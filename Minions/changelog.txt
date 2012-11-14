@@ -1,0 +1,215 @@
+Update 1.5.1
+- updated to MC 1.4.4
+
+Update 1.5.0
+- made food cost configurable
+
+Update 1.4.9
+- removed debug printing server spew
+- reworked synchronization in multithreaded pathing, hopefully fixes crashes and fixes pathfinding glitches
+
+Update 1.4.8
+- fixed client Item/Proxy blockade when connected to remote Servers
+
+Update 1.4.7
+- fixed XP cost being added, not subtracted to the player
+
+Update 1.4.6
+- updated Block dropping code to the 1.4.2 style, should fix issues with IC2 and Railcraft
+
+Update 1.4.5
+- added synchronization and different catch for that damn IllegalThreadException
+
+Update 1.4.4
+- added a crash trap for the illusive IllegalThreadException
+
+Update 1.4.3
+- update to Minecraft 1.4.2 and Forge 6
+
+Update 1.4.2
+- made Minions and Minion commands cost-free in creative mode
+
+Update 1.4.1
+- removed volative keyword from Pathing Thread .. maybe fixes the IllegalThreadState crashes some people were having
+- fixed small SMP issue on the Master Staff
+- added packaged AtomicStryker Update Checker mod. Leave it out if you dont want update notifications.
+
+Update 1.4.0
+- fixed Master's Staff being "Unnamed"
+- fixed a single click counting as multiple orders, there is now a 0.4s delay minimum between orders
+
+Update 1.3.9
+- fixed Entity mount bug (i hope)
+- reworked and normalized Packets
+
+Update 1.3.8
+- added worthless Block registration to advanced config
+- added some more documentation to advanced config file on how to use it
+
+Update 1.3.7
+- hopefully final Unsummon SMP crashfix
+
+Update, 1.3.6
+- and another crashfix
+
+Update, 1.3.5
+- another crashfix
+
+Update, 1.3.4
+- fixed ConcurrentModification crash with Entity Chunk Loading
+- fixed NoSuchMethod crash related to Block Mining on server
+
+Update, 1.3.3
+- fixed various sound issues and missing server propagated sounds
+- fixed several missing FX
+- added distinct sound to notify users about empty foodbar
+
+Update, 1.3.2
+- added mcmod.info file (Just as FML no longer necessitates it)
+- fixed ClientProxy package problem
+- fixed various MC 1.3.2 porting issues
+
+Update, 1.3.0
+- updated to Minecraft 1.3.2, FML and Forge 4.x
+- dropped Update Manager for now
+- still has issues. Report the issues. Include FML logs.
+
+Update, 1.2.8
+- changed "return to chest" code to "return to TileEntity with inventory". The only requirement is the inventory be larger than 23 stacks.
+	- this should fix compatibility with Ironchests in particular
+- changed BlockTask workings so a failed pathfollow attempt does not result in a "forgotten" Block immediatly
+	- the Minion will attempt another path first (that was already coded but a small bug prevented it from working)
+	- if all paths fail, the Minion will teleport to the Block instead
+	- only if all of the above failed will a Minion leave a Block be
+- Update Manager to newest version
+
+Update, 1.2.7
+- fixed vanilla pathing interfering with Minions AI crash
+- made Master's Staff item ID configurable
+- added the ability to define a blockID as "tree" block, allowing you to order Minions to chop them and added IC2 rubber as default entry
+( only properly supports trees up to 2x2 size, i do not guarantee anything above that )
+- fixed SMP entity pickup fix breaking player pickup in turn - both should work now
+
+Update, 1.2.6
+- redid Minion AI to use the newer Minecraft AI for movement
+- pathfollowing, entity following and general movement should be a lot more responsive
+- fixed picking up non-player Entities not showing properly on servers
+- updated Vazkii's included Update Manager to 2.0, now serverside too!
+
+Update, 1.2.5
+- added Lightning Ability to Master Staff, left click on out-of-reach target to strike (hold for unlimited power), causes Exhaustion
+- giving a nontrivial work order to minions now causes Exhaustion
+- added messages regarding config file and settings to GUI
+- implemented Update Notifier
+
+Update, 1.2.4B (compatible with 1.2.4)
+- fixed java near-lockup when a Minions' Inventory got full while doing a job and their chest/master was far away or hard to path to
+
+Update, 1.2.4
+- fixed some crashes with Path Finding and Chunk Loading
+
+Update, 1.2.3
+- fixed various bugs, crashes and inefficiencies
+- made Strip Mining schematic longer so its clearer what you are doing and where it points to
+- swapping your Item away from the Master staff cancels selections, selecting only possible with Staff in hand
+- added custom space digging! Your minions can now move mountains if you freaking say so. Dungeons can now also be dug without hassle ...
+- new Minion AI automatically digs out an access stairwell for high enclosed spaces, if top layers cannot be reached by Minions
+
+Update, 1.2.2
+- the persisting Minion ("Minions in Savegame") setting now defaults to true
+- in SMP, Minions now keep nearby Chunks loaded (even while moving!). Having them mining while nobody is on the server is now be possible
+- for that occasion, Strip Mining Shaft's maximum length has been doubled from 40 to 80 Blocks
+- added Unsummon button to Minion menu, if you really really need them gone. Items will be dropped on disappearing. Re-summoning is free if you have the staff.
+
+Update, 1.2.1
+- ported from ModLoaderMp to Forge Networkmod. No longer requires MLMP, now requires Forge.
+- also major bugfixes to Mining, there should be a lot less Blocks lost now
+
+Update, 1.2.0
+- a specified return Chest is now checked for being valid before Minions attempt to dump stuff into it
+- upon finding it's gone they will just stand there and do nothing
+
+Update, 1.1.9
+- updated version string to 1.2.4
+- fixed Minions snatching Items out of the air when their comrades return goods to you
+
+Update, 1.1.8
+- completely ditched the part of MinecraftServer Forge is breaking, should no longer rely on hacky solution
+- fixed problem with Minions sometimes mining the wrong Block (namely, Redpower Gem Blocks as Ore Blocks instead of loose Gems)
+- on that notice, made it impossible for Minions to collect any kind of water, lava, leaves, or plants Material block
+- Minions can now collide with and pickup Items lying about
+- Completely reworked Tree Harvesting Code. Tree Harvesting Time now depends on the size of the Tree (1 second each block)
+- Tree Harvesting now also immediatly destroys most of the attached leave Blocks (sapling drop rates apply)
+- GET TO THE CHOPPAH!! JUNGLE CLEARING YEEEEEEES
+- updated to Minecraft 1.2.4
+
+Update, 1.1.7B and C
+- fixes to Forge and MinecraftServer problems, removed fix from Bukkit since Bukkit doesnt have the problem
+
+Update, 1.1.7
+- added several Minion NullPointer checks to serverside to prevent async crashes
+
+Update, 1.1.6
+- worked around Forge breaking the MinecraftServer file, yay
+
+Update, 1.1.5
+- Netherrack and Soulsand are no longer considered precious Blocks
+- small logic change to multithreaded workers (should not change anything)
+
+Update, 1.1.4
+- updated client-server XP cost interaction
+- Servers now impose their XP setting on clients instead of just checking it
+- A setting of -1 is now possible both client and server to disable the Deeds
+
+Update, 1.1.3
+- updated to work with MC 1.2.3
+
+Update, 1.1.2
+- fixed some NullPointer crashes
+
+Update, 1.1.1
+- fixed Strip Mining in SMP not doing anything
+
+Update, 1.1.0
+- New feature: Issueing an order at your feet will have a Minion carry you
+- New feature: In SMP, ordering Minions to carry other Players is now possible
+- any player attacking a Minion will have the Minion drop the Entity it's holding
+
+Update, 1.0.9
+- removed Minion debug printing i forgot to disable
+- improved Player follow code a bit, they should bump into you less, now
+- reduced Teleport pop sound to half volume
+
+Update, 1.0.8
+- further improvements to Minions getting stuck stripmining, halting work
+- some Nullpointer fixes
+
+Update, 1.0.7
+- fixed Minions ability to "mine" liquids
+- fixed Minions not aborting extensive Vein Mining if ordered
+- added experimental persistant Minions config setting
+
+Update, 1.0.6
+- fixed bug introduced with stripmine fix (lol)
+
+Update, 1.0.5
+- fixed crash upon clicking a nonpathable ore vein
+- fixed minions sometimes getting stuck doing nothing while strip mining
+
+Update, 1.0.4
+- fixed many Items disappearing upon Minion dumping them into chest
+- if a large chest's half is full, the other half should be filled now
+- fixed large chest not opening if Minion targeted the lower half
+
+Update, 1.0.3
+- checking the inventory code there was a small efficiency flaw, which is fixed now
+
+Update, 1.0.2
+- if you order a Minion to grab an Animal, and the animal moves away before the Minion arrives, it should now follow the animal
+- improved chest dropoff pathing, Minions should no longer insist on stepping ontop of the crate
+
+Update, 1.0.1
+- Vein mining will no longer regard Cobblestone, Obsidian, or Bedrock as precious
+- removed Minions ability to destroy Bedrock
+
+Initial release

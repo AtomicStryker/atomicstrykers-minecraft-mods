@@ -1,0 +1,54 @@
+Folder structure this file resides in
+
+./
+	./mcp/ - the folder you extracted MCP and Forge into, installed Forge, and then installed NEI following each of their instructions
+	./eclipseworkspace/ - contains the eclipse workspaces, sources, and build scripts for all of the mods
+
+To setup my workspace in your eclipse, simply setup MCP, Forge and NEI following their instructions, then run updatemd5 of mcp to "null" the sources
+Then move your eclipse workspace into my folder.
+The Projects should get autodetected, if not, just use "New -> Java Project" and type the folder names to have them imported.
+If your MCP is setup properly, no or very few compile errors should show. If there's a massive load of errors, your setup is wrong.
+
+
+Each project/mod contains a "build.xml" in its folder, which, when run as Java Ant Project, automatically moves the sources into MCP,
+recompiles, reobfuscates, packs the resulting files into a jar/zip, then removes the sources from MCP again, and in some cases
+does additional packaging (when mods need more than drag and drop installation).
+Obviously you need to have Java Ant installed and working for that to work.
+
+THIS ASSUMES YOUR MCP AND MOD COMPILE AND MCP HAS HAD UPDATEMD5 RUN - if there are compile errors in the eclipse project, it will fail!
+
+In the MCP Minecraft Project - which is the forge/NEI minecraft sources - there is a buildAll.xml, which, when ran, will build ALL projects/mods.
+NOTE: Some projects attempt to include the Update Checker into their packages, which means it will be built first.
+
+
+Stuff that needs changing each version:
+
+- in "./eclipseworkspace/properties" you find the minecraft version that is appended by the scripts to all resulting mod- and archivenames.
+- change is according to minecraft version only, so that you can keep overwriting your Dropbox/whatever link for the current MC version
+
+- each mod has a changelog, add new version
+- each mod has a mcmod.info, change to new versions (mod and mc both)
+- each mod has a @Mod sourcefile, generally in the common side, in which you need to change the "version =" property
+
+
+Mods with special Needs:
+
+-- Multi Mine
+- Multi Mine needs it's dummy jar in /mcp/jars/mods/ if you want it to work through MCP
+- Multi Mine uses hardcoded obfuscated names in it's sourcefile "common\atomicstryker\multimine\common\fmlmagic\MMTransformer.java"
+- those need to be fixed each time minecraft obfuscation changes.
+- a good place to get working obfuscated names from is /mcp/conf/: joined.srg, methods.csv and fields.csv
+- another good place is MCPBot in the MCP IRC channels, assuming it runs the version you need
+
+-- Dynamic Lights
+- similar to Multi Mine. sourcefile is "common\atomicstryker\dynamiclights\common\DLTransformer.java"
+
+-- Stalker Creepers
+- similar to Multi Mine. sourcefile is "common\atomicstryker\stalkercreepers\common\SCTransformer.java"
+
+-- Finder Compass
+- Finder Compass uses some really hacky solutions to get the current texturepack resolution from multiple MC setups. Break easily.
+- will crash if broken, so thats a good indicator. Testrun with HD textures and Optifine!
+
+-- Kenshiro Mod
+- uses some hacky stuff for rendering and manipulating punched entities. Will probably crash if broken.

@@ -1,0 +1,135 @@
+Version 4.5
+	update to MC 1.4.4
+
+Version 4.4c
+	fixed NPE in operate()
+
+Version 4.4b
+	fixed Input Slot not being drained after first process
+
+Version 4.4a
+	fixed Slot transfer (Shift clicking)
+
+Version 4.4
+	fixed recipes with multiple input items only using up one per process
+	fixed Compressor and Extractor not showing up in Creative, TMI, NEI etc etc
+	added NEI Subset, IC2.AdvancedMachines
+
+Version 4.3
+	update to MC 1.4.2 and IC2 1.108
+
+Version 4.2C
+	removed NEI subset line again. I meant to add the NEI API file but forgot, doesnt work anyway
+	added Tile Entity fixes suggested by hiimcody1, thanks
+
+Version 4.2B
+	fixed machines not exploding
+	will no longer launch without or before IC2
+	will no longer launch unless IC2 is at version 1.107 atleast LEARN TO READ PEOPLE
+	added automatic NEI registering. Does currently not work right. I dont know who is to blame but not me.
+
+Version 4.2
+	ported to 1.3.2 and IC2 1.107
+	code cleanup and refactoring
+	fixed wrenching the machines opening the menu
+	made a bunch of things configurable
+
+Version 4.1
+	added fallback explosion method when feeding too much power into a machine
+	re-implemented ISidedInventory to fix Tube/Pipe compatibility
+
+Version 4.0
+	Updated for Minecraft 1.2.5, IC2 1.95 and ported from MLMP to FML
+
+Version 3.9b
+	Fixed smallish issue with Forge config parser
+
+Version 3.9
+	Updated to IC2 1.90, MC 1.2.4 / 1.2.5 and Forge build 67
+	Fixed some issues with Additive Macerating giving out too much dust with Ingot input
+	POSSIBLE ISSUE: I'm rather certain thats a Forge bug ... loading the (new) config file does not seem to work as of now. Forge changed their config file handler.
+	
+Version 3.8c
+	fixed some Forge and IC2 issues
+
+Version 3.8b
+	fixed some ModLoader porting issues
+
+Version 3.8
+	updated to IC2 1.81 @ Minecraft 1.2.3
+	Added more additive Macerating recipes
+		- 1 Coal + 1 Re-Enriched Uranium Cell = 1 Uranium Cell
+		- 1 BlockLog (eg wood) + 1 BlockCactus = 1 Compressed Plant Clump
+
+Version 3.7
+	fixed more IC2 API implementations
+		- Advanced Machine facing should be transmitted to clients by the server, thus be kept in sync
+		- Advanced Machines can now be turned with a Wrench
+		- KNOWN ISSUE: Sometimes Rotation does not Update immediatly, but only after a time or when the machine is switched on
+		- KNOWN ISSUE: Upon placing an Advanced Machine the client can crash with an "internal server error", nothing happens on server. Just relog and it should be fine
+		
+	fixed additive Macerating giving out 2 refined Iron Dust for 1 Iron Ingot and Coal
+	fixed additive Macerating giving out 2 Bronze Dust for 1 Copper Ingot and Tin
+
+Version 3.6e [client only]
+	fixed various Texture issues - on/off visuals and rotation should now be fine, across all machines, hosts and states
+	made the Singularity Compressor emit smoke as the Macerator does
+	dropped block_0 config option since it has no point of existing
+
+Version 3.6d [client only]
+	and of refined Iron Dust
+
+Version 3.6c [client only]
+	fixed Texture Pack Support of the GUIs
+
+Version 3.6b
+	fixed ArrayOutOfBounds Crash in Compressor
+
+Version 3.6
+	added additive Macerating: using a second Input Slot, you can manipulate certain outcomes
+		current recipes:
+		- 64 Iron Ore + 1 Coal = 128 refined Iron Dust
+		- 3 Copper Ore + 1 Tin Ore = 8 Bronze Dust [Works with any Forge library Copper and Tin]
+		- 8 Coal + 1 Water Cell = 8 Hydrated Coal Dust
+		once additive Macerating has started, any attempt to remove the second Input Item will result in one of it's stack being left behind. It its only a single Stack, clicking it purges the slot.
+	
+	fixed Shift clicking. Upgrades now automatically land in the Upgrade Slots, anything else in Input, shift clicking on machine content always puts in inventory
+
+
+Version 3.5b
+	fixed ancient Energy bug from 3.2 or earlier, resulting in too much Power draw
+	fixed Advanced Machines stopping work when Energy Buffer was empty but Momentum still present
+	fixed Explosion console spam on Bukkit
+	raised Base max Speed to 7500
+	
+
+Version 3.5, codename "Nerf Stick"
+	_DANGER EXPLOSIONS_ Changed base Tier to 1 (Low Voltage) _DANGER EXPLOSIONS_
+	Existing idle Advanced Machines hooked up to Medium Voltage won't explode. Working ones WILL.
+
+	Cut down base max Energy Input to 32 EU/t, from 128
+	Cut down base max Speed and Energy Storage by half, to 5000
+	-> so to make Upgrades actually useful
+	
+	Increased extra Energy cost when adding Overclockers
+	Reduced Overclocker max Speed Bonus by half, is now 500
+	Change to Energy Cost: Once Full Speed is reached, the additional cost from Overclockers is nullified
+
+	Added missing sprites
+	Fixed Voltage Explosion bug when introducing Transformers into a non charged Machine
+	Dramatically reduced Tick Load by checking Upgrade Inventory only when it has changed (IC2 does it at all times ... lol)
+	Changed Sound behaviour to only play "interrupt" sound when a Machine actually comes to a total halt
+
+
+Version 3.4:
+	Merged pwnedgod's fixes into this. Changes include
+
+		customizable Texture and Sound config
+		a different Texture when a machine is working (may not work in SMP)
+		Particles!
+		Extractor has 3 output Slots again, reworked all GUIs for vertical output slots
+
+	Default values are compatible with prior versions, your config should contain the new stuff after running once.
+
+Version 3.3b:
+	Reverted base Acceleration to what it was originally, fixed several SMP GUI problems (on bukkit aswell) 

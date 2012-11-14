@@ -1,0 +1,5 @@
+1.4.4
+update to mc 1.4.4
+
+1.4.2
+starting an actual changelog for Finder Compass

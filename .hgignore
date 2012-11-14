@@ -1,0 +1,8 @@
+syntax: glob
+.metadata/
+**/bin/
+**/build/
+**/temp/
+**/dist/
+**/download/
+.settings/

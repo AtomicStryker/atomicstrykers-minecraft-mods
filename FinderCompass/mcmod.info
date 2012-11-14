@@ -1,0 +1,21 @@
+[
+{
+  "modid": "AS_FCompass",
+  "name": "Finder Compass",
+  "description": "Make the vanilla Compass point on new and exciting Things! Diamonds! Strongholds! Any Block!",
+  "version": "1.4.4",
+  "mcversion": "1.4.4",
+  "url": "http://www.minecraftforum.net/topic/189739-",
+  "updateUrl": "",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

@@ -1,0 +1,21 @@
+[
+{
+  "modid": "PetBat",
+  "name": "Pet Bat",
+  "description": "Amazing Pet Bats!",
+  "version": "1.0.9",
+  "mcversion": "1.4.4",
+  "url": "http://www.atomicstryker.net/",
+  "updateUrl": "",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

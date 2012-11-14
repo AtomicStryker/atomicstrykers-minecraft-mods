@@ -1,0 +1,38 @@
+AtomicStryker's BattleTowers
+
+
+Changes from Kodaichi's original, maintained by freakstritch
+http://www.minecraftforum.net/topic/139746-173-battle-towers-chicken-gliding-kodaichi-classics/
+
+
+- Completely rewritten Tower Spawning to properly work in most cases
+- There is 7 Types of Towers now
+- 4 spawn depending on their underground (Sand, Ice, Water, Foliage)
+- Battle Towers now have actual staircases
+- Adjusted Items and Blocks in Chests
+- rewritten Golem Combat:
+- Golem is much slower, you can actually avoid him on the tower now
+- Golem Apocalypse Stomp will trigger if you hide in the Staircase
+- Golem also shoots Fireballs
+- ported to Forge, SMP capable
+
+- You cannot open the topmost 2 chests while the golem lives
+- When a golem dies, the Tower will (by default setting) collapse quickly
+- The Setting files allow full customization of Items found in BattleTower chests
+
+
+Installation:
+
+
+Required Stuff to have installed beforehand (client and server!!):
+
+Forge
+http://minecraftforge.net
+
+
+
+Make sure you followed the Forge installation instructions. Make sure META-INF is deleted.
+Best testlaunch minecraft once before installing this.
+
+Then...
+Put everything in their respective folders in ./minecraft as the folder names inside /setup/ instruct you. The sourcecode folder contains this mods MCP sources.

@@ -1,0 +1,12 @@
+<project name="MasterBuild" default="buildAllSubProjects">
+	<target name="buildAllSubProjects">
+
+		<subant target="build" genericantfile="build.xml" buildpath="./../UpdateCheckerMod/build.xml">
+		</subant>
+
+		<subant target="build" genericantfile="build.xml">
+			<fileset dir="./../" includes="**/build.xml" excludes="**/UpdateCheckerMod/**"/>
+		</subant>
+
+	</target>
+</project>

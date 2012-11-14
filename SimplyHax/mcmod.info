@@ -1,0 +1,21 @@
+[
+{
+  "modid": "AS_SH",
+  "name": "Simply Hax",
+  "description": "Sprinting, Flying, seeing through Walls, it's SIMPLY HAX.",
+  "version": "1.4.4",
+  "mcversion": "1.4.4",
+  "url": "http://www.minecraftforum.net/topic/1113099-",
+  "updateUrl": "",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "See thread",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

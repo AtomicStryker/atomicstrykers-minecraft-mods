@@ -1,0 +1,43 @@
+1.0.9
+- update to Minecraft 1.4.4
+- made enchanted drop IDs configurable
+
+1.0.8
+- made sure Wither doesn't get Infernal anymore
+
+1.0.7
+- fixed onHurt hook calling client method on server Side
+
+1.0.6
+- fixed name Display to not show obfuscated classnames
+- fixed health Display propagation not really working
+   let me stress how much of an issue this was to get going
+- changed Spawn Handler:
+   Now only Mob Entities will become infernal
+   Now every Mob joining the World through any means can become infernal (that includes eggs)
+- fixed broken xp and enchantment dropping
+- fixed a whole bunch of broken or not working modifiers
+- fixed broken saving and loading of modifiers
+- fixed clients inverting the mod order locally
+   there is a massive client/server mixup issue that i dont remember from last version, mc 1.4.2 yay
+
+1.0.5
+- updated to minecraft 1.4.2 and Forge 6.x
+
+1.0.4
+- updated to minecraft 1.4 and Forge 5.x
+- fixed serverside load
+
+1.0.3
+- bugfixes, removed faulty DataWatcher addition
+- ported to minecraft 1.3.2 and Forge 4.x
+
+Update, 1.0.2
+- bug- and crashfixes
+- added Serverside mod
+- added Update Manager
+
+Update, 1.0.1
+- bug- and crashfixes
+
+Initial release

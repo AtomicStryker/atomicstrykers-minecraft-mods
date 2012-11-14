@@ -1,0 +1,40 @@
+1.2.3
+- update to Minecraft 1.4.4
+
+1.2.2
+- changed sounds yet again. Made a dormant Golem emit spooky sounds.
+
+1.2.1
+- fixed sounds crashing
+
+1.2.0
+- updated to Minecraft 1.4.2 and Forge 6
+
+1.1.9
+- updated to Minecraft 1.4 and Forge 5
+
+1.1.8B (hotfix)
+- fixed NoSuchElement crash with Tower Destroyers tick
+
+1.1.8
+- synchronized Tower Destroyers for crash prevention
+- fixed timer code derp in Server Ticks (ran every tick, not every second)
+- updated Configuration code to have current FML compliant code
+- Configuration file changed. To prevent incompatibility problems, i changed it's name to "Battletowers.cfg". You can delete the old one.
+
+1.1.7
+- fixed endless loop that could occur when trying to generate BattleTowers
+- fixed BattleTowers trying to generate in Nether
+- moved sounds back into the /resource/ folder. They didnt work inside the zip
+
+1.1.6
+- fixed NoSuchMethod Sound crash in Golems on Serverside
+
+1.1.5:
+- synchronized WorldGen for BattleTowers, meaning there shouldnt be any next-to-each-other Towers, ever again. This also generally decreases their occurance.
+- moved Sound files into the zip, away from /resources/
+- fixed Golem not reacting if you attacked him from far away
+- fixed issue preventing BattleTowers from loading on a dedicated server
+
+1.1.4:
+- fixed Battletowers spawning too close together (goddamnit Minecraft, i cant even depend on you to compute the distance between 2 points correctly?)

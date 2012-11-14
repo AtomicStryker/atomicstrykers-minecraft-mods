@@ -1,0 +1,21 @@
+[
+{
+  "modid": "AS_BattleTowers",
+  "name": "AtomicStryker's Battletowers",
+  "description": "Giant Towers spawn all over the lands, featuring a vicious Mob infested Ascend leading up to an epic Boss Fight!",
+  "version": "1.2.3",
+  "mcversion": "1.4.4",
+  "url": "http://www.minecraftforum.net/topic/480774-",
+  "updateUrl": "",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "See CREDITS file",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

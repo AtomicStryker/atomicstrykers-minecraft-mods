@@ -1,0 +1,27 @@
+1.5.9
+- updated to MC 1.4.4
+
+1.5.8
+- fixed bug with Machine Rotation (being done) not being immediatly visible on client
+- fixed bug with Machine Rotation not being sent to client upon connecting or spotting the Machine
+
+- changed Wood for Harvester: Jungle Logs are no longer harvestable.
+-- this was done both to make Cocoa farming possible and the one-click-chopdown of jungle giants impossible
+- added Cocoa as plantable, harvestable and fertilizable with machines. Does not autoplace jungle logs.
+- added Carrot as plantable, harvestable and fertilizable
+- added Potato as plantable, harvestable and fertilizable
+
+- redid Veterinary Machine: Will once again actually work
+-- accepts and heals with anything Steve will eat (includes Rotten Flesh, Spider eyes etc)
+-- will also accept wheat, carrots, potatoes, pumpkins and melons
+- changed Rancher to hit all Entities in it's scope each work tick instead of a single one
+- changed Vet to hit all Entities in it's scope each work tick instead of a single one
+
+Inhumanity upgraded!
+- Rancher will now grind several Mobs into Items: Creepers, Pigmen, Zombies, Spiders, Skeletons and Witches
+- note the Vet will not heal any Mob Entities
+- note the Rancher will always hurt Mobs upon farming them, and also has a guaranteed drop each tick
+-- unlike tame Animals only sometimes dropping and only sometimes getting hurt
+
+
+This changelog starting with the official takeoever of MFR by AtomicStryker

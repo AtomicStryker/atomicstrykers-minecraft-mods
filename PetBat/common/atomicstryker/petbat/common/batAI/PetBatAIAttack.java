@@ -1,0 +1,132 @@
+package atomicstryker.petbat.common.batAI;
+
+import atomicstryker.petbat.common.EntityPetBat;
+import net.minecraft.src.Entity;
+import net.minecraft.src.EntityAIBase;
+import net.minecraft.src.EntityItem;
+import net.minecraft.src.EntityLiving;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.Vec3;
+
+public class PetBatAIAttack extends EntityAIBase
+{
+    
+    private final EntityPetBat petBat;
+    private Entity entityTarget;
+    private int attackTick;
+    
+    public PetBatAIAttack(EntityLiving bat)
+    {
+        petBat = (EntityPetBat) bat;
+        attackTick = 0;
+    }
+    
+    @Override
+    public boolean shouldExecute()
+    {
+        if (petBat.getAttackTarget() != null
+        && petBat.getAttackTarget().isEntityAlive())
+        {
+            entityTarget = petBat.getAttackTarget();
+            return true;
+        }
+        else if (petBat.getFoodAttackTarget() != null
+        && petBat.getFoodAttackTarget().isEntityAlive())
+        {
+            entityTarget = petBat.getFoodAttackTarget();
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean continueExecuting()
+    {
+        if (entityTarget != null && entityTarget.isEntityAlive())
+        {
+            return true;   
+        }
+        
+        return super.continueExecuting();
+    }
+    
+    @Override
+    public void startExecuting()
+    {
+        super.startExecuting();
+    }
+    
+    @Override
+    public void resetTask()
+    {
+        entityTarget = null;
+        attackTick = 0;
+        super.resetTask();
+    }
+    
+    @Override
+    public void updateTask()
+    {
+        petBat.getLookHelper().setLookPositionWithEntity(entityTarget, 30.0F, 30.0F);
+        
+        attackTick = Math.max(attackTick - 1, 0);
+        
+        double var1 = (double)(petBat.width * 2.0F * petBat.width * 2.0F);
+        if (petBat.getDistanceSq(entityTarget.posX, entityTarget.boundingBox.maxY, entityTarget.posZ) <= var1)
+        {
+            if (entityTarget instanceof EntityItem)
+            {
+                if (attackTick == 0)
+                {
+                    attackTick = 40;
+                }
+                else if (attackTick == 1)
+                {
+                    entityTarget.setDead();
+                    displayEatingEffects(((EntityItem)entityTarget).item, 16);
+                    petBat.worldObj.playSoundAtEntity(petBat, "random.burp", 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
+                    petBat.heal(18);
+                    petBat.setFoodAttackTarget(null);
+                }
+                else if (attackTick % 3 == 0)
+                {
+                    displayEatingEffects(((EntityItem)entityTarget).item, 5);
+                }
+            }
+            else
+            {
+                if (attackTick == 0)
+                {
+                    attackTick = 20;
+                    petBat.attackEntityAsMob(entityTarget);
+                    
+                    double xKnock = entityTarget.posX - petBat.posX;
+                    double zKnock = entityTarget.posZ - petBat.posZ;
+                    for (; xKnock * xKnock + zKnock * zKnock < 1.0E-4D; zKnock = (Math.random() - Math.random()) * 0.01D)
+                    {
+                        xKnock = (Math.random() - Math.random()) * 0.01D;
+                    }
+                    petBat.knockBack(entityTarget, 4, xKnock, zKnock);
+                }
+            }
+        }
+    }
+
+    private void displayEatingEffects(ItemStack item, int power)
+    {
+        for (int var3 = 0; var3 < power; ++var3)
+        {
+            Vec3 var4 = petBat.worldObj.getWorldVec3Pool().getVecFromPool(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+            var4.rotateAroundX(-petBat.rotationPitch * (float)Math.PI / 180.0F);
+            var4.rotateAroundY(-petBat.rotationYaw * (float)Math.PI / 180.0F);
+            Vec3 var5 = petBat.worldObj.getWorldVec3Pool().getVecFromPool(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.3D, (double)(-petBat.getRNG().nextFloat()) * 0.6D - 0.3D, 0.6D);
+            var5.rotateAroundX(-petBat.rotationPitch * (float)Math.PI / 180.0F);
+            var5.rotateAroundY(-petBat.rotationYaw * (float)Math.PI / 180.0F);
+            var5 = var5.addVector(petBat.posX, petBat.posY + (double)petBat.getEyeHeight(), petBat.posZ);
+            petBat.worldObj.spawnParticle("iconcrack_" + item.getItem().shiftedIndex, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord);
+        }
+
+        petBat.worldObj.playSoundAtEntity(petBat, "random.eat", 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2), (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
+    }
+    
+}

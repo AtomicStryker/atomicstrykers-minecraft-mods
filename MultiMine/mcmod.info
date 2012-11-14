@@ -1,0 +1,21 @@
+[
+{
+  "modid": "AS_MultiMine",
+  "name": "Multi Mine",
+  "description": "Partially Mined Blocks stay broken and regenerate slowly! Mine parallel or in tandem! Fully networked!",
+  "version": "1.2.0",
+  "mcversion": "1.4.4",
+  "url": "http://www.minecraftforum.net/topic/485526-",
+  "updateUrl": "",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "cpw for making FML",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

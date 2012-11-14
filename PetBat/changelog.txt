@@ -1,0 +1,32 @@
+1.0.9
+changed Itemifying: If the Bat Item cannot be added to your inventory,
+the bat drops as Item wherever it is at the moment. Teleporting into
+your Inventory because of too great distance simply won't happen while
+your inventory is full.
+
+1.0.8
+update to Minecraft 1.4.4
+
+1.0.7
+likely covered all possible cases of bat duping now
+
+1.0.6
+fixed entity ID being chosen randomly, kinda
+
+1.0.5
+fixed manual inventory toss causing bat duping
+
+1.0.4
+fixed tiny typo wiping Bat XP on crafting
+
+1.0.3
+fixed tiny flight logic derp
+
+1.0.2
+fixed teleporting into inventory causing bat duping
+
+1.0.1
+GUI was being referenced on serverside, huehuehue
+
+1.0.0
+initial Release!

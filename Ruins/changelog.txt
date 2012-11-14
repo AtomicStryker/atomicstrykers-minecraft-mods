@@ -1,0 +1,92 @@
+CHANGELOG:
+v1 - Initial Release
+
+v2 - Template File Release
++ Template files interface added, .minecraft/mods/resources/ruins/*.tml
+
+v3 - Options File Release
++ Mod options file, .minecraft/ruins.txt
++ Log file for errors, .minecraft/ruins_log.txt
++ Block Metadata support added
++ Template weights for randomization
++ Embed distance, allowing basements to be created
+
+v4 - ModLoader Release
++ Complete ModLoader v5 compatibility, no base classes modified
++ Random site rotation
+
+v5 - Biome-Specific Release
++ Templates can now spawn in the Nether
++ Templates can now spawn specific to a biome
++ Templates can now spawn in and around water and lava
++ Automatic terrain leveling and cutting
++ Added a new "under block" conditional to the templates
+
+v6 - 
++ Options per world
++ Added Unique flag (only generate once per world)
++ Unique ruins are retained between world loads
++ Added a .schematic converter (no documentation!)
++ Ruins now have a bounding box to prevent sloppy generation
++ Attempted to fix edge of world generation (we'll see)
+
+v7 -
++ changed folder structure: all ruin related files now base off the /mods/ folder, resources for example goes to /mods/resources
++ scrapped hardcoded and mismatching Biome Index in favor of a dynamic solution, directly accessing BiomeGenBase for all Biomes
++ added new and changed other folder names to match Notch Biome designations. Make sure your custom structures are in the new folder!
++ added SMP version (requires MLMP) - clients connecting to a server do not need to have the mod installed
++ added drag and drop batch file to schematic converter, made some Jungle Structures
++ added new plants to plant exlusion lists
++ added tons of unique Structures and Traps, courtesy of Arrrg http://www.minecraftforum.net/topic/293667-123-amco-arrrgs-minecraft-overhaul/
+
+v7.1 (server only) -
++ fixed file system problems
+
+v7.2 -
++ upped maximum amount of supported Biomes from 50 to 500
++ removed leading slashes from folder designators (no more absolute path enforcing)
+
+v7.2b -
++ fixed Array Length in RuinStats class to 500 aswell
+
+v7.3 -
++ ported from ModLoaderMP to Forge NetworkMod (Yes that DOES mean it now requires Forge)
++ updated Block metadata Handling to include: Brick/Stone/Netherbrick Stairs, TrapDoors
+
+v7.4 -
++ hopefully updated Template rotating metadata Handling to not screw up inverted Stairs
+
+v7.4B -
++ fixed inverted stairs metadata for reals this time
+
+v7.4C -
++ Added metadata rotation translator for BlockVines (106)
+
+v.7.4 for 1.3.1
++ compiled against Modloader 1.3.1, same file should work both client and server
+
+7.5 for 1.3.2
++ ported to FML. No longer supports ModLoader. Works both client and server.
+
+7.5B
++ purged Minecraft clientside only code remnants from Modfile
+
+7.6
++ changed World Savedir Finding method to be more robust
+
+7.7
++ update to MC 1.4 and Forge 5
+
+7.7 - im keeping the number, nobody used the first rev anyway
++ update to MC 1.4.2 and Forge 6
+
+7.8
++ made sure Ruins loads after ExtraBiomesXL if present
++ added implementation of ExtraBiomesXL API, now finds those Biomes
++ added creation of empty folders for Biomes you don't have templates for
+
+7.9
++ redid World Savedir Finder again, now uses Chunk Saving Location
+
+8.0
++ Update to Minecraft 1.4.4

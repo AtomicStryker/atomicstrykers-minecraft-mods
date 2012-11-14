@@ -1,0 +1,23 @@
+[
+{
+  "modid": "MFReloaded",
+  "name": "Minefactory Reloaded",
+  "description": "An abundance of automated Appliances for your lazyness needs!",
+  "version": "1.5.9",
+  "mcversion": "1.4.4",
+  "url": "https://github.com/balr0g/MineFactoryReloaded/wiki",
+  "updateUrl": "http://atomicstryker.net",
+  "authors": [
+    "PowerCrystals",
+	"TehKrush",
+    "AtomicStryker"
+  ],
+  "credits": "All the contributors",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

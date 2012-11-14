@@ -1,0 +1,47 @@
+1.1.0
+- update to MC 1.4.4
+- fixed toggle button triggering while in menus
+
+1.0.9
+- fixed the Player handheld light/armor stopping to work when changing worlds
+- fixed rather severe bug causing both Client and Integrated Server to go through Dynamic Lights
+  and causing the World change detector to got batshit crazy
+- added golden Helmet ID to all default Modules default configs
+- fixed Armor stroboscopic rave light (dawwwww...)
+
+1.0.8
+- fixed toggle key still triggering while in chat or otherwise in a menu
+
+1.0.7
+- fixed Dynamic Light not changing when swapping between stronger and weaker Light Items
+- that applies for yourself and for other Players
+- fixed more possible ConcurrentModificationExceptions, this time in the main mod
+
+1.0.6
+- fixed crash when changing Keybinding without World loaded
+- added chat message to toggling Dynamic Lights on/off
+- fixed possible ConcurrentModificationException crashes in Entitylist accessing modules (i hope)
+
+1.0.5
+- fixed another NPE in removeLightSource
+
+1.0.4
+- further synchronization to prevent accidents
+- fixed small issue preventing it to work in SMP
+
+1.0.3
+- fixed another NPE Crash with CreeperLight and MoCreatures
+- why is there a fish making a Sound with String null? ZHAAAAAARK
+
+1.0.2
+- fixed NPE Crash with Multithreading (Optifine)
+
+1.0.1
+- fixed NPE Crash with CreeperLight
+
+1.0.0
+- rewritten from scratch to be a FML Coremod for Minecraft 1.4.4, requires Forge
+- boosted efficiency A LOT, I'm positive it cannot be done any better now :3
+- Dynamic Lights is now modular! See readme!
+- configuration files for Dynamic Light modules can now be found at /config/
+- global toggle Button can now be configured via Controls Menu

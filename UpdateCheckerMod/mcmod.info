@@ -1,0 +1,21 @@
+[
+{
+  "modid": "AS_UpdateCheck",
+  "name": "AtomicStryker Update Check Mod",
+  "description": "Minimalistic Update Checker for all AtomicStryker mods",
+  "version": "1.0.4",
+  "mcversion": "1.4.4",
+  "url": "atomicstryker.net",
+  "updateUrl": "",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

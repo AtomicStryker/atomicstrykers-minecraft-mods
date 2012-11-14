@@ -1,0 +1,83 @@
+RopesPlus 1.2.3
+- update to MC 1.4.4
+
+RopesPlus 1.2.2
+- fixed clientside config being loaded in wrong place in some cases
+- fixed Forge config not automatically fixing already-taken Block and Item IDs
+- thanks to NLZ for pointing this out
+
+RopesPlus 1.2.1
+- fixed Warparrows allowing negative y teleports
+- fixed Explosive Arrows exploding on clientside
+
+RopesPlus 1.2.0
+- ported to MC 1.4.2 and Forge 6.x
+
+RopesPlus 1.1.9
+- fixed NPE crash when someone cheated himself and fired an ItemBowRopesPlus
+- added chat message scolding player not to do that
+- fixed damage and fire enchantments on the firing vanilla bow to once more affect Ropes+ arrows
+
+RopesPlus 1.1.8
+- fixed issue sometimes misplacing the config file
+
+RopesPlus 1.1.7
+- fixed issue preventing the mod from being run on a dedicated server
+
+RopesPlus 1.1.6
+- fixed thrown Grappling Hook texture
+- fixed Grappling Hook networking, should be actually recallable once more
+- tidied up some code, refactored some classnames
+- fixed Rope invisibility bug
+- made Rope texture configurable. You can swap inbetween the 2 built-in textures.
+
+RopesPlus 1.1.5B
+- fixed crash with Rope Arrow impact
+- fixed DispenserHandler to run with current FML
+
+RopesPlus 1.1.5
+- updated to Minecraft 1.3.2, Forge 4.x and FML idontevenknow
+- dropped Update Manager for now
+- added some additional things to the config file
+- made Dispenser shot arrows not crash
+
+RopesPlus 1.1.4
+- fixed Ropes+ arrows not correctly using ammo on Servers
+- updated Update Manager to 2.1, customized it a little to be less obnoxious
+
+RopesPlus 1.1.3
+- made Arrow Item ID's configurable, optionally you can disable choice arrows now, too, just set the id to -1
+- fixed NullPointerException because current arrow was null when counting
+- fixed issue preventing you from firing vanilla arrows in SMP while you had RopesPlus arrows
+- updated included Vazkii's Update Manager to 2.0, now for SMP too
+
+RopesPlus 1.1.2
+- fixed config file not generating
+
+RopesPlus 1.1.1
+- made config Forge compliant, i heard something about automatic conflict resolving
+- added Update Notifier
+
+RopesPlus 1.1, release
+
+- fixed Ropes faulty rendering on Block undersides
+
+RopesPlus 1.1 beta 2
+
+- fixed config files to be located in /config/ instead of /mods/
+- added arrow up/down select keys to config
+- fixed grappling hook to work in snow
+- fixed roof mounted rope using the original (wrong) rope texture
+- fixed arrows passing through point blank blocks
+- added current arrow stack counter to display
+- added message stating swap keys to arrow status
+- fixed arrow status message disappearing while drawing ropesplus arrows
+- fixed inability to fire vanilla arrows
+
+RopesPlus 1.1 beta 1
+
+- fixes to bow and arrow oddities (ammo, display, keeping a bugged bow)
+- fixed sprites to use Forge system, no longer takes vanilla slots
+
+
+Starting with the 1.1 beta

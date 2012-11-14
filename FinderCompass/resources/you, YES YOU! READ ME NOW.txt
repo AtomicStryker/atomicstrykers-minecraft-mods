@@ -1,0 +1,36 @@
+
+Works with vanilla
+Works with mcpatcher
+Works with Optifine
+Works with Forge
+
+
+Read this or rot in your pit of unknowingness forever!!
+
+
+USAGE:
+See config file for options. "Use Item" binding of Minecraft with compass in hand switches setting preset.
+
+
+TO INSTALL:
+
+- Requires FML (Forge ModLoader, it's also part of Forge!)
+- Extract the /setup/ folder found in this archive into your .minecraft folder. The mod zip needs to end up in the .minecraft/mods/ folder and the .cfg file needs to be in .minecraft/
+
+
+Scanrange default is 7 Block lengths, it can be set in the configuration file.
+
+The Scanrange distinction is for people with shitty computers - it will re-scan once you move one block, and shitty computers might stop while they sift through the 3600 blocks within 15 blocks range.
+7 range immediatly cuts this to 784 blocks.
+
+Note the scan is height sensitive - your compass will not show diamond you wouldn't see if you dug a standard 2x1 tunnel to where the compass points you.
+(because its 1 block further down or upward behind another block).
+
+Default needles are Spawn Zone (red) and Stronghold Locator (dark greenish).
+
+
+
+I've also added the possibility of making your own 'Needles'. Read findercompass.cfg which you put in your .minecraft folder for more info
+
+
+-- Atomicstryker
