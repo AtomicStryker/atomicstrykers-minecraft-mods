@@ -1,11 +1,11 @@
 Folder structure this file resides in
 
 ./
-	./mcp/ - the folder you extracted MCP and Forge into, installed Forge, and then installed NEI following each of their instructions
-	./eclipseworkspace/ - contains the eclipse workspaces, sources, and build scripts for all of the mods
+	./../mcp/ - the folder you extracted MCP and Forge into, installed Forge, and then installed NEI following each of their instructions
+	./**/     - contains the various Mods as Eclipse Projects with Ant Build scripts
 
 To setup my workspace in your eclipse, simply setup MCP, Forge and NEI following their instructions, then run updatemd5 of mcp to "null" the sources
-Then move your eclipse workspace into my folder.
+Then import the Eclipse Projects of the various mods you want.
 The Projects should get autodetected, if not, just use "New -> Java Project" and type the folder names to have them imported.
 If your MCP is setup properly, no or very few compile errors should show. If there's a massive load of errors, your setup is wrong.
 
@@ -23,7 +23,7 @@ NOTE: Some projects attempt to include the Update Checker into their packages, w
 
 Stuff that needs changing each version:
 
-- in "./eclipseworkspace/properties" you find the minecraft version that is appended by the scripts to all resulting mod- and archivenames.
+- in "./properties" you find the minecraft version that is appended by the scripts to all resulting mod- and archivenames.
 - change is according to minecraft version only, so that you can keep overwriting your Dropbox/whatever link for the current MC version
 
 - each mod has a changelog, add new version
