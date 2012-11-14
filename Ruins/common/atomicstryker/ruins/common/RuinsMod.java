@@ -24,7 +24,7 @@ import net.minecraft.src.ISaveHandler;
 import net.minecraft.src.SaveHandler;
 import net.minecraft.src.World;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.0", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.1", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -129,9 +129,15 @@ public class RuinsMod
     public static File getWorldSaveDir(World world)
     {
         ISaveHandler worldsaver = world.getSaveHandler();
-        AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.provider);
-        System.out.println("Ruins mod determines World Save Dir to be at: "+loader.chunkSaveLocation);
-        return loader.chunkSaveLocation;
+        
+        if (worldsaver.getChunkLoader(world.provider) instanceof AnvilChunkLoader)
+        {
+            AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.provider);
+            System.out.println("Ruins mod determines World Save Dir to be at: "+loader.chunkSaveLocation);
+            return loader.chunkSaveLocation;
+        }
+        
+        return null;
     }
 
     public static int getBiomeFromName(String name)
