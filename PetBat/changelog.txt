@@ -1,3 +1,11 @@
+1.1.0
+added Dynamic Lights integration module
+if you have Dynamic Lights running, you can 'use' Glowstone dust
+on your bat to make it shine light for a time. Light Effect does
+not stay on the Bat when it turns into an Item for whatever reason,
+or when you quit the game.
+fixed UTF-8 encoding on GUI text .. again
+
 1.0.9
 changed Itemifying: If the Bat Item cannot be added to your inventory,
 the bat drops as Item wherever it is at the moment. Teleporting into

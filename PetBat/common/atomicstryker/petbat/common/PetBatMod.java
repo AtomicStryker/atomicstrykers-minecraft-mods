@@ -25,6 +25,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import atomicstryker.petbat.client.ClientPacketHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ICraftingHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
@@ -39,7 +40,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.0.9")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -47,6 +48,7 @@ connectionHandler = ConnectionHandler.class)
 public class PetBatMod implements IProxy
 {
     public final int TAME_ITEM_ID = 400; // pumpkin pie
+    public final int GLISTER_ITEM_ID = 348; // glowstone dust
     
     private final String[] batLevels = {
             "Pet Bat",
@@ -133,6 +135,9 @@ public class PetBatMod implements IProxy
 	private boolean manualEnabled;
     public Item itemPocketedBat;
     
+    private boolean glisterBatEnabled;
+    public long glisterBatEffectDuration;
+    
     @SidedProxy(clientSide = "atomicstryker.petbat.client.ClientProxy", serverSide = "atomicstryker.petbat.common.PetBatMod")
     public static IProxy proxy;
     
@@ -151,6 +156,8 @@ public class PetBatMod implements IProxy
             cfg.load();
             itemIDPocketBat = cfg.getItem("ItemPocketedPetBat", 2528).getInt();
 			manualEnabled = cfg.get(cfg.CATEGORY_GENERAL, "manualEnabled", true).getBoolean(true);
+			glisterBatEffectDuration = cfg.get(cfg.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
+			glisterBatEffectDuration *= 1000; // sec to millisec
         }
         catch (Exception e)
         {
@@ -187,7 +194,7 @@ public class PetBatMod implements IProxy
     @PostInit
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
-        
+        glisterBatEnabled = Loader.isModLoaded("DynamicLights");
     }
 	
 	public boolean getPetBatManualEnabled()
@@ -243,6 +250,17 @@ public class PetBatMod implements IProxy
                     p.worldObj.spawnEntityInWorld(newPet);
                     b.setDead();
                 }
+            }
+        }
+        
+        if (glisterBatEnabled && event.target instanceof EntityPetBat)
+        {
+            EntityPlayer p = event.entityPlayer;
+            ItemStack item = p.inventory.getCurrentItem();
+            if (item != null && item.itemID == GLISTER_ITEM_ID)
+            {
+                new GlisterBatAdapter((EntityPetBat) event.target);
+                p.inventory.consumeInventoryItem(GLISTER_ITEM_ID);
             }
         }
     }

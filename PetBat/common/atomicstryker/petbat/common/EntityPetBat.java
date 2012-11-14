@@ -502,4 +502,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     @Override
     public void initCreature() {}
+    
+    /**
+     * setter for the protected texture field
+     */
+    public void setTexture(String textureFile)
+    {
+        texture = textureFile;
+    }
 }
