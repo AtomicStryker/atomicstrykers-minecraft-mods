@@ -62,7 +62,8 @@ public class MineFactoryClient
 
         LanguageRegistry.instance().addName(MineFactoryReloadedCore.steelIngotItem, "Steel Ingot");
         LanguageRegistry.instance().addName(MineFactoryReloadedCore.factoryHammerItem, "Factory Hammer");
-
+        LanguageRegistry.instance().addName(MineFactoryReloadedCore.milkItem, "spilled Milk");
+        
         renderId = RenderingRegistry.getNextAvailableRenderId();
         RenderingRegistry.registerBlockHandler(renderId, new FactoryRenderer());
 

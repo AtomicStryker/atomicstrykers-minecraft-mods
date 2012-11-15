@@ -1,3 +1,7 @@
+1.6.0
+- fixed Name and Texture for spilled Milk Item
+- moved NEI config out of Blocks and put in a new category for all MFR related things
+
 1.5.9
 - updated to MC 1.4.4
 
@@ -23,5 +27,6 @@ Inhumanity upgraded!
 - note the Rancher will always hurt Mobs upon farming them, and also has a guaranteed drop each tick
 -- unlike tame Animals only sometimes dropping and only sometimes getting hurt
 
+Added NEI config set for MinefactoryReloaded
 
 This changelog starting with the official takeoever of MFR by AtomicStryker

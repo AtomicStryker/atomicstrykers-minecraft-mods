@@ -91,7 +91,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.4R1.5.9", dependencies = "after:BuildCraft|Core")
+@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.4R1.6.0", dependencies = "after:BuildCraft|Core")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ServerPacketHandler.class),
@@ -383,7 +383,7 @@ public class MineFactoryReloadedCore
     {
         factoryHammerTexture = 0;
         steelIngotTexture = 2;
-        milkTexture = 29;
+        milkTexture = 3;
 
         // 0 bottom 1 top 2 east 3 west 4 north 5 south
         cargoRailDropoffTexture = 0;

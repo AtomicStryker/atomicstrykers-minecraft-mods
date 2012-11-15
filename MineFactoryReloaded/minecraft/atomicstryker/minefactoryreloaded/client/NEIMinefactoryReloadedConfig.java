@@ -31,7 +31,14 @@ public class NEIMinefactoryReloadedConfig implements IConfigureNEI
         {
             subTypes.add(blockID, i, i);
         }
-        API.addSetRange("Blocks.Minefactory", subTypes);
+        
+        subTypes.add(MineFactoryReloadedCore.conveyorBlockId.getInt(), 0, 0);
+        
+        subTypes.add(MineFactoryReloadedCore.steelIngotItem, 0, 0);
+        subTypes.add(MineFactoryReloadedCore.factoryHammerItem, 0, 0);
+        subTypes.add(MineFactoryReloadedCore.milkItem, 0, 0);
+        
+        API.addSetRange("Minefactory", subTypes);
     }
 
     @Override
