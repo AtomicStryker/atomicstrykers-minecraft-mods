@@ -25,7 +25,7 @@ import net.minecraft.src.ISaveHandler;
 import net.minecraft.src.SaveHandler;
 import net.minecraft.src.World;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.2", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.2a", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -141,6 +141,7 @@ public class RuinsMod
                 {
                     try
                     {
+                        f.setAccessible(true);
                         File saveLoc = (File) f.get(loader);
                         System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
                         return saveLoc;
