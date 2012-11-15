@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -24,7 +25,7 @@ import net.minecraft.src.ISaveHandler;
 import net.minecraft.src.SaveHandler;
 import net.minecraft.src.World;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.1", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.2", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -133,8 +134,24 @@ public class RuinsMod
         if (worldsaver.getChunkLoader(world.provider) instanceof AnvilChunkLoader)
         {
             AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.provider);
-            System.out.println("Ruins mod determines World Save Dir to be at: "+loader.chunkSaveLocation);
-            return loader.chunkSaveLocation;
+            
+            for (Field f : loader.getClass().getDeclaredFields())
+            {
+                if (f.getType().equals(File.class))
+                {
+                    try
+                    {
+                        File saveLoc = (File) f.get(loader);
+                        System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
+                        return saveLoc;
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("Ruins mod failed trying to find World Save dir:");
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
         
         return null;
