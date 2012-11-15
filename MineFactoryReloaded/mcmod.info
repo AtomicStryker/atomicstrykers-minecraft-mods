@@ -3,9 +3,9 @@
   "modid": "MFReloaded",
   "name": "Minefactory Reloaded",
   "description": "An abundance of automated Appliances for your lazyness needs!",
-  "version": "1.5.9",
+  "version": "1.6.0",
   "mcversion": "1.4.4",
-  "url": "https://github.com/balr0g/MineFactoryReloaded/wiki",
+  "url": "http://atomicstryker.net",
   "updateUrl": "http://atomicstryker.net",
   "authors": [
     "PowerCrystals",
