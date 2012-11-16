@@ -256,7 +256,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	    			timeLastSound = curTime;
 	    		}
 	    		
-	    		this.worldObj.spawnParticle("tilecrack_"+blockID, posX+ ((double)rand.nextFloat() - 0.5D), posY+1.5D, posZ+((double)rand.nextFloat() - 0.5D), 1, 1, 1);
+	    		this.worldObj.spawnParticle("tilecrack_"+blockID+"_"+worldObj.getBlockMetadata(x, y, z), posX+((double)rand.nextFloat() - 0.5D), posY+1.5D, posZ+((double)rand.nextFloat() - 0.5D), 1, 1, 1);
     		}
     	}
     	else

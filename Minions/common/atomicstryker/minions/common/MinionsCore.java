@@ -63,7 +63,7 @@ import net.minecraft.src.*;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.1")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
