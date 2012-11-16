@@ -1,7 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package atomicstryker.ropesplus.common.arrows;
 
 import atomicstryker.ropesplus.common.Settings_RopePlus;
@@ -13,13 +9,20 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 
 
-// Referenced classes of package net.minecraft.src:
-//            EntityArrow303, Block, ItemStack, Entity, 
-//            World, EntityLiving
-
 public class EntityArrow303Torch extends EntityArrow303
 {
+    
+    public EntityArrow303Torch(World world)
+    {
+        super(world);
+    }
 
+    public EntityArrow303Torch(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+    }
+
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -36,28 +39,36 @@ public class EntityArrow303Torch extends EntityArrow303
         return 11;
     }
 
-    public EntityArrow303Torch(World world)
+    @Override
+    public boolean onHitBlock(int x, int y, int z)
     {
-        super(world);
-    }
-
-    public EntityArrow303Torch(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
-    public boolean onHit()
-    {
-        if(tryToPlaceBlock((EntityPlayer)shooter, 50))
+        if(tryToPlaceBlock((EntityPlayer)shooter, Block.torchWood.blockID))
         {
         	setDead();
         }
-        return true;
+        return super.onHitBlock(x, y, z);
     }
 
+    @Override
     public boolean onHitTarget(Entity entity)
     {
     	entity.setFire(300/20);
-        return true;
+        return super.onHitTarget(entity);
     }
+    
+    @Override
+    public void tickFlying()
+    {
+        super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("flame",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
+    }
+    
 }

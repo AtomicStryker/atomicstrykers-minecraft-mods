@@ -7,17 +7,19 @@ import net.minecraft.src.*;
 
 public class EntityArrow303Confusion extends EntityArrow303
 {
+    private final double CONFUSION_EFFECT_SIZE = 6D;
 
     public EntityArrow303Confusion(World world)
     {
         super(world);
     }
 
-    public EntityArrow303Confusion(World world, EntityLiving entityliving)
+    public EntityArrow303Confusion(World world, EntityLiving entityliving, float power)
     {
-        super(world, entityliving);
+        super(world, entityliving, power);
     }
 
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -34,39 +36,42 @@ public class EntityArrow303Confusion extends EntityArrow303
         return 0;
     }
 
-    public boolean onHitBlock()
+    @Override
+    public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
+        worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
         confuse(this);
         return true;
     }
 
+    @Override
     public boolean onHitTarget(Entity entity)
     {
+        worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
         confuse(entity);
         return true;
     }
 
-    public void confuse(Entity entity)
+    private void confuse(Entity entity)
     {
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(radius, radius, radius));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE));
         ArrayList arraylist = new ArrayList();
         Iterator iterator = list.iterator();
         do
         {
-            if(!iterator.hasNext())
-            {
-                break;
-            }
             Entity entity1 = (Entity)iterator.next();
             if((entity1 instanceof EntityCreature) && entity1 != shooter)
             {
                 arraylist.add((EntityCreature)entity1);
             }
-        } while(true);
+        }
+        while(iterator.hasNext());
+        
         if(arraylist.size() < 2)
         {
             return;
         }
+        
         for(int i = 0; i < arraylist.size(); i++)
         {
             EntityCreature entitycreature = (EntityCreature)arraylist.get(i);
@@ -77,12 +82,20 @@ public class EntityArrow303Confusion extends EntityArrow303
 
         setDead();
     }
-
+    
+    @Override
     public void tickFlying()
     {
         super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("tilecrack_12_0",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
-
-    public static double radius = 6D;
-
+    
 }

@@ -1,3 +1,16 @@
+RopesPlus 1.2.4
+- big code cleanup and rewrite, fixing a ton of bugs, heres an excerpt:
+- fixed premature collisions of arrow entities with the firing player
+- fixed clientside explosions and other glitches
+- fixed arrows to have particles again
+- fixed sounds
+- fixed arrows not flying according to the strength you drew the bow with
+
+- figured out what laser arrows do (penetrate multiple targets)
+- changed explosive arrows to not explode immediately. They stick to Entities.
+- changed slime arrows to only have a 25% chance of spawning Slimes
+- changed Warp Arrows .. should work without killing the user
+
 RopesPlus 1.2.3
 - update to MC 1.4.4
 

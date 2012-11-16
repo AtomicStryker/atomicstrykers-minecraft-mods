@@ -7,7 +7,23 @@ import net.minecraft.src.*;
 
 public class EntityArrow303Laser extends EntityArrow303
 {
+    
+    private final String sound = "damage.fallbig";
+    
+    public boolean pierced;
+    public Set piercedMobs;
+    
+    public EntityArrow303Laser(World world)
+    {
+        super(world);
+    }
 
+    public EntityArrow303Laser(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+    }
+    
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -23,26 +39,17 @@ public class EntityArrow303Laser extends EntityArrow303
         piercedMobs = new HashSet();
         item = new ItemStack(itemId, 1, 0);
     }
-    
+
     @Override
     public int getArrowIconIndex()
     {
         return 7;
     }
 
-    public EntityArrow303Laser(World world)
-    {
-        super(world);
-    }
-
-    public EntityArrow303Laser(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
+    @Override
     public boolean onHitTarget(Entity entity)
     {
-        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)shooter), 8);
+        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 8);
         pierced = true;
         piercedMobs.add(entity);
         target = null;
@@ -50,49 +57,45 @@ public class EntityArrow303Laser extends EntityArrow303
         return false;
     }
 
+    @Override
     public boolean isInSight(Entity entity)
     {
         return canSee(this, entity) && canSee(entity, this);
     }
 
-    public boolean canSee(Entity entity, Entity entity1)
+    private boolean canSee(Entity entity, Entity ent)
     {
-        MovingObjectPosition movingobjectposition = worldObj.rayTraceBlocks(((Vec3)null).createVectorHelper(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ), ((Vec3)null).createVectorHelper(entity1.posX, entity1.posY + (double)entity1.getEyeHeight(), entity1.posZ));
-        return movingobjectposition == null || movingobjectposition.typeOfHit == EnumMovingObjectType.TILE && isTransparent(worldObj.getBlockId(movingobjectposition.blockX, movingobjectposition.blockY, movingobjectposition.blockZ));
+        MovingObjectPosition mop = worldObj.rayTraceBlocks(worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ),
+                worldObj.getWorldVec3Pool().getVecFromPool(ent.posX, ent.posY + (double) ent.getEyeHeight(), ent.posZ));
+        return mop == null || mop.typeOfHit == EnumMovingObjectType.TILE && isTransparent(worldObj.getBlockId(mop.blockX, mop.blockY, mop.blockZ));
     }
 
-    public boolean onHitBlock()
+    @Override
+    public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        if(!isTransparent(inTile))
+        if (!isTransparent(inTileBlockID))
         {
-            if(pierced)
+            if (pierced)
             {
-            	setDead();
+                setDead();
             }
-            return true;
-        } else
+            return super.onHitBlock(blockX, blockY, blockZ);
+        }
+        else
         {
             return false;
         }
     }
 
-    public boolean isTransparent(int i)
+    private boolean isTransparent(int i)
     {
         return Block.lightOpacity[i] != 255;
     }
-
-    public void tickFlying()
-    {
-        super.tickFlying();
-    }
-
+    
+    @Override
     public boolean canTarget(Entity entity)
     {
         return !piercedMobs.contains(entity) && super.canTarget(entity);
     }
-
-    public boolean pierced;
-    public Set piercedMobs;
-    public static String sound = "damage.fallbig";
 
 }

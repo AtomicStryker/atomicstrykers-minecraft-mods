@@ -36,25 +36,25 @@ public class Settings_RopePlus
 		config = new Configuration(suggested);
 		config.load();
 		
-		blockIdRope = Integer.parseInt(config.getBlock(config.CATEGORY_BLOCK, "blockIdRope", blockIdRope).value);
-		blockIdGrapplingHook = Integer.parseInt(config.getBlock(config.CATEGORY_BLOCK, "blockIdGrapplingHook", blockIdGrapplingHook).value);
-		blockIdRopeDJRoslin = Integer.parseInt(config.getBlock(config.CATEGORY_BLOCK, "blockIdRopeDJRoslin", blockIdRopeDJRoslin).value);
+		blockIdRope = config.getBlock(config.CATEGORY_BLOCK, "blockIdRope", blockIdRope).getInt();
+		blockIdGrapplingHook = config.getBlock(config.CATEGORY_BLOCK, "blockIdGrapplingHook", blockIdGrapplingHook).getInt();
+		blockIdRopeDJRoslin = config.getBlock(config.CATEGORY_BLOCK, "blockIdRopeDJRoslin", blockIdRopeDJRoslin).getInt();
 		
-		itemIdRope = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdRope", itemIdRope).value);
-		itemIdGrapplingHook = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdGrapplingHook", itemIdGrapplingHook).value);
-		itemIdRopesPlusBow = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdRopesPlusBow", itemIdRopesPlusBow).value);
+		itemIdRope = config.getItem(config.CATEGORY_ITEM, "itemIdRope", itemIdRope).getInt();
+		itemIdGrapplingHook = config.getItem(config.CATEGORY_ITEM, "itemIdGrapplingHook", itemIdGrapplingHook).getInt();
+		itemIdRopesPlusBow = config.getItem(config.CATEGORY_ITEM, "itemIdRopesPlusBow", itemIdRopesPlusBow).getInt();
 		
-		itemIdArrowConfusion = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowConfusion", itemIdArrowConfusion).value);
-		itemIdArrowDirt = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowDirt", itemIdArrowDirt).value);
-		itemIdArrowExplosion = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowExplosion", itemIdArrowExplosion).value);
-		itemIdArrowFire = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowFire", itemIdArrowFire).value);
-		itemIdArrowGrass = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowGrass", itemIdArrowGrass).value);
-		itemIdArrowIce = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowIce", itemIdArrowIce).value);
-		itemIdArrowLaser = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowLaser", itemIdArrowLaser).value);
-		itemIdArrowRope = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowRope", itemIdArrowRope).value);
-		itemIdArrowSlime = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowSlime", itemIdArrowSlime).value);
-		itemIdArrowTorch = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowTorch", itemIdArrowTorch).value);
-		itemIdArrowWarp = Integer.parseInt(config.getItem(config.CATEGORY_ITEM, "itemIdArrowWarp", itemIdArrowWarp).value);
+		itemIdArrowConfusion = config.getItem(config.CATEGORY_ITEM, "itemIdArrowConfusion", itemIdArrowConfusion).getInt();
+		itemIdArrowDirt = config.getItem(config.CATEGORY_ITEM, "itemIdArrowDirt", itemIdArrowDirt).getInt();
+		itemIdArrowExplosion = config.getItem(config.CATEGORY_ITEM, "itemIdArrowExplosion", itemIdArrowExplosion).getInt();
+		itemIdArrowFire = config.getItem(config.CATEGORY_ITEM, "itemIdArrowFire", itemIdArrowFire).getInt();
+		itemIdArrowGrass = config.getItem(config.CATEGORY_ITEM, "itemIdArrowGrass", itemIdArrowGrass).getInt();
+		itemIdArrowIce = config.getItem(config.CATEGORY_ITEM, "itemIdArrowIce", itemIdArrowIce).getInt();
+		itemIdArrowLaser = config.getItem(config.CATEGORY_ITEM, "itemIdArrowLaser", itemIdArrowLaser).getInt();
+		itemIdArrowRope = config.getItem(config.CATEGORY_ITEM, "itemIdArrowRope", itemIdArrowRope).getInt();
+		itemIdArrowSlime = config.getItem(config.CATEGORY_ITEM, "itemIdArrowSlime", itemIdArrowSlime).getInt();
+		itemIdArrowTorch = config.getItem(config.CATEGORY_ITEM, "itemIdArrowTorch", itemIdArrowTorch).getInt();
+		itemIdArrowWarp = config.getItem(config.CATEGORY_ITEM, "itemIdArrowWarp", itemIdArrowWarp).getInt();
 		
 		ropeTexture = config.get(config.CATEGORY_GENERAL, "Rope Texture", 1).getInt();
 		

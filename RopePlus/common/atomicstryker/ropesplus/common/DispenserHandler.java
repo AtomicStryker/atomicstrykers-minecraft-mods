@@ -20,10 +20,10 @@ public class DispenserHandler implements IDispenseHandler
             EntityArrow303 entityarrow303 = (EntityArrow303)iterator.next();
             if(entityarrow303.itemId == item.itemID)
             {
-                EntityArrow303 entityarrow303_1 = entityarrow303.newArrow(world);
-                entityarrow303_1.setPosition(x, y, z);
-                entityarrow303_1.setArrowHeading(xVelocity, 0.10000000000000001D, zVelocity, 1.1F, 6F);
-                world.spawnEntityInWorld(entityarrow303_1);
+                EntityArrow303 arrow = entityarrow303.newArrow(world);
+                arrow.setPosition(x, y, z);
+                arrow.setThrowableHeading(xVelocity, 0.10000000000000001D, zVelocity, 1.1F, 6F);
+                world.spawnEntityInWorld(arrow);
                 world.playSoundEffect(x, y, z, "random.bow", 1.0F, 1.2F);
                 return 1;
             }

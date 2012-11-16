@@ -13,11 +13,12 @@ public class EntityArrow303Fire extends EntityArrow303
         super(world);
     }
 
-    public EntityArrow303Fire(World world, EntityLiving entityliving)
+    public EntityArrow303Fire(World world, EntityLiving entityliving, float power)
     {
-        super(world, entityliving);
+        super(world, entityliving, power);
     }
 
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -34,23 +35,36 @@ public class EntityArrow303Fire extends EntityArrow303
         return 4;
     }
 
-    public boolean onHit()
+    @Override
+    public boolean onHitBlock(int x, int y, int z)
     {
-        if(tryToPlaceBlock((EntityPlayer)shooter, 51))
+        if(tryToPlaceBlock((EntityPlayer)shooter, Block.fire.blockID))
         {
         	setDead();
         }
-        return true;
+        return super.onHitBlock(x, y, z);
     }
 
+    @Override
     public boolean onHitTarget(Entity entity)
     {
     	entity.setFire(300/20);
-        return true;
+        return super.onHitTarget(entity);
     }
-
+    
+    @Override
     public void tickFlying()
     {
         super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("flame",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
+    
 }

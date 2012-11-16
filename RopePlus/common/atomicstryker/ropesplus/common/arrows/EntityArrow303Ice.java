@@ -7,15 +7,22 @@ import net.minecraft.src.*;
 
 public class EntityArrow303Ice extends EntityArrow303
 {
-
-    public void subscreen()
+    
+    public EntityLiving victim;
+    public float freezeFactor;
+    public int freezeTimer;
+    
+    public EntityArrow303Ice(World world)
     {
+        super(world);
     }
 
-    public void setupConfig()
+    public EntityArrow303Ice(World world, EntityLiving entityliving, float power)
     {
+        super(world, entityliving, power);
     }
 
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -25,71 +32,50 @@ public class EntityArrow303Ice extends EntityArrow303
         tip = Item.snowball;
         item = new ItemStack(itemId, 1, 0);
     }
-    
+
     @Override
     public int getArrowIconIndex()
     {
         return 6;
     }
 
-    public EntityArrow303Ice(World world)
-    {
-        super(world);
-    }
-
-    public EntityArrow303Ice(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
-    public boolean onHitBlock()
-    {
-        if(victim == null)
-        {
-            setEntityDead();
-            return true;
-        } else
-        {
-            return false;
-        }
-    }
-
+    @Override
     public boolean onHitTarget(Entity entity)
     {
-        if(!(entity instanceof EntityLiving) || victim != null)
+        if (!(entity instanceof EntityLiving) || victim != null)
         {
             return false;
         }
+        
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(3D, 3D, 3D));
-        for(int i = 0; i < list.size(); i++)
+        for (int i = 0; i < list.size(); i++)
         {
-            Entity entity1 = (Entity)list.get(i);
-            if(!(entity1 instanceof EntityArrow303Ice))
+            Entity entity1 = (Entity) list.get(i);
+            if (!(entity1 instanceof EntityArrow303Ice))
             {
                 continue;
             }
-            EntityArrow303Ice entityarrow303ice = (EntityArrow303Ice)entity1;
-            if(entityarrow303ice.victim == entity)
+            EntityArrow303Ice entityarrow303ice = (EntityArrow303Ice) entity1;
+            if (entityarrow303ice.victim == entity)
             {
-                entityarrow303ice.freezeTimer += getFreezeTimer((EntityLiving)entity);
-                entityarrow303ice.isDead = false;
-                entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)shooter), 4);
-                setEntityDead();
-                return false;
+                entityarrow303ice.freezeTimer += getFreezeTimer((EntityLiving) entity);
+                entityarrow303ice.setDead();
+                entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 4);
+                return super.onHitTarget(entity);
             }
         }
 
-        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)shooter), 4);
-        freezeMob((EntityLiving)entity);
-        return false;
+        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 4);
+        freezeMob((EntityLiving) entity);
+        return super.onHitTarget(entity);
     }
 
-    public int getFreezeTimer(EntityLiving entityliving)
+    private int getFreezeTimer(EntityLiving entityliving)
     {
         return ((entityliving instanceof EntityPlayer) ? 5 : 10 * 20);
     }
 
-    public void freezeMob(EntityLiving entityliving)
+    private void freezeMob(EntityLiving entityliving)
     {
         victim = entityliving;
         freezeFactor = ((entityliving instanceof EntityPlayer) ? 0.5F : 0.1F);
@@ -97,98 +83,99 @@ public class EntityArrow303Ice extends EntityArrow303
         motionX = motionY = motionZ = 0.0D;
     }
 
-    public void unfreezeMob()
+    private void unfreezeMob()
     {
         victim = null;
     }
 
-    public void setEntityDead()
+    @Override
+    public void setDead()
     {
-        if(victim != null)
+        if (victim != null)
         {
             unfreezeMob();
         }
         super.setDead();
     }
 
+    @Override
     public void onUpdate()
     {
         super.onUpdate();
-        if(victim != null)
+        if (victim != null)
         {
-            if(victim.isDead || victim.deathTime > 0)
+            if (victim.isDead || victim.deathTime > 0)
             {
-                setEntityDead();
+                setDead();
                 return;
             }
             isDead = false;
             inGround = false;
             posX = victim.posX;
-            posY = victim.boundingBox.minY + (double)victim.height * 0.5D;
+            posY = victim.boundingBox.minY + (double) victim.height * 0.5D;
             posZ = victim.posZ;
             setPosition(posX, posY, posZ);
             victim.motionX *= freezeFactor;
             victim.motionY *= freezeFactor;
             victim.motionZ *= freezeFactor;
             freezeTimer--;
-            if(freezeTimer <= 0)
+            if (freezeTimer <= 0)
             {
-                setEntityDead();
+                setDead();
             }
         }
     }
 
-    public boolean onHit()
+    @Override
+    public boolean onHitBlock(int curX, int curY, int curZ)
     {
-        if(victim != null)
+        for (int iX = curX - 1; iX <= curX + 1; iX++)
         {
-            return false;
-        }
-        int i = MathHelper.floor_double(posX);
-        int j = MathHelper.floor_double(posY);
-        int k = MathHelper.floor_double(posZ);
-        for(int l = i - 1; l <= i + 1; l++)
-        {
-            for(int i1 = j - 1; i1 <= j + 1; i1++)
+            for (int iY = curY - 1; iY <= curY + 1; iY++)
             {
-                for(int j1 = k - 1; j1 <= k + 1; j1++)
+                for (int iZ = curZ - 1; iZ <= curZ + 1; iZ++)
                 {
-                    if(worldObj.getBlockMaterial(l, i1, j1) == Material.water && worldObj.getBlockMetadata(l, i1, j1) == 0)
+                    if (worldObj.getBlockMaterial(iX, iY, iZ) == Material.water && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.setBlockWithNotify(l, i1, j1, 79);
+                        worldObj.setBlockWithNotify(iX, iY, iZ, Block.ice.blockID);
                         continue;
                     }
-                    if(worldObj.getBlockMaterial(l, i1, j1) == Material.lava && worldObj.getBlockMetadata(l, i1, j1) == 0)
+                    if (worldObj.getBlockMaterial(iX, iY, iZ) == Material.lava && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.setBlockWithNotify(l, i1, j1, 49);
+                        worldObj.setBlockWithNotify(iX, iY, iZ, Block.cobblestone.blockID);
                         continue;
                     }
-                    if(worldObj.getBlockId(l, i1, j1) == 51)
+                    if (worldObj.getBlockId(iX, iY, iZ) == Block.fire.blockID)
                     {
-                        worldObj.setBlockWithNotify(l, i1, j1, 0);
+                        worldObj.setBlockWithNotify(iX, iY, iZ, 0);
                         continue;
                     }
-                    if(worldObj.getBlockId(l, i1, j1) == 50)
+                    if (worldObj.getBlockId(iX, iY, iZ) == Block.torchWood.blockID)
                     {
-                        Block.blocksList[50].dropBlockAsItemWithChance(worldObj, l, i1, j1, worldObj.getBlockMetadata(l, i1, j1), 1.0F, 0);
-                        worldObj.setBlockWithNotify(l, i1, j1, 0);
-                        Block.blocksList[50].onBlockDestroyedByExplosion(worldObj, l, i1, j1);
+                        Block.blocksList[Block.torchWood.blockID].dropBlockAsItemWithChance(worldObj, iX, iY, iZ, worldObj.getBlockMetadata(iX, iY, iZ), 1.0F, 0);
+                        worldObj.setBlockWithNotify(iX, iY, iZ, 0);
+                        Block.blocksList[Block.torchWood.blockID].onBlockDestroyedByExplosion(worldObj, iX, iY, iZ);
                     }
                 }
-
             }
-
         }
 
-        return true;
+        return super.onHitBlock(curX, curY, curZ);
     }
-
+    
+    @Override
     public void tickFlying()
     {
         super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("snowballpoof",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
 
-    public EntityLiving victim;
-    public float freezeFactor;
-    public int freezeTimer;
 }

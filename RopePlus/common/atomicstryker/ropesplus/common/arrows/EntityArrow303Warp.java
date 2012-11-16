@@ -5,7 +5,18 @@ import net.minecraft.src.*;
 
 public class EntityArrow303Warp extends EntityArrow303
 {
+    
+    public EntityArrow303Warp(World world)
+    {
+        super(world);
+    }
 
+    public EntityArrow303Warp(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+    }
+
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -22,40 +33,32 @@ public class EntityArrow303Warp extends EntityArrow303
         return 12;
     }
 
-    public EntityArrow303Warp(World world)
+    @Override
+    public boolean onHitBlock(int x, int y, int z)
     {
-        super(world);
-    }
-
-    public EntityArrow303Warp(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-        world.playSoundAtEntity(this, "portal.trigger", 1.0F, 1.0F);
-    }
-
-    public void tickFlying()
-    {
-        super.tickFlying();
-    }
-
-    public boolean onHit()
-    {
-        if(shooter != null)
+        if(shooter != null && y > 8)
         {
-        	shooter.setPositionAndUpdate(this.posX, this.posY, this.posZ);
+            shooter.worldObj.playSoundAtEntity(shooter, "portal.trigger", 1.0F, 1.0F);
+        	shooter.setPositionAndUpdate(x, y+2, z);
+        	shooter.fallDistance = 0.0F;
         	setDead();
         }
         return true;
     }
-
-    private boolean isSolid(int i, int j, int k)
+    
+    @Override
+    public void tickFlying()
     {
-        int l = worldObj.getBlockId(i, j, k);
-        return l != 0 && Block.blocksList[l].renderAsNormalBlock();
+        super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("portal",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
-
-    private boolean isSolid(double d, double d1, double d2)
-    {
-        return isSolid(MathHelper.floor_double(d), MathHelper.floor_double(d1), MathHelper.floor_double(d2));
-    }
+    
 }

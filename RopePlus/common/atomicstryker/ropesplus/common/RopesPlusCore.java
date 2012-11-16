@@ -9,6 +9,8 @@ import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagList;
 import net.minecraft.src.World;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ropesplus.client.ClientPacketHandler;
@@ -43,7 +45,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.2.3")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.2.4")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -143,9 +145,9 @@ public class RopesPlusCore
         bowRopesPlus = new ItemBowRopesPlus(Settings_RopePlus.itemIdRopesPlusBow).setIconCoord(5, 1).setItemName("bowRopesPlus");
         LanguageRegistry.instance().addName(bowRopesPlus, "RopesPlusBow");
         
-        for(Class class1 : coreArrowClasses)
+        for(Class c : coreArrowClasses)
         {
-            addArrowToRegister(constructArrowInstance(class1));
+            addArrowToRegister(constructArrowInstance(c));
         }
         arrows.add(new EntityArrow303(null));
         
@@ -194,7 +196,22 @@ public class RopesPlusCore
 		else if (Item.arrow != null && entityarrow303.itemId != -1)
 		{
 			item = (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setItemName(entityarrow303.name);
-			GameRegistry.addRecipe(new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0), new Object[] {
+			ItemStack craftedStack = new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0);
+			
+			/* hmm id like to add Lore to the arrows using this
+			craftedStack.stackTagCompound = new NBTTagCompound();
+			NBTTagList tagList = new NBTTagList("Lore");
+			NBTTagCompound tagCmpnd = new NBTTagCompound();
+			tagCmpnd.setString("1", "Mystic Arrow");
+			tagCmpnd.setString("2", "Second tag");
+			tagList.appendTag(tagCmpnd);
+			NBTTagCompound displayTag = new NBTTagCompound();
+			displayTag.setTag("Lore", tagList);
+			displayTag.setString("Name", entityarrow303.name);
+			craftedStack.stackTagCompound.setTag("display", displayTag);
+			*/
+			
+			GameRegistry.addRecipe(craftedStack, new Object[] {
 				"X", "#", "Y", Character.valueOf('X'), entityarrow303.tip, Character.valueOf('#'), Item.stick, Character.valueOf('Y'), Item.feather
 			});
 

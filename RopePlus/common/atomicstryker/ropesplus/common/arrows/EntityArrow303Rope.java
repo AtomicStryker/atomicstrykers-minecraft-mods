@@ -10,6 +10,17 @@ import net.minecraft.src.*;
 public class EntityArrow303Rope extends EntityArrow303
 {
 
+    public EntityArrow303Rope(World world)
+    {
+        super(world);
+    }
+
+    public EntityArrow303Rope(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+    }
+    
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -26,24 +37,15 @@ public class EntityArrow303Rope extends EntityArrow303
         return 9;
     }
 
-    public EntityArrow303Rope(World world)
-    {
-        super(world);
-    }
-
-    public EntityArrow303Rope(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
-    public boolean onHit()
+    @Override
+    public boolean onHitBlock(int x, int y, int z)
     {
         if(tryToPlaceBlock((EntityPlayer)shooter, RopesPlusCore.blockRopeCentralPos.blockID))
         {
         	setDead();
 			RopesPlusCore.onRopeArrowHit(this.worldObj, placeCoords[0], placeCoords[1], placeCoords[2]);
         }
-		else if(tryToPlaceBlock2(RopesPlusCore.blockRopeWallPos.blockID))
+		else if(tryToPlaceWallRope())
 		{
             TileEntityRope newent = new TileEntityRope(worldObj, placeCoords[0], placeCoords[1], placeCoords[2], 32);
             RopesPlusCore.addRopeToArray(newent);
@@ -51,31 +53,24 @@ public class EntityArrow303Rope extends EntityArrow303
             setDead();
 		}
 
-        return true;
+        return super.onHitBlock(x, y, z);
     }
 	
-    public boolean tryToPlaceBlock2(int i)
+    private boolean tryToPlaceWallRope()
     {
-        int j = MathHelper.floor_double(posX);
-        int k = MathHelper.floor_double(posY);
-        int l = MathHelper.floor_double(posZ);
-        boolean flag = false;
-        int ai[][] = candidates;
-        int arrayLength = ai.length;
+        int blockID = RopesPlusCore.blockRopeWallPos.blockID;
+        int x = MathHelper.floor_double(posX);
+        int y = MathHelper.floor_double(posY);
+        int z = MathHelper.floor_double(posZ);
+        boolean canPlace = false;
+        int arrayLength = candidates.length;
         int index = 0;
-        
-		double d5 = motionX;
-		double d6 = motionZ;
-		byte byte0 = ((byte)(d5 <= 0.0D ? -1 : 1));
-		byte byte1 = ((byte)(d6 <= 0.0D ? -1 : 1));
 		byte targetMeta = 0;
 		int blockSide = 0;
 
-		boolean flag2 = false;
-		if(Math.abs(d5) > Math.abs(d6))
+		if(Math.abs(motionX) > Math.abs(motionZ))
 		{
-			flag2 = true;
-			if(byte0 > 0)
+			if(motionX > 0)
 			{
 				blockSide = 4;
 				targetMeta = 8;
@@ -86,10 +81,9 @@ public class EntityArrow303Rope extends EntityArrow303
 				targetMeta = 2;
 			}
 		}
-		else if(Math.abs(d5) <= Math.abs(d6))
+		else if(Math.abs(motionX) <= Math.abs(motionZ))
 		{
-			flag2 = true;
-			if(byte1 > 0)
+			if(motionZ > 0)
 			{
 				blockSide = 1;
 				targetMeta = 1;
@@ -103,43 +97,36 @@ public class EntityArrow303Rope extends EntityArrow303
         
         do
         {
-            if(index >= arrayLength)
+            int coords[] = candidates[index];
+            int ix = coords[0];
+            int iy = coords[1];
+            int iz = coords[2];
+            if(worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, blockSide, (Entity)null))
             {
-                break;
-            }
-            int ai1[] = ai[index];
-            int i2 = ai1[0];
-            int j2 = ai1[1];
-            int k2 = ai1[2];
-            if(worldObj.canPlaceEntityOnSide(i, j + i2, k + j2, l + k2, true, blockSide, (Entity)null))
-            {
-                j += i2;
-                k += j2;
-                l += k2;
-                flag = true;
+                x += ix;
+                y += iy;
+                z += iz;
+                canPlace = true;
                 break;
             }
             index++;
-        } while(true);
-        if(!flag)
+        }
+        while(index < arrayLength);
+        
+        if(!canPlace)
         {
             return false;
         }
         
-		if(flag2)
-		{
-			if(!worldObj.isRemote)
-			{
-				worldObj.setBlockWithNotify(j, k, l, i);
-				worldObj.setBlockMetadataWithNotify(j, k, l, targetMeta);
-			}
-			
-			placeCoords[0] = j;
-			placeCoords[1] = k;
-			placeCoords[2] = l;
-			return true;
-		}
-		
-		return false;
+        if(!worldObj.isRemote)
+        {
+            worldObj.setBlockWithNotify(x, y, z, blockID);
+            worldObj.setBlockMetadataWithNotify(x, y, z, targetMeta);
+        }
+
+        placeCoords[0] = x;
+        placeCoords[1] = y;
+        placeCoords[2] = z;
+        return true;
     }
 }

@@ -7,7 +7,22 @@ import net.minecraft.src.*;
 
 public class EntityArrow303Slime extends EntityArrow303
 {
+ 
+    private boolean spawns;
+    
+    public EntityArrow303Slime(World world)
+    {
+        super(world);
+        spawns = false;
+    }
 
+    public EntityArrow303Slime(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+        spawns = worldObj.rand.nextInt(4) == 0;
+    }
+
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -24,52 +39,61 @@ public class EntityArrow303Slime extends EntityArrow303
         return 10;
     }
 
-    public EntityArrow303Slime(World world)
-    {
-        super(world);
-    }
-
-    public EntityArrow303Slime(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
-    public EntityLiving makeMob()
+    private EntityLiving makeMob()
     {
         EntitySlime entityslime = new EntitySlime(worldObj);
         entityslime.heal(1 << rand.nextInt(4));
         return entityslime;
     }
 
-    public boolean onHitBlock()
+    @Override
+    public boolean onHitBlock(int x, int y, int z)
     {
-        EntityLiving entityliving = makeMob();
-        entityliving.setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
-        if(worldObj.spawnEntityInWorld(entityliving))
+        if (spawns)
         {
-            entityliving.spawnExplosionParticle();
-            setDead();
-        }
-        return true;
-    }
-
-    public boolean onHitTarget(Entity entity)
-    {
-        EntityLiving entityliving = makeMob();
-        entityliving.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
-        if(worldObj.spawnEntityInWorld(entityliving))
-        {
-            entityliving.spawnExplosionParticle();
-            if(!(entity instanceof EntityPlayer))
+            EntityLiving entityliving = makeMob();
+            entityliving.setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
+            if(worldObj.spawnEntityInWorld(entityliving))
             {
-                entity.setDead();
+                entityliving.spawnExplosionParticle();
+                setDead();
             }
         }
-        return true;
+        return super.onHitBlock(x, y, z);
     }
 
+    @Override
+    public boolean onHitTarget(Entity entity)
+    {
+        if (spawns)
+        {
+            EntityLiving entityliving = makeMob();
+            entityliving.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+            if(worldObj.spawnEntityInWorld(entityliving))
+            {
+                entityliving.spawnExplosionParticle();
+                if(!(entity instanceof EntityPlayer))
+                {
+                    entity.setDead();
+                }
+            }
+        }
+        return super.onHitTarget(entity);
+    }
+    
+    @Override
     public void tickFlying()
     {
         super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("slime",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
+    
 }

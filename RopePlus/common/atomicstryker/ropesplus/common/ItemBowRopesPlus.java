@@ -22,21 +22,22 @@ public class ItemBowRopesPlus extends ItemBow
      * called when the player releases the use item button.
      */
 	@Override
-    public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, int heldTicks)
+    public void onPlayerStoppedUsing(ItemStack usedItemStack, World world, EntityPlayer player, int heldTicks)
     {
         // get vanilla bow
-        ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(par3EntityPlayer);
+        ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
 	    
-    	int arrowSlot = RopesPlusCore.instance.selectedSlot(par3EntityPlayer); 	
-        if (par3EntityPlayer.inventory.mainInventory[arrowSlot] != null && par3EntityPlayer.inventory.hasItem(par3EntityPlayer.inventory.mainInventory[arrowSlot].itemID))
+    	int arrowSlot = RopesPlusCore.instance.selectedSlot(player);
+    	ItemStack[] mainInv = player.inventory.mainInventory;
+        if (mainInv[arrowSlot] != null && player.inventory.hasItem(mainInv[arrowSlot].itemID))
         {            
-            int ticksLeftToCharge = this.getMaxItemUseDuration(par1ItemStack) - heldTicks;
+            int ticksLeftToCharge = this.getMaxItemUseDuration(usedItemStack) - heldTicks;
             float bowChargeRatio = (float)ticksLeftToCharge / 20.0F;
             bowChargeRatio = (bowChargeRatio * bowChargeRatio + bowChargeRatio * 2.0F) / 3.0F;
 
             if ((double)bowChargeRatio < 0.1D)
             {
-				par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(par3EntityPlayer);
+				mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
                 return;
             }
 
@@ -46,22 +47,22 @@ public class ItemBowRopesPlus extends ItemBow
             }
             
     		EntityArrow303 entityarrow303 = null;
-    		Item arrowCandidate = par3EntityPlayer.inventory.getStackInSlot(arrowSlot).getItem();
+    		Item arrowCandidate = player.inventory.getStackInSlot(arrowSlot).getItem();
     		if (arrowCandidate != null && arrowCandidate instanceof ItemArrow303)
     		{
     			entityarrow303 = ((ItemArrow303)arrowCandidate).arrow;
     		}
     		if(entityarrow303 == null)
     		{
-    			par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(par3EntityPlayer);
+    			mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
     			return;
     		}
             
-    		EntityArrow303 newArrow = entityarrow303.newArrow(par2World, par3EntityPlayer);
+    		EntityArrow303 newArrow = entityarrow303.newArrow(world, player, bowChargeRatio*2);
 
             if (bowChargeRatio == 1.0F)
             {
-                newArrow.arrowCritical = true;
+                newArrow.setIsCritical(true);
             }
 
             int damageEnchantPower = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, vanillaBow);
@@ -75,26 +76,26 @@ public class ItemBowRopesPlus extends ItemBow
                 newArrow.setFire(100);
             }
 
-            par2World.playSoundAtEntity(par3EntityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + bowChargeRatio * 0.5F);
+            world.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + bowChargeRatio * 0.5F);
 
-            par3EntityPlayer.inventory.consumeInventoryItem(par3EntityPlayer.inventory.mainInventory[arrowSlot].itemID);
-            par3EntityPlayer.inventory.inventoryChanged = true;
+            player.inventory.consumeInventoryItem(mainInv[arrowSlot].itemID);
+            player.inventory.inventoryChanged = true;
 
-            if (!par2World.isRemote)
+            if (!world.isRemote)
             {
-                par2World.spawnEntityInWorld(newArrow);
+                world.spawnEntityInWorld(newArrow);
             }
         }
         
         // put vanilla bow back in hands, do damage etc
-        par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = vanillaBow;
+        mainInv[player.inventory.currentItem] = vanillaBow;
 		if (vanillaBow != null)
 		{
-			par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem].damageItem(1, par3EntityPlayer);
+			mainInv[player.inventory.currentItem].damageItem(1, player);
 		}
 		else
 		{
-		    par3EntityPlayer.sendChatToPlayer("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!");
+		    player.sendChatToPlayer("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!");
 		}
     }
     

@@ -5,15 +5,18 @@ import net.minecraft.src.*;
 
 public class EntityArrow303Dirt extends EntityArrow303
 {
-
-    public void subscreen()
+    
+    public EntityArrow303Dirt(World world)
     {
+        super(world);
     }
 
-    public void setupConfig()
+    public EntityArrow303Dirt(World world, EntityLiving entityliving, float power)
     {
+        super(world, entityliving, power);
     }
-
+    
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -30,71 +33,30 @@ public class EntityArrow303Dirt extends EntityArrow303
         return 1;
     }
 
-    public EntityArrow303Dirt(World world)
+    @Override
+    public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        super(world);
-    }
-
-    public EntityArrow303Dirt(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
-    public boolean onHit()
-    {
-        spawnDirt();
-        return true;
-    }
-
-    public boolean onHitBlock()
-    {
-    	setDead();
-        return true;
-    }
-
-    public void spawnDirt()
-    {
-
-        int i = MathHelper.floor_double(posX);
-        int j = MathHelper.floor_double(posY);
-        int k = MathHelper.floor_double(posZ);
-        for(int l = -0; l <= 0; l++)
+        if(tryToPlaceBlock((EntityPlayer)shooter, Block.dirt.blockID))
         {
-            for(int i1 = -0; i1 <= 0; i1++)
-            {
-                for(int j1 = -0; j1 <= 0; j1++)
-                {
-                    int k1 = i + l;
-                    int l1 = j + j1;
-                    int i2 = k + i1;
-
-                    if(Math.abs(l) != 0 && Math.abs(j1) != 0 && Math.abs(i1) != 0)
-                    {
-                        continue;
-                    }
-                    if(!worldObj.canPlaceEntityOnSide(defaultBlockId, k1, l1, i2, true, Block.dirt.blockID, (Entity)null))
-                    {
-                        continue;
-                    }
-                    worldObj.setBlockWithNotify(k1, l1, i2, Block.dirt.blockID);
-                    break;
-                }
-
-            }
-
+            setDead();
+            return super.onHitBlock(blockX, blockY, blockZ);
         }
-
+        return false;
     }
-
+    
+    @Override
     public void tickFlying()
     {
         super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("tilecrack_3_0",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
-
-    public static final int defaultBlockId;
-
-    static 
-    {
-        defaultBlockId = Block.dirt.blockID;
-    }
+    
 }

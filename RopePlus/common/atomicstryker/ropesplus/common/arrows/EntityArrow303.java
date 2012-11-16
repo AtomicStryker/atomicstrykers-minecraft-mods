@@ -20,75 +20,57 @@ public class EntityArrow303 extends EntityProjectileBase
     public int craftingResults;
     public Object tip;
     public Entity target;
-    public boolean homing;
-    public static int candidates[][] = {
+    protected boolean isArrowHoming;
+    
+    protected final static int candidates[][] = { { 0, 0, 0 }, { 0, -1, 0 }, { 0, 1, 0 }, { -1, 0, 0 }, { 1, 0, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, -1, 0 }, { -1, 0, -1 }, { -1, 0, 1 }, { -1, 1, 0 },
+            { 0, -1, -1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, 1, 1 }, { 1, -1, 0 }, { 1, 0, -1 }, { 1, 0, 1 }, { 1, 1, 0 }, { -1, -1, -1 }, { -1, -1, 1 }, { -1, 1, -1 }, { -1, 1, 1 }, { 1, -1, -1 },
+            { 1, -1, 1 }, { 1, 1, -1 }, { 1, 1, 1 } };
+    
+    public EntityArrow303(World world)
+    {
+        super(world);
+        isArrowHoming = false;
+    }
+
+    public EntityArrow303(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+        isArrowHoming = false;
+    }
+    
+    public EntityArrow303 newArrow(World world, EntityLiving entityliving, float power)
+    {
+        try
         {
-            0, 0, 0
-        }, {
-            0, -1, 0
-        }, {
-            0, 1, 0
-        }, {
-            -1, 0, 0
-        }, {
-            1, 0, 0
-        }, {
-            0, 0, -1
-        }, {
-            0, 0, 1
-        }, {
-            -1, -1, 0
-        }, {
-            -1, 0, -1
-        }, {
-            -1, 0, 1
-        }, {
-            -1, 1, 0
-        }, {
-            0, -1, -1
-        }, {
-            0, -1, 1
-        }, {
-            0, 1, -1
-        }, {
-            0, 1, 1
-        }, {
-            1, -1, 0
-        }, {
-            1, 0, -1
-        }, {
-            1, 0, 1
-        }, {
-            1, 1, 0
-        }, {
-            -1, -1, -1
-        }, {
-            -1, -1, 1
-        }, {
-            -1, 1, -1
-        }, {
-            -1, 1, 1
-        }, {
-            1, -1, -1
-        }, {
-            1, -1, 1
-        }, {
-            1, 1, -1
-        }, {
-            1, 1, 1
+            return (EntityArrow303) getClass().getConstructor(new Class[] { World.class, EntityLiving.class, float.class }).newInstance(new Object[] { world, entityliving, power });
         }
-    };
+        catch (Throwable throwable)
+        {
+            throw new RuntimeException("Could not construct arrow instance", throwable);
+        }
+    }
+
+    public EntityArrow303 newArrow(World world)
+    {
+        try
+        {
+            return (EntityArrow303) getClass().getConstructor(new Class[] { World.class }).newInstance(new Object[] { world });
+        }
+        catch (Throwable throwable)
+        {
+            throw new RuntimeException("Could not construct arrow instance", throwable);
+        }
+    }
     
     public int getArrowIconIndex()
     {
         return 0;
     }
-    
-	@Override
+
+    @Override
     public void entityInit()
     {
         super.entityInit();
-        homing = false;
         name = "Arrow";
         itemId = Item.arrow.shiftedIndex;
         craftingResults = 4;
@@ -102,109 +84,40 @@ public class EntityArrow303 extends EntityProjectileBase
         setSize(0.5F, 0.5F);
     }
 
-    public EntityArrow303 newArrow(World world, EntityLiving entityliving)
-    {
-        try
-        {
-            return (EntityArrow303) getClass().getConstructor(new Class[] {
-                    net.minecraft.src.World.class,
-                    net.minecraft.src.EntityLiving.class }).newInstance(new Object[] {
-                    world,
-                    entityliving });
-        }
-        catch(Throwable throwable)
-        {
-            throw new RuntimeException("Could not construct arrow instance", throwable);
-        }
-    }
-
-    public EntityArrow303 newArrow(World world)
-    {
-        try
-        {
-            return (EntityArrow303)getClass().getConstructor(new Class[] {
-                net.minecraft.src.World.class
-            }).newInstance(new Object[] {
-                world
-            });
-        }
-        catch(Throwable throwable)
-        {
-            throw new RuntimeException("Could not construct arrow instance", throwable);
-        }
-    }
-
-    public void setupConfig()
-    {
-    }
-
-    public EntityArrow303(World world)
-    {
-        super(world);
-    }
-
-    public EntityArrow303(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-        homing = false;
-    }
-
     public boolean isInSight(Entity entity)
     {
-        return worldObj.rayTraceBlocks(Vec3.createVectorHelper(posX, posY + (double)getEyeHeight(), posZ), Vec3.createVectorHelper(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
+        return worldObj.rayTraceBlocks(worldObj.getWorldVec3Pool().getVecFromPool(posX, posY + (double) getEyeHeight(), posZ),
+                worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ)) == null;
     }
-
-    @Override
-    public void handleMotionUpdate()
-    {
-        if(!homing)
-        {
-            float f = slowdown;
-            if(handleWaterMovement())
-            {
-                for(int i = 0; i < 4; i++)
-                {
-                    float f1 = 0.25F;
-                    worldObj.spawnParticle("bubble", posX - motionX * (double)f1, posY - motionY * (double)f1, posZ - motionZ * (double)f1, motionX, motionY, motionZ);
-                }
-
-                f *= 0.8F;
-            }
-            motionX *= f;
-            motionY *= f;
-            motionZ *= f;
-        }
-        if(target == null)
-        {
-            motionY -= curvature;
-        }
-    }
-
+    
     @Override
     public void tickFlying()
     {
-        if(ticksFlying > 1 && homing)
+        super.tickFlying();
+        
+        if (ticksFlying > 1 && isArrowHoming)
         {
-            if(target == null || target.isDead || (target instanceof EntityLiving) && ((EntityLiving)target).deathTime != 0)
+            if (target == null || target.isDead || (target instanceof EntityLiving) && ((EntityLiving) target).deathTime != 0)
             {
-                if(shooter instanceof EntityCreature)
+                if (shooter instanceof EntityCreature)
                 {
-                    target = ((EntityCreature)shooter).getAITarget();
-                } else
+                    target = ((EntityCreature) shooter).getAITarget();
+                }
+                else
                 {
                     target = getTarget(posX, posY, posZ, 16D);
                 }
-            } else
-            if((shooter instanceof EntityPlayer) && !isInSight(target))
+            }
+            else if ((shooter instanceof EntityPlayer) && !isInSight(target))
             {
                 target = getTarget(posX, posY, posZ, 16D);
             }
-            if(target != null)
+            if (target != null)
             {
-                double d = (target.boundingBox.minX + (target.boundingBox.maxX - target.boundingBox.minX) / 2D) - posX;
-                double d1 = (target.boundingBox.minY + (target.boundingBox.maxY - target.boundingBox.minY) / 2D) - posY;
-                double d2 = (target.boundingBox.minZ + (target.boundingBox.maxZ - target.boundingBox.minZ) / 2D) - posZ;
-                setArrowHeading(d, d1, d2, speed, precision);
+                double diffX = (target.boundingBox.minX + (target.boundingBox.maxX - target.boundingBox.minX) / 2D) - posX;
+                double diffY = (target.boundingBox.minY + (target.boundingBox.maxY - target.boundingBox.minY) / 2D) - posY;
+                double diffZ = (target.boundingBox.minZ + (target.boundingBox.maxZ - target.boundingBox.minZ) / 2D) - posZ;
+                setThrowableHeading(diffX, diffY, diffZ, speed, precision);
             }
         }
     }
@@ -212,7 +125,7 @@ public class EntityArrow303 extends EntityProjectileBase
     @Override
     public boolean canBeCollidedWith()
     {
-        return !isDead && !inGround && ticksFlying >= 2;
+        return !isDead && !inGround && ticksFlying >= TICKS_BEFORE_COLLIDABLE;
     }
 
     @Override
@@ -221,23 +134,23 @@ public class EntityArrow303 extends EntityProjectileBase
         return !(entity instanceof EntityArrow303) && super.canBeShot(entity);
     }
 
-    private Entity getTarget(double d, double d1, double d2, double d3)
+    protected Entity getTarget(double xPos, double yPos, double zPos, double boxSize)
     {
-        float f = -1F;
+        float nearestDist = -1F;
         Entity entity = null;
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(d3, d3, d3));
-        for(int i = 0; i < list.size(); i++)
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(boxSize, boxSize, boxSize));
+        for (int i = 0; i < list.size(); i++)
         {
-            Entity entity1 = (Entity)list.get(i);
-            if(!canTarget(entity1))
+            Entity targetEnt = (Entity) list.get(i);
+            if (!canTarget(targetEnt))
             {
                 continue;
             }
-            float f1 = entity1.getDistanceToEntity(this);
-            if(f == -1F || f1 < f)
+            float curDist = targetEnt.getDistanceToEntity(this);
+            if (nearestDist == -1F || curDist < nearestDist)
             {
-                f = f1;
-                entity = entity1;
+                nearestDist = curDist;
+                entity = targetEnt;
             }
         }
 
@@ -249,55 +162,52 @@ public class EntityArrow303 extends EntityProjectileBase
         return (entity instanceof EntityLiving) && entity != shooter && isInSight(entity);
     }
 
-    public boolean tryToPlaceBlock(EntityPlayer shooter, int i)
+    public boolean tryToPlaceBlock(EntityPlayer shooter, int blockID)
     {
-        int j = MathHelper.floor_double(posX);
-        int k = MathHelper.floor_double(posY);
-        int l = MathHelper.floor_double(posZ);
-        boolean flag = false;
-        int ai[][] = candidates;
-        int j1 = ai.length;
-        int l1 = 0;
+        int x = MathHelper.floor_double(posX);
+        int y = MathHelper.floor_double(posY);
+        int z = MathHelper.floor_double(posZ);
+        boolean canPlace = false;
+        int arrayLength = candidates.length;
+        int index = 0;
         do
         {
-            if(l1 >= j1)
+            int candidateCoords[] = candidates[index];
+            int ix = candidateCoords[0];
+            int iy = candidateCoords[1];
+            int iz = candidateCoords[2];
+            if (worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, 1, (Entity) null))
             {
+                x += ix;
+                y += iy;
+                z += iz;
+                canPlace = true;
                 break;
             }
-            int ai1[] = ai[l1];
-            int i2 = ai1[0];
-            int j2 = ai1[1];
-            int k2 = ai1[2];
-            if(worldObj.canPlaceEntityOnSide(i, j + i2, k + j2, l + k2, true, 1, (Entity)null))
-            {
-                j += i2;
-                k += j2;
-                l += k2;
-                flag = true;
-                break;
-            }
-            l1++;
-        } while(true);
-        if(!flag)
+            index++;
+        }
+        while (index < arrayLength);
+        
+        if (!canPlace)
         {
             return false;
         }
-		
-		placeCoords[0] = j;
-		placeCoords[1] = k;
-		placeCoords[2] = l;
-		
-        if(!worldObj.isRemote)
+
+        placeCoords[0] = x;
+        placeCoords[1] = y;
+        placeCoords[2] = z;
+
+        if (!worldObj.isRemote)
         {
-			int i1 = worldObj.getBlockId(j, k, l);
-			if(i1 > 0)
-			{
-				int k1 = worldObj.getBlockMetadata(j, k, l);
-				Block.blocksList[i1].harvestBlock(worldObj, shooter, j, k, l, k1);
-			}
-			worldObj.setBlockAndMetadataWithNotify(j, k, l, i, 0);
-		}
-		
+            int prevBlockID = worldObj.getBlockId(x, y, z);
+            if (prevBlockID > 0)
+            {
+                int prevBlockMeta = worldObj.getBlockMetadata(x, y, z);
+                Block.blocksList[prevBlockID].harvestBlock(worldObj, shooter, x, y, z, prevBlockMeta);
+            }
+            worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, 0);
+        }
+
         return true;
     }
 }

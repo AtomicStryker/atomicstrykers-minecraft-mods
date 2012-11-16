@@ -6,6 +6,17 @@ import net.minecraft.src.*;
 public class EntityArrow303Grass extends EntityArrow303
 {
 
+    public EntityArrow303Grass(World world)
+    {
+        super(world);
+    }
+
+    public EntityArrow303Grass(World world, EntityLiving entityliving, float power)
+    {
+        super(world, entityliving, power);
+    }
+    
+    @Override
     public void entityInit()
     {
         super.entityInit();
@@ -22,56 +33,45 @@ public class EntityArrow303Grass extends EntityArrow303
         return 5;
     }
 
-    public EntityArrow303Grass(World world)
+    @Override
+    public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        super(world);
-    }
-
-    public EntityArrow303Grass(World world, EntityLiving entityliving)
-    {
-        super(world, entityliving);
-    }
-
-    public boolean onHit()
-    {
-        int i = MathHelper.floor_double(posX);
-        int j = MathHelper.floor_double(posY);
-        int k = MathHelper.floor_double(posZ);
-        for(int l = i - 1; l <= i + 1; l++)
+        int hitBlockID = worldObj.getBlockId(blockX, blockY, blockZ);
+        if(hitBlockID == Block.dirt.blockID)
         {
-            for(int i1 = j - 1; i1 <= j + 1; i1++)
-            {
-                for(int j1 = k - 1; j1 <= k + 1; j1++)
-                {
-                    int k1 = worldObj.getBlockId(l, i1, j1);
-                    if(k1 == 3)
-                    {
-                        worldObj.setBlockWithNotify(l, i1, j1, 2);
-                        setDead();
-                        continue;
-                    }
-                    if(k1 == 4)
-                    {
-                        worldObj.setBlockWithNotify(l, i1, j1, 48);
-                        setDead();
-                        continue;
-                    }
-                    if(k1 == 60 && i1 != 127 && worldObj.getBlockId(l, i1 + 1, j1) == 0)
-                    {
-                        worldObj.setBlockWithNotify(l, i1 + 1, j1, 59);
-                        setDead();
-                    }
-                }
-
-            }
-
+            worldObj.setBlockWithNotify(blockX, blockY, blockZ, Block.grass.blockID);
+            setDead();
+            return super.onHitBlock(blockX, blockY, blockZ);
         }
-
-        return true;
+        else if(hitBlockID == Block.cobblestone.blockID)
+        {
+            worldObj.setBlockWithNotify(blockX, blockY, blockZ, Block.cobblestoneMossy.blockID);
+            setDead();
+            return super.onHitBlock(blockX, blockY, blockZ);
+        }
+        else if(hitBlockID == Block.tilledField.blockID && worldObj.getBlockId(blockX, blockY+1, blockZ) == 0)
+        {
+            worldObj.setBlockWithNotify(blockX, blockY+1, blockZ, Block.crops.blockID);
+            setDead();
+            return super.onHitBlock(blockX, blockY, blockZ);
+        }
+        
+        return false;
     }
-
+    
+    @Override
     public void tickFlying()
     {
         super.tickFlying();
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            this.worldObj.spawnParticle("tilecrack_18_0",
+                    this.posX + this.motionX * (double) i / 4.0D,
+                    this.posY + this.motionY * (double) i / 4.0D,
+                    this.posZ + this.motionZ * (double) i / 4.0D,
+                    -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
+    
 }
