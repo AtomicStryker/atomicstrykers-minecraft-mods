@@ -29,6 +29,12 @@ public class ClientPacketHandler implements IPacketHandler
         {
         	RopesPlusClient.grapplingHookOut = false;
         }
+        else if (packetID == 4) // server tells client to accept hookshot drag ownership { entID hookshot }
+        {
+            Class[] decodeAs = { Integer.class };
+            Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
+            RopesPlusClient.onAffixedToHookShotRope((int) readOut[0]);
+        }
 	}
 
 }

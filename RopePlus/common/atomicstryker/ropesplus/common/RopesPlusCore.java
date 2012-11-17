@@ -45,7 +45,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.2.4")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.2.5")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -90,6 +90,8 @@ public class RopesPlusCore
     /* Arrow Selection Maps */
     private static HashMap<EntityPlayer, Integer> selectedSlotMap;
     private HashMap<EntityPlayer, Boolean> cycledMap;
+    
+    public static Item itemHookShot;
 	
     @PreInit
     public void preInit(FMLPreInitializationEvent event)
@@ -112,7 +114,7 @@ public class RopesPlusCore
     {
         // Rope mod part
         itemRope = new ItemRope(Settings_RopePlus.itemIdRope);
-        blockRopeCentralPos = (new BlockRopeCenter(Settings_RopePlus.blockIdRopeDJRoslin, Settings_RopePlus.ropeTexture)).setHardness(0.3F);
+        blockRopeCentralPos = (new BlockRopeCenter(Settings_RopePlus.blockIdRopeDJRoslin, Settings_RopePlus.ropeTexture)).setHardness(0.3F).setBlockName("blockRopeCentral");
 
         // Grappling Hook mod part
         itemGrapplingHook = new ItemGrapplingHook(Settings_RopePlus.itemIdGrapplingHook).setIconIndex(13).setItemName("itemGrapplingHook");
@@ -123,7 +125,7 @@ public class RopesPlusCore
         GameRegistry.registerBlock(blockRopeWallPos);
         GameRegistry.registerBlock(blockRopeCentralPos);
         
-        ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 12);
+        ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 6);
         ropeCentral.setItemName("blockRopeItem");
         GameRegistry.addRecipe(ropeCentral, new Object[] {" # ", " # ", " # ", Character.valueOf('#'), Item.silk});
         
@@ -131,15 +133,23 @@ public class RopesPlusCore
         stackGrHk.setItemName("itemGrHk");
         GameRegistry.addRecipe(stackGrHk, new Object[] {" X ", " # ", " # ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Item.ingotIron});
         
+        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(13).setItemName("itemHookshot");
+        
+        ItemStack stackHookShot = new ItemStack(itemHookShot, 1);
+        stackHookShot.setItemName("Hookshot");
+        GameRegistry.addRecipe(stackHookShot, new Object[] {" X ", " # ", " Y ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), itemGrapplingHook, Character.valueOf('Y'), Block.pistonBase});
+        
         LanguageRegistry.instance().addName(blockRopeCentralPos, "Rope");
         LanguageRegistry.instance().addName(blockRopeWallPos, "GrHk Rope");
         LanguageRegistry.instance().addName(blockGrapplingHook, "Grappling Hook");
         LanguageRegistry.instance().addName(itemRope, "GrHk Rope");
         LanguageRegistry.instance().addName(itemGrapplingHook, "Grappling Hook");
+        LanguageRegistry.instance().addName(stackHookShot, "Hookshot");
         
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
         EntityRegistry.registerModEntity(EntityGrapplingHook.class, "GrapplingHook", 1, this, 25, 5, true);
+        EntityRegistry.registerModEntity(EntityFreeFormRope.class, "FreeFormRope", 2, this, 25, 5, false);
         
         // 303 Arrows
         bowRopesPlus = new ItemBowRopesPlus(Settings_RopePlus.itemIdRopesPlusBow).setIconCoord(5, 1).setItemName("bowRopesPlus");
@@ -161,7 +171,7 @@ public class RopesPlusCore
     @PostInit
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
-        int index = 2;
+        int index = 3;
         EntityArrow303 entArrow303 = null;
         for(Iterator iter = RopesPlusCore.arrows.iterator(); iter.hasNext();)
         {

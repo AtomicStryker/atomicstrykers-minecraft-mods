@@ -29,6 +29,8 @@ public class Settings_RopePlus
 	
 	public static int ropeTexture = 1;
 	
+	public static int itemIdHookShot = 2524;
+	
 	public static Configuration config;
 	
 	public static void InitSettings(File suggested)
@@ -55,6 +57,8 @@ public class Settings_RopePlus
 		itemIdArrowSlime = config.getItem(config.CATEGORY_ITEM, "itemIdArrowSlime", itemIdArrowSlime).getInt();
 		itemIdArrowTorch = config.getItem(config.CATEGORY_ITEM, "itemIdArrowTorch", itemIdArrowTorch).getInt();
 		itemIdArrowWarp = config.getItem(config.CATEGORY_ITEM, "itemIdArrowWarp", itemIdArrowWarp).getInt();
+		
+		itemIdHookShot = config.getItem(config.CATEGORY_ITEM, "itemIdHookShot", itemIdArrowWarp).getInt();
 		
 		ropeTexture = config.get(config.CATEGORY_GENERAL, "Rope Texture", 1).getInt();
 		

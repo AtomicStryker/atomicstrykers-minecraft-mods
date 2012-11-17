@@ -8,6 +8,7 @@ import java.util.Map;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.Entity;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.InventoryPlayer;
@@ -40,7 +41,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
     private static int arrowCount;
     private int selectedSlot;
     private boolean cycled;
-    private EntityPlayer localPlayer;
+    private static EntityPlayer localPlayer;
     private GuiScreen prevScreen;
     
     private static int keyforward = Keyboard.getKeyIndex("COMMA");
@@ -103,7 +104,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         TickRegistry.registerTickHandler(new RopesPlusClient(), Side.CLIENT);
     }
     
-    public void selectArrow()
+    private void selectArrow()
     {
         if(localPlayer == null)
         {
@@ -118,7 +119,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         }
     }
 
-    public void findNextArrow(boolean flag)
+    private void findNextArrow(boolean flag)
     {
         EntityArrow303 entityarrow303 = selectedArrow;
         int i = selectedSlot;
@@ -129,7 +130,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         }
     }
 
-    public void findPrevArrow()
+    private void findPrevArrow()
     {
         EntityArrow303 entityarrow303 = selectedArrow;
         int i = selectedSlot;
@@ -140,7 +141,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         }
     }
 
-    public void findNextArrowBetween(EntityArrow303 previousarrow303, int i, int j, int k, boolean dontKeepArrowType)
+    private void findNextArrowBetween(EntityArrow303 previousarrow303, int i, int j, int k, boolean dontKeepArrowType)
     {
         for(int l = i; j > 0 && l < k || l > k; l += j)
         {
@@ -187,7 +188,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         selectedSlot = 0;
     }
 
-    public int countArrows(EntityArrow303 entityarrow303)
+    private int countArrows(EntityArrow303 entityarrow303)
     {
         int i = 0;
         InventoryPlayer inventoryplayer = localPlayer.inventory;
@@ -205,14 +206,14 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         return i;
     }
 
-    public void sendPacketToUpdateArrowChoice()
+    private void sendPacketToUpdateArrowChoice()
     {
         arrowCount = -1;
         Object[] toSend = {selectedSlot};
         FMLClientHandler.instance().sendPacket(ForgePacketWrapper.createPacket("AS_Ropes", 1, toSend));
     }
 
-    public void cycle(boolean directionForward)
+    private void cycle(boolean directionForward)
     {
         EntityArrow303 previousarrow303 = selectedArrow;
         int i = selectedSlot;
@@ -320,4 +321,18 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
     {
         return "RopesPlusClient";
     }
+    
+    public static void onAffixedToHookShotRope(int ropeEntID)
+    {
+        if (localPlayer != null && localPlayer.worldObj != null)
+        {
+            Entity ent = localPlayer.worldObj.getEntityByID(ropeEntID);
+            if (ent != null && ent instanceof EntityFreeFormRope)
+            {
+                ((EntityFreeFormRope)ent).setShooter(localPlayer);
+            }
+        }
+    }
+    
+    public static boolean letGoOfHookShot = false;
 }
