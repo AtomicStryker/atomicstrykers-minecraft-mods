@@ -19,6 +19,7 @@ import net.minecraftforge.common.Configuration;
 
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.ropesplus.common.CommonProxy;
+import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
 import atomicstryker.ropesplus.common.RopesPlusCore;
@@ -92,9 +93,12 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         
         RenderingRegistry.registerBlockHandler(BlockRenderHandler.instance.new BlockGrapplingHookRenderHandler());
         
+        RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope());
+        
         MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
         MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropesPlusItems.png");
         MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/itemGrapplingHookThrown.png");
+        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropeSegment.png");
         
         TickRegistry.registerTickHandler(new RopesPlusClient(), Side.CLIENT);
     }
