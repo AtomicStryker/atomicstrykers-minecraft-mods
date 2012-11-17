@@ -50,9 +50,10 @@ public class RenderFreeFormRope extends Render
         prevX = startCoords[0];
         prevY = startCoords[1];
         prevZ = startCoords[2];
-
-        float jointInterval = 1F / rope.getSegmentCount();
-        for (float i = jointInterval; i <= 1F; i+=jointInterval)
+        
+        int segCount = rope.getSegmentCount();
+        float jointInterval = 1F / segCount;
+        for (float i = jointInterval*(segCount-1); i >= 0; i-=jointInterval)
         {
             count++;
             renderRopeJoint(rope, i, partialTick);
