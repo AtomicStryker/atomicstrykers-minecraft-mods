@@ -12,28 +12,45 @@ import atomicstryker.ropesplus.common.EntityFreeFormRope;
 public class RenderFreeFormRope extends Render
 {
     
-    static float f = 0.0F;
-    static float f1 = 1.0F;
-    static final float f2 = 0;
-    static final float f3 = 0.25F;
-    static final double thickness = .05D;
-    static final Tessellator tessellator = Tessellator.instance;
-    double x = 0;
-    double y = 0;
-    double z = 0;
-    double prevX = 0;
-    double prevY = 0;
-    double prevZ = 0;
+    float f;
+    float f1;
+    final float f2;
+    final float f3;
+    final double thickness;
+    final Tessellator tessellator;
+    
+    double xGuess;
+    double yGuess;
+    double zGuess;
+    
+    double x;
+    double y;
+    double z;
+    double prevX;
+    double prevY;
+    double prevZ;
     
     double ptx;
     double pty;
     double ptz;
-
-    int count = 0;
-    long total = 0;
+    
+    public RenderFreeFormRope()
+    {
+        f = 0.0F;
+        f1 = 1.0F;
+        f2 = 0;
+        f3 = 0.25F;
+        thickness = .05D;
+        tessellator = Tessellator.instance;
+    }
     
     public void renderRope(EntityFreeFormRope rope, double posX, double posY, double posZ, float partialTick)
     {
+        EntityPlayer player = (EntityPlayer) renderManager.livingPlayer;
+        xGuess = player.prevPosX + (player.posX - player.prevPosX) * partialTick;
+        yGuess = player.prevPosY + (player.posY - player.prevPosY) * partialTick;
+        zGuess = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTick;
+        
         loadTexture("/atomicstryker/ropesplus/client/ropeSegment.png");
         GL11.glPushMatrix();
         
@@ -56,7 +73,7 @@ public class RenderFreeFormRope extends Render
         for (float i = jointInterval*(segCount-1); i >= 0; i-=jointInterval)
         {
             count++;
-            renderRopeJoint(rope, i, partialTick);
+            renderRopeJoint(rope, i);
             if(count == 80)
             {
                 tessellator.draw();
@@ -75,7 +92,7 @@ public class RenderFreeFormRope extends Render
         f1 = 0.0f;
     }
     
-    public void renderRopeJoint(EntityFreeFormRope rope, float relativeLength, float partialTick/*PhysRopeJoint joint*/)
+    public void renderRopeJoint(EntityFreeFormRope rope, float relativeLength)
     {
         double[] coords = rope.getCoordsAtRelativeLength(relativeLength);
         
@@ -86,11 +103,6 @@ public class RenderFreeFormRope extends Render
         double segmentX = prevX - x;
         double segmentY = prevY - y;
         double segmentZ = prevZ - z;
-        
-        EntityPlayer player = (EntityPlayer) renderManager.livingPlayer;
-        double xGuess = player.prevPosX + (player.posX - player.prevPosX) * partialTick;
-        double yGuess = player.prevPosY + (player.posY - player.prevPosY) * partialTick;
-        double zGuess = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTick;
         
         double lookX = x - xGuess;
         double lookY = y - yGuess;
