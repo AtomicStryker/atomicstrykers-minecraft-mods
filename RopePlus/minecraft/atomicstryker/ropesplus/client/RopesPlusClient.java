@@ -334,5 +334,31 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         }
     }
     
-    public static boolean letGoOfHookShot = false;
+    private boolean letGoOfHookShot = false;
+    private boolean pulledByHookShot = false;
+    
+    @Override
+    public boolean getShouldHookShotDisconnect()
+    {
+        return letGoOfHookShot;
+    }
+
+    @Override
+    public void setShouldHookShotDisconnect(boolean b)
+    {
+        letGoOfHookShot = b;
+    }
+    
+    @Override
+    public boolean getShouldHookShotPull()
+    {
+        return pulledByHookShot;
+    }
+
+    @Override
+    public void setShouldHookShotPull(boolean b)
+    {
+        pulledByHookShot = b;
+    }
+    
 }

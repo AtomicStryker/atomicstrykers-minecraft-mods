@@ -4,6 +4,7 @@ import java.io.File;
 
 public class CommonProxy
 {
+    
     public void loadConfig(File configFile)
     {
         // NOOP
@@ -13,4 +14,25 @@ public class CommonProxy
     {
         // NOOP
     }
+
+    public boolean getShouldHookShotDisconnect()
+    {
+        return false;
+    }
+
+    public void setShouldHookShotDisconnect(boolean b)
+    {
+        // NOOP
+    }
+    
+    public boolean getShouldHookShotPull()
+    {
+        return false;
+    }
+
+    public void setShouldHookShotPull(boolean b)
+    {
+        // NOOP
+    }
+    
 }

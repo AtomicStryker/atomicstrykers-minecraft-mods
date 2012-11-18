@@ -3,9 +3,11 @@ package atomicstryker.ropesplus.client;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import atomicstryker.ForgePacketWrapper;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.INetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
+import atomicstryker.ForgePacketWrapper;
+import atomicstryker.ropesplus.common.RopesPlusCore;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -31,9 +33,14 @@ public class ClientPacketHandler implements IPacketHandler
         }
         else if (packetID == 4) // server tells client to accept hookshot drag ownership { entID hookshot }
         {
-            Class[] decodeAs = { Integer.class };
+            Class[] decodeAs = { Integer.class, Integer.class, Integer.class, Integer.class };
             Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
             RopesPlusClient.onAffixedToHookShotRope((int) readOut[0]);
+            ((EntityPlayer)player).worldObj.spawnParticle("largeexplode", ((int)readOut[1])+0.5D, (int)readOut[2], ((int)readOut[3])+0.5D, 1.0D, 0.0D, 0.0D);
+        }
+        else if (packetID == 5) // server tells client hookshot is now pulling
+        {
+            RopesPlusCore.proxy.setShouldHookShotPull(true);
         }
 	}
 

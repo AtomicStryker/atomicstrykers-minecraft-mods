@@ -1,7 +1,6 @@
 package atomicstryker.ropesplus.common;
 
 import atomicstryker.ForgePacketWrapper;
-import atomicstryker.ropesplus.client.RopesPlusClient;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import net.minecraft.src.EntityPlayer;
@@ -53,18 +52,21 @@ public class ItemHookshot extends Item
         int ticksLeftToCharge = getMaxItemUseDuration(itemstack) - heldTicks;
         float chargeRatio = (float)ticksLeftToCharge / 20.0F;
         
-        if (chargeRatio < 0.2)
+        if (chargeRatio < 0.5)
         {
             if(world.isRemote)
             {
                 if (!clientHasRopeOut)
                 {
+                    RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
+                    RopesPlusCore.proxy.setShouldHookShotPull(false);
                     clientHasRopeOut = true;
                 }
                 else
                 {
                     clientHasRopeOut = false;
-                    RopesPlusClient.letGoOfHookShot = true;
+                    RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
+                    RopesPlusCore.proxy.setShouldHookShotPull(false);
                 }
                 entityplayer.swingItem();
             }
@@ -101,10 +103,11 @@ public class ItemHookshot extends Item
                         {
                             ropeEnt = new EntityFreeFormRope(world);
                             ropeEnt.setStartCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
+                            ropeEnt.setEndCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
                             ropeEnt.setEndBlock(target.blockX, target.blockY, target.blockZ);
                             ropeEnt.setShooter(entityplayer);
                             world.spawnEntityInWorld(ropeEnt);
-                            Object[] toSend = {ropeEnt.entityId};
+                            Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
                             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
                             world.playSoundAtEntity(entityplayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
                         }
@@ -127,9 +130,10 @@ public class ItemHookshot extends Item
                 entityplayer.swingItem();
             }
         }
-        else
+        else if (ropeEnt != null)
         {
-            // TODO activate pull on clientside, activate kill when close on server
+            // activate hook pull on clientside
+            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 5, null), (Player) entityplayer);
         }
     }
 

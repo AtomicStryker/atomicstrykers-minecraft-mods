@@ -1,6 +1,7 @@
 package atomicstryker.ropesplus.common;
 
-import atomicstryker.ropesplus.client.RopesPlusClient;
+import atomicstryker.ForgePacketWrapper;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
@@ -25,7 +26,7 @@ public class EntityFreeFormRope extends Entity
         ignoreFrustumCheck = true;
         hangsTaut = true;
         shooter = null;
-        maxLength = 0;
+        maxLength = 999D;
         inertiaSpeed = -1;
     }
     
@@ -44,7 +45,7 @@ public class EntityFreeFormRope extends Entity
     public void setShooter(EntityPlayer p)
     {
         shooter = p;
-        maxLength = getDistanceToEntity(p);
+        maxLength = getDistanceToEntity(shooter);
     }
     
     public double getStartX()
@@ -149,7 +150,7 @@ public class EntityFreeFormRope extends Entity
         compound.setDouble("endZ", getEndZ());
         compound.setDouble("ropePOWvalue", getPowValue());
     }
-    
+       
     @Override
     public void onUpdate()
     {
@@ -159,47 +160,68 @@ public class EntityFreeFormRope extends Entity
         {
             setPowValue(getPowValue()+0.05);
         }
-        
+
         if (shooter != null)
         {
-            this.setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
-            
+            setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
+            double dist = getDistanceToEntity(shooter);
+
             if (worldObj.isRemote)
             {
-                if (RopesPlusClient.letGoOfHookShot)
+                if (RopesPlusCore.proxy.getShouldHookShotDisconnect())
                 {
                     shooter = null;
-                    RopesPlusClient.letGoOfHookShot = false;
+                    RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
                     return;
                 }
-                
-                double dist = getDistanceToEntity(shooter);
-                if (dist > maxLength)
+
+                if (RopesPlusCore.proxy.getShouldHookShotPull())
                 {
-                    if (inertiaSpeed < 0)
+                    double distToEnd = shooter.getDistance(getEndX(), getEndY(), getEndZ());
+                    if (distToEnd < 3D)
                     {
-                        inertiaSpeed = getEntitySpeed(shooter);
+                        RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
+                        RopesPlusCore.proxy.setShouldHookShotPull(false);
+                        Object[] toSend = { entityId };
+                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 5, toSend));
                     }
-                    
-                    /*
-                     * If someone can write a beautiful smooth orthogonal swing curve, by all means do
-                     */
-                    
-                    Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
-                    playerToHookVec = playerToHookVec.normalize();
-                    Vec3 mergedVec = playerToHookVec.addVector(shooter.motionX, shooter.motionY, shooter.motionZ);
-                    mergedVec = mergedVec.normalize();
-                    Vec3 playerFacingVec = shooter.getLookVec();
-                    mergedVec.addVector(playerFacingVec.xCoord+shooter.motionX, playerFacingVec.yCoord, playerFacingVec.zCoord+shooter.motionZ);
-                    mergedVec = mergedVec.normalize();
-                    shooter.addVelocity(-shooter.motionX*0.5, -shooter.motionY*0.5, -shooter.motionZ*0.5);
-                    shooter.addVelocity(mergedVec.xCoord*0.5, mergedVec.yCoord*0.5, mergedVec.zCoord*0.5);
-                    
-                    while (getEntitySpeed(shooter) < inertiaSpeed)
+                    else
                     {
-                        shooter.motionX *= 1.1;
-                        shooter.motionY *= 1.1;
-                        shooter.motionZ *= 1.1;
+                        Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
+                        playerToHookVec = playerToHookVec.normalize();
+                        shooter.addVelocity(-shooter.motionX*0.5, -shooter.motionY*0.5, -shooter.motionZ*0.5);
+                        shooter.addVelocity(playerToHookVec.xCoord*0.5, playerToHookVec.yCoord*0.5, playerToHookVec.zCoord*0.5);
+                    }
+                }
+                else
+                {
+                    if (dist > maxLength)
+                    {
+                        if (inertiaSpeed < 0)
+                        {
+                            inertiaSpeed = getEntitySpeed(shooter);
+                        }
+
+                        /*
+                         * If someone can write a beautiful smooth orthogonal swing curve, by all means do
+                         */
+
+                        Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
+                        playerToHookVec = playerToHookVec.normalize();
+                        Vec3 mergedVec = playerToHookVec.addVector(shooter.motionX, shooter.motionY, shooter.motionZ);
+                        mergedVec = mergedVec.normalize();
+                        Vec3 playerFacingVec = shooter.getLookVec();
+                        mergedVec.addVector(playerFacingVec.xCoord+shooter.motionX, playerFacingVec.yCoord, playerFacingVec.zCoord+shooter.motionZ);
+                        mergedVec = mergedVec.normalize();
+                        shooter.addVelocity(-shooter.motionX*0.5, -shooter.motionY*0.5, -shooter.motionZ*0.5);
+                        shooter.addVelocity(mergedVec.xCoord*0.5, mergedVec.yCoord*0.5, mergedVec.zCoord*0.5);
+
+                        while (getEntitySpeed(shooter) < inertiaSpeed)
+                        {
+                            shooter.motionX *= 1.1;
+                            shooter.motionY *= 1.1;
+                            shooter.motionZ *= 1.1;
+                        }
                     }
                 }
             }
@@ -235,7 +257,8 @@ public class EntityFreeFormRope extends Entity
     }
     
     /**
-     * Attaches the Rope End to the BOTTOM of target block
+     * Makes the rope end attach to the BOTTOM of target Block
+     * 
      * @param x block coordinate
      * @param y block coordinate
      * @param z block coordinate
@@ -260,13 +283,17 @@ public class EntityFreeFormRope extends Entity
         posZ = getStartZ()+(getEndZ()-getStartZ());
     }
     
+    private double getRopeAbsLength()
+    {
+        return Math.sqrt((getEndX()-getStartX())*(getEndX()-getStartX()) + (getEndY()-getStartY())*(getEndY()-getStartY()) + (getEndZ()-getStartZ())*(getEndZ()-getStartZ()));
+    }
+    
     /**
      * Determines how many Segments the Entity needs to be broken into for rendering
      */
     public int getSegmentCount()
     {
-        double distance = Math.sqrt((getEndX()-getStartX())*(getEndX()-getStartX()) + (getEndY()-getStartY())*(getEndY()-getStartY()) + (getEndZ()-getStartZ())*(getEndZ()-getStartZ()));
-        return (int) Math.rint(distance/SEGMENT_LENGTH);
+        return (int) Math.rint(getRopeAbsLength()/SEGMENT_LENGTH);
     }
     
     /**

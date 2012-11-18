@@ -133,7 +133,7 @@ public class RopesPlusCore
         stackGrHk.setItemName("itemGrHk");
         GameRegistry.addRecipe(stackGrHk, new Object[] {" X ", " # ", " # ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Item.ingotIron});
         
-        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(13).setItemName("itemHookshot");
+        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(17).setItemName("itemHookshot");
         
         ItemStack stackHookShot = new ItemStack(itemHookShot, 1);
         stackHookShot.setItemName("Hookshot");
