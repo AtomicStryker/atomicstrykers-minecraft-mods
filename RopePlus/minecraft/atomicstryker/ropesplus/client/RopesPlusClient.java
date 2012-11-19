@@ -2,10 +2,6 @@ package atomicstryker.ropesplus.client;
 
 import java.io.File;
 import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Entity;
@@ -18,20 +14,21 @@ import net.minecraft.src.Render;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.Configuration;
 
+import org.lwjgl.input.Keyboard;
+
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.ropesplus.common.CommonProxy;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
-import atomicstryker.ropesplus.common.Settings_RopePlus;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.TickRegistry;
 
 public class RopesPlusClient extends CommonProxy implements ITickHandler
@@ -44,15 +41,23 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
     private static EntityPlayer localPlayer;
     private GuiScreen prevScreen;
     
-    private static int keyforward = Keyboard.getKeyIndex("COMMA");
-    private static int keyback = Keyboard.getKeyIndex("PERIOD");
-    private String keyNameForward = "COMMA";
-    private String keyNameBackward = "PERIOD";
+    private static int keyforward;
+    private static int keyback;
+    private String keyNameForward;
+    private String keyNameBackward;
     
     private int countDownToArrowCount;
     
     public static int renderIDGrapplingHook;
     public static boolean grapplingHookOut;
+    
+    private boolean letGoOfHookShot;
+    private boolean pulledByHookShot;
+    
+    private static EntityFreeFormRope onZipLine;
+    private static float lastZipLineLength;
+    private static long timeNextZipUpdate;
+    private static int zipTicker;
     
     public RopesPlusClient()
     {
@@ -66,7 +71,17 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         prevScreen = null;
         countDownToArrowCount = 100;
         grapplingHookOut = false;
-        
+        letGoOfHookShot = false;
+        pulledByHookShot = false;
+        onZipLine = null;
+        lastZipLineLength = 0;
+        timeNextZipUpdate = 0;
+
+        keyforward = Keyboard.getKeyIndex("COMMA");
+        keyback = Keyboard.getKeyIndex("PERIOD");
+        keyNameForward = "COMMA";
+        keyNameBackward = "PERIOD";
+
         renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
     }
     
@@ -262,6 +277,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
             prevScreen = mc.currentScreen;
             selectArrow();
         }
+        
         if(mc.currentScreen == null)
         {
             ItemStack itemstack = mc.thePlayer.getCurrentEquippedItem();
@@ -308,6 +324,38 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
                 mc.fontRenderer.drawStringWithShadow("Swap arrows with "+keyNameForward+", "+keyNameBackward, 2, 20, 0xffffff);
             }
         }
+        
+        if (onZipLine != null)
+        {
+            if (mc.gameSettings.keyBindUseItem.pressed && lastZipLineLength > 0.2)
+            {
+                Object[] toSend = { onZipLine.entityId, lastZipLineLength };
+                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
+                onZipLine = null;
+            }
+            
+            if (System.currentTimeMillis() > timeNextZipUpdate)
+            {
+                double startCoords[] = onZipLine.getCoordsAtRelativeLength(lastZipLineLength);
+                localPlayer.setPositionAndUpdate(startCoords[0], startCoords[1]-2.5D, startCoords[2]);
+                localPlayer.setVelocity(0, 0, 0);
+                localPlayer.fallDistance = 0f;
+                lastZipLineLength += 0.025;
+                timeNextZipUpdate = System.currentTimeMillis() + 50L;
+                
+                if (++zipTicker == 10)
+                {
+                    zipTicker = 0;
+                    Object[] toSend = { onZipLine.entityId, lastZipLineLength };
+                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
+                }
+                
+                if (lastZipLineLength > .9F)
+                {
+                    onZipLine = null;
+                }
+            }
+        }
     }
 
     @Override
@@ -334,8 +382,19 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         }
     }
     
-    private boolean letGoOfHookShot = false;
-    private boolean pulledByHookShot = false;
+    public static void onUsedZipLine(int ropeEntID)
+    {
+        if (localPlayer != null && localPlayer.worldObj != null)
+        {
+            Entity ent = localPlayer.worldObj.getEntityByID(ropeEntID);
+            if (ent != null && ent instanceof EntityFreeFormRope)
+            {
+                onZipLine = (EntityFreeFormRope) ent;
+                lastZipLineLength = 0;
+                timeNextZipUpdate = System.currentTimeMillis();
+            }
+        }
+    }
     
     @Override
     public boolean getShouldHookShotDisconnect()

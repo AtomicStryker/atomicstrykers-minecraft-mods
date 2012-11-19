@@ -98,14 +98,6 @@ public class BlockRopeCenter extends Block
         {
             blockstays = true;
         }
-        /* Im not sure what this code segment is supposed to do
-        if((world.getBlockId(i, j + 1, k) == 0) & (world.getBlockId(i, j + 2, k) != 0))
-        {
-            blockstays = true;
-            world.setBlockWithNotify(i, j + 1, k, this.blockID);
-            world.setBlockWithNotify(i, j, k, 0);
-        }
-        */
         if(!blockstays)
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);

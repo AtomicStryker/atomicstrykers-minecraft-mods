@@ -1,10 +1,6 @@
 package atomicstryker.ropesplus.common;
 
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.EnumAction;
 import net.minecraft.src.EnumMovingObjectType;
 import net.minecraft.src.Item;
@@ -13,6 +9,9 @@ import net.minecraft.src.MathHelper;
 import net.minecraft.src.MovingObjectPosition;
 import net.minecraft.src.Vec3;
 import net.minecraft.src.World;
+import atomicstryker.ForgePacketWrapper;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class ItemHookshot extends Item
 {
@@ -93,7 +92,7 @@ public class ItemHookshot extends Item
                     float viewY = MathHelper.sin(-guessRot * 0.017453292F);
                     float viewX = yawSin * rotCos;
                     float viewZ = yawCos * rotCos;
-                    double traceDistance = 25.0D;
+                    double traceDistance = Settings_RopePlus.maxHookShotRopeLength;
                     Vec3 aimVec = playerVec.addVector((double)viewX * traceDistance, (double)viewY * traceDistance, (double)viewZ * traceDistance);
                     MovingObjectPosition target = world.rayTraceBlocks_do_do(playerVec, aimVec, false, false);
                     

@@ -9,8 +9,6 @@ import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
 import net.minecraft.src.World;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ropesplus.client.ClientPacketHandler;
@@ -75,12 +73,10 @@ public class RopesPlusCore
 	private static List<ItemArrow303> arrowItems;
 	public static RopesPlusCore instance;
 	
-    // Rope mod part
     public static Block blockRopeCentralPos;
     public static List ropeEntArray;
     private static List<int[]> ropePosArray;
     
-    // Grappling Hook mod part
     public static Block blockRopeWallPos;
     public static Block blockGrapplingHook;
     public static Item itemRope;
@@ -92,6 +88,7 @@ public class RopesPlusCore
     private HashMap<EntityPlayer, Boolean> cycledMap;
     
     public static Item itemHookShot;
+    public static Block blockZipLineAnchor;
 	
     @PreInit
     public void preInit(FMLPreInitializationEvent event)
@@ -112,18 +109,21 @@ public class RopesPlusCore
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        // Rope mod part
+
         itemRope = new ItemRope(Settings_RopePlus.itemIdRope);
         blockRopeCentralPos = (new BlockRopeCenter(Settings_RopePlus.blockIdRopeDJRoslin, Settings_RopePlus.ropeTexture)).setHardness(0.3F).setBlockName("blockRopeCentral");
 
-        // Grappling Hook mod part
         itemGrapplingHook = new ItemGrapplingHook(Settings_RopePlus.itemIdGrapplingHook).setIconIndex(13).setItemName("itemGrapplingHook");
         blockRopeWallPos = (new BlockRopeWall(Settings_RopePlus.blockIdRope, Settings_RopePlus.ropeTexture)).setHardness(0.5F).setStepSound(Block.soundClothFootstep).setBlockName("blockRope");
         blockGrapplingHook = (new BlockGrapplingHook(Settings_RopePlus.blockIdGrapplingHook, 0)).setHardness(0.0F).setStepSound(Block.soundMetalFootstep).setBlockName("blockGrHk");
         
+        blockZipLineAnchor = new BlockZipLineAnchor(Settings_RopePlus.blockIdZipLineAnchor, 3).setHardness(0.3F).setBlockName("blockZipeLineAnchor");
+        
         GameRegistry.registerBlock(blockGrapplingHook);
         GameRegistry.registerBlock(blockRopeWallPos);
         GameRegistry.registerBlock(blockRopeCentralPos);
+        GameRegistry.registerBlock(blockZipLineAnchor);
+        GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
         
         ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 6);
         ropeCentral.setItemName("blockRopeItem");
@@ -139,19 +139,23 @@ public class RopesPlusCore
         stackHookShot.setItemName("Hookshot");
         GameRegistry.addRecipe(stackHookShot, new Object[] {" X ", " # ", " Y ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), itemGrapplingHook, Character.valueOf('Y'), Block.pistonBase});
         
+        ItemStack stackZipAnchor = new ItemStack(blockZipLineAnchor, 1);
+        GameRegistry.addRecipe(stackZipAnchor, new Object[] {" # ", " # ", " X ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Item.ingotIron});
+        
         LanguageRegistry.instance().addName(blockRopeCentralPos, "Rope");
         LanguageRegistry.instance().addName(blockRopeWallPos, "GrHk Rope");
         LanguageRegistry.instance().addName(blockGrapplingHook, "Grappling Hook");
         LanguageRegistry.instance().addName(itemRope, "GrHk Rope");
-        LanguageRegistry.instance().addName(itemGrapplingHook, "Grappling Hook");
         LanguageRegistry.instance().addName(stackHookShot, "Hookshot");
+        LanguageRegistry.instance().addName(itemGrapplingHook, "Grappling Hook");
+        LanguageRegistry.instance().addName(blockZipLineAnchor, "Zipline Anchor");
+        LanguageRegistry.instance().addName(stackZipAnchor, "Zipline Anchor");
         
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
         EntityRegistry.registerModEntity(EntityGrapplingHook.class, "GrapplingHook", 1, this, 25, 5, true);
-        EntityRegistry.registerModEntity(EntityFreeFormRope.class, "FreeFormRope", 2, this, 25, 5, false);
+        EntityRegistry.registerModEntity(EntityFreeFormRope.class, "FreeFormRope", 2, this, 75, 5, false);
         
-        // 303 Arrows
         bowRopesPlus = new ItemBowRopesPlus(Settings_RopePlus.itemIdRopesPlusBow).setIconCoord(5, 1).setItemName("bowRopesPlus");
         LanguageRegistry.instance().addName(bowRopesPlus, "RopesPlusBow");
         

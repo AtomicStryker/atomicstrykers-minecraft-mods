@@ -1,12 +1,14 @@
 package atomicstryker.ropesplus.common;
 
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.Material;
+import net.minecraft.src.MathHelper;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.Vec3;
 import net.minecraft.src.World;
+import atomicstryker.ForgePacketWrapper;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class EntityFreeFormRope extends Entity
 {
@@ -19,6 +21,7 @@ public class EntityFreeFormRope extends Entity
     private EntityPlayer shooter;
     private double maxLength;
     private double inertiaSpeed;
+    private int swingFactor;
     
     public EntityFreeFormRope(World par1World)
     {
@@ -28,6 +31,7 @@ public class EntityFreeFormRope extends Entity
         shooter = null;
         maxLength = 999D;
         inertiaSpeed = -1;
+        swingFactor = -1;
     }
     
     @Override
@@ -46,6 +50,16 @@ public class EntityFreeFormRope extends Entity
     {
         shooter = p;
         maxLength = getDistanceToEntity(shooter);
+    }
+    
+    public EntityPlayer getShooter()
+    {
+        return shooter;
+    }
+    
+    public void setLoosening()
+    {
+        hangsTaut = false;
     }
     
     public double getStartX()
@@ -156,6 +170,12 @@ public class EntityFreeFormRope extends Entity
     {
         super.onUpdate();
         
+        if (!isTargetBlockValid())
+        {
+            this.setDead();
+            return;
+        }
+        
         if (!hangsTaut && getPowValue() < 2D)
         {
             setPowValue(getPowValue()+0.05);
@@ -201,11 +221,27 @@ public class EntityFreeFormRope extends Entity
                         {
                             inertiaSpeed = getEntitySpeed(shooter);
                         }
-
+                        
+                        /*
+                        double[] anchorC = {getEndX(), getEndY(), getEndZ()};
+                        double[] playerC = {shooter.posX, shooter.posY, shooter.posZ};
+                        double[] moveVec = getTangentVector(anchorC, playerC);
+                        
+                        double diffX = getEndX()-shooter.posX;
+                        double diffZ = getEndZ()-shooter.posZ;
+                        if (diffX*diffX+diffZ*diffZ < 2)
+                        {
+                            //swingFactor = (swingFactor == -1) ? 1 : -1;
+                        }
+                        
+                        shooter.addVelocity(moveVec[0]*-0.015, moveVec[1]*-0.015, moveVec[2]*-0.015);
+                        */
+                        
                         /*
                          * If someone can write a beautiful smooth orthogonal swing curve, by all means do
                          */
-
+                        
+                        
                         Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
                         playerToHookVec = playerToHookVec.normalize();
                         Vec3 mergedVec = playerToHookVec.addVector(shooter.motionX, shooter.motionY, shooter.motionZ);
@@ -222,6 +258,7 @@ public class EntityFreeFormRope extends Entity
                             shooter.motionY *= 1.1;
                             shooter.motionZ *= 1.1;
                         }
+                        
                     }
                 }
             }
@@ -232,6 +269,60 @@ public class EntityFreeFormRope extends Entity
         }
     }
     
+    private double[] getTangentVector(double[] ankerPos, double[] playerPos) {
+        double[] ankerToPlayer = getVector(ankerPos, playerPos);
+        double ropeLength = getMagnitude(ankerToPlayer);
+        double[] anker = new double[]{ 0d, ropeLength, 0d};
+        double[] vectorDown = new double[] { 0d, -1d, 0d };
+        double[] player = addVectors(anker, ankerToPlayer);
+        double[] direction = crossProduct(vectorDown, player);
+        double[] t = crossProduct(direction, ankerToPlayer);
+        return t;
+    }
+    
+    private double[] addVectors(double[] u, double[] v)
+    {
+        return new double[] { u[0] + v[0], u[1] + v[1], u[2] + v[2] };
+    }
+
+    private double[] normalize(double[] v)
+    {
+        return divideVector(v, getMagnitude(v));
+    }
+
+    private double getMagnitude(double[] v)
+    {
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    }
+
+    private double[] multiplyVector(double[] v, double value)
+    {
+        return new double[] { v[0] * value, v[1] * value, v[2] * value };
+    }
+
+    private double[] divideVector(double[] v, double value)
+    {
+        return multiplyVector(v, 1d / value);
+    }
+
+    private double[] crossProduct(double[] u, double[] v)
+    {
+        return new double[] { u[1] * v[2] - v[1] * u[2], v[0] * u[2] - u[0] * v[2], u[0] * v[1] - v[0] * u[1] };
+    }
+
+    private double[] getVector(double[] p1, double[] p2)
+    {
+        return new double[] { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
+    }
+    
+    private boolean isTargetBlockValid()
+    {
+        return worldObj.isBlockOpaqueCube(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()-0.5D), MathHelper.floor_double(getEndZ()))
+        || worldObj.isBlockOpaqueCube(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()+0.5D), MathHelper.floor_double(getEndZ()))
+        || worldObj.getBlockMaterial(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()-0.5D), MathHelper.floor_double(getEndZ())) == Material.leaves
+        || worldObj.getBlockMaterial(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()+0.5D), MathHelper.floor_double(getEndZ())) == Material.leaves;
+    }
+
     private double getEntitySpeed(Entity ent)
     {
         return Math.sqrt(ent.motionX*ent.motionX+ent.motionY*ent.motionY+ent.motionZ*ent.motionZ);

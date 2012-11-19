@@ -7,6 +7,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.INetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
 import atomicstryker.ForgePacketWrapper;
+import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
@@ -41,6 +42,31 @@ public class ClientPacketHandler implements IPacketHandler
         else if (packetID == 5) // server tells client hookshot is now pulling
         {
             RopesPlusCore.proxy.setShouldHookShotPull(true);
+        }
+        else if (packetID == 6) // server tells client hookshot is gone now
+        {
+            RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
+            RopesPlusCore.proxy.setShouldHookShotPull(false);
+            
+            EntityPlayer p = (EntityPlayer) player;
+            for (Object o : p.worldObj.loadedEntityList)
+            {
+                if (o instanceof EntityFreeFormRope)
+                {
+                    EntityFreeFormRope rope = (EntityFreeFormRope) o;
+                    if (rope.getShooter() != null && rope.getShooter().equals(p))
+                    {
+                        rope.setDead();
+                        break;
+                    }
+                }
+            }
+        }
+        else if (packetID == 7) // server tells client to slide down zipline { entID ropeEnt }
+        {
+            Class[] decodeAs = { Integer.class };
+            Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
+            RopesPlusClient.onUsedZipLine((int) readOut[0]);
         }
 	}
 

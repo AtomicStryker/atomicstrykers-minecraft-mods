@@ -28,7 +28,7 @@ public class ServerPacketHandler implements IPacketHandler
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             RopesPlusCore.setselectedSlot((EntityPlayer)player, (Integer) packetReadout[0]);
         }
-        else if (packetID == 5) // client has reached hookshot max pull, kill the rope ent { entID }
+        else if (packetID == 5) // client has reached hookshot max pull, kill the rope ent { int entID }
         {
             Class[] decodeAs = {Integer.class};
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
@@ -37,6 +37,21 @@ public class ServerPacketHandler implements IPacketHandler
             if (target != null && target instanceof EntityFreeFormRope)
             {
                 target.setDead();
+            }
+        }
+        else if (packetID == 7) // client updates server about its position on zipline { int entID, float relativeLength }
+        {
+            Class[] decodeAs = { Integer.class, Float.class };
+            Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
+            EntityPlayer p = (EntityPlayer) player;            
+            Entity target = p.worldObj.getEntityByID((int) packetReadout[0]);
+            if (target != null && target instanceof EntityFreeFormRope)
+            {
+                double[] coords = ((EntityFreeFormRope)target).getCoordsAtRelativeLength((float)packetReadout[1]);
+                //System.out.println("server got pos update: "+coords[0]+", "+coords[1]+", "+coords[2]);
+                p.setPositionAndUpdate(coords[0], coords[1]-2.5D, coords[2]);
+                p.setVelocity(0, 0, 0);
+                p.fallDistance = 0;
             }
         }
     }
