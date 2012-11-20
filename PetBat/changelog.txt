@@ -1,3 +1,6 @@
+1.1.1
+life steal will no longer overheal the bat
+
 1.1.0
 added Dynamic Lights integration module
 if you have Dynamic Lights running, you can 'use' Glowstone dust

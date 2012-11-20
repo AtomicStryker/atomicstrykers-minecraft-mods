@@ -229,7 +229,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 
                 if (level > 2)
                 {
-                    setEntityHealth(this.getHealth() + damageDealt/3);
+                    this.heal(Math.max(damageDealt/3, 1));
                 }
             }
         }
