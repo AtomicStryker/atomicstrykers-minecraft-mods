@@ -70,7 +70,7 @@ public class RopesPlusCore
 	
 	public static List<EntityArrow303> arrows;
 	public static Item bowRopesPlus;
-	private static List<ItemArrow303> arrowItems;
+	public static List<ItemArrow303> arrowItems;
 	public static RopesPlusCore instance;
 	
     public static Block blockRopeCentralPos;
@@ -79,7 +79,6 @@ public class RopesPlusCore
     
     public static Block blockRopeWallPos;
     public static Block blockGrapplingHook;
-    public static Item itemRope;
     public static Item itemGrapplingHook;
     private static HashMap<EntityPlayer, EntityGrapplingHook> grapplingHookMap;
     
@@ -110,8 +109,6 @@ public class RopesPlusCore
     @Init
     public void load(FMLInitializationEvent evt)
     {
-
-        itemRope = new ItemRope(Settings_RopePlus.itemIdRope);
         blockRopeCentralPos = (new BlockRopeCenter(Settings_RopePlus.blockIdRopeDJRoslin, Settings_RopePlus.ropeTexture)).setHardness(0.3F).setBlockName("blockRopeCentral");
 
         itemGrapplingHook = new ItemGrapplingHook(Settings_RopePlus.itemIdGrapplingHook).setIconIndex(13).setItemName("itemGrapplingHook");
@@ -147,7 +144,6 @@ public class RopesPlusCore
         LanguageRegistry.instance().addName(blockRopeCentralPos, "Rope");
         LanguageRegistry.instance().addName(blockRopeWallPos, "GrHk Rope");
         LanguageRegistry.instance().addName(blockGrapplingHook, "Grappling Hook");
-        LanguageRegistry.instance().addName(itemRope, "GrHk Rope");
         LanguageRegistry.instance().addName(stackHookShot, "Hookshot");
         LanguageRegistry.instance().addName(itemGrapplingHook, "Grappling Hook");
         LanguageRegistry.instance().addName(blockZipLineAnchor, "Zipline Anchor");

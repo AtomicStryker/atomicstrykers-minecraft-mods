@@ -26,7 +26,7 @@ public class EntityArrow303Ice extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "IceArrow";
+        name = "Frost Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowIce;
         tip = Item.snowball;

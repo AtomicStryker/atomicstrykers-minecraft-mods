@@ -20,7 +20,7 @@ public class EntityArrow303Grass extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "GrassArrow";
+        name = "Seed Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowGrass;
         tip = Item.seeds;

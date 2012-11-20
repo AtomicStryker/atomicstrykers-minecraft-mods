@@ -26,7 +26,7 @@ public class EntityArrow303Slime extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "SlimeArrow";
+        name = "Slime Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowSlime;
         tip = Item.slimeBall;

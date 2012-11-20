@@ -26,7 +26,7 @@ public class EntityArrow303Torch extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "TorchArrow";
+        name = "Torch Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowTorch;
         tip = Block.torchWood;

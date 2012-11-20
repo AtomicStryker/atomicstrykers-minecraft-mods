@@ -23,7 +23,7 @@ public class EntityArrow303Confusion extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "ConfusionArrow";
+        name = "Confusing Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowConfusion;
         tip = Block.sand;

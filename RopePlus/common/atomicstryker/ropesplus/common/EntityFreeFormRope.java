@@ -272,7 +272,8 @@ public class EntityFreeFormRope extends Entity
                             shooter.motionX *= 1.1;
                             shooter.motionY *= 1.1;
                             shooter.motionZ *= 1.1;
-                        }                        
+                        }
+
                     }
                 }
             }
@@ -281,52 +282,6 @@ public class EntityFreeFormRope extends Entity
                 shooter.fallDistance = 0;
             }
         }
-    }
-    
-    private double[] getTangentVector(double[] ankerPos, double[] playerPos) {
-        double[] ankerToPlayer = getVector(ankerPos, playerPos);
-        double ropeLength = getMagnitude(ankerToPlayer);
-        double[] anker = new double[]{ 0d, ropeLength, 0d};
-        double[] vectorDown = new double[] { 0d, -1d, 0d };
-        double[] player = addVectors(anker, ankerToPlayer);
-        double[] direction = crossProduct(vectorDown, player);
-        double[] t = crossProduct(direction, ankerToPlayer);
-        return t;
-    }
-    
-    private double[] addVectors(double[] u, double[] v)
-    {
-        return new double[] { u[0] + v[0], u[1] + v[1], u[2] + v[2] };
-    }
-
-    private double[] normalize(double[] v)
-    {
-        return divideVector(v, getMagnitude(v));
-    }
-
-    private double getMagnitude(double[] v)
-    {
-        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    }
-
-    private double[] multiplyVector(double[] v, double value)
-    {
-        return new double[] { v[0] * value, v[1] * value, v[2] * value };
-    }
-
-    private double[] divideVector(double[] v, double value)
-    {
-        return multiplyVector(v, 1d / value);
-    }
-
-    private double[] crossProduct(double[] u, double[] v)
-    {
-        return new double[] { u[1] * v[2] - v[1] * u[2], v[0] * u[2] - u[0] * v[2], u[0] * v[1] - v[0] * u[1] };
-    }
-
-    private double[] getVector(double[] p1, double[] p2)
-    {
-        return new double[] { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
     }
     
     private boolean isTargetBlockValid()

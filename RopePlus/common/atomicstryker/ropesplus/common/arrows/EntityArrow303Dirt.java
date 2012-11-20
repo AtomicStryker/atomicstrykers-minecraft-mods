@@ -20,7 +20,7 @@ public class EntityArrow303Dirt extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "DirtArrow";
+        name = "Dirt Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowDirt;
         tip = Block.dirt;

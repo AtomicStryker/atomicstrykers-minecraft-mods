@@ -20,7 +20,7 @@ public class EntityArrow303Warp extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "WarpArrow";
+        name = "Warp Arrow";
         craftingResults = 4;
         itemId = Settings_RopePlus.itemIdArrowWarp;
         tip = Block.obsidian;

@@ -22,7 +22,7 @@ public class EntityArrow303Fire extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "FiArrow";
+        name = "Fire Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowFire;
         tip = Item.coal;

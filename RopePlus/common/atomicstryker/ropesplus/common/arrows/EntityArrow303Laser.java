@@ -27,7 +27,7 @@ public class EntityArrow303Laser extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "LaserArrow";
+        name = "Penetrating Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowLaser;
         tip = Item.redstone;

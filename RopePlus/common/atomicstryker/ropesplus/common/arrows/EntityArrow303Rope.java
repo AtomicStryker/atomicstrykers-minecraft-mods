@@ -24,7 +24,7 @@ public class EntityArrow303Rope extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "RopeArrow";
+        name = "Rope Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowRope;
         tip = RopesPlusCore.blockRopeCentralPos;

@@ -29,7 +29,7 @@ public class EntityArrow303Ex extends EntityArrow303
     public void entityInit()
     {
         super.entityInit();
-        name = "ExArrow";
+        name = "Exploding Arrow";
         craftingResults = 1;
         itemId = Settings_RopePlus.itemIdArrowExplosion;
         tip = Item.gunpowder;

@@ -1,3 +1,12 @@
+RopesPlus 1.2.5
+- built with MC 1.4.5, filename remains 1.4.4 for now
+- introducing threedimensional Ropes
+- introducing the Hookshot and its ammunition, the Hookshot cartridge
+- introducing Ziplines and the Zipline Anchor Block
+- removed invalid "GrHk Rope" Item leftover
+- fixed several Names for Items and Arrows
+- added integrated NEI plugin for RopesPlus category
+
 RopesPlus 1.2.4
 - big code cleanup and rewrite, fixing a ton of bugs, heres an excerpt:
 - fixed premature collisions of arrow entities with the firing player
