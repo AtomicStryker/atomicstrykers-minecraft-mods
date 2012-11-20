@@ -285,7 +285,7 @@ public class RuinTemplate implements RuinIBuildable {
 
 		// get the late runs and finish up
 		doLateRuns( world, random, laterun, lastrun );
-		world.markBlocksDirty( xBase, y + 1 - embed, zBase, xBase + xDim, y + ( 1 - embed ) + height, zBase + zDim );
+		world.markBlockRangeForRenderUpdate( xBase, y + 1 - embed, zBase, xBase + xDim, y + ( 1 - embed ) + height, zBase + zDim );
 	}
 
 	private void doLateRuns( World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun ) {
