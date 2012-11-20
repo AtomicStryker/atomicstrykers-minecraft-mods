@@ -208,7 +208,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
                     int resultingStackSize = Math.min(resultStack.stackSize, newOutputs[index]);
                     if (this.inventory[this.outputs[index]] == null)
                     {
-                        this.inventory[this.outputs[index]] = getResultFor(this.inventory[this.inputs[0]], true).copy();
+                        this.inventory[this.outputs[index]] = getResultFor(this.inventory[this.inputs[0]], true);
                         onFinishedProcessingItem();
                     }
                     else
