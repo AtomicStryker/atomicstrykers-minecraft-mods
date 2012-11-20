@@ -48,18 +48,18 @@ public class ContainerSingularityCompressor extends Container
             ICrafting var2 = (ICrafting)this.crafters.get(var1);
             if (this.progress != this.tileentity.progress)
             {
-                var2.updateCraftingInventoryInfo(this, 0, this.tileentity.progress);
+                var2.sendProgressBarUpdate(this, 0, this.tileentity.progress);
             }
 
             if (this.energy != this.tileentity.energy)
             {
-                var2.updateCraftingInventoryInfo(this, 1, this.tileentity.energy & '\uffff');
-                var2.updateCraftingInventoryInfo(this, 2, this.tileentity.energy >>> 16);
+                var2.sendProgressBarUpdate(this, 1, this.tileentity.energy & '\uffff');
+                var2.sendProgressBarUpdate(this, 2, this.tileentity.energy >>> 16);
             }
 
             if (this.PSI != this.tileentity.speed)
             {
-                var2.updateCraftingInventoryInfo(this, 3, this.tileentity.speed);
+                var2.sendProgressBarUpdate(this, 3, this.tileentity.speed);
             }
         }
 

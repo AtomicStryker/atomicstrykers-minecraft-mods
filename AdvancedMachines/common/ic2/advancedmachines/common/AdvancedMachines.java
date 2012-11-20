@@ -89,7 +89,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 188).getInt());
+        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 188).getInt()).setBlockName("blockAdvMachine");
         refIronID = config.getItem("IDs", "refIronID", 29775).getInt(29775);
 
         guiIdRotary = config.get("IDs", "guiIdRotary", 40).getInt();
@@ -184,7 +184,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         transformerStack = Items.getItem("transformerUpgrade");
         energyStorageUpgradeStack = Items.getItem("energyStorageUpgrade");
         
-        refinedIronDust = new ItemDust(refIronID);
+        refinedIronDust = new ItemDust(refIronID).setItemName("refinedIronDust");
         LanguageRegistry.addName(refinedIronDust, refIronDustName);
         GameRegistry.addSmelting(refinedIronDust.shiftedIndex, Items.getItem("refinedIronIngot"), 1.0f);
     }
