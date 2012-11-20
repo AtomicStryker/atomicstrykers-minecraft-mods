@@ -98,7 +98,7 @@ public class TileEntityVet extends TileEntityFactoryInventory
 	            {
 	                result = 2;
 	            }
-	            else if (stack.itemID == Block.potatoe.blockID)
+	            else if (stack.itemID == Block.potato.blockID)
 	            {
 	                result = 2;
 	            }

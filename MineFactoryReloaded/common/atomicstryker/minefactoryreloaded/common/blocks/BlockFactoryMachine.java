@@ -94,7 +94,7 @@ public class BlockFactoryMachine extends BlockContainer implements IPipeConnecti
 			if(te instanceof TileEntityFactory && ((TileEntityFactory)te).canRotate())
 			{
 				((TileEntityFactory)te).rotate();
-				world.markBlockNeedsUpdate(i, j, k);
+				world.markBlockForUpdate(i, j, k);
 			}
 		}
 		else if(te != null && te instanceof TileEntityFactoryInventory && ((TileEntityFactoryInventory)te).getSizeInventory() == 27)

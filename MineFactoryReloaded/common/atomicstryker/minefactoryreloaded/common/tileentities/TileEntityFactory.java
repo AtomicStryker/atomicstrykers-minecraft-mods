@@ -152,7 +152,7 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 	            forwardDirection = Orientations.XPos;
 	        }
 	        
-	        worldObj.markBlockNeedsUpdate(xCoord, yCoord, zCoord);
+	        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	        MineFactoryReloadedCore.instance().onRotatedTileEntity(this, forwardDirection);
 	    }
 	}
@@ -162,7 +162,7 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 		forwardDirection = Orientations.dirs()[rotation];
 		if (worldObj != null)
 		{
-		    worldObj.markBlockNeedsUpdate(xCoord, yCoord, zCoord);
+		    worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 	}
 	

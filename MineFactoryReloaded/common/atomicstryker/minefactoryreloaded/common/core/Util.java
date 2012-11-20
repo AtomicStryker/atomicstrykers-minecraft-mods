@@ -160,7 +160,7 @@ public class Util
 		for(BlockPosition bp : new BlockPosition(te).getAdjacent(false))
 		{
 			int blockId = te.worldObj.getBlockId(bp.x, bp.y, bp.z);
-			if(blockId == Block.redstoneWire.blockID && Block.blocksList[blockId].isPoweringTo(te.worldObj, bp.x, bp.y, bp.z, 1))
+			if(blockId == Block.redstoneWire.blockID && Block.blocksList[blockId].isProvidingStrongPower(te.worldObj, bp.x, bp.y, bp.z, 1))
 			{
 				return true;
 			}

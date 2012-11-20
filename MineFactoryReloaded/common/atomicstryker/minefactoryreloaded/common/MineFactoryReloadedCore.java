@@ -91,7 +91,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.4R1.6.0", dependencies = "after:BuildCraft|Core")
+@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.1", dependencies = "after:BuildCraft|Core")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ServerPacketHandler.class),
@@ -322,7 +322,7 @@ public class MineFactoryReloadedCore
         registerPlantable(new PlantableStandard(Block.mushroomRed.blockID, Block.mushroomRed.blockID));
         registerPlantable(new PlantableCropPlant(Item.seeds.shiftedIndex, Block.crops.blockID));
         registerPlantable(new PlantableCropPlant(Item.carrot.shiftedIndex, Block.carrot.blockID));
-        registerPlantable(new PlantableCropPlant(Item.potatoe.shiftedIndex, Block.potatoe.blockID));
+        registerPlantable(new PlantableCropPlant(Item.potato.shiftedIndex, Block.potato.blockID));
         registerPlantable(new PlantableNetherWart());
         registerPlantable(new PlantableCocoa());
 
@@ -339,7 +339,7 @@ public class MineFactoryReloadedCore
         registerHarvestable(new HarvestableStemPlant(Block.melon.blockID, HarvestType.Normal));
         registerHarvestable(new HarvestableCropPlant(Block.crops.blockID));
         registerHarvestable(new HarvestableCropPlant(Block.carrot.blockID));
-        registerHarvestable(new HarvestableCropPlant(Block.potatoe.blockID));
+        registerHarvestable(new HarvestableCropPlant(Block.potato.blockID));
         registerHarvestable(new HarvestableVine());
         registerHarvestable(new HarvestableNetherWart());
         if (Util.getBool(harvesterHarvestsSmallMushrooms))
@@ -352,7 +352,7 @@ public class MineFactoryReloadedCore
         registerFertilizable(new FertilizableSapling());
         registerFertilizable(new FertilizableCropPlant(Block.crops.blockID));
         registerFertilizable(new FertilizableCropPlant(Block.carrot.blockID));
-        registerFertilizable(new FertilizableCropPlant(Block.potatoe.blockID));
+        registerFertilizable(new FertilizableCropPlant(Block.potato.blockID));
         registerFertilizable(new FertilizableGiantMushroom(Block.mushroomBrown.blockID));
         registerFertilizable(new FertilizableGiantMushroom(Block.mushroomRed.blockID));
         registerFertilizable(new FertilizableStemPlants(Block.pumpkinStem.blockID));

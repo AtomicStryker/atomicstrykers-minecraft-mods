@@ -1,3 +1,6 @@
+1.6.1
+- update to MC 1.4.5
+
 1.6.0
 - fixed Name and Texture for spilled Milk Item
 - moved NEI config out of Blocks and put in a new category for all MFR related things
