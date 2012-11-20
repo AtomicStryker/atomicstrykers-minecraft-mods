@@ -30,6 +30,7 @@ public class Settings_RopePlus
 	public static int blockIdZipLineAnchor = 245;
 	public static int itemIdHookShot = 2524;
     public static int maxHookShotRopeLength;
+    public static int itemIdHookshotCartridge = 2525;
 	
 	public static Configuration config;
 	
@@ -61,6 +62,7 @@ public class Settings_RopePlus
 		blockIdZipLineAnchor = config.getBlock("blockIdZipLineAnchor", blockIdZipLineAnchor).getInt();
 		itemIdHookShot = config.getItem(config.CATEGORY_ITEM, "itemIdHookShot", itemIdHookShot).getInt();
 		maxHookShotRopeLength = config.get(config.CATEGORY_GENERAL, "max HookShot Rope Length", 50).getInt();
+		itemIdHookshotCartridge = config.getItem(config.CATEGORY_ITEM, "itemIdHookshotCartridge", itemIdHookshotCartridge).getInt();
 		
 		ropeTexture = config.get(config.CATEGORY_GENERAL, "Rope Texture", 1).getInt();
 		

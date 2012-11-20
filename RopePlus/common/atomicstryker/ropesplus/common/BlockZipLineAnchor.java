@@ -25,6 +25,7 @@ public class BlockZipLineAnchor extends BlockContainer
         {
             Object[] toSend = { teAnchor.getZipLineEntity().entityId };
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend), (Player) entityPlayer);
+            world.playSoundAtEntity(entityPlayer, "zipline", 1.0F, 1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
             return true;
         }
         else
@@ -39,6 +40,7 @@ public class BlockZipLineAnchor extends BlockContainer
                         teAnchor.setTargetCoordinates(MathHelper.floor_double(rope.getEndX()), MathHelper.floor_double(rope.getEndY()), MathHelper.floor_double(rope.getEndZ()));
                         entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShot.shiftedIndex);
                         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 6, null), (Player) entityPlayer);
+                        world.playSoundAtEntity(entityPlayer, "ropetension", 1.0F, 1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
                         return true;
                     }
                 }

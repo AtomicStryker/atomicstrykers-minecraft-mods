@@ -13,6 +13,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.Render;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.input.Keyboard;
 
@@ -95,6 +96,8 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         keyback = Keyboard.getKeyIndex(config.get(config.CATEGORY_GENERAL, "keyback", "PERIOD").value);
         
         config.save();
+        
+        MinecraftForge.EVENT_BUS.register(new RopesPlusSounds());
     }
     
     @Override

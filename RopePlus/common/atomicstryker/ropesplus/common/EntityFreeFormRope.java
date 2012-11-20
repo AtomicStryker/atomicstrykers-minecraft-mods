@@ -22,6 +22,8 @@ public class EntityFreeFormRope extends Entity
     private double maxLength;
     private double inertiaSpeed;
     private int swingFactor;
+    private long nextSoundTime;
+    private boolean jungleCall;
     
     public EntityFreeFormRope(World par1World)
     {
@@ -32,6 +34,8 @@ public class EntityFreeFormRope extends Entity
         maxLength = 999D;
         inertiaSpeed = -1;
         swingFactor = -1;
+        nextSoundTime = 0;
+        jungleCall = false;
     }
     
     @Override
@@ -214,33 +218,44 @@ public class EntityFreeFormRope extends Entity
                     }
                 }
                 else
-                {
+                {                    
                     if (dist > maxLength)
                     {
                         if (inertiaSpeed < 0)
                         {
                             inertiaSpeed = getEntitySpeed(shooter);
+                            
+                            if (maxLength > 10 && getEndY()-shooter.posY < 5D)
+                            {
+                                double adder = maxLength-10D;
+                                while (adder > 0)
+                                {
+                                    inertiaSpeed *= 1.4;
+                                    adder -= 2D;
+                                }
+                            }
                         }
                         
-                        /*
-                        double[] anchorC = {getEndX(), getEndY(), getEndZ()};
-                        double[] playerC = {shooter.posX, shooter.posY, shooter.posZ};
-                        double[] moveVec = getTangentVector(anchorC, playerC);
-                        
-                        double diffX = getEndX()-shooter.posX;
-                        double diffZ = getEndZ()-shooter.posZ;
-                        if (diffX*diffX+diffZ*diffZ < 2)
+                        if (System.currentTimeMillis() > nextSoundTime)
                         {
-                            //swingFactor = (swingFactor == -1) ? 1 : -1;
+                            nextSoundTime = System.currentTimeMillis() + 3000l;
+                            
+                            if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
+                            {
+                                jungleCall = true;
+                                Object[] toSend = { "jungleking" };
+                                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 8, toSend));
+                            }
+                            else
+                            {
+                                Object[] toSend = { "ropetension" };
+                                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 8, toSend));
+                            }
                         }
-                        
-                        shooter.addVelocity(moveVec[0]*-0.015, moveVec[1]*-0.015, moveVec[2]*-0.015);
-                        */
                         
                         /*
                          * If someone can write a beautiful smooth orthogonal swing curve, by all means do
                          */
-                        
                         
                         Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
                         playerToHookVec = playerToHookVec.normalize();
@@ -257,8 +272,7 @@ public class EntityFreeFormRope extends Entity
                             shooter.motionX *= 1.1;
                             shooter.motionY *= 1.1;
                             shooter.motionZ *= 1.1;
-                        }
-                        
+                        }                        
                     }
                 }
             }

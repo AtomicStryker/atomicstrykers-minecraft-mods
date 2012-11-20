@@ -51,11 +51,13 @@ public class ItemHookshot extends Item
         int ticksLeftToCharge = getMaxItemUseDuration(itemstack) - heldTicks;
         float chargeRatio = (float)ticksLeftToCharge / 20.0F;
         
+        boolean hasAmmo = entityplayer.inventory.hasItem(RopesPlusCore.itemHookShotCartridge.shiftedIndex);
+        
         if (chargeRatio < 0.5)
         {
             if(world.isRemote)
             {
-                if (!clientHasRopeOut)
+                if (!clientHasRopeOut && hasAmmo)
                 {
                     RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
                     RopesPlusCore.proxy.setShouldHookShotPull(false);
@@ -73,47 +75,55 @@ public class ItemHookshot extends Item
             {
                 if (!serverHasRopeOut)
                 {
-                    serverHasRopeOut = true;
-                    
-                    if (ropeEnt != null)
+                    if (hasAmmo)
                     {
-                        ropeEnt.setDead();
-                    }
-                    
-                    float guessRot = entityplayer.prevRotationPitch + (entityplayer.rotationPitch - entityplayer.prevRotationPitch);
-                    float guessYaw = entityplayer.prevRotationYaw + (entityplayer.rotationYaw - entityplayer.prevRotationYaw);
-                    double guessX = entityplayer.prevPosX + (entityplayer.posX - entityplayer.prevPosX);
-                    double guessY = entityplayer.prevPosY + (entityplayer.posY - entityplayer.prevPosY) + 1.62D - (double)entityplayer.yOffset;
-                    double guessZ = entityplayer.prevPosZ + (entityplayer.posZ - entityplayer.prevPosZ);
-                    Vec3 playerVec = world.getWorldVec3Pool().getVecFromPool(guessX, guessY, guessZ);
-                    float yawCos = MathHelper.cos(-guessYaw * 0.017453292F - (float)Math.PI);
-                    float yawSin = MathHelper.sin(-guessYaw * 0.017453292F - (float)Math.PI);
-                    float rotCos = -MathHelper.cos(-guessRot * 0.017453292F);
-                    float viewY = MathHelper.sin(-guessRot * 0.017453292F);
-                    float viewX = yawSin * rotCos;
-                    float viewZ = yawCos * rotCos;
-                    double traceDistance = Settings_RopePlus.maxHookShotRopeLength;
-                    Vec3 aimVec = playerVec.addVector((double)viewX * traceDistance, (double)viewY * traceDistance, (double)viewZ * traceDistance);
-                    MovingObjectPosition target = world.rayTraceBlocks_do_do(playerVec, aimVec, false, false);
-                    
-                    if (target != null)
-                    {
-                        if (target.typeOfHit == EnumMovingObjectType.TILE)
+                        serverHasRopeOut = true;
+                        
+                        if (ropeEnt != null)
                         {
-                            ropeEnt = new EntityFreeFormRope(world);
-                            ropeEnt.setStartCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
-                            ropeEnt.setEndCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
-                            ropeEnt.setEndBlock(target.blockX, target.blockY, target.blockZ);
-                            ropeEnt.setShooter(entityplayer);
-                            world.spawnEntityInWorld(ropeEnt);
-                            Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
-                            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
-                            world.playSoundAtEntity(entityplayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+                            ropeEnt.setDead();
+                        }
+                        
+                        float guessRot = entityplayer.prevRotationPitch + (entityplayer.rotationPitch - entityplayer.prevRotationPitch);
+                        float guessYaw = entityplayer.prevRotationYaw + (entityplayer.rotationYaw - entityplayer.prevRotationYaw);
+                        double guessX = entityplayer.prevPosX + (entityplayer.posX - entityplayer.prevPosX);
+                        double guessY = entityplayer.prevPosY + (entityplayer.posY - entityplayer.prevPosY) + 1.62D - (double)entityplayer.yOffset;
+                        double guessZ = entityplayer.prevPosZ + (entityplayer.posZ - entityplayer.prevPosZ);
+                        Vec3 playerVec = world.getWorldVec3Pool().getVecFromPool(guessX, guessY, guessZ);
+                        float yawCos = MathHelper.cos(-guessYaw * 0.017453292F - (float)Math.PI);
+                        float yawSin = MathHelper.sin(-guessYaw * 0.017453292F - (float)Math.PI);
+                        float rotCos = -MathHelper.cos(-guessRot * 0.017453292F);
+                        float viewY = MathHelper.sin(-guessRot * 0.017453292F);
+                        float viewX = yawSin * rotCos;
+                        float viewZ = yawCos * rotCos;
+                        double traceDistance = Settings_RopePlus.maxHookShotRopeLength;
+                        Vec3 aimVec = playerVec.addVector((double)viewX * traceDistance, (double)viewY * traceDistance, (double)viewZ * traceDistance);
+                        MovingObjectPosition target = world.rayTraceBlocks_do_do(playerVec, aimVec, false, false);
+                        
+                        if (target != null)
+                        {
+                            if (target.typeOfHit == EnumMovingObjectType.TILE)
+                            {
+                                ropeEnt = new EntityFreeFormRope(world);
+                                ropeEnt.setStartCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
+                                ropeEnt.setEndCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
+                                ropeEnt.setEndBlock(target.blockX, target.blockY, target.blockZ);
+                                ropeEnt.setShooter(entityplayer);
+                                world.spawnEntityInWorld(ropeEnt);
+                                Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
+                                PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
+                                world.playSoundAtEntity(entityplayer, "hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+                                entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge.shiftedIndex);
+                            }
+                        }
+                        else
+                        {
+                            entityplayer.sendChatToPlayer("No target for Hookshot");
                         }
                     }
                     else
                     {
-                        entityplayer.sendChatToPlayer("No target for Hookshot");
+                        world.playSoundAtEntity(entityplayer, "random.click", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
                     }
                 }
                 else
@@ -129,10 +139,11 @@ public class ItemHookshot extends Item
                 entityplayer.swingItem();
             }
         }
-        else if (ropeEnt != null)
+        else if (ropeEnt != null && ropeEnt.isEntityAlive())
         {
             // activate hook pull on clientside
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 5, null), (Player) entityplayer);
+            world.playSoundAtEntity(entityplayer, "hookshotpull", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
         }
     }
 

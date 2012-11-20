@@ -89,6 +89,7 @@ public class RopesPlusCore
     
     public static Item itemHookShot;
     public static Block blockZipLineAnchor;
+    public static Item itemHookShotCartridge;
 	
     @PreInit
     public void preInit(FMLPreInitializationEvent event)
@@ -119,6 +120,9 @@ public class RopesPlusCore
         
         blockZipLineAnchor = new BlockZipLineAnchor(Settings_RopePlus.blockIdZipLineAnchor, 3).setHardness(0.3F).setBlockName("blockZipeLineAnchor");
         
+        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(17).setItemName("itemHookshot");
+        itemHookShotCartridge = new Item(Settings_RopePlus.itemIdHookshotCartridge).setIconIndex(18).setTextureFile("/atomicstryker/ropesplus/client/ropesPlusItems.png").setItemName("HookshotCartridge");
+        
         GameRegistry.registerBlock(blockGrapplingHook);
         GameRegistry.registerBlock(blockRopeWallPos);
         GameRegistry.registerBlock(blockRopeCentralPos);
@@ -126,21 +130,19 @@ public class RopesPlusCore
         GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
         
         ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 6);
-        ropeCentral.setItemName("blockRopeItem");
         GameRegistry.addRecipe(ropeCentral, new Object[] {" # ", " # ", " # ", Character.valueOf('#'), Item.silk});
         
         ItemStack stackGrHk = new ItemStack(itemGrapplingHook, 1);
-        stackGrHk.setItemName("itemGrHk");
         GameRegistry.addRecipe(stackGrHk, new Object[] {" X ", " # ", " # ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Item.ingotIron});
         
-        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(17).setItemName("itemHookshot");
-        
         ItemStack stackHookShot = new ItemStack(itemHookShot, 1);
-        stackHookShot.setItemName("Hookshot");
-        GameRegistry.addRecipe(stackHookShot, new Object[] {" X ", " # ", " Y ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), itemGrapplingHook, Character.valueOf('Y'), Block.pistonBase});
+        GameRegistry.addRecipe(stackHookShot, new Object[] {"AXA", "A#A", "AYA", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), itemGrapplingHook, Character.valueOf('Y'), Block.pistonBase,  Character.valueOf('A'), Item.ingotIron});
         
         ItemStack stackZipAnchor = new ItemStack(blockZipLineAnchor, 1);
         GameRegistry.addRecipe(stackZipAnchor, new Object[] {" # ", " # ", " X ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Item.ingotIron});
+        
+        ItemStack stackCartridge = new ItemStack(itemHookShotCartridge, 4);
+        GameRegistry.addRecipe(stackCartridge, new Object[] {" # ", "#X#", " # ", Character.valueOf('#'), Item.paper, Character.valueOf('X'), Item.gunpowder});
         
         LanguageRegistry.instance().addName(blockRopeCentralPos, "Rope");
         LanguageRegistry.instance().addName(blockRopeWallPos, "GrHk Rope");
@@ -150,6 +152,7 @@ public class RopesPlusCore
         LanguageRegistry.instance().addName(itemGrapplingHook, "Grappling Hook");
         LanguageRegistry.instance().addName(blockZipLineAnchor, "Zipline Anchor");
         LanguageRegistry.instance().addName(stackZipAnchor, "Zipline Anchor");
+        LanguageRegistry.instance().addName(itemHookShotCartridge, "Hookshot Cartridge");
         
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
