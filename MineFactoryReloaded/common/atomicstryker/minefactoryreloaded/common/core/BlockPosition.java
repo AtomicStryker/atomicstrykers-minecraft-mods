@@ -3,29 +3,27 @@ package atomicstryker.minefactoryreloaded.common.core;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityFactory;
-import buildcraft.api.core.Orientations;
-
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
+import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityFactory;
 
 public class BlockPosition
 {
 	public int x;
 	public int y;
 	public int z;
-	public Orientations orientation;
+	public ForgeDirection orientation;
 	
 	public BlockPosition(int x, int y, int z)
 	{
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		orientation = Orientations.Unknown;
+		orientation = ForgeDirection.UNKNOWN;
 	}
 	
-	public BlockPosition(int x, int y, int z, Orientations corientation)
+	public BlockPosition(int x, int y, int z, ForgeDirection corientation)
 	{
 		this.x = x;
 		this.y = y;
@@ -47,7 +45,7 @@ public class BlockPosition
 		y = nbttagcompound.getInteger("j");
 		z = nbttagcompound.getInteger("k");
 		
-		orientation = Orientations.Unknown;
+		orientation = ForgeDirection.UNKNOWN;
 	}
 	
 	public BlockPosition(TileEntity tile)
@@ -68,16 +66,16 @@ public class BlockPosition
 	{
 		switch(orientation)
 		{
-		case ZPos:
+		case EAST:
 			x = x - step;
 			break;
-		case ZNeg:
+		case WEST:
 			x = x + step;    			
 			break;
-		case XPos:
+		case NORTH:
 			z = z + step;
 			break;
-		case XNeg:
+		case SOUTH:
 			z = z - step;
 			break;
 		}
@@ -92,22 +90,22 @@ public class BlockPosition
 	{
 		switch(orientation)
 		{
-		case YPos:
+		case UP:
 			y = y + step;
 			break;
-		case YNeg:
+		case DOWN:
 			y = y - step;
 			break;
-		case ZPos:
+		case EAST:
 			z = z + step;
 			break;
-		case ZNeg:
+		case WEST:
 			z = z - step;	
 			break;
-		case XPos:
+		case NORTH:
 			x = x + step;
 			break;		
-		case XNeg:
+		case SOUTH:
 			x = x - step;
 			break;
 		}
@@ -122,7 +120,7 @@ public class BlockPosition
 	{
 		switch(orientation)
 		{
-		case ZPos: case ZNeg: case XPos: case XNeg:
+		case EAST: case WEST: case NORTH: case SOUTH:
 			y = y + step;
 			break;
 		}

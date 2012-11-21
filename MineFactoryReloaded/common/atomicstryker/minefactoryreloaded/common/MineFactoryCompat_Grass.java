@@ -9,7 +9,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 
-@Mod(modid = "MFR_CompatGrass", name = "MFR Grass Fertilizer Addon", version = "1.3.2R1.5.4", dependencies = "after:mod_MineFactory")
+@Mod(modid = "MFR_CompatGrass", name = "MFR Grass Fertilizer Addon", version = "1.4.5R1.6.1", dependencies = "after:MFReloaded")
 public class MineFactoryCompat_Grass
 {
     @PostInit

@@ -3,15 +3,9 @@ package atomicstryker.minefactoryreloaded.common.tileentities;
 import net.minecraft.src.Block;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
-import buildcraft.api.core.BuildCraftAPI;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.liquids.ILiquidTank;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
 
-public class TileEntityWeather extends TileEntityFactoryInventory implements ITankContainer
+public class TileEntityWeather extends TileEntityFactoryInventory
 {
 	public TileEntityWeather()
 	{
@@ -42,7 +36,7 @@ public class TileEntityWeather extends TileEntityFactoryInventory implements ITa
 			}
 			else
 			{
-				if(!produceLiquid(LiquidManager.getLiquidIDForFilledItem(new ItemStack(Item.bucketWater))))
+				if(!produceLiquid(LiquidContainerRegistry.getLiquidForFilledItem(new ItemStack(Item.bucketWater))))
 				{
 					dropStack(new ItemStack(Item.snowball), 0.5F, -0.5F, 0.5F);
 				}
@@ -63,39 +57,4 @@ public class TileEntityWeather extends TileEntityFactoryInventory implements ITa
 		return true;
 	}
 
-	@Override
-	public ItemStack getStackInSlotOnClosing(int var1)
-	{
-		return null;
-	}
-
-    @Override
-    public int fill(Orientations from, LiquidStack resource, boolean doFill)
-    {
-        return 0;
-    }
-
-    @Override
-    public int fill(int tankIndex, LiquidStack resource, boolean doFill)
-    {
-        return 0;
-    }
-
-    @Override
-    public LiquidStack drain(Orientations from, int maxDrain, boolean doDrain)
-    {
-        return null;
-    }
-
-    @Override
-    public LiquidStack drain(int tankIndex, int maxDrain, boolean doDrain)
-    {
-        return null;
-    }
-
-    @Override
-    public ILiquidTank[] getTanks()
-    {
-        return null;
-    }
 }

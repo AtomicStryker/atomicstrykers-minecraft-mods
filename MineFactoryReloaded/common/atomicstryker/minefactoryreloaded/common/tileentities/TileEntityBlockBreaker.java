@@ -2,14 +2,11 @@ package atomicstryker.minefactoryreloaded.common.tileentities;
 
 import java.util.List;
 
-
-import atomicstryker.minefactoryreloaded.common.core.BlockPosition;
-import atomicstryker.minefactoryreloaded.common.core.Util;
-import buildcraft.api.core.Orientations;
-
 import net.minecraft.src.Block;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
+import atomicstryker.minefactoryreloaded.common.core.BlockPosition;
+import atomicstryker.minefactoryreloaded.common.core.Util;
 
 public class TileEntityBlockBreaker extends TileEntityFactoryPowered
 {
@@ -30,22 +27,22 @@ public class TileEntityBlockBreaker extends TileEntityFactoryPowered
 		float dropOffsetX = 0.0F;
 		float dropOffsetZ = 0.0F;
 		
-		if(getDirectionFacing() == Orientations.XPos)
+		if(getDirectionFacing() == ForgeDirection.NORTH)
 		{
 			dropOffsetX = -0.5F;
 			dropOffsetZ = 0.5F;
 		}
-		else if(getDirectionFacing() == Orientations.ZPos)
+		else if(getDirectionFacing() == ForgeDirection.EAST)
 		{
 			dropOffsetX = 0.5F;
 			dropOffsetZ = -0.5F;
 		}
-		else if(getDirectionFacing() == Orientations.XNeg)
+		else if(getDirectionFacing() == ForgeDirection.SOUTH)
 		{
 			dropOffsetX = 1.5F;
 			dropOffsetZ = 0.5F;
 		}
-		else if(getDirectionFacing() == Orientations.ZNeg)
+		else if(getDirectionFacing() == ForgeDirection.WEST)
 		{
 			dropOffsetX = 0.5F;
 			dropOffsetZ = 1.5F;

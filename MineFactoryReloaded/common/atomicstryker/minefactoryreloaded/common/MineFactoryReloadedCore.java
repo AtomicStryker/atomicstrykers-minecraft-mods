@@ -22,9 +22,13 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Property;
 import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.liquids.LiquidContainerData;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreDictionary.OreRegisterEvent;
 import atomicstryker.minefactoryreloaded.client.ClientPacketHandler;
@@ -42,11 +46,11 @@ import atomicstryker.minefactoryreloaded.common.blocks.BlockRailPassengerPickup;
 import atomicstryker.minefactoryreloaded.common.core.IMFRProxy;
 import atomicstryker.minefactoryreloaded.common.core.Util;
 import atomicstryker.minefactoryreloaded.common.farmables.FertilizableCocoa;
+import atomicstryker.minefactoryreloaded.common.farmables.FertilizableCropPlant;
 import atomicstryker.minefactoryreloaded.common.farmables.FertilizableGiantMushroom;
 import atomicstryker.minefactoryreloaded.common.farmables.FertilizableNetherWart;
 import atomicstryker.minefactoryreloaded.common.farmables.FertilizableSapling;
 import atomicstryker.minefactoryreloaded.common.farmables.FertilizableStemPlants;
-import atomicstryker.minefactoryreloaded.common.farmables.FertilizableCropPlant;
 import atomicstryker.minefactoryreloaded.common.farmables.HarvestableCocoa;
 import atomicstryker.minefactoryreloaded.common.farmables.HarvestableCropPlant;
 import atomicstryker.minefactoryreloaded.common.farmables.HarvestableNetherWart;
@@ -55,9 +59,9 @@ import atomicstryker.minefactoryreloaded.common.farmables.HarvestableStemPlant;
 import atomicstryker.minefactoryreloaded.common.farmables.HarvestableVine;
 import atomicstryker.minefactoryreloaded.common.farmables.HarvestableWood;
 import atomicstryker.minefactoryreloaded.common.farmables.PlantableCocoa;
+import atomicstryker.minefactoryreloaded.common.farmables.PlantableCropPlant;
 import atomicstryker.minefactoryreloaded.common.farmables.PlantableNetherWart;
 import atomicstryker.minefactoryreloaded.common.farmables.PlantableStandard;
-import atomicstryker.minefactoryreloaded.common.farmables.PlantableCropPlant;
 import atomicstryker.minefactoryreloaded.common.farmables.RanchableChicken;
 import atomicstryker.minefactoryreloaded.common.farmables.RanchableCow;
 import atomicstryker.minefactoryreloaded.common.farmables.RanchableMooshroom;
@@ -73,9 +77,6 @@ import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityPlanter;
 import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityRancher;
 import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityVet;
 import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityWeather;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.liquids.LiquidData;
-import buildcraft.api.liquids.LiquidManager;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
@@ -91,7 +92,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.1", dependencies = "after:BuildCraft|Core")
+@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.1", dependencies = "after:BuildCraft|Core;after:BuildCraft|Factory;after:BuildCraft|Energy;after:BuildCraft|Builders;after:BuildCraft|Transport")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ServerPacketHandler.class),
@@ -115,6 +116,7 @@ public class MineFactoryReloadedCore
     public static Item steelIngotItem;
     public static Item factoryHammerItem;
     public static Item milkItem;
+    public static LiquidContainerData milkLiquidContainer;
 
     public static Item machineItem;
 
@@ -262,7 +264,7 @@ public class MineFactoryReloadedCore
     @PostInit
     public void afterModsLoaded(FMLPostInitializationEvent evt)
     {
-        LiquidManager.liquids.add(new LiquidData(milkItem.shiftedIndex, Item.bucketMilk.shiftedIndex, Item.bucketMilk));
+        LiquidContainerRegistry.registerLiquid(new LiquidContainerData(new LiquidStack(milkItem,  LiquidContainerRegistry.BUCKET_VOLUME), new ItemStack(Item.bucketMilk), new ItemStack(Item.bucketEmpty)));
     }
     
     @ServerStarted
@@ -484,12 +486,12 @@ public class MineFactoryReloadedCore
     {
         Configuration c = new Configuration(configFile);
         c.load();
-        machineBlockId = c.getBlock(c.CATEGORY_BLOCK, "ID.MachineBlock", 145);
-        conveyorBlockId = c.getBlock(c.CATEGORY_BLOCK, "ID.ConveyorBlock", 146);
-        passengerPickupRailBlockId = c.getBlock(c.CATEGORY_BLOCK, "ID.PassengerRailPickupBlock", 147);
-        passengerDropoffRailBlockId = c.getBlock(c.CATEGORY_BLOCK, "ID.PassengerRailDropoffBlock", 148);
-        cargoPickupRailBlockId = c.getBlock(c.CATEGORY_BLOCK, "ID.CargoRailPickupBlock", 149);
-        cargoDropoffRailBlockId = c.getBlock(c.CATEGORY_BLOCK, "ID.CargoRailDropoffBlock", 150);
+        machineBlockId = c.getBlock("ID.MachineBlock", 145);
+        conveyorBlockId = c.getBlock("ID.ConveyorBlock", 146);
+        passengerPickupRailBlockId = c.getBlock("ID.PassengerRailPickupBlock", 147);
+        passengerDropoffRailBlockId = c.getBlock("ID.PassengerRailDropoffBlock", 148);
+        cargoPickupRailBlockId = c.getBlock("ID.CargoRailPickupBlock", 149);
+        cargoDropoffRailBlockId = c.getBlock("ID.CargoRailDropoffBlock", 150);
 
         steelIngotItemId = c.getItem(Configuration.CATEGORY_ITEM, "ID.SteelIngot", 986);
         hammerItemId = c.getItem(Configuration.CATEGORY_ITEM, "ID.Hammer", 987);
@@ -579,7 +581,7 @@ public class MineFactoryReloadedCore
         }
     }
 
-    public void onRotatedTileEntity(TileEntityFactory te, Orientations direction)
+    public void onRotatedTileEntity(TileEntityFactory te, ForgeDirection direction)
     {
         Object[] toSend = { te.xCoord, te.yCoord, te.zCoord, direction.ordinal() };
         PacketDispatcher.sendPacketToAllAround(te.xCoord, te.yCoord, te.zCoord, 50, te.worldObj.getWorldInfo().getDimension(), PacketWrapper.createPacket("MFReloaded", 1, toSend));

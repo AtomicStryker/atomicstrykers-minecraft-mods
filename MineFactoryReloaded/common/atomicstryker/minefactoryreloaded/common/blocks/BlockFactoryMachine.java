@@ -1,6 +1,17 @@
 package atomicstryker.minefactoryreloaded.common.blocks;
 
-import atomicstryker.minefactoryreloaded.client.MineFactoryClient;
+import net.minecraft.src.AxisAlignedBB;
+import net.minecraft.src.BlockContainer;
+import net.minecraft.src.Entity;
+import net.minecraft.src.EntityItem;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.IBlockAccess;
+import net.minecraft.src.IInventory;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.Material;
+import net.minecraft.src.TileEntity;
+import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
 import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
 import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore.Machine;
 import atomicstryker.minefactoryreloaded.common.core.Util;
@@ -16,19 +27,7 @@ import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityPlanter;
 import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityRancher;
 import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityVet;
 import atomicstryker.minefactoryreloaded.common.tileentities.TileEntityWeather;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.transport.IPipeConnection;
-import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Material;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
 
 public class BlockFactoryMachine extends BlockContainer implements IPipeConnection
 {
@@ -197,7 +196,7 @@ label0:
 	}
 
     @Override
-    public boolean isPipeConnected(Orientations with)
+    public boolean isPipeConnected(ForgeDirection with)
     {
         return true;
     }
@@ -207,4 +206,5 @@ label0:
 	{
         return MineFactoryReloadedCore.terrainTexture;
 	}
+	
 }

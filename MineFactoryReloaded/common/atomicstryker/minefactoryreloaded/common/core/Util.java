@@ -3,12 +3,6 @@ package atomicstryker.minefactoryreloaded.common.core;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
-import buildcraft.api.core.BuildCraftAPI;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.transport.IPipeEntry;
-
 import net.minecraft.src.Block;
 import net.minecraft.src.BlockFluid;
 import net.minecraft.src.EntityPlayer;
@@ -18,7 +12,11 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.Property;
+import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.api.transport.IPipeEntry;
 
 public class Util
 {
@@ -101,11 +99,11 @@ public class Util
 		return -1;
 	}
 
-	public static List<Orientations> findPipes(World world, int x, int y, int z)
+	public static List<ForgeDirection> findPipes(World world, int x, int y, int z)
 	{
-		List<Orientations> pipes = new LinkedList<Orientations>();
+		List<ForgeDirection> pipes = new LinkedList<ForgeDirection>();
 		BlockPosition ourpos = new BlockPosition(x, y, z);
-		for(Orientations o : Orientations.values())
+		for(ForgeDirection o : ForgeDirection.values())
 		{
 			BlockPosition bp = new BlockPosition(ourpos);
 			bp.orientation = o;

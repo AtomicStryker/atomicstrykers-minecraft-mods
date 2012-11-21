@@ -1,13 +1,11 @@
 package atomicstryker.minefactoryreloaded.common.tileentities;
 
-import net.minecraft.src.World;
 import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
 import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore.PowerSystem;
 import atomicstryker.minefactoryreloaded.common.core.Util;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
-import buildcraft.api.power.PowerProvider;
 
 public abstract class TileEntityFactoryPowered extends TileEntityFactory implements IPowerReceptor
 {

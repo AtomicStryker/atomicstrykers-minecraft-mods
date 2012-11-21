@@ -1,44 +1,41 @@
 package atomicstryker.minefactoryreloaded.common.tileentities;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
-import atomicstryker.minefactoryreloaded.common.PacketWrapper;
-import atomicstryker.minefactoryreloaded.common.core.Area;
-import atomicstryker.minefactoryreloaded.common.core.BlockPosition;
-import atomicstryker.minefactoryreloaded.common.core.IRotateableTile;
-import atomicstryker.minefactoryreloaded.common.core.Util;
-import buildcraft.api.core.BuildCraftAPI;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
-import buildcraft.api.transport.IPipeEntry;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.Packet;
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.ITankContainer;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidStack;
+import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
+import atomicstryker.minefactoryreloaded.common.PacketWrapper;
+import atomicstryker.minefactoryreloaded.common.core.Area;
+import atomicstryker.minefactoryreloaded.common.core.BlockPosition;
+import atomicstryker.minefactoryreloaded.common.core.IRotateableTile;
+import atomicstryker.minefactoryreloaded.common.core.Util;
+import buildcraft.api.core.Position;
+import buildcraft.api.transport.IPipeEntry;
 
 public abstract class TileEntityFactory extends TileEntity implements IRotateableTile
 {
-	private Orientations forwardDirection;
+	private ForgeDirection forwardDirection;
 	
 	protected TileEntityFactory()
 	{
-		forwardDirection = Orientations.XPos;
+		forwardDirection = ForgeDirection.NORTH;
 	}
 	
-	protected boolean canDropInPipeAt(Orientations o)
+	protected boolean canDropInPipeAt(ForgeDirection o)
 	{
 		return true;
 	}
 	
 	protected void dropStack(ItemStack s, float dropOffsetX, float dropOffsetY, float dropZ)
 	{
-		for(Orientations o : Util.findPipes(worldObj, xCoord, yCoord, zCoord))
+		for(ForgeDirection o : Util.findPipes(worldObj, xCoord, yCoord, zCoord))
 		{
 			BlockPosition bp = new BlockPosition(xCoord, yCoord, zCoord);
 			bp.orientation = o;
@@ -115,7 +112,7 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 		return new Area(ourpos, getHarvestRadius(), 0, 0);
 	}
 	
-	public Orientations getDirectionFacing()
+	public ForgeDirection getDirectionFacing()
 	{
 		return forwardDirection;
 	}
@@ -131,25 +128,25 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 	{
 	    if(!worldObj.isRemote)
 	    {
-	        if(forwardDirection == Orientations.XPos)
+	        if(forwardDirection == ForgeDirection.NORTH)
 	        {
-	            forwardDirection = Orientations.ZPos;
+	            forwardDirection = ForgeDirection.EAST;
 	        }
-	        else if(forwardDirection == Orientations.ZPos)
+	        else if(forwardDirection == ForgeDirection.EAST)
 	        {
-	            forwardDirection = Orientations.XNeg;
+	            forwardDirection = ForgeDirection.SOUTH;
 	        }
-	        else if(forwardDirection == Orientations.XNeg)
+	        else if(forwardDirection == ForgeDirection.SOUTH)
 	        {
-	            forwardDirection = Orientations.ZNeg;
+	            forwardDirection = ForgeDirection.WEST;
 	        }
-	        else if(forwardDirection == Orientations.ZNeg)
+	        else if(forwardDirection == ForgeDirection.WEST)
 	        {
-	            forwardDirection = Orientations.XPos;
+	            forwardDirection = ForgeDirection.NORTH;
 	        }
 	        else
 	        {
-	            forwardDirection = Orientations.XPos;
+	            forwardDirection = ForgeDirection.NORTH;
 	        }
 	        
 	        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -159,7 +156,7 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 	
 	public void rotateDirectlyTo(int rotation)
 	{
-		forwardDirection = Orientations.dirs()[rotation];
+		forwardDirection = ForgeDirection.getOrientation(rotation);
 		if (worldObj != null)
 		{
 		    worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -172,15 +169,15 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 		{
 			return side;
 		}
-		else if(forwardDirection == Orientations.ZPos)
+		else if(forwardDirection == ForgeDirection.EAST)
 		{
 			return addToSide(side, 1);
 		}
-		else if(forwardDirection == Orientations.XNeg)
+		else if(forwardDirection == ForgeDirection.SOUTH)
 		{
 			return addToSide(side, 2);
 		}
-		else if(forwardDirection == Orientations.ZNeg)
+		else if(forwardDirection == ForgeDirection.WEST)
 		{
 			return addToSide(side, 3);
 		}
@@ -217,12 +214,17 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 		nbttagcompound.setInteger("rotation", getDirectionFacing().ordinal());
     }
 	
-	protected boolean produceLiquid(int liquidId)
+	/**
+	 * Attempts to find an adjacent Liquid Tank and to put the LiquidStack provided into it.
+	 * @param liquidStack to stash away
+	 * @return true when the liquidStack was successfully filled into a tank, false otherwise
+	 */
+	protected boolean produceLiquid(LiquidStack liquidStack)
 	{
-		int amountToFill = LiquidManager.BUCKET_VOLUME;
+		int amountToFill = LiquidContainerRegistry.BUCKET_VOLUME;
 		for(int i = 0; i < 6; i++)
 		{
-			Orientations or = Orientations.values()[i];
+			ForgeDirection or = ForgeDirection.values()[i];
 			
 			BlockPosition p = new BlockPosition(xCoord, yCoord, zCoord, or);
 			p.moveForwards(1);
@@ -232,10 +234,10 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 			if(tile instanceof ITankContainer && !(p.x == xCoord && p.y == yCoord && p.z == zCoord))
 			{
 				ITankContainer lc = (ITankContainer)tile;
-				amountToFill -= lc.fill(or.reverse(), new LiquidStack(liquidId, LiquidManager.BUCKET_VOLUME), true);
+				amountToFill -= lc.fill(or.getOpposite(), liquidStack, true);
 			}
 		}
-		if(amountToFill < LiquidManager.BUCKET_VOLUME)
+		if(amountToFill < LiquidContainerRegistry.BUCKET_VOLUME)
 		{
 			return true;
 		}

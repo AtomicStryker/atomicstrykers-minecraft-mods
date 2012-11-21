@@ -7,18 +7,14 @@ import java.util.Map;
 import net.minecraft.src.DamageSource;
 import net.minecraft.src.EntityLiving;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidStack;
 import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
 import atomicstryker.minefactoryreloaded.common.api.IFactoryRanchable;
 import atomicstryker.minefactoryreloaded.common.core.Util;
-import buildcraft.api.core.BuildCraftAPI;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.liquids.ILiquidTank;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
 
-public class TileEntityRancher extends TileEntityFactoryInventory implements ITankContainer
+public class TileEntityRancher extends TileEntityFactoryInventory
 {
 	private static Map<Class<?>, IFactoryRanchable> ranchables = new HashMap<Class<?>, IFactoryRanchable>();
 
@@ -56,11 +52,13 @@ public class TileEntityRancher extends TileEntityFactoryInventory implements ITa
 		return 3;
 	}
 	
+	/*
 	@Override
-	protected boolean canDropInPipeAt(Orientations o)
+	protected boolean canDropInPipeAt(ForgeDirection o)
 	{
 		return o == getDirectionFacing().reverse();
 	}
+	*/
 
 	@Override
 	public void doWork()
@@ -73,22 +71,22 @@ public class TileEntityRancher extends TileEntityFactoryInventory implements ITa
 		float dropOffsetX = 0.0F;
 		float dropOffsetZ = 0.0F;
 		
-		if(getDirectionFacing() == Orientations.XPos)
+		if(getDirectionFacing() == ForgeDirection.NORTH)
 		{
 			dropOffsetX = -0.5F;
 			dropOffsetZ = 0.5F;
 		}
-		else if(getDirectionFacing() == Orientations.ZPos)
+		else if(getDirectionFacing() == ForgeDirection.EAST)
 		{
 			dropOffsetX = 0.5F;
 			dropOffsetZ = -0.5F;
 		}
-		else if(getDirectionFacing() == Orientations.XNeg)
+		else if(getDirectionFacing() == ForgeDirection.SOUTH)
 		{
 			dropOffsetX = 1.5F;
 			dropOffsetZ = 0.5F;
 		}
-		else if(getDirectionFacing() == Orientations.ZNeg)
+		else if(getDirectionFacing() == ForgeDirection.WEST)
 		{
 			dropOffsetX = 0.5F;
 			dropOffsetZ = 1.5F;
@@ -109,10 +107,11 @@ public class TileEntityRancher extends TileEntityFactoryInventory implements ITa
 				List<ItemStack> drops = r.ranch(worldObj, e, this);
 				for(ItemStack s : drops)
 				{
-					if(LiquidManager.getFilledItemForLiquid(new LiquidStack(s.itemID, LiquidManager.BUCKET_VOLUME)) != null)
+				    LiquidStack produced = LiquidContainerRegistry.getLiquidForFilledItem(s);
+					if(produced != null)
 					{
-						produceLiquid(s.itemID);
-						continue; // abort if we got a liquid block/item - nowhere to put it, it'll just be destroyed
+						produceLiquid(produced); // the 'milk Item' doesnt exist as anything but liquid, so no need to check this
+						continue;
 					}
 					dropStack(s, dropOffsetX, 0, dropOffsetZ);
 				}
@@ -124,35 +123,5 @@ public class TileEntityRancher extends TileEntityFactoryInventory implements ITa
 			}
 		}
 	}
-
-    @Override
-    public int fill(Orientations from, LiquidStack resource, boolean doFill)
-    {
-        return 0;
-    }
-
-    @Override
-    public int fill(int tankIndex, LiquidStack resource, boolean doFill)
-    {
-        return 0;
-    }
-
-    @Override
-    public LiquidStack drain(Orientations from, int maxDrain, boolean doDrain)
-    {
-        return null;
-    }
-
-    @Override
-    public LiquidStack drain(int tankIndex, int maxDrain, boolean doDrain)
-    {
-        return null;
-    }
-
-    @Override
-    public ILiquidTank[] getTanks()
-    {
-        return null;
-    }
     
 }
