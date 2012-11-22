@@ -32,7 +32,7 @@ public class ServerPacketHandler implements IPacketHandler
             Class[] decodeAs = { Integer.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             EntityPlayer p = (EntityPlayer) player;
-            Entity target = p.worldObj.getEntityByID((int) packetReadout[0]);
+            Entity target = p.worldObj.getEntityByID((Integer) packetReadout[0]);
             if (target != null && target instanceof EntityFreeFormRope)
             {
                 target.setDead();
@@ -43,10 +43,10 @@ public class ServerPacketHandler implements IPacketHandler
             Class[] decodeAs = { Integer.class, Float.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             EntityPlayer p = (EntityPlayer) player;
-            Entity target = p.worldObj.getEntityByID((int) packetReadout[0]);
+            Entity target = p.worldObj.getEntityByID((Integer) packetReadout[0]);
             if (target != null && target instanceof EntityFreeFormRope)
             {
-                double[] coords = ((EntityFreeFormRope) target).getCoordsAtRelativeLength((float) packetReadout[1]);
+                double[] coords = ((EntityFreeFormRope) target).getCoordsAtRelativeLength((Float) packetReadout[1]);
                 // System.out.println("server got pos update: "+coords[0]+", "+coords[1]+", "+coords[2]);
                 p.setPositionAndUpdate(coords[0], coords[1] - 2.5D, coords[2]);
                 p.setVelocity(0, 0, 0);

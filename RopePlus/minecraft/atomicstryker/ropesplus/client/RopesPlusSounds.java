@@ -1,6 +1,7 @@
 package atomicstryker.ropesplus.client;
 
 import java.io.File;
+import java.net.URL;
 
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -28,7 +29,8 @@ public class RopesPlusSounds
             String s = SOUND_RESOURCE_LOCATION+soundFile;
             try
             {
-                event.manager.addSound(soundFile, new File(this.getClass().getResource(s).toURI()));
+                URL url = this.getClass().getResource(s);
+                event.manager.soundPoolSounds.addSound(soundFile, url);
             }
             
             catch (Exception e)
