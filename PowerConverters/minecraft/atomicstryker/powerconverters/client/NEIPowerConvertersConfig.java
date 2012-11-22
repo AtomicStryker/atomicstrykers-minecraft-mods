@@ -25,11 +25,8 @@ public class NEIPowerConvertersConfig implements IConfigureNEI
     private void addSubSet()
     {
         MultiItemRange subTypes = new MultiItemRange();
-        int blockID = PowerConverterCore.powerConverterBlock.blockID;
-        for (int i = 0; i <= 7; i++)
-        {
-            subTypes.add(blockID, i, i);
-        }
+        subTypes.add(PowerConverterCore.jetpackFuellerItem);
+        subTypes.add(PowerConverterCore.powerConverterBlock, 0, 7);
         API.addSetRange("Blocks.PowerConverters", subTypes);
     }
 
