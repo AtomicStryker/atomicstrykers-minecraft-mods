@@ -6,18 +6,12 @@ import ic2.api.Items;
 import java.io.File;
 import java.util.Random;
 
-import atomicstryker.netherores.client.NetherOresClient;
-
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.BiomeGenBase;
 import net.minecraft.src.Block;
 import net.minecraft.src.FurnaceRecipes;
 import net.minecraft.src.IChunkProvider;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.NetHandler;
-import net.minecraft.src.NetLoginHandler;
-import net.minecraft.src.Packet1Login;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.World;
 import net.minecraftforge.common.Configuration;
@@ -26,20 +20,17 @@ import net.minecraftforge.common.Property;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreDictionary.OreRegisterEvent;
+import atomicstryker.netherores.client.NetherOresClient;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.IConnectionHandler;
-import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
@@ -130,7 +121,7 @@ public class NetherOresCore
                 Ic2Recipes.addMaceratorRecipe(new ItemStack(blockNetherOres.blockID, 1, 7), new ItemStack(tinDust.itemID, 4, 0));
             }
 
-            System.out.println("NetherOres: loaded Macerator Recipes");
+            System.out.println("NetherOres: loaded IC2 Macerator Recipes");
         }
 
         if (Boolean.parseBoolean(enableStandardFurnaceRecipes.value) == true)
