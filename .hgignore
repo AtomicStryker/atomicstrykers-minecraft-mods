@@ -6,3 +6,4 @@ syntax: glob
 **/dist/
 **/download/
 .settings/
+Testing/*
