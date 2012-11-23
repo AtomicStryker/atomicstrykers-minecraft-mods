@@ -15,7 +15,7 @@ See config file for options. "Use Item" binding of Minecraft with compass in han
 TO INSTALL:
 
 - Requires FML (Forge ModLoader, it's also part of Forge!)
-- Extract the /setup/ folder found in this archive into your .minecraft folder. The mod zip needs to end up in the .minecraft/mods/ folder and the .cfg file needs to be in .minecraft/
+- Extract the /setup/ folder found in this archive into your .minecraft folder. The mod zip needs to end up in the .minecraft/mods/ folder and the .cfg file needs to be in .minecraft/config/
 
 
 Scanrange default is 7 Block lengths, it can be set in the configuration file.
