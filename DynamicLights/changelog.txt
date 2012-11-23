@@ -1,3 +1,6 @@
+1.1.1
+- added Light module for Arrows shot with fire enchantment on bow
+
 1.1.0
 - update to MC 1.4.4
 - fixed toggle button triggering while in menus
