@@ -336,8 +336,7 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
                 onZipLine = null;
             }
-            
-            if (System.currentTimeMillis() > timeNextZipUpdate)
+            else if (System.currentTimeMillis() > timeNextZipUpdate)
             {
                 double startCoords[] = onZipLine.getCoordsAtRelativeLength(lastZipLineLength);
                 localPlayer.setPositionAndUpdate(startCoords[0], startCoords[1]-2.5D, startCoords[2]);

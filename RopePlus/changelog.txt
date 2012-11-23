@@ -1,3 +1,6 @@
+RopesPlus 1.2.5a
+- fixed tiny logical derp in Client Ticker
+
 RopesPlus 1.2.5
 - built with MC 1.4.5, filename remains 1.4.4 for now
 - introducing threedimensional Ropes
