@@ -3,14 +3,15 @@
 	<classpathentry kind="src" path="common"/>
 	<classpathentry kind="src" path="minecraft"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="./../../mcp/jars/bin/jinput.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/jars/bin/lwjgl.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/jars/bin/lwjgl_util.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/argo-2.25.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/asm-all-4.0.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/asm-all-4.0-source.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/guava-12.0.1.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/guava-12.0.1-sources.jar"/>
+	<classpathentry kind="lib" path="../../mcp/jars/bin/jinput.jar"/>
+	<classpathentry kind="lib" path="../../mcp/jars/bin/lwjgl.jar"/>
+	<classpathentry kind="lib" path="../../mcp/jars/bin/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/argo-2.25.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/asm-all-4.0.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/asm-all-4.0-source.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/guava-12.0.1.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/guava-12.0.1-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Buildcraft"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
