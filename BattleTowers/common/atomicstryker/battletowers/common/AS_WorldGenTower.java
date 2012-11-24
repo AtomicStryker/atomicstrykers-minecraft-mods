@@ -378,14 +378,14 @@ public class AS_WorldGenTower extends WorldGenerator
                 floor = 2;
             }
             // chest
-            TowerStageItemManager floorChestManager = maker.getTowerStageManagerForFloor(floor, random);
+            TowerStageItemManager floorChestManager = topFloor ? maker.getTowerStageManagerForFloor(10, random) : maker.getTowerStageManagerForFloor(floor, random);
             
             for(int chestlength = 0; chestlength < 2; chestlength++)
             {
                 world.setBlockAndMetadata(ix - chestlength, builderHeight + 7, kz + 3, Block.chest.blockID, 2);
                 TileEntityChest tileentitychest = new TileEntityChest();
                 world.setBlockTileEntity(ix - chestlength, builderHeight + 7, kz + 3, tileentitychest);
-                for(int j5 = 0; j5 < 3; j5++)
+                for(int attempt = 0; attempt < AS_BattleTowersCore.itemGenerateAttemptsPerFloor; attempt++)
                 {
                     ItemStack itemstack = floorChestManager.getStageItem(random);
                     if(itemstack != null)
@@ -567,40 +567,22 @@ public class AS_WorldGenTower extends WorldGenerator
 		{
 			case 0:
 			{
-				if(ModLoader.isModLoaded("mod_prefixskeletons"))
-				{
-					return "PrefixSkeleton";
-				}
-				else
-				{
-					return "Skeleton";
-				}
+				return "Skeleton";
 			}
 			case 1:
 			{
-				if(ModLoader.isModLoaded("mod_MoreCreepsAndWeirdos"))
-				{
-					return "Mummy";
-				}
-				else
-				{
-					return "Zombie";
-				}
+				return "Zombie";
 			}
 			case 2:
 			{
-				return "Zombie";
+				return "Spider";
 			}
 			case 3:
 			{
-				return "Spider";
+				return "CaveSpider";
 			}
-			case 4:
-			{
-				return "";
-			}
+			default:
+			    return "Zombie";
 		}
-		
-		return "";
     }
 }

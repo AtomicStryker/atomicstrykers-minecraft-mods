@@ -115,15 +115,23 @@ public class AS_TowerDestroyer
 	
 	private void createSFX(int i, int j, int k)
 	{
-		if (System.currentTimeMillis() > lastExplosionSoundTime + 4000L)
-		{
-			switch(world.rand.nextInt(4))
-			{
-				case 0: world.playSoundEffect(i, j, k, "random.fizz", 4F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F);
-				case 1: world.playSoundEffect(i, j, k, "towercrumble", 4F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F);
-			}
-			lastExplosionSoundTime = System.currentTimeMillis();
-		}
+	    if (System.currentTimeMillis() > lastExplosionSoundTime + 4000L)
+	    {
+	        switch(world.rand.nextInt(4))
+	        {
+    	        case 0:
+    	        {
+    	            world.playSoundEffect(i, j, k, "random.fizz", 4F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F);
+    	            break;
+    	        }
+    	        case 1:
+    	        {
+    	            world.playSoundEffect(i, j, k, "towercrumble", 4F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F);
+    	            break;
+    	        }
+	        }
+	        lastExplosionSoundTime = System.currentTimeMillis();
+	    }
 		
 		double d = (float)i + world.rand.nextFloat();
 		double d1 = (float)j + world.rand.nextFloat();
@@ -143,10 +151,26 @@ public class AS_TowerDestroyer
 		
 		switch(world.rand.nextInt(4))
 		{
-			case 0: world.spawnParticle("explode", (d + i * 1.0D) / 2D, (d1 + j * 1.0D) / 2D, (d2 + k * 1.0D) / 2D, d3, d4, d5);
-			case 1: world.spawnParticle("smoke", d, d1, d2, d3, d4, d5);
-			case 2: world.spawnParticle("lava", d, d1, d2, 0.0D, 0.0D, 0.0D);
-			case 4: world.spawnParticle("largesmoke", (double)i + Math.random(), (double)j + 1.2D, (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
+    		case 0:
+    		{
+    		    world.spawnParticle("explode", (d + i * 1.0D) / 2D, (d1 + j * 1.0D) / 2D, (d2 + k * 1.0D) / 2D, d3, d4, d5);
+    		    break;
+    		}
+    		case 1:
+    		{
+    		    world.spawnParticle("smoke", d, d1, d2, d3, d4, d5);
+    		    break;
+    		}
+    		case 2:
+    		{
+    		    world.spawnParticle("lava", d, d1, d2, 0.0D, 0.0D, 0.0D);
+    		    break;
+    		}
+    		case 4:
+    		{
+    		    world.spawnParticle("largesmoke", (double)i + Math.random(), (double)j + 1.2D, (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
+    		    break;
+    		}
 		}
 	}
 }

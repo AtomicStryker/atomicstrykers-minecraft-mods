@@ -16,13 +16,7 @@ import net.minecraft.src.World;
 
 public class AS_EntityGolemFireball extends Entity
 {
-    private int xTile;
-    private int yTile;
-    private int zTile;
-    private int inTile;
 	private boolean wasDeflected;
-    private boolean inGround;
-    public int shake;
     public EntityLiving shooterEntity;
     public double accelerationX;
     public double accelerationY;
@@ -31,12 +25,6 @@ public class AS_EntityGolemFireball extends Entity
     public AS_EntityGolemFireball(World world)
     {
         super(world);
-        xTile = -1;
-        yTile = -1;
-        zTile = -1;
-        inTile = 0;
-        inGround = false;
-        shake = 0;
         setSize(0.3F, 0.3F);
 		wasDeflected = false;
     }
@@ -45,43 +33,21 @@ public class AS_EntityGolemFireball extends Entity
     protected void entityInit()
     {
     }
-
-    public AS_EntityGolemFireball(World world, double X, double Y, double Z)
-    {
-        super(world);
-        inTile = 0;
-        inGround = false;
-        shake = 0;
-        setSize(0.3F, 0.3F);
-        yOffset = 0.0F;
-        motionX = motionY = motionZ = 0.0D;
-        this.setPosition(X, Y, Z);
-		wasDeflected = false;
-    }
 	
     public AS_EntityGolemFireball(World world, EntityLiving entityliving, double diffX, double diffY, double diffZ)
     {
-        super(world);
-        xTile = -1;
-        yTile = -1;
-        zTile = -1;
-        inTile = 0;
-        inGround = false;
-        shake = 0;
+        this(world);
+        
         shooterEntity = entityliving;
-        setSize(0.3F, 0.3F);
-        //setLocationAndAngles(entityliving.posX, entityliving.posY, entityliving.posZ, entityliving.rotationYaw, entityliving.rotationPitch);
-        setPosition(posX, posY, posZ);
         yOffset = 0.0F;
         motionX = motionY = motionZ = 0.0D;
-        diffX += rand.nextGaussian() * 0.40000000000000002D;
-        diffY += rand.nextGaussian() * 0.40000000000000002D;
-        diffZ += rand.nextGaussian() * 0.40000000000000002D;
+        diffX += rand.nextGaussian() * 0.4D;
+        diffY += rand.nextGaussian() * 0.4D;
+        diffZ += rand.nextGaussian() * 0.4D;
         double targetDistance = MathHelper.sqrt_double(diffX * diffX + diffY * diffY + diffZ * diffZ);
-        accelerationX = (diffX / targetDistance) * 0.10000000000000001D;
-        accelerationY = (diffY / targetDistance) * 0.10000000000000001D;
-        accelerationZ = (diffZ / targetDistance) * 0.10000000000000001D;
-		wasDeflected = false;
+        accelerationX = (diffX / targetDistance) * 0.1D;
+        accelerationY = (diffY / targetDistance) * 0.1D;
+        accelerationZ = (diffZ / targetDistance) * 0.1D;
     }
 
     @Override
@@ -89,74 +55,51 @@ public class AS_EntityGolemFireball extends Entity
     {
         super.onUpdate();
         this.setFire(1);
-        if(shake > 0)
+        
+        Vec3 curVec = Vec3.createVectorHelper(posX, posY, posZ);
+        Vec3 nextVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        MovingObjectPosition collisionPosition = worldObj.rayTraceBlocks(curVec, nextVec);
+        curVec = Vec3.createVectorHelper(posX, posY, posZ);
+        nextVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        if(collisionPosition != null)
         {
-            shake--;
+            nextVec = Vec3.createVectorHelper(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
-        if(inGround)
-        {
-            int i = worldObj.getBlockId(xTile, yTile, zTile);
-            if(i != inTile)
-            {
-                inGround = false;
-                motionX *= rand.nextFloat() * 0.2F;
-                motionY *= rand.nextFloat() * 0.2F;
-                motionZ *= rand.nextFloat() * 0.2F;
-            }
-			else
-            {
-                if(ticksExisted >= 1200)
-                {
-                    setDead();
-                }
-                return;
-            }
-        }
-        Vec3 vec3d = Vec3.createVectorHelper(posX, posY, posZ);
-        Vec3 vec3d1 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
-        MovingObjectPosition movingobjectposition = worldObj.rayTraceBlocks(vec3d, vec3d1);
-        vec3d = Vec3.createVectorHelper(posX, posY, posZ);
-        vec3d1 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
-        if(movingobjectposition != null)
-        {
-            vec3d1 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
-        }
-        Entity entity = null;
+        Entity hitEntity = null;
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
-        double d = 0.0D;
-        for(int j = 0; j < list.size(); j++)
+        double minDist = 0.0D;
+        for(int index = 0; index < list.size(); index++)
         {
-            Entity entity1 = (Entity)list.get(j);
-            if(!entity1.canBeCollidedWith() || (entity1 == shooterEntity && ticksExisted < 25 && !wasDeflected))
+            Entity ent = (Entity)list.get(index);
+            if(!ent.canBeCollidedWith() || (ent == shooterEntity && ticksExisted < 25 && !wasDeflected))
             {
                 continue;
             }
-            float f2 = 0.3F;
-            AxisAlignedBB axisalignedbb = entity1.boundingBox.expand(f2, f2, f2);
-            MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(vec3d, vec3d1);
-            if(movingobjectposition1 == null)
+            AxisAlignedBB axisalignedbb = ent.boundingBox.expand( 0.3F,  0.3F,  0.3F);
+            MovingObjectPosition entCollision = axisalignedbb.calculateIntercept(curVec, nextVec);
+            if(entCollision == null)
             {
                 continue;
             }
-            double d1 = vec3d.distanceTo(movingobjectposition1.hitVec);
-            if(d1 < d || d == 0.0D)
+            double distToCollision = curVec.distanceTo(entCollision.hitVec);
+            if(distToCollision < minDist || minDist == 0.0D)
             {
-                entity = entity1;
-                d = d1;
+                hitEntity = ent;
+                minDist = distToCollision;
             }
         }
 
-        if(entity != null)
+        if(hitEntity != null)
         {
-            movingobjectposition = new MovingObjectPosition(entity);
+            collisionPosition = new MovingObjectPosition(hitEntity);
         }
-        if(movingobjectposition != null)
+        if(collisionPosition != null)
         {
             if(!worldObj.isRemote)
             {
-                if(movingobjectposition.entityHit != null)
+                if(collisionPosition.entityHit != null)
                 {
-                    if(!movingobjectposition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity), 0));
+                    if(!collisionPosition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity), 0));
                 }
                 worldObj.newExplosion(null, posX, posY, posZ, 1.0F, true, true);
             }
@@ -195,28 +138,6 @@ public class AS_EntityGolemFireball extends Entity
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbttagcompound)
-    {
-        nbttagcompound.setShort("xTile", (short)xTile);
-        nbttagcompound.setShort("yTile", (short)yTile);
-        nbttagcompound.setShort("zTile", (short)zTile);
-        nbttagcompound.setByte("inTile", (byte)inTile);
-        nbttagcompound.setByte("shake", (byte)shake);
-        nbttagcompound.setByte("inGround", (byte)(inGround ? 1 : 0));
-    }
-
-    @Override
-    public void readEntityFromNBT(NBTTagCompound nbttagcompound)
-    {
-        xTile = nbttagcompound.getShort("xTile");
-        yTile = nbttagcompound.getShort("yTile");
-        zTile = nbttagcompound.getShort("zTile");
-        inTile = nbttagcompound.getByte("inTile") & 0xff;
-        shake = nbttagcompound.getByte("shake") & 0xff;
-        inGround = nbttagcompound.getByte("inGround") == 1;
-    }
-
-    @Override
     public boolean canBeCollidedWith()
     {
         return true;
@@ -241,9 +162,9 @@ public class AS_EntityGolemFireball extends Entity
                 motionX = vec3d.xCoord;
                 motionY = vec3d.yCoord;
                 motionZ = vec3d.zCoord;
-                accelerationX = motionX * 0.10000000000000001D;
-                accelerationY = motionY * 0.10000000000000001D;
-                accelerationZ = motionZ * 0.10000000000000001D;
+                accelerationX = motionX * 0.1D;
+                accelerationY = motionY * 0.1D;
+                accelerationZ = motionZ * 0.1D;
 				
 				wasDeflected = true;
             }
@@ -253,5 +174,17 @@ public class AS_EntityGolemFireball extends Entity
         {
             return false;
         }
+    }
+
+    @Override
+    protected void readEntityFromNBT(NBTTagCompound var1)
+    {
+        super.readFromNBT(var1);
+    }
+
+    @Override
+    protected void writeEntityToNBT(NBTTagCompound var1)
+    {
+        super.writeToNBT(var1);
     }
 }

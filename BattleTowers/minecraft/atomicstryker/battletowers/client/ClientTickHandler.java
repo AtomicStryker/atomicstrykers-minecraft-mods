@@ -54,8 +54,8 @@ public class ClientTickHandler implements ITickHandler
                     {
                         AS_EntityGolem golem = (AS_EntityGolem) ents.get(i);
                         
-                            Object[] objArray = { golem.entityId };
-                            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_BT", 2, objArray));
+                        Object[] objArray = { golem.entityId };
+                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_BT", 2, objArray));
                         
                         mc.displayGuiScreen(null);
                         break;
@@ -92,7 +92,7 @@ public class ClientTickHandler implements ITickHandler
                             float progress = 0;
                             try
                             {
-                                progressHack = ReflectionHelper.getPrivateValue(PlayerControllerMP.class, mc.playerController, 5);
+                                progressHack = ReflectionHelper.getPrivateValue(PlayerControllerMP.class, mc.playerController, 6);
                                 progress = (Float) progressHack;
                             }
                             catch (Exception e)
@@ -112,6 +112,7 @@ public class ClientTickHandler implements ITickHandler
                                 else
                                 {
                                     golem.setAwake();
+                                    golem.setTarget(mc.thePlayer);
                                 }
                             }
 

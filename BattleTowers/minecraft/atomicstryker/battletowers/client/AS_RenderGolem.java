@@ -17,13 +17,13 @@ public class AS_RenderGolem extends RenderBiped
         setRenderPassModel(new ModelBiped());
     }
 
-    protected void func_15310_scalegolem(AS_EntityGolem entitygolem, float f)
+    protected void rescaleGolem(AS_EntityGolem entitygolem, float f)
     {
         GL11.glScalef(2.0F, 2.0F, 2.0F);
     }
 
     protected void preRenderCallback(EntityLiving entityliving, float f)
     {
-        func_15310_scalegolem((AS_EntityGolem)entityliving, f);
+        rescaleGolem((AS_EntityGolem)entityliving, f);
     }
 }

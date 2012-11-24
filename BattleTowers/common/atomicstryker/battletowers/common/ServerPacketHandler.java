@@ -45,8 +45,10 @@ public class ServerPacketHandler implements IPacketHandler
             if (golem != null
             && golem instanceof AS_EntityGolem)
             {
+                AS_EntityGolem g = (AS_EntityGolem) golem;
                 System.out.println("Found BattleTower chest golem, waking!");
-                ((AS_EntityGolem)golem).setAwake();
+                g.setAwake();
+                g.setTarget((EntityPlayer) player);
             }
         }
     }

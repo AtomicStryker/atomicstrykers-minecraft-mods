@@ -1,3 +1,8 @@
+1.2.4
+- rewritten some parts of golem AI, found the crashing sound and removed it
+- added Cave Spiders to Battletowers Mobspawner List (MWAHAHAHA)
+- made Item spawn attempts per floor configurable (was 3)
+
 1.2.3
 - update to Minecraft 1.4.4
 
