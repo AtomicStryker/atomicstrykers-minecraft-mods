@@ -26,7 +26,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             if (attemptToSpawnTower(world, random, xActual, zActual))
             {
-                System.out.println("Battle Tower spawned at [ "+xActual+" | "+zActual+" ]");
+                //System.out.println("Battle Tower spawned at [ "+xActual+" | "+zActual+" ]");
             }
             else
             {
@@ -63,6 +63,10 @@ public class WorldGenHandler implements IWorldGenerator
         if (floor >= AS_BattleTowersCore.floorItemManagers.length)
         {
             floor = AS_BattleTowersCore.floorItemManagers.length-1;
+        }
+        if (floor < 1)
+        {
+            floor = 1;
         }
         
         return new TowerStageItemManager(AS_BattleTowersCore.floorItemManagers[floor]);

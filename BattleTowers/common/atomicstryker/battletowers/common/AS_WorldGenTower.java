@@ -19,6 +19,7 @@ public class AS_WorldGenTower extends WorldGenerator
     private int floor;
 	private int floorIterator;
     private boolean topFloor;
+    private boolean underground;
 	
     private int candidates[][] = {
         {
@@ -155,12 +156,17 @@ public class AS_WorldGenTower extends WorldGenerator
 		int towerLightBlockID = towerChosen.GetLightBlockID();
 		int towerFloorBlockID = towerChosen.GetFloorBlockID();
 		
+		underground = world.rand.nextInt(100)+1 < AS_BattleTowersCore.chanceTowerIsUnderGround;
+		
+		int startingHeight = underground ? jy-70 : jy - 6; // TODO make sure that works
+		int maximumHeight = underground ? jy+7 : 120;
+		
         floor = 1;
         topFloor = false;
-		int builderHeight = jy - 6;
-        for(; builderHeight < 120; builderHeight += 7) // builderHeight jumps floors
+		int builderHeight = startingHeight;
+        for(; builderHeight < maximumHeight; builderHeight += 7) // builderHeight jumps floors
         {
-            if(builderHeight + 7 >= 120)
+            if(builderHeight + 7 >= maximumHeight)
             {
                 topFloor = true;
             }
@@ -198,7 +204,10 @@ public class AS_WorldGenTower extends WorldGenerator
                             {
                                 if(xIterator == (floorIterator + 1) % 7 - 3) // stairwell!!
                                 {
-                                    world.setBlock(iCurrent, jCurrent, zCurrent, towerChosen.GetStairBlockID());
+                                    if (!(underground && floor == 1))
+                                    {
+                                        world.setBlock(iCurrent, jCurrent, zCurrent, towerChosen.GetStairBlockID());  // TODO underground towers, remove first stairs?
+                                    }
                                     if(floorIterator == 5)
                                     {
                                         world.setBlock(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID);
@@ -262,7 +271,7 @@ public class AS_WorldGenTower extends WorldGenerator
                         {
                             if(xIterator == -7 || xIterator == 6)
                             {
-                                if(floorIterator < 0 || floorIterator > 3 || xIterator != -7 && xIterator != 6 || zIterator != -1 && zIterator != 0) // wall, short of window
+                                if(floorIterator < 0 || floorIterator > 3 || ((xIterator != -7 && xIterator != 6) || underground) || zIterator != -1 && zIterator != 0) // wall, short of window
                                 {
                                     BuildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID);
                                 }
@@ -350,7 +359,7 @@ public class AS_WorldGenTower extends WorldGenerator
                 world.setBlock(ix + 3, builderHeight, kz - 5, towerWallBlockID);
                 world.setBlock(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID);
             }
-            if(topFloor)
+            if((!underground && topFloor) || (underground && floor == 1))  // TODO underground towers
             {
                 double d = ix;
                 double d1 = builderHeight + 6;
@@ -364,10 +373,17 @@ public class AS_WorldGenTower extends WorldGenerator
             {
                 world.setBlockWithNotify(ix + 2, builderHeight + 6, kz + 2, Block.mobSpawner.blockID);
                 TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix + 2, builderHeight + 6, kz + 2);
-                tileentitymobspawner.setMobID(getMobType(random));
+                if (tileentitymobspawner != null)
+                {
+                    tileentitymobspawner.setMobID(getMobType(random));
+                }
+                
                 world.setBlockWithNotify(ix - 3, builderHeight + 6, kz + 2, Block.mobSpawner.blockID);
-                TileEntityMobSpawner tileentitymobspawner1 = (TileEntityMobSpawner)world.getBlockTileEntity(ix - 3, builderHeight + 6, kz + 2);
-                tileentitymobspawner1.setMobID(getMobType(random));
+                tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix - 3, builderHeight + 6, kz + 2);
+                if (tileentitymobspawner != null)
+                {
+                    tileentitymobspawner.setMobID(getMobType(random));
+                }
             }
             // chest petal
             world.setBlock(ix, builderHeight + 6, kz + 3, towerFloorBlockID);
@@ -377,15 +393,23 @@ public class AS_WorldGenTower extends WorldGenerator
             {
                 floor = 2;
             }
-            // chest
-            TowerStageItemManager floorChestManager = topFloor ? maker.getTowerStageManagerForFloor(10, random) : maker.getTowerStageManagerForFloor(floor, random);
+            // chest  // TODO underground towers
+            TowerStageItemManager floorChestManager = null;
+            if (!underground)
+            {
+                floorChestManager = topFloor ? maker.getTowerStageManagerForFloor(10, random) : maker.getTowerStageManagerForFloor(floor, random);
+            }
+            else
+            {
+                floorChestManager = floor == 1 ? maker.getTowerStageManagerForFloor(10, random) : maker.getTowerStageManagerForFloor(Math.abs(11-floor), random);
+            }
             
             for(int chestlength = 0; chestlength < 2; chestlength++)
             {
                 world.setBlockAndMetadata(ix - chestlength, builderHeight + 7, kz + 3, Block.chest.blockID, 2);
                 TileEntityChest tileentitychest = new TileEntityChest();
                 world.setBlockTileEntity(ix - chestlength, builderHeight + 7, kz + 3, tileentitychest);
-                for(int attempt = 0; attempt < AS_BattleTowersCore.itemGenerateAttemptsPerFloor; attempt++)
+                for(int attempt = 0; attempt < (underground ? AS_BattleTowersCore.itemGenerateAttemptsPerFloor*2 : AS_BattleTowersCore.itemGenerateAttemptsPerFloor); attempt++)
                 {
                     ItemStack itemstack = floorChestManager.getStageItem(random);
                     if(itemstack != null)
@@ -431,6 +455,8 @@ public class AS_WorldGenTower extends WorldGenerator
             floor++;
         }
 
+        System.out.println("Battle Tower spawned at [ "+ix+" | "+kz+" ], underground: "+underground);
+        
         return true;
     }
 	
@@ -452,16 +478,15 @@ public class AS_WorldGenTower extends WorldGenerator
 			FillTowerBaseToGround(world, i, j, k, towerWallBlockID);
 		}
 	}
-	
-	private void FillTowerBaseToGround(World world, int i, int j, int k, int blocktype)
+
+    private void FillTowerBaseToGround(World world, int i, int j, int k, int blocktype)
 	{
 		int x = j-1;
-		do
+		while(x>0 && !IsBuildableBlockID(world.getBlockId(i, x, k)))
 		{
 			world.setBlock(i, x, k, blocktype);
 			x--;
 		}
-		while(x>0 && !IsBuildableBlockID(world.getBlockId(i, x, k)));
 	}
 	
 	private int GetSurfaceBlockHeight(World world, int x, int z)

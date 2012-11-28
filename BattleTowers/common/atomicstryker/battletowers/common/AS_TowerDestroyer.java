@@ -38,7 +38,7 @@ public class AS_TowerDestroyer
 	
 	public void update()
 	{
-	    if (deleteMe)
+	    if (deleteMe || yCoord() < 70)
 	    {
 	        return;
 	    }

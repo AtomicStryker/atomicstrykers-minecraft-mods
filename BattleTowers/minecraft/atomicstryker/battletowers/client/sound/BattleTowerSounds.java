@@ -13,7 +13,8 @@ public class BattleTowerSounds
     private final String[] soundFiles = {
             "golem.ogg",
             "golemawaken.ogg",
-            "golemcharge.ogg",
+            "golemcharge1.ogg",
+            "golemcharge2.ogg",
             "golemdeath.ogg",
             "golemhurt1.ogg",
             "golemhurt2.ogg",

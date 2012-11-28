@@ -115,7 +115,7 @@
 		<!-- Copy mcmod.info and changelog.txt into distributable -->
 		<copy file="./mcmod.info" todir="${build.dir}" />
 		<copy file="./changelog.txt" todir="${build.dir}" />
-
+		
 		<!-- Copy non-code files in client source folder (eg textures) into distributable -->
 		<copy todir="${build.dir}">
 			<fileset dir="${client.src.dir}" excludes="**/*.java" />
@@ -154,17 +154,6 @@
 	<target name="builddownload" description="Build the final download Zip archive" depends ="include-updater">
 		<delete dir="${download.dir}" />
 		<mkdir dir="${temp.dir}" />
-
-		<!-- Copy source code and files into download -->
-		<mkdir dir="${temp.dir}/src" />
-		<mkdir dir="${temp.dir}/src/common" />
-		<mkdir dir="${temp.dir}/src/minecraft" />
-		<copy todir="${temp.dir}/src/common">
-			<fileset dir="${common.src.dir}" />
-		</copy>
-		<copy todir="${temp.dir}/src/minecraft">
-			<fileset dir="${client.src.dir}" />
-		</copy>
 
 		<!-- Copy any additional files into download package -->
 		<copy todir="${temp.dir}">

@@ -37,6 +37,7 @@ public class AS_BattleTowersCore
 	public static double minDistanceBetweenTowers;
 	public static int towerDestroyerEnabled;
 	public static int itemGenerateAttemptsPerFloor;
+	public static int chanceTowerIsUnderGround;
 	
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
     public static CommonProxy proxy;
@@ -81,6 +82,7 @@ public class AS_BattleTowersCore
         minDistanceBetweenTowers = Integer.parseInt(configuration.get("Main Options", "Minimum Distance between 2 BattleTowers", 196).value);
         towerDestroyerEnabled = Integer.parseInt(configuration.get("Main Options", "Tower Destroying Enabled", 1).value);
         itemGenerateAttemptsPerFloor = configuration.get("BattleTower Chest Items", "Item Generations per Floot", "7").getInt();
+        chanceTowerIsUnderGround = configuration.get("Main Options", "chanceTowerIsUnderGround", 15, "Chance in percent a Battletower is underground.").getInt();
         
         // 280-0-50-6-5 sticks
         // 295-0-50-3-5 seeds
