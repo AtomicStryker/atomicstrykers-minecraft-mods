@@ -25,6 +25,7 @@ public class BlockRailPassengerPickup extends BlockRail
 		setStepSound(Block.soundMetalFootstep);
 	}
 
+	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity)
 	{
 		if(world.isRemote || !(entity instanceof EntityMinecart))

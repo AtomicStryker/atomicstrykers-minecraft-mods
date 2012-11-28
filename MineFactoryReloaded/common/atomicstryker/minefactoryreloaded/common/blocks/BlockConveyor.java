@@ -176,6 +176,7 @@ public class BlockConveyor extends BlockContainer
 		}
 	}
 	
+	@Override
 	public int getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l)
 	{
 		TileEntity te = iblockaccess.getBlockTileEntity(i, j, k);
@@ -222,6 +223,7 @@ public class BlockConveyor extends BlockContainer
 		return AxisAlignedBB.getBoundingBox((float)i + f, j, (float)k + f1, (float)(i + 1) - f, (float)j + 0.1F, (float)(k + 1) - f1);
 	}
 
+	@Override
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int i, int j, int k)
 	{
 		int l = world.getBlockMetadata(i, j, k);

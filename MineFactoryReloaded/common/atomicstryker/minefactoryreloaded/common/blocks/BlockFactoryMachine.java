@@ -41,6 +41,7 @@ public class BlockFactoryMachine extends BlockContainer implements IPipeConnecti
 		setStepSound(soundMetalFootstep);
 	}
 
+	@Override
     public int getBlockTexture(IBlockAccess iblockaccess, int x, int y, int z, int side)
     {
     	int md = iblockaccess.getBlockMetadata(x, y, z);
@@ -52,6 +53,7 @@ public class BlockFactoryMachine extends BlockContainer implements IPipeConnecti
     	return textures[md][side];
     }
 
+	@Override
     public int getBlockTextureFromSideAndMetadata(int i, int j)
     {
         return textures[j][i];
