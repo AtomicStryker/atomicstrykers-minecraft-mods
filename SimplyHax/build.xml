@@ -3,7 +3,7 @@
 
 
      Simply Hax
-     Why get huge cheat suites if all you want are 2 things
+     Flying, Sprinting, Cave Vision, without base edits.
 
      AtomicStryker
      ====================================================================== -->
@@ -13,7 +13,7 @@
 	<property name="author" value="AtomicStryker" />
 
 	<!-- Choose ".zip" or ".jar" as the dist file extension -->
-	<property name="filetype" value="zip" />
+	<property name="filetype" value="jar" />
 
 	<!-- MCP directory relative to this file -->
 	<property name="mcp.dir" location="./../../mcp" />
@@ -36,19 +36,19 @@
 	<!-- Update to point to your Python executable. Example: /usr/bin/python -->
 	<!-- The following location is relative, for Windows: -->
 	<property name="python" location="${mcp.dir}/runtime/bin/python/python_mcp.exe" />
-	
+
 	<!-- This method fetches the mc version we're building for from the properties file -->
-    <loadfile srcfile="./../properties" property="version">
-             <filterchain>
-                     <linecontains>
-                             <contains value="mcversion="/>
-                     </linecontains>
-                     <tokenfilter>
-                             <replacestring from="mcversion=" to=""/>
-                     </tokenfilter>
-             </filterchain>
-     </loadfile>
-     <echo message="mcversion read from file: ${version}"/>
+	<loadfile srcfile="./../properties" property="version">
+		<filterchain>
+			<linecontains>
+				<contains value="mcversion=" />
+			</linecontains>
+			<tokenfilter>
+				<replacestring from="mcversion=" to="" />
+			</tokenfilter>
+		</filterchain>
+	</loadfile>
+	<echo message="mcversion read from file: ${version}" />
 
 	<!-- This method deletes old folders and prepares fresh ones -->
 	<target name="init" description="Initialize build environment">
@@ -62,10 +62,10 @@
 		<mkdir dir="${dist.dir}" />
 	</target>
 
-	<!-- This method detects files in the source folders and copies them into the MCP source folders -->
+	<!-- This method detects sources in the source folders and copies them into the MCP source folders -->
 	<target name="mergesources" depends="init">
 		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
-			<fileset dir="${client.src.dir}"/>
+			<fileset dir="${client.src.dir}" includes="**/*.java" />
 		</copy>
 		<copy todir="${common.mcp.srcdir}" overwrite="true" verbose="true">
 			<fileset dir="${common.src.dir}" includes="**/*.java" />
@@ -111,44 +111,83 @@
 		<copy todir="${build.dir}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" excludes=".svn/**, *.txt" />
 		</copy>
-		
-		<!-- Copy mcmod.info and changelog.txt into distributable -->
+
+		<!-- Copy stuff into distributable -->
 		<copy file="./mcmod.info" todir="${build.dir}" />
 		<copy file="./changelog.txt" todir="${build.dir}" />
-		
+
 		<!-- Copy non-code files in client source folder (eg textures) into distributable -->
 		<copy todir="${build.dir}">
-			<fileset dir="${client.src.dir}" excludes="**/*.java"/>
+			<fileset dir="${client.src.dir}" excludes="**/*.java" />
 		</copy>
-		
-		<!-- Copy source code and files into distributable -->
-		<mkdir dir="${build.dir}/src"/>
-		<mkdir dir="${build.dir}/src/common"/>
-		<mkdir dir="${build.dir}/src/minecraft"/>
-		<copy todir="${build.dir}/src/common">
-			<fileset dir="${common.src.dir}"/>
-		</copy>
-		<copy todir="${build.dir}/src/minecraft">
-			<fileset dir="${client.src.dir}"/>
-		</copy>
-		
+
 	</target>
 
-	<target name="build" description="Perform all tasks for a build" depends="init, mergesources, recompile, reobfuscate, stage, jarzip, clean">
+	<target name="build" description="Perform all tasks for a build" depends="init, mergesources, recompile, reobfuscate, stage, jarzip, clean, builddownload">
 		<echo message="MCP Ant Build Completed!" />
 	</target>
 
 	<target name="jarzip" description="Jar (or zip) the project's dist output">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${ant.project.name}_${version}.${filetype}" duplicate="preserve" index="true" manifestencoding="UTF-8">
-			<manifest>
-				<attribute name="Built-By" value="a combination of MCP and cpw ant scripts" />
-				<attribute name="Implementation-Vendor" value="${author}" />
-				<attribute name="Implementation-Title" value="${ant.project.name}" />
-				<attribute name="Implementation-Version" value="${version}" />
-			</manifest>
+		<jar destfile="${dist.dir}/${ant.project.name}_${version}.${filetype}" duplicate="preserve" index="true" manifestencoding="UTF-8" manifest="./MANIFEST.MF">
 			<fileset dir="${build.dir}" />
 		</jar>
+	</target>
+
+	<!-- Directory name for the finished modfile, inside the downloadable archive -->
+	<property name="moddir" value="setup/coremods" />
+
+	<!-- Directory name for anything else to copy into the downloadable archive -->
+	<property name="resources.dir" location="./resources" />
+
+	<!-- Directory for the downloadable result, relative to this file -->
+	<property name="download.dir" location="./download" />
+
+	<!-- Directory for temp-packaging, relative to this file -->
+	<property name="temp.dir" location="./temp" />
+
+	<target name="builddownload" description="Build the final download Zip archive" depends="include-updater">
+		<delete dir="${download.dir}" />
+		<mkdir dir="${temp.dir}" />
+
+		<!-- Copy source code and files into download -->
+		<mkdir dir="${temp.dir}/src" />
+		<mkdir dir="${temp.dir}/src/common" />
+		<mkdir dir="${temp.dir}/src/minecraft" />
+		<copy todir="${temp.dir}/src/common">
+			<fileset dir="${common.src.dir}" />
+		</copy>
+		<copy todir="${temp.dir}/src/minecraft">
+			<fileset dir="${client.src.dir}" />
+		</copy>
+		
+		<!-- Copy any additional files into download package -->
+		<copy todir="${temp.dir}">
+			<fileset dir="${resources.dir}" />
+		</copy>
+
+		<!-- Copy mod file into appropriate place in download archive -->
+		<copy file="${dist.dir}/${ant.project.name}_${version}.${filetype}" todir="${temp.dir}/${moddir}" />
+
+		<mkdir dir="${download.dir}" />
+		<!-- Pack up temp folder to download archive -->
+		<zip destfile="${download.dir}/${ant.project.name}_${version}.zip">
+			<fileset dir="${temp.dir}" />
+		</zip>
+
+		<delete dir="${temp.dir}" />
+	</target>
+
+	<!-- Add Update Checker mod :3 -->
+	<property name="updaterloc" location="./../UpdateCheckerMod/dist/UpdateCheckerMod_${version}.zip" />
+
+	<target name="-check-use-file" unless="file.exists">
+		<available property="file.exists" file="${updaterloc}" />
+	</target>
+
+	<target name="include-updater" depends="-check-use-file" if="${file.exists}">
+		<echo message="updater found and included from: ${updaterloc}" />
+		<copy file="${updaterloc}" todir="${temp.dir}/${moddir}/../mods" />
 	</target>
 
 </project>

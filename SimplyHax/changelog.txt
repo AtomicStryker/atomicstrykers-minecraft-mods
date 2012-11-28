@@ -1,2 +1,5 @@
+1.4.5
+changed to be a FML Coremod to fix the damn falling bug
+
 1.4.4
 SimplyHax changelog, probably wont do much here.

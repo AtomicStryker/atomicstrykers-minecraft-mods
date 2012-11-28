@@ -33,7 +33,7 @@ public class SimplyHaxFlying
     private long lastTime;
 	private boolean buttonCD = false;
 	
-	private boolean isFlying = false;
+	private static boolean isFlying = false;
 	private boolean isSprinting = false;
 	
 	private static File configfile;
@@ -49,7 +49,7 @@ public class SimplyHaxFlying
 	private static float fovModifier = 20F;
 	
 	private float distanceWalkedModified;
-	private Minecraft mcinstance;
+	private static Minecraft mcinstance;
 	
 	private double modMotionX;
 	private double modMotionZ;
@@ -333,8 +333,6 @@ public class SimplyHaxFlying
 	private void MakeFly(EntityPlayerSP entityplayer)
 	{
 		entityplayer.distanceWalkedModified = distanceWalkedModified;	// fix the step sounds
-		entityplayer.fallDistance = 0F; // fix the falling
-		entityplayer.onGround = true; // because we say so!
 		
 		if (Keyboard.isKeyDown(ikeyupwards) && !IsMenuOpen())
 		{
@@ -357,6 +355,16 @@ public class SimplyHaxFlying
 				entityplayer.motionY = 0;
 			}
 		}
+	}
+	
+	public static void preMoveEntityPlayerSP()
+	{
+        if (isFlying)
+        {
+            mcinstance.thePlayer.motionY = 0;
+            mcinstance.thePlayer.fallDistance = 0F; // fix the falling
+            mcinstance.thePlayer.onGround = true; // because we say so!
+        }
 	}
 	
 	private double GetAbsSpeed(Entity ent)
