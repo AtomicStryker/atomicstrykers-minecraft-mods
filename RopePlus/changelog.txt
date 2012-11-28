@@ -1,3 +1,6 @@
+RopesPlus 1.2.5b
+- fixed small classcast problem with Explosive Arrows
+
 RopesPlus 1.2.5a
 - fixed tiny logical derp in Client Ticker
 

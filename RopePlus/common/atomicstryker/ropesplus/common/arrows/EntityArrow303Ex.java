@@ -58,7 +58,10 @@ public class EntityArrow303Ex extends EntityArrow303
             }
             
             // ((EntityLiving)ent).setArrowCountInEntity(((EntityLiving)ent).getArrowCountInEntity() + 1);
-            ((EntityLiving)ent).func_85034_r(((EntityLiving)ent).func_85035_bI() + 1);
+            if (ent instanceof EntityLiving)
+            {
+                ((EntityLiving)ent).func_85034_r(((EntityLiving)ent).func_85035_bI() + 1);
+            }
             setSize(0, 0);
         }
         return false;
