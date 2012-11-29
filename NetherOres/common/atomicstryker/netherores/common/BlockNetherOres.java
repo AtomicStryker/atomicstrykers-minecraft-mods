@@ -62,20 +62,31 @@ public class BlockNetherOres extends Block
 	@Override
 	public boolean removeBlockByPlayer(World world, EntityPlayer player, int i, int j, int k)
 	{
-		for(int n = 0; n < NetherOresCore.getExplosionChance(); n++)
-		{
-			int tx = i - 1 + world.rand.nextInt(3);
-			int ty = j - 1 + world.rand.nextInt(3);
-			int tz = k - 1 + world.rand.nextInt(3);
-			if(tx != i && ty != j && tz != k && world.getBlockId(tx, ty, tz) == this.blockID)
-			{
-				world.setBlockMetadataWithNotify(tx, ty, tz, world.getBlockMetadata(tx, ty, tz) | 0x08);
-		        world.scheduleBlockUpdate(tx, ty, tz, this.blockID, 75);
-		        NetherOresCore.causeFuseSoundAt(world, i, j, k);
-				break;
-			}
-		}
+	    checkExplosionChances(world, i, j, k);
 		return super.removeBlockByPlayer(world, player, i, j, k);
+	}
+	
+	@Override
+    public void onBlockDestroyedByExplosion(World world, int i, int j, int k)
+    {
+	    checkExplosionChances(world, i, j, k);
+    }
+	
+	private void checkExplosionChances(World world, int x, int y, int z)
+	{
+        for(int n = 0; n < NetherOresCore.getExplosionChance(); n++)
+        {
+            int tx = x - 1 + world.rand.nextInt(3);
+            int ty = y - 1 + world.rand.nextInt(3);
+            int tz = z - 1 + world.rand.nextInt(3);
+            if(tx != x && ty != y && tz != z && world.getBlockId(tx, ty, tz) == this.blockID)
+            {
+                world.setBlockMetadataWithNotify(tx, ty, tz, world.getBlockMetadata(tx, ty, tz) | 0x08);
+                world.scheduleBlockUpdate(tx, ty, tz, this.blockID, 75);
+                world.playSoundEffect(x+0.5D, y+0.5D, z+0.5D, "random.fuse", 1.0F, 1.0F);
+                break;
+            }
+        }
 	}
 
     public void randomDisplayTick(World world, int i, int j, int k, Random random)

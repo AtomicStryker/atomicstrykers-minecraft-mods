@@ -12,7 +12,6 @@ import net.minecraft.src.FurnaceRecipes;
 import net.minecraft.src.IChunkProvider;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.World;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,7 +19,6 @@ import net.minecraftforge.common.Property;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreDictionary.OreRegisterEvent;
-import atomicstryker.netherores.client.NetherOresClient;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -29,14 +27,11 @@ import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "NetherOres", name = "Nether Ores", version = "1.4.4R1.2.7", dependencies = "after:IC2")
+@Mod(modid = "NetherOres", name = "Nether Ores", version = "1.4.4R1.2.9", dependencies = "after:IC2")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
-clientPacketHandlerSpec = @SidedPacketHandler(channels = { "NetherOres" }, packetHandler = NetherOresClient.class),
 connectionHandler = ConnectionHandler.class)
 public class NetherOresCore
 {
@@ -56,6 +51,7 @@ public class NetherOresCore
     public void preInit(FMLPreInitializationEvent evt)
     {
         loadConfig(evt.getSuggestedConfigurationFile());
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Init
@@ -64,8 +60,6 @@ public class NetherOresCore
         blockNetherOres = new BlockNetherOres(Integer.parseInt(netherOreBlockId.value), 0);
 
         GameRegistry.registerBlock(blockNetherOres, ItemNetherOre.class);
-
-        MinecraftForge.EVENT_BUS.register(this);
         GameRegistry.registerWorldGenerator(new WorldGenHandler());
 
         MinecraftForge.setBlockHarvestLevel(blockNetherOres, 0, "pickaxe", 1);
@@ -92,7 +86,17 @@ public class NetherOresCore
         LanguageRegistry.instance().addName(new ItemStack(NetherOresCore.blockNetherOres, 1, 5), "Nether Redstone Ore");
         LanguageRegistry.instance().addName(new ItemStack(NetherOresCore.blockNetherOres, 1, 6), "Nether Copper Ore");
         LanguageRegistry.instance().addName(new ItemStack(NetherOresCore.blockNetherOres, 1, 7), "Nether Tin Ore");
-
+        
+        if (!foundCopper && !OreDictionary.getOres("oreCopper").isEmpty())
+        {
+            registerNetherCopper(OreDictionary.getOres("oreCopper").get(0));
+        }
+        
+        if (!foundTin && !OreDictionary.getOres("oreTin").isEmpty())
+        {
+            registerNetherTin(OreDictionary.getOres("oreTin").get(0));
+        }
+        
         if (Boolean.parseBoolean(enableMaceratorRecipes.value) == true && Loader.isModLoaded("IC2"))
         {
             ItemStack goldDust = Items.getItem("goldDust");
@@ -207,37 +211,42 @@ public class NetherOresCore
         }
     }
 
-    public static void causeFuseSoundAt(World world, int i, int j, int k)
-    {
-        Object[] input = {i, j, k};
-        Packet250CustomPayload packet = ForgePacketWrapper.createPacket("NetherOres", 1, input);
-        PacketDispatcher.sendPacketToAllAround(i, j, k, 30D, world.getWorldInfo().getDimension(), packet);
-    }
-
     @ForgeSubscribe
     public void registerOreEvent(OreRegisterEvent event)
     {
-        if (event.Name == "oreCopper" && !foundCopper)
+        if (event.Name.equals("oreCopper") && !foundCopper)
         {
-            foundCopper = true;
-            ItemStack smeltedOre = event.Ore.copy();
-            smeltedOre.stackSize = 1;
-            MinecraftForge.setBlockHarvestLevel(blockNetherOres, 6, "pickaxe", 1);
-            if (Boolean.parseBoolean(enableStandardFurnaceRecipes.value) == true)
-            {
-                FurnaceRecipes.smelting().addSmelting(blockNetherOres.blockID, 6, smeltedOre, 1f);
-            }
+            registerNetherCopper(event.Ore.copy());
         }
-        if (event.Name == "oreTin" && !foundTin)
+        else if (event.Name.equals("oreTin") && !foundTin)
         {
-            foundTin = true;
-            ItemStack smeltedOre = event.Ore.copy();
-            smeltedOre.stackSize = 1;
-            FurnaceRecipes.smelting().addSmelting(blockNetherOres.blockID, 7, smeltedOre, 1f);
-            if (Boolean.parseBoolean(enableStandardFurnaceRecipes.value) == true)
-            {
-                MinecraftForge.setBlockHarvestLevel(blockNetherOres, 7, "pickaxe", 1);
-            }
+            registerNetherTin(event.Ore.copy());
+        }
+    }
+    
+    private void registerNetherCopper(ItemStack smeltedOre)
+    {
+        System.out.println("Nether Ores found Copper Ore registration! Activating Nether Copper!");
+        
+        foundCopper = true;
+        smeltedOre.stackSize = 1;
+        MinecraftForge.setBlockHarvestLevel(blockNetherOres, 6, "pickaxe", 1);
+        if (Boolean.parseBoolean(enableStandardFurnaceRecipes.value) == true)
+        {
+            FurnaceRecipes.smelting().addSmelting(blockNetherOres.blockID, 6, smeltedOre, 1f);
+        }
+    }
+    
+    private void registerNetherTin(ItemStack smeltedOre)
+    {
+        System.out.println("Nether Ores found Tin Ore registration! Activating Nether Tin!");
+        
+        foundTin = true;
+        smeltedOre.stackSize = 1;
+        FurnaceRecipes.smelting().addSmelting(blockNetherOres.blockID, 7, smeltedOre, 1f);
+        if (Boolean.parseBoolean(enableStandardFurnaceRecipes.value) == true)
+        {
+            MinecraftForge.setBlockHarvestLevel(blockNetherOres, 7, "pickaxe", 1);
         }
     }
 
