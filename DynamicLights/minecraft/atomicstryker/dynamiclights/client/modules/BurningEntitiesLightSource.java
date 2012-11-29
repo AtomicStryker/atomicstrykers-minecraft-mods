@@ -35,7 +35,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
  * Burning Entites can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.2", dependencies = "required-after:DynamicLights")
 public class BurningEntitiesLightSource
 {
     private Minecraft mcinstance;
@@ -153,7 +153,7 @@ public class BurningEntitiesLightSource
                     if (!found) // wasnt already tracked
                     {
                         // make new, tick, put in new list
-                        adapter = new EntityLightAdapter((EntityLiving) ent);
+                        adapter = new EntityLightAdapter(ent);
                         adapter.onTick();
                         newList.add(adapter);
                     }
