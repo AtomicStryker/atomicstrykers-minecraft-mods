@@ -68,8 +68,11 @@ public class MultiMineServer
      * @param z coordinate of Block
      * @param dimension of Block and Player
      */
-    public void onClientSentPartialBlockPacket(EntityPlayer player, int x, int y, int z, int dimension)
+    public void onClientSentPartialBlockPacket(EntityPlayer player, int x, int y, int z, int dim)
     {
+        int dimension = player.dimension;
+        //System.out.println("multi mine client sent packet from dimension "+dim+", server says its actually "+dimension);
+        
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
         
         if (partiallyMinedBlocks == null)
@@ -99,7 +102,7 @@ public class MultiMineServer
                     // and if its done, destroy the world block
                     player.worldObj.destroyBlockInWorldPartially(player.entityId, x, y, z, -1);
                     int blockID = player.worldObj.getBlockId(x, y, z);
-                    PacketDispatcher.sendPacketToAllAround(x, y, z, 30D, player.worldObj.getWorldInfo().getDimension(), new Packet53BlockChange(x, y, z, player.worldObj));
+                    PacketDispatcher.sendPacketToAllAround(x, y, z, 30D, dimension, new Packet53BlockChange(x, y, z, player.worldObj));
                     
                     Block block = Block.blocksList[blockID];
                     if (block != null)
@@ -109,7 +112,11 @@ public class MultiMineServer
                         {
                             block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
                             onBlockMineFinishedDamagePlayerItem(player, blockID, x, y, z);
-                            block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                            
+                            if (block.canHarvestBlock(player, meta))
+                            {
+                                block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                            }
                         }
                     }
                     
@@ -215,6 +222,7 @@ public class MultiMineServer
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block)
     {
         Object[] toSend = {block.getX(), block.getY(), block.getZ(), block.getProgress()};
+        System.out.println("Server sending partial Block Update ["+block.getX()+"|"+block.getY()+"|"+block.getZ()+"] in dimension "+block.getDimension());
         PacketDispatcher.sendPacketToAllAround(block.getX(), block.getY(), block.getZ(), 30D, block.getDimension(), ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
     }
     

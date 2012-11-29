@@ -1,3 +1,9 @@
+1.2.2
+- fixed issue with dimension Ids preventing it from working 100% with Mystcraft, it does now.
+
+1.2.1
+- added vanilla harvest check to MultiMine, you can no longer mine successfully (drops) without the appropriate tool
+
 1.2.0
 - updated to Minecraft 1.4.4
 - fixed any Block Breaking happening showing as damaging your Item on your screen, now only your Blocks should show that
