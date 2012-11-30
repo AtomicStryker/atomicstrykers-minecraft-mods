@@ -101,6 +101,13 @@ public abstract class TileEntityLiquidFab extends TileEntityPowerConverter imple
 	{
 		int amountToAdd = Math.min(amount, maxStoredEnergy - storedEnergy);
 		storedEnergy += amountToAdd;
+		
+		// shitty IC2 API fix
+		if (amountToAdd == 0)
+		{
+		    amountToAdd = 1;
+		}
+		
 		return amount - amountToAdd;
 	}
 	

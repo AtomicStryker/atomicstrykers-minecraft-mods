@@ -25,7 +25,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PowerConverters", name = "Power Converters", version = "1.4.5R1.3.9", dependencies = "required-after:IC2;required-after:BuildCraft|Energy")
+@Mod(modid = "PowerConverters", name = "Power Converters", version = "1.4.5R1.4.0", dependencies = "required-after:IC2;required-after:BuildCraft|Energy")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "PowerConverters" }, packetHandler = ClientPacketHandler.class),
 connectionHandler = ConnectionHandler.class)

@@ -1,2 +1,5 @@
+1.4.0
+- workaround for IC2 API bug
+
 1.3.9
 - started changelog, update to Minecraft 1.4.5, IC2 1.109 and BC3 3.2
