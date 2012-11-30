@@ -1,3 +1,6 @@
+1.2.5
+- made sure underground towers dont start lower than 15
+
 1.2.4
 - rewritten some parts of golem AI, found the hanging sounds and fixed them - REMOVE THE OLD SOUNDS FROM YOUR RESOURCES FOLDER
 - added Cave Spiders to Battletowers Mobspawner List (MWAHAHAHA)

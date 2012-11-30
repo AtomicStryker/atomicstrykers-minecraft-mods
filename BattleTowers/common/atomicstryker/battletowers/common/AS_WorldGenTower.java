@@ -158,7 +158,7 @@ public class AS_WorldGenTower extends WorldGenerator
 		
 		underground = world.rand.nextInt(100)+1 < AS_BattleTowersCore.chanceTowerIsUnderGround;
 		
-		int startingHeight = underground ? jy-70 : jy - 6; // TODO make sure that works
+		int startingHeight = underground ? Math.max(jy-70, 15) : jy - 6; // TODO make sure that works
 		int maximumHeight = underground ? jy+7 : 120;
 		
         floor = 1;
