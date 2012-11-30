@@ -63,7 +63,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.0.9")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.0")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class),
@@ -112,7 +112,6 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     public void load(FMLInitializationEvent evt)
     {
         rareMobs = new ConcurrentHashMap();
-        loadMods();
         
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
@@ -130,10 +129,11 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     
     /**
      * Registers the MobModifier classes for consideration
+     * @param config 
      */
-    private static void loadMods()
+    private void loadMods()
     {
-        mobMods = new ArrayList();
+        mobMods = new ArrayList<Class>();
         
         mobMods.add(MM_1UP.class);
         mobMods.add(MM_Berserk.class);
@@ -157,12 +157,22 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         mobMods.add(MM_Vengeance.class);
         mobMods.add(MM_Weakness.class);
         mobMods.add(MM_Webber.class);
+        
+        Iterator<Class> iter = mobMods.iterator();
+        while (iter.hasNext())
+        {
+            Class c = iter.next();
+            if (!config.get(config.CATEGORY_GENERAL, c.getSimpleName()+" enabled", true).getBoolean(true))
+            {
+                iter.remove();
+            }
+        }
     }
 
     /**
      * Forge Config file
      */
-    private static void loadConfig()
+    private void loadConfig()
     {
         config.load();
         eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15).value);
@@ -174,6 +184,8 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         {
             instance.dropIdList.add(Integer.parseInt(s));
         }
+        
+        loadMods();
         
         config.save();
     }
@@ -386,7 +398,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
      * Used on World/Server/Savegame change to clear the Boss HashMap of old World Entities
      * @param lastWorld 
      */
-    public static void checkRareListForObsoletes(World lastWorld)
+    public void checkRareListForObsoletes(World lastWorld)
     {
         ArrayList<EntityLiving> toRemove = new ArrayList<EntityLiving>();
         for (EntityLiving ent : getRareMobs().keySet())
@@ -401,6 +413,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         {
             getRareMobs().remove(ent);
         }
+        
         loadConfig();
     }
 

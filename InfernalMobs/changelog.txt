@@ -1,3 +1,8 @@
+1.1.0
+- fix for NPE in overlayrenderer
+- made modifiers removable via config. CAUTION: Removing mods on client may cause crash when on a server
+- note: disabling too many (more than half?) will probably crash somehow too
+
 1.0.9
 - update to Minecraft 1.4.4
 - made enchanted drop IDs configurable

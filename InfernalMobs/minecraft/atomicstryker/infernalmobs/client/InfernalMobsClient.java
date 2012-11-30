@@ -93,7 +93,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 }
                 
                 fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, 10, 0x2F96EB);
-                buffer = InfernalMobsCore.getMobModifiers(target).getModName();
+                buffer = mod.getModName();
                 fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, 20, 0xffffff);
             }
         }
@@ -186,7 +186,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
             
             if (!newGame)
             {
-                InfernalMobsCore.checkRareListForObsoletes(lastWorld);
+                InfernalMobsCore.instance().checkRareListForObsoletes(lastWorld);
             }
         }
         
