@@ -30,7 +30,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "NetherOres", name = "Nether Ores", version = "1.4.4R1.2.9", dependencies = "after:IC2")
+@Mod(modid = "NetherOres", name = "Nether Ores", version = "1.4.4R1.3.0", dependencies = "after:IC2")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class)
 public class NetherOresCore
@@ -51,14 +51,13 @@ public class NetherOresCore
     public void preInit(FMLPreInitializationEvent evt)
     {
         loadConfig(evt.getSuggestedConfigurationFile());
+        blockNetherOres = new BlockNetherOres(Integer.parseInt(netherOreBlockId.value), 0);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        blockNetherOres = new BlockNetherOres(Integer.parseInt(netherOreBlockId.value), 0);
-
         GameRegistry.registerBlock(blockNetherOres, ItemNetherOre.class);
         GameRegistry.registerWorldGenerator(new WorldGenHandler());
 
