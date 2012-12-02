@@ -3,7 +3,7 @@
 # From: Minecraft Forums
 
 weight=4
-unique=0
+unique=1
 embed_into_distance=18
 acceptable_target_blocks=1,2,3,12,13,24,78
 dimensions=39,30,30

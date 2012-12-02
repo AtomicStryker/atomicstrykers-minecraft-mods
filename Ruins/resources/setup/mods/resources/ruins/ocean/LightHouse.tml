@@ -2,12 +2,12 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
-weight=2
+weight=1
 embed_into_distance=16
 acceptable_target_blocks=9,79
 dimensions=49,11,11
 allowable_overhang=66
-unique=1
+unique=0
 max_cut_in=1
 cut_in_buffer=0
 max_leveling=0

@@ -1,7 +1,7 @@
 # Author: GnomeWorks
 # From: Minecraft Forums
 
-weight=3
+weight=15
 embed_into_distance=1
 acceptable_target_blocks=1,12,24
 dimensions=10,5,5

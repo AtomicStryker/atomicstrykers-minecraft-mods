@@ -1,7 +1,7 @@
 # Author: RoofFiddler
 # From: Minecraft Forums
 
-weight=1
+weight=5
 embed_into_distance=1
 acceptable_target_blocks=1,2,3,12,13
 dimensions=7,9,15

@@ -12,7 +12,7 @@ max_leveling=2
 leveling_buffer=1
 preserve_water=0
 preserve_lava=0
-preserve_plants=1
+preserve_plants=0
 
 rule1=0,100,300
 rule2=0,100,4,48

@@ -1,10 +1,10 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
-weight=3
-unique=1
+weight=5
+unique=0
 embed_into_distance=1
-acceptable_target_blocks=9,79
+acceptable_target_blocks=9
 dimensions=55,12,12
 allowable_overhang=150
 max_cut_in=0

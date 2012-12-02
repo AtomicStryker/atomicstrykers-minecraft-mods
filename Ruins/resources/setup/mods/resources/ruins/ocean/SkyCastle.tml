@@ -2,7 +2,7 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
-weight=2
+weight=1
 unique=1
 embed_into_distance=1
 acceptable_target_blocks=8,9,79

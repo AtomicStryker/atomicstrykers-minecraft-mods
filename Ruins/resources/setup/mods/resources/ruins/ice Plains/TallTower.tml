@@ -2,6 +2,7 @@
 # From: Default Template
 
 weight=3
+unique=0
 embed_into_distance=1
 acceptable_target_blocks=1,2,3,12,13
 dimensions=9,7,7

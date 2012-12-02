@@ -1,9 +1,9 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
-weight=4
+weight=1
 embed_into_distance=60
-acceptable_target_blocks=1,2,3,12,13,78
+acceptable_target_blocks=1,13
 dimensions=83,3,3
 allowable_overhang=0
 unique=0

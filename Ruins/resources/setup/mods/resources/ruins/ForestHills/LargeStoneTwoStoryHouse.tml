@@ -1,7 +1,7 @@
 # Author: d00dv4d3r
 # From: Default Template
 
-weight=4
+weight=5
 embed_into_distance=1
 acceptable_target_blocks=1,2,3,12,13
 dimensions=8,7,7

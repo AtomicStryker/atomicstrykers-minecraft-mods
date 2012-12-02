@@ -1,9 +1,9 @@
 # Author: d00dv4d3r
 # From: Default Template
 
-weight=5
+weight=15
 embed_into_distance=1
-acceptable_target_blocks=12,24
+acceptable_target_blocks=1,2,3,12,13
 dimensions=4,7,5
 allowable_overhang=2
 max_cut_in=2

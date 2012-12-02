@@ -1,7 +1,7 @@
 # Author: Malgor
 # From: Minecraft Forums
 
-weight=1
+weight=2
 embed_into_distance=4
 acceptable_target_blocks=1,2,3
 dimensions=10,12,12

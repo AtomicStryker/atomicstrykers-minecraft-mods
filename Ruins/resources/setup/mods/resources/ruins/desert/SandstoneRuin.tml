@@ -1,9 +1,9 @@
 # Author: thecraww
 # From: Minecraft Forums
 
-weight=5
+weight=17
 embed_into_distance=1
-acceptable_target_blocks=12,24
+acceptable_target_blocks=1,2,3,12,24
 dimensions=6,5,7
 allowable_overhang=2
 max_cut_in=2
