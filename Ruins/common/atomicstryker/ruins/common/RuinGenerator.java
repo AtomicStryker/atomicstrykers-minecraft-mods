@@ -63,7 +63,8 @@ public class RuinGenerator {
 
     private void createBuilding( World world, Random random, int x, int z, int minDistance, boolean Nether ) {
 		int rotate = random.nextInt( 4 );
-		int biomeID = world.getWorldChunkManager().getBiomeGenAt(x, z).biomeID;		
+		int biomeID = world.getWorldChunkManager().getBiomeGenAt(x, z).biomeID;
+		String biomeName = world.getWorldChunkManager().getBiomeGenAt(x, z).biomeName;
         int nextMinDistance = 0;
         
 		if( Ruins.useGeneric( random, biomeID ) )
@@ -112,11 +113,10 @@ public class RuinGenerator {
         if( y > 0 ) {
 //            if( r.checkArea( world, x, y, z, rotate, stats ) ) {
             if( ruinTemplate.checkArea( world, x, y, z, rotate ) ) {
-
 				if( minDistance != 0 ) {
-					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeID+" as part of a site at x:" + x + ", y:" + y + ", z:" + z );
+					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeName+" as part of a site at x:" + x + ", y:" + y + ", z:" + z );
 				} else {
-					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeID+" at x:" + x + ", y:" + y + ", z:" + z );
+					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeName+" at x:" + x + ", y:" + y + ", z:" + z );
 				}
 				stats.NumCreated++;
 

@@ -25,7 +25,7 @@ import net.minecraft.src.ISaveHandler;
 import net.minecraft.src.SaveHandler;
 import net.minecraft.src.World;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.2a", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.3", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;

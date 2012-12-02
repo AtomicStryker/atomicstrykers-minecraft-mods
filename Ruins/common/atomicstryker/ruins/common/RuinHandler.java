@@ -24,7 +24,7 @@ public class RuinHandler {
 		// create the vars array fitting to the number of Biomes present
 		int biomeAmountPlusOne = RuinsMod.BIOME_NONE+1;
 		vars = new int[3][biomeAmountPlusOne];
-		for ( int j = 0; j < vars.length; j++ )
+		for ( int j = 0; j < vars[0].length; j++ )
 		{
 			vars[CHANCE][j] = 75;
 		}
@@ -168,7 +168,7 @@ public class RuinHandler {
 
 	public boolean useGeneric( Random random, int biome ) {
 		if( biome == RuinsMod.BIOME_NONE ) { return true; }
-		if( random.nextInt( 100 ) < vars[CHANCE][biome] ) { return false; }
+		if( random.nextInt( 100 )+1 < vars[CHANCE][biome] ) { return false; }
 		return true;
 	}
 
