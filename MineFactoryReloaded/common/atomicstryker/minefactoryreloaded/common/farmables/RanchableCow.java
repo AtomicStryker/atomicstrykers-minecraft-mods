@@ -38,7 +38,7 @@ public class RanchableCow implements IFactoryRanchable
 			if(bucketIndex >= 0)
 			{
 				drops.add(new ItemStack(Item.bucketMilk));
-				rancher.setInventorySlotContents(bucketIndex, null);
+				rancher.decrStackSize(bucketIndex, 1);
 			}
 			else
 			{

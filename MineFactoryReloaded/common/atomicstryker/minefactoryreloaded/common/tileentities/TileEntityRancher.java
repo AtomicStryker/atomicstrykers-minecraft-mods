@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.src.DamageSource;
+import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityLiving;
 import net.minecraft.src.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
 import atomicstryker.minefactoryreloaded.common.MineFactoryReloadedCore;
 import atomicstryker.minefactoryreloaded.common.api.IFactoryRanchable;
@@ -98,8 +100,13 @@ public class TileEntityRancher extends TileEntityFactoryInventory
 		{
 			if(!(o instanceof EntityLiving))
 			{
+			    if (o instanceof EntityItem)
+			    {
+			        dropStack(((EntityItem)o).item, dropOffsetX, 0, dropOffsetZ);
+			    }
 				continue;
 			}
+			
 			EntityLiving e = (EntityLiving)o;
 			if(ranchables.containsKey(e.getClass()))
 			{
@@ -107,12 +114,13 @@ public class TileEntityRancher extends TileEntityFactoryInventory
 				List<ItemStack> drops = r.ranch(worldObj, e, this);
 				for(ItemStack s : drops)
 				{
-				    LiquidStack produced = LiquidContainerRegistry.getLiquidForFilledItem(s);
-					if(produced != null)
-					{
-						produceLiquid(produced); // the 'milk Item' doesnt exist as anything but liquid, so no need to check this
-						continue;
-					}
+				    LiquidStack ls = MineFactoryReloadedCore.instance().getLiquidStackFromLiquidItem(s);
+				    if (ls != null)
+				    {
+				        produceLiquid(ls);
+				        continue;
+				    }
+					
 					dropStack(s, dropOffsetX, 0, dropOffsetZ);
 				}
 				

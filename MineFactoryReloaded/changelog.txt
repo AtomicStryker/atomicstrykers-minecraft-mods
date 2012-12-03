@@ -1,3 +1,11 @@
+1.6.3
+- changed Collector Recipe so it no longer collides with Ironchests
+
+1.6.2
+- fixed cow Ranching to properly use and fill buckets
+- fixed Liquid API usage, milk now works with Forestry Engines
+- Rancher will now also suck in Items in it's area of effect (drops by dying Animals)
+
 1.6.1
 - update to MC 1.4.5
 

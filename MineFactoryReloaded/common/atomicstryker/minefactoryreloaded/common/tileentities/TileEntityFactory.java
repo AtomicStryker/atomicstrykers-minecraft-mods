@@ -70,6 +70,7 @@ public abstract class TileEntityFactory extends TileEntity implements IRotateabl
 				}
 			}
 		}
+		
 		if(s.stackSize > 0)
 		{
 			EntityItem entityitem = new EntityItem(worldObj, xCoord + dropOffsetX, yCoord + dropOffsetY, zCoord + dropZ, s);

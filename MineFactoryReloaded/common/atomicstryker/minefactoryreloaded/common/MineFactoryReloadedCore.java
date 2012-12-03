@@ -28,6 +28,7 @@ import net.minecraftforge.common.Property;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.liquids.LiquidContainerData;
 import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreDictionary.OreRegisterEvent;
@@ -92,7 +93,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.1", dependencies = "after:BuildCraft|Core;after:BuildCraft|Factory;after:BuildCraft|Energy;after:BuildCraft|Builders;after:BuildCraft|Transport")
+@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.3", dependencies = "after:BuildCraft|Core;after:BuildCraft|Factory;after:BuildCraft|Energy;after:BuildCraft|Builders;after:BuildCraft|Transport")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ServerPacketHandler.class),
@@ -116,7 +117,6 @@ public class MineFactoryReloadedCore
     public static Item steelIngotItem;
     public static Item factoryHammerItem;
     public static Item milkItem;
-    public static LiquidContainerData milkLiquidContainer;
 
     public static Item machineItem;
 
@@ -264,7 +264,7 @@ public class MineFactoryReloadedCore
     @PostInit
     public void afterModsLoaded(FMLPostInitializationEvent evt)
     {
-        LiquidContainerRegistry.registerLiquid(new LiquidContainerData(new LiquidStack(milkItem,  LiquidContainerRegistry.BUCKET_VOLUME), new ItemStack(Item.bucketMilk), new ItemStack(Item.bucketEmpty)));
+        LiquidContainerRegistry.registerLiquid(new LiquidContainerData(LiquidDictionary.getOrCreateLiquid("milk", new LiquidStack(milkItem,  LiquidContainerRegistry.BUCKET_VOLUME)), new ItemStack(Item.bucketMilk), new ItemStack(Item.bucketEmpty)));
     }
     
     @ServerStarted
@@ -293,7 +293,7 @@ public class MineFactoryReloadedCore
         GameRegistry.addRecipe(new ItemStack(machineBlock, 1, machineMetadataMappings.get(Machine.Fisher)),
                 new Object[] { "SSS", "SFS", "SSS", Character.valueOf('F'), Item.fishingRod, Character.valueOf('S'), steelIngot });
         GameRegistry.addRecipe(new ItemStack(machineBlock, 1, machineMetadataMappings.get(Machine.Collector)),
-                new Object[] { "SSS", "SCS", "SSS", Character.valueOf('C'), Block.chest, Character.valueOf('S'), steelIngot });
+                new Object[] { "SSS", "SCS", "SDS", Character.valueOf('C'), Block.chest, Character.valueOf('S'), steelIngot, Character.valueOf('D'), Block.dispenser });
         GameRegistry.addRecipe(new ItemStack(machineBlock, 1, machineMetadataMappings.get(Machine.Vet)), new Object[] { "SSS", "SBS", "SSS", Character.valueOf('B'), Item.bread,
                 Character.valueOf('S'), steelIngot });
         GameRegistry.addRecipe(new ItemStack(machineBlock, 1, machineMetadataMappings.get(Machine.Breaker)),
@@ -597,5 +597,14 @@ public class MineFactoryReloadedCore
     {
         int blockId = world.getBlockId(x, y, z);
         ((BlockStem)Block.blocksList[blockId]).fertilizeStem(world, x, y, z);
+    }
+
+    public LiquidStack getLiquidStackFromLiquidItem(ItemStack s)
+    {
+        if (s.itemID == milkItem.shiftedIndex)
+        {
+            return LiquidDictionary.getLiquid("milk", LiquidContainerRegistry.BUCKET_VOLUME);
+        }
+        return null;
     }
 }
