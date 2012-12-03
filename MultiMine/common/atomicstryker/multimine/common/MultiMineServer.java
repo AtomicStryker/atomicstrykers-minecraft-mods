@@ -222,7 +222,7 @@ public class MultiMineServer
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block)
     {
         Object[] toSend = {block.getX(), block.getY(), block.getZ(), block.getProgress()};
-        System.out.println("Server sending partial Block Update ["+block.getX()+"|"+block.getY()+"|"+block.getZ()+"] in dimension "+block.getDimension());
+        //System.out.println("Server sending partial Block Update ["+block.getX()+"|"+block.getY()+"|"+block.getZ()+"] in dimension "+block.getDimension());
         PacketDispatcher.sendPacketToAllAround(block.getX(), block.getY(), block.getZ(), 30D, block.getDimension(), ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
     }
     
