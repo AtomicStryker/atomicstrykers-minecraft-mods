@@ -121,6 +121,6 @@ public class BlockGrapplingHook extends Block
     @Override
     public int getRenderType()
     {
-        return RopesPlusClient.renderIDGrapplingHook;
+        return RopesPlusCore.proxy.getGrapplingHookRenderId();
     }
 }

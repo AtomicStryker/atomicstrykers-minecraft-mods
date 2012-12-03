@@ -49,7 +49,6 @@ public class ServerPacketHandler implements IPacketHandler
                 double[] coords = ((EntityFreeFormRope) target).getCoordsAtRelativeLength((Float) packetReadout[1]);
                 // System.out.println("server got pos update: "+coords[0]+", "+coords[1]+", "+coords[2]);
                 p.setPositionAndUpdate(coords[0], coords[1] - 2.5D, coords[2]);
-                p.setVelocity(0, 0, 0);
                 p.fallDistance = 0;
             }
         }

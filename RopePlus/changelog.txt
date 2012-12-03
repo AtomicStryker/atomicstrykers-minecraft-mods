@@ -1,3 +1,9 @@
+RopesPlus 1.2.7
+- fixed another serverside crash
+
+RopesPlus 1.2.6
+- fixed serverside crash when using Ziplines
+
 RopesPlus 1.2.5b
 - fixed small classcast problem with Explosive Arrows
 

@@ -422,4 +422,10 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         pulledByHookShot = b;
     }
     
+    @Override
+    public int getGrapplingHookRenderId()
+    {
+        return renderIDGrapplingHook;
+    }
+    
 }

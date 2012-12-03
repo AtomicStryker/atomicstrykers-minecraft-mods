@@ -34,5 +34,10 @@ public class CommonProxy
     {
         // NOOP
     }
+
+    public int getGrapplingHookRenderId()
+    {
+        return 0;
+    }
     
 }
