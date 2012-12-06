@@ -154,17 +154,6 @@
 		<delete dir="${download.dir}" />
 		<mkdir dir="${temp.dir}" />
 
-		<!-- Copy source code and files into download -->
-		<mkdir dir="${temp.dir}/src" />
-		<mkdir dir="${temp.dir}/src/common" />
-		<mkdir dir="${temp.dir}/src/minecraft" />
-		<copy todir="${temp.dir}/src/common">
-			<fileset dir="${common.src.dir}" />
-		</copy>
-		<copy todir="${temp.dir}/src/minecraft">
-			<fileset dir="${client.src.dir}" />
-		</copy>
-
 		<!-- Copy any additional files into download package -->
 		<copy file="./changelog.txt" todir="${temp.dir}" />
 		<copy todir="${temp.dir}">

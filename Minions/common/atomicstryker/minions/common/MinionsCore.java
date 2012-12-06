@@ -63,7 +63,7 @@ import net.minecraft.src.*;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.2")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.3")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -265,16 +265,16 @@ public class MinionsCore
         }
     }
 
-    public static void MinionLoadRegister(EntityMinion ent)
+    public static void minionLoadRegister(EntityMinion ent)
     {        
-        if (ent.masterUsername == null)
+        if (ent.masterUsername == null || ent.masterUsername.equals(""))
         {
             System.out.println("Loaded Minion without masterName, killing");
             ent.setDead();
             return;
         }
 
-        System.out.println("Loaded Minion, re-registering master: "+ent.masterUsername);
+        System.out.println("Loaded Minion from NBT, re-registering master: "+ent.masterUsername);
         String mastername = ent.masterUsername;
 
         if (!masterNames.containsKey(mastername))
@@ -291,9 +291,18 @@ public class MinionsCore
         }
         else
         {
+            for (EntityMinion m : array)
+            {
+                if (m.entityId == ent.entityId)
+                {
+                    System.out.println("Minion already loaded");
+                    return;
+                }
+            }
+            
             if (array.length >= minionsPerPlayer)
             {
-                System.out.println("Adding a minion too many for "+mastername+", killing it NOW");
+                System.out.println("Adding a new minion too many for "+mastername+", killing it NOW");
                 ent.setDead();
                 return;
             }
@@ -307,7 +316,7 @@ public class MinionsCore
             }
             arrayplusone[array.length] = ent;
             masterNames.put(mastername, arrayplusone);
-            System.out.println("adding additional minion for "+mastername+", array now: "+arrayplusone);
+            System.out.println("adding additional minion for "+mastername+", now in array: "+arrayplusone.length);
         }
     }
 
@@ -339,20 +348,7 @@ public class MinionsCore
     
     public static Entity findEntityByID(World world, int ID)
     {
-        List entList = world.loadedEntityList;
-        Iterator iter = entList.iterator();
-        Entity ent;
-        {
-            while (iter.hasNext())
-            {
-                ent = (Entity) iter.next();
-                if (ent.entityId == ID)
-                {
-                    return ent;
-                }
-            }
-        }
-        return null;
+        return world.getEntityByID(ID);
     }
     
     public static boolean hasPlayerMinions(EntityPlayer player)
@@ -363,9 +359,11 @@ public class MinionsCore
     public static boolean hasAllMinions(EntityPlayer player)
     {
         EntityMinion[] array = (EntityMinion[]) masterNames.get(player.username);
-        
-        if (array == null) return false;
-        return (array.length >= minionsPerPlayer);
+        if (array != null)
+        {
+            return (array.length >= minionsPerPlayer);
+        }
+        return false;
     }
     
     public static void orderMinionToPickupEntity(EntityPlayer playerEnt, EntityLiving target)

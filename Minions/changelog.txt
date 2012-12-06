@@ -1,3 +1,7 @@
+Update 1.5.3
+- fixed NBT reload killing Minions
+- fixed Minions being killed or disappearing not dropping their inventories first
+
 Update 1.5.2
 - fixed particles in 1.4.4
 

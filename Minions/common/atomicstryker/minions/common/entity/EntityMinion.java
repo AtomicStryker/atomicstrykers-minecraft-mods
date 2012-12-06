@@ -172,6 +172,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	public void setDead()
 	{
 		MinionsChunkManager.unRegisterChunkLoaderEntity(this);
+		inventory.dropAllItems();
 		super.setDead();
 	}
 	
@@ -192,7 +193,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         masterUsername = var1.getString("masterUsername");
         master = worldObj.getPlayerEntityByName(masterUsername);
         
-        MinionsCore.MinionLoadRegister(this);
+        MinionsCore.minionLoadRegister(this);
     }
     
     private void performTeleportToTarget()
