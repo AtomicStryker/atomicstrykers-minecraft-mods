@@ -1,10 +1,9 @@
 package atomicstryker.dynamiclights.client;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Block;
@@ -40,7 +39,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.1.2")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.1.3")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -51,18 +50,13 @@ public class DynamicLights
      * just check once for World being equal.
      */
     private IBlockAccess lastWorld;
-    private List<DynamicLightSourceContainer> lastList;
+    private ConcurrentLinkedQueue<DynamicLightSourceContainer> lastList;
     
     /**
      * This Map contains a List of DynamicLightSourceContainer for each World. Since the client can only
      * be in a single World, the other Lists just float idle when unused.
      */
-    private ConcurrentHashMap<World, List<DynamicLightSourceContainer>> worldLightsMap;
-    
-    /**
-     * Semaphore Lock boolean for the Light List of the World
-     */
-    private static boolean isAccessingLightsMap;
+    private ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>> worldLightsMap;
     
     /**
      * Keeps track of the toggle button.
@@ -75,8 +69,7 @@ public class DynamicLights
         instance = this;
         globalLightsOff = false;
         mcinstance = FMLClientHandler.instance().getClient();
-        worldLightsMap = new ConcurrentHashMap<World, List<DynamicLightSourceContainer>>();
-        isAccessingLightsMap = false;
+        worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();
     }
     
     @Init
@@ -107,12 +100,10 @@ public class DynamicLights
         {
             if (mcinstance.theWorld != null)
             {
-                List worldLights = worldLightsMap.get(mcinstance.theWorld);
+                ConcurrentLinkedQueue worldLights = worldLightsMap.get(mcinstance.theWorld);
                 
                 if (worldLights != null)
                 {
-                    while (isAccessingLightsMap) {}
-                    isAccessingLightsMap = true;
                     Iterator iter = worldLights.iterator();
                     while (iter.hasNext())
                     {
@@ -124,7 +115,6 @@ public class DynamicLights
                             //System.out.println("Dynamic Lights killing off LightSource on dead Entity "+tickedLightContainer.getLightSource().getAttachmentEntity());
                         }
                     }
-                    isAccessingLightsMap = false;
                 }
             }
         }
@@ -183,18 +173,15 @@ public class DynamicLights
                 World world = mcinstance.theWorld;
                 if (world != null)
                 {
-                    List worldLights = worldLightsMap.get(world);
+                    ConcurrentLinkedQueue worldLights = worldLightsMap.get(world);
                     if (worldLights != null)
                     {
-                        while (isAccessingLightsMap) {}
-                        isAccessingLightsMap = true;
                         Iterator iter = worldLights.iterator();
                         while (iter.hasNext())
                         {
                             DynamicLightSourceContainer c = (DynamicLightSourceContainer) iter.next();
                             world.updateLightByType(EnumSkyBlock.Block, c.getX(), c.getY(), c.getZ());
                         }
-                        isAccessingLightsMap = false;
                     }
                 }
             }
@@ -272,11 +259,9 @@ public class DynamicLights
             if (lightToAdd.getAttachmentEntity().isEntityAlive())
             {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
-                List<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().worldObj);
+                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().worldObj);
                 if (lightList != null)
                 {
-                    while (isAccessingLightsMap) {}
-                    isAccessingLightsMap = true;
                     if (!lightList.contains(newLightContainer))
                     {
                         //System.out.println("Successfully registered Dynamic Light on Entity: "+newLightContainer.getLightSource().getAttachmentEntity()+" in list "+lightList);
@@ -286,11 +271,10 @@ public class DynamicLights
                     {
                         System.out.println("Cannot add Dynamic Light: Attachment Entity is already registered!");
                     }
-                    isAccessingLightsMap = false;
                 }
                 else
                 {
-                    lightList = new ArrayList<DynamicLightSourceContainer>();
+                    lightList = new ConcurrentLinkedQueue<DynamicLightSourceContainer>();
                     lightList.add(newLightContainer);
                     instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().worldObj, lightList);
                 }
@@ -319,11 +303,9 @@ public class DynamicLights
             if (world != null)
             {
                 DynamicLightSourceContainer iterContainer = null;
-                List<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(world);
+                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(world);
                 if (lightList != null)
                 {
-                    while (isAccessingLightsMap) {}
-                    isAccessingLightsMap = true;
                     Iterator iter = lightList.iterator();
                     while (iter.hasNext())
                     {
@@ -334,7 +316,6 @@ public class DynamicLights
                             break;
                         }
                     }
-                    isAccessingLightsMap = false;
                     
                     if (iterContainer != null)
                     {
