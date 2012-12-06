@@ -444,7 +444,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         }
     }
 
-    public static void dropLootForEnt(EntityLiving mob)
+    public void dropLootForEnt(EntityLiving mob)
     {
         int xpValue = 25;
         while (xpValue > 0)
@@ -457,7 +457,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         dropRandomEnchantedItem(mob);
     }
 
-    private static void dropRandomEnchantedItem(EntityLiving mob)
+    private void dropRandomEnchantedItem(EntityLiving mob)
     {
         try
         {
@@ -473,49 +473,10 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         }
     }
     
-    private static Item getRandomItem(EntityLiving mob)
+    private Item getRandomItem(EntityLiving mob)
     {
-        return Item.itemsList[instance.dropIdList.get(mob.worldObj.rand.nextInt(instance.dropIdList.size()))]; //viables[mob.worldObj.rand.nextInt(viables.length)];
+        return Item.itemsList[instance.dropIdList.get(mob.worldObj.rand.nextInt(instance.dropIdList.size()))];
     }
-    
-    /*
-    private static Item[] viables =
-    {
-        Item.axeGold,
-        Item.axeGold,
-        Item.axeDiamond,
-        
-        Item.shovelGold,
-        Item.shovelSteel,
-        Item.shovelDiamond,
-        
-        Item.pickaxeGold,
-        Item.pickaxeSteel,
-        Item.pickaxeDiamond,
-        
-        Item.swordGold,
-        Item.swordSteel,
-        Item.swordDiamond,
-        
-        Item.bootsChain,
-        Item.bootsSteel,
-        Item.bootsDiamond,
-        
-        Item.legsChain,
-        Item.legsSteel,
-        Item.legsDiamond,
-        
-        Item.plateChain,
-        Item.plateSteel,
-        Item.plateDiamond,
-        
-        Item.helmetChain,
-        Item.helmetSteel,
-        Item.helmetDiamond,
-        
-        Item.bow
-    };
-    */
     
     //addVelocity player: Packet ID 2, from server, { double xVel, double yVel, double zVel }
     public void sendVelocityPacket(EntityPlayer target, double xVel, double yVel, double zVel)

@@ -57,7 +57,7 @@ public abstract class MobModifier
 
     public void onDropItems(EntityLiving moddedMob, DamageSource killSource, ArrayList<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
     {
-        InfernalMobsCore.dropLootForEnt(moddedMob);
+        InfernalMobsCore.instance().dropLootForEnt(moddedMob);
     }
 
     public void onSetAttackTarget(EntityLiving target)
