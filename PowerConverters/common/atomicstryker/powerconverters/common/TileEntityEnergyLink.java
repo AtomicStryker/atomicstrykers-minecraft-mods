@@ -101,9 +101,15 @@ public class TileEntityEnergyLink extends TileEntityPowerConverter implements IE
 	@Override
 	public int injectEnergy(Direction directionFrom, int amount)
 	{
-		int amountToAdd = Math.min(amount, maxStoredEnergy - storedEnergy);
-		storedEnergy += amountToAdd;
-		return amount - amountToAdd;
+		int amountToInject = Math.min(amount, maxStoredEnergy - storedEnergy);
+		if (amountToInject == 0)
+		{
+		    storedEnergy += amountToInject; // IC2 API demands we accept an overflow
+		    return 0;
+		}
+		
+		storedEnergy += amountToInject;
+		return amount - amountToInject;
 	}
 
 	/* IMachine methods
