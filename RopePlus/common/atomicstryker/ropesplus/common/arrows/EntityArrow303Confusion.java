@@ -55,29 +55,28 @@ public class EntityArrow303Confusion extends EntityArrow303
     private void confuse(Entity entity)
     {
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE));
-        ArrayList arraylist = new ArrayList();
-        Iterator iterator = list.iterator();
-        do
+        ArrayList<EntityCreature> hitList = new ArrayList();
+        Iterator<Entity> iterator = list.iterator();
+        while(iterator.hasNext());
         {
-            Entity entity1 = (Entity)iterator.next();
+            Entity entity1 = iterator.next();
             if((entity1 instanceof EntityCreature) && entity1 != shooter)
             {
-                arraylist.add((EntityCreature)entity1);
+                hitList.add((EntityCreature)entity1);
             }
         }
-        while(iterator.hasNext());
         
-        if(arraylist.size() < 2)
+        if(hitList.size() < 2)
         {
             return;
         }
         
-        for(int i = 0; i < arraylist.size(); i++)
+        for(int i = 0; i < hitList.size(); i++)
         {
-            EntityCreature entitycreature = (EntityCreature)arraylist.get(i);
-            EntityCreature entitycreature1 = (EntityCreature)arraylist.get(i != 0 ? i - 1 : arraylist.size() - 1);
-            entitycreature.attackEntityFrom(DamageSource.causeMobDamage(entitycreature1), 0);
-            entitycreature1.setTarget(entitycreature);
+            EntityCreature creatureA = hitList.get(i);
+            EntityCreature creatureB = hitList.get(i != 0 ? i - 1 : hitList.size() - 1);
+            creatureA.attackEntityFrom(DamageSource.causeMobDamage(creatureB), 0);
+            creatureB.attackEntityFrom(DamageSource.causeMobDamage(creatureA), 0);
         }
 
         setDead();
