@@ -43,15 +43,15 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.2.8")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.2.9")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ServerPacketHandler.class))
 public class RopesPlusCore
 {
-    @SidedProxy(clientSide = "atomicstryker.ropesplus.client.RopesPlusClient", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
-    public static CommonProxy proxy;
+    @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
+    public static IProxy proxy;
     
 	public final static Class coreArrowClasses[] =
 	{
@@ -89,6 +89,8 @@ public class RopesPlusCore
     public static Item itemHookShot;
     public static Block blockZipLineAnchor;
     public static Item itemHookShotCartridge;
+    
+    private HashMap<EntityPlayer, EntityFreeFormRope> playerRopeMap;
 	
     @PreInit
     public void preInit(FMLPreInitializationEvent event)
@@ -101,6 +103,7 @@ public class RopesPlusCore
     	grapplingHookMap = new HashMap<EntityPlayer, EntityGrapplingHook>();
     	selectedSlotMap = new HashMap<EntityPlayer, Integer>();
     	cycledMap = new HashMap<EntityPlayer, Boolean>();
+    	playerRopeMap = new HashMap<EntityPlayer, EntityFreeFormRope>();
     	
         Settings_RopePlus.InitSettings(event.getSuggestedConfigurationFile());
         proxy.loadConfig(event.getSuggestedConfigurationFile());
@@ -330,4 +333,22 @@ public class RopesPlusCore
     {
     	return grapplingHookMap;
     }
+    
+    public EntityFreeFormRope getPlayerRope(EntityPlayer p)
+    {
+        return playerRopeMap.get(p);
+    }
+    
+    public void setPlayerRope(EntityPlayer p, EntityFreeFormRope r)
+    {
+        if (r == null)
+        {
+            playerRopeMap.remove(p);
+        }
+        else
+        {
+            playerRopeMap.put(p, r);
+        }
+    }
+    
 }

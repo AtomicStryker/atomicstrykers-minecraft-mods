@@ -8,13 +8,14 @@ import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import cpw.mods.fml.common.IDispenseHandler;
+import cpw.mods.fml.common.IDispenserHandler;
 
-public class DispenserHandler implements IDispenseHandler
+public class DispenserHandler implements IDispenserHandler
 {
 
 	@Override
-	public int dispense(double x, double y, double z, int xVelocity, int zVelocity, World world, ItemStack item, Random random, double entX, double entY, double entZ)
-	{
+    public int dispense(int x, int y, int z, int xVelocity, int zVelocity, World world, ItemStack item, Random random, double entX, double entY, double entZ)
+    {
         for(Iterator iterator = RopesPlusCore.arrows.iterator(); iterator.hasNext();)
         {
             EntityArrow303 entityarrow303 = (EntityArrow303)iterator.next();

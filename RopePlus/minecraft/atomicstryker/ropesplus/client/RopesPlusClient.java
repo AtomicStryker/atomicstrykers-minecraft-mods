@@ -32,7 +32,7 @@ import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-public class RopesPlusClient extends CommonProxy implements ITickHandler
+public class RopesPlusClient implements ITickHandler
 {
     
     private EntityArrow303 selectedArrow;
@@ -42,18 +42,15 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
     private static EntityPlayer localPlayer;
     private GuiScreen prevScreen;
     
-    private static int keyforward;
-    private static int keyback;
+    public static int keyforward;
+    public static int keyback;
     private String keyNameForward;
     private String keyNameBackward;
     
     private int countDownToArrowCount;
     
-    public static int renderIDGrapplingHook;
     public static boolean grapplingHookOut;
-    
-    private boolean letGoOfHookShot;
-    private boolean pulledByHookShot;
+    public static int renderIDGrapplingHook;
     
     private static EntityFreeFormRope onZipLine;
     private static float lastZipLineLength;
@@ -71,9 +68,6 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         localPlayer = null;
         prevScreen = null;
         countDownToArrowCount = 100;
-        grapplingHookOut = false;
-        letGoOfHookShot = false;
-        pulledByHookShot = false;
         onZipLine = null;
         lastZipLineLength = 0;
         timeNextZipUpdate = 0;
@@ -84,42 +78,6 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
         keyNameBackward = "PERIOD";
 
         renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
-    }
-    
-    @Override
-    public void loadConfig(File configFile)
-    {
-        Configuration config = new Configuration(configFile);
-        config.load();
-        
-        keyforward = Keyboard.getKeyIndex(config.get(config.CATEGORY_GENERAL, "keyforward", "COMMA").value);
-        keyback = Keyboard.getKeyIndex(config.get(config.CATEGORY_GENERAL, "keyback", "PERIOD").value);
-        
-        config.save();
-        
-        MinecraftForge.EVENT_BUS.register(new RopesPlusSounds());
-    }
-    
-    @Override
-    public void load()
-    {        
-        RenderingRegistry.registerEntityRenderingHandler(EntityGrapplingHook.class, new RenderGrapplingHook());
-        Render arrowRenderer = new RenderArrow303();
-        for(Class arrow : RopesPlusCore.coreArrowClasses)
-        {
-            RenderingRegistry.registerEntityRenderingHandler(arrow, arrowRenderer);
-        }
-        
-        RenderingRegistry.registerBlockHandler(BlockRenderHandler.instance.new BlockGrapplingHookRenderHandler());
-        
-        RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope());
-        
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropesPlusItems.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/itemGrapplingHookThrown.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropeSegment.png");
-        
-        TickRegistry.registerTickHandler(new RopesPlusClient(), Side.CLIENT);
     }
     
     private void selectArrow()
@@ -396,36 +354,6 @@ public class RopesPlusClient extends CommonProxy implements ITickHandler
                 timeNextZipUpdate = System.currentTimeMillis();
             }
         }
-    }
-    
-    @Override
-    public boolean getShouldHookShotDisconnect()
-    {
-        return letGoOfHookShot;
-    }
-
-    @Override
-    public void setShouldHookShotDisconnect(boolean b)
-    {
-        letGoOfHookShot = b;
-    }
-    
-    @Override
-    public boolean getShouldHookShotPull()
-    {
-        return pulledByHookShot;
-    }
-
-    @Override
-    public void setShouldHookShotPull(boolean b)
-    {
-        pulledByHookShot = b;
-    }
-    
-    @Override
-    public int getGrapplingHookRenderId()
-    {
-        return renderIDGrapplingHook;
     }
     
 }

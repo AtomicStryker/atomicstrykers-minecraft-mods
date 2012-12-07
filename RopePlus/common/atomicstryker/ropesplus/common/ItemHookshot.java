@@ -15,19 +15,12 @@ import cpw.mods.fml.common.network.Player;
 
 public class ItemHookshot extends Item
 {
-    
-    private boolean clientHasRopeOut;
-    private boolean serverHasRopeOut;
-    private EntityFreeFormRope ropeEnt;
 
     public ItemHookshot(int i)
     {
         super(i);
         maxStackSize = 1;
         setTextureFile("/atomicstryker/ropesplus/client/ropesPlusItems.png");
-        clientHasRopeOut = false;
-        serverHasRopeOut = false;
-        ropeEnt = null;
     }
 
     @Override
@@ -57,33 +50,24 @@ public class ItemHookshot extends Item
         {
             if(world.isRemote)
             {
-                if (!clientHasRopeOut && hasAmmo)
+                if (!RopesPlusCore.proxy.getHasClientRopeOut() && hasAmmo)
                 {
                     RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
-                    RopesPlusCore.proxy.setShouldHookShotPull(false);
-                    clientHasRopeOut = true;
                 }
                 else
                 {
-                    clientHasRopeOut = false;
                     RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-                    RopesPlusCore.proxy.setShouldHookShotPull(false);
                 }
+                
+                RopesPlusCore.proxy.setShouldHookShotPull(false);
                 entityplayer.swingItem();
             }
             else
             {
-                if (!serverHasRopeOut)
+                if (RopesPlusCore.instance.getPlayerRope(entityplayer) == null)
                 {
                     if (hasAmmo)
                     {
-                        serverHasRopeOut = true;
-                        
-                        if (ropeEnt != null)
-                        {
-                            ropeEnt.setDead();
-                        }
-                        
                         float guessRot = entityplayer.prevRotationPitch + (entityplayer.rotationPitch - entityplayer.prevRotationPitch);
                         float guessYaw = entityplayer.prevRotationYaw + (entityplayer.rotationYaw - entityplayer.prevRotationYaw);
                         double guessX = entityplayer.prevPosX + (entityplayer.posX - entityplayer.prevPosX);
@@ -104,12 +88,15 @@ public class ItemHookshot extends Item
                         {
                             if (target.typeOfHit == EnumMovingObjectType.TILE)
                             {
-                                ropeEnt = new EntityFreeFormRope(world);
+                                EntityFreeFormRope ropeEnt = new EntityFreeFormRope(world);
                                 ropeEnt.setStartCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
                                 ropeEnt.setEndCoordinates(entityplayer.posX, entityplayer.posY+0.5D, entityplayer.posZ);
                                 ropeEnt.setEndBlock(target.blockX, target.blockY, target.blockZ);
                                 ropeEnt.setShooter(entityplayer);
                                 world.spawnEntityInWorld(ropeEnt);
+                                
+                                RopesPlusCore.instance.setPlayerRope(entityplayer, ropeEnt);
+                                
                                 Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
                                 world.playSoundAtEntity(entityplayer, "hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
@@ -118,6 +105,7 @@ public class ItemHookshot extends Item
                         }
                         else
                         {
+                            RopesPlusCore.instance.setPlayerRope(entityplayer, null);
                             entityplayer.sendChatToPlayer("No target for Hookshot");
                         }
                     }
@@ -128,18 +116,19 @@ public class ItemHookshot extends Item
                 }
                 else
                 {
-                    if (ropeEnt != null)
+                    if (RopesPlusCore.instance.getPlayerRope(entityplayer) != null)
                     {
-                        ropeEnt.setDead();
+                        RopesPlusCore.instance.getPlayerRope(entityplayer).setDead();
                     }
-                    ropeEnt = null;
-                    serverHasRopeOut = false;
+                    RopesPlusCore.instance.setPlayerRope(entityplayer, null);
                     world.playSoundAtEntity(entityplayer, "random.bowhit", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
                 }
                 entityplayer.swingItem();
             }
         }
-        else if (ropeEnt != null && ropeEnt.isEntityAlive())
+        else if (!world.isRemote
+                && RopesPlusCore.instance.getPlayerRope(entityplayer) != null
+                && RopesPlusCore.instance.getPlayerRope(entityplayer).isEntityAlive())
         {
             // activate hook pull on clientside
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 5, null), (Player) entityplayer);
@@ -166,4 +155,5 @@ public class ItemHookshot extends Item
     {
         return EnumAction.bow;
     }
+    
 }

@@ -204,6 +204,7 @@ public class EntityFreeFormRope extends Entity
                     double distToEnd = shooter.getDistance(getEndX(), getEndY(), getEndZ());
                     if (distToEnd < 3D)
                     {
+                        RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
                         RopesPlusCore.proxy.setShouldHookShotPull(false);
                         Object[] toSend = { entityId };
