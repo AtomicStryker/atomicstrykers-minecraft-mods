@@ -600,26 +600,22 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 		return this.heldItem;
 	}
 	
-    public void dropMinionItemWithRandomChoice(ItemStack var1)
+    public void dropMinionItemWithRandomChoice(ItemStack stack)
     {
-        if (var1 != null)
+        if (stack != null)
         {
-            EntityItem var3 = new EntityItem(this.worldObj, this.posX, this.posY - 0.30000001192092896D + (double)this.getEyeHeight(), this.posZ, var1);
-            var3.delayBeforeCanPickup = 40;
-            float var4;
-            float var5;
-            var4 = 0.1F;
-            var3.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * var4);
-            var3.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * var4);
-            var3.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * 3.1415927F) * var4 + 0.1F);
-            var4 = 0.02F;
-            var5 = this.rand.nextFloat() * 3.1415927F * 2.0F;
-            var4 *= this.rand.nextFloat();
-            var3.motionX += Math.cos((double)var5) * (double)var4;
-            var3.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-            var3.motionZ += Math.sin((double)var5) * (double)var4;
-
-            this.worldObj.spawnEntityInWorld(var3);
+            EntityItem itemEnt = new EntityItem(this.worldObj, this.posX, this.posY - 0.3D + (double)this.getEyeHeight(), this.posZ, stack);
+            itemEnt.delayBeforeCanPickup = 40;
+            float varFloatA = 0.1F;
+            itemEnt.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
+            itemEnt.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
+            itemEnt.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA + 0.1F);
+            float randomAngle = this.rand.nextFloat() * 3.1415927F * 2.0F;
+            varFloatA = this.rand.nextFloat() * 0.02F;
+            itemEnt.motionX += Math.cos((double)randomAngle) * (double)varFloatA;
+            itemEnt.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
+            itemEnt.motionZ += Math.sin((double)randomAngle) * (double)varFloatA;
+            this.worldObj.spawnEntityInWorld(itemEnt);
         }
     }
     

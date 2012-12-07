@@ -162,8 +162,9 @@ public class MinionsCore
                 hasBooted = true;
             }
         }
-        else if (System.currentTimeMillis() > time + 1000L)
+        else if (System.currentTimeMillis() > time)
         {
+            time = System.currentTimeMillis() + 1000L;
             MinionsChunkManager.updateLoadedChunks();
         }
 
