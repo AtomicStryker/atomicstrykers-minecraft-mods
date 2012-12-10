@@ -168,6 +168,20 @@ public class EntityFreeFormRope extends Entity
         compound.setDouble("endZ", getEndZ());
         compound.setDouble("ropePOWvalue", getPowValue());
     }
+    
+    @Override
+    public void setDead()
+    {
+        if (shooter != null)
+        {
+            RopesPlusCore.proxy.setHasClientRopeOut(false);
+            RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
+            RopesPlusCore.proxy.setShouldHookShotPull(false);
+            RopesPlusCore.instance.setPlayerRope(shooter, null);
+        }
+        
+        super.setDead();
+    }
        
     @Override
     public void onUpdate()

@@ -37,6 +37,8 @@ public class ClientPacketHandler implements IPacketHandler
             Class[] decodeAs = { Integer.class, Integer.class, Integer.class, Integer.class };
             Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
             RopesPlusCore.proxy.setHasClientRopeOut(true);
+            RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
+            RopesPlusCore.proxy.setShouldHookShotPull(false);
             RopesPlusClient.onAffixedToHookShotRope((Integer) readOut[0]);
             ((EntityPlayer)player).worldObj.spawnParticle("largeexplode", ((Integer)readOut[1])+0.5D, (Integer)readOut[2], ((Integer)readOut[3])+0.5D, 1.0D, 0.0D, 0.0D);
         }

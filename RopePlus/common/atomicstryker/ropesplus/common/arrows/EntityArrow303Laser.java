@@ -28,7 +28,7 @@ public class EntityArrow303Laser extends EntityArrow303
     {
         super.entityInit();
         name = "Penetrating Arrow";
-        craftingResults = 1;
+        craftingResults = 4;
         itemId = Settings_RopePlus.itemIdArrowLaser;
         tip = Item.redstone;
         curvature = 0.0F;

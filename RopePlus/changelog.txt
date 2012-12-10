@@ -1,3 +1,10 @@
+RopesPlus 1.3.1
+- fixed Confusion Arrow crash reason
+- adjusted several Arrow recipes to yield more arrows per craft
+
+RopesPlus 1.3.0
+- fixed HookShot Rope not resetting properly
+
 RopesPlus 1.2.9
 - fixed HookShot Item having global properties instead of per-players
 

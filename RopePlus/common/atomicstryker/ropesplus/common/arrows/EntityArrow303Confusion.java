@@ -1,9 +1,15 @@
 package atomicstryker.ropesplus.common.arrows;
 
-import java.util.*;
+import java.util.ArrayList;
 
+import net.minecraft.src.Block;
+import net.minecraft.src.DamageSource;
+import net.minecraft.src.Entity;
+import net.minecraft.src.EntityCreature;
+import net.minecraft.src.EntityLiving;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.World;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
-import net.minecraft.src.*;
 
 public class EntityArrow303Confusion extends EntityArrow303
 {
@@ -24,7 +30,7 @@ public class EntityArrow303Confusion extends EntityArrow303
     {
         super.entityInit();
         name = "Confusing Arrow";
-        craftingResults = 1;
+        craftingResults = 4;
         itemId = Settings_RopePlus.itemIdArrowConfusion;
         tip = Block.sand;
         item = new ItemStack(itemId, 1, 0);
@@ -54,15 +60,13 @@ public class EntityArrow303Confusion extends EntityArrow303
 
     private void confuse(Entity entity)
     {
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE));
+        Object[] ents = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE)).toArray();
         ArrayList<EntityCreature> hitList = new ArrayList();
-        Iterator<Entity> iterator = list.iterator();
-        while(iterator.hasNext());
+        for (Object o : ents)
         {
-            Entity entity1 = iterator.next();
-            if((entity1 instanceof EntityCreature) && entity1 != shooter)
+            if (o instanceof EntityCreature && o != shooter)
             {
-                hitList.add((EntityCreature)entity1);
+                hitList.add((EntityCreature)o);
             }
         }
         
