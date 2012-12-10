@@ -1,3 +1,12 @@
+1.6.6
+- refixed textures. Reminder to self: JUST SAY NO NEXT TIME
+
+1.6.5
+- fixed loading
+
+1.6.4
+- fixed OreRegistry Recipe Hook registering too late
+
 1.6.3
 - changed Collector Recipe so it no longer collides with Ironchests
 

@@ -93,7 +93,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.3", dependencies = "after:BuildCraft|Core;after:BuildCraft|Factory;after:BuildCraft|Energy;after:BuildCraft|Builders;after:BuildCraft|Transport")
+@Mod(modid = "MFReloaded", name = "Minefactory Reloaded", version = "1.4.5R1.6.6", dependencies = "after:BuildCraft|Core;after:BuildCraft|Factory;after:BuildCraft|Energy;after:BuildCraft|Builders;after:BuildCraft|Transport")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MFReloaded" }, packetHandler = ServerPacketHandler.class),
@@ -196,14 +196,9 @@ public class MineFactoryReloadedCore
     @PreInit
     public void preInit(FMLPreInitializationEvent evt)
     {
-        loadConfig(evt.getSuggestedConfigurationFile());
-    }
-
-    @Init
-    public void load(FMLInitializationEvent evt)
-    {
         instance = this;
-
+        loadConfig(evt.getSuggestedConfigurationFile());
+        
         machineMetadataMappings = new HashMap<Machine, Integer>();
         machineMetadataMappings.put(Machine.Planter, 0);
         machineMetadataMappings.put(Machine.Fisher, 1);
@@ -214,22 +209,25 @@ public class MineFactoryReloadedCore
         machineMetadataMappings.put(Machine.Collector, 6);
         machineMetadataMappings.put(Machine.Breaker, 7);
         machineMetadataMappings.put(Machine.Weather, 8);
-
+        
         setupTextures();
-
+        
         passengerRailPickupBlock = new BlockRailPassengerPickup(Util.getInt(passengerPickupRailBlockId), passengerRailPickupTexture);
         passengerRailDropoffBlock = new BlockRailPassengerDropoff(Util.getInt(passengerDropoffRailBlockId), passengerRailDropoffTexture);
         cargoRailDropoffBlock = new BlockRailCargoDropoff(Util.getInt(cargoDropoffRailBlockId), cargoRailDropoffTexture);
         cargoRailPickupBlock = new BlockRailCargoPickup(Util.getInt(cargoPickupRailBlockId), cargoRailPickupTexture);
-
         conveyorBlock = new BlockConveyor(Util.getInt(conveyorBlockId), conveyorTexture);
-
         machineBlock = new BlockFactoryMachine(Util.getInt(machineBlockId), 0);
-
         steelIngotItem = (new ItemFactory(Util.getInt(steelIngotItemId))).setIconIndex(steelIngotTexture).setItemName("steelIngot");
         factoryHammerItem = (new ItemFactory(Util.getInt(hammerItemId))).setIconIndex(factoryHammerTexture).setItemName("factoryWrench").setMaxStackSize(1);
         milkItem = (new ItemFactory(Util.getInt(milkItemId))).setIconIndex(milkTexture).setItemName("milkItem");
+        
+        MinecraftForge.EVENT_BUS.register(instance);
+    }
 
+    @Init
+    public void load(FMLInitializationEvent evt)
+    {
         GameRegistry.registerBlock(machineBlock, ItemFactoryMachine.class);
         GameRegistry.registerBlock(conveyorBlock);
         GameRegistry.registerBlock(passengerRailPickupBlock);
@@ -253,7 +251,6 @@ public class MineFactoryReloadedCore
             GameRegistry.addRecipe(new ItemStack(steelIngotItem, 5), new Object[] { " C ", "CIC", " C ", Character.valueOf('C'), Item.coal, Character.valueOf('I'), Item.ingotIron });
         }
 
-        MinecraftForge.EVENT_BUS.register(instance);
         OreDictionary.registerOre("ingotRefinedIron", new ItemStack(steelIngotItem));
 
         registerFarmables();
