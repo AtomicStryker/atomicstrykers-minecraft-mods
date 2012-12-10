@@ -165,6 +165,11 @@ public class MultiMineClient
      */
     public void onServerSentPartialBlockData(int x, int y, int z, int progress)
     {
+        if (thePlayer == null)
+        {
+            return;
+        }
+        
         //System.out.println("Client received partial Block packet for: ["+x+"|"+y+"|"+z+"], progress now: "+progress);
         updateCloudTickReading();
         

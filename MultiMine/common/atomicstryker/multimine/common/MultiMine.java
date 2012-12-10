@@ -24,7 +24,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.2.2")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.2.3")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ServerPacketHandler.class),

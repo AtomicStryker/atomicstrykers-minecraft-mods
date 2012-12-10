@@ -1,3 +1,6 @@
+1.2.3
+- fixed issue with clients crashing when connecting to a server someone is mining on that moment
+
 1.2.2
 - fixed issue with dimension Ids preventing it from working 100% with Mystcraft, it does now.
 
