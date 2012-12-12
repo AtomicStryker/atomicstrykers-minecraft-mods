@@ -101,3 +101,6 @@ a: setAccessible now true
 8.3
 + fixed initialization problem preventing Extra Biomes to spawn stuff by default
 + made cavechunk's pack the default pack, props to him http://www.minecraftforum.net/user/973867-cavechunk/
+
+8.4
++ fixed crash when placing invalid chests via template

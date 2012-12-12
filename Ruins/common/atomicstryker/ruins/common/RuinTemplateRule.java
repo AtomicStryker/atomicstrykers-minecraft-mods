@@ -276,11 +276,14 @@ public class RuinTemplateRule {
     private static void addEasyChest( World world, Random random, int x, int y, int z, int items ) {
         world.setBlockWithNotify( x, y, z, Block.chest.blockID );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
-        ItemStack stack = null;
-        for( int i = 0; i < items; i++ ) {
-            stack = getNormalStack( random );
-            if( stack != null ) {
-                chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+        if (chest != null)
+        {
+            ItemStack stack = null;
+            for( int i = 0; i < items; i++ ) {
+                stack = getNormalStack( random );
+                if( stack != null ) {
+                    chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+                }
             }
         }
     }
@@ -288,15 +291,18 @@ public class RuinTemplateRule {
     private static void addMediumChest( World world, Random random, int x, int y, int z, int items ) {
         world.setBlockWithNotify( x, y, z, Block.chest.blockID );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
-        ItemStack stack = null;
-        for( int i = 0; i < items; i++ ) {
-            if( random.nextInt( 20 ) < 19 ) {
-                stack = getNormalStack( random );
-            } else {
-                stack = getLootStack( random );
-            }
-            if( stack != null ) {
-                chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+        if (chest != null)
+        {
+            ItemStack stack = null;
+            for( int i = 0; i < items; i++ ) {
+                if( random.nextInt( 20 ) < 19 ) {
+                    stack = getNormalStack( random );
+                } else {
+                    stack = getLootStack( random );
+                }
+                if( stack != null ) {
+                    chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+                }
             }
         }
     }
@@ -304,15 +310,18 @@ public class RuinTemplateRule {
     private static void addHardChest( World world, Random random, int x, int y, int z, int items ) {
         world.setBlockWithNotify( x, y, z, Block.chest.blockID );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
-        ItemStack stack = null;
-        for( int i = 0; i < items; i++ ) {
-            if( random.nextInt( 10 ) < 9 ) {
-                stack = getNormalStack( random );
-            } else {
-                stack = getLootStack( random );
-            }
-            if( stack != null ) {
-                chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+        if (chest != null)
+        {
+            ItemStack stack = null;
+            for( int i = 0; i < items; i++ ) {
+                if( random.nextInt( 10 ) < 9 ) {
+                    stack = getNormalStack( random );
+                } else {
+                    stack = getLootStack( random );
+                }
+                if( stack != null ) {
+                    chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+                }
             }
         }
     }
