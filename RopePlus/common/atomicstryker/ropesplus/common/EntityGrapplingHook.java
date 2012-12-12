@@ -397,8 +397,13 @@ public class EntityGrapplingHook extends Entity
         setPosition(posX, posY, posZ);
     }
 	
-    public void recallHook()
+    public void recallHook(EntityPlayer entityplayer)
     {
+        if (owner == null)
+        {
+            owner = entityplayer;
+        }
+        
         if(plantedHook != null)
         {
             double d = owner.posX - posX;

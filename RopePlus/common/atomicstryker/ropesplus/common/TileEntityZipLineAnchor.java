@@ -18,7 +18,6 @@ public class TileEntityZipLineAnchor extends TileEntity
         targetY = -1;
         targetZ = -1;
         ropeEnt = null;
-        
     }
     
     @Override
@@ -50,7 +49,6 @@ public class TileEntityZipLineAnchor extends TileEntity
     public void validate()
     {
         super.validate();
-        trySpawningRope();
     }
     
     @Override
@@ -84,9 +82,10 @@ public class TileEntityZipLineAnchor extends TileEntity
     
     private void checkRope()
     {
-        if (ropeEnt != null && ropeEnt.isDead)
+        if (ropeEnt == null || (ropeEnt != null && ropeEnt.isDead))
         {
             ropeEnt = null;
+            trySpawningRope();
         }
     }
     
@@ -95,12 +94,7 @@ public class TileEntityZipLineAnchor extends TileEntity
         if (targetY > 0)
         {
             if (worldObj.isBlockOpaqueCube(targetX, targetY, targetZ))
-            {
-                if (ropeEnt != null)
-                {
-                    ropeEnt.setDead();
-                }
-                
+            {                
                 ropeEnt = new EntityFreeFormRope(worldObj);
                 ropeEnt.setStartCoordinates(xCoord+0.5D, yCoord, zCoord+0.5D);
                 ropeEnt.setEndCoordinates(targetX+0.5D, targetY+1D, targetZ+0.5D);

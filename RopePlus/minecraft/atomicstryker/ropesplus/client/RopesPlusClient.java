@@ -1,6 +1,5 @@
 package atomicstryker.ropesplus.client;
 
-import java.io.File;
 import java.util.EnumSet;
 
 import net.minecraft.client.Minecraft;
@@ -10,42 +9,33 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.InventoryPlayer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.Render;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.src.KeyBinding;
 
 import org.lwjgl.input.Keyboard;
 
 import atomicstryker.ForgePacketWrapper;
-import atomicstryker.ropesplus.common.CommonProxy;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
-import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.client.registry.KeyBindingRegistry;
+import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
 
 public class RopesPlusClient implements ITickHandler
 {
     
+    private Minecraft mc;
     private EntityArrow303 selectedArrow;
     private static int arrowCount;
     private int selectedSlot;
-    private boolean cycled;
     private static EntityPlayer localPlayer;
     private GuiScreen prevScreen;
-    
-    public static int keyforward;
-    public static int keyback;
-    private String keyNameForward;
-    private String keyNameBackward;
+    private ItemStack prevItem;
     
     private int countDownToArrowCount;
     
@@ -59,28 +49,30 @@ public class RopesPlusClient implements ITickHandler
     
     public RopesPlusClient()
     {
+        mc = FMLClientHandler.instance().getClient();
         tickTypes = EnumSet.of(TickType.RENDER);
         
         selectedArrow = null;
         arrowCount = -1;
         selectedSlot = 0;
-        cycled = false;
         localPlayer = null;
         prevScreen = null;
+        prevItem = null;
         countDownToArrowCount = 100;
         onZipLine = null;
         lastZipLineLength = 0;
         timeNextZipUpdate = 0;
-
-        keyforward = Keyboard.getKeyIndex("COMMA");
-        keyback = Keyboard.getKeyIndex("PERIOD");
-        keyNameForward = "COMMA";
-        keyNameBackward = "PERIOD";
+        
+        boolean[] repeat = {false};
+        KeyBinding[] keyf = {new KeyBinding("SwapArrowsForward", Keyboard.KEY_COMMA)};
+        KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsForward(keyf, repeat));
+        KeyBinding[] keyb = {new KeyBinding("SwapArrowsBackward", Keyboard.KEY_PERIOD)};
+        KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsBackward(keyb, repeat));
 
         renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
     }
     
-    private void selectArrow()
+    private void selectAnyArrow()
     {
         if(localPlayer == null)
         {
@@ -88,6 +80,7 @@ public class RopesPlusClient implements ITickHandler
             selectedSlot = 0;
             return;
         }
+        
         findNextArrow(true);
         if(selectedArrow == null)
         {
@@ -95,91 +88,108 @@ public class RopesPlusClient implements ITickHandler
         }
     }
 
-    private void findNextArrow(boolean flag)
+    private void findNextArrow(boolean keepArrowType)
     {
         EntityArrow303 entityarrow303 = selectedArrow;
         int i = selectedSlot;
-        findNextArrowBetween(entityarrow303, i, 1, localPlayer.inventory.mainInventory.length, flag);
-        if(selectedArrow == null)
-        {
-            findNextArrowBetween(entityarrow303, 0, 1, i, flag);
-        }
+        findNextArrow(entityarrow303, 1, keepArrowType);
     }
 
     private void findPrevArrow()
     {
         EntityArrow303 entityarrow303 = selectedArrow;
         int i = selectedSlot;
-        findNextArrowBetween(entityarrow303, i, -1, -1, false);
-        if(selectedArrow == null)
-        {
-            findNextArrowBetween(entityarrow303, localPlayer.inventory.mainInventory.length - 1, -1, i + 1, false);
-        }
+        findNextArrow(entityarrow303, -1, false);
     }
-
-    private void findNextArrowBetween(EntityArrow303 previousarrow303, int i, int j, int k, boolean dontKeepArrowType)
+    
+    /**
+     * Iterates forward or backward through the player inventory until a full cycle is done and
+     * no other arrow could be found, or sets the selectedSlot to the newly found arrow and
+     * propagates the update. Resumes from the other end of the inventory array when hitting it's boundaries.
+     * 
+     * @param previousarrow303 previously selected EntityArrow303
+     * @param indexProgress how to iterate through the inventory
+     * @param keepArrowType true if the new arrow type must match the old one, false if it must differ
+     */
+    private void findNextArrow(EntityArrow303 previousarrow303, int indexProgress, boolean keepArrowType)
     {
-        for(int l = i; j > 0 && l < k || l > k; l += j)
+        int prevSlot = selectedSlot;
+        int newSlot = keepArrowType ? selectedSlot : selectedSlot+indexProgress;
+        
+        int iterations = 0;
+        while (iterations++ < localPlayer.inventory.mainInventory.length)
         {
-            ItemStack itemstack = localPlayer.inventory.mainInventory[l];
+            if (newSlot < 0)
+            {
+                newSlot = localPlayer.inventory.mainInventory.length-1;
+            }
+            else if (newSlot >= localPlayer.inventory.mainInventory.length)
+            {
+                newSlot = 0;
+            }
+            
+            ItemStack itemstack = localPlayer.inventory.mainInventory[newSlot];
             if(itemstack == null)
             {
+                newSlot += indexProgress;
                 continue;
             }
+            
             Item item = itemstack.getItem();
             
-            if(item == null)
-            {
-                continue;
-            }
-            
-            if (!(item instanceof ItemArrow303) && !(item.shiftedIndex == Item.arrow.shiftedIndex))
-            {               
-                continue;
-            }
-            
+            // handle vanilla arrows
             if (item.shiftedIndex == Item.arrow.shiftedIndex)
             {
                 EntityArrow303 itemarrow303 = new EntityArrow303(localPlayer.worldObj);
                 if(previousarrow303 == null || previousarrow303.tip != itemarrow303.tip)
                 {
                     selectedArrow = itemarrow303;
-                    selectedSlot = l;
+                    selectedSlot = newSlot;
                     sendPacketToUpdateArrowChoice();
                     return;
                 }
+                
+                newSlot += indexProgress;
+                continue;
+            }
+            
+            // handle ropes+ arrows
+            if (item == null || (!(item instanceof ItemArrow303)))
+            {
+                newSlot += indexProgress;
                 continue;
             }
             
             ItemArrow303 itemarrow303 = (ItemArrow303)item;
-            if(previousarrow303 == null || dontKeepArrowType && itemarrow303.arrow == previousarrow303 || !dontKeepArrowType && itemarrow303.arrow != previousarrow303)
+            if(previousarrow303 == null || keepArrowType && itemarrow303.arrow == previousarrow303 || !keepArrowType && itemarrow303.arrow != previousarrow303)
             {
                 selectedArrow = itemarrow303.arrow;
-                selectedSlot = l;
+                selectedSlot = newSlot;
                 sendPacketToUpdateArrowChoice();
                 return;
             }
         }
+        
+        // failure to find anything!
         selectedArrow = null;
         selectedSlot = 0;
     }
 
     private int countArrows(EntityArrow303 entityarrow303)
     {
-        int i = 0;
+        int count = 0;
         InventoryPlayer inventoryplayer = localPlayer.inventory;
         ItemStack aitemstack[] = inventoryplayer.mainInventory;
-        int j = aitemstack.length;
-        for(int k = 0; k < j; k++)
+        for(int k = 0; k < aitemstack.length; k++)
         {
             ItemStack itemstack = aitemstack[k];
             if(itemstack != null && itemstack.itemID == entityarrow303.itemId)
             {
-                i += itemstack.stackSize;
+                count += itemstack.stackSize;
             }
         }
 
-        return i;
+        return count;
     }
 
     private void sendPacketToUpdateArrowChoice()
@@ -213,7 +223,6 @@ public class RopesPlusClient implements ITickHandler
         {
             selectedArrow = previousarrow303;
             selectedSlot = i;
-            System.out.println("client cycle");
             sendPacketToUpdateArrowChoice();
         }
     }
@@ -236,53 +245,33 @@ public class RopesPlusClient implements ITickHandler
         {
             localPlayer = mc.thePlayer;
             prevScreen = mc.currentScreen;
-            selectArrow();
+            selectAnyArrow();
         }
         
         if(mc.currentScreen == null)
         {
             ItemStack itemstack = mc.thePlayer.getCurrentEquippedItem();
+            if (itemstack != prevItem)
+            {
+                prevItem = itemstack;
+                selectAnyArrow();
+            }
+            
             if(itemstack != null && (itemstack.itemID == Item.bow.shiftedIndex || itemstack.itemID == RopesPlusCore.bowRopesPlus.shiftedIndex))
             {
-                boolean pressingForward = Keyboard.isKeyDown(keyforward);
-                boolean pressingBackward = Keyboard.isKeyDown(keyback);
-                if(cycled)
+                boolean hasArrows = selectedArrow != null;
+                String s = hasArrows ? selectedArrow.name : "No arrows";
+                if (hasArrows)
                 {
-                    if(!pressingForward && !pressingBackward)
+                    if (arrowCount == -1 || countDownToArrowCount-- < 0)
                     {
-                        cycled = false;
+                        countDownToArrowCount = 100;
+                        arrowCount = countArrows(selectedArrow);
                     }
+                    s = s.concat("x"+arrowCount);
                 }
-                else
-                {
-                    cycled = true;
-                    if(pressingForward)
-                    {
-                        cycle(false);
-                    }
-                    else if(pressingBackward)
-                    {
-                        cycle(true);
-                    }
-                    else
-                    {
-                        cycled = false;
-                    }
-                }
-                if(selectedArrow == null)
-                {
-                    return;
-                }
-                
-                String s = selectedArrow.name;
-                if (arrowCount == -1 || countDownToArrowCount-- < 0)
-                {
-                    countDownToArrowCount = 100;
-                    arrowCount = countArrows(selectedArrow);
-                }
-                s = (new StringBuilder()).append(s).append("x").append(arrowCount).toString();
                 mc.fontRenderer.drawStringWithShadow(s, 2, 10, 0x2F96EB);
-                mc.fontRenderer.drawStringWithShadow("Swap arrows with "+keyNameForward+", "+keyNameBackward, 2, 20, 0xffffff);
+                mc.fontRenderer.drawStringWithShadow("See control options for swap buttons", 2, 20, 0xffffff);
             }
         }
         
@@ -353,6 +342,78 @@ public class RopesPlusClient implements ITickHandler
                 lastZipLineLength = 0;
                 timeNextZipUpdate = System.currentTimeMillis();
             }
+        }
+    }
+    
+    private class KeySwapArrowsForward extends KeyHandler
+    {
+        private EnumSet tickTypes = EnumSet.of(TickType.CLIENT);
+        
+        public KeySwapArrowsForward(KeyBinding[] keyBindings, boolean[] repeatings)
+        {
+            super(keyBindings, repeatings);
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return "SwapArrowsForward";
+        }
+
+        @Override
+        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
+        {
+        }
+
+        @Override
+        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
+        {
+            if (tickEnd && mc.currentScreen == null)
+            {
+                cycle(false);
+            }
+        }
+
+        @Override
+        public EnumSet<TickType> ticks()
+        {
+            return tickTypes;
+        }
+    }
+    
+    private class KeySwapArrowsBackward extends KeyHandler
+    {
+        private EnumSet tickTypes = EnumSet.of(TickType.CLIENT);
+        
+        public KeySwapArrowsBackward(KeyBinding[] keyBindings, boolean[] repeatings)
+        {
+            super(keyBindings, repeatings);
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return "SwapArrowsBackward";
+        }
+
+        @Override
+        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
+        {
+        }
+
+        @Override
+        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
+        {
+            if (tickEnd && mc.currentScreen == null)
+            {
+                cycle(true);
+            }
+        }
+
+        @Override
+        public EnumSet<TickType> ticks()
+        {
+            return tickTypes;
         }
     }
     

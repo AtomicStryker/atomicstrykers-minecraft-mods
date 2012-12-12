@@ -47,7 +47,7 @@ public class ItemGrapplingHook extends Item
         if (!world.isRemote && RopesPlusCore.getGrapplingHookMap().get(entityplayer) != null)
         {
         	//System.out.println("recalling serverside hook!");
-        	RopesPlusCore.getGrapplingHookMap().get(entityplayer).recallHook();
+        	RopesPlusCore.getGrapplingHookMap().get(entityplayer).recallHook(entityplayer);
         	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 3, null), (Player)entityplayer);
         	RopesPlusCore.getGrapplingHookMap().remove(entityplayer);
         }

@@ -2,22 +2,16 @@ package atomicstryker.ropesplus.client;
 
 import java.io.File;
 
-import org.lwjgl.input.Keyboard;
-
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.registry.TickRegistry;
-
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Render;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
-import atomicstryker.ropesplus.client.BlockRenderHandler.BlockGrapplingHookRenderHandler;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.registry.TickRegistry;
 
 public class ClientProxy implements IProxy
 {
@@ -34,15 +28,7 @@ public class ClientProxy implements IProxy
 
     @Override
     public void loadConfig(File configFile)
-    {
-        Configuration config = new Configuration(configFile);
-        config.load();
-        
-        RopesPlusClient.keyforward = Keyboard.getKeyIndex(config.get(config.CATEGORY_GENERAL, "keyforward", "COMMA").value);
-        RopesPlusClient.keyback = Keyboard.getKeyIndex(config.get(config.CATEGORY_GENERAL, "keyback", "PERIOD").value);
-        
-        config.save();
-        
+    {        
         MinecraftForge.EVENT_BUS.register(new RopesPlusSounds());
     }
     
