@@ -14,12 +14,12 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     public int tier = 0;
     public boolean addedToEnergyNet = false;
 
-    public TileEntityBaseMachine(int var1, int var2, int var3, int var4)
+    public TileEntityBaseMachine(int inventorySize, int maxEnergy, int maxInput)
     {
-        super(var1);
-        this.fuelslot = var2;
-        this.maxEnergy = var3;
-        this.maxInput = var4;
+        super(inventorySize);
+        this.fuelslot = 0;
+        this.maxEnergy = maxEnergy;
+        this.maxInput = maxInput;
         this.tier = 1;
     }
 

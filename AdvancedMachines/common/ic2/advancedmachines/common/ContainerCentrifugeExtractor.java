@@ -1,8 +1,13 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
-import ic2.api.*;
+import ic2.api.IElectricItem;
+import net.minecraft.src.Container;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.ICrafting;
+import net.minecraft.src.InventoryPlayer;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.Slot;
+import net.minecraft.src.SlotFurnace;
 
 public class ContainerCentrifugeExtractor extends Container
 {
@@ -11,31 +16,31 @@ public class ContainerCentrifugeExtractor extends Container
     public int energy = 0;
     public int speed = 0;
 
-    public ContainerCentrifugeExtractor(InventoryPlayer var1, TileEntityCentrifugeExtractor var2)
+    public ContainerCentrifugeExtractor(InventoryPlayer inv, TileEntityCentrifugeExtractor tE)
     {
-        this.tileentity = var2;
-        this.addSlotToContainer(new Slot(var2, 0, 56, 17));
-        this.addSlotToContainer(new Slot(var2, 1, 56, 53));
-        this.addSlotToContainer(new SlotFurnace(var1.player, var2, 2, 115, 17));
-        this.addSlotToContainer(new SlotFurnace(var1.player, var2, 3, 115, 35));
-        this.addSlotToContainer(new SlotFurnace(var1.player, var2, 4, 115, 53)); //Re-added the third slot.
-        this.addSlotToContainer(new Slot(var2, 5, 152, 6));
-        this.addSlotToContainer(new Slot(var2, 6, 152, 24));
-        this.addSlotToContainer(new Slot(var2, 7, 152, 42));
-        this.addSlotToContainer(new Slot(var2, 8, 152, 60));
+        this.tileentity = tE;
+        this.addSlotToContainer(new Slot(tE, 0, 56, 53));
+        this.addSlotToContainer(new Slot(tE, 1, 56, 17));
+        this.addSlotToContainer(new SlotFurnace(inv.player, tE, 2, 115, 17));
+        this.addSlotToContainer(new SlotFurnace(inv.player, tE, 3, 115, 35));
+        this.addSlotToContainer(new SlotFurnace(inv.player, tE, 4, 115, 53)); //Re-added the third slot.
+        this.addSlotToContainer(new Slot(tE, 5, 152, 6));
+        this.addSlotToContainer(new Slot(tE, 6, 152, 24));
+        this.addSlotToContainer(new Slot(tE, 7, 152, 42));
+        this.addSlotToContainer(new Slot(tE, 8, 152, 60));
 
-        int var3;
-        for (var3 = 0; var3 < 3; ++var3)
+        int i;
+        for (i = 0; i < 3; ++i)
         {
-            for (int var4 = 0; var4 < 9; ++var4)
+            for (int j = 0; j < 9; ++j)
             {
-                this.addSlotToContainer(new Slot(var1, var4 + var3 * 9 + 9, 8 + var4 * 18, 84 + var3 * 18));
+                this.addSlotToContainer(new Slot(inv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
 
-        for (var3 = 0; var3 < 9; ++var3)
+        for (i = 0; i < 9; ++i)
         {
-            this.addSlotToContainer(new Slot(var1, var3, 8 + var3 * 18, 142));
+            this.addSlotToContainer(new Slot(inv, i, 8 + i * 18, 142));
         }
     }
 
@@ -60,9 +65,17 @@ public class ContainerCentrifugeExtractor extends Container
             	{
             		this.mergeItemStack(localstack, 5, 8, false);
             	}
+                else if (localstack.getItem() instanceof IElectricItem)
+                {
+                    if (((Slot) inventorySlots.get(0)).getStack() == null)
+                    {
+                        ((Slot) inventorySlots.get(0)).putStack(localstack);
+                        localslot.putStack((ItemStack)null);
+                    }
+                }
             	else
             	{
-            		this.mergeItemStack(localstack, 0, 1, false);
+            		this.mergeItemStack(localstack, 1, 2, false);
             	}
             }
 
@@ -91,9 +104,9 @@ public class ContainerCentrifugeExtractor extends Container
     {
         super.updateCraftingResults();
 
-        for (int var1 = 0; var1 < this.crafters.size(); ++var1)
+        for (int i = 0; i < this.crafters.size(); ++i)
         {
-            ICrafting var2 = (ICrafting)this.crafters.get(var1);
+            ICrafting var2 = (ICrafting)this.crafters.get(i);
             if (this.progress != this.tileentity.progress)
             {
                 var2.sendProgressBarUpdate(this, 0, this.tileentity.progress);
@@ -117,21 +130,21 @@ public class ContainerCentrifugeExtractor extends Container
     }
 
     @Override
-    public void updateProgressBar(int var1, int var2)
+    public void updateProgressBar(int key, int value)
     {
-        switch (var1)
+        switch (key)
         {
             case 0:
-                this.tileentity.progress = (short)var2;
+                this.tileentity.progress = (short)value;
                 break;
             case 1:
-                this.tileentity.energy = this.tileentity.energy & -65536 | var2;
+                this.tileentity.energy = this.tileentity.energy & -65536 | value;
                 break;
             case 2:
-                this.tileentity.energy = this.tileentity.energy & '\uffff' | var2 << 16;
+                this.tileentity.energy = this.tileentity.energy & '\uffff' | value << 16;
                 break;
             case 3:
-                this.tileentity.speed = (short)var2;
+                this.tileentity.speed = (short)value;
         }
     }
 
@@ -140,18 +153,4 @@ public class ContainerCentrifugeExtractor extends Container
     {
         return this.tileentity.isUseableByPlayer(var1);
     }
-
-    /* gone?
-    @Override
-    public int guiInventorySize()
-    {
-        return 9;
-    }
-
-    @Override
-    public int getInput()
-    {
-        return 0;
-    }
-    */
 }

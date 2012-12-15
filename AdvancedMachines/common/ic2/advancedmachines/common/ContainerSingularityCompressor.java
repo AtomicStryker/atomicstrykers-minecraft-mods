@@ -1,8 +1,13 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
-import ic2.api.*;
+import ic2.api.IElectricItem;
+import net.minecraft.src.Container;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.ICrafting;
+import net.minecraft.src.InventoryPlayer;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.Slot;
+import net.minecraft.src.SlotFurnace;
 
 public class ContainerSingularityCompressor extends Container
 {
@@ -14,10 +19,9 @@ public class ContainerSingularityCompressor extends Container
     public ContainerSingularityCompressor(InventoryPlayer var1, TileEntitySingularityCompressor var2)
     {
         this.tileentity = var2;
-        this.addSlotToContainer(new Slot(var2, 0, 56, 17));
-        this.addSlotToContainer(new Slot(var2, 1, 56, 53));
+        this.addSlotToContainer(new Slot(var2, 0, 56, 53));
+        this.addSlotToContainer(new Slot(var2, 1, 56, 17));
         this.addSlotToContainer(new SlotFurnace(var1.player, var2, 2, 115, 35));
-        
         this.addSlotToContainer(new Slot(var2, 3, 152, 6));
         this.addSlotToContainer(new Slot(var2, 4, 152, 24));
         this.addSlotToContainer(new Slot(var2, 5, 152, 42));
@@ -89,10 +93,18 @@ public class ContainerSingularityCompressor extends Container
             	{
             		this.mergeItemStack(localstack, 3, 6, false);
             	}
-            	else
-            	{
-            		this.mergeItemStack(localstack, 0, 1, false);
-            	}
+                else if (localstack.getItem() instanceof IElectricItem)
+                {
+                    if (((Slot) inventorySlots.get(0)).getStack() == null)
+                    {
+                        ((Slot) inventorySlots.get(0)).putStack(localstack);
+                        localslot.putStack((ItemStack)null);
+                    }
+                }
+                else
+                {
+                    this.mergeItemStack(localstack, 1, 2, false);
+                }
             }
 
             if (localstack.stackSize == 0)
@@ -139,18 +151,5 @@ public class ContainerSingularityCompressor extends Container
     {
         return this.tileentity.isUseableByPlayer(var1);
     }
-
-    /* gone ?
-    @Override
-    public int guiInventorySize()
-    {
-        return 7;
-    }
-
-    @Override
-    public int getInput()
-    {
-        return 0;
-    }
-    */
+    
 }

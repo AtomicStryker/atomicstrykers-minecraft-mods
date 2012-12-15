@@ -1,11 +1,19 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
+import ic2.api.INetworkDataProvider;
+import ic2.api.INetworkTileEntityEventListener;
+import ic2.api.IWrenchable;
+import ic2.api.NetworkHelper;
 
-import net.minecraft.src.*;
-import ic2.api.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TileEntityBlock extends TileEntity implements IWrenchable, INetworkDataProvider, INetworkTileEntityEventListener
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.TileEntity;
+
+public abstract class TileEntityBlock extends TileEntity implements IWrenchable, INetworkDataProvider, INetworkTileEntityEventListener
 {
     protected boolean created = false;
     public boolean active = false;
@@ -105,6 +113,12 @@ public class TileEntityBlock extends TileEntity implements IWrenchable, INetwork
     {
         return 1.0F;
     }
+    
+    @Override
+    public ItemStack getWrenchDrop(EntityPlayer entityPlayer)
+    {
+        return new ItemStack(this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord), 1, this.worldObj.getBlockMetadata(this.xCoord, this.yCoord, this.zCoord));
+    }
 
 	@Override
 	public List<String> getNetworkedFields()
@@ -116,4 +130,5 @@ public class TileEntityBlock extends TileEntity implements IWrenchable, INetwork
 	public void onNetworkEvent(int event)
 	{
 	}
+
 }

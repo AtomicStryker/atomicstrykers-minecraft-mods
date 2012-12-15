@@ -1,8 +1,15 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
-import ic2.api.*;
+import ic2.api.Ic2Recipes;
+import ic2.api.Items;
+
+import java.util.List;
+
+import net.minecraft.src.Container;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.InventoryPlayer;
+import net.minecraft.src.Item;
+import net.minecraft.src.ItemStack;
 
 public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
 {
@@ -19,7 +26,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
 	
     public TileEntityRotaryMacerator()
     {
-        super("Rotary Macerator", "%5d RPM", 1, new int[] {0, 1}, new int[] {2, 3});
+        super("Rotary Macerator", "%5d RPM", 1, new int[] {1}, new int[] {2, 3});
         
         idIronDust = Items.getItem("ironDust").itemID;
         idCopperDust = Items.getItem("copperDust").itemID;
@@ -45,7 +52,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     public ItemStack getResultFor(ItemStack macerated, boolean adjustOutput)
     {
     	ItemStack result = Ic2Recipes.getMaceratorOutputFor(macerated, adjustOutput);
-    	ItemStack supplement = (this.inventory[8] != null) ? this.inventory[8].copy() : null;
+    	ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
     	
     	if(supplement != null)
     	{
@@ -73,10 +80,10 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     	{
     		if (supplementedItemsLeft == 1)
     		{
-    			this.inventory[8].stackSize--;
-    			if (this.inventory[8].stackSize == 0)
+    			inventory[8].stackSize--;
+    			if (inventory[8].stackSize == 0)
     			{
-    				this.inventory[8] = null;
+    				inventory[8] = null;
     			}
     		}
     		supplementedItemsLeft--;

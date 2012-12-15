@@ -1,6 +1,7 @@
 package ic2.api;
 
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.ItemStack;
 
 /**
  * Allows a tile entity to make use of the wrench's removal and rotation functions.
@@ -46,5 +47,13 @@ public interface IWrenchable {
 	 * @return Probability from 0 to 1
 	 */
 	float getWrenchDropRate();
+	
+	/**
+	 * Determine the item the block will drop when the wrenching is successful.
+	 * 
+	 * @param entityPlayer player using the wrench
+	 * @return Item to drop
+	 */
+	ItemStack getWrenchDrop(EntityPlayer entityPlayer);
 }
 

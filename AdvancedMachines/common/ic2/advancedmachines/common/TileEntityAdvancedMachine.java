@@ -1,11 +1,16 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
+import ic2.api.Direction;
+import ic2.api.NetworkHelper;
+
+import java.util.List;
+
+import net.minecraft.src.Container;
+import net.minecraft.src.InventoryPlayer;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import ic2.api.*;
-import ic2.api.Direction;
 
 public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory
 {
@@ -32,7 +37,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     public TileEntityAdvancedMachine(String invName, String dataForm, int dataScale, int[] inputSlots, int[] outputSlots)
     {
-        super(inputSlots.length + outputSlots.length + 5, inputSlots.length, MAX_ENERGY, MAX_INPUT);
+        super(inputSlots.length + outputSlots.length + 6, MAX_ENERGY, MAX_INPUT);
         this.inventoryName = invName;
         this.dataFormat = dataForm;
         this.dataScaling = dataScale;
@@ -184,28 +189,28 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         if (this.canOperate())
         {
             //ItemStack resultStack = this.getResultFor(this.inventory[this.inputs[this.inputs[0]]], false).copy();
-			ItemStack resultStack = this.getResultFor(this.inventory[this.inputs[0]], false);
-            int[] newOutputs = new int[this.outputs.length];
+			ItemStack resultStack = this.getResultFor(this.inventory[inputs[0]], false);
+            int[] resultingStackSizesOutputs = new int[outputs.length];
             int resultMaxStackSize = resultStack.getMaxStackSize();
 
             int index;
-            for (index = 0; index < this.outputs.length; ++index)
+            for (index = 0; index < outputs.length; ++index)
             {
-                if (this.inventory[this.outputs[index]] == null)
+                if (inventory[outputs[index]] == null)
                 {
-                    newOutputs[index] = resultMaxStackSize;
+                    resultingStackSizesOutputs[index] = resultMaxStackSize;
                 }
-                else if (this.inventory[this.outputs[index]].isItemEqual(resultStack))
+                else if (inventory[outputs[index]].isItemEqual(resultStack))
                 {
-                    newOutputs[index] = resultMaxStackSize - this.inventory[this.outputs[index]].stackSize;
+                    resultingStackSizesOutputs[index] = resultMaxStackSize - inventory[outputs[index]].stackSize;
                 }
             }
 
-            for (index = 0; index < newOutputs.length; ++index)
+            for (index = 0; index < resultingStackSizesOutputs.length; ++index)
             {
-                if (newOutputs[index] > 0)
+                if (resultingStackSizesOutputs[index] > 0)
                 {
-                    int resultingStackSize = Math.min(resultStack.stackSize, newOutputs[index]);
+                    int resultingStackSize = Math.min(resultStack.stackSize, resultingStackSizesOutputs[index]);
                     if (this.inventory[this.outputs[index]] == null)
                     {
                         this.inventory[this.outputs[index]] = getResultFor(this.inventory[this.inputs[0]], true);
@@ -288,9 +293,12 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     {
         switch (side)
         {
-            case DOWN: return 1; // 0 bottom, power slot, 1
-            case UP: return 0; // 1 top side, input, 0
-            default: return 2; // anything other is sides eg output, starts at slot 2
+            case DOWN:
+                return 0; // power slot always 0
+            case UP:
+                return inputs[0];
+            default:
+                return outputs[0];
         }
     }
 
@@ -370,10 +378,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     	NetworkHelper.announceBlockUpdate(worldObj, xCoord, yCoord, zCoord);
     }
     
-    public int getUpgradeSlotsStartSlot()
-    {
-    	return inventory.length-4;
-    }
+    public abstract int getUpgradeSlotsStartSlot();
     
     public void setOverclockRates()
     {

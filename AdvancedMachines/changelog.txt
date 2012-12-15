@@ -1,3 +1,15 @@
+Version 4.6a
+	fixed Upgrades not working in certain Slots on certain Machines
+	fixed Sounds not working
+	fixed Macerator not using the upper Output
+
+Version 4.6
+	update to IC2 1.110
+	fixed the GUI opening when sneak-clicking the block
+	normalized battery slot to id 0
+	shift clicking electric items (batteries) should now place them in the battery slot
+	fixed things getting stuffed in the wrong holes by pipes
+
 Version 4.5
 	update to MC 1.4.4
 

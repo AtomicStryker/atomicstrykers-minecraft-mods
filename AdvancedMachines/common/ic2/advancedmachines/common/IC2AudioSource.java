@@ -26,24 +26,31 @@ public class IC2AudioSource
 		{
 			try
 			{
-				audioManagerClass = Class.forName("ic2.common.AudioManager");
+				audioManagerClass = Class.forName("ic2.common.AudioManagerClient");
 				audioManagercreateSource = audioManagerClass.getDeclaredMethod("createSource", Object.class, String.class);
 				audioManagerremoveSource = audioManagerClass.getDeclaredMethod("removeSources", Object.class);
 				audioManagerplayOnce = audioManagerClass.getDeclaredMethod("playOnce", Object.class, String.class);
 				
 				audioManagerInstance = Class.forName("ic2.common.IC2").getDeclaredField("audioManager").get(null);
 				
-				audioSourceClass = Class.forName("ic2.common.AudioSource");
+				audioSourceClass = Class.forName("ic2.common.AudioSourceClient");
 				audioSourcePlay = audioSourceClass.getDeclaredMethod("play", (Class[])null);
 				audioSourceStop = audioSourceClass.getDeclaredMethod("stop", (Class[])null);
 				audioSourceRemove = audioSourceClass.getDeclaredMethod("remove", (Class[])null);
 				
 				System.out.println("IC2AudioSource Init successful!");
+				
+				System.out.println("audioManagerClass: "+audioManagerClass);
+				System.out.println("audioManagercreateSource: "+audioManagercreateSource);
+				System.out.println("audioManagerplayOnce: "+audioManagerplayOnce);
+				System.out.println("audioManagerInstance: "+audioManagerInstance);
+				System.out.println("audioManagercreateSource type: "+audioManagercreateSource.toGenericString());
 			}
 			catch (Exception e)
 			{
 				System.out.println("IC2AudioSource Init failed, exception: "+e);
 				initFailed = true;
+				e.printStackTrace();
 			}
 		}
 		
@@ -51,19 +58,14 @@ public class IC2AudioSource
 		{
 			try
 			{
-				this.audioSourceinstance = audioManagercreateSource.invoke(audioManagerClass, tEnt, soundfile);
+			    
+				audioSourceinstance = audioManagercreateSource.invoke(audioManagerInstance, tEnt, soundfile);
 			}
-			catch (IllegalAccessException e)
+			catch (Exception e)
 			{
-				this.audioSourceinstance = null;
-			}
-			catch (IllegalArgumentException e)
-			{
-				this.audioSourceinstance = null;
-			}
-			catch (InvocationTargetException e)
-			{
-				this.audioSourceinstance = null;
+			    System.out.println("IC2AudioSource second Init failed, exception: "+e);
+				audioSourceinstance = null;
+				e.printStackTrace();
 			}
 		}
 	}
@@ -76,9 +78,10 @@ public class IC2AudioSource
 			{
 				audioManagerremoveSource.invoke(audioManagerInstance, audioSource);
 			}
-			catch (IllegalAccessException e) {}
-			catch (IllegalArgumentException e) {}
-			catch (InvocationTargetException e) {}
+			catch (Exception e)
+			{
+			    e.printStackTrace();
+			}
 		}
 	}
 	
@@ -90,9 +93,10 @@ public class IC2AudioSource
 			{
 				audioManagerplayOnce.invoke(audioManagerInstance, tEnt, soundFile);
 			}
-			catch (IllegalAccessException e) {}
-			catch (IllegalArgumentException e) {}
-			catch (InvocationTargetException e) {}
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 		}
 	}
 	
@@ -104,9 +108,10 @@ public class IC2AudioSource
 			{
 				audioSourcePlay.invoke(audioSourceinstance, (Object[])null);
 			}
-			catch (IllegalAccessException e) {}
-			catch (IllegalArgumentException e) {}
-			catch (InvocationTargetException e) {}
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 		}
 	}
 	
@@ -118,9 +123,10 @@ public class IC2AudioSource
 			{
 				audioSourceStop.invoke(audioSourceinstance, (Object[])null);
 			}
-			catch (IllegalAccessException e) {}
-			catch (IllegalArgumentException e) {}
-			catch (InvocationTargetException e) {}
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 		}
 	}
 	
@@ -132,9 +138,10 @@ public class IC2AudioSource
 			{
 				audioSourceRemove.invoke(audioSourceinstance, (Object[])null);
 			}
-			catch (IllegalAccessException e) {}
-			catch (IllegalArgumentException e) {}
-			catch (InvocationTargetException e) {}
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 		}
 	}
 }

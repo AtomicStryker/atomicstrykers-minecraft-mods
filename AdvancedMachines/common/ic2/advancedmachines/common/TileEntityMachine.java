@@ -1,17 +1,19 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
-import ic2.api.*;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.IInventory;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagList;
 
 public abstract class TileEntityMachine extends TileEntityBlock implements IInventory
 {
     public ItemStack[] inventory;
 
-    public TileEntityMachine(int var1)
+    public TileEntityMachine(int inventorySize)
     {
     	super();
-        this.inventory = new ItemStack[var1];
+        this.inventory = new ItemStack[inventorySize];
     }
 
     @Override

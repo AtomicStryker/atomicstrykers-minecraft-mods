@@ -185,16 +185,16 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9)
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9)
     {
-        if (par5EntityPlayer.getCurrentEquippedItem() != null
-        && (par5EntityPlayer.getCurrentEquippedItem().itemID == idWrench || par5EntityPlayer.getCurrentEquippedItem().itemID == idEWrench))
+        if (entityPlayer.isSneaking())
         {
-            if (par5EntityPlayer.isSneaking())
-            {
-                return false;   
-            }
-            
+            return false;   
+        }
+        
+        if (entityPlayer.getCurrentEquippedItem() != null
+        && (entityPlayer.getCurrentEquippedItem().itemID == idWrench || entityPlayer.getCurrentEquippedItem().itemID == idEWrench))
+        {            
             TileEntityAdvancedMachine team = (TileEntityAdvancedMachine)world.getBlockTileEntity(x, y, z);
             if (team != null)
             {
@@ -206,7 +206,7 @@ public class BlockAdvancedMachines extends BlockContainer
         }
         else
         {
-            par5EntityPlayer.openGui(AdvancedMachines.instance, 0, world, x, y, z);
+            entityPlayer.openGui(AdvancedMachines.instance, 0, world, x, y, z);
             return true;
         }
         return false;
