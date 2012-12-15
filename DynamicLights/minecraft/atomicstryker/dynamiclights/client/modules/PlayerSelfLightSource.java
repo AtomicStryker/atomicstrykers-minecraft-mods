@@ -2,6 +2,7 @@ package atomicstryker.dynamiclights.client.modules;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityPlayer;
@@ -30,7 +31,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.2", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.3", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -38,11 +39,13 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     private int lightLevel;
     private boolean enabled;
     private HashMap<Integer, Integer> itemsMap;
+    private HashSet<Integer> notWaterProofItems;
     
     @PreInit
     public void preInit(FMLPreInitializationEvent evt)
     {
         itemsMap = new HashMap<Integer, Integer>();
+        notWaterProofItems = new HashSet<Integer>();
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
@@ -56,6 +59,14 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             int id = Integer.valueOf(values[0]);
             int value = Integer.valueOf(values[1]);
             itemsMap.put(id, value);
+        }
+        
+        Property notWaterProofList = config.get(config.CATEGORY_GENERAL, "TurnedOffByWaterItems", "50,327");
+        notWaterProofList.comment = "Item IDs that do not shine light when held in water, have to be present in LightItems. Syntax: ItemID, seperated by commas";
+        tokens = notWaterProofList.value.split(",");
+        for (String oneId : tokens)
+        {
+            notWaterProofItems.add(Integer.valueOf(oneId));
         }
         
         config.save();
@@ -115,10 +126,19 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                     lightLevel = 0;
                 }
                 else
-                {                    
+                {
                     if (thePlayer.isBurning())
                     {
                         lightLevel = 15;
+                    }
+                    else
+                    {
+                        if (thePlayer.isInWater()
+                        && thePlayer.getCurrentEquippedItem() != null
+                        && notWaterProofItems.contains(thePlayer.getCurrentEquippedItem().itemID))
+                        {
+                            lightLevel = 0;
+                        }
                     }
                 }
                 

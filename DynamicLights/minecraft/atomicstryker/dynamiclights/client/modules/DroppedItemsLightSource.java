@@ -3,6 +3,7 @@ package atomicstryker.dynamiclights.client.modules;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.Material;
+import net.minecraft.src.MathHelper;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
@@ -33,7 +36,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.2", dependencies = "required-after:DynamicLights")
 public class DroppedItemsLightSource
 {
     private Minecraft mcinstance;
@@ -44,11 +47,13 @@ public class DroppedItemsLightSource
     private boolean threadRunning;
     
     private HashMap<Integer, Integer> itemsMap;
+    private HashSet<Integer> notWaterProofItems;
     
     @PreInit
     public void preInit(FMLPreInitializationEvent evt)
     {
         itemsMap = new HashMap<Integer, Integer>();
+        notWaterProofItems = new HashSet<Integer>();
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
@@ -66,6 +71,14 @@ public class DroppedItemsLightSource
             int id = Integer.valueOf(values[0]);
             int value = Integer.valueOf(values[1]);
             itemsMap.put(id, value);
+        }
+        
+        Property notWaterProofList = config.get(config.CATEGORY_GENERAL, "TurnedOffByWaterItems", "50,327");
+        notWaterProofList.comment = "Item IDs that do not shine light when dropped and in water, have to be present in LightItems. Syntax: ItemID, seperated by commas";
+        tokens = notWaterProofList.value.split(",");
+        for (String oneId : tokens)
+        {
+            notWaterProofItems.add(Integer.valueOf(oneId));
         }
         
         config.save();
@@ -197,12 +210,14 @@ public class DroppedItemsLightSource
         private EntityItem entity;
         private int lightLevel;
         private boolean enabled;
+        private boolean notWaterProof;
         
         public EntityItemAdapter(EntityItem eI)
         {
             lightLevel = 0;
             enabled = false;
             entity = eI;
+            notWaterProof = notWaterProofItems.contains(eI.item.itemID);
         }
         
         /**
@@ -218,6 +233,12 @@ public class DroppedItemsLightSource
             else
             {
                 lightLevel = getLightFromItemStack(entity.item);
+                
+                if (notWaterProof
+                && entity.worldObj.getBlockMaterial(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)) == Material.water)
+                {
+                    lightLevel = 0;
+                }
             }
             
             if (!enabled && lightLevel > 8)
@@ -251,7 +272,7 @@ public class DroppedItemsLightSource
         @Override
         public int getLightLevel()
         {
-            return lightLevel;
+            return (notWaterProof && entity.isInWater()) ? 0 : lightLevel;
         }
     }
 
