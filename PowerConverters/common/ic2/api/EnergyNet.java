@@ -84,11 +84,46 @@ public final class EnergyNet {
 	 *
 	 * @param tileEntity conductor
 	 */
+	@Deprecated
 	public long getTotalEnergyConducted(TileEntity tileEntity) {
 		try {
 			if (EnergyNet_getTotalEnergyConducted == null) EnergyNet_getTotalEnergyConducted = Class.forName(getPackage() + ".common.EnergyNet").getMethod("getTotalEnergyConducted", TileEntity.class);
 			
 			return ((Long) EnergyNet_getTotalEnergyConducted.invoke(energyNetInstance, tileEntity)).longValue();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * determine how much energy has been emitted by the EnergyEmitter specified
+	 *
+	 * @note call this twice with x ticks delay to get the avg. emitted power p = (call2 - call1) / x EU/tick
+	 *
+	 * @param tileEntity energy emitter
+	 */
+	public long getTotalEnergyEmitted(TileEntity tileEntity) {
+		try {
+			if (EnergyNet_getTotalEnergyEmitted == null) EnergyNet_getTotalEnergyEmitted = Class.forName(getPackage() + ".common.EnergyNet").getMethod("getTotalEnergyEmitted", TileEntity.class);
+			
+			return ((Long) EnergyNet_getTotalEnergyEmitted.invoke(energyNetInstance, tileEntity)).longValue();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * determine how much energy has been sunken by the EnergySink specified
+	 *
+	 * @note call this twice with x ticks delay to get the avg. sunken power p = (call2 - call1) / x EU/tick
+	 *
+	 * @param tileEntity energy emitter
+	 */
+	public long getTotalEnergySunken(TileEntity tileEntity) {
+		try {
+			if (EnergyNet_getTotalEnergySunken == null) EnergyNet_getTotalEnergySunken = Class.forName(getPackage() + ".common.EnergyNet").getMethod("getTotalEnergySunken", TileEntity.class);
+			
+			return ((Long) EnergyNet_getTotalEnergySunken.invoke(energyNetInstance, tileEntity)).longValue();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -115,5 +150,7 @@ public final class EnergyNet {
 	private static Method EnergyNet_removeTileEntity;
 	private static Method EnergyNet_emitEnergyFrom;
 	private static Method EnergyNet_getTotalEnergyConducted;
+	private static Method EnergyNet_getTotalEnergyEmitted;
+	private static Method EnergyNet_getTotalEnergySunken;
 }
 
