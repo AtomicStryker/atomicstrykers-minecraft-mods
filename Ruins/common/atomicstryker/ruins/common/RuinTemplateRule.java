@@ -84,7 +84,7 @@ public class RuinTemplateRule {
     private void doNormalBlock( World world, Random random, int x, int y, int z, int rotate ) {
 		int blocknum = getBlockNum( random );
         if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum] );
+			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
 		} else {
 			placeBlock( world, blocknum, x, y, z, rotate );
 		}
@@ -94,7 +94,7 @@ public class RuinTemplateRule {
         if( owner.isAir( world.getBlockId( x, y - 1, z ) ) ) { return; }
 		int blocknum = getBlockNum( random );
         if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum] );
+			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
 		} else {
 			placeBlock( world, blocknum, x, y, z, rotate );
 		}
@@ -107,7 +107,7 @@ public class RuinTemplateRule {
             ( owner.isAir( world.getBlockId( x - 1, y, z ) ) ) ) { return; }
 		int blocknum = getBlockNum( random );
         if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum] );
+			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
 		} else {
 			placeBlock( world, blocknum, x, y, z, rotate );
 		}
@@ -117,7 +117,7 @@ public class RuinTemplateRule {
         if( owner.isAir( world.getBlockId( x, y + 1, z ) ) ) { return; }
 		int blocknum = getBlockNum( random );
         if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum] );
+			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
 		} else {
 			placeBlock( world, blocknum, x, y, z, rotate );
 		}
@@ -136,7 +136,7 @@ public class RuinTemplateRule {
 		}
 	}
 
-    public void doSpecialBlock( World world, Random random, int x, int y, int z, int block ) {
+    public void doSpecialBlock( World world, Random random, int x, int y, int z, int block, String dataString ) {
         switch( block ) {
 		case 300:
 			// preserve existing world block
@@ -174,11 +174,23 @@ public class RuinTemplateRule {
         case 311:
             addHardChest( world, random, x, y, z, random.nextInt( 5 ) + 3 );
             break;
+        case 315:
+            addCustomSpawner( world, x, y, z, dataString );
+            break;
         }
     }
 
     private int getBlockNum( Random random ) {
 		return random.nextInt( blockIDs.length );
+    }
+    
+    private static void addCustomSpawner( World world, int x, int y, int z, String id ) {
+        world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
+        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
+        if (mobspawner != null)
+        {
+            mobspawner.setMobID( id );
+        }
     }
 
     private static void addSkeletonSpawn( World world, int x, int y, int z ) {

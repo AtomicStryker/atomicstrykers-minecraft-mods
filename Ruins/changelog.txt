@@ -104,3 +104,8 @@ a: setAccessible now true
 
 8.4
 + fixed crash when placing invalid chests via template
+
+8.5
++ added possibility to place custom Mob ID MobSpawners (only manually!)
+# Example 6: rule1=0,100,315-0'Villager
+# This spawns a custom Mob Spawner (315) with Mob Id "Villager" (and metadata 0) 100% of the time

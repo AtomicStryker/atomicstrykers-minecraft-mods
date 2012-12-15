@@ -196,6 +196,8 @@ preserve_plants=0
 #     309 = Easy Chest (For Easy rewards)
 #     310 = Medium Chest (For Medium rewards)
 #     311 = Hard Chest (For Hard rewards)
+#     315 = Custom Mob Spawner (REQUIRES DATA STRING, appended to metadata, seperated by ')
+#     see Example 6
 #
 # Example 1: rule1=0,100,0,4,48
 # This spawns either air, cobblestone, or a mossy cobblestone 100% of the time.
@@ -213,6 +215,9 @@ preserve_plants=0
 #
 # Example 5: rule1=0,25,310
 # This spawns a Medium Chest (see special blockID above) 25% of the time.
+#
+# Example 6: rule1=0,50,315-0'Villager
+# This spawns a Mob Spawner with Mob Id "Villager" (and metadata 0) 50% of the time
 
 
 rule1=0,100,0,43,44
