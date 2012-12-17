@@ -182,22 +182,32 @@ preserve_plants=0
 # You can find a list of blockIDs and commonly-used metadata at the Minepedia
 # website (Google it).
 #
-# Following is a list of special block numbers you can use for these rules,
-# since certain information is not currently available to load.
-#     300 = Leave existing world block alone
-#     301 = Mob Spawner (Zombie)
-#     302 = Mob Spawner (Skeleton) 
-#     303 = Mob Spawner (Spider)
-#     304 = Mob Spawner (Creeper)
-#     305 = Mob Spawner (Zombie, Skeleton, Creeper)
-#     306 = Mob Spawner (Easy, zombies and skeletons)
-#     307 = Mob Spawner (Medium, zombies, skeletons, and spiders)
-#     308 = Mob Spawner (Hard, all mobs)
-#     309 = Easy Chest (For Easy rewards)
-#     310 = Medium Chest (For Medium rewards)
-#     311 = Hard Chest (For Hard rewards)
-#     315 = Custom Mob Spawner (REQUIRES DATA STRING, appended to metadata, seperated by ')
-#     see Example 6
+#        /*
+#         * Conversion table from old Ruins 8.5 template style to new 8.6+ style
+#         * 
+#         * Just handling the part where you used to specify 'special' blocks
+#         * Full Example: "rule1=0,25,MediumChest" turns into "rule1=0,25,MediumChest"
+#         * 
+#         * 300 -> preserveBlock
+#         * 301 -> MobSpawner:Zombie
+#         * 302 -> MobSpawner:Skeleton
+#         * 303 -> MobSpawner:Spider
+#         * 304 -> MobSpawner:Creeper
+#         * 305 -> UprightMobSpawn
+#         * 306 -> EasyMobSpawn
+#         * 307 -> MediumMobSpawn
+#         * 308 -> HardMobSpawn
+#         * 309 -> EasyChest
+#         * 310 -> MediumChest
+#         * 311 -> HardChest
+#         * 315-0'Villager -> MobSpawner:Villager
+#         * 
+#         */
+#
+# As of 8.6, you can also specify a Block Name instead of it's numeric ID! This should be
+# very useful to use Ruins with other Mods and changible Block IDs. Make sure to use the
+# absolute Blockname, not the translation! Example: "44-2" can also be written as "stoneSlab-2"
+#
 #
 # Example 1: rule1=0,100,0,4,48
 # This spawns either air, cobblestone, or a mossy cobblestone 100% of the time.
@@ -213,11 +223,11 @@ preserve_plants=0
 # Example 4: rule1=0,100,50-5
 # This spawns a torch standing on the ground.
 #
-# Example 5: rule1=0,25,310
-# This spawns a Medium Chest (see special blockID above) 25% of the time.
+# Example 5: rule1=0,25,MediumChest
+# This spawns a Medium Chest (see above) 25% of the time.
 #
-# Example 6: rule1=0,50,315-0'Villager
-# This spawns a Mob Spawner with Mob Id "Villager" (and metadata 0) 50% of the time
+# Example 6: rule1=0,50,MobSpawner:Villager
+# This spawns a Mob Spawner with Mob Id "Villager" 50% of the time
 
 
 rule1=0,100,0,43,44

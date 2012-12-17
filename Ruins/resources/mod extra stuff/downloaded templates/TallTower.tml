@@ -19,7 +19,7 @@ rule2=0,100,4,48
 rule3=0,100,4,48
 rule4=0,100,4,48
 rule5=0,100,4,48
-rule6=0,100,300
+rule6=0,100,preserveBlock
 
 layer
 6,6,2,2,2,6,6

@@ -16,8 +16,8 @@ rule2=1,90,4,48
 rule3=3,90,4,48
 rule4=2,90,43,44
 rule5=0,100,43,44
-rule6=0,100,302
-rule7=0,100,310
+rule6=0,100,MobSpawner:Skeleton
+rule7=0,100,MediumChest
 layer
 1,1,1,1,1,1,1
 1,1,1,1,1,1,1

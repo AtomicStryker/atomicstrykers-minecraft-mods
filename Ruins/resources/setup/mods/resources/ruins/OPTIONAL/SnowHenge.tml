@@ -16,7 +16,7 @@ preserve_plants=0
 
 rule1=1,80,80
 rule2=2,60,80
-rule3=0,100,300
+rule3=0,100,preserveBlock
 rule4=0,95,80
 
 layer

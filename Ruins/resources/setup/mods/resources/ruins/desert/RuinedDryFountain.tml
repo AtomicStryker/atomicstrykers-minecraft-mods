@@ -11,7 +11,7 @@ preserve_plants=0
 max_cut_in=10
 
 
-rule1=0,100,24,24,24,300,300,300
+rule1=0,100,24,24,24,preserveBlock,preserveBlock,preserveBlock
 rule2=0,100,24
 rule3=0,100,12
 rule4=0,75,44-1

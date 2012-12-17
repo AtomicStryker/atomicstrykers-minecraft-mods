@@ -13,8 +13,8 @@ preserve_plants=0
 
 rule1=0,100,24
 rule2=1,60,12
-rule3=0,100,302
-rule4=0,100,309
+rule3=0,100,MobSpawner:Skeleton
+rule4=0,100,HardMobSpawn
 
 layer
 1,1,1,1,1,1,0,0,1,1,1,1,1,1,1

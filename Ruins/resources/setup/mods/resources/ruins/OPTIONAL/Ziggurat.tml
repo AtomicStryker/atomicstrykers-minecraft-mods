@@ -16,8 +16,8 @@ preserve_plants=0
 
 rule1=1,90,12,24,24
 rule2=1,90,44-1
-rule3=0,100,300
-rule4=1,100,310,309,310,309,311,0,0,0,0
+rule3=0,100,preserveBlock
+rule4=1,100,MediumChest,HardMobSpawn,MediumChest,HardMobSpawn,HardChest,0,0,0,0
 rule5=0,75,46
 rule6=0,100,0,70
 rule7=0,100,12,24,24

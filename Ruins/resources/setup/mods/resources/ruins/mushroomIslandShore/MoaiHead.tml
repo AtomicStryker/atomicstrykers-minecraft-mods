@@ -18,7 +18,7 @@ preserve_plants=0
 rule1=0,100,4,48
 rule2=0,100,4
 rule3=0,100,67-0
-rule4=0,100,300
+rule4=0,100,preserveBlock
 rule5=0,100,0,35-9
 
 

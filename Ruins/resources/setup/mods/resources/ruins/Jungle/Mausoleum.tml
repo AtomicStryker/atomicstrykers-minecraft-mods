@@ -14,11 +14,11 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=1
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=0,100,4,48
 rule3=0,100,44
-rule4=0,100,301
-rule5=0,100,310,311
+rule4=0,100,MobSpawner:Zombie
+rule5=0,100,MediumChest,HardChest
 
 layer
 1,1,2,2,2,2,2,2,2,2,2,2,2,1

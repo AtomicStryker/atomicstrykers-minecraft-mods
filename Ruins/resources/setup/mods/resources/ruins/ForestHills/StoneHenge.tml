@@ -16,7 +16,7 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=0,100,2
 rule3=0,100,3
 rule4=0,100,1
@@ -25,7 +25,7 @@ rule6=0,100,39,40
 rule7=0,100,48
 rule8=0,100,8
 rule9=0,100,9
-rule10=0,100,308,308,308,309,310,311
+rule10=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,HardMobSpawn,MediumChest,HardChest
 rule11=0,100,89
 rule12=0,100,89
 rule13=0,100,13

@@ -16,8 +16,8 @@ rule1=0,0,35-5
 rule2=0,90,5,5,5,5-1
 rule3=0,100,53-3
 #4,5-loot
-rule4=0,100,54-5,309,311
-rule5=0,100,54-4,309,311
+rule4=0,100,54-5,HardMobSpawn,HardChest
+rule5=0,100,54-4,HardMobSpawn,HardChest
 #6-beams
 rule6=2,98,17-1
 rule7=0,100,53-2

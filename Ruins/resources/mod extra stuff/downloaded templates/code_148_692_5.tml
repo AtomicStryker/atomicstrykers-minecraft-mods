@@ -11,11 +11,11 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,302
+rule1=0,100,MobSpawner:Skeleton
 rule2=0,100,4,48
 rule3=0,100,44,44-3
 rule4=0,100,0
-rule5=0,100,310
+rule5=0,100,MediumChest
 
 layer
 2,2,2,2,2,2,2,2,2

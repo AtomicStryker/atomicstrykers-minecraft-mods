@@ -16,7 +16,7 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=0,100,65-4
 rule3=0,100,2
 rule4=0,100,17
@@ -24,7 +24,7 @@ rule5=0,100,13
 rule6=0,100,10
 rule7=0,100,20
 rule8=0,100,18
-rule9=0,100,311
+rule9=0,100,HardChest
 rule10=0,100,6
 
 layer

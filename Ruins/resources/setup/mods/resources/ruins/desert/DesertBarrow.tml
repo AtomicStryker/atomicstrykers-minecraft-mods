@@ -14,8 +14,8 @@ max_cut_in=10
 
 rule1=0,100,12
 rule2=0,100,24
-rule3=0,100,307,307,307,24
-rule4=0,100,310,310,24,24
+rule3=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,24
+rule4=0,100,MediumChest,MediumChest,24,24
 rule5=0,100,24-2
 rule6=0,100,44-1
 rule7=0,100,24-1

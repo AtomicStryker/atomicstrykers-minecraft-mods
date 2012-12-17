@@ -15,9 +15,9 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,4,48
-rule2=0,100,300
-rule3=0,25,309
-rule4=0,100,305
+rule2=0,100,preserveBlock
+rule3=0,25,HardMobSpawn
+rule4=0,100,UprightMobSpawn
 
 layer
 2,1,1,1,1,1,1,1,2

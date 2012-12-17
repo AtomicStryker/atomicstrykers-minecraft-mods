@@ -14,13 +14,13 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=0,100,17
 rule3=0,100,18
 rule4=0,100,18,17
 rule5=0,100,18
-rule6=0,25,309,310
-rule7=0,100,303
+rule6=0,25,HardMobSpawn,MediumChest
+rule7=0,100,MobSpawner:Spider
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1,1,1

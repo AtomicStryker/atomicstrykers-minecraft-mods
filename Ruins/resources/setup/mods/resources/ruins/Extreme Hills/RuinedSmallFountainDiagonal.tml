@@ -11,8 +11,8 @@ preserve_lava=0
 preserve_plants=0
 max_cut_in=10
 
-rule1=0,100,300
-rule2=0,100,98-1,98-1,98-2,98-2,98,300,300,300
+rule1=0,100,preserveBlock
+rule2=0,100,98-1,98-1,98-2,98-2,98,preserveBlock,preserveBlock,preserveBlock
 rule3=0,100,13
 rule4=0,100,98-1,98-1,98-2,98-2,98
 rule5=0,100,109-2,109-2,109-2,109-2,98-1,98-2

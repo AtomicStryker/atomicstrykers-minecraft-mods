@@ -20,13 +20,13 @@ rule3=0,80,48,4
 #lower floor
 rule4=2,70,43
 #spawners
-rule5=0,50,308
+rule5=0,50,MediumMobSpawn
 #chest pedestal
 rule6=0,100,43
 #lower stairs
 rule7=2,75,67-1
 #chests
-rule8=0,75,309,310,54,54
+rule8=0,75,HardMobSpawn,MediumChest,54,54
 #upper main blocks
 rule9=1,80,48,4
 #upper window blocks

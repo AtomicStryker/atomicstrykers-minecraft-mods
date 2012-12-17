@@ -15,7 +15,7 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,7
-rule2=0,100,300
+rule2=0,100,preserveBlock
 rule3=0,100,48,48,48,48,48,48,4
 rule4=0,100,87
 rule5=0,100,87
@@ -23,10 +23,10 @@ rule6=0,100,87
 rule7=0,100,88
 rule8=0,100,11
 rule9=0,100,51
-rule10=0,100,307,307,307,305,0
-rule11=0,100,309,309,309,310,0,309,309,309,310,0
-rule12=0,100,311,311,310,0,0,0,0
-rule13=0,100,309,0,0,0,0
+rule10=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,UprightMobSpawn,0
+rule11=0,100,HardMobSpawn,HardMobSpawn,HardMobSpawn,MediumChest,0,HardMobSpawn,HardMobSpawn,HardMobSpawn,MediumChest,0
+rule12=0,100,HardChest,HardChest,MediumChest,0,0,0,0
+rule13=0,100,HardMobSpawn,0,0,0,0
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

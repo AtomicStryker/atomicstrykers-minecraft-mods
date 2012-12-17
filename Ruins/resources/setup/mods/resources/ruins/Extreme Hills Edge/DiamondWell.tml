@@ -15,7 +15,7 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=1,75,44-2
 rule3=2,100,50
 rule4=0,100,4,48,48

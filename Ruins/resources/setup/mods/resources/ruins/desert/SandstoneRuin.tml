@@ -20,7 +20,7 @@ rule3=1,50,12,24
 rule4=1,50,24
 rule5=2,33,24
 rule6=1,33,24
-rule7=0,1,309
+rule7=0,1,HardMobSpawn
 
 layer
 2,2,2,2,2,2,2

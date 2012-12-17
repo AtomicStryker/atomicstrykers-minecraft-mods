@@ -21,7 +21,7 @@ rule2=0,90,4,48
 #floors
 rule3=0,70,43
 #spawners
-rule4=0,50,308
+rule4=0,50,MediumMobSpawn
 #chest pedestal
 rule5=0,100,43
 #stairs
@@ -29,9 +29,9 @@ rule6=0,75,67-1,67-1,67-1
 #window fence
 rule7=0,0,113
 #chest
-rule8=0,100,309,310,54
+rule8=0,100,HardMobSpawn,MediumChest,54
 #roof chest
-rule9=0,100,311
+rule9=0,100,HardChest
 
 
 layer

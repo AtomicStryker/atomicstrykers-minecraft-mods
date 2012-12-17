@@ -14,13 +14,13 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=0,100,4,48
 rule3=0,100,44
 rule4=0,100,87
 rule5=0,100,51
-rule6=0,100,307
-rule7=0,100,309,310,311
+rule6=0,100,MediumMobSpawn
+rule7=0,100,HardMobSpawn,MediumChest,HardChest
 
 layer
 1,1,1,1,1,2,2,2,2,2,2,2,1,1,1,1,1

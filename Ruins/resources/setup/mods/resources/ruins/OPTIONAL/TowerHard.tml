@@ -14,16 +14,16 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,300
+rule1=0,100,preserveBlock
 rule2=0,100,89
 rule3=0,100,80
 rule4=0,100,48
 rule5=0,100,43
 rule6=0,100,50
-rule7=0,100,311
-rule8=0,100,311
-rule9=0,100,305
-rule10=0,100,304
+rule7=0,100,HardChest
+rule8=0,100,HardChest
+rule9=0,100,UprightMobSpawn
+rule10=0,100,MobSpawner:Creeper
 
 
 
