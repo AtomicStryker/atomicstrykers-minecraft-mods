@@ -97,9 +97,7 @@ public class RuinHandler {
 		{
 		    // ExtraBiomesXL sigh
 		    Class extraBiomesManager = null;
-
 		    extraBiomesManager = Class.forName("extrabiomes.api.BiomeManager");
-
 		    if (extraBiomesManager != null)
 		    {
 		        Collection xlBiomes = (Collection) extraBiomesManager.getDeclaredMethod("getBiomes", (Class[])null).invoke(null, (Object[])null);
@@ -117,7 +115,7 @@ public class RuinHandler {
 		}
 		catch (Exception e)
 		{
-		    e.printStackTrace();
+		    pw.println("ExtraBiomesXL not found, skipping over their BiomeManager hook");
 		}
 
 		// Find and load the excluded file.  If this does not exist, no worries.

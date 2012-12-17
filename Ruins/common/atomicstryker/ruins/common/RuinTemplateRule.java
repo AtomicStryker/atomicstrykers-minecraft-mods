@@ -27,22 +27,66 @@ public class RuinTemplateRule {
         blockMDs = new int[numblocks];
 		blockStrings = new String[numblocks];
 		String[] data;
-        for( int i = 0; i < numblocks; i++ ) {
-			data = items[i + 2].split( "-" );
-			if( data.length > 1 ) {
-				blockIDs[i] = Integer.parseInt( data[0] );
-				if( data[1].split( "'" ).length > 1 ) {
-					blockMDs[i] = Integer.parseInt( data[1].split( "'" )[0] );
-					blockStrings[i] = data[1].split( "'" )[1];
-				} else {
-					blockMDs[i] = Integer.parseInt( data[1] );
-					blockStrings[i] = "";
-				}
-			} else {
-				blockIDs[i] = Integer.parseInt( items[i + 2] );
-				blockMDs[i] = 0;
-				blockStrings[i] = "";
-			}
+        for (int i = 0; i < numblocks; i++)
+        {
+            data = items[i + 2].split("-");
+            if (data.length > 1) // has '-' in it, like "50-5" or "planks-3"
+            {
+                if (isNumber(data[0])) // 50-5
+                {
+                    blockIDs[i] = Integer.parseInt(data[0]);
+                    blockMDs[i] = Integer.parseInt(data[1]);
+                    blockStrings[i] = "";
+                }
+                else // planks-3
+                {
+                    blockIDs[i] = tryFindingBlockOfName(data[0]);
+                    blockMDs[i] = Integer.parseInt(data[1]);
+                    blockStrings[i] = items[i + 2];
+                }
+            }
+            else if (!isNumber(data[0])) // MobSpawners and the like
+            {
+                blockIDs[i] = tryFindingBlockOfName(data[0]);
+                blockMDs[i] = 0;
+                blockStrings[i] = items[i + 2];
+            }
+            else // does not have metadata specified, aka "50"
+            {
+                blockIDs[i] = Integer.parseInt(items[i + 2]);
+                blockMDs[i] = 0;
+                blockStrings[i] = "";
+            }
+        }
+    }
+    
+    private int tryFindingBlockOfName(String blockName)
+    {
+        for (Block b : Block.blocksList)
+        {
+            if (b != null && b.getBlockName() != null && b.getBlockName().equals(blockName))
+            {
+                return b.blockID;
+            }
+        }
+        
+        return -1;
+    }
+
+    private boolean isNumber(String s)
+    {
+        if (s == null || s.equals(""))
+        {
+            return false;
+        }
+        try
+        {
+            int n = Integer.parseInt(s);
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
         }
     }
 
@@ -82,22 +126,14 @@ public class RuinTemplateRule {
 	}
 
     private void doNormalBlock( World world, Random random, int x, int y, int z, int rotate ) {
-		int blocknum = getBlockNum( random );
-        if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
-		} else {
-			placeBlock( world, blocknum, x, y, z, rotate );
-		}
+        int blocknum = getBlockNum( random );
+        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
     }
 
     private void doAboveBlock( World world, Random random, int x, int y, int z, int rotate ) {
         if( owner.isAir( world.getBlockId( x, y - 1, z ) ) ) { return; }
-		int blocknum = getBlockNum( random );
-        if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
-		} else {
-			placeBlock( world, blocknum, x, y, z, rotate );
-		}
+        int blocknum = getBlockNum( random );
+        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
     }
 
     private void doAdjacentBlock( World world, Random random, int x, int y, int z, int rotate ) {
@@ -105,25 +141,30 @@ public class RuinTemplateRule {
             ( owner.isAir( world.getBlockId( x, y, z + 1 ) ) ) &&
             ( owner.isAir( world.getBlockId( x, y, z - 1 ) ) ) &&
             ( owner.isAir( world.getBlockId( x - 1, y, z ) ) ) ) { return; }
-		int blocknum = getBlockNum( random );
-        if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
-		} else {
-			placeBlock( world, blocknum, x, y, z, rotate );
-		}
+        int blocknum = getBlockNum( random );
+        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
     }
 
     private void doUnderBlock( World world, Random random, int x, int y, int z, int rotate ) {
         if( owner.isAir( world.getBlockId( x, y + 1, z ) ) ) { return; }
 		int blocknum = getBlockNum( random );
-        if( blockIDs[blocknum] > 299 ) {
-			doSpecialBlock( world, random, x, y, z, blockIDs[blocknum], blockStrings[blocknum] );
-		} else {
-			placeBlock( world, blocknum, x, y, z, rotate );
-		}
+		handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
+    }
+    
+	private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum, int rotate, String blockString)
+    {
+	    int blockID = blockIDs[blocknum];
+        if( blockID == -1 )
+        {
+            doSpecialBlock( world, random, x, y, z, blockString );
+        }
+        else
+        {
+            placeBlock( world, blocknum, x, y, z, rotate );
+        }
     }
 
-	private void placeBlock( World world, int blocknum, int x, int y, int z, int rotate ) {
+    private void placeBlock( World world, int blocknum, int x, int y, int z, int rotate ) {
 		if( canReplace( blockIDs[blocknum], world.getBlockId( x, y, z ) ) ) {
 			if( rotate != RuinsMod.DIR_NORTH ) {
 				int metadata = rotateMetadata( blockIDs[blocknum], blockMDs[blocknum], rotate );
@@ -136,47 +177,48 @@ public class RuinTemplateRule {
 		}
 	}
 
-    public void doSpecialBlock( World world, Random random, int x, int y, int z, int block, String dataString ) {
-        switch( block ) {
-		case 300:
-			// preserve existing world block
-			break;
-        case 301:
-            addZombieSpawn( world, x, y, z );
-            break;
-        case 302:
-            addSkeletonSpawn( world, x, y, z );
-            break;
-        case 303:
-            addSpiderSpawn( world, x, y, z );
-            break;
-        case 304:
-            addCreeperSpawn( world, x, y, z );
-            break;
-        case 305:
+    public void doSpecialBlock( World world, Random random, int x, int y, int z, String dataString )
+    {
+        
+        if (dataString.equals("preserveBlock"))
+        {
+            // NOOP
+        }
+        else if (dataString.startsWith("MobSpawner:"))
+        {
+            addCustomSpawner( world, x, y, z, dataString.split(":")[1] );
+        }
+        else if (dataString.equals("UprightMobSpawn"))
+        {
             addUprightMobSpawn( world, random, x, y, z );
-            break;
-        case 306:
+        }
+        else if (dataString.equals("EasyMobSpawn"))
+        {
             addEasyMobSpawn( world, random, x, y, z );
-            break;
-        case 307:
+        }
+        else if (dataString.equals("MediumMobSpawn"))
+        {
             addMediumMobSpawn( world, random, x, y, z );
-            break;
-        case 308:
+        }
+        else if (dataString.equals("HardMobSpawn"))
+        {
             addHardMobSpawn( world, random, x, y, z );
-            break;
-        case 309:
+        }
+        else if (dataString.equals("EasyChest"))
+        {
             addEasyChest( world, random, x, y, z, random.nextInt( 3 ) + 3 );
-            break;
-        case 310:
+        }
+        else if (dataString.equals("MediumChest"))
+        {
             addMediumChest( world, random, x, y, z, random.nextInt( 4 ) + 3 );
-            break;
-        case 311:
+        }
+        else if (dataString.equals("HardChest"))
+        {
             addHardChest( world, random, x, y, z, random.nextInt( 5 ) + 3 );
-            break;
-        case 315:
-            addCustomSpawner( world, x, y, z, dataString );
-            break;
+        }
+        else
+        {
+            System.err.println("Ruins Mod could not determine what to spawn for ["+dataString+"] in Ruin template: "+owner.getName());
         }
     }
 
@@ -184,7 +226,8 @@ public class RuinTemplateRule {
 		return random.nextInt( blockIDs.length );
     }
     
-    private static void addCustomSpawner( World world, int x, int y, int z, String id ) {
+    private static void addCustomSpawner( World world, int x, int y, int z, String id )
+    {
         world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
         if (mobspawner != null)
@@ -193,63 +236,30 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addSkeletonSpawn( World world, int x, int y, int z ) {
-        world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
-		if (mobspawner != null)
-		{
-			mobspawner.setMobID( "Skeleton" );
-		}
-    }
-
-    private static void addZombieSpawn( World world, int x, int y, int z ) {
-        world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
-		if (mobspawner != null)
-		{
-			mobspawner.setMobID( "Zombie" );
-		}
-    }
-
-    private static void addSpiderSpawn( World world, int x, int y, int z ) {
-        world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
-		if (mobspawner != null)
-		{
-			mobspawner.setMobID( "Spider" );
-		}
-    }
-
-    private static void addCreeperSpawn( World world, int x, int y, int z ) {
-        world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
-		if (mobspawner != null)
-		{
-			mobspawner.setMobID( "Creeper" );
-		}
-    }
-
     private static void addEasyMobSpawn( World world, Random random, int x, int y, int z ) {
-        switch( random.nextInt( 3 ) ) {
+        switch( random.nextInt( 2 ) ) {
         case 0:
-            addSkeletonSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Skeleton" );
             break;
         default:
-            addZombieSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Zombie" );
             break;
         }
     }
 
     private static void addMediumMobSpawn( World world, Random random, int x, int y, int z ) {
-        switch( random.nextInt( 3 ) ) {
+        switch( random.nextInt( 4 ) ) {
         case 0:
-            addSpiderSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Spider" );
             break;
         case 1:
-            addSkeletonSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Skeleton" );
+            break;
+        case 2:
+            addCustomSpawner( world, x, y, z, "CaveSpider" );
             break;
         default:
-            addZombieSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Zombie" );
             break;
         }
     }
@@ -257,16 +267,16 @@ public class RuinTemplateRule {
     private static void addHardMobSpawn( World world, Random random, int x, int y, int z ) {
         switch( random.nextInt( 4 ) ) {
         case 0:
-            addCreeperSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Creeper" );
             break;
         case 1:
-            addSpiderSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "CaveSpider" );
             break;
         case 2:
-            addSkeletonSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Skeleton" );
             break;
         default:
-            addZombieSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Blaze" );
             break;
         }
     }
@@ -274,13 +284,13 @@ public class RuinTemplateRule {
     private static void addUprightMobSpawn( World world, Random random, int x, int y, int z ) {
         switch( random.nextInt( 3 ) ) {
         case 0:
-            addCreeperSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Creeper" );
             break;
         case 1:
-            addSkeletonSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Skeleton" );
             break;
         default:
-            addZombieSpawn( world, x, y, z );
+            addCustomSpawner( world, x, y, z, "Zombie" );
             break;
         }
     }
