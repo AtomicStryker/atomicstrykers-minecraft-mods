@@ -37,7 +37,7 @@ public class BlockZipLineAnchor extends BlockContainer
                     EntityFreeFormRope rope = (EntityFreeFormRope) o;
                     if (rope.getShooter() != null && rope.getShooter().equals(entityPlayer))
                     {
-                        if (rope.getEndY() < y)
+                        if (rope.getEndY() > y)
                         {
                             entityPlayer.sendChatToPlayer("Newton says you can't Zipline upwards, sorry...");
                         }
