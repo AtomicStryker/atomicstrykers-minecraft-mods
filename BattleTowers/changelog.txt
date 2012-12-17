@@ -1,3 +1,6 @@
+1.2.6
+- fixed crash upon MC saving Golem Fireballs
+
 1.2.5
 - made sure underground towers dont start lower than 15
 

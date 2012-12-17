@@ -25,7 +25,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import atomicstryker.battletowers.client.ClientPacketHandler;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.2.5")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.2.6")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),

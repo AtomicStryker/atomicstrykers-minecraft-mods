@@ -10,6 +10,8 @@ import net.minecraft.src.EntityLiving;
 import net.minecraft.src.MathHelper;
 import net.minecraft.src.MovingObjectPosition;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagDouble;
+import net.minecraft.src.NBTTagList;
 import net.minecraft.src.Vec3;
 import net.minecraft.src.World;
 
@@ -177,14 +179,32 @@ public class AS_EntityGolemFireball extends Entity
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound var1)
-    {
-        super.readFromNBT(var1);
+    public void readEntityFromNBT(NBTTagCompound nbttagcompound)
+    {        
+        this.posX = nbttagcompound.getShort("xTile");
+        this.posY = nbttagcompound.getShort("yTile");
+        this.posZ = nbttagcompound.getShort("zTile");
+
+        if (nbttagcompound.hasKey("direction"))
+        {
+            NBTTagList var2 = nbttagcompound.getTagList("direction");
+            this.motionX = ((NBTTagDouble)var2.tagAt(0)).data;
+            this.motionY = ((NBTTagDouble)var2.tagAt(1)).data;
+            this.motionZ = ((NBTTagDouble)var2.tagAt(2)).data;
+        }
+        else
+        {
+            this.setDead();
+        }
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound var1)
+    public void writeEntityToNBT(NBTTagCompound nbttagcompound)
     {
-        super.writeToNBT(var1);
+        nbttagcompound.setShort("xTile", (short)this.posX);
+        nbttagcompound.setShort("yTile", (short)this.posY);
+        nbttagcompound.setShort("zTile", (short)this.posZ);
+        nbttagcompound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
     }
+    
 }
