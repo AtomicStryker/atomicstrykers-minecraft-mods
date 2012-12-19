@@ -6,21 +6,20 @@ import java.net.URL;
 import java.util.EnumSet;
 import java.util.Map;
 
-import net.minecraft.src.World;
-
+import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.0.4")
+@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.0.5")
 public class UpdateCheckMod
 {
     private final String updateURL = "http://atomicstryker.net/updatemanager/modversions.txt";

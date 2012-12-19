@@ -1,3 +1,6 @@
+1.0.5
+updated to MC 1.4.6
+
 1.0.4
 updated to MC 1.4.4
 
