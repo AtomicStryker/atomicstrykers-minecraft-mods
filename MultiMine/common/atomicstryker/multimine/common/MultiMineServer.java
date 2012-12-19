@@ -8,14 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet14BlockDig;
+import net.minecraft.network.packet.Packet53BlockChange;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Packet14BlockDig;
-import net.minecraft.src.Packet53BlockChange;
-
 import atomicstryker.ForgePacketWrapper;
 
 import com.google.common.collect.Lists;
@@ -24,11 +22,11 @@ import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class MultiMineServer
 {

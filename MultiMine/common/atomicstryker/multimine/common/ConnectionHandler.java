@@ -1,12 +1,12 @@
 package atomicstryker.multimine.common;
 
-import atomicstryker.multimine.client.MultiMineClient;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.NetLoginHandler;
+import net.minecraft.network.packet.NetHandler;
+import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NetHandler;
-import net.minecraft.src.NetLoginHandler;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Packet1Login;
+import atomicstryker.multimine.client.MultiMineClient;
 import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.Player;
 

@@ -2,12 +2,9 @@ package atomicstryker.multimine.common;
 
 import java.util.HashSet;
 
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
-
 import atomicstryker.multimine.client.ClientPacketHandler;
-
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PreInit;
@@ -18,13 +15,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.2.3")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.2.4")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ServerPacketHandler.class),

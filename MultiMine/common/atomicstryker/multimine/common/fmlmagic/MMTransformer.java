@@ -1,13 +1,36 @@
 package atomicstryker.multimine.common.fmlmagic;
 
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.FCMPG;
+import static org.objectweb.asm.Opcodes.FCMPL;
+import static org.objectweb.asm.Opcodes.FCONST_0;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.IFGE;
+import static org.objectweb.asm.Opcodes.IFLT;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.ISTORE;
+import static org.objectweb.asm.Opcodes.PUTFIELD;
+import static org.objectweb.asm.Opcodes.RETURN;
+
 import java.util.Iterator;
 
-import static org.objectweb.asm.Opcodes.*;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.PlayerControllerMP;
-
-import org.objectweb.asm.*;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
 
@@ -15,11 +38,10 @@ public class MMTransformer implements IClassTransformer
 {
     /* Obfuscated Names for NetServerHandler Transformation */
     
-    /* net/minecraft/src/Packet14BlockDig */
-    private final String packet14BlockDigNameO = "ej";
-    /* net.minecraft.src.NetServerHandler */
+    /* net/minecraft/network/packet/Packet14BlockDig */
+    private final String packet14BlockDigNameO = "eg";
+    /* net.minecraft.network.NetServerHandler */
     private final String netServerHandlerClassNameO = "iv";
-    /* net/minecraft/src/NetServerHandler */
     private final String netServerHandlerJavaClassNameO = "iv";
     /* handleBlockDig */
     private final String netServerHandlertargetMethodNameO = "a";
@@ -33,10 +55,9 @@ public class MMTransformer implements IClassTransformer
     
     /* Obfuscated Names for PlayerControllerMP Transformation */
     
-    /* net.minecraft.src.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "ayg";
-    /* net/minecraft/src/NetServerHandler */
-    private final String playerControllerMPJavaClassNameO = "ayg";
+    /* net.minecraft.client.multiplayer.PlayerControllerMP */
+    private final String playerControllerMPClassNameO = "ayo";
+    private final String playerControllerMPJavaClassNameO = "ayo";
     /* onPlayerDamageBlock */
     private final String playerControllerMPtargetMethodNameO = "c";
     /* currentBlockX */
@@ -50,8 +71,8 @@ public class MMTransformer implements IClassTransformer
     
     
     /* MCP Names for PlayerControllerMP Transformation */
-    private final String playerControllerMPClassName = "net.minecraft.src.PlayerControllerMP";
-    private final String playerControllerMPJavaClassName = "net/minecraft/src/PlayerControllerMP";
+    private final String playerControllerMPClassName = "net.minecraft.client.multiplayer.PlayerControllerMP";
+    private final String playerControllerMPJavaClassName = "net/minecraft/client/multiplayer/PlayerControllerMP";
     private final String playerControllerMPtargetMethodName = "onPlayerDamageBlock";
     private final String playerControllerMPcurrentBlockXFieldName = "currentBlockX";
     private final String playerControllerMPcurrentBlockYFieldName = "currentBlockY";
@@ -59,12 +80,12 @@ public class MMTransformer implements IClassTransformer
     private final String playerControllerMPcurrentBlockDamageFieldName = "curBlockDamageMP";
     
     /* MCP Names for NetServerHandler Transformation */
-    private final String packet14BlockDigName = "net/minecraft/src/Packet14BlockDig";
-    private final String netServerHandlerClassName = "net.minecraft.src.NetServerHandler";
-    private final String netServerHandlerJavaClassName = "net/minecraft/src/NetServerHandler";
+    private final String packet14BlockDigName = "net/minecraft/network/packet/Packet14BlockDig";
+    private final String netServerHandlerClassName = "net.minecraft.network.NetServerHandler";
+    private final String netServerHandlerJavaClassName = "net/minecraft/network/NetServerHandler";
     private final String netServerHandlertargetMethodName = "handleBlockDig";
     private final String netServerHandlerEntIDFieldName = "playerEntity";
-    private final String entityPlayerMPJavaClassName = "net/minecraft/src/EntityPlayerMP";
+    private final String entityPlayerMPJavaClassName = "net/minecraft/entity/player/EntityPlayerMP";
     private final String entityPlayerMPEntIDFieldName = "entityId";
     
     @Override
@@ -179,7 +200,7 @@ public class MMTransformer implements IClassTransformer
             }
         }
         
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
         return writer.toByteArray();
     }
@@ -225,7 +246,7 @@ public class MMTransformer implements IClassTransformer
             }
         }
         
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
         return writer.toByteArray();
     }
@@ -318,7 +339,7 @@ public class MMTransformer implements IClassTransformer
             }
         }
         
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
         return writer.toByteArray();
     }
@@ -364,7 +385,7 @@ public class MMTransformer implements IClassTransformer
             }
         }
         
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
         return writer.toByteArray();
     }

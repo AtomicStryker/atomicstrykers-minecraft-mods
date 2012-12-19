@@ -1,28 +1,21 @@
 package atomicstryker.multimine.client;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Block;
-import net.minecraft.src.DestroyBlockProgress;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Packet53BlockChange;
-import net.minecraft.src.RenderGlobal;
-import net.minecraft.src.World;
-
-import com.google.common.collect.Lists;
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class MultiMineClient
 {
@@ -129,6 +122,7 @@ public class MultiMineClient
      */
     public void onClientLoggedIn()
     {
+        System.out.println("MM sending client login packet to server...");
         isInstalledOnServer = false;
         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 0, null));
     }
@@ -216,7 +210,7 @@ public class MultiMineClient
                             block.harvestBlock(player.worldObj, player, x, y, z, meta);
                         }
 						
-						player.worldObj.playSound(x+0.5D, y+0.5D, z+0.5D, block.stepSound.getBreakSound(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
+						player.worldObj.playSound(x+0.5D, y+0.5D, z+0.5D, block.stepSound.getBreakSound(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F, false);
                     }
                     onBlockMineFinishedDamagePlayerItem(player, blockID, x, y, z);
 
