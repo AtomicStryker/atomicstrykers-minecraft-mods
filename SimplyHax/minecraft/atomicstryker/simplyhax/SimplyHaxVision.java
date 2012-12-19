@@ -12,8 +12,8 @@ import java.util.EnumSet;
 import java.util.Properties;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.RenderGlobal;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.entity.EntityLiving;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -23,13 +23,13 @@ import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.4.4")
+@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.4.6")
 public class SimplyHaxVision
 {
 	private final static String modname = "Vision";
@@ -89,7 +89,7 @@ public class SimplyHaxVision
 				if (rendererReplaced != visionActive)
 				{
 					rendererReplaced = visionActive;
-					copyAllClassFields(net.minecraft.src.RenderGlobal.class, rendererReplaced ? original : replacement, rendererReplaced ? replacement : original);
+					copyAllClassFields(RenderGlobal.class, rendererReplaced ? original : replacement, rendererReplaced ? replacement : original);
 					mcinstance.renderGlobal = rendererReplaced ? replacement : original;
 				}
 			}
@@ -143,7 +143,7 @@ public class SimplyHaxVision
 		replacement = (RenderGlobal)replacementhax;
 		original = mcinstance.renderGlobal;
 		
-		copyAllClassFields(net.minecraft.src.RenderGlobal.class, original, replacement);
+		copyAllClassFields(RenderGlobal.class, original, replacement);
 	}
 	
     private void copyAllClassFields(Class copiedclass, Object originalinstance, Object newinstance)

@@ -1,11 +1,11 @@
 package atomicstryker.simplyhax;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.ICamera;
-import net.minecraft.src.RenderEngine;
-import net.minecraft.src.RenderGlobal;
-import net.minecraft.src.Vec3;
+import net.minecraft.client.renderer.RenderEngine;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.Vec3;
 
 public class SimplyHaxVisionRenderer extends RenderGlobal
 {

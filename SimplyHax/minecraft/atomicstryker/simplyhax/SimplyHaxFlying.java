@@ -9,10 +9,13 @@ import java.util.EnumSet;
 import java.util.Properties;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayerSP;
-import net.minecraft.src.EntityRenderer;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 import org.lwjgl.input.Keyboard;
 
@@ -21,13 +24,13 @@ import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.4.4")
+@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.4.6")
 public class SimplyHaxFlying
 {
     private long lastTime;
@@ -41,10 +44,6 @@ public class SimplyHaxFlying
 	private static int itogglekey = Keyboard.getKeyIndex(togglekey);
 	private static String sprintkey = "LSHIFT";
 	private static int isprintkey = Keyboard.getKeyIndex(sprintkey);
-	private static String keyupwards = "SPACE";
-	private static int ikeyupwards = Keyboard.getKeyIndex(keyupwards);
-	private static String keydownwards = "LCONTROL";
-	private static int ikeydownwards = Keyboard.getKeyIndex(keydownwards);
 	private static double maxflyspeed = 1.0D;
 	private static float fovModifier = 20F;
 	
@@ -59,6 +58,7 @@ public class SimplyHaxFlying
 	public void preInit(FMLPreInitializationEvent evt)
 	{
 	    configfile = evt.getSuggestedConfigurationFile();
+	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
     @Init
@@ -90,10 +90,6 @@ public class SimplyHaxFlying
 			itogglekey = Keyboard.getKeyIndex(togglekey);
 			sprintkey = properties.getProperty("sprintKey", "LSHIFT");
 			isprintkey = Keyboard.getKeyIndex(sprintkey);
-			keydownwards = properties.getProperty("keydownwards", "LCONTROL");
-			ikeydownwards = Keyboard.getKeyIndex(keydownwards);
-			keyupwards = properties.getProperty("keyupwards", "SPACE");
-			ikeyupwards = Keyboard.getKeyIndex(keyupwards);
 			maxflyspeed = Double.parseDouble(properties.getProperty("maxflyspeed", "1.0"));
 			fovModifier = Float.parseFloat(properties.getProperty("fovModifier", "20.0"));
 		}
@@ -162,12 +158,12 @@ public class SimplyHaxFlying
 				
 				// do every tick stuff
 				
-				isSprinting = (Keyboard.isKeyDown(isprintkey) && !IsMenuOpen());
+				isSprinting = (Keyboard.isKeyDown(isprintkey) && !isMenuOpen());
 				
 				if (!buttonCD
 				&& Keyboard.getEventKeyState()
 				&& Keyboard.getEventKey() == itogglekey
-				&& !IsMenuOpen())
+				&& !isMenuOpen())
 				{
 					lastTime = l;
 					buttonCD = true;
@@ -181,23 +177,23 @@ public class SimplyHaxFlying
 					}
 				}
 				
-				if (IsAlive(mcinstance.thePlayer))
+				if (isAlive(mcinstance.thePlayer))
 				{
 					if (isSprinting)
 					{
-						MakeHaste(mcinstance.thePlayer);
+						makeHaste(mcinstance.thePlayer);
 						
-						float fov = GetFOV();
-						if (GetAbsSpeed(mcinstance.thePlayer) > 0.1D)
+						float fov = getFOV();
+						if (getAbsSpeed(mcinstance.thePlayer) > 0.1D)
 						{
 							if (fov < fovModifier)
 							{
-								SetFOV(fov + (fovModifier*0.25F));
+								setFOV(fov + (fovModifier*0.25F));
 							}
 						}
 						else if (fov > 0F)
 						{
-							SetFOV(fov - (fovModifier*0.25F));
+							setFOV(fov - (fovModifier*0.25F));
 						}
 					}
 					else
@@ -205,16 +201,16 @@ public class SimplyHaxFlying
 						modMotionX = mcinstance.thePlayer.motionX;
 						modMotionZ = mcinstance.thePlayer.motionZ;
 						
-						float fov = GetFOV();
+						float fov = getFOV();
 						if (fov > 0F)
 						{
-							SetFOV(fov - (fovModifier*0.25F));
+							setFOV(fov - (fovModifier*0.25F));
 						}
 					}
 					
 					if (isFlying)
 					{
-						MakeFly(mcinstance.thePlayer);
+						makeFly(mcinstance.thePlayer);
 					}
 				}
 			}
@@ -234,7 +230,7 @@ public class SimplyHaxFlying
 		
 	}
 	
-	private void SetFOV(float setting)
+	private void setFOV(float setting)
 	{
 		try
 		{
@@ -252,7 +248,7 @@ public class SimplyHaxFlying
 		}
 	}
 	
-	private float GetFOV()
+	private float getFOV()
 	{
 		try
 		{
@@ -272,7 +268,7 @@ public class SimplyHaxFlying
 		return 0F;
 	}
 	
-	private void MakeHaste(EntityPlayerSP entityplayer)
+	private void makeHaste(EntityPlayerSP entityplayer)
 	{
 		float rotationMovement = (float)((Math.atan2(entityplayer.motionX, entityplayer.motionZ) * 180D) / 3.1415D);
 		float rotationLook = entityplayer.rotationYaw;
@@ -293,7 +289,7 @@ public class SimplyHaxFlying
 			rotationLook -= 360F;
 		}
 		
-		double entspeed = GetAbsSpeed(entityplayer);
+		double entspeed = getAbsSpeed(entityplayer);
 		
 		// unfuck velocity lock
 		if (Math.abs(rotationMovement+rotationLook) > 10F)
@@ -304,7 +300,7 @@ public class SimplyHaxFlying
 		
 		if (!isFlying && (entspeed < 0.3D))
 		{
-			if (GetAbsModSpeed() > 0.6D || !(entityplayer.onGround))
+			if (getAbsModSpeed() > 0.6D || !(entityplayer.onGround))
 			{
 				modMotionX /= 1.55;
 				modMotionZ /= 1.55;
@@ -317,7 +313,7 @@ public class SimplyHaxFlying
 		}
 		else if (isFlying && (entspeed < maxflyspeed))
 		{
-			if (GetAbsModSpeed() > maxflyspeed*3)
+			if (getAbsModSpeed() > maxflyspeed*3)
 			{
 				modMotionX /= 2.55;
 				modMotionZ /= 2.55;
@@ -330,16 +326,16 @@ public class SimplyHaxFlying
 		}
 	}
 	
-	private void MakeFly(EntityPlayerSP entityplayer)
+	private void makeFly(EntityPlayerSP entityplayer)
 	{
 		entityplayer.distanceWalkedModified = distanceWalkedModified;	// fix the step sounds
 		
-		if (Keyboard.isKeyDown(ikeyupwards) && !IsMenuOpen())
+		if (mcinstance.gameSettings.keyBindJump.pressed && !isMenuOpen())
 		{
 			entityplayer.motionY = (isSprinting ? 1D : 0.35D);
 			modposY = entityplayer.posY;
 		}
-		else if (Keyboard.isKeyDown(ikeydownwards) && !IsMenuOpen())
+		else if (mcinstance.gameSettings.keyBindSneak.pressed && !isMenuOpen())
 		{
 			entityplayer.motionY = (isSprinting ? -1D : -0.35D);
 			modposY = entityplayer.posY;
@@ -363,26 +359,35 @@ public class SimplyHaxFlying
         {
             mcinstance.thePlayer.motionY = 0;
             mcinstance.thePlayer.fallDistance = 0F; // fix the falling
-            mcinstance.thePlayer.onGround = true; // because we say so!
+            mcinstance.thePlayer.onGround = true;
         }
 	}
 	
-	private double GetAbsSpeed(Entity ent)
+	@ForgeSubscribe
+	public void onEntityLivingFall(LivingFallEvent event)
+	{
+	    if (isFlying && event.entityLiving.equals(mcinstance.thePlayer))
+	    {
+	        event.setCanceled(true);
+	    }
+	}
+	
+	private double getAbsSpeed(Entity ent)
 	{
 		return Math.sqrt(ent.motionX*ent.motionX + ent.motionZ*ent.motionZ);
 	}
 	
-	private double GetAbsModSpeed()
+	private double getAbsModSpeed()
 	{
 		return Math.sqrt(modMotionX*modMotionX + modMotionZ*modMotionZ);
 	}
 	
-	private boolean IsAlive(EntityLiving ent)
+	private boolean isAlive(EntityLiving ent)
 	{
 		return ent != null && ent.getHealth() > 0 && !ent.isDead;
 	}
 	
-	private boolean IsMenuOpen()
+	private boolean isMenuOpen()
 	{
 		return mcinstance.currentScreen != null;
 	}

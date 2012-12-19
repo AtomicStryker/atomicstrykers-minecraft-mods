@@ -1,3 +1,10 @@
+1.4.6
+-updated to 1.4.6
+-fixed the bug where deactivating flying, falling,
+and reactivating before hitting the ground would yield fall damage
+-removed the manually definable buttons for flying up and down, now
+simply uses JUMP and SNEAK as set in minecraft
+
 1.4.5
 changed to be a FML Coremod to fix the damn falling bug
 
