@@ -5,9 +5,9 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 /**
  * Provides access to Compressor, Extractor and Macerator recipes, as well as charge-aware recipes

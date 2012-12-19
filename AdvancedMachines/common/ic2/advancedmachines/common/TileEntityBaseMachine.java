@@ -1,9 +1,14 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
-import ic2.api.*;
 import ic2.api.Direction;
+import ic2.api.ElectricItem;
+import ic2.api.EnergyNet;
+import ic2.api.IElectricItem;
+import ic2.api.IEnergySink;
+import ic2.api.Items;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public abstract class TileEntityBaseMachine extends TileEntityMachine implements IEnergySink
 {

@@ -1,9 +1,10 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
+import java.util.List;
 
-import net.minecraft.src.*;
-import ic2.api.*;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 
 public class ItemAdvancedMachine extends ItemBlock
 {

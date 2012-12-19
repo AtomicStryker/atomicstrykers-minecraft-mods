@@ -1,8 +1,12 @@
 package ic2.advancedmachines.common;
 
-import java.util.*;
-import net.minecraft.src.*;
-import ic2.api.*;
+import ic2.api.Ic2Recipes;
+
+import java.util.List;
+
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
 {

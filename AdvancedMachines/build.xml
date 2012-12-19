@@ -67,7 +67,7 @@
 		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
 			<fileset dir="${client.src.dir}" />
 		</copy>
-		<copy todir="${common.mcp.srcdir}" overwrite="true" verbose="true">
+		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
 			<fileset dir="${common.src.dir}" includes="**/*.java" />
 		</copy>
 	</target>
@@ -101,7 +101,7 @@
 			<fileset dir="${client.mcp.srcdir}">
 				<present present="both" targetdir="${client.src.dir}" />
 			</fileset>
-			<fileset dir="${common.mcp.srcdir}">
+			<fileset dir="${client.mcp.srcdir}">
 				<present present="both" targetdir="${common.src.dir}" />
 			</fileset>
 		</delete>

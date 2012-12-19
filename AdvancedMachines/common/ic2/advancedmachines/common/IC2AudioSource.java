@@ -1,7 +1,8 @@
 package ic2.advancedmachines.common;
 
-import net.minecraft.src.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+
+import net.minecraft.tileentity.TileEntity;
 
 public class IC2AudioSource
 {

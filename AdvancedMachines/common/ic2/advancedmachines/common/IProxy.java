@@ -1,7 +1,7 @@
 package ic2.advancedmachines.common;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.World;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 public interface IProxy
 {

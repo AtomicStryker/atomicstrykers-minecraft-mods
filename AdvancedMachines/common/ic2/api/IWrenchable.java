@@ -1,7 +1,7 @@
 package ic2.api;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 /**
  * Allows a tile entity to make use of the wrench's removal and rotation functions.

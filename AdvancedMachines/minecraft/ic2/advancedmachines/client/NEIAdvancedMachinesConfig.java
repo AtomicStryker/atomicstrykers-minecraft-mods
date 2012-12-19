@@ -1,7 +1,6 @@
 package ic2.advancedmachines.client;
 
 import ic2.advancedmachines.common.AdvancedMachines;
-import net.minecraft.src.ItemStack;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;

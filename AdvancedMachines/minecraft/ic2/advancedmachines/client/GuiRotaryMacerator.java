@@ -1,12 +1,12 @@
 package ic2.advancedmachines.client;
 
-import java.util.*;
+import ic2.advancedmachines.common.AdvancedMachines;
+import ic2.advancedmachines.common.ContainerRotaryMacerator;
+import ic2.advancedmachines.common.TileEntityRotaryMacerator;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.InventoryPlayer;
 
 import org.lwjgl.opengl.GL11;
-
-import net.minecraft.src.*;
-import ic2.advancedmachines.common.*;
-import ic2.api.*;
 
 public class GuiRotaryMacerator extends GuiContainer
 {

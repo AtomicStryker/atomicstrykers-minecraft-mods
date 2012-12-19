@@ -1,6 +1,6 @@
 package ic2.advancedmachines.common;
 
-import net.minecraft.src.Item;
+import net.minecraft.item.Item;
 
 public class ItemDust extends Item
 {

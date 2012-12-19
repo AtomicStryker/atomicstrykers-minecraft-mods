@@ -2,8 +2,8 @@ package ic2.api;
 
 import java.lang.reflect.Method;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 /**
  * Allows for charging, discharging and using electric items (IElectricItem).

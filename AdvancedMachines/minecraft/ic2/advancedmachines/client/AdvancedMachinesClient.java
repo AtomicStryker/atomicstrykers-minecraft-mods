@@ -1,13 +1,13 @@
 package ic2.advancedmachines.client;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
-import net.minecraftforge.client.MinecraftForgeClient;
 import ic2.advancedmachines.common.IProxy;
 import ic2.advancedmachines.common.TileEntityCentrifugeExtractor;
 import ic2.advancedmachines.common.TileEntityRotaryMacerator;
 import ic2.advancedmachines.common.TileEntitySingularityCompressor;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class AdvancedMachinesClient implements IProxy
 {
