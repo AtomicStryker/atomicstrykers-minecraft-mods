@@ -1,16 +1,14 @@
 package atomicstryker.battletowers.common;
 
-import java.util.*;
-import java.lang.*;
+import java.util.Arrays;
+import java.util.Random;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntityChest;
-import net.minecraft.src.TileEntityMobSpawner;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldGenerator;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class AS_WorldGenTower extends WorldGenerator
 {

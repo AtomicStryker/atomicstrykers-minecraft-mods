@@ -1,9 +1,9 @@
 package atomicstryker.battletowers.common;
 
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.Entity;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.World;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 public class AS_TowerDestroyer
 {

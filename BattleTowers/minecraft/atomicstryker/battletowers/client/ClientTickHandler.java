@@ -3,17 +3,15 @@ package atomicstryker.battletowers.client;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.Block;
-import net.minecraft.src.EnumMovingObjectType;
-import net.minecraft.src.GuiChest;
-import net.minecraft.src.MovingObjectPosition;
-import net.minecraft.src.PlayerControllerMP;
-
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.MovingObjectPosition;
 import atomicstryker.battletowers.common.AS_EntityGolem;
 import atomicstryker.battletowers.common.ForgePacketWrapper;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;

@@ -1,13 +1,16 @@
 package atomicstryker.battletowers.common;
 
-import java.io.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
+import net.minecraft.network.packet.Packet3Chat;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraftforge.common.Configuration;
+import atomicstryker.battletowers.client.ClientPacketHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -18,14 +21,9 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-import net.minecraft.src.*;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.MinecraftForge;
-
-import atomicstryker.battletowers.client.ClientPacketHandler;
-
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.2.6")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.2.7")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),

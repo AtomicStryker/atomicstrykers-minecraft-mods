@@ -2,7 +2,9 @@ package atomicstryker.battletowers.common;
 
 import java.util.Random;
 
-import net.minecraft.src.*;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class TowerStageItemManager
 {

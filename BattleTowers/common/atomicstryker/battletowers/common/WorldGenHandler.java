@@ -1,12 +1,10 @@
 package atomicstryker.battletowers.common;
 
 import java.util.Random;
-import java.util.Set;
 
-import net.minecraft.src.BiomeGenBase;
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.IChunkProvider;
-import net.minecraft.src.World;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.IChunkProvider;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class WorldGenHandler implements IWorldGenerator

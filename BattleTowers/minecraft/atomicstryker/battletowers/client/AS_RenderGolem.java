@@ -1,8 +1,8 @@
 package atomicstryker.battletowers.client;
 
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.ModelBiped;
-import net.minecraft.src.RenderBiped;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.entity.EntityLiving;
 
 import org.lwjgl.opengl.GL11;
 

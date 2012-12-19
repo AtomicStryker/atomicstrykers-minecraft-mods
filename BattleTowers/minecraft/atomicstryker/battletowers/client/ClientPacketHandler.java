@@ -3,10 +3,10 @@ package atomicstryker.battletowers.client;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import atomicstryker.battletowers.common.AS_BattleTowersCore;
 import atomicstryker.battletowers.common.ForgePacketWrapper;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Packet250CustomPayload;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 
