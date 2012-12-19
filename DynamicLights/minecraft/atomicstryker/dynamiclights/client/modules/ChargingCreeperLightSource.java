@@ -1,7 +1,7 @@
 package atomicstryker.dynamiclights.client.modules;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityCreeper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;

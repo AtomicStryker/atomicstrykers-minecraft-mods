@@ -29,20 +29,18 @@ import cpw.mods.fml.relauncher.IClassTransformer;
 public class DLTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.World */
-    private final String classNameWorldObfusc = "xv"; // 1.4.4 obfuscation
-    //private final String classNameWorldObfusc = "xe"; // 1.4.2 obfuscation
+    private final String classNameWorldObfusc = "yc"; // 1.4.6 obfuscation
     
     /* class net.minecraft.src.IBlockAccess */
-    private final String classNameBlockAccessObfusc = "yf"; // 1.4.4 obfuscation
-    //private final String classNameBlockAccessObfusc = "xo"; // 1.4.2 obfuscation
+    private final String classNameBlockAccessObfusc = "ym"; // 1.4.6 obfuscation
     
     /* method World.computeBlockLightValue(IIIIII)I */
     private final String computeBlockLightMethodNameO = "g"; // both 1.4.2 and 1.4.4 obfuscation
     
     
-    private final String classNameWorld = "net.minecraft.src.World";
-    private final String classNameWorldJava = "net/minecraft/src/World";
-    private final String blockAccessJava = "net/minecraft/src/IBlockAccess";
+    private final String classNameWorld = "net.minecraft.world.World";
+    private final String classNameWorldJava = "net/minecraft/world/World";
+    private final String blockAccessJava = "net/minecraft/world/IBlockAccess";
     private final String computeBlockLightMethodName = "computeBlockLightValue";
     
     @Override

@@ -1,9 +1,9 @@
 package atomicstryker.dynamiclights.client.modules;
 
-import net.minecraft.src.EnchantmentHelper;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityArrow;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -40,7 +40,7 @@ public class FlameEnchantedArrowLightSource
             if (arrow.shootingEntity != null && arrow.shootingEntity instanceof EntityPlayer)
             {
                 EntityPlayer shooter = (EntityPlayer) arrow.shootingEntity;
-                if (EnchantmentHelper.func_90036_a(shooter) != 0) // getFireAspectModifier
+                if (EnchantmentHelper.getFireAspectModifier(shooter) != 0)
                 {
                     DynamicLights.addLightSource(new EntityLightAdapter(arrow));
                 }

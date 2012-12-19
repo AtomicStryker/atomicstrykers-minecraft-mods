@@ -1,6 +1,6 @@
 package atomicstryker.dynamiclights.client;
 
-import net.minecraft.src.Entity;
+import net.minecraft.entity.Entity;
 
 /**
  * 

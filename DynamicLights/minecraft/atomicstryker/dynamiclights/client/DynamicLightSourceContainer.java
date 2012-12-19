@@ -1,8 +1,8 @@
 package atomicstryker.dynamiclights.client;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EnumSkyBlock;
-import net.minecraft.src.MathHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumSkyBlock;
 
 /**
  * 

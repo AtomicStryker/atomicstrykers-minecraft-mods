@@ -5,13 +5,13 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Block;
-import net.minecraft.src.EnumSkyBlock;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.KeyBinding;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldServer;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import org.lwjgl.input.Keyboard;
 
@@ -22,11 +22,11 @@ import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * 
@@ -39,7 +39,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.1.4")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.1.5")
 public class DynamicLights
 {
     private Minecraft mcinstance;
