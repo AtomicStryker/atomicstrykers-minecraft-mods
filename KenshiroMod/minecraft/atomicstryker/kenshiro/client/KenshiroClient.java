@@ -4,18 +4,18 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Block;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityCreeper;
-import net.minecraft.src.EntityCrit2FX;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntitySkeleton;
-import net.minecraft.src.EnumMovingObjectType;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.MovingObjectPosition;
+import net.minecraft.client.particle.EntityCrit2FX;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 
 import org.lwjgl.input.Mouse;
 
@@ -25,10 +25,10 @@ import atomicstryker.kenshiro.common.PacketType;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class KenshiroClient
 {
@@ -310,7 +310,7 @@ public class KenshiroClient
         ent.worldObj.spawnParticle("explode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
         ent.worldObj.spawnParticle("largeexplode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
         minecraft.effectRenderer.addEffect(new EntityCrit2FX(ent.worldObj, ent));
-        entPlayer.worldObj.playSound(ent.posX, ent.posY, ent.posZ, "kenshiropunch", 1.0F, (entPlayer.getRNG().nextFloat() - entPlayer.getRNG().nextFloat()) * 0.2F + 1.0F);
+        entPlayer.worldObj.playSound(ent.posX, ent.posY, ent.posZ, "kenshiropunch", 1.0F, (entPlayer.getRNG().nextFloat() - entPlayer.getRNG().nextFloat()) * 0.2F + 1.0F, false);
         
         if (ent instanceof EntityCreeper)
         {

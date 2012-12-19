@@ -4,14 +4,14 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityAIArrowAttack;
-import net.minecraft.src.EntityAITaskEntry;
-import net.minecraft.src.EntityCreeper;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntitySkeleton;
-import net.minecraft.src.World;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIArrowAttack;
+import net.minecraft.entity.ai.EntityAITaskEntry;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 import atomicstryker.kenshiro.client.ClientPacketHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -23,7 +23,7 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 
-@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.0.7")
+@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.0.8")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_KSM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_KSM"}, packetHandler = ServerPacketHandler.class)

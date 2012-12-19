@@ -1,12 +1,12 @@
 package atomicstryker.kenshiro.common;
 
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.NetLoginHandler;
+import net.minecraft.network.packet.NetHandler;
+import net.minecraft.network.packet.Packet1Login;
+import net.minecraft.server.MinecraftServer;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.kenshiro.client.KenshiroClient;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.NetHandler;
-import net.minecraft.src.NetLoginHandler;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Packet1Login;
 import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;

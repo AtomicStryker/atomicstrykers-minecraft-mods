@@ -1,21 +1,20 @@
 package atomicstryker.kenshiro.client;
 
-import java.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityPlayerSP;
-import net.minecraft.src.EnumAction;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemRenderer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.MapData;
-import net.minecraft.src.MapItemRenderer;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.Render;
-import net.minecraft.src.RenderHelper;
-import net.minecraft.src.RenderManager;
-import net.minecraft.src.RenderPlayer;
-import net.minecraft.src.Tessellator;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.MapItemRenderer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.storage.MapData;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;

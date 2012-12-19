@@ -3,17 +3,16 @@ package atomicstryker.kenshiro.client;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.kenshiro.common.KenshiroMod;
 import atomicstryker.kenshiro.common.PacketType;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Packet250CustomPayload;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class ClientPacketHandler implements IPacketHandler
@@ -71,7 +70,7 @@ public class ClientPacketHandler implements IPacketHandler
             Class[] decodeAs = { String.class, Integer.class, Integer.class, Integer.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             String sound = (String) packetReadout[0];
-            FMLClientHandler.instance().getClient().theWorld.playSound((Integer)packetReadout[1]+0.5D, (Integer)packetReadout[2]+0.5D, (Integer)packetReadout[3]+0.5D, sound, 1.0F, 1.0F);
+            FMLClientHandler.instance().getClient().theWorld.playSound((Integer)packetReadout[1]+0.5D, (Integer)packetReadout[2]+0.5D, (Integer)packetReadout[3]+0.5D, sound, 1.0F, 1.0F, false);
         }
     }
 
