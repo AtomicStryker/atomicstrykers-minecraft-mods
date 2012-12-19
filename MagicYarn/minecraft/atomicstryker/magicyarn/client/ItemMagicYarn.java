@@ -1,6 +1,10 @@
 package atomicstryker.magicyarn.client;
 
-import net.minecraft.src.*;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ItemMagicYarn extends Item
 {
@@ -46,7 +50,7 @@ public class ItemMagicYarn extends Item
 			{		
 				origin = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0);
 				System.out.println("Magic Yarn Origin set to ["+origin.x+"|"+origin.y+"|"+origin.z+"]");
-				world.playSound(player.posX, player.posY, player.posZ, "random.orb", 1.0F, 1.0F);
+				world.playSound(player.posX, player.posY, player.posZ, "random.orb", 1.0F, 1.0F, false);
 				MagicYarn.showPath = false;
 			}
 			else
@@ -70,7 +74,7 @@ public class ItemMagicYarn extends Item
 							if (((AStarNode) MagicYarn.path.get(i)).equals(target))
 							{
 								System.out.println("Magic Yarn being cut shorter!");
-								world.playSound(player.posX, player.posY, player.posZ, "random.break", 1.0F, 1.0F);
+								world.playSound(player.posX, player.posY, player.posZ, "random.break", 1.0F, 1.0F, false);
 								soundplayed = true;
 								while (i >= 0)
 								{
@@ -88,7 +92,7 @@ public class ItemMagicYarn extends Item
 					System.out.println("Magic Yarn Target nulled");
 					if (!soundplayed)
 					{
-						world.playSound(player.posX, player.posY, player.posZ, "random.pop", 1.0F, 1.0F);
+						world.playSound(player.posX, player.posY, player.posZ, "random.pop", 1.0F, 1.0F, false);
 					}
 					MagicYarn.showPath = false;
 				}
@@ -104,7 +108,7 @@ public class ItemMagicYarn extends Item
 				MagicYarn.lastPath = null;
 				AStarPath.stopPathSearch();
 				System.out.println("Magic Yarn Origin nulled");
-				world.playSound(player.posX, player.posY, player.posZ, "random.fizz", 1.0F, 1.0F);
+				world.playSound(player.posX, player.posY, player.posZ, "random.fizz", 1.0F, 1.0F, false);
 				MagicYarn.showPath = false;
 			}
 		}
