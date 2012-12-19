@@ -3,12 +3,9 @@ package atomicstryker.petbat.client;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Packet250CustomPayload;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import atomicstryker.ForgePacketWrapper;
-import atomicstryker.petbat.common.EntityPetBat;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 

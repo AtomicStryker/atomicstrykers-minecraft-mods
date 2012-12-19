@@ -1,12 +1,12 @@
 package atomicstryker.petbat.client;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.MathHelper;
 import atomicstryker.petbat.common.EntityPetBat;
-import net.minecraft.src.Entity;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.ModelBase;
-import net.minecraft.src.ModelRenderer;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ModelPetBat extends ModelBase

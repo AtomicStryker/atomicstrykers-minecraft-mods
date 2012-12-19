@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityBat;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.Potion;
-import net.minecraft.src.PotionEffect;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -40,7 +40,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.1")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -275,9 +275,9 @@ public class PetBatMod implements IProxy
     {
         if (!event.entity.worldObj.isRemote)
         {
-            if (event.entityItem.item.itemID == itemPocketedBat.shiftedIndex)
+            if (event.entityItem.func_92014_d().itemID == itemPocketedBat.shiftedIndex)
             {
-                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(event.player, event.entityItem.item);
+                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(event.player, event.entityItem.func_92014_d());
                 if (bat.getHealth() > 1)
                 {
                     EntityPlayer p = event.player;
@@ -290,7 +290,7 @@ public class PetBatMod implements IProxy
                     event.setCanceled(true);
                 }
             }
-            else if (event.entityItem.item.itemID == TAME_ITEM_ID)
+            else if (event.entityItem.func_92014_d().itemID == TAME_ITEM_ID)
             {
                 List nearEnts = event.entityItem.worldObj.getEntitiesWithinAABBExcludingEntity(event.entityItem, event.entityItem.boundingBox.expand(8D, 8D, 8D));
                 for (Object o : nearEnts)

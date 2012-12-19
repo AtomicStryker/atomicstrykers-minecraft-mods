@@ -1,18 +1,16 @@
 package atomicstryker.petbat.client;
 
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.item.ItemStack;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
-
 import cpw.mods.fml.common.network.PacketDispatcher;
-
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.GuiTextField;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Packet250CustomPayload;
 
 public class GuiPetBatRename extends GuiScreen
 {

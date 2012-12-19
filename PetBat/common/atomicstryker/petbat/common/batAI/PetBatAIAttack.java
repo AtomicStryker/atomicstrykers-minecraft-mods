@@ -1,12 +1,12 @@
 package atomicstryker.petbat.common.batAI;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec3;
 import atomicstryker.petbat.common.EntityPetBat;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityAIBase;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Vec3;
 
 public class PetBatAIAttack extends EntityAIBase
 {
@@ -83,14 +83,14 @@ public class PetBatAIAttack extends EntityAIBase
                 else if (attackTick == 1)
                 {
                     entityTarget.setDead();
-                    displayEatingEffects(((EntityItem)entityTarget).item, 16);
+                    displayEatingEffects(((EntityItem)entityTarget).func_92014_d(), 16);
                     petBat.worldObj.playSoundAtEntity(petBat, "random.burp", 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
                 else if (attackTick % 3 == 0)
                 {
-                    displayEatingEffects(((EntityItem)entityTarget).item, 5);
+                    displayEatingEffects(((EntityItem)entityTarget).func_92014_d(), 5);
                 }
             }
             else

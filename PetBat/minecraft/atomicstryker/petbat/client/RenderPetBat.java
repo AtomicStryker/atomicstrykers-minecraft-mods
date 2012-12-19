@@ -1,15 +1,15 @@
 package atomicstryker.petbat.client;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.petbat.common.EntityPetBat;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderPetBat extends RenderLiving

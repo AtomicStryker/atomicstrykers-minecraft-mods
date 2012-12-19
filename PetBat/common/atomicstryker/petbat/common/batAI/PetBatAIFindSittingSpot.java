@@ -1,10 +1,9 @@
 package atomicstryker.petbat.common.batAI;
 
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 import atomicstryker.petbat.common.EntityPetBat;
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.EntityAIBase;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.World;
 
 public class PetBatAIFindSittingSpot extends EntityAIBase
 {

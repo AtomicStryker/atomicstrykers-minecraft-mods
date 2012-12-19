@@ -1,16 +1,16 @@
 package atomicstryker.petbat.common;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.NetLoginHandler;
+import net.minecraft.network.packet.NetHandler;
+import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
-import net.minecraft.src.NetHandler;
-import net.minecraft.src.NetLoginHandler;
-import net.minecraft.src.Packet1Login;
 import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.Player;
 

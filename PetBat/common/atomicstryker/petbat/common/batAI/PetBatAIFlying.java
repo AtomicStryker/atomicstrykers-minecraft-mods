@@ -2,13 +2,13 @@ package atomicstryker.petbat.common.batAI;
 
 import java.util.Random;
 
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import atomicstryker.petbat.common.EntityPetBat;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.EntityAIBase;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.MathHelper;
 
 public class PetBatAIFlying extends EntityAIBase
 {
