@@ -1,13 +1,12 @@
 package atomicstryker.ruins.common;
 
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
 
-
-import net.minecraft.src.World;
+import net.minecraft.world.World;
 
 public class RuinTemplate implements RuinIBuildable {
 	private String name;

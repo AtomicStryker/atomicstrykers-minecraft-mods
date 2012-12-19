@@ -3,8 +3,8 @@
   "modid": "AS_Ruins",
   "name": "Ruins Spawning System",
   "description": "Allows highly customizable Structure Templates to randomly generate in your Worlds",
-  "version": "8.6",
-  "mcversion": "1.4.4",
+  "version": "8.7",
+  "mcversion": "1.4.6",
   "url": "http://www.minecraftforum.net/topic/1113099-",
   "updateUrl": "",
   "authors": [

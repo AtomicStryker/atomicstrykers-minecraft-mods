@@ -1,14 +1,17 @@
 package atomicstryker.ruins.common;
 
-import java.util.Collection;
-import java.util.Random;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Random;
 
-
-import net.minecraft.src.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenBase;
 
 public class RuinHandler {
 	private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;

@@ -1,13 +1,11 @@
 package atomicstryker.ruins.common;
 
-import java.util.Random;
-import java.util.LinkedList;
 import java.util.Iterator;
-import java.awt.Point;
+import java.util.LinkedList;
+import java.util.Random;
 
-
-import net.minecraft.src.BiomeGenBase;
-import net.minecraft.src.World;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 
 public class RuinGenerator {
 	private RuinHandler Ruins;

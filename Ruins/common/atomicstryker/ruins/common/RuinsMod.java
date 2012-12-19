@@ -1,31 +1,30 @@
 package atomicstryker.ruins.common;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.nio.channels.*;
+import java.nio.channels.FileChannel;
+import java.util.Random;
 
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.minecraft.world.storage.ISaveHandler;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.src.AnvilChunkLoader;
-import net.minecraft.src.BiomeGenBase;
-import net.minecraft.src.IChunkLoader;
-import net.minecraft.src.IChunkProvider;
-import net.minecraft.src.ISaveHandler;
-import net.minecraft.src.SaveHandler;
-import net.minecraft.src.World;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.6", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.7", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
