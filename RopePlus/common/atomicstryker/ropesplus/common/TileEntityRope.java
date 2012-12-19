@@ -1,6 +1,7 @@
 package atomicstryker.ropesplus.common;
 
-import net.minecraft.src.*;
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
 
 public class TileEntityRope
 {

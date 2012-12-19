@@ -1,6 +1,6 @@
 package atomicstryker.ropesplus.common;
 
-import net.minecraft.src.Item;
+import net.minecraft.item.Item;
 
 public class ItemRope extends Item
 {

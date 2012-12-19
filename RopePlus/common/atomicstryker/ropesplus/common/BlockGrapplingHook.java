@@ -2,15 +2,10 @@ package atomicstryker.ropesplus.common;
 
 import java.util.Random;
 
-import atomicstryker.ropesplus.client.RopesPlusClient;
-
-import cpw.mods.fml.client.registry.RenderingRegistry;
-
-import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.Block;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.Material;
-import net.minecraft.src.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 public class BlockGrapplingHook extends Block
 {

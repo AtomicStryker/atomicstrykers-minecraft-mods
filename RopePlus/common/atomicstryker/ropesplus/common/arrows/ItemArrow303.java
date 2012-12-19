@@ -1,6 +1,6 @@
 package atomicstryker.ropesplus.common.arrows;
 
-import net.minecraft.src.Item;
+import net.minecraft.item.Item;
 
 public class ItemArrow303 extends Item
 {

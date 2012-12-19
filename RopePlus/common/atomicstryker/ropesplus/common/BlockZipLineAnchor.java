@@ -1,9 +1,14 @@
 package atomicstryker.ropesplus.common;
 
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import atomicstryker.ForgePacketWrapper;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
-import net.minecraft.src.*;
 
 
 public class BlockZipLineAnchor extends BlockContainer

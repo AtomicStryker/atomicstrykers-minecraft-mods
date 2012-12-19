@@ -2,7 +2,7 @@ package atomicstryker.ropesplus.client;
 
 import java.io.File;
 
-import net.minecraft.src.Render;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
@@ -10,8 +10,8 @@ import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class ClientProxy implements IProxy
 {

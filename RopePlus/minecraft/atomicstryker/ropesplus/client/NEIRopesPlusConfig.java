@@ -1,6 +1,6 @@
 package atomicstryker.ropesplus.client;
 
-import net.minecraft.src.Item;
+import net.minecraft.item.Item;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 import codechicken.nei.MultiItemRange;

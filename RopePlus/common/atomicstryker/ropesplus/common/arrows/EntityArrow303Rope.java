@@ -1,11 +1,14 @@
 package atomicstryker.ropesplus.common.arrows;
 
-import java.util.*;
-
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
 import atomicstryker.ropesplus.common.TileEntityRope;
-import net.minecraft.src.*;
 
 public class EntityArrow303Rope extends EntityArrow303
 {

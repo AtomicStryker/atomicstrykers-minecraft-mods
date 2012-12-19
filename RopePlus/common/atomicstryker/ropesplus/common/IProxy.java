@@ -2,8 +2,6 @@ package atomicstryker.ropesplus.common;
 
 import java.io.File;
 
-import net.minecraft.src.EntityPlayer;
-
 public interface IProxy
 {
     public void loadConfig(File configFile);

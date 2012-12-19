@@ -1,15 +1,17 @@
 package atomicstryker.ropesplus.common.arrows;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.List;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.EntityProjectileBase;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import net.minecraft.src.*;
 
 public class EntityArrow303 extends EntityProjectileBase
 {

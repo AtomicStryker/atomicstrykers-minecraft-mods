@@ -2,13 +2,12 @@ package atomicstryker.ropesplus.common;
 
 import java.util.HashMap;
 
-import atomicstryker.ropesplus.common.arrows.ItemArrow303;
-
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
+import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class RopesPlusBowController
 {

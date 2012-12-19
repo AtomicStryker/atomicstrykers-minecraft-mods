@@ -1,10 +1,10 @@
 package atomicstryker.ropesplus.client;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Render;
-import net.minecraft.src.Tessellator;
-import net.minecraft.src.Vec3;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
 
 import org.lwjgl.opengl.GL11;
 

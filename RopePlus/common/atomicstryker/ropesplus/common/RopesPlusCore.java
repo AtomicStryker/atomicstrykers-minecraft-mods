@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ropesplus.client.ClientPacketHandler;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
@@ -30,7 +30,6 @@ import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.Mod.ServerStarted;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -42,8 +41,9 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.3")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.4")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -118,15 +118,15 @@ public class RopesPlusCore
         blockRopeWallPos = (new BlockRopeWall(Settings_RopePlus.blockIdRope, Settings_RopePlus.ropeTexture)).setHardness(0.5F).setStepSound(Block.soundClothFootstep).setBlockName("blockRope");
         blockGrapplingHook = (new BlockGrapplingHook(Settings_RopePlus.blockIdGrapplingHook, 0)).setHardness(0.0F).setStepSound(Block.soundMetalFootstep).setBlockName("blockGrHk");
         
-        blockZipLineAnchor = new BlockZipLineAnchor(Settings_RopePlus.blockIdZipLineAnchor, 3).setHardness(0.3F).setBlockName("blockZipeLineAnchor");
+        blockZipLineAnchor = new BlockZipLineAnchor(Settings_RopePlus.blockIdZipLineAnchor, 3).setHardness(0.3F).setBlockName("blockZiplineAnchor");
         
         itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(17).setItemName("itemHookshot");
         itemHookShotCartridge = new Item(Settings_RopePlus.itemIdHookshotCartridge).setIconIndex(18).setTextureFile("/atomicstryker/ropesplus/client/ropesPlusItems.png").setItemName("HookshotCartridge");
         
-        GameRegistry.registerBlock(blockGrapplingHook);
-        GameRegistry.registerBlock(blockRopeWallPos);
-        GameRegistry.registerBlock(blockRopeCentralPos);
-        GameRegistry.registerBlock(blockZipLineAnchor);
+        GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
+        GameRegistry.registerBlock(blockRopeWallPos, "blockRope");
+        GameRegistry.registerBlock(blockRopeCentralPos, "blockRopeCentral");
+        GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
         GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
         
         ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 6);
@@ -168,8 +168,6 @@ public class RopesPlusCore
         arrows.add(new EntityArrow303(null));
         
         MinecraftForge.EVENT_BUS.register(new RopesPlusBowController());
-        
-        GameRegistry.registerDispenserHandler(new DispenserHandler());
         
         proxy.load();
     }
@@ -241,7 +239,7 @@ public class RopesPlusCore
 	{
 		try
 		{
-			return (EntityArrow303)class1.getConstructor(new Class[] {net.minecraft.src.World.class}).newInstance(new Object[] {(World)null});
+			return (EntityArrow303)class1.getConstructor(new Class[] {World.class}).newInstance(new Object[] {(World)null});
 		}
 		catch(Throwable throwable)
 		{

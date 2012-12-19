@@ -1,9 +1,13 @@
 package atomicstryker.ropesplus.common;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Iterator;
 
-import net.minecraft.src.EntityPlayer;
+import cpw.mods.fml.common.FMLCommonHandler;
+
+import net.minecraft.block.BlockDispenser;
+import net.minecraft.dispenser.BehaviorArrowDispense;
+import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 
 public class CommonProxy implements IProxy
 {
@@ -17,7 +21,11 @@ public class CommonProxy implements IProxy
     @Override
     public void load()
     {
-        // NOOP
+        for(Iterator<EntityArrow303> iterator = RopesPlusCore.arrows.iterator(); iterator.hasNext();)
+        {
+            EntityArrow303 arrow = iterator.next();
+            BlockDispenser.dispenseBehaviorRegistry.putObject(arrow.item, new BehaviorArrowDispense(FMLCommonHandler.instance().getMinecraftServerInstance()));
+        }
     }
     
     @Override

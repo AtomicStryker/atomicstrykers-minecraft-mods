@@ -1,7 +1,11 @@
 package atomicstryker.ropesplus.common.arrows;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
-import net.minecraft.src.*;
 
 public class EntityArrow303Dirt extends EntityArrow303
 {

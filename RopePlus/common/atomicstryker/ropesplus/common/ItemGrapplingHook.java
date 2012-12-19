@@ -1,18 +1,13 @@
 package atomicstryker.ropesplus.common;
 
-import java.util.Map;
-import java.util.Random;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.ropesplus.client.RopesPlusClient;
-
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class ItemGrapplingHook extends Item
 {

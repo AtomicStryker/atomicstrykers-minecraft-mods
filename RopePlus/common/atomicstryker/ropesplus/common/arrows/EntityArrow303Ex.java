@@ -1,9 +1,13 @@
 package atomicstryker.ropesplus.common.arrows;
 
-import java.util.Random;
-
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
-import net.minecraft.src.*;
 
 public class EntityArrow303Ex extends EntityArrow303
 {
@@ -57,10 +61,9 @@ public class EntityArrow303Ex extends EntityArrow303
                 ent.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 1);
             }
             
-            // ((EntityLiving)ent).setArrowCountInEntity(((EntityLiving)ent).getArrowCountInEntity() + 1);
             if (ent instanceof EntityLiving)
             {
-                ((EntityLiving)ent).func_85034_r(((EntityLiving)ent).func_85035_bI() + 1);
+                ((EntityLiving)ent).setArrowCountInEntity(((EntityLiving)ent).getArrowCountInEntity() + 1);
             }
             setSize(0, 0);
         }

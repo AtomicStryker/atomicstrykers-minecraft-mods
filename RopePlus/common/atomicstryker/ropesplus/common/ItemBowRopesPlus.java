@@ -1,15 +1,14 @@
 package atomicstryker.ropesplus.common;
 
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
-import net.minecraft.src.Enchantment;
-import net.minecraft.src.EnchantmentHelper;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EnumAction;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemBow;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
 
 public class ItemBowRopesPlus extends ItemBow
 {

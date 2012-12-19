@@ -1,6 +1,11 @@
 package atomicstryker.ropesplus.common;
 
-import net.minecraft.src.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 
 public class BlockRopeCenter extends Block
