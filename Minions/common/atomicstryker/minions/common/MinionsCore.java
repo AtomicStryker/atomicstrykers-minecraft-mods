@@ -609,39 +609,6 @@ public class MinionsCore
         proxy.playSoundAtEntity(playerEnt, "mod_minions.randomorder", 1.0F, 1.0F);
     }
     
-    public static AS_PathEntity translateAStarPathtoPathEntity(ArrayList input)
-    {
-        AS_PathPoint[] points = new AS_PathPoint[input.size()];
-        AStarNode reading;
-        int i = 0;
-        int size = input.size();
-        //System.out.println("Translating AStar Path with "+size+" Hops:");
-
-        while(size > 0)
-        {
-            reading = (AStarNode) input.get(size-1);
-            points[i] = new AS_PathPoint(reading.x, i == 0 ? reading.y+1 : reading.y, reading.z); // MC demands the first path point to be at +1 height for some fucking reason
-            points[i].isFirst = i == 0;
-            points[i].setIndex(i);
-            points[i].setTotalPathDistance(i);
-            points[i].setDistanceToNext(1F);
-            points[i].setDistanceToTarget(size);
-
-            if (i>0)
-            {
-                points[i].setPrevious(points[i-1]);
-            }
-            //System.out.println("PathPoint: ["+reading.x+"|"+reading.y+"|"+reading.z+"]");
-
-            input.remove(size-1);
-            size --;
-            i++;
-        }
-        //System.out.println("Translated AStar PathEntity with length: "+ points.length);
-
-        return new AS_PathEntity(points);
-    }
-    
     private void initializeSettingsFile(File settingsFile)
     {
         try

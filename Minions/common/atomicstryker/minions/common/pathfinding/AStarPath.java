@@ -14,30 +14,30 @@ public class AStarPath
 {
     private AStarWorker worker;
     private World worldObj;
-    private boolean isWorking = false;
-    private ArrayList pathResult;
+    private boolean isWorking;
     private IAStarPathedEntity pathedEntity;
-    private long timeStarted = 0L;
+    private long timeStarted;
     private boolean accesslock;
 
-    public AStarPath(World worldObj)
+    public AStarPath(World world)
     {
-        this.worldObj = worldObj;
+        worldObj = world;
         accesslock = false;
+        timeStarted = 0L;
+        isWorking = false;
     }
 
     public AStarPath(World worldObj, IAStarPathedEntity ent)
     {
-        this.worldObj = worldObj;
+        this(worldObj);
         pathedEntity = ent;
-        accesslock = false;
     }
 
     public boolean isBusy()
     {
         if (timeStarted != 0L && System.currentTimeMillis() - timeStarted > 5000L)
         {
-            OnNoPathAvailable();
+            onNoPathAvailable();
         }
 
         return isWorking;
@@ -45,8 +45,8 @@ public class AStarPath
 
     public void getPath(int startx, int starty, int startz, int destx, int desty, int destz, boolean allowDropping)
     {
-        AStarNode starter = new AStarNode(startx, starty, startz, 0);
-        AStarNode finish = new AStarNode(destx, desty, destz, -1);;
+        AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
+        AStarNode finish = new AStarNode(destx, desty, destz, -1, null);
 
         getPath(starter, finish, allowDropping);
     }
@@ -70,21 +70,18 @@ public class AStarPath
         accesslock = false;
     }
 
-    public void OnFoundPath(ArrayList result)
+    public void onFoundPath(ArrayList result)
     {
         flushWorker();
-        pathResult = result;
-
         if (pathedEntity != null)
         {
             pathedEntity.onFoundPath(result);
         }
     }
 
-    public void OnNoPathAvailable()
+    public void onNoPathAvailable()
     {
         flushWorker();
-
         if (pathedEntity != null)
         {
             pathedEntity.onNoPathAvailable();
@@ -94,7 +91,6 @@ public class AStarPath
     public void stopPathSearch()
     {
         flushWorker();
-
         if (pathedEntity != null)
         {
             pathedEntity.onNoPathAvailable();

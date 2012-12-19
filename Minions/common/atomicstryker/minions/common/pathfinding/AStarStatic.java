@@ -1,6 +1,8 @@
 package atomicstryker.minions.common.pathfinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
@@ -14,9 +16,9 @@ import atomicstryker.minions.common.MinionsCore;
  * @author AtomicStryker
  */
 
-public final class AStarStatic
+public class AStarStatic
 {
-	
+    
 	static boolean isViable(World worldObj, AStarNode target, int yoffset)
 	{
 		int x = target.x;
@@ -72,10 +74,15 @@ public final class AStarStatic
 		return Math.sqrt((entLiving.motionX * entLiving.motionX) + (entLiving.motionZ * entLiving.motionZ));
 	}
 	
+	/**
+	 * Calculates the Euclidian distance between 2 AStarNode instances
+	 * @param a Node
+	 * @param b Node
+	 * @return Euclidian Distance between the 2 given Nodes
+	 */
 	static double getDistanceBetweenNodes(AStarNode a, AStarNode b)
 	{
-		return (Math.abs(a.x-b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z));
-		//return Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2) + Math.pow((a.z - b.z), 2));
+		return Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2) + Math.pow((a.z - b.z), 2));
 	}
 	
 	public static double getDistanceBetweenCoords(int x, int y, int z, int posX, int posY, int posZ)
@@ -83,6 +90,9 @@ public final class AStarStatic
 		return Math.sqrt(Math.pow(x-posX, 2) + Math.pow(y-posY, 2) + Math.pow(z-posZ, 2));
 	}
 	
+	/**
+	 * Array of standard 3D neighbour Block offsets and their 'reach cost' as fourth value
+	 */
 	final static int candidates[][] =
 	{
 		{
@@ -151,16 +161,19 @@ public final class AStarStatic
 		}
 	};
 	
-	static boolean isLadder(int id)
+	static boolean isLadder(World world, int blockID, int x, int y, int z)
 	{
-		return (id == Block.ladder.blockID
-			|| id == 242
-			|| id == 243);
+	    Block b = Block.blocksList[blockID];
+	    if (b != null)
+	    {
+	        return b.isLadder(world, x, y, z);
+	    }
+	    return false;
 	}
 	
     public static AStarNode[] getAccessNodesSorted(World worldObj, int workerX, int workerY, int workerZ, int posX, int posY, int posZ)
     {
-    	ArrayList resultList = new ArrayList();
+    	ArrayList<AStarNode> resultList = new ArrayList<AStarNode>();
 
 		AStarNode check;
 		for (int xIter = -2; xIter <= 2; xIter++)
@@ -169,25 +182,16 @@ public final class AStarStatic
 			{
 				for (int yIter = -3; yIter <= 2; yIter++)
 				{
-					check = new AStarNode(posX+xIter, posY+yIter, posZ+zIter, 0);
-					
+					check = new AStarNode(posX+xIter, posY+yIter, posZ+zIter, Math.abs(xIter)+Math.abs(yIter), null);
 					if (AStarStatic.isViable(worldObj, check, 1))
 					{
-						check.f_distanceToGoal = ((AStarStatic.getDistanceBetweenCoords(workerX, workerY, workerZ, check.x, check.y, check.z)));
-						
-						int index = 0;
-						if (resultList.size() != 0)
-						{
-							while(index < resultList.size() && resultList.get(index) != null && ((AStarNode)resultList.get(index)).f_distanceToGoal <= check.f_distanceToGoal)
-							{
-								index++;
-							}
-						}
-						resultList.add(index, check);
+						resultList.add(check);
 					}
 				}
 			}
 		}
+		
+		Collections.sort(resultList); // TODO check this to be sorted correctly
 		
 		int count = 0;
 		AStarNode[] returnVal = new AStarNode[resultList.size()];
@@ -200,9 +204,47 @@ public final class AStarStatic
 		
     	return returnVal;
     }
+    
+    private class NodeComparer implements Comparator<AStarNode>
+    {
+        @Override
+        public int compare(AStarNode o1, AStarNode o2)
+        {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+    }
 	
-	public static AS_PathEntity translateAStarPathtoPathEntity(ArrayList input)
-	{		
-		return MinionsCore.translateAStarPathtoPathEntity(input);
-	}
+    public static AS_PathEntity translateAStarPathtoPathEntity(ArrayList input)
+    {
+        AS_PathPoint[] points = new AS_PathPoint[input.size()];
+        AStarNode reading;
+        int i = 0;
+        int size = input.size();
+        //System.out.println("Translating AStar Path with "+size+" Hops:");
+
+        while(size > 0)
+        {
+            reading = (AStarNode) input.get(size-1);
+            points[i] = new AS_PathPoint(reading.x, i == 0 ? reading.y+1 : reading.y, reading.z); // MC demands the first path point to be at +1 height for some fucking reason
+            points[i].isFirst = i == 0;
+            points[i].setIndex(i);
+            points[i].setTotalPathDistance(i);
+            points[i].setDistanceToNext(1F);
+            points[i].setDistanceToTarget(size);
+
+            if (i>0)
+            {
+                points[i].setPrevious(points[i-1]);
+            }
+            //System.out.println("PathPoint: ["+reading.x+"|"+reading.y+"|"+reading.z+"]");
+
+            input.remove(size-1);
+            size --;
+            i++;
+        }
+        //System.out.println("Translated AStar PathEntity with length: "+ points.length);
+
+        return new AS_PathEntity(points);
+    }
 }

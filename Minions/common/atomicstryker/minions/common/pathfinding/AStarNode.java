@@ -9,99 +9,133 @@ import java.util.Comparator;
  * @author AtomicStryker
  */
 
-public class AStarNode
+public class AStarNode implements Comparable
 {
 	final public int x;
 	final public int y;
 	final public int z;
+	final AStarNode target;
 	
-	public AStarNode parent = null;
-	public int parentxoffset;
-	public int parentyoffset;
-	public int parentzoffset;
+	public AStarNode parent;
 	
-	public int g_BlockDistToStart;
-	public double f_distanceToGoal;
-	public double h_reachCost;
+	/**
+	 * AStar G value, the total distance from the start Node to this Node
+	 */
+	private int g;
 	
-	public AStarNode(int ix, int iy, int iz, int dist)
+	/**
+	 * AStar H value, cost to goal estimated value
+	 */
+	private double h;
+	
+	/**
+	 * AStarNode constructor
+	 * @param ix x coordinate
+	 * @param iy y coordinate
+	 * @param iz z coordinate
+	 * @param dist Node reaching distance from start
+	 * @param p parent Node
+	 */
+	public AStarNode(int ix, int iy, int iz, int dist, AStarNode p)
 	{
 		x = ix;
 		y = iy;
 		z = iz;
-		g_BlockDistToStart = dist;
+		g = dist;
+		parent = p;
+		target = null;
 	}
 	
-	public AStarNode(int ix, int iy, int iz, int dist, AStarNode node)
+	public AStarNode(int ix, int iy, int iz, int dist, AStarNode p, AStarNode t)
 	{
-		x = ix;
-		y = iy;
-		z = iz;
-		g_BlockDistToStart = dist;
-		parent = node;
-		updateParentOffset();
+	    x = ix;
+	    y = iy;
+	    z = iz;
+	    g = dist;
+	    parent = p;
+	    target = t;
+	    updateTargetCostEstimate();
 	}
 	
-	public void updateReachCost(double input)
+	public int getG()
 	{
-		f_distanceToGoal = input;
-		h_reachCost = g_BlockDistToStart + f_distanceToGoal;
+	    return g;
 	}
 	
+	public double getF()
+	{
+	    return g+h;
+	}
+	
+	/**
+	 * Tries to update this Node instance with a new Nodechain to it, but checks
+	 * if that improves the Node cost first
+	 * @param checkingDistance new G distance if the update is accepted
+	 * @param parentOtherNode new parent Node if the update is accepted
+	 * @return true if the new cost is lower and the update was accepted, false otherwise
+	 */
 	public boolean updateDistance(int checkingDistance, AStarNode parentOtherNode)
 	{
-		if (checkingDistance < this.g_BlockDistToStart)
+		if (checkingDistance < g)
 		{
-			g_BlockDistToStart = checkingDistance;
-			h_reachCost = g_BlockDistToStart + f_distanceToGoal;
+			g = checkingDistance;
 			parent = parentOtherNode;
-			updateParentOffset();
+			updateTargetCostEstimate();
 			return true;
 		}
 		
 		return false;
 	}
 	
-	public void updateParentOffset()
+	/**
+	 * Computes the H or heuristic value by estimating the total cost from here
+	 * to the target Node (if it exists).
+	 */
+	private void updateTargetCostEstimate()
 	{
-		parentxoffset = parent.x - x;
-		parentyoffset = parent.y - y;
-		parentzoffset = parent.z - z;
-	}
-	
-    @Override
-	public boolean equals(Object checkagainst)
-	{
-		if (checkagainst instanceof AStarNode)
-		{
-			AStarNode check = (AStarNode) checkagainst;
-			if (check.hashCode() == hashCode() && check.x == x && check.y == y && check.z == z)
-			{
-				return true;
-			}
-		}
-		
-		return false;
+	    if (target != null)
+	    {
+	        // we prefer "less distance to target" over "short path" by a huge factor, here 10!
+	        h = g + AStarStatic.getDistanceBetweenNodes(this, target)*10;
+	    }
+	    else
+	    {
+	        h = 0;
+	    }
 	}
     
-    public int compare(Object a, Object b)
+    @Override
+    public int compareTo(Object o)
     {
-    	if (a instanceof AStarNode && b instanceof AStarNode)
-    	{
-    		AStarNode anode = (AStarNode) a;
-    		AStarNode bnode = (AStarNode) b;
-    		if (anode.h_reachCost == bnode.h_reachCost)
-    		{
-    			return 0;
-    		}
-    		else if (anode.h_reachCost < bnode.h_reachCost)
-    		{
-    			return -1;
-    		}
-    		else return 1;
-    	}
-    	
+        if (o instanceof AStarNode)
+        {
+            AStarNode other = (AStarNode) o;
+            if (getF() < other.getF()) // lower cost = smaller natural value
+            {
+                return -1;
+            }
+            else if (getF() > other.getF()) // higher cost = higher natural value
+            {
+                return 1;
+            }
+        }
+        
     	return 0;
+    }
+    
+    @Override
+    public boolean equals(Object checkagainst)
+    {
+        if (checkagainst instanceof AStarNode)
+        {
+            AStarNode check = (AStarNode) checkagainst;
+            if (check.x == x && check.y == y && check.z == z)
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 	
     @Override
