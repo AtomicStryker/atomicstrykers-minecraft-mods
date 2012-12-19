@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityLiving;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.DamageSource;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Bulwark extends MobModifier

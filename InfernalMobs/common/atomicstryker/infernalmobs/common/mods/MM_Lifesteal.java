@@ -1,14 +1,10 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import java.lang.reflect.Field;
-
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityCreeper;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityMob;
-import net.minecraft.src.EntityWolf;
-import net.minecraft.src.Potion;
-import net.minecraft.src.PotionEffect;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.util.DamageSource;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 

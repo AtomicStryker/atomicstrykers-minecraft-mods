@@ -1,10 +1,8 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Potion;
-import net.minecraft.src.PotionEffect;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Quicksand extends MobModifier

@@ -2,15 +2,14 @@ package atomicstryker.infernalmobs.client;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.EntityLiving;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.ModelBase;
-import net.minecraft.src.OpenGlHelper;
-import net.minecraft.src.RenderEngine;
-import net.minecraft.src.RenderLiving;
-import net.minecraft.src.RenderManager;
 
 public class RenderLivingGlow extends RenderLiving
 {

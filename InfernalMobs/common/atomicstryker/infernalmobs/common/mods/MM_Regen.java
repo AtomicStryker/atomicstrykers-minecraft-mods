@@ -1,10 +1,6 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import java.lang.reflect.Field;
-
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
+import net.minecraft.entity.EntityLiving;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 

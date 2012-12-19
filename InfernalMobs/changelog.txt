@@ -1,3 +1,6 @@
+1.1.1
+- update to Minecraft 1.4.6
+
 1.1.0
 - fix for NPE in overlayrenderer
 - made modifiers removable via config. CAUTION: Removing mods on client may cause crash when on a server

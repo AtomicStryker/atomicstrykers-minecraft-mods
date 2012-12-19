@@ -1,10 +1,10 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.MathHelper;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Webber extends MobModifier

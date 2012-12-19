@@ -1,14 +1,12 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityMob;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntitySmallFireball;
-import net.minecraft.src.EntityWolf;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.Vec3;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntitySmallFireball;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Vec3;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ghastly extends MobModifier

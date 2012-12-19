@@ -1,11 +1,11 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.Vec3;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ender extends MobModifier

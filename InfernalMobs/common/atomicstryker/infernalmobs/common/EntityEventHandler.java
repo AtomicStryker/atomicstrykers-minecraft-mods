@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;

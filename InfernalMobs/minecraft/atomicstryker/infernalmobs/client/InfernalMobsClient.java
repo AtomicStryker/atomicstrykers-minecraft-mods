@@ -5,31 +5,30 @@ import java.util.EnumSet;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityList;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.FontRenderer;
-import net.minecraft.src.GuiIngame;
-import net.minecraft.src.MovingObjectPosition;
-import net.minecraft.src.ScaledResolution;
-import net.minecraft.src.Vec3;
-import net.minecraft.src.World;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
 
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.infernalmobs.common.ISidedProxy;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class InfernalMobsClient implements ISidedProxy, ITickHandler
 {

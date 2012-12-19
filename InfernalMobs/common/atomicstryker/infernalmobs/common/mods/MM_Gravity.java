@@ -1,11 +1,10 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityMob;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.MathHelper;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 

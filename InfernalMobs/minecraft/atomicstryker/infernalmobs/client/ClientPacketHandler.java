@@ -3,14 +3,14 @@ package atomicstryker.infernalmobs.client;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.mods.MM_Gravity;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.INetworkManager;
-import net.minecraft.src.Packet250CustomPayload;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;

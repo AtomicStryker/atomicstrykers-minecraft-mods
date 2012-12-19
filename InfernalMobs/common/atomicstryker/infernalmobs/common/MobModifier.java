@@ -2,10 +2,10 @@ package atomicstryker.infernalmobs.common;
 
 import java.util.ArrayList;
 
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
 
 public abstract class MobModifier
 {
