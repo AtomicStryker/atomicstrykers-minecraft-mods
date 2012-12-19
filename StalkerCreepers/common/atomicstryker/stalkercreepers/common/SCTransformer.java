@@ -26,12 +26,12 @@ public class SCTransformer implements IClassTransformer
     
     /* MCP Names for EntityAICreeperSwell Transformation */
     
-    private final String entityAICreeperSwellClassName = "net.minecraft.src.EntityAICreeperSwell";
-    private final String entityAICreeperSwellJavaClassName = "net/minecraft/src/EntityAICreeperSwell";
+    private final String entityAICreeperSwellClassName = "net.minecraft.entity.ai.EntityAICreeperSwell";
+    private final String entityAICreeperSwellJavaClassName = "net/minecraft/entity/ai/EntityAICreeperSwell";
     private final String shouldExecuteMethodName = "shouldExecute";
     private final String swellingCreeperFieldName = "swellingCreeper";
-    private final String entityLivingJavaClassName = "net/minecraft/src/EntityLiving";
-    private final String entityCreeperJavaClassName = "net/minecraft/src/EntityCreeper";
+    private final String entityLivingJavaClassName = "net/minecraft/entity/EntityLiving";
+    private final String entityCreeperJavaClassName = "net/minecraft/entity/monster/EntityCreeper";
     
     @Override
     public byte[] transform(String name, byte[] bytes)

@@ -1,2 +1,5 @@
+1.0.1
+updated for MC 1.4.6
+
 1.0.0
 ported to be a FML Coremod for Minecraft 1.4.4

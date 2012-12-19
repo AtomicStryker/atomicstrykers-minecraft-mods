@@ -1,7 +1,7 @@
 package atomicstryker.stalkercreepers.common;
 
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.Vec3;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.Vec3;
 
 public class EntityAIHelperStalker
 {
