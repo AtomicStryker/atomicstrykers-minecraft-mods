@@ -2,7 +2,7 @@ package atomicstryker.findercompass.client;
 
 import java.util.HashMap;
 
-import net.minecraft.src.ChunkCoordinates;
+import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
 
 public class CompassSetting

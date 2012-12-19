@@ -1,6 +1,7 @@
 package atomicstryker.findercompass.client;
 
 import java.util.EnumSet;
+
 import net.minecraft.client.Minecraft;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
@@ -55,7 +56,7 @@ public class FinderCompassClientTicker implements ITickHandler
                 {
                     repeat = true;
                     AS_FinderCompass.switchSetting();
-                    mc.theWorld.playSound(mc.thePlayer.posX+0.5D, mc.thePlayer.posY+0.5D, mc.thePlayer.posZ+0.5D, "random.click", 0.3F, 0.6F);
+                    mc.theWorld.playSound(mc.thePlayer.posX+0.5D, mc.thePlayer.posY+0.5D, mc.thePlayer.posZ+0.5D, "random.click", 0.3F, 0.6F, false);
                 }
             }
             else

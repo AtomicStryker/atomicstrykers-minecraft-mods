@@ -8,14 +8,14 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.4.4")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.4.6")
 @NetworkMod(
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "FindrCmps" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "FindrCmps" }, packetHandler = ServerPacketHandler.class),

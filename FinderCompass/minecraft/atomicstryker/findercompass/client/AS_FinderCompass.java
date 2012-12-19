@@ -16,10 +16,10 @@ import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.ITexturePack;
-import net.minecraft.src.Item;
-import net.minecraft.src.TextureCompassFX;
+import net.minecraft.client.renderer.texturefx.TextureCompassFX;
+import net.minecraft.client.texturepacks.ITexturePack;
+import net.minecraft.item.Item;
+import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
 import atomicstryker.findercompass.common.FinderCompassMod;
