@@ -1,21 +1,18 @@
 package atomicstryker.minions.client.gui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.minions.common.EvilDeed;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.PacketType;
-
 import cpw.mods.fml.client.FMLClientHandler;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Evil Deed selection menu
@@ -95,7 +92,7 @@ public class GuiDeedMenu extends GuiScreen
         			timeFadeStart = System.currentTimeMillis();
         			fadeState = 0;
         			
-        			mc.thePlayer.worldObj.playSound(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, ((EvilDeed)this.deedButtons.get(actionCalled-1)).getSoundFile(), 1.0F, 1.0F);
+        			mc.thePlayer.worldObj.playSound(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, ((EvilDeed)this.deedButtons.get(actionCalled-1)).getSoundFile(), 1.0F, 1.0F, false);
         			timeStayBlack = ((EvilDeed)this.deedButtons.get(actionCalled-1)).getSoundLength() * 1000L;
         		}
         	}

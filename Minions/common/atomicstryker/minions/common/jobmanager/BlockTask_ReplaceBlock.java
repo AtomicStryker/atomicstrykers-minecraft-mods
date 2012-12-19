@@ -1,7 +1,5 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.*;
-
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**

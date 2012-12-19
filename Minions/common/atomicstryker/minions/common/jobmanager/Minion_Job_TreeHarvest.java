@@ -2,10 +2,9 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.ArrayList;
 
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 import atomicstryker.minions.common.entity.EntityMinion;
-
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.World;
 
 /**
  * Minion Job class for scanning for Trees and then keeping track of the minions harvesting them.

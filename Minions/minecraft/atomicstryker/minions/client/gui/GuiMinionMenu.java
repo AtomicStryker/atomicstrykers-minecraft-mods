@@ -1,21 +1,12 @@
 package atomicstryker.minions.client.gui;
 
-import java.util.*;
-
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.PacketType;
-
 import cpw.mods.fml.client.FMLClientHandler;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Minion Menu, provides access to evil deeds and later minion commands

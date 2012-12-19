@@ -1,7 +1,27 @@
 package atomicstryker.minions.common.entity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import atomicstryker.minions.common.MinionsChunkManager;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.jobmanager.BlockTask;
@@ -10,27 +30,6 @@ import atomicstryker.minions.common.pathfinding.AStarNode;
 import atomicstryker.minions.common.pathfinding.AStarPath;
 import atomicstryker.minions.common.pathfinding.AStarStatic;
 import atomicstryker.minions.common.pathfinding.IAStarPathedEntity;
-
-import net.minecraft.src.Block;
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityAISwimming;
-import net.minecraft.src.EntityCreature;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.PathPoint;
-import net.minecraft.src.Profiler;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.TileEntityChest;
-import net.minecraft.src.World;
 
 /**
  * Minion Entity class, this is where the evil magic happens
@@ -426,20 +425,20 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	{
     		EntityItem itemEnt = (EntityItem)collider;
     		
-    		if (itemEnt.item != null)
+    		if (itemEnt.func_92014_d() != null)
     		{
     			if (itemEnt.ticksExisted < 200)
     			{
     				return;
     			}
-    			if (this.inventory.addItemStackToInventory(itemEnt.item))
+    			if (this.inventory.addItemStackToInventory(itemEnt.func_92014_d()))
     			{
     				collider.setDead();
     			}
     			else
     			{
         			this.inventoryFull = true;
-        			this.worldObj.spawnEntityInWorld(new EntityItem(worldObj, this.posX, this.posY, this.posZ, itemEnt.item));
+        			this.worldObj.spawnEntityInWorld(new EntityItem(worldObj, this.posX, this.posY, this.posZ, itemEnt.func_92014_d()));
     			}
     		}
     	}

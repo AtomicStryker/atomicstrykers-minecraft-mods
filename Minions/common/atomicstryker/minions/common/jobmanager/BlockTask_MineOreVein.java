@@ -1,14 +1,13 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.*;
+import java.util.ArrayList;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.entity.EnumMinionState;
-
-import net.minecraft.src.Block;
-import net.minecraft.src.ChunkCoordinates;
-import net.minecraft.src.ItemStack;
 
 /**
  * Blocktask for destroying any number of interconnected Blocks

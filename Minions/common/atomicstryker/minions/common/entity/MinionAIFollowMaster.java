@@ -1,11 +1,9 @@
 package atomicstryker.minions.common.entity;
 
-import net.minecraft.src.EntityAIBase;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityTameable;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.PathNavigate;
-import net.minecraft.src.World;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 public class MinionAIFollowMaster extends EntityAIBase
 {

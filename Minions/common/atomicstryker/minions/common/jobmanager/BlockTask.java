@@ -2,13 +2,13 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.ArrayList;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Material;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.entity.EnumMinionState;
 import atomicstryker.minions.common.pathfinding.AStarNode;

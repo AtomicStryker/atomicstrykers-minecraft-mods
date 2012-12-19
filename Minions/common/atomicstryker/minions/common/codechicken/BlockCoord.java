@@ -6,8 +6,8 @@ package atomicstryker.minions.common.codechicken;
  * Available at: http://www.minecraftforum.net/topic/909223-125-smp-chickenbones-mods/
  */
 
-import net.minecraft.src.ChunkPosition;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkPosition;
 
 public class BlockCoord extends ChunkPosition implements Comparable<BlockCoord>
 {

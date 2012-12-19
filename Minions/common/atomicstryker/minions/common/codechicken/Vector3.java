@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.Vec3;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Vec3;
 
 public class Vector3
 {

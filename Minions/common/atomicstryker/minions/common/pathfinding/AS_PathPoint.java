@@ -1,7 +1,7 @@
 package atomicstryker.minions.common.pathfinding;
 
+import net.minecraft.pathfinding.PathPoint;
 import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.src.PathPoint;
 
 public class AS_PathPoint extends PathPoint
 {

@@ -1,9 +1,7 @@
 package atomicstryker.minions.common.entity;
 
-import net.minecraft.src.EntityAIBase;
-import net.minecraft.src.EntityCreature;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.RandomPositionGenerator;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.util.MathHelper;
 
 public class MinionAIWander extends EntityAIBase
 {

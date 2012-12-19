@@ -1,9 +1,9 @@
 package atomicstryker.minions.common.pathfinding;
 
-import net.minecraft.src.Entity;
-import net.minecraft.src.PathEntity;
-import net.minecraft.src.PathPoint;
-import net.minecraft.src.Vec3;
+import net.minecraft.entity.Entity;
+import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.util.Vec3;
 
 /**
  * Extension of the Minecraft PathEntity to try and fix some of its horrible shortcomings

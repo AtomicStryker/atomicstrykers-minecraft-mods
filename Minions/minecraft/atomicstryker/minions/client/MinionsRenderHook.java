@@ -1,11 +1,16 @@
 package atomicstryker.minions.client;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.points.PointCube;

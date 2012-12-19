@@ -8,21 +8,20 @@ package atomicstryker.minions.client;
 
 import java.util.Iterator;
 
-import net.minecraft.src.ActiveRenderInfo;
-import net.minecraft.src.Entity;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.Entity;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.RenderGlobal;
-import net.minecraft.src.Tessellator;
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
 
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
-import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt.Segment;
+import atomicstryker.minions.common.codechicken.Vector3;
 
 public class RenderChickenLightningBolt
 {	

@@ -1,14 +1,12 @@
 package atomicstryker.minions.common.pathfinding;
 
-import java.util.*;
+import java.util.ArrayList;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import atomicstryker.minions.common.MinionsCore;
-
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.PathPoint;
-import net.minecraft.src.World;
 
 /**
  * Static parts of AStarPath calculation and translation

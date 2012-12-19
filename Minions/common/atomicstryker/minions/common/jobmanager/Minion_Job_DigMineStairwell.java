@@ -1,8 +1,8 @@
 package atomicstryker.minions.common.jobmanager;
 
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
 import atomicstryker.minions.common.entity.EntityMinion;
-import net.minecraft.src.Block;
-import net.minecraft.src.World;
 
 /**
  * Minion Job class for digging a 5x5 vertical mineshaft with stairwell.

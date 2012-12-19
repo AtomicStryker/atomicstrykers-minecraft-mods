@@ -1,9 +1,8 @@
 package atomicstryker.minions.common.pathfinding;
 
-import java.lang.Thread.State;
-import java.util.*;
+import java.util.ArrayList;
 
-import net.minecraft.src.World;
+import net.minecraft.world.World;
 
 /**
  * Control Class for AstarPath, creates workers and manages returns

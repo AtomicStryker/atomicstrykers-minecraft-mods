@@ -1,6 +1,8 @@
 package atomicstryker.minions.client;
 
-import net.minecraft.src.*;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
 
 /**
  * Minion Model class

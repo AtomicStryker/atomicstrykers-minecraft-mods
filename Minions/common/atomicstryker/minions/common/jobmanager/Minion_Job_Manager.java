@@ -11,11 +11,10 @@ package atomicstryker.minions.common.jobmanager;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.entity.EnumMinionState;
-
-import net.minecraft.src.ChunkCoordinates;
 
 
 public abstract class Minion_Job_Manager
