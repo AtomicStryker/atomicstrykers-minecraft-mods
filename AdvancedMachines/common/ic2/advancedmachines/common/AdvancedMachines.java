@@ -24,7 +24,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "4.6a", dependencies = "required-after:IC2")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "4.7", dependencies = "required-after:IC2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -135,7 +135,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         
         proxy.load();
 
-        GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class);
+        GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
 
         GameRegistry.registerTileEntity(TileEntityRotaryMacerator.class, "Rotary Macerator");
         GameRegistry.registerTileEntity(TileEntitySingularityCompressor.class, "Singularity Compressor");

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 /**
  * Allows for charging, discharging and using electric items (IElectricItem).
- * 
+ *
  * The charge or remaining capacity of an item can be determined by calling charge/discharge with
  * ignoreTransferLimit and simulate set to true.
  */
@@ -24,14 +24,14 @@ public final class ElectricItem {
 	 */
 	public static int charge(ItemStack itemStack, int amount, int tier, boolean ignoreTransferLimit, boolean simulate) {
 		try {
-			if (ElectricItem_charge == null) ElectricItem_charge = Class.forName(getPackage() + ".common.ElectricItem").getMethod("charge", ItemStack.class, Integer.TYPE, Integer.TYPE, Boolean.TYPE, Boolean.TYPE);
-			
+			if (ElectricItem_charge == null) ElectricItem_charge = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("charge", ItemStack.class, Integer.TYPE, Integer.TYPE, Boolean.TYPE, Boolean.TYPE);
+
 			return (Integer) ElectricItem_charge.invoke(null, itemStack, amount, tier, ignoreTransferLimit, simulate);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Discharge an item by a specified amount of energy
 	 *
@@ -44,14 +44,14 @@ public final class ElectricItem {
 	 */
 	public static int discharge(ItemStack itemStack, int amount, int tier, boolean ignoreTransferLimit, boolean simulate) {
 		try {
-			if (ElectricItem_discharge == null) ElectricItem_discharge = Class.forName(getPackage() + ".common.ElectricItem").getMethod("discharge", ItemStack.class, Integer.TYPE, Integer.TYPE, Boolean.TYPE, Boolean.TYPE);
-			
+			if (ElectricItem_discharge == null) ElectricItem_discharge = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("discharge", ItemStack.class, Integer.TYPE, Integer.TYPE, Boolean.TYPE, Boolean.TYPE);
+
 			return (Integer) ElectricItem_discharge.invoke(null, itemStack, amount, tier, ignoreTransferLimit, simulate);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Determine if the specified electric item has at least a specific amount of EU.
 	 * This is supposed to be used in the item code during operation, for example if you want to implement your own electric item.
@@ -63,14 +63,14 @@ public final class ElectricItem {
 	 */
 	public static boolean canUse(ItemStack itemStack, int amount) {
 		try {
-			if (ElectricItem_canUse == null) ElectricItem_canUse = Class.forName(getPackage() + ".common.ElectricItem").getMethod("canUse", ItemStack.class, Integer.TYPE);
-			
+			if (ElectricItem_canUse == null) ElectricItem_canUse = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("canUse", ItemStack.class, Integer.TYPE);
+
 			return (Boolean) ElectricItem_canUse.invoke(null, itemStack, amount);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Try to retrieve a specific amount of energy from an Item, and if applicable, a BatPack.
 	 * This is supposed to be used in the item code during operation, for example if you want to implement your own electric item.
@@ -82,14 +82,14 @@ public final class ElectricItem {
 	 */
 	public static boolean use(ItemStack itemStack, int amount, EntityPlayer player) {
 		try {
-			if (ElectricItem_use == null) ElectricItem_use = Class.forName(getPackage() + ".common.ElectricItem").getMethod("use", ItemStack.class, Integer.TYPE, EntityPlayer.class);
-			
+			if (ElectricItem_use == null) ElectricItem_use = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("use", ItemStack.class, Integer.TYPE, EntityPlayer.class);
+
 			return (Boolean) ElectricItem_use.invoke(null, itemStack, amount, player);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Charge an item from the BatPack a player is wearing.
 	 * This is supposed to be used in the item code during operation, for example if you want to implement your own electric item.
@@ -100,17 +100,17 @@ public final class ElectricItem {
 	 */
 	public static void chargeFromArmor(ItemStack itemStack, EntityPlayer player) {
 		try {
-			if (ElectricItem_chargeFromArmor == null) ElectricItem_chargeFromArmor = Class.forName(getPackage() + ".common.ElectricItem").getMethod("chargeFromArmor", ItemStack.class, EntityPlayer.class);
-			
+			if (ElectricItem_chargeFromArmor == null) ElectricItem_chargeFromArmor = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("chargeFromArmor", ItemStack.class, EntityPlayer.class);
+
 			ElectricItem_chargeFromArmor.invoke(null, itemStack, player);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Get the base IC2 package name, used internally.
-	 * 
+	 *
 	 * @return IC2 package name, if unable to be determined defaults to ic2
 	 */
 	private static String getPackage() {
@@ -118,7 +118,7 @@ public final class ElectricItem {
 		if (pkg != null) return pkg.getName().substring(0, pkg.getName().lastIndexOf('.'));
 		else return "ic2";
 	}
-	
+
 	private static Method ElectricItem_charge;
 	private static Method ElectricItem_discharge;
 	private static Method ElectricItem_canUse;

@@ -1,7 +1,7 @@
 package ic2.advancedmachines.common;
 
 import ic2.api.Direction;
-import ic2.api.NetworkHelper;
+import ic2.api.network.NetworkHelper;
 
 import java.util.List;
 
@@ -92,7 +92,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         boolean newItemProcessing = false;
         if (this.energy <= this.maxEnergy)
         {
-            newItemProcessing = this.provideEnergy();
+            newItemProcessing = this.getPowerFromFuelSlot();
         }
 
         boolean isActive = this.getActive();
@@ -168,13 +168,11 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         {
             this.onInventoryChanged();
         }
-        /*
         if(isActive != getActive())
     	{
-    		worldObj.markBlockNeedsUpdate(xCoord, yCoord, zCoord);
+    		worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
     		setActive(isActive);
     	}
-    	*/
     }
     
     @Override
@@ -186,11 +184,10 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     private void operate()
     {
-        if (this.canOperate())
+        if (canOperate())
         {
-            //ItemStack resultStack = this.getResultFor(this.inventory[this.inputs[this.inputs[0]]], false).copy();
-			ItemStack resultStack = this.getResultFor(this.inventory[inputs[0]], false);
-            int[] resultingStackSizesOutputs = new int[outputs.length];
+			ItemStack resultStack = getResultFor(inventory[inputs[0]], true).copy();
+            int[] stackSizeSpaceAvailableInOutput = new int[outputs.length];
             int resultMaxStackSize = resultStack.getMaxStackSize();
 
             int index;
@@ -198,43 +195,40 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             {
                 if (inventory[outputs[index]] == null)
                 {
-                    resultingStackSizesOutputs[index] = resultMaxStackSize;
+                    stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize;
                 }
                 else if (inventory[outputs[index]].isItemEqual(resultStack))
                 {
-                    resultingStackSizesOutputs[index] = resultMaxStackSize - inventory[outputs[index]].stackSize;
+                    stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize - inventory[outputs[index]].stackSize;
                 }
             }
 
-            for (index = 0; index < resultingStackSizesOutputs.length; ++index)
+            for (index = 0; index < stackSizeSpaceAvailableInOutput.length; ++index)
             {
-                if (resultingStackSizesOutputs[index] > 0)
+                if (stackSizeSpaceAvailableInOutput[index] > 0)
                 {
-                    int resultingStackSize = Math.min(resultStack.stackSize, resultingStackSizesOutputs[index]);
-                    if (this.inventory[this.outputs[index]] == null)
+                    int stackSizeToStash = Math.min(resultStack.stackSize, stackSizeSpaceAvailableInOutput[index]);
+                    if (inventory[outputs[index]] == null)
                     {
-                        this.inventory[this.outputs[index]] = getResultFor(this.inventory[this.inputs[0]], true);
-                        onFinishedProcessingItem();
+                        inventory[outputs[index]] = resultStack;
+                        break;
                     }
                     else
                     {
-                        getResultFor(this.inventory[this.inputs[0]], true);
-                        this.inventory[this.outputs[index]].stackSize += resultingStackSize;
-                        onFinishedProcessingItem();
+                        inventory[outputs[index]].stackSize += stackSizeToStash;
+                        resultStack.stackSize -= stackSizeToStash;
+                        if (resultStack.stackSize <= 0)
+                        {
+                            break;
+                        }
                     }
-
-                    resultStack.stackSize -= resultingStackSize;
-                }
-
-                if (resultStack.stackSize <= 0)
-                {
-                    break;
                 }
             }
+            onFinishedProcessingItem();
 
-            if (this.inventory[this.inputs[0]].stackSize <= 0)
+            if (inventory[inputs[0]].stackSize <= 0)
             {
-                this.inventory[this.inputs[0]] = null;
+                inventory[inputs[0]] = null;
             }
         }
     }
@@ -246,13 +240,13 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     private boolean canOperate()
     {
-        if (this.inventory[this.inputs[0]] == null)
+        if (inventory[inputs[0]] == null)
         {
             return false;
         }
         else
         {
-            ItemStack resultStack = this.getResultFor(this.inventory[this.inputs[0]], false);
+            ItemStack resultStack = getResultFor(inventory[inputs[0]], false);
             if (resultStack == null)
             {
                 return false;
@@ -260,28 +254,33 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             else
             {
                 int resultMaxStackSize = resultStack.getMaxStackSize();
-                int resultingStackSize = 0;
-                int[] outputArray = this.outputs;
-                int outputsLength = outputArray.length;
-
-                for (int index = 0; index < outputsLength; ++index)
+                int freeSpaceOutputSlots = 0;
+                for (int index = 0; index < outputs.length; ++index)
                 {
-                    int curOutputSlot = outputArray[index];
-                    if (this.inventory[curOutputSlot] == null)
+                    int curOutputSlot = outputs[index];
+                    if (inventory[curOutputSlot] == null)
                     {
-                        resultingStackSize += resultMaxStackSize;
+                        freeSpaceOutputSlots += resultMaxStackSize;
                     }
-                    else if (this.inventory[curOutputSlot].isItemEqual(resultStack))
+                    else if (inventory[curOutputSlot].isItemEqual(resultStack))
                     {
-                        resultingStackSize += resultMaxStackSize - this.inventory[curOutputSlot].stackSize;
+                        freeSpaceOutputSlots += (resultMaxStackSize - inventory[curOutputSlot].stackSize);
                     }
                 }
 
-                return resultingStackSize >= resultStack.stackSize;
+                return freeSpaceOutputSlots >= resultStack.stackSize;
             }
         }
     }
-
+    
+    /**
+     * Returns the ItemStack that results from processing whatever is in the Input, or null
+     * @param input ItemStack to be processed
+     * @param adjustOutput if true, whatever was used as input will be taken from the input slot and destroyed,
+     * if false, the input Slots remain as they are
+     * 
+     * @return ItemStack that results from processing the Input, or null if no processing is possible
+     */
     public abstract ItemStack getResultFor(ItemStack input, boolean adjustOutput);
 
     protected abstract List getResultMap();

@@ -1,9 +1,9 @@
 package ic2.advancedmachines.common;
 
-import ic2.api.INetworkDataProvider;
-import ic2.api.INetworkTileEntityEventListener;
 import ic2.api.IWrenchable;
-import ic2.api.NetworkHelper;
+import ic2.api.network.INetworkDataProvider;
+import ic2.api.network.INetworkTileEntityEventListener;
+import ic2.api.network.NetworkHelper;
 
 import java.util.ArrayList;
 import java.util.List;

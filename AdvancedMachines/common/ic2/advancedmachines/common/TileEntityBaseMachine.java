@@ -2,13 +2,15 @@ package ic2.advancedmachines.common;
 
 import ic2.api.Direction;
 import ic2.api.ElectricItem;
-import ic2.api.EnergyNet;
 import ic2.api.IElectricItem;
-import ic2.api.IEnergySink;
 import ic2.api.Items;
+import ic2.api.energy.event.EnergyTileLoadEvent;
+import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergySink;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
 
 public abstract class TileEntityBaseMachine extends TileEntityMachine implements IEnergySink
 {
@@ -48,7 +50,8 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         super.updateEntity();
         if (!this.addedToEnergyNet)
         {
-            EnergyNet.getForWorld(this.worldObj).addTileEntity(this);
+            //EnergyNet.getForWorld(this.worldObj).addTileEntity(this);
+            MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             this.addedToEnergyNet = true;
         }
     }
@@ -58,7 +61,8 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     {
         if (this.addedToEnergyNet)
         {
-            EnergyNet.getForWorld(this.worldObj).removeTileEntity(this);
+            //EnergyNet.getForWorld(this.worldObj).removeTileEntity(this);
+            MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
             this.addedToEnergyNet = false;
         }
 
@@ -72,9 +76,9 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     }
 
     @Override
-    public boolean demandsEnergy()
+    public int demandsEnergy()
     {
-        return this.energy <= this.maxEnergy - this.maxInput;
+        return maxEnergy - energy;
     }
 
     @Override
@@ -102,6 +106,12 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
             return var3;
         }
     }
+    
+    @Override
+    public int getMaxSafeInput()
+    {
+        return maxInput;
+    }
 
     @Override
     public boolean acceptsEnergyFrom(TileEntity var1, Direction var2)
@@ -114,7 +124,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         return this.worldObj.isBlockIndirectlyGettingPowered(this.xCoord, this.yCoord, this.zCoord);
     }
     
-    protected boolean provideEnergy()
+    protected boolean getPowerFromFuelSlot()
     {
         if (this.inventory[this.fuelslot] == null)
         {

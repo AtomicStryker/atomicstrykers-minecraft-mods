@@ -1,8 +1,8 @@
 package ic2.advancedmachines.common;
 
 import ic2.advancedmachines.client.AdvancedMachinesClient;
-import ic2.api.EnergyNet;
 import ic2.api.Items;
+import ic2.api.energy.event.EnergyTileUnloadEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 public class BlockAdvancedMachines extends BlockContainer
 {
@@ -211,7 +212,8 @@ public class BlockAdvancedMachines extends BlockContainer
             TileEntityAdvancedMachine team = (TileEntityAdvancedMachine)world.getBlockTileEntity(x, y, z);
             if (team != null)
             {
-                EnergyNet.getForWorld(world).removeTileEntity(team);
+                //EnergyNet.getForWorld(world).removeTileEntity(team);
+                MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(team));
                 team.invalidate();
                 team.setActive(false);
                 return true;

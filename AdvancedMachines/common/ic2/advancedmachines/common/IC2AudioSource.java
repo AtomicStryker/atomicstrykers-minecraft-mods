@@ -27,14 +27,14 @@ public class IC2AudioSource
 		{
 			try
 			{
-				audioManagerClass = Class.forName("ic2.common.AudioManagerClient");
+				audioManagerClass = Class.forName("ic2.core.audio.AudioManagerClient");
 				audioManagercreateSource = audioManagerClass.getDeclaredMethod("createSource", Object.class, String.class);
 				audioManagerremoveSource = audioManagerClass.getDeclaredMethod("removeSources", Object.class);
 				audioManagerplayOnce = audioManagerClass.getDeclaredMethod("playOnce", Object.class, String.class);
 				
-				audioManagerInstance = Class.forName("ic2.common.IC2").getDeclaredField("audioManager").get(null);
+				audioManagerInstance = Class.forName("ic2.core.IC2").getDeclaredField("audioManager").get(null);
 				
-				audioSourceClass = Class.forName("ic2.common.AudioSourceClient");
+				audioSourceClass = Class.forName("ic2.core.audio.AudioSourceClient");
 				audioSourcePlay = audioSourceClass.getDeclaredMethod("play", (Class[])null);
 				audioSourceStop = audioSourceClass.getDeclaredMethod("stop", (Class[])null);
 				audioSourceRemove = audioSourceClass.getDeclaredMethod("remove", (Class[])null);

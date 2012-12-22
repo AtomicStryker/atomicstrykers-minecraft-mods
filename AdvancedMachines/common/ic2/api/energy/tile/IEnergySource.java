@@ -1,4 +1,4 @@
-package ic2.api;
+package ic2.api.energy.tile;
 
 /**
  * Allows a tile entity (mostly a generator) to emit energy.
