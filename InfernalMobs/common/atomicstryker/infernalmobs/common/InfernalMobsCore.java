@@ -1,7 +1,9 @@
 package atomicstryker.infernalmobs.common;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,11 +62,10 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.1")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.3")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
-serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class),
-connectionHandler = ConnectionHandler.class)
+serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
 public class InfernalMobsCore implements ITickHandler, ISidedProxy
 {
     public static final int RARE_MOB_HEALTH_MODIFIER = 4;
@@ -72,6 +73,8 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     
     private static long lastExistCheckTime;
     private ArrayList<Integer> dropIdList;
+    private static boolean healthHacked;
+    private HashMap<String, Boolean> classesAllowedMap;
     
     private static InfernalMobsCore instance;
     
@@ -86,7 +89,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     }
     
     private static ConcurrentHashMap<EntityLiving, MobModifier> rareMobs;
-    private static ArrayList<Class> mobMods;
+    private static ArrayList<Class<? extends MobModifier>> mobMods;
     
     private static int eliteRarity;
     public static Configuration config;
@@ -100,6 +103,8 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         instance = this;
         dropIdList = new ArrayList<Integer>();
         lastExistCheckTime = System.currentTimeMillis();
+        healthHacked = false;
+        classesAllowedMap = new HashMap();
         
         config = new Configuration(evt.getSuggestedConfigurationFile());
         loadConfig();
@@ -130,7 +135,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
      */
     private void loadMods()
     {
-        mobMods = new ArrayList<Class>();
+        mobMods = new ArrayList<Class<? extends MobModifier>>();
         
         mobMods.add(MM_1UP.class);
         mobMods.add(MM_Berserk.class);
@@ -155,7 +160,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         mobMods.add(MM_Weakness.class);
         mobMods.add(MM_Webber.class);
         
-        Iterator<Class> iter = mobMods.iterator();
+        Iterator<Class<? extends MobModifier>> iter = mobMods.iterator();
         while (iter.hasNext())
         {
             Class c = iter.next();
@@ -197,7 +202,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         {
             if (!getIsRareEntity(entity))
             {
-                if (entity instanceof EntityMob && !(entity instanceof EntityWither) && entity.worldObj.rand.nextInt(eliteRarity) == 0)
+                if (entity instanceof EntityMob && instance.checkEntityClassAllowed(entity) && entity.worldObj.rand.nextInt(eliteRarity) == 0)
                 {
                     MobModifier mod = createMobModifiers(entity);
                     if (mod != null)
@@ -211,6 +216,24 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         }
     }
     
+    private boolean checkEntityClassAllowed(EntityLiving entity)
+    {
+        String entName = entity.getEntityName();
+        if (classesAllowedMap.containsKey(entName))
+        {
+            return classesAllowedMap.get(entName);
+        }
+        
+        config.load();
+        boolean result = config.get("permittedentities", entName, true).getBoolean(true);
+        config.save();
+        classesAllowedMap.put(entName, result);
+        
+        return result;
+    }
+
+    private static Field fieldHealth;
+    
     /**
      * Allows setting Entity Health past the hardcoded getMaxHealth() constraint
      * @param entity Entity instance whose health you want changed
@@ -218,11 +241,74 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
      */
     public static void setEntityHealthPastMax(EntityLiving entity, int amount)
     {
-        entity.setEntityHealth(amount);
-        if (!entity.worldObj.isRemote)
+        if (!healthHacked)
         {
-            instance.sendHealthPacket(entity, amount);
+            hackHealth(entity);
         }
+        
+        if (fieldHealth != null)
+        {
+            try
+            {
+                fieldHealth.setInt(entity, amount);
+                if (!entity.worldObj.isRemote)
+                {
+                    instance.sendHealthPacket(entity, amount);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private static void hackHealth(EntityLiving entity)
+    {
+        System.out.println("Infernal Mobs health hack attempt now running...");
+        ArrayList<Field> possibleFields = new ArrayList<Field>();
+        for (Field f : EntityLiving.class.getDeclaredFields())
+        {
+            if (String.valueOf(f.getType()).equals("int"))
+            {
+                f.setAccessible(true);
+                possibleFields.add(f);
+            }
+        }
+        System.out.println("Infernal Mobs health hack found candidate fields: "+possibleFields.size());
+        
+        int prevEntHealth = entity.getHealth();
+        for (int i = 0; i < 4; i++)
+        {
+            entity.setEntityHealth(i+2);
+            Iterator<Field> iter = possibleFields.iterator();
+            while (iter.hasNext())
+            {
+                try
+                {
+                    if (iter.next().getInt(entity) != i+2)
+                    {
+                        iter.remove();
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        if (possibleFields.size() == 1)
+        {
+            fieldHealth = possibleFields.get(0);
+            System.out.println("Infernal Mobs health hack success, field health is: "+fieldHealth);
+        }
+        else
+        {
+            System.out.println("Infernal Mobs health hack failed, no field took the 3 changes");
+        }
+        entity.setEntityHealth(prevEntHealth);
+        healthHacked = true;
     }
 
     /**
@@ -235,7 +321,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         /* 2-5 modifications */
         int number = 2 + entity.worldObj.rand.nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
-        ArrayList<Class> possibleMods = (ArrayList<Class>) mobMods.clone();
+        ArrayList<Class<? extends MobModifier>> possibleMods = (ArrayList<Class<? extends MobModifier>>) mobMods.clone();
         
         MobModifier lastMod = null;
         while (number > 0 && !possibleMods.isEmpty())
@@ -422,22 +508,16 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
      */
     public static void addRemoteEntityModifiers(World world, int entID, String mods)
     {
-        //System.out.println("Client adding remote infernal mob!");
-        Iterator iter = world.loadedEntityList.iterator();
-        while (iter.hasNext())
+        Entity ent = world.getEntityByID(entID);
+        if (ent != null)
         {
-            Entity ent = (Entity) iter.next();
-            if (ent instanceof EntityLiving && ent.entityId == entID)
+            addEntityModifiersByString((EntityLiving)ent, mods);
+            MobModifier mod = getMobModifiers((EntityLiving) ent);
+            if (mod != null)
             {
-                addEntityModifiersByString((EntityLiving)ent, mods);
-                MobModifier mod = getMobModifiers((EntityLiving) ent);
-                if (mod != null)
-                {
-                    mod.onSpawningComplete();
-                }
-                //System.out.println("Client added remote infernal mob!");
-                break;
+                mod.onSpawningComplete();
             }
+            //System.out.println("Client added remote infernal mod on entity "+ent+", is now "+mod.getModName());
         }
     }
 
@@ -493,7 +573,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     public void sendHealthPacket(EntityLiving mob, int health)
     {
         Object[] toSend = { mob.entityId, health };
-        PacketDispatcher.sendPacketToAllAround(mob.posX, mob.posY, mob.posZ, 15D, mob.worldObj.getWorldInfo().getDimension(), ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
+        PacketDispatcher.sendPacketToAllAround(mob.posX, mob.posY, mob.posZ, 32D, mob.dimension, ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
     }
     
     // health request, Packet ID 4, from client, { int entityID }

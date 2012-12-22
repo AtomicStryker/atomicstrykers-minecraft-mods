@@ -1,3 +1,13 @@
+1.1.3
+- new types of infernal Entities now register in the config. If you want to disallow certain
+Entities to become infernal, say so in the config. ONLY HAS EFFECT UPON RESTARTING
+
+1.1.2
+- scrapped "enchant glow" code for enchanted Mobs, it broke with 1.4.6 and i cannot get it working again
+- fixed/readded particles to enchanted Mobs
+- made health bar updates more aggressive on client
+- changed loot dropping back to the "must have been recently hit by player" system
+
 1.1.1
 - update to Minecraft 1.4.6
 

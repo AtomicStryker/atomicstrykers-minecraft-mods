@@ -72,8 +72,9 @@ public class ServerPacketHandler implements IPacketHandler
                 MobModifier mod = InfernalMobsCore.getMobModifiers(ent);
                 if (mod != null)
                 {
-                    /* answer: Packet ID 4, from server, { int entityID, int health } */                    
-                    InfernalMobsCore.instance().sendHealthPacket(ent, ent.getHealth());
+                    /* answer: Packet ID 4, from server, { int entityID, int health } */
+                    Object[] toSend = { ent.entityId, ent.getHealth() };
+                    PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_IM", 4, toSend), player);
                 }
             }
         }

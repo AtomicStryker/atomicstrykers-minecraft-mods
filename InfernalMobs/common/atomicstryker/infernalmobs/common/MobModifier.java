@@ -13,6 +13,7 @@ public abstract class MobModifier
     protected MobModifier nextMod = null;
     protected String modName;
     private boolean healthHacked = false;
+    private int healthHackDelayTicks = 10;
     private long lastExistCheckTime = System.currentTimeMillis();
     private final long existCheckDelay = 5000L;
     private int actualHealth = 100;
@@ -57,7 +58,10 @@ public abstract class MobModifier
 
     public void onDropItems(EntityLiving moddedMob, DamageSource killSource, ArrayList<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
     {
-        InfernalMobsCore.instance().dropLootForEnt(moddedMob);
+        if (recentlyHit)
+        {
+            InfernalMobsCore.instance().dropLootForEnt(moddedMob);
+        }
     }
 
     public void onSetAttackTarget(EntityLiving target)
@@ -135,26 +139,13 @@ public abstract class MobModifier
 
         if (!mob.worldObj.isRemote)
         {
-            int moddedMaxHealth = mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER;
-
-            if (!healthHacked)
+            if (!healthHacked && --healthHackDelayTicks <= 0)
             {
+                InfernalMobsCore.setEntityHealthPastMax(mob, mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER);
+                //System.out.println("new entity "+mob+" health hacked to: "+mob.getHealth()+" from max: "+mob.getMaxHealth());
                 healthHacked = true;
-                InfernalMobsCore.setEntityHealthPastMax(mob, moddedMaxHealth);
-                actualHealth = moddedMaxHealth;
             }
-            else
-            {
-                int health = mob.getHealth();
-                if (actualHealth != health)
-                {
-                    actualHealth = health;
-                    if (actualHealth != moddedMaxHealth)
-                    {
-                        InfernalMobsCore.instance().sendHealthPacket(mob, actualHealth);
-                    }
-                }
-            }
+            InfernalMobsCore.instance().sendHealthPacket(mob, mob.getHealth());
         }
 
         return false;

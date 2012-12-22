@@ -35,17 +35,27 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     private final double NAME_VISION_DISTANCE = 32D;
     private Minecraft mc;
     private World lastWorld;
-    private static ArrayList<Entity> lastLoadedEntityList = null;
-    private long lastTick;
+    private long nextPacketTime;
     
     @Override
     public void load()
     {
         mc = FMLClientHandler.instance().getClient();
-        lastTick = System.currentTimeMillis();
+        nextPacketTime = 0;
         
         TickRegistry.registerTickHandler(this, Side.CLIENT);
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
+        MinecraftForge.EVENT_BUS.register(new EntityTracker());
+    }
+    
+    private void askServerHealth(Entity ent)
+    {
+        if (System.currentTimeMillis() > nextPacketTime)
+        {
+            Object[] toSend = {ent.entityId};
+            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
+            nextPacketTime = System.currentTimeMillis() + 100l;
+        }
     }
     
     private void renderBossOverlay(float renderTick, Minecraft mc)
@@ -58,6 +68,8 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
             MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLiving)ent);
             if (mod != null)
             {
+                askServerHealth(ent);
+                
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture("/gui/icons.png"));
                 GL11.glDisable(GL11.GL_BLEND);
@@ -181,35 +193,10 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
         {
             boolean newGame = lastWorld == null;
             lastWorld = mc.theWorld;
-            lastLoadedEntityList = (ArrayList) lastWorld.getLoadedEntityList();
             
             if (!newGame)
             {
                 InfernalMobsCore.instance().checkRareListForObsoletes(lastWorld);
-            }
-        }
-        
-        if (lastWorld != null
-        && lastTick != System.currentTimeMillis())
-        {
-            lastTick = System.currentTimeMillis();
-            
-            if (mc.theWorld.isRemote
-             && lastLoadedEntityList != null)
-            {
-                ArrayList<Entity> bufferList = (ArrayList<Entity>) ((ArrayList)mc.theWorld.getLoadedEntityList()).clone();
-                if (bufferList.hashCode() != lastLoadedEntityList.hashCode()) /*optimization.. make sure entityList changed*/
-                {
-                    bufferList.removeAll(lastLoadedEntityList);
-                    for (Entity ent : bufferList)
-                    {
-                        if (ent instanceof EntityLiving)
-                        {
-                            askServerForMobMods((EntityLiving)ent);
-                        }
-                    }
-                }
-                lastLoadedEntityList = (ArrayList) ((ArrayList) mc.theWorld.getLoadedEntityList()).clone();
             }
         }
     }
@@ -227,15 +214,4 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
         return "InfernalMobs";
     }
     
-    private void askServerForMobMods(EntityLiving ent)
-    {
-        // question: Packet ID 1, from client, { entID }
-        Object[] input = { ent.entityId };
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_IM", 1, input));
-    }
-
-    public static void onJoinedNewServer()
-    {
-        lastLoadedEntityList = null;
-    }
 }

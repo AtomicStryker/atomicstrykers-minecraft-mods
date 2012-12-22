@@ -60,6 +60,7 @@ public class ClientPacketHandler implements IPacketHandler
                 MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLiving) ent);
                 if (mod != null)
                 {
+                    //System.out.println("Client updating health of modMob "+ent+" to: "+(Integer)packetReadout[1]);
                     mod.setActualHealth((Integer)packetReadout[1]);
                 }
             }
