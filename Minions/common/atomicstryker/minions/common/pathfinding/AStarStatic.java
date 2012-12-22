@@ -191,7 +191,7 @@ public class AStarStatic
 			}
 		}
 		
-		Collections.sort(resultList); // TODO check this to be sorted correctly
+		Collections.sort(resultList);
 		
 		int count = 0;
 		AStarNode[] returnVal = new AStarNode[resultList.size()];
@@ -203,16 +203,6 @@ public class AStarStatic
 		}
 		
     	return returnVal;
-    }
-    
-    private class NodeComparer implements Comparator<AStarNode>
-    {
-        @Override
-        public int compare(AStarNode o1, AStarNode o2)
-        {
-            // TODO Auto-generated method stub
-            return 0;
-        }
     }
 	
     public static AS_PathEntity translateAStarPathtoPathEntity(ArrayList input)
