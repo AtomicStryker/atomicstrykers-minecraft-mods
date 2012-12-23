@@ -1,3 +1,6 @@
+Version 4.7a
+	fixed bug where tier would be 1 lower than intended
+
 Version 4.7
 	updated to MC 1.4.6 and IC2 1.12 APIs
 	fixed problem where the last resulting Item got lost

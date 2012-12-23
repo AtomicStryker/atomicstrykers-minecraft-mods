@@ -14,12 +14,12 @@ import net.minecraftforge.common.MinecraftForge;
 
 public abstract class TileEntityBaseMachine extends TileEntityMachine implements IEnergySink
 {
-    public int energy = 0;
+    public int energy;
     public int fuelslot;
     public int maxEnergy;
     public int maxInput;
-    public int tier = 0;
-    public boolean addedToEnergyNet = false;
+    public int tier;
+    public boolean addedToEnergyNet;
 
     public TileEntityBaseMachine(int inventorySize, int maxEnergy, int maxInput)
     {
@@ -28,6 +28,9 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         this.maxEnergy = maxEnergy;
         this.maxInput = maxInput;
         this.tier = 1;
+        
+        energy = 0;
+        addedToEnergyNet = false;
     }
 
     @Override
@@ -126,44 +129,44 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     
     protected boolean getPowerFromFuelSlot()
     {
-        if (this.inventory[this.fuelslot] == null)
+        if (inventory[fuelslot] == null)
         {
             return false;
         }
         else
         {
-            int var1 = this.inventory[this.fuelslot].itemID;
-            if (Item.itemsList[var1] instanceof IElectricItem)
+            int fuelID = inventory[fuelslot].itemID;
+            if (Item.itemsList[fuelID] instanceof IElectricItem)
             {
-                if (!((IElectricItem)Item.itemsList[var1]).canProvideEnergy())
+                if (!((IElectricItem)Item.itemsList[fuelID]).canProvideEnergy())
                 {
                     return false;
                 }
                 else
                 {
-                    int var2 = ElectricItem.discharge(this.inventory[this.fuelslot], this.maxEnergy - this.energy, this.tier, false, false);
-                    this.energy += var2;
-                    return var2 > 0;
+                    int charge = ElectricItem.discharge(inventory[fuelslot], maxEnergy - energy, tier, false, false);
+                    energy += charge;
+                    return charge > 0;
                 }
             }
-            else if (var1 == Item.redstone.shiftedIndex)
+            else if (fuelID == Item.redstone.shiftedIndex)
             {
-                this.energy += this.maxEnergy;
-                --this.inventory[this.fuelslot].stackSize;
-                if (this.inventory[this.fuelslot].stackSize <= 0)
+                energy += maxEnergy;
+                --inventory[fuelslot].stackSize;
+                if (inventory[fuelslot].stackSize <= 0)
                 {
-                    this.inventory[this.fuelslot] = null;
+                    inventory[fuelslot] = null;
                 }
 
                 return true;
             }
-            else if (var1 == Items.getItem("suBattery").itemID)
+            else if (fuelID == Items.getItem("suBattery").itemID)
             {
-                this.energy += 1000;
-                --this.inventory[this.fuelslot].stackSize;
-                if (this.inventory[this.fuelslot].stackSize <= 0)
+                energy += 1000;
+                --inventory[fuelslot].stackSize;
+                if (inventory[fuelslot].stackSize <= 0)
                 {
-                    this.inventory[this.fuelslot] = null;
+                    inventory[fuelslot] = null;
                 }
 
                 return true;

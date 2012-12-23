@@ -90,12 +90,12 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         
         boolean newItemProcessing = false;
-        if (this.energy <= this.maxEnergy)
+        if (energy <= maxEnergy)
         {
-            newItemProcessing = this.getPowerFromFuelSlot();
+            getPowerFromFuelSlot();
         }
-
-        boolean isActive = this.getActive();
+        
+        boolean isActive = getActive();
         if (this.progress >= MAX_PROGRESS)
         {
             this.operate();
@@ -106,20 +106,20 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             NetworkHelper.initiateTileEntityEvent(this, EventStop, true);
         }
 
-        boolean bCanOperate = this.canOperate();
-        if (this.energy > 0 && (bCanOperate || this.isRedstonePowered()))
+        boolean bCanOperate = canOperate();
+        if (energy > 0 && (bCanOperate || isRedstonePowered()))
         {
         	setOverclockRates();
         	
-            if (this.speed < maxSpeed)
+            if (speed < maxSpeed)
             {
-                this.speed += acceleration;
-                this.energy -= energyConsume;
+                speed += acceleration;
+                energy -= energyConsume;
             }
             else
             {
-            	this.speed = (short) maxSpeed;
-            	this.energy -= AdvancedMachines.defaultEnergyConsume;
+            	speed = (short) maxSpeed;
+            	energy -= AdvancedMachines.defaultEnergyConsume;
             }
 
             isActive = true;
@@ -127,21 +127,21 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         else
         {
-        	boolean wasWorking = this.speed != 0;
-            this.speed = (short)(this.speed - Math.min(this.speed, 4));
-            if (wasWorking && this.speed == 0)
+        	boolean wasWorking = speed != 0;
+            speed = (short)(speed - Math.min(speed, 4));
+            if (wasWorking && speed == 0)
             {
             	NetworkHelper.initiateTileEntityEvent(this, EventInterrupt, true);
             }
         }
 
-        if (isActive && this.progress != 0)
+        if (isActive && progress != 0)
         {
-            if (!bCanOperate || this.speed == 0)
+            if (!bCanOperate || speed == 0)
             {
                 if (!bCanOperate)
                 {
-                    this.progress = 0;
+                    progress = 0;
                 }
 
                 isActive = false;
@@ -149,24 +149,24 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         else if (bCanOperate)
         {
-            if (this.speed != 0)
+            if (speed != 0)
             {
                 isActive = true;
             }
         }
         else
         {
-            this.progress = 0;
+            progress = 0;
         }
 
         if (isActive && bCanOperate)
         {
-            this.progress = (short)(this.progress + this.speed / 30);
+            progress = (short)(progress + speed / 30);
         }
 
         if (newItemProcessing)
         {
-            this.onInventoryChanged();
+            onInventoryChanged();
         }
         if(isActive != getActive())
     	{
@@ -407,6 +407,6 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     	this.maxSpeed = (MAX_SPEED + overclockerUpgradeCount * AdvancedMachines.overClockSpeedBonus);
     	this.maxInput = (MAX_INPUT * (int)Math.pow(AdvancedMachines.overLoadInputRatio, transformerUpgradeCount));
     	this.maxEnergy = (MAX_ENERGY + energyStorageUpgradeCount * MAX_ENERGY + this.maxInput - 1);
-    	this.tier = (transformerUpgradeCount);
+    	this.tier = 1 + transformerUpgradeCount;
     }
 }
