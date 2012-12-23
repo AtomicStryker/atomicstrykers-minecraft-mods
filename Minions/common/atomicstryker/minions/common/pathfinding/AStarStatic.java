@@ -19,14 +19,25 @@ import atomicstryker.minions.common.MinionsCore;
 public class AStarStatic
 {
     
-	static boolean isViable(World worldObj, AStarNode target, int yoffset)
+    /**
+     * Determines whether or not an AStarNode is traversable
+     * Checks if a 2 Block high nonblocked space exists with this Node as bottom
+     * Also checks if you can reach this node without your head passing
+     * through a solid overhang (vertical diagonal)
+     * 
+     * @param worldObj World to check in
+     * @param target Node to check for being blocked
+     * @param yoffset Height offset relative to the previous Node
+     * @return
+     */
+	public static boolean isViable(World worldObj, AStarNode target, int yoffset)
 	{
 		int x = target.x;
 		int y = target.y;
 		int z = target.z;
 		int id = worldObj.getBlockId(x, y, z);
 
-		if (id == Block.ladder.blockID)
+		if (id == Block.ladder.blockID && isPassableBlock(worldObj, x, y+1, z))
 		{
 			return true;
 		}
@@ -52,10 +63,17 @@ public class AStarStatic
 		return true;
 	}
 	
+	/**
+	 * Determines if an Entity can pass through a Block
+	 * @param worldObj World
+	 * @param ix coordinate
+	 * @param iy coordinate
+	 * @param iz coordinate
+	 * @return true if the Block is passable, false otherwise
+	 */
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
 		int id = worldObj.getBlockId(ix, iy, iz);
-
 		if (id != 0)
 		{
 			return !Block.blocksList[id].blockMaterial.isSolid();
@@ -69,7 +87,12 @@ public class AStarStatic
 		return MathHelper.floor_double(input);
 	}
 	
-	static double getEntityLandSpeed(EntityLiving entLiving)
+	/**
+	 * Returns the absolute movement speed of an Entity in coordinate space
+	 * @param entLiving Entity
+	 * @return euclidian vector length of Entity movement vector
+	 */
+	public static double getEntityLandSpeed(EntityLiving entLiving)
 	{
 		return Math.sqrt((entLiving.motionX * entLiving.motionX) + (entLiving.motionZ * entLiving.motionZ));
 	}
@@ -80,7 +103,7 @@ public class AStarStatic
 	 * @param b Node
 	 * @return Euclidian Distance between the 2 given Nodes
 	 */
-	static double getDistanceBetweenNodes(AStarNode a, AStarNode b)
+	public static double getDistanceBetweenNodes(AStarNode a, AStarNode b)
 	{
 		return Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2) + Math.pow((a.z - b.z), 2));
 	}
@@ -161,7 +184,7 @@ public class AStarStatic
 		}
 	};
 	
-	static boolean isLadder(World world, int blockID, int x, int y, int z)
+	public static boolean isLadder(World world, int blockID, int x, int y, int z)
 	{
 	    Block b = Block.blocksList[blockID];
 	    if (b != null)
@@ -171,6 +194,21 @@ public class AStarStatic
 	    return false;
 	}
 	
+	/**
+	 * Computes the Array of AStarNodes around a target from which the target is in reaching distance,
+	 * sorts this array in such a way that Nodes closer to the given worker coordinates come first.
+	 * Does not check if the target is reachable at all. Can return an empty array if there is no
+	 * possible way to stand near the target (if it's in sold earth for example).
+	 * 
+	 * @param worldObj World instance
+	 * @param workerX worker coordinate
+	 * @param workerY worker coordinate
+	 * @param workerZ worker coordinate
+	 * @param posX Node coordinate
+	 * @param posY Node coordinate
+	 * @param posZ Node coordinate
+	 * @return sorted Array of AStarNodes in accessing distance to the target coordinates
+	 */
     public static AStarNode[] getAccessNodesSorted(World worldObj, int workerX, int workerY, int workerZ, int posX, int posY, int posZ)
     {
     	ArrayList<AStarNode> resultList = new ArrayList<AStarNode>();
@@ -205,7 +243,12 @@ public class AStarStatic
     	return returnVal;
     }
 	
-    public static AS_PathEntity translateAStarPathtoPathEntity(ArrayList input)
+    /**
+     * Converts an ArrayList of AStarNodes into an MC style PathEntity
+     * @param input List of AStarNodes
+     * @return MC pathing compatible PathEntity
+     */
+    public static AS_PathEntity translateAStarPathtoPathEntity(ArrayList<AStarNode> input)
     {
         AS_PathPoint[] points = new AS_PathPoint[input.size()];
         AStarNode reading;
@@ -215,7 +258,7 @@ public class AStarStatic
 
         while(size > 0)
         {
-            reading = (AStarNode) input.get(size-1);
+            reading = input.get(size-1);
             points[i] = new AS_PathPoint(reading.x, i == 0 ? reading.y+1 : reading.y, reading.z); // MC demands the first path point to be at +1 height for some fucking reason
             points[i].isFirst = i == 0;
             points[i].setIndex(i);

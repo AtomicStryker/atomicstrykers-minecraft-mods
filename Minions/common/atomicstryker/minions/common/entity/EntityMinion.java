@@ -27,7 +27,7 @@ import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.jobmanager.BlockTask;
 import atomicstryker.minions.common.pathfinding.AS_PathEntity;
 import atomicstryker.minions.common.pathfinding.AStarNode;
-import atomicstryker.minions.common.pathfinding.AStarPath;
+import atomicstryker.minions.common.pathfinding.AStarPathPlanner;
 import atomicstryker.minions.common.pathfinding.AStarStatic;
 import atomicstryker.minions.common.pathfinding.IAStarPathedEntity;
 
@@ -46,7 +46,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	public InventoryMinion inventory = new InventoryMinion(this);
 	public boolean inventoryFull = false;
 	public TileEntity returnChestOrInventory;
-	public AStarPath pathPlanner;
+	public AStarPathPlanner pathPlanner;
 	public EnumMinionState currentState = EnumMinionState.IDLE;
 	public EnumMinionState lastOrderedState = EnumMinionState.IDLE;
 	public EnumMinionState nextState = null;
@@ -73,7 +73,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.moveSpeed = 0.35F;
         
         this.texture = "/atomicstryker/minions/client/textures/AS_EntityMinion.png";
-        this.pathPlanner = new AStarPath(worldObj, this);
+        this.pathPlanner = new AStarPathPlanner(worldObj, this);
         
         this.getNavigator().setAvoidsWater(false);
         this.tasks.addTask(0, new EntityAISwimming(this));
@@ -558,7 +558,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     }
 
 	@Override
-	public void onFoundPath(ArrayList result)
+	public void onFoundPath(ArrayList<AStarNode> result)
 	{
 		currentPathNotFoundCooldownTick = pathingCooldownTicks;
 		pathFindingFails = 0;

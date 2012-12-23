@@ -24,7 +24,7 @@ public class AStarNode implements Comparable
 	private int g;
 	
 	/**
-	 * AStar H value, cost to goal estimated value
+	 * AStar H value, cost to goal estimated value, sometimes called heuristic value
 	 */
 	private double h;
 	

@@ -10,7 +10,7 @@ import net.minecraft.world.World;
  * @author AtomicStryker
  */
 
-public class AStarPath
+public class AStarPathPlanner
 {
     private AStarWorker worker;
     private World worldObj;
@@ -19,7 +19,7 @@ public class AStarPath
     private long timeStarted;
     private boolean accesslock;
 
-    public AStarPath(World world)
+    public AStarPathPlanner(World world)
     {
         worldObj = world;
         accesslock = false;
@@ -27,7 +27,7 @@ public class AStarPath
         isWorking = false;
     }
 
-    public AStarPath(World worldObj, IAStarPathedEntity ent)
+    public AStarPathPlanner(World worldObj, IAStarPathedEntity ent)
     {
         this(worldObj);
         pathedEntity = ent;
@@ -70,7 +70,7 @@ public class AStarPath
         accesslock = false;
     }
 
-    public void onFoundPath(ArrayList result)
+    public void onFoundPath(ArrayList<AStarNode> result)
     {
         flushWorker();
         if (pathedEntity != null)

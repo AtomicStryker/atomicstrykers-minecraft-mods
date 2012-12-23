@@ -18,11 +18,11 @@ public class AS_PathEntity extends PathEntity
 	private final PathPoint[] pointsCopy;
 	private int pathIndexCopy;
 	
-    public AS_PathEntity(PathPoint[] var1)
+    public AS_PathEntity(PathPoint[] points)
     {
-    	super(var1);
+    	super(points);
     	timeLastPathIncrement = System.currentTimeMillis();
-    	this.pointsCopy = var1;
+    	this.pointsCopy = points;
     	this.pathIndexCopy = 0;
     }
     

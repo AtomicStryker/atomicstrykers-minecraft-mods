@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public interface IAStarPathedEntity
 {
-	public void onFoundPath(ArrayList result);
+	public void onFoundPath(ArrayList<AStarNode> result);
 	
 	public void onNoPathAvailable();
 }

@@ -4,6 +4,13 @@ import java.lang.reflect.Field;
 
 import net.minecraft.pathfinding.PathPoint;
 
+/**
+ * PathPoint extension for field access.
+ * 
+ * 
+ * @author AtomicStryker
+ *
+ */
 public class AS_PathPoint extends PathPoint
 {
     private static boolean init = false;
