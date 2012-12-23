@@ -254,7 +254,8 @@ public class MultiMineClient
         
         ItemStack itemStack = player.getCurrentEquippedItem();
         if (itemStack != null
-        && Item.itemsList[itemStack.itemID] != null)
+        && Item.itemsList[itemStack.itemID] != null
+        && Block.blocksList[blockID] != null)
         {
             itemStack.onBlockDestroyed(player.worldObj, blockID, x, y, z, player);
 
