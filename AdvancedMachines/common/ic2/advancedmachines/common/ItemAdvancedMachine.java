@@ -21,6 +21,12 @@ public class ItemAdvancedMachine extends ItemBlock
     {
         return var1;
     }
+    
+    @Override
+    public String getItemDisplayName(ItemStack itemStack)
+    {
+        return "§E"+super.getItemDisplayName(itemStack);
+    }
 
     @Override
     public String getItemNameIS(ItemStack var1)
