@@ -13,13 +13,8 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-	</natures>   
+	</natures>
 	<linkedResources>
-		<link>
-			<name>common</name>
-			<type>2</type>
-			<locationURI>PARENT-1-WORKSPACE_LOC/mcp/src/common</locationURI>
-		</link>
 		<link>
 			<name>minecraft</name>
 			<type>2</type>
