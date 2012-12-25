@@ -79,4 +79,10 @@ public class ItemMastersStaff extends Item
     	var3.setItemInUse(var1, this.getMaxItemUseDuration(var1));
         return var1;
     }
+	
+    @Override
+    public String getItemDisplayName(ItemStack itemStack)
+    {
+        return "§E"+super.getItemDisplayName(itemStack);
+    }
 }
