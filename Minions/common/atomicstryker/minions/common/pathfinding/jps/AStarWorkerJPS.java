@@ -1,6 +1,7 @@
 package atomicstryker.minions.common.pathfinding.jps;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 
 import atomicstryker.minions.common.pathfinding.AStarNode;
@@ -8,10 +9,17 @@ import atomicstryker.minions.common.pathfinding.AStarPathPlanner;
 import atomicstryker.minions.common.pathfinding.AStarStatic;
 import atomicstryker.minions.common.pathfinding.AStarWorker;
 
-import net.minecraftforge.common.ForgeDirection;
-
 public class AStarWorkerJPS extends AStarWorker
 {
+    /**
+     * Important preset value. Determines after how many non-jump-nodes in a
+     * direction an abort is executed, in order to prevent near-infinite
+     * loops in cases of unobstructed space pathfinding.
+     * After this distance is met, the reached node is perceived as jump node
+     * by default and treated as such.
+     */
+    private final static int MAX_SKIP_DISTANCE = 25;
+    
     private final PriorityQueue<NodeWithDirections> queue;
     private NodeWithDirections currentNWD;
     private AStarNode skipperNode;
@@ -20,6 +28,7 @@ public class AStarWorkerJPS extends AStarWorker
     private int yAheadCached;
     private int z;
     private int dist;
+    private boolean foundPath;
 
     public AStarWorkerJPS(AStarPathPlanner creator)
     {
@@ -29,6 +38,7 @@ public class AStarWorkerJPS extends AStarWorker
 
     public ArrayList<AStarNode> getPath(AStarNode start, AStarNode end, boolean searchMode)
     {
+        foundPath = false;
         NodeWithDirections startNode = new NodeWithDirections(start);
         queue.offer(startNode);
         targetNode = end;
@@ -39,15 +49,17 @@ public class AStarWorkerJPS extends AStarWorker
         int parentZO = (start.z - end.z < 0) ? 1: -1;
         start.parent = new AStarNode(start.x+parentXO, start.y, start.z+parentZO, 0, null);
         
-        for(;;)
+        for(; !foundPath;)
         {
-            if (queue.isEmpty())
+            if (currentNWD == null)
             {
                 return null;
             }
             
-            if (checkNextDirection(currentNWD)) // TODO if this works on first try ill sacrifice a goat
+            if (checkNextDirection(currentNWD))
             {
+                // we found the target! OH, MY!
+                foundPath = true;
                 break;
             }
             
@@ -63,13 +75,14 @@ public class AStarWorkerJPS extends AStarWorker
             }
         }
         
+        // TODO this doesn't take skipped nodes into account. Interpolate something something.
         ArrayList<AStarNode> foundpath = new ArrayList<AStarNode>();
         foundpath.add(currentNWD.getAStarNode());
-        while (!currentNWD.getAStarNode().equals(start))
+        AStarNode jumpTo = currentNWD.getAStarNode().parent;
+        while (!jumpTo.equals(start))
         {
-            // TODO create a Node-by-Node path from the jumping Points
-            AStarNode jumpTo = currentNWD.getAStarNode().parent;
-            
+            foundpath.add(jumpTo);
+            jumpTo = jumpTo.parent;
         }
         return foundpath;
     }
@@ -78,8 +91,8 @@ public class AStarWorkerJPS extends AStarWorker
      * Executes the Skip-movement along the next Direction that is still open
      * If it runs into a Jump point, it adds the natural and forced
      * Neighbours into the open queue and returns false
-     * If it runs over the target node, sets the target Node as currentNWD
-     * and returns true
+     * If it runs over the target node, sets the target Node parent to the first
+     * node of it's path and return true
      * 
      * @param nodeWithDirections current NodeWithDirections
      * @return true if the target node was run over, false otherwise
@@ -91,7 +104,7 @@ public class AStarWorkerJPS extends AStarWorker
         x = node.x;
         y = node.y;
         z = node.z;
-        dist = 1;
+        dist = currentNWD.getAStarNode().getG();
         
         // compute direction parent -> this, aka STRAIGHT
         int xDir = node.x - node.parent.x;
@@ -107,8 +120,6 @@ public class AStarWorkerJPS extends AStarWorker
             
             for(; skipAheadStraight(xDir, zDir); dist++)
             {
-                // will continue skipping until skipAhead returns false
-                // should probably check for target node
                 if (x == targetNode.x && y == targetNode.y && z == targetNode.z)
                 {
                     targetNode.parent = currentNWD.getAStarNode();
@@ -124,7 +135,17 @@ public class AStarWorkerJPS extends AStarWorker
             xDir = rotated[0];
             zDir = rotated[1];
             
-            //TODO diagonal moves
+            NodeWithDirections retainedNode = currentNWD;
+            for(; skipAheadDiagonal(xDir, zDir); dist+=2)
+            {
+                // check diagonal node we just jumped onto for being the target
+                if (x == targetNode.x && y == targetNode.y && z == targetNode.z)
+                {
+                    targetNode.parent = currentNWD.getAStarNode();
+                    return true;
+                }
+            }
+            currentNWD = retainedNode;
         }
         
         nodeWithDirections.closeCurrentDirection();
@@ -147,7 +168,7 @@ public class AStarWorkerJPS extends AStarWorker
         x += xDir;
         z += zDir;
         int newY = yAheadCached == 0 ? getGroundNodeHeight(x, y, z) : yAheadCached;
-        if (newY != 0) // movement straight ahead succeeded!
+        if (newY != 0)
         {
             y = newY; // setup new y value, flush cache
             yAheadCached = 0;
@@ -157,6 +178,7 @@ public class AStarWorkerJPS extends AStarWorker
              */
             int forwardY = getGroundNodeHeight(x+xDir, y, z+zDir);
             boolean forced = false;
+            AStarNode forwardNode;
             if (forwardY != 0)
             {
                 /* 
@@ -182,6 +204,9 @@ public class AStarWorkerJPS extends AStarWorker
                 // cache the forward y so we dont have to run the node twice
                 yAheadCached = forwardY;
                 
+                //prepare a forward Node
+                forwardNode = new AStarNode(x+xDir, y, z+zDir, dist+1, currentNWD.getAStarNode(), targetNode);
+                
                 // check left forced node, queue it if it exists
                 int leftY = getGroundNodeHeight(leftX, y, leftZ);
                 if (leftY == 0)
@@ -190,8 +215,7 @@ public class AStarWorkerJPS extends AStarWorker
                     int yForcedLeft = getGroundNodeHeight(leftX+xDir+xDir, yAheadCached, leftZ+zDir+zDir);
                     if (yForcedLeft != 0)
                     {
-                        // TODO closed nodes check, update open nodes?
-                        queue.offer(new NodeWithDirections(new AStarNode(leftX+xDir+xDir, yForcedLeft, leftZ+zDir+zDir, dist+2, currentNWD.getAStarNode(), targetNode)));
+                        addOrUpdateNode(new AStarNode(leftX+xDir+xDir, yForcedLeft, leftZ+zDir+zDir, dist+2, currentNWD.getAStarNode(), forwardNode));
                     }
                 }
                 
@@ -203,8 +227,7 @@ public class AStarWorkerJPS extends AStarWorker
                     int yForcedRight = getGroundNodeHeight(rightX+xDir+xDir, yAheadCached, rightZ+zDir+zDir);
                     if (yForcedRight != 0)
                     {
-                        // TODO closed nodes check, update open nodes?
-                        queue.offer(new NodeWithDirections(new AStarNode(rightX+xDir+xDir, yForcedRight, rightZ+zDir+zDir, dist+2, currentNWD.getAStarNode(), targetNode)));
+                        addOrUpdateNode(new AStarNode(rightX+xDir+xDir, yForcedRight, rightZ+zDir+zDir, dist+2, currentNWD.getAStarNode(), forwardNode));
                     }
                 }
             }
@@ -214,20 +237,103 @@ public class AStarWorkerJPS extends AStarWorker
                 return false;
             }
 
-            if (!forced && dist < 25) // lets also force automatically after x blocks, to keep in an area
+            if (!forced && dist < MAX_SKIP_DISTANCE) // lets also force automatically after x blocks, to keep in an area
             {
                 return true;
             }
-            else // we got a forced node left and/or right, add the one a step ahead
+            else // we got a forced node left and/or right, or distance, add the Node a step ahead
             {
-                // TODO closed nodes check, update open nodes?
-                queue.offer(new NodeWithDirections(new AStarNode(x+xDir, y, z+zDir, dist+1, currentNWD.getAStarNode(), targetNode)));
+                addOrUpdateNode(forwardNode);
             }
         }
         
         return false;
     }
     
+    /**
+     * Helper method to execute diagonal skipping. Will move diagonally,
+     * then check the left and right straights for Jump Points. Upon finding
+     * one, will save the current diagonal and any found Jump points into
+     * the queue
+     * 
+     * NOTE: Due to the special case of mc environment (no small, closed
+     * map) this actually cannot possibly do more than a single step. It
+     * will ALWAYS yield at least itself as jump point.
+     * 
+     * @param xDir x diagonal offset to use each step
+     * @param zDir z diagonal offset to use each step
+     * @return true if the move forward was successful and without forced nodes, false otherwise
+     */
+    private boolean skipAheadDiagonal(int xDir, int zDir)
+    {
+        x += xDir;
+        z += zDir;
+        int newY = yAheadCached == 0 ? getGroundNodeHeight(x, y, z) : yAheadCached;
+        if (newY != 0)
+        {
+            y = newY; // setup new y value, flush cache
+            yAheadCached = 0;
+            
+            // save dist, setup base node for followups
+            int originDist = dist;
+            AStarNode diagBaseNode = new AStarNode(x, y, z, originDist, currentNWD.getAStarNode());
+            
+            // check x axis
+            for(; skipAheadStraight(xDir, 0); dist++)
+            {
+                if (x == targetNode.x && y == targetNode.y && z == targetNode.z)
+                {
+                    targetNode.parent = diagBaseNode;
+                    foundPath = true;
+                    return false;
+                }
+            }
+            
+            // reset dist, check z axis
+            dist = originDist;
+            for(; skipAheadStraight(0, zDir); dist++)
+            {
+                if (x == targetNode.x && y == targetNode.y && z == targetNode.z)
+                {
+                    targetNode.parent = diagBaseNode;
+                    foundPath = true;
+                    return false;
+                }
+            }
+            
+            addOrUpdateNode(diagBaseNode);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Adds a new AStarNode to the queue unless it is already among the closed nodes,
+     * in which case it only updates the closed Node with the new distance.
+     * @param newNode Node to be saved
+     */
+    private void addOrUpdateNode(AStarNode newNode)
+    {
+        if (closedNodes.contains(newNode))
+        {
+            Iterator<AStarNode> iter = closedNodes.iterator();
+            while (iter.hasNext())
+            {
+                AStarNode toUpdate = iter.next();
+                
+                if (newNode.equals(toUpdate))
+                {
+                    toUpdate.updateDistance(newNode.getG(), newNode.parent);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            queue.offer(new NodeWithDirections(newNode));
+        }
+    }
+
     /**
      * Attempts to find a viable Node (height) next to the coordinates provided,
      * with a maximum allowed offset of 1.
