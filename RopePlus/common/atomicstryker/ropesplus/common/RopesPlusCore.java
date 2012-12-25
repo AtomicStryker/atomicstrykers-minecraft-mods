@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ropesplus.client.ClientPacketHandler;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
@@ -43,7 +44,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.4")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.5")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -177,10 +178,12 @@ public class RopesPlusCore
     {
         int index = 3;
         EntityArrow303 entArrow303 = null;
+        Configuration c = Settings_RopePlus.config;
+        c.load();
         for(Iterator iter = RopesPlusCore.arrows.iterator(); iter.hasNext();)
         {
             entArrow303 = (EntityArrow303)iter.next();
-            makeItem(entArrow303);
+            makeItem(entArrow303, c);
             String name = (new StringBuilder()).append(entArrow303.name).append("303").toString();
             
             EntityRegistry.registerModEntity(entArrow303.getClass(), name, index, this, 25, 5, true);
@@ -188,6 +191,7 @@ public class RopesPlusCore
             
             //System.out.println("registered "+name+" as Networked Entity for ALL TIME!!!");
         }
+        c.save();
     }
     
     @ServerStarted
@@ -196,7 +200,7 @@ public class RopesPlusCore
         // cant think of anything yet
     }
 
-	private static void makeItem(EntityArrow303 entityarrow303)
+	private static void makeItem(EntityArrow303 entityarrow303, Configuration config)
 	{
 		Item item = null;
 		if(entityarrow303.itemId == Item.arrow.shiftedIndex)
@@ -207,23 +211,10 @@ public class RopesPlusCore
 		     * item = Item.arrow = (new ItemArrow303(Item.arrow.shiftedIndex - 256, entityarrow303)).setItemName(Item.arrow.getItemName());
 			 */
 		}
-		else if (Item.arrow != null && entityarrow303.itemId != -1)
+		else if (Item.arrow != null && config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))
 		{
 			item = (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setItemName(entityarrow303.name);
 			ItemStack craftedStack = new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0);
-			
-			/* hmm id like to add Lore to the arrows using this
-			craftedStack.stackTagCompound = new NBTTagCompound();
-			NBTTagList tagList = new NBTTagList("Lore");
-			NBTTagCompound tagCmpnd = new NBTTagCompound();
-			tagCmpnd.setString("1", "Mystic Arrow");
-			tagCmpnd.setString("2", "Second tag");
-			tagList.appendTag(tagCmpnd);
-			NBTTagCompound displayTag = new NBTTagCompound();
-			displayTag.setTag("Lore", tagList);
-			displayTag.setString("Name", entityarrow303.name);
-			craftedStack.stackTagCompound.setTag("display", displayTag);
-			*/
 			
 			GameRegistry.addRecipe(craftedStack, new Object[] {
 				"X", "#", "Y", Character.valueOf('X'), entityarrow303.tip, Character.valueOf('#'), Item.stick, Character.valueOf('Y'), Item.feather
