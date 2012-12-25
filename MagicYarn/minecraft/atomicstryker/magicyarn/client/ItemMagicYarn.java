@@ -128,7 +128,14 @@ public class ItemMagicYarn extends Item
 	}
 
 	@Override
-	public EnumAction getItemUseAction(ItemStack var1) {
+	public EnumAction getItemUseAction(ItemStack var1)
+	{
 		return EnumAction.bow;
 	}
+	
+    @Override
+    public String getItemDisplayName(ItemStack itemStack)
+    {
+        return "§E"+super.getItemDisplayName(itemStack);
+    }
 }
