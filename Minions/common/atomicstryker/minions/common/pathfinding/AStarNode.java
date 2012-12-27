@@ -137,10 +137,25 @@ public class AStarNode implements Comparable
         
         return false;
     }
+    
+    @Override
+    public AStarNode clone()
+    {
+        return new AStarNode(x, y, z, g, parent);
+    }
 	
     @Override
     public int hashCode()
     {
         return (x << 16) ^ z ^(y<<24);
+    }
+    
+    @Override
+    public String toString()
+    {
+        if (parent == null)
+            return String.format("[%d|%d|%d], dist %d, F: %f", x, y, z, g, getF());
+        else
+            return String.format("[%d|%d|%d], dist %d, parent [%d|%d|%d], F: %f", x, y, z, g, parent.x, parent.y, parent.z, getF());
     }
 }

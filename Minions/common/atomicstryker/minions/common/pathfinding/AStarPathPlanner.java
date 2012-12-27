@@ -16,35 +16,34 @@ public class AStarPathPlanner
     private World worldObj;
     private boolean isWorking;
     private IAStarPathedEntity pathedEntity;
-    private long timeStarted;
     private boolean accesslock;
-
-    public AStarPathPlanner(World world)
+    private boolean isJPS;
+    private AStarNode lastStart;
+    private AStarNode lastEnd;
+    
+    public AStarPathPlanner(World world, IAStarPathedEntity ent)
     {
+        worker = new AStarWorker(this);
         worldObj = world;
         accesslock = false;
-        timeStarted = 0L;
         isWorking = false;
-    }
-
-    public AStarPathPlanner(World worldObj, IAStarPathedEntity ent)
-    {
-        this(worldObj);
         pathedEntity = ent;
+        isJPS = true;
+    }
+    
+    public void setJPS(boolean b)
+    {
+        isJPS = b;
+        flushWorker();
     }
 
     public boolean isBusy()
     {
-        if (timeStarted != 0L && System.currentTimeMillis() - timeStarted > 5000L)
-        {
-            onNoPathAvailable();
-        }
-
         return isWorking;
     }
 
     public void getPath(int startx, int starty, int startz, int destx, int desty, int destz, boolean allowDropping)
-    {
+    {        
         AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
         AStarNode finish = new AStarNode(destx, desty, destz, -1, null);
 
@@ -60,9 +59,10 @@ public class AStarPathPlanner
 
         while (accesslock) { Thread.yield(); }
         accesslock = true;
+        
+        lastStart = start;
+        lastEnd = end;
 
-        timeStarted = System.currentTimeMillis();
-        worker = new AStarWorker(this);
         worker.setup(worldObj, start, end, allowDropping);
         worker.start();
         isWorking = true;
@@ -72,7 +72,7 @@ public class AStarPathPlanner
 
     public void onFoundPath(ArrayList<AStarNode> result)
     {
-        flushWorker();
+        setJPS(true);
         if (pathedEntity != null)
         {
             pathedEntity.onFoundPath(result);
@@ -81,7 +81,13 @@ public class AStarPathPlanner
 
     public void onNoPathAvailable()
     {
-        flushWorker();
+        if (isJPS) // in case of JPS failure switch to old best first algorithm
+        {
+            setJPS(false);
+            getPath(lastStart, lastEnd, false);
+            return;
+        }
+        
         if (pathedEntity != null)
         {
             pathedEntity.onNoPathAvailable();
@@ -101,13 +107,8 @@ public class AStarPathPlanner
     {
         if (!accesslock) // only flush if we arent starting!
         {
-            timeStarted = 0L;
-            if (worker != null)
-            {
-                worker.interrupt();
-                worker = null;
-            }
             isWorking = false;
+            worker = isJPS ? new AStarWorkerJPS(this) : new AStarWorker(this);
         }
     }
 }

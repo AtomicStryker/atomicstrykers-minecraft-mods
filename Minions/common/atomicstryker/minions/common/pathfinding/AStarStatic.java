@@ -2,13 +2,11 @@ package atomicstryker.minions.common.pathfinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import atomicstryker.minions.common.MinionsCore;
 
 /**
  * Static parts of AStarPath calculation and translation
