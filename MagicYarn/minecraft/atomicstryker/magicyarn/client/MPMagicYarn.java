@@ -6,6 +6,9 @@ import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
+import atomicstryker.magicyarn.common.pathfinding.AStarNode;
+import atomicstryker.magicyarn.common.pathfinding.AStarPathPlanner;
+
 public class MPMagicYarn
 {
 	private AStarNode origin = null;
@@ -61,19 +64,20 @@ public class MPMagicYarn
 		{
 			if(origin == null)
 			{		
-				origin = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0);
+				origin = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
 				System.out.println("Magic Yarn Origin set to ["+origin.x+"|"+origin.y+"|"+origin.z+"]");
 				world.playSound(player.posX, player.posY, player.posZ, "random.orb", 1.0F, 1.0F, false);
 				MagicYarn.showPath = false;
 			}
 			else
 			{
+			    origin.parent = null;
 				if (target == null && MagicYarn.path == null)
 				{					
-					target = new AStarNode((int)Math.floor(player.posX), (int)player.posY-1, (int)Math.floor(player.posZ), 0);
+					target = new AStarNode((int)Math.floor(player.posX), (int)player.posY-1, (int)Math.floor(player.posZ), 0, null);
 					System.out.println("Magic Yarn Target set to ["+target.x+"|"+target.y+"|"+target.z+"]");
 
-					AStarPath.getPath(origin, target, false, (timeButtonHeld < 0.5F));
+					MagicYarn.plannerInstance.getPath(origin, target, false);
 					MagicYarn.showPath = true;
 				}
 				else
@@ -81,7 +85,7 @@ public class MPMagicYarn
 					boolean soundplayed = false;
 					if (MagicYarn.path != null)
 					{
-						target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0);
+						target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
 						for (int i = MagicYarn.path.size()-1; i != 0; i--)
 						{
 							if (((AStarNode) MagicYarn.path.get(i)).equals(target))
@@ -101,7 +105,7 @@ public class MPMagicYarn
 					
 					target = null;
 					MagicYarn.inputPath(null, true);
-					AStarPath.stopPathSearch();
+					MagicYarn.plannerInstance.stopPathSearch();
 					System.out.println("Magic Yarn Target nulled");
 					if (!soundplayed)
 					{
@@ -119,7 +123,7 @@ public class MPMagicYarn
 				target = null;
 				MagicYarn.inputPath(null, true);
 				MagicYarn.lastPath = null;
-				AStarPath.stopPathSearch();
+				MagicYarn.plannerInstance.stopPathSearch();
 				System.out.println("Magic Yarn Origin nulled");
 				world.playSound(player.posX, player.posY, player.posZ, "random.fizz", 1.0F, 1.0F, false);
 				MagicYarn.showPath = false;

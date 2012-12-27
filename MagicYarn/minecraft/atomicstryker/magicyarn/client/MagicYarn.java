@@ -3,6 +3,10 @@ package atomicstryker.magicyarn.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import atomicstryker.magicyarn.common.pathfinding.AStarNode;
+import atomicstryker.magicyarn.common.pathfinding.AStarPathPlanner;
+import atomicstryker.magicyarn.common.pathfinding.IAStarPathedEntity;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
@@ -24,16 +28,16 @@ import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.4.6")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false)
-public class MagicYarn
+public class MagicYarn implements IAStarPathedEntity
 {
     private final String textureFile = "/atomicstryker/magicyarn/client/sprites/magicYarnTextures.png";
 	public static final Item magicYarn = (new ItemMagicYarn(2526)).setItemName("Magic Yarn");
 	private static long time;
-	public static AStarPath instance;
+	public static AStarPathPlanner plannerInstance;
 	
 	public static Minecraft mcinstance;
-	public static ArrayList path = null;
-	public static ArrayList lastPath = null;
+	public static ArrayList<AStarNode> path = null;
+	public static ArrayList<AStarNode> lastPath = null;
 	public static boolean showPath = false;
 	
 	private static MPMagicYarn mpYarn;
@@ -60,15 +64,19 @@ public class MagicYarn
 		
 		time = System.currentTimeMillis();
 		
-        instance = new AStarPath(mcinstance);
-        mpYarn = new MPMagicYarn(mcinstance);
-		
 		TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
     }
     
-    public static void inputPath(ArrayList given)
+    @Override
+    public void onFoundPath(ArrayList<AStarNode> result)
     {
-    	inputPath(given, false, false);
+        inputPath(result, false, false);
+    }
+
+    @Override
+    public void onNoPathAvailable()
+    {
+        
     }
     
     public static void inputPath(ArrayList given, boolean noSound)
@@ -85,12 +93,32 @@ public class MagicYarn
     	path = given;
     	if (path != null)
     	{
+    	    AStarNode prevN = null;
+    	    for (AStarNode n : path)
+    	    {
+    	        if (prevN != null)
+    	        {
+    	            n.parent = prevN;
+    	        }
+    	        else
+    	        {
+    	            n.parent = null;
+    	        }
+    	        prevN = n;
+    	    }
+    	    
     		mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.levelup", 1.0F, 1.0F, false);
     	}
     	else if (!noSound)
     	{
     		mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.drr", 1.0F, 1.0F, false);
     	}
+    }
+    
+    private void buildInstances()
+    {
+        plannerInstance = new AStarPathPlanner(mcinstance.theWorld, this);
+        mpYarn = new MPMagicYarn(mcinstance);
     }
     
     private class TickHandler implements ITickHandler
@@ -106,16 +134,29 @@ public class MagicYarn
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
             if (mcinstance.thePlayer == null || mcinstance.theWorld == null) return;
-
+            
+            if (plannerInstance == null)
+            {
+                buildInstances();
+            }
+            else
+            {
+                // this will abort a rampant worker after 500 ms
+                plannerInstance.isBusy();
+            }
+            
             mpYarn.onUpdate(mcinstance.theWorld);
-
+            
+            
             if (showPath && path != null)
             {
-                AStarNode temp;
-                for(int i = path.size()-1; i >= 0; i--)
+                for (AStarNode temp : path)
                 {
-                    temp = ((AStarNode)path.get(i));
-                    mcinstance.renderGlobal.spawnParticle("magicCrit", temp.x+0.5D, temp.y+0.5D, temp.z+0.5D, temp.parentxoffset*0.75, (temp.parentyoffset*0.5)+0.2, temp.parentzoffset*0.75);
+                    if (temp.parent != null)
+                    {
+                        mcinstance.renderGlobal.spawnParticle("magicCrit", temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                                (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
+                    }
                 }
             }
         }
@@ -132,5 +173,15 @@ public class MagicYarn
             return "MagicYarn";
         }
         
+    }
+
+    public static void getPath(AStarNode origin, AStarNode target, boolean b)
+    {
+        plannerInstance.getPath(origin, target, b);
+    }
+
+    public static void stopPathSearch()
+    {
+        plannerInstance.stopPathSearch();
     }
 }

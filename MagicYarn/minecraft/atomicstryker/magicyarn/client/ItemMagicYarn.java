@@ -5,6 +5,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import atomicstryker.magicyarn.common.pathfinding.AStarNode;
 
 public class ItemMagicYarn extends Item
 {
@@ -33,34 +34,35 @@ public class ItemMagicYarn extends Item
 	@Override
 	public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityPlayer player, int useTime)
 	{
-	    if (!world.isRemote) return;
+	    if (world.isRemote) return;
 	    
 		int var5 = this.getMaxItemUseDuration(itemstack) - useTime;
 		float var6 = (float)var5 / 20.0F;
 		var6 = (var6 * var6 + var6 * 2.0F) / 3.0F;
 
-		if(var6 > 2.5F)
+		if(var6 > 1.0F)
 		{
-			var6 = 2.5F;
+			var6 = 1.0F;
 		}
 
-		if(var6 < 2.5F)
+		if(var6 < 1.0F)
 		{
 			if(origin == null)
 			{		
-				origin = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0);
+				origin = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY), (int)Math.floor(player.posZ), 0, null);
 				System.out.println("Magic Yarn Origin set to ["+origin.x+"|"+origin.y+"|"+origin.z+"]");
-				world.playSound(player.posX, player.posY, player.posZ, "random.orb", 1.0F, 1.0F, false);
+				world.playSoundAtEntity(player, "random.orb", 1.0F, 1.0F);
 				MagicYarn.showPath = false;
 			}
 			else
 			{
+			    origin.parent = null;
 				if (target == null && MagicYarn.path == null)
-				{					
-					target = new AStarNode((int)Math.floor(player.posX), (int)player.posY-1, (int)Math.floor(player.posZ), 0);
+				{
+					target = new AStarNode((int)Math.floor(player.posX), (int)player.posY, (int)Math.floor(player.posZ), 0, null);
 					System.out.println("Magic Yarn Target: ["+target.x+"|"+target.y+"|"+target.z+"]");
 
-					AStarPath.getPath(origin, target, false, (var6 < 0.5F));
+					MagicYarn.getPath(origin, target, false);
 					MagicYarn.showPath = true;
 				}
 				else
@@ -68,13 +70,13 @@ public class ItemMagicYarn extends Item
 					boolean soundplayed = false;
 					if (MagicYarn.path != null)
 					{
-						target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0);
+						target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY), (int)Math.floor(player.posZ), 0, null);
 						for (int i = MagicYarn.path.size()-1; i != 0; i--)
 						{
 							if (((AStarNode) MagicYarn.path.get(i)).equals(target))
 							{
 								System.out.println("Magic Yarn being cut shorter!");
-								world.playSound(player.posX, player.posY, player.posZ, "random.break", 1.0F, 1.0F, false);
+								world.playSoundAtEntity(player, "random.break", 1.0F, 1.0F);
 								soundplayed = true;
 								while (i >= 0)
 								{
@@ -88,11 +90,11 @@ public class ItemMagicYarn extends Item
 					
 					target = null;
 					MagicYarn.inputPath(null, true);
-					AStarPath.stopPathSearch();
+					MagicYarn.stopPathSearch();
 					System.out.println("Magic Yarn Target nulled");
 					if (!soundplayed)
 					{
-						world.playSound(player.posX, player.posY, player.posZ, "random.pop", 1.0F, 1.0F, false);
+					    world.playSoundAtEntity(player, "random.pop", 1.0F, 1.0F);
 					}
 					MagicYarn.showPath = false;
 				}
@@ -106,9 +108,9 @@ public class ItemMagicYarn extends Item
 				target = null;
 				MagicYarn.inputPath(null, true);
 				MagicYarn.lastPath = null;
-				AStarPath.stopPathSearch();
+				MagicYarn.stopPathSearch();
 				System.out.println("Magic Yarn Origin nulled");
-				world.playSound(player.posX, player.posY, player.posZ, "random.fizz", 1.0F, 1.0F, false);
+				world.playSoundAtEntity(player, "random.fizz", 1.0F, 1.0F);
 				MagicYarn.showPath = false;
 			}
 		}
