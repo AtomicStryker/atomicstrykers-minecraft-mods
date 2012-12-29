@@ -56,13 +56,14 @@ public class AStarPathPlanner
         {
             stopPathSearch();
         }
-
+        
         while (accesslock) { Thread.yield(); }
+        flushWorker();
         accesslock = true;
         
         lastStart = start;
         lastEnd = end;
-
+        
         worker.setup(worldObj, start, end, allowDropping);
         worker.start();
         isWorking = true;

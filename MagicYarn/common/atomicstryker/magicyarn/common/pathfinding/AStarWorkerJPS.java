@@ -167,6 +167,11 @@ public class AStarWorkerJPS extends AStarWorker
             
             if (dx != 0 && dz != 0) // prune diagonal
             {
+                if (stairs)
+                {
+                    return getAllNeighborsWithoutParent(x, y, z, dx, dz, node);
+                }
+                
                 int left = 0;
                 int right = 0;
                 nY = getGroundNodeHeight(x, y, z + dz);
@@ -187,14 +192,14 @@ public class AStarWorkerJPS extends AStarWorker
                 }
                 if (left != 0)
                 {
-                    if (stairs || getGroundNodeHeight(x - dx, py, z) == 0)
+                    if (getGroundNodeHeight(x - dx, py, z) == 0)
                     {
                         r.add(new AStarNode(x - dx, left,  z + dz, dist+2, node));
                     }
                 }
                 if (right != 0)
                 {
-                    if (stairs || getGroundNodeHeight(x, py, z - dz) == 0)
+                    if (getGroundNodeHeight(x, py, z - dz) == 0)
                     {
                         r.add(new AStarNode(x + dx, right, z - dz, dist+2, node));
                     }
@@ -271,6 +276,37 @@ public class AStarWorkerJPS extends AStarWorker
         return r;
     }
     
+    /**
+     * An attempt to fix the 'V-turn weakness', we manually force-add all neighbors
+     * when a jump is both diagonal and non-horizontal. Does not add the neighbor
+     * in the direction we just came from.
+     * 
+     * @param x jump origin coordinate
+     * @param y jump origin coordinate
+     * @param z jump origin coordinate
+     * @param dx jump direction
+     * @param dz jump direction
+     * @param node AStarNode we jumped from
+     * @return
+     */
+    private ArrayList<AStarNode> getAllNeighborsWithoutParent(int x, int y, int z, int dx, int dz, AStarNode node)
+    {
+        ArrayList<AStarNode> r = new ArrayList<AStarNode>();
+        for (int[] offset : neighbourOffsets)
+        {
+            if (offset[0] == -dx && offset[1] == -dz) // disregard neighbor we come from!
+            {
+                continue;
+            }
+            int nY = getGroundNodeHeight(x+offset[0], y, z+offset[1]);
+            if (nY > 0)
+            {
+                r.add(new AStarNode(x+offset[0], nY, z+offset[1], nY, node));
+            }
+        }
+        return r;
+    }
+
     /**
      * Recursive Jumper as described by JPS algorithm
      * 
@@ -404,22 +440,17 @@ public class AStarWorkerJPS extends AStarWorker
     private int getGroundNodeHeight(int xN, int yN, int zN)
     {
         //System.out.println("getGroundNodeHeight ["+xN+"|"+yN+"|"+zN+"]");
-        AStarNode node = new AStarNode(xN, yN, zN, 0, null);
-        if (AStarStatic.isViable(worldObj, node, 0))
+        if (AStarStatic.isViable(worldObj, xN, yN, zN, 0))
         {
             //System.out.println("result "+yN);
             return yN;
         }
-        
-        node = new AStarNode(xN, yN-1, zN, 0, null);
-        if (AStarStatic.isViable(worldObj, node, -1))
+        if (AStarStatic.isViable(worldObj, xN, yN, zN, -1))
         {
             //System.out.println("result "+(yN-1));
             return yN-1;
         }
-        
-        node = new AStarNode(xN, yN+1, zN, 0, null);
-        if (AStarStatic.isViable(worldObj, node, 1))
+        if (AStarStatic.isViable(worldObj, xN, yN, zN, 1))
         {
             //System.out.println("result "+(yN+1));
             return yN+1;
