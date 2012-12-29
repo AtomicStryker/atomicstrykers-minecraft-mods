@@ -83,6 +83,6 @@ public class ItemMastersStaff extends Item
     @Override
     public String getItemDisplayName(ItemStack itemStack)
     {
-        return "§E"+super.getItemDisplayName(itemStack);
+        return "Â§E"+super.getItemDisplayName(itemStack);
     }
 }

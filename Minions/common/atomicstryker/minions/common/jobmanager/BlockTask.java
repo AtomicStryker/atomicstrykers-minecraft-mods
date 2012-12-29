@@ -27,11 +27,11 @@ public abstract class BlockTask
 	public final int posX;
 	public final int posY;
 	public final int posZ;
-	public boolean startedTask = false;
+	public boolean startedTask;
 	public EntityMinion worker;
-	protected double accessRange = 4.0D;
-	protected long taskDurationMillis = 1000L;
-	public boolean isWorkerInRange = false;
+	protected double accessRange;
+	protected long taskDurationMillis;
+	public boolean isWorkerInRange;
 	protected long timeBlockReached;
 	protected AStarNode[] possibleAccessNodes;
 	protected int currentAccessNode;
@@ -55,6 +55,10 @@ public abstract class BlockTask
     	this.posX = ix;
     	this.posY = iy;
     	this.posZ = iz;
+    	startedTask = false;
+    	accessRange = 4.0D;
+    	taskDurationMillis = 1000L;
+    	isWorkerInRange = false;
     }
     
     /**
@@ -147,7 +151,8 @@ public abstract class BlockTask
     	else
     	{
     	    //System.out.println("BlockTask onWorkerPathFailed all paths failed, teleporting dat minion");
-    		this.worker.setPositionAndUpdate(posX+0.5D, posY+0.5D, posZ+0.5D);
+    		worker.performTeleportToTarget();
+    		onFinishedTask();
     	}
     }
     
@@ -190,24 +195,7 @@ public abstract class BlockTask
     	}
     	else
     	{
-    		this.onTaskNotPathable();
-    	}
-    }
-    
-    /**
-     * Called when no path from worker to Block can be computed. Reports back to the taskmanager,
-     * if one exists.
-     */
-    public void onTaskNotPathable()
-    {
-        System.out.println("onTaskNotPathable ["+this.posX+"|"+this.posY+"|"+this.posZ+"], skipping task");
-        worker.getDataWatcher().updateObject(12, Integer.valueOf(0));
-    	this.worker.currentState = EnumMinionState.AWAITING_JOB;
-    	this.worker.giveTask(null, true);
-    	
-    	if (boss != null)
-    	{
-    		boss.onTaskUnpathable(this, posX, posY, posZ);
+    	    worker.performTeleportToTarget();
     	}
     }
     

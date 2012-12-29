@@ -332,18 +332,6 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	}
     }
     
-    @Override
-    public void onTaskUnpathable(BlockTask task, int x, int y, int z)
-    {
-    	super.onTaskUnpathable(task, x, y, z);
-    	
-       	// we just put the failed task back into the jobQueue
-       	if (worldObj.getBlockId(x, y, z) != 0)
-       	{
-       		jobQueue.add(task);
-       	}
-    }
-    
     private void planStairWellFrom(int x, int y, int z)
     {
     	if (y+3 > maxY)

@@ -20,11 +20,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class MinionsServer
-{    
-    public static void onWorldTick(Object[] tickData)
-    {
-        MinionsCore.onTick();
-    }
+{
 
     public static void onPacketData(INetworkManager mgr, Packet250CustomPayload packet, Player p)
     {
@@ -90,12 +86,13 @@ public class MinionsServer
                     int y = (Integer) packetReadout[2];
                     int z = (Integer) packetReadout[3];
                     
-                    MinionsCore.spawnMinionsForPlayer(player, x, y, z);
+                    if (MinionsCore.spawnMinionsForPlayer(player, x, y, z))
+                    {
+                        MinionsCore.exhaustPlayerBig(player);
+                    }
                     
                     Object[] toSend = {MinionsCore.hasPlayerMinions(player) ? 1 : 0, MinionsCore.hasAllMinions(player) ? 1 : 0};
                     PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend), p);
-                    
-                    MinionsCore.exhaustPlayerBig(player);
                 }
                 break;
             }

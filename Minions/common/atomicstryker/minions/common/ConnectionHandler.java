@@ -1,5 +1,6 @@
 package atomicstryker.minions.common;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
 import net.minecraft.network.packet.NetHandler;
@@ -18,6 +19,10 @@ public class ConnectionHandler implements IConnectionHandler
 	{
         Object[] toSend = {MinionsCore.evilDeedXPCost};
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.REQUESTXPSETTING.ordinal(), toSend), player);
+        
+        EntityPlayer p = (EntityPlayer) player;
+        Object[] toSend2 = {MinionsCore.hasPlayerMinions(p) ? 1 : 0, MinionsCore.hasAllMinions(p) ? 1 : 0};
+        PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend2), player);
 	}
 
 	@Override

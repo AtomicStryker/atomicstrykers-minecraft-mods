@@ -19,76 +19,76 @@ import atomicstryker.minions.common.entity.EnumMinionState;
 public class Minion_Job_StripMine extends Minion_Job_Manager
 {
 	private final int STRIPMINE_MAX_LENGTH = 80;
-	
-	private World worldObj;
-	
-	private int currentSegment = -1;
-	
+	private final long SEGMENT_MAX_DELAY = 10000L;
 	private final int xDirection;
 	private final int zDirection;
 	
-	private boolean isFinished = false;
+	private EntityMinion worker;
+	private World worldObj;
+	private int currentSegment;
 	
 	private final int startX;
 	private final int startY;
 	private final int startZ;
 	
-	private long timeLastSegmentAdded;
+	private long timeForceNextSegment;
 	
     public Minion_Job_StripMine(EntityMinion[] minions, int ix, int iy, int iz)
     {
-    	int i = 0;
-    	while (i < minions.length)
+        currentSegment = -1;
+    	for (EntityMinion m : minions)
     	{
-    		if (!minions[i].isStripMining)
-    		{
-	    		this.workerList.add(minions[i]);
-	    		minions[i].isStripMining = true;
-	    		
-	   			minions[i].currentState = EnumMinionState.AWAITING_JOB;
-	    		minions[i].lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
-	    		
-	    		if (minions[i].riddenByEntity != null)
-	    		{
-	    			minions[i].riddenByEntity.mountEntity(null);
-	    		}
-	    		
-	    		if (masterName == null)
-	    		{
-	    			masterName = minions[i].masterUsername;
-	    		}
-	    		break;
-    		}
-    		i++;
+            if (!m.isStripMining)
+            {
+                worker = m;
+                m.isStripMining = true;
+                
+                m.giveTask(null, true);
+                m.currentState = EnumMinionState.AWAITING_JOB;
+                m.lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
+                
+                if (m.riddenByEntity != null)
+                {
+                    m.riddenByEntity.mountEntity(null);
+                }
+                
+                if (masterName == null)
+                {
+                    masterName = m.masterUsername;
+                }
+                break;
+            }
     	}
     	
-    	if (this.workerList.isEmpty())
+    	if (worker == null)
     	{
     		System.out.println("Attempted to create Strip Mine Job, but all Minions are already stripmining!");
-    		this.onJobFinished();
-    	}
-
-    	this.pointOfOrigin = new ChunkCoordinates(ix, iy, iz);
-
-    	this.worldObj = minions[0].worldObj;
-
-    	startX = this.pointOfOrigin.posX;
-    	startY = this.pointOfOrigin.posY;
-    	startZ = this.pointOfOrigin.posZ;
-
-    	Entity boss = minions[0].master;
-    	int bossX = MathHelper.floor_double(boss.posX);
-    	int bossZ = MathHelper.floor_double(boss.posZ);
-    	
-    	if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
-    	{
-    		xDirection = (startX - bossX > 0) ? 1 : -1;
-    		zDirection = 0;
+    		zDirection = xDirection = startX = startY = startZ = 0;
     	}
     	else
     	{
-    		xDirection = 0;
-    		zDirection = (startZ - bossZ > 0) ? 1 : -1;
+            this.pointOfOrigin = new ChunkCoordinates(ix, iy, iz);
+
+            this.worldObj = minions[0].worldObj;
+
+            startX = this.pointOfOrigin.posX;
+            startY = this.pointOfOrigin.posY;
+            startZ = this.pointOfOrigin.posZ;
+
+            Entity boss = minions[0].master;
+            int bossX = MathHelper.floor_double(boss.posX);
+            int bossZ = MathHelper.floor_double(boss.posZ);
+            
+            if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
+            {
+                xDirection = (startX - bossX > 0) ? 1 : -1;
+                zDirection = 0;
+            }
+            else
+            {
+                xDirection = 0;
+                zDirection = (startZ - bossZ > 0) ? 1 : -1;
+            }
     	}
     }
     
@@ -103,70 +103,44 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     public void onJobUpdateTick()
     {
     	super.onJobUpdateTick();
-    	
-    	BlockTask nextBlock = null;
-    	EntityMinion worker;
-    	boolean hasJobs = (!this.jobQueue.isEmpty());
-    	if (!hasJobs && !isFinished)
+    	if (worker == null)
     	{
-    		hasJobs = canAddNextLayer();
+    	    onJobFinished();
+    	    return;
+    	}
+    	else if (!worker.hasTask() && !jobQueue.isEmpty())
+    	{
+            BlockTask job = (BlockTask) this.jobQueue.get(0);
+            worker.currentState = EnumMinionState.THINKING;
+            worker.giveTask(job);           
+            job.setWorker(worker);
     	}
     	
-    	if (hasJobs)
-    	{
-    		if (!workerList.isEmpty() && System.currentTimeMillis() > timeLastSegmentAdded + 10000L)
-    		{
-    			worker = (EntityMinion) workerList.get(0);
-    			
-    			if (worker.getCurrentTask() instanceof BlockTask_MineOreVein)
-    			{
-    				// System.out.println("10 sec abort on MineOreVein Task");
-    				worker.giveTask(null, true);
-    				worker.currentState = EnumMinionState.AWAITING_JOB;
-    			}
-    			else // eerie case in which minions get stuck doing nothing
-    			{
-    				// System.out.println("10 sec abort on NOT.MineOreVein Task");
-    				currentSegment--;
-    				worker.giveTask(null, true);
-    				worker.currentState = EnumMinionState.AWAITING_JOB;
-    			}
-    		}
-    		
-    		nextBlock = (BlockTask) this.jobQueue.get(0);
-	    	worker = this.getNearestAvailableWorker(nextBlock.posX, nextBlock.posY, nextBlock.posZ);
-    	}
-    	else
-    	{
-    		worker = this.getAnyAvailableWorker();
-    	}
-    	if (worker != null)
-    	{
-    		if (hasJobs)
-    		{
-    			// get job from queue
-    			// worker.giveTask();
-    			// job.setworker!
-    			
-    			BlockTask job = (BlockTask) this.jobQueue.get(0);
-    			worker.giveTask(job);
-    			job.setWorker(worker);
-    			worker.currentState = EnumMinionState.THINKING;
-    			//System.out.println("Strip Mine assigned job to idle worker: ["+job.posX+"|"+job.posY+"|"+job.posZ+"]");
-    			
-    			this.jobQueue.remove(0);
-    		}
-    		else
-    		{
-    			this.setWorkerFree(worker);
-    		}
-    	}
+        if (System.currentTimeMillis() > timeForceNextSegment)
+        {
+            //currentSegment++;
+            queueCurrentSegmentJobs();
+        }
     }
     
     @Override
     public void onJobFinished()
     {
+        worker = null;
     	super.onJobFinished();
+    }
+    
+    @Override
+    public void onTaskFinished(BlockTask task, int x, int y, int z)
+    {
+        timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
+        jobQueue.remove(task);
+        
+        if (jobQueue.isEmpty())
+        {
+            currentSegment++;
+            queueCurrentSegmentJobs();
+        }
     }
     
     public void setWorkerFree(EntityMinion input)
@@ -175,15 +149,23 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     	super.setWorkerFree(input);
     }
     
-    private boolean canAddNextLayer()
+    /**
+     * Creates and queues the current 2-by-1 Segment to dig away
+     * @return false if the Stripmine has reached max length, true otherwise
+     */
+    private boolean queueCurrentSegmentJobs()
     {
-    	timeLastSegmentAdded = System.currentTimeMillis();
+        jobQueue.clear();
+        worker.giveTask(null, true);
+        worker.currentState = EnumMinionState.AWAITING_JOB;
+        
+    	timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
     	
-   		currentSegment++;
    		//System.out.println("Strip Mine adding next layer, now: "+currentSegment);
    		
    		if (currentSegment >= STRIPMINE_MAX_LENGTH)
    		{
+   		    onJobFinished();
    			return false;
    		}
    		
@@ -221,8 +203,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
    			checkBlockValuables(nextX, startY+1, nextZ-1);
    		}
    		
-   		checkBlockValuables(nextX, startY-1, nextZ); // check floor
-    	
+   		checkBlockValuables(nextX, startY-1, nextZ); // check floor    	
     	return true;
     }
     

@@ -1,3 +1,21 @@
+Update 1.5.7
+- rewritten Stripmining several ... SEVERAL ... TOO MANY TIMES
+- it's more reliable now
+- fixed various cases of Minions getting stuck and staying stuck
+
+Update 1.5.6
+- scratch that, fixed V-turns for JPS, should now find every path
+
+- using the master staff for the first time after reconnect will no longer drain hunger
+- if you have minions in a world, your menu will register that upon connecting to a server.
+  you will no longer need to issue a staff order for that register to happen, and should
+  be able to unsummon minions if you connected without your staff at hand
+
+Update 1.5.5
+- added 3D implementation of A* JPS pathfinding as default
+- due to technical limitations does not work in every case
+- will revert to old (slower) A* Best-First when it fails
+
 Update 1.5.4
 - updated to MC 1.4.6
 

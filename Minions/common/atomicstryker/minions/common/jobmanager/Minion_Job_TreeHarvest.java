@@ -15,16 +15,15 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class Minion_Job_TreeHarvest extends Minion_Job_Manager
 {
-	private volatile TreeScanner treeScanWorker;
-	private volatile Thread thread;
+	private Thread thread;
 	private World worldObj;
-	private boolean isWorking = false;
-	private boolean doneLookingForTrees = false;
+	private boolean doneLookingForTrees;
 	
     public Minion_Job_TreeHarvest(EntityMinion[] minions, int ix, int iy, int iz)
     {
     	super(minions, ix, iy, iz);
     	this.worldObj = minions[0].worldObj;
+    	doneLookingForTrees = false;
     }
     
     @Override
@@ -32,9 +31,8 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     {
     	super.onJobStarted();
     	
-    	treeScanWorker = new TreeScanner(this);
+    	TreeScanner treeScanWorker = new TreeScanner(this);
     	treeScanWorker.setup(pointOfOrigin, worldObj);
-    	
     	thread = new Thread(treeScanWorker);
     	thread.start();
     }
@@ -43,14 +41,6 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     public void onJobUpdateTick()
     {
     	super.onJobUpdateTick();
-    	
-    	if (!isWorking)
-    	{
-    		//System.out.println("onJobUpdateTick, starting Tree Job now!");
-    		isWorking = true;
-    		onJobStarted();
-    		return;
-    	}
     	
     	BlockTask_TreeChop nextTree = null;
     	EntityMinion worker = null;

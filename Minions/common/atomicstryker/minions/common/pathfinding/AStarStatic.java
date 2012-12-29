@@ -18,47 +18,54 @@ public class AStarStatic
 {
     
     /**
+     * AStarNode wrapper for isViable
+     */
+	public static boolean isViable(World worldObj, AStarNode target, int yoffset)
+	{
+	    return isViable(worldObj, target.x, target.y, target.z, yoffset);
+	}
+	
+	/**
      * Determines whether or not an AStarNode is traversable
      * Checks if a 2 Block high nonblocked space exists with this Node as bottom
      * Also checks if you can reach this node without your head passing
      * through a solid overhang (vertical diagonal)
      * 
      * @param worldObj World to check in
-     * @param target Node to check for being blocked
-     * @param yoffset Height offset relative to the previous Node
-     * @return
-     */
-	public static boolean isViable(World worldObj, AStarNode target, int yoffset)
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param z coordinate
+	 * @param yoffset Height offset relative to the previous Node
+	 * @return true if the target coordinates can be passed as 2 block high entity, false otherwise
+	 */
+	public static boolean isViable(World worldObj, int x, int y, int z, int yoffset)
 	{
-		int x = target.x;
-		int y = target.y;
-		int z = target.z;
-		int id = worldObj.getBlockId(x, y, z);
+	    int id = worldObj.getBlockId(x, y, z);
 
-		if (id == Block.ladder.blockID && isPassableBlock(worldObj, x, y+1, z))
-		{
-			return true;
-		}
+	    if (id == Block.ladder.blockID && isPassableBlock(worldObj, x, y+1, z))
+	    {
+	        return true;
+	    }
 
-		if (!isPassableBlock(worldObj, x, y, z)
-		|| !isPassableBlock(worldObj, x, y+1, z)
-		|| (isPassableBlock(worldObj, x, y-1, z) && (id != Block.waterStill.blockID || id != Block.waterMoving.blockID)))
-		{
-			return false;
-		}
+	    if (!isPassableBlock(worldObj, x, y, z)
+	    || !isPassableBlock(worldObj, x, y+1, z)
+	    || (isPassableBlock(worldObj, x, y-1, z) && (id != Block.waterStill.blockID || id != Block.waterMoving.blockID)))
+	    {
+	        return false;
+	    }
 
-		if (yoffset < 0) yoffset *= -1;
-		int ycheckhigher = 1;
-		while (ycheckhigher <= yoffset)
-		{
-			if (!isPassableBlock(worldObj, x, y+yoffset, z))
-			{
-				return false;
-			}
-			ycheckhigher++;
-		}
+	    if (yoffset < 0) yoffset *= -1;
+	    int ycheckhigher = 1;
+	    while (ycheckhigher <= yoffset)
+	    {
+	        if (!isPassableBlock(worldObj, x, y+yoffset, z))
+	        {
+	            return false;
+	        }
+	        ycheckhigher++;
+	    }
 
-		return true;
+	    return true;
 	}
 	
 	/**

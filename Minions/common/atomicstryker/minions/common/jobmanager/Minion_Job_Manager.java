@@ -22,7 +22,7 @@ public abstract class Minion_Job_Manager
 	/**
 	 * Contains all of a player's minions after init. Removing them from here nulls their consideration for new jobs.
 	 */
-	protected ArrayList<EntityMinion> workerList = new ArrayList();
+	protected final ArrayList<EntityMinion> workerList;
 	
 	/**
 	 * XYZ coordinates of where the player 'placed' the job
@@ -32,23 +32,31 @@ public abstract class Minion_Job_Manager
 	/**
 	 * Contains all Blocktasks the Job needs done in ascending order. Once all are finished, the job is done.
 	 */
-	protected ArrayList<BlockTask> jobQueue = new ArrayList();
+	protected final ArrayList<BlockTask> jobQueue;
 	
 	/**
 	 * The player's username
 	 */
-	public String masterName = null;
+	public String masterName;
+	
+	private boolean isWorking;
 	
 	public Minion_Job_Manager()
 	{
+	    workerList = new ArrayList();
+	    jobQueue = new ArrayList();
+	    isWorking = false;
+	    masterName = null;
 	}
 	
     public Minion_Job_Manager(EntityMinion[] minions, int ix, int iy, int iz)
     {
+        this();
+        
     	int i = 0;
     	while (i < minions.length)
     	{
-    		this.workerList.add(minions[i]);
+    		workerList.add(minions[i]);
     		
    			minions[i].currentState = EnumMinionState.AWAITING_JOB;
     		minions[i].lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
@@ -142,14 +150,24 @@ public abstract class Minion_Job_Manager
     	}
     }
     
+    /**
+     * Called by the first Job Update tick
+     */
     public void onJobStarted()
     {
     	
     }
     
+    /**
+     * Method to be called by some Updatetick propagating device, either a mod or an Entity
+     */
     public void onJobUpdateTick()
     {
-    	
+    	if (!isWorking)
+    	{
+    	    onJobStarted();
+    	    isWorking = true;
+    	}
     }
     
     /**
@@ -178,16 +196,4 @@ public abstract class Minion_Job_Manager
     	
     }
     
-    /**
-     * event coming back from an issued Blocktask, useful to put it back into the jobqueue or such
-     * 
-     * @param worker Minion which was unable to reach the Task Block
-     * @param x coordinate of task
-     * @param y coordinate of task
-     * @param z coordinate of task
-     */
-    public void onTaskUnpathable(BlockTask task, int x, int y, int z)
-    {
-    	//System.out.println("A "+task+" threw an unpathable error, coords: ["+x+"|"+y+"|"+z+"]");
-    }
 }

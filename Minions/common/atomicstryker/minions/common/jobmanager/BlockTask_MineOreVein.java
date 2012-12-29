@@ -52,30 +52,6 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     	super.onUpdate();	
     }
     
-    public void onTaskNotPathable()
-    {
-    	super.onTaskNotPathable();
-    	
-    	worker.getDataWatcher().updateObject(12, Integer.valueOf(0));
-    	
-    	ChunkCoordinates check = new ChunkCoordinates(posX, posY, posZ);
-		if (oreVeinBlocks != null && oreVeinBlocks.contains(check))
-		{
-			oreVeinBlocks.remove(check);
-		}
-		if (oreVeinBlocks != null && !oreVeinBlocks.isEmpty())
-		{
-			check = (ChunkCoordinates) oreVeinBlocks.get(0);
-			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.posX, check.posY, check.posZ);
-			worker.giveTask(next);
-		}
-		else
-		{
-	    	this.worker.currentState = EnumMinionState.AWAITING_JOB;
-	    	this.worker.giveTask(null, true);
-		}
-    }
-    
     public void onFinishedTask()
     {
     	worker.getDataWatcher().updateObject(12, Integer.valueOf(0));

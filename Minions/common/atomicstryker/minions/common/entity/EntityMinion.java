@@ -40,30 +40,32 @@ import atomicstryker.minions.common.pathfinding.IAStarPathedEntity;
 
 public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 {
+    private final int pathingCooldownTicks = 30;
+    public final InventoryMinion inventory;
+    public final AStarPathPlanner pathPlanner;
+    
 	public EntityPlayer master;
 	public String masterUsername;
-	private ItemStack heldItem = new ItemStack(Item.pickaxeSteel, 1);
-	public InventoryMinion inventory = new InventoryMinion(this);
-	public boolean inventoryFull = false;
+	private ItemStack heldItem;
+	public boolean inventoryFull;
 	public TileEntity returnChestOrInventory;
-	public AStarPathPlanner pathPlanner;
-	public EnumMinionState currentState = EnumMinionState.IDLE;
-	public EnumMinionState lastOrderedState = EnumMinionState.IDLE;
-	public EnumMinionState nextState = null;
+	public EnumMinionState currentState;
+	public EnumMinionState lastOrderedState;
+	public EnumMinionState nextState;
 	private AS_PathEntity pathToWalkInputCache;
 	public ChunkCoordinates currentTarget;
-	private final int pathingCooldownTicks = 30;
-	private int currentPathNotFoundCooldownTick = 0;
-	private int pathFindingFails = 0;
-	private int currentPathingStopCooldownTick = 0;
+	private int currentPathNotFoundCooldownTick;
+	private int pathFindingFails;
+	private int currentPathingStopCooldownTick;
 	private BlockTask currentTask;
 	public EntityLiving targetEntityToGrab;
-	public float workSpeed = 1.0F;
-	private long workBoostTime = 0L;
-	public boolean isStripMining = false;
+	public float workSpeed;
+	private long workBoostTime;
+	public boolean isStripMining;
 	private long timeLastSound;
-	public boolean canPickUpItems = true;
-	private long canPickUpItemsAgainAt = 0L;
+	public boolean canPickUpItems;
+	private long canPickUpItemsAgainAt;
+	private long closeChestTime;
 
 	public EntityMinion(World var1)
 	{
@@ -80,6 +82,21 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.tasks.addTask(1, new MinionAIStalkAndGrab(this, this.moveSpeed));
         this.tasks.addTask(2, new MinionAIFollowMaster(this, this.moveSpeed, 10.0F, 2.0F));
         this.tasks.addTask(3, new MinionAIWander(this, this.moveSpeed));
+        
+        inventory = new InventoryMinion(this);
+        heldItem = new ItemStack(Item.pickaxeSteel, 1);
+        inventoryFull = false;
+        currentState = lastOrderedState = EnumMinionState.IDLE;
+        nextState = null;
+        currentPathNotFoundCooldownTick = 0;
+        pathFindingFails = 0;
+        currentPathingStopCooldownTick = 0;
+        workSpeed = 1.0F;
+        workBoostTime = 0L;
+        isStripMining = false;
+        canPickUpItems = true;
+        canPickUpItemsAgainAt = 0L;
+        closeChestTime = 0;
 	}
 	
 	public void setMaster(EntityPlayer creator)
@@ -123,7 +140,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	public void giveTask(BlockTask input)
 	{
 		currentTask = input;
-		
 		if (currentTask == null)
 		{
 			//System.out.println("giveTask(null), minion returning goods!");
@@ -195,9 +211,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         MinionsCore.minionLoadRegister(this);
     }
     
-    private void performTeleportToTarget()
+    public void performTeleportToTarget()
     {
-    	this.setPositionAndUpdate(currentTarget.posX, currentTarget.posY, currentTarget.posZ);
+    	this.setPositionAndUpdate(currentTarget.posX+0.5D, currentTarget.posY, currentTarget.posZ+0.5D);
     	MinionsCore.proxy.playSoundAtEntity(this, "random.pop", 0.5F, 1.0F);
     }
     
@@ -270,6 +286,12 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     {
     	super.onEntityUpdate();
     	
+        if (!worldObj.isRemote && closeChestTime != 0)
+        {
+            ((IInventory)returnChestOrInventory).closeChest();
+            closeChestTime = 0;
+        }
+    	
     	if (workBoostTime != 0L && System.currentTimeMillis() - workBoostTime > 30000L)
     	{
     		workBoostTime = 0L;
@@ -277,7 +299,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	}
     	
     	if (currentState == EnumMinionState.WALKING_TO_COORDS || currentState == EnumMinionState.THINKING)
-    	{
+    	{    	    
     		if (hasReachedTarget())
     		{
     			getNavigator().setPath(null, this.moveSpeed);
@@ -360,11 +382,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     			if (this.inventory.containsItems() && checkReturnChestValidity())
     			{
 	    			// System.out.println("Dropping Items into chest!");
-    			    if (returnChestOrInventory instanceof TileEntityChest)
-    			    {
-    			        openChest((TileEntityChest) returnChestOrInventory);
-    			    }
-    				
+    			    ((IInventory)returnChestOrInventory).openChest();
+    			    closeChestTime = System.currentTimeMillis() + 4000L;
 	    			this.inventory.putAllItemsToInventory((IInventory)returnChestOrInventory);
     			}
     			this.currentState = EnumMinionState.IDLE;
@@ -462,15 +481,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	canPickUpItemsAgainAt = System.currentTimeMillis() + 3000L;
     }
     
-    private void openChest(TileEntityChest chest)
-    {
-    	if (chest.adjacentChestXPos != null) chest.adjacentChestXPos.lidAngle = 1.0F;
-    	else if (chest.adjacentChestXNeg != null) chest.adjacentChestXNeg.lidAngle = 1.0F;
-    	else if (chest.adjacentChestZPosition != null) chest.adjacentChestZPosition.lidAngle = 1.0F;
-    	else if (chest.adjacentChestZNeg != null) chest.adjacentChestZNeg.lidAngle = 1.0F;
-    	chest.lidAngle = 1.0F;
-    }
-    
     private double getDistanceToEntity(TileEntity tileent)
     {
 		return AStarStatic.getDistanceBetweenCoords(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), tileent.xCoord, tileent.yCoord, tileent.zCoord);
@@ -559,7 +569,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 
 	@Override
 	public void onFoundPath(ArrayList<AStarNode> result)
-	{
+	{	    
 		currentPathNotFoundCooldownTick = pathingCooldownTicks;
 		pathFindingFails = 0;
 		

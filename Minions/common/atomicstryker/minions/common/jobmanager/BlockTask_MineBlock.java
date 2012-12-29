@@ -16,10 +16,10 @@ import atomicstryker.minions.common.entity.EntityMinion;
 public class BlockTask_MineBlock extends BlockTask
 {
     public Block targetBlock;
-    private int blocksDropped = 0;
+    private int blocksDropped;
     public int blockID;
     public int blockmetadata;
-    public boolean disableDangerCheck = false;
+    public boolean disableDangerCheck;
 	
     /**
      * @param boss Job Manager calling
@@ -31,6 +31,8 @@ public class BlockTask_MineBlock extends BlockTask
     public BlockTask_MineBlock(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
+    	blocksDropped = 0;
+    	disableDangerCheck = false;
     }
     
     /**
@@ -43,7 +45,7 @@ public class BlockTask_MineBlock extends BlockTask
      */
     public BlockTask_MineBlock(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, boolean noDangerCheck)
     {
-    	super(boss, input, ix, iy, iz);
+        this(boss, input, ix, iy, iz);
     	disableDangerCheck = noDangerCheck;
     }
 

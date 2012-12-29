@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import net.minecraft.block.Block;
@@ -61,7 +62,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.4")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.7")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -75,7 +76,7 @@ public class MinionsCore
 	
     public static int evilDeedXPCost = 2;
     public static int minionsPerPlayer = 4;
-    public static ArrayList evilDoings = new ArrayList();
+    public static ArrayList<EvilDeed> evilDoings = new ArrayList();
     
     private static float exhaustAmountSmall;
     private static float exhaustAmountBig;
@@ -85,8 +86,8 @@ public class MinionsCore
     
     public static HashSet<Integer> foundTreeBlocks = new HashSet<Integer>();
     public static HashSet<Integer> configWorthlessBlocks = new HashSet<Integer>();
-    public static ArrayList<Minion_Job_Manager> runningJobList = new ArrayList<Minion_Job_Manager>();
-    public static ArrayList<Minion_Job_Manager> finishedJobList = new ArrayList<Minion_Job_Manager>();
+    public static CopyOnWriteArrayList<Minion_Job_Manager> runningJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
+    public static CopyOnWriteArrayList<Minion_Job_Manager> finishedJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
     public static Map<String, EntityMinion[]> masterNames = new HashMap<String, EntityMinion[]>();
     public static Map<String, Integer> masterCommits = new HashMap<String, Integer>();
 
@@ -401,7 +402,16 @@ public class MinionsCore
         }
     }
     
-    public static void spawnMinionsForPlayer(EntityPlayer playerEnt, int x, int y, int z)
+    /**
+     * Tries to spawn additional Minions for a player, checks first if he needs any
+     * 
+     * @param playerEnt Player calling the spawning
+     * @param x coordinate
+     * @param y coordinate
+     * @param z coordinate
+     * @return true if a Minion was actually spawned, false otherwise
+     */
+    public static boolean spawnMinionsForPlayer(EntityPlayer playerEnt, int x, int y, int z)
     {   
         EntityMinion[] minions = (EntityMinion[]) masterNames.get(playerEnt.username);
         
@@ -423,10 +433,12 @@ public class MinionsCore
 
             masterNames.put(playerEnt.username, arrayplusone);
             //System.out.println("spawned missing minion for "+var3.username);
+            return true;
         }
         
         //AS_EntityMinion[] readout = (AS_EntityMinion[]) masterNames.get(playerEnt.username);
         orderMinionsToMoveTo(playerEnt, x, y, z);
+        return false;
     }
     
     public static void orderMinionsToChopTrees(EntityPlayer playerEnt, int x, int y, int z)
@@ -498,8 +510,7 @@ public class MinionsCore
         
         TileEntity chestOrInventoryBlock;
         if ((chestOrInventoryBlock = playerEnt.worldObj.getBlockTileEntity(x, y-1, z)) != null
-                && chestOrInventoryBlock instanceof IInventory
-                && ((IInventory)chestOrInventoryBlock).getSizeInventory() >= 24)
+                && chestOrInventoryBlock instanceof IInventory)
         {
             cancelRunningJobsForMaster(playerEnt.username);
             proxy.sendSoundToClients(minions[0], "mod_minions.randomorder");
@@ -675,7 +686,7 @@ public class MinionsCore
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
-            MinionsServer.onWorldTick(tickData);
+            onTick();
         }
 
         @Override
