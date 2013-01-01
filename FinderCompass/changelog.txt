@@ -1,3 +1,6 @@
+1.4.6a
+mode swapping on compass will no longer trigger with a target under cursor
+
 1.4.6
 update to mc 1.4.6
 

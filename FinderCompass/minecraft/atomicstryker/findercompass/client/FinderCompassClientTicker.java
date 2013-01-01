@@ -50,7 +50,8 @@ public class FinderCompassClientTicker implements ITickHandler
             
             if (mc.thePlayer.getCurrentEquippedItem() != null
             && mc.thePlayer.getCurrentEquippedItem().itemID == COMPASS_ITEM_ID
-            && mc.gameSettings.keyBindUseItem.pressed)
+            && mc.gameSettings.keyBindUseItem.pressed
+            && mc.objectMouseOver == null)
             {
                 if (!repeat)
                 {
