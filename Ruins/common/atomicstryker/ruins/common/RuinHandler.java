@@ -140,7 +140,9 @@ public class RuinHandler {
 		} catch( Exception e ) {
 			printErrorToLog( pw, e, "There was an error when loading the options file.  Defaults will be used instead." );
 		}
-
+		
+		new CustomRotationMapping(templPath, pw);
+		
 		pw.println( "Ruins mod loaded." );
 		pw.flush();
 		pw.close();

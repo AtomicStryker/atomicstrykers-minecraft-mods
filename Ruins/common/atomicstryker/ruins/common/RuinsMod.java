@@ -10,11 +10,16 @@ import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
 import java.util.Random;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -24,7 +29,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.7", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "8.9", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -40,6 +45,19 @@ public class RuinsMod
     public void load(FMLInitializationEvent evt)
     {
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+    
+    private long nextInfoTime;
+    @ForgeSubscribe
+    public void onBreakSpeed(BreakSpeed event)
+    {
+        ItemStack is = event.entityPlayer.getCurrentEquippedItem();
+        if (is != null && is.itemID == Item.stick.shiftedIndex && System.currentTimeMillis() > nextInfoTime)
+        {
+            nextInfoTime = System.currentTimeMillis() + 1000l;
+            event.entityPlayer.sendChatToPlayer(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getBlockName(), event.block.blockID, event.metadata));
+        }
     }
     
     public class RuinsWorldGenerator implements IWorldGenerator
@@ -77,10 +95,10 @@ public class RuinsMod
         }
     }
 
-    private void generateSurface(World world, Random random, int chunkX, int chunkZ)
+    private synchronized void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
         checkWorld(world);
-        if (ruins != null && ruins.loaded)
+        if (ruins != null && ruins.loaded && (chunkX != 0 || chunkZ != 0))
         {
             // can change this generation as needed. We're going for overblown
             // right now,

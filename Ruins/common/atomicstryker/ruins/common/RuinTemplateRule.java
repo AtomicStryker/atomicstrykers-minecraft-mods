@@ -541,40 +541,6 @@ public class RuinTemplateRule {
 				if( metadata == 4 ) { return 2 + tempdata; }
 			}
 			break;
-		case 53: case 67: case 108: case 109: case 112:
-		{
-			// compact stairs
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 0 ) { return 2; }
-				if( metadata == 1 ) { return 3; }
-				if( metadata == 2 ) { return 1; }
-				if( metadata == 3 ) { return 0; }
-				if( metadata == 4 ) { return 6; }
-				if( metadata == 5 ) { return 7; }
-				if( metadata == 6 ) { return 5; }
-				if( metadata == 7 ) { return 4; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 0 ) { return 1; }
-				if( metadata == 1 ) { return 0; }
-				if( metadata == 2 ) { return 3; }
-				if( metadata == 3 ) { return 2; }
-				if( metadata == 4 ) { return 5; }
-				if( metadata == 5 ) { return 4; }
-				if( metadata == 6 ) { return 7; }
-				if( metadata == 7 ) { return 6; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 0 ) { return 3; }
-				if( metadata == 1 ) { return 2; }
-				if( metadata == 2 ) { return 0; }
-				if( metadata == 3 ) { return 1; }
-				if( metadata == 4 ) { return 7; }
-				if( metadata == 5 ) { return 6; }
-				if( metadata == 6 ) { return 4; }
-				if( metadata == 7 ) { return 5; }
-			}
-			break;
-		}
 		case 65: case 23: case 61: case 62: case 68:
 			// Ladders, Wall Signs, Furnaces and Dispensers
 			switch( dir ) {
@@ -741,6 +707,8 @@ public class RuinTemplateRule {
 				if( metadata == 14 ) { return 10; }
 				if( metadata == 15 ) { return 11; }
 			}
+			default:
+			    return CustomRotationMapping.getMapping(blockID, metadata, dir);
 		}
 		// we should never get here, but users can be silly sometimes.
 		return metadata + tempdata;

@@ -143,3 +143,13 @@ a: setAccessible now true
 
 8.7
 + update to MC 1.4.6
+
+8.8
++ synchronized World Generation Hook, also made sure the 0,0 chunk doesn't ever spawn anything
+
+8.9
++ unleashing the custom rotation config file! You should now be able to use any and all blocks
+  for your Ruins, if you make rotation mappings for them.
++ read /mods/resources/ruins/rotation_mappings.txt for information and examples
++ to facilitate the figuring out of block names and metadata, Ruins will now print out the
+  relevant information about a block ingame if you tap it with a "stick".
