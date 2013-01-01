@@ -1,3 +1,6 @@
+1.2.7 (second revision)
+- fixed loot Blocks being restricted to IDs below 256
+
 1.2.7
 - update to Minecraft 1.4.6
 

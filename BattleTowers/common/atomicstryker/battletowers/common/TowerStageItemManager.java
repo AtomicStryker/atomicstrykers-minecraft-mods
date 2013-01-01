@@ -78,7 +78,7 @@ public class TowerStageItemManager
 		if (floorHasItemsLeft()
 		&& rand.nextInt(100) < chanceToSpawn[curIndex])
 		{
-			if (itemID[curIndex] < 256
+			if (itemID[curIndex] < Block.blocksList.length
 			&& Block.blocksList[itemID[curIndex]] != null)
 			{
                 if (itemDamage[curIndex] == 0)
