@@ -1,11 +1,11 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Cloaking extends MobModifier
@@ -58,6 +58,13 @@ public class MM_Cloaking extends MobModifier
             nextAbilityUse = time+coolDown;
             mob.addPotionEffect(new PotionEffect(Potion.invisibility.id, 200));
         }
+    }
+    
+    @Override
+    public Class[] getBlackListMobClasses()
+    {
+        Class[] r = { EntitySpider.class };
+        return r;
     }
     
 }
