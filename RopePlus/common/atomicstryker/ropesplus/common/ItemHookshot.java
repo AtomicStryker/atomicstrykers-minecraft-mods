@@ -44,7 +44,7 @@ public class ItemHookshot extends Item
         int ticksLeftToCharge = getMaxItemUseDuration(itemstack) - heldTicks;
         float chargeRatio = (float)ticksLeftToCharge / 20.0F;
         
-        boolean hasAmmo = entityplayer.inventory.hasItem(RopesPlusCore.itemHookShotCartridge.shiftedIndex);
+        boolean hasAmmo = entityplayer.inventory.hasItem(RopesPlusCore.itemHookShotCartridge.itemID);
         
         if (chargeRatio < 0.5)
         {
@@ -100,7 +100,7 @@ public class ItemHookshot extends Item
                                 Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
                                 world.playSoundAtEntity(entityplayer, "hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
-                                entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge.shiftedIndex);
+                                entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge.itemID);
                             }
                         }
                         else

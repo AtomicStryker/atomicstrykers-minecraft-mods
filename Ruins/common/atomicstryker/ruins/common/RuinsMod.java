@@ -53,7 +53,7 @@ public class RuinsMod
     public void onBreakSpeed(BreakSpeed event)
     {
         ItemStack is = event.entityPlayer.getCurrentEquippedItem();
-        if (is != null && is.itemID == Item.stick.shiftedIndex && System.currentTimeMillis() > nextInfoTime)
+        if (is != null && is.itemID == Item.stick.itemID && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
             event.entityPlayer.sendChatToPlayer(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getBlockName(), event.block.blockID, event.metadata));

@@ -138,7 +138,7 @@ public class RopesPlusClient implements ITickHandler
             Item item = itemstack.getItem();
             
             // handle vanilla arrows
-            if (item.shiftedIndex == Item.arrow.shiftedIndex)
+            if (item.itemID == Item.arrow.itemID)
             {
                 EntityArrow303 itemarrow303 = new EntityArrow303(localPlayer.worldObj);
                 if(previousarrow303 == null || previousarrow303.tip != itemarrow303.tip)
@@ -257,7 +257,7 @@ public class RopesPlusClient implements ITickHandler
                 selectAnyArrow();
             }
             
-            if(itemstack != null && (itemstack.itemID == Item.bow.shiftedIndex || itemstack.itemID == RopesPlusCore.bowRopesPlus.shiftedIndex))
+            if(itemstack != null && (itemstack.itemID == Item.bow.itemID || itemstack.itemID == RopesPlusCore.bowRopesPlus.itemID))
             {
                 boolean hasArrows = selectedArrow != null;
                 String s = hasArrows ? selectedArrow.name : "No arrows";

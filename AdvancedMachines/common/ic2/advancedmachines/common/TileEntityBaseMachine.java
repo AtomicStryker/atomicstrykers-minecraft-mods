@@ -149,7 +149,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
                     return charge > 0;
                 }
             }
-            else if (fuelID == Item.redstone.shiftedIndex)
+            else if (fuelID == Item.redstone.itemID)
             {
                 energy += maxEnergy;
                 --inventory[fuelslot].stackSize;

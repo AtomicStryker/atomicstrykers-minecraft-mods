@@ -331,7 +331,7 @@ public class MinionsCore
             {
             	proxy.playSoundAtEntity(player, "mod_minions.thegodshaverewardedyouroffering", 1.0F, 1.0F);
                 // give master item to player
-                player.inventory.addItemStackToInventory(new ItemStack(MinionsCore.itemMastersStaff.shiftedIndex, 1, 0));
+                player.inventory.addItemStackToInventory(new ItemStack(MinionsCore.itemMastersStaff.itemID, 1, 0));
             }
             else
             {

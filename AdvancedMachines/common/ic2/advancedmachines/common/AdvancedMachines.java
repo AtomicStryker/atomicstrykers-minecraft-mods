@@ -177,7 +177,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         
         refinedIronDust = new ItemDust(refIronID).setItemName("refinedIronDust");
         LanguageRegistry.addName(refinedIronDust, refIronDustName);
-        GameRegistry.addSmelting(refinedIronDust.shiftedIndex, Items.getItem("refinedIronIngot"), 1.0f);
+        GameRegistry.addSmelting(refinedIronDust.itemID, Items.getItem("refinedIronIngot"), 1.0f);
     }
     
     public static boolean explodeMachineAt(World world, int x, int y, int z)

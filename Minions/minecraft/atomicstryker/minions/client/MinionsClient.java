@@ -95,7 +95,7 @@ public class MinionsClient
         if (mc.currentScreen == null && isSelectingMineArea)
         {
             if (mc.thePlayer.inventory.getCurrentItem() == null
-            || mc.thePlayer.inventory.getCurrentItem().itemID != MinionsCore.itemMastersStaff.shiftedIndex)
+            || mc.thePlayer.inventory.getCurrentItem().itemID != MinionsCore.itemMastersStaff.itemID)
             {
                 isSelectingMineArea = false;
                 MinionsRenderHook.deleteSelection();
@@ -163,7 +163,7 @@ public class MinionsClient
         {
             if (Mouse.isButtonDown(0)
             && mc.thePlayer.inventory.getCurrentItem() != null
-            && mc.thePlayer.inventory.getCurrentItem().itemID == MinionsCore.itemMastersStaff.shiftedIndex
+            && mc.thePlayer.inventory.getCurrentItem().itemID == MinionsCore.itemMastersStaff.itemID
             && mc.objectMouseOver == null
             && lastStaffLightningBoltTime + 100L < System.currentTimeMillis())
             {

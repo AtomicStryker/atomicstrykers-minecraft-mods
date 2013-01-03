@@ -187,8 +187,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             int i = drops;
             for(int j = 0; j < i; j++)
             {
-                dropItem(Item.diamond.shiftedIndex, 1);
-				dropItem(Item.redstone.shiftedIndex, 1);
+                dropItem(Item.diamond.itemID, 1);
+				dropItem(Item.redstone.itemID, 1);
             }
 
             i = rand.nextInt(4) + 8;
@@ -430,7 +430,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     @Override
     protected int getDropItemId()
     {
-        return Item.paper.shiftedIndex;
+        return Item.paper.itemID;
     }
 
 }

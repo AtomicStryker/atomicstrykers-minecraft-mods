@@ -23,7 +23,7 @@ public class ItemMastersStaff extends Item
     {
         super(var1);
         this.maxStackSize = 1;
-        System.out.println("Minions Master Staff created! ID: "+shiftedIndex);
+        System.out.println("Minions Master Staff created! ID: "+itemID);
         
         this.setCreativeTab(CreativeTabs.tabCombat);
         setTextureFile("/atomicstryker/minions/client/textures/MinionItems.png");

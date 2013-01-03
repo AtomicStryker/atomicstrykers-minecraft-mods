@@ -97,7 +97,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     	{
     		ItemStack supplementOutput = Ic2Recipes.getMaceratorOutputFor(supplement, bool);
     		
-    		if (result.itemID == this.idIronDust && supplement.itemID == Item.coal.shiftedIndex)
+    		if (result.itemID == this.idIronDust && supplement.itemID == Item.coal.itemID)
     		{
     			currentResultCount = 128;
     			return new ItemStack(AdvancedMachines.refinedIronDust, result.stackSize);

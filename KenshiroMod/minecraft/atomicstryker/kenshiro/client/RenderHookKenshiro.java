@@ -122,7 +122,7 @@ public class RenderHookKenshiro extends Render
 
 	      float var11;
 	      float var13;
-	      if(var14 != null && var14.itemID == Item.map.shiftedIndex) {
+	      if(var14 != null && var14.itemID == Item.map.itemID) {
 	         GL11.glPushMatrix();
 	         var7 = 0.8F;
 	         var17 = override;

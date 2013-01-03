@@ -28,7 +28,7 @@ public class ServerPacketHandler implements IPacketHandler
             EntityPlayer p = (EntityPlayer) player;
             
             if (p.getCurrentEquippedItem() != null
-            && p.getCurrentEquippedItem().itemID == PetBatMod.instance().itemPocketedBat.shiftedIndex)
+            && p.getCurrentEquippedItem().itemID == PetBatMod.instance().itemPocketedBat.itemID)
             {
                 ItemPocketedPetBat.writeBatNameToItemStack(p.getCurrentEquippedItem(), batName);
             }

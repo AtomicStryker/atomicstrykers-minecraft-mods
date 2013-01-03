@@ -74,7 +74,7 @@ public class EntityArrow303 extends EntityProjectileBase
     {
         super.entityInit();
         name = "Arrow";
-        itemId = Item.arrow.shiftedIndex;
+        itemId = Item.arrow.itemID;
         craftingResults = 4;
         tip = Item.flint;
         curvature = 0.03F;

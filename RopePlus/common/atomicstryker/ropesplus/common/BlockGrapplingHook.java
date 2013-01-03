@@ -61,7 +61,7 @@ public class BlockGrapplingHook extends Block
     @Override
     public int idDropped(int var1, Random var2, int var3)
     {
-        return RopesPlusCore.itemGrapplingHook.shiftedIndex;
+        return RopesPlusCore.itemGrapplingHook.itemID;
     }
 
     @Override

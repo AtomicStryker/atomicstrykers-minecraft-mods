@@ -100,9 +100,9 @@ public class ContainerCentrifugeExtractor extends Container
     }
 
     @Override
-    public void updateCraftingResults()
+    public void detectAndSendChanges()
     {
-        super.updateCraftingResults();
+        super.detectAndSendChanges();
 
         for (int i = 0; i < this.crafters.size(); ++i)
         {

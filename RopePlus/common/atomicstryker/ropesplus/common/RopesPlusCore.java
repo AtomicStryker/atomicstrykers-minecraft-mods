@@ -203,12 +203,12 @@ public class RopesPlusCore
 	private static void makeItem(EntityArrow303 entityarrow303, Configuration config)
 	{
 		Item item = null;
-		if(entityarrow303.itemId == Item.arrow.shiftedIndex)
+		if(entityarrow303.itemId == Item.arrow.itemID)
 		{
 		    /*
 		     * dont replace vanilla arrow thank you
-		     * Item.itemsList[Item.arrow.shiftedIndex] = null;
-		     * item = Item.arrow = (new ItemArrow303(Item.arrow.shiftedIndex - 256, entityarrow303)).setItemName(Item.arrow.getItemName());
+		     * Item.itemsList[Item.arrow.itemID] = null;
+		     * item = Item.arrow = (new ItemArrow303(Item.arrow.itemID - 256, entityarrow303)).setItemName(Item.arrow.getItemName());
 			 */
 		}
 		else if (Item.arrow != null && config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))

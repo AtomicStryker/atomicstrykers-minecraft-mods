@@ -49,7 +49,7 @@ public class BlockZipLineAnchor extends BlockContainer
                         else
                         {
                             teAnchor.setTargetCoordinates(MathHelper.floor_double(rope.getEndX()), MathHelper.floor_double(rope.getEndY()), MathHelper.floor_double(rope.getEndZ()));
-                            entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShot.shiftedIndex);
+                            entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShot.itemID);
                             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 6, null), (Player) entityPlayer);
                             world.playSoundAtEntity(entityPlayer, "ropetension", 1.0F, 1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
                             return true;

@@ -46,9 +46,9 @@ public class ContainerRotaryMacerator extends Container
     }
 
     @Override
-    public void updateCraftingResults()
+    public void detectAndSendChanges()
     {
-        super.updateCraftingResults();
+        super.detectAndSendChanges();
 
         for (int var1 = 0; var1 < this.crafters.size(); ++var1)
         {

@@ -123,7 +123,7 @@ public class PetBatAIAttack extends EntityAIBase
             var5.rotateAroundX(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var5.rotateAroundY(-petBat.rotationYaw * (float)Math.PI / 180.0F);
             var5 = var5.addVector(petBat.posX, petBat.posY + (double)petBat.getEyeHeight(), petBat.posZ);
-            petBat.worldObj.spawnParticle("iconcrack_" + item.getItem().shiftedIndex, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord);
+            petBat.worldObj.spawnParticle("iconcrack_" + item.getItem().itemID, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord);
         }
 
         petBat.worldObj.playSoundAtEntity(petBat, "random.eat", 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2), (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);

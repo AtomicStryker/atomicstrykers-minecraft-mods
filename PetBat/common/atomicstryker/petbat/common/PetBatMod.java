@@ -181,8 +181,8 @@ public class PetBatMod implements IProxy
         itemPocketedBat = new ItemPocketedPetBat(itemIDPocketBat).setItemName("fed Pet Bat");
         LanguageRegistry.addName(itemPocketedBat, "fed Pet Bat");
         
-        ItemStack fedBat = new ItemStack(itemPocketedBat.shiftedIndex, 1, -1);
-        GameRegistry.addShapelessRecipe(new ItemStack(itemPocketedBat.shiftedIndex, 1, 0), fedBat, new ItemStack(TAME_ITEM_ID, 1, 0));
+        ItemStack fedBat = new ItemStack(itemPocketedBat.itemID, 1, -1);
+        GameRegistry.addShapelessRecipe(new ItemStack(itemPocketedBat.itemID, 1, 0), fedBat, new ItemStack(TAME_ITEM_ID, 1, 0));
         GameRegistry.registerCraftingHandler(new BatHealCraftingHandler());
         
         proxy.onModLoad();
@@ -275,7 +275,7 @@ public class PetBatMod implements IProxy
     {
         if (!event.entity.worldObj.isRemote)
         {
-            if (event.entityItem.func_92014_d().itemID == itemPocketedBat.shiftedIndex)
+            if (event.entityItem.func_92014_d().itemID == itemPocketedBat.itemID)
             {
                 EntityPetBat bat = ItemPocketedPetBat.toBatEntity(event.player, event.entityItem.func_92014_d());
                 if (bat.getHealth() > 1)
@@ -331,13 +331,13 @@ public class PetBatMod implements IProxy
         @Override
         public void onCrafting(EntityPlayer player, ItemStack item, IInventory craftMatrix)
         {
-            if (item.itemID == itemPocketedBat.shiftedIndex)
+            if (item.itemID == itemPocketedBat.itemID)
             {
                 for (int i = craftMatrix.getSizeInventory()-1; i>= 0; i--)
                 {
                     ItemStack slotStack = craftMatrix.getStackInSlot(i);
                     if (slotStack != null
-                    && slotStack.itemID == itemPocketedBat.shiftedIndex)
+                    && slotStack.itemID == itemPocketedBat.itemID)
                     {
                         String owner = slotStack.stackTagCompound != null ? slotStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : player.username;
                         String name = slotStack.stackTagCompound != null ? slotStack.stackTagCompound.getCompoundTag("display").getString("Name") : "I was cheated";
