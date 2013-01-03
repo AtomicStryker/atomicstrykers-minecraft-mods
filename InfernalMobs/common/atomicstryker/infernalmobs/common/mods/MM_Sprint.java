@@ -18,19 +18,19 @@ public class MM_Sprint extends MobModifier
         this.nextMod = prevMod;
     }
     
-    private long lastAbilityUse = 0L;
+    private long nextAbilityUse = 0L;
     private final static long coolDown = 5000L;
     private boolean sprinting;
     
     @Override
     public boolean onUpdate()
     {
-        if (mob.getAttackTarget() != null)
+        if (getMobTarget() != null)
         {
             long time = System.currentTimeMillis();
-            if (time > lastAbilityUse+coolDown)
+            if (time > nextAbilityUse)
             {
-                lastAbilityUse = time;
+                nextAbilityUse = time+coolDown;
                 sprinting = !sprinting;
             }
             

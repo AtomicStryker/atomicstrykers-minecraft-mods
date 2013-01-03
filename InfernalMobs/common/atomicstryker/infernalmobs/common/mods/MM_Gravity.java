@@ -26,17 +26,17 @@ public class MM_Gravity extends MobModifier
     }
     
     private final boolean offensive;    
-    private long lastAbilityUse = 0L;
+    private long nextAbilityUse = 0L;
     private final static long coolDown = 5000L;
     
     @Override
     public boolean onUpdate()
     {
         if (offensive
-        && mob.getAttackTarget() != null
-        && mob.getAttackTarget() instanceof EntityPlayer)
+        && getMobTarget() != null
+        && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility(mob.getAttackTarget());
+            tryAbility(getMobTarget());
         }
         
         return super.onUpdate();
@@ -58,9 +58,9 @@ public class MM_Gravity extends MobModifier
     private void tryAbility(EntityLiving target)
     {
         long time = System.currentTimeMillis();
-        if (time > lastAbilityUse+coolDown)
+        if (time > nextAbilityUse)
         {
-            lastAbilityUse = time;
+            nextAbilityUse = time+coolDown;
             
             EntityLiving source = offensive ? mob : target;
             EntityLiving destination = offensive ? target : mob;

@@ -24,42 +24,29 @@ public class MM_Ghastly extends MobModifier
         this.nextMod = prevMod;
     }
     
-    private long lastAbilityUse = 0L;
+    private long nextAbilityUse = 0L;
     private final static long coolDown = 6000L;
     private final static float MIN_DISTANCE = 3F;
-    private EntityLiving target = null;
     
     @Override
     public boolean onUpdate()
     {
-        if (mob.getAttackTarget() != null
-        && mob.getAttackTarget() instanceof EntityPlayer)
+        if (getMobTarget() != null
+        && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility(mob.getAttackTarget());
+            tryAbility(getMobTarget());
         }
         
         return super.onUpdate();
     }
     
-    @Override
-    public int onHurt(DamageSource source, int damage)
-    {
-        if (source.getEntity() != null
-        && source.getEntity() instanceof EntityLiving)
-        {
-            target = (EntityLiving) source.getEntity();
-        }
-        
-        return super.onHurt(source, damage);
-    }
-
     private void tryAbility(EntityLiving target)
     {
         long time = System.currentTimeMillis();
-        if (time > lastAbilityUse+coolDown
+        if (time > nextAbilityUse
         && mob.getDistanceToEntity(target) > MIN_DISTANCE)
         {
-            lastAbilityUse = time;
+            nextAbilityUse = time+coolDown;
 
             double diffX = target.posX - mob.posX;
             double diffY = target.boundingBox.minY + (double)(target.height / 2.0F) - (mob.posY + (double)(mob.height / 2.0F));

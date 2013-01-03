@@ -24,7 +24,7 @@ public class MM_Vengeance extends MobModifier
     {
         if (source.getEntity() != null)
         {
-            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), damage);
+            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), Math.max(damage/2, 1));
         }
         
         return super.onHurt(source, damage);

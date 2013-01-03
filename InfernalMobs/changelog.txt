@@ -1,3 +1,10 @@
+1.1.4
+- changed health hack to fire later and be more robust
+- added new Modifiers Cloaking, Sapper and Wither
+- reworked targeting on all mods, should fix bugs with old/new AI system clashing
+- nerfed Vengeance damage reflection from 100% to 50% of damage dealt
+- nerfed Ninja to deal a maximum of 15 damage when reflecting an attack
+
 1.1.3
 - new types of infernal Entities now register in the config. If you want to disallow certain
 Entities to become infernal, say so in the config. ONLY HAS EFFECT UPON RESTARTING

@@ -104,7 +104,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 }
                 
                 fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, 10, 0x2F96EB);
-                buffer = mod.getModName();
+                buffer = mod.getLinkedModName();
                 fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, 20, 0xffffff);
             }
         }

@@ -31,7 +31,7 @@ public class MM_Webber extends MobModifier
         if (mob.getAttackTarget() != null
         && mob.getAttackTarget() instanceof EntityPlayer)
         {
-            tryAbility(mob.getAttackTarget());
+            tryAbility(getMobTarget());
         }
         
         return super.onUpdate();

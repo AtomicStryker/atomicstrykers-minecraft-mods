@@ -22,17 +22,17 @@ public class MM_Storm extends MobModifier
         this.nextMod = prevMod;
     }
     
-    private long lastAbilityUse = 0L;
+    private long nextAbilityUse = 0L;
     private final static long coolDown = 15000L;
     private final static float MIN_DISTANCE = 3F;
     
     @Override
     public boolean onUpdate()
     {
-        if (mob.getAttackTarget() != null
-        && mob.getAttackTarget() instanceof EntityPlayer)
+        if (getMobTarget() != null
+        && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility(mob.getAttackTarget());
+            tryAbility(getMobTarget());
         }
         
         return super.onUpdate();
@@ -41,10 +41,10 @@ public class MM_Storm extends MobModifier
     private void tryAbility(EntityLiving target)
     {        
         long time = System.currentTimeMillis();
-        if (time > lastAbilityUse+coolDown
+        if (time > nextAbilityUse
         && mob.getDistanceToEntity(target) > MIN_DISTANCE)
         {
-            lastAbilityUse = time;
+            nextAbilityUse = time+coolDown;
             mob.worldObj.addWeatherEffect(new EntityLightningBolt(mob.worldObj, target.posX, target.posY-1, target.posZ));
         }
     }

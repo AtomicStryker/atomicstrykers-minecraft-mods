@@ -25,10 +25,10 @@ public class MM_Quicksand extends MobModifier
     @Override
     public boolean onUpdate()
     {
-        if (mob.getAttackTarget() != null && ++ticker == 50)
+        if (getMobTarget() != null && ++ticker == 50)
         {
             ticker = 0;
-            mob.getAttackTarget().addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 45, 0));
+            getMobTarget().addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 45, 0));
         }
         
         return super.onUpdate();

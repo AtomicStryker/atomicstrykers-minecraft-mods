@@ -23,19 +23,19 @@ public class MM_Ninja extends MobModifier
         this.nextMod = prevMod;
     }
     
-    private long lastAbilityUse = 0L;
+    private long nextAbilityUse = 0L;
     private final static long coolDown = 15000L;
     
     @Override
     public int onHurt(DamageSource source, int damage)
     {
         long time = System.currentTimeMillis();
-        if (time > lastAbilityUse+coolDown
+        if (time > nextAbilityUse
         && source.getEntity() != null
         && teleportToEntity(source.getEntity()))
         {
-            lastAbilityUse = time;
-            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), damage);
+            nextAbilityUse = time+coolDown;
+            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), Math.min(damage, 15));
             return super.onHurt(source, 0);
         }
         

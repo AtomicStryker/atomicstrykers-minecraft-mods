@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
@@ -27,6 +26,7 @@ import atomicstryker.infernalmobs.common.mods.MM_1UP;
 import atomicstryker.infernalmobs.common.mods.MM_Berserk;
 import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
 import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
 import atomicstryker.infernalmobs.common.mods.MM_Darkness;
 import atomicstryker.infernalmobs.common.mods.MM_Ender;
 import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
@@ -39,12 +39,14 @@ import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
 import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
 import atomicstryker.infernalmobs.common.mods.MM_Regen;
 import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
 import atomicstryker.infernalmobs.common.mods.MM_Sprint;
 import atomicstryker.infernalmobs.common.mods.MM_Sticky;
 import atomicstryker.infernalmobs.common.mods.MM_Storm;
 import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
 import atomicstryker.infernalmobs.common.mods.MM_Weakness;
 import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -62,7 +64,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.3")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.4")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -71,7 +73,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     public static final int RARE_MOB_HEALTH_MODIFIER = 4;
     private static final long existCheckDelay = 5000L;
     
-    private static long lastExistCheckTime;
+    private static long nextExistCheckTime;
     private ArrayList<Integer> dropIdList;
     private static boolean healthHacked;
     private HashMap<String, Boolean> classesAllowedMap;
@@ -102,7 +104,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     {
         instance = this;
         dropIdList = new ArrayList<Integer>();
-        lastExistCheckTime = System.currentTimeMillis();
+        nextExistCheckTime = System.currentTimeMillis();
         healthHacked = false;
         classesAllowedMap = new HashMap();
         
@@ -141,6 +143,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         mobMods.add(MM_Berserk.class);
         mobMods.add(MM_Blastoff.class);
         mobMods.add(MM_Bulwark.class);
+        mobMods.add(MM_Cloaking.class);
         mobMods.add(MM_Darkness.class);
         mobMods.add(MM_Ender.class);
         mobMods.add(MM_Exhaust.class);
@@ -153,12 +156,14 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         mobMods.add(MM_Quicksand.class);
         mobMods.add(MM_Regen.class);
         mobMods.add(MM_Rust.class);
+        mobMods.add(MM_Sapper.class);
         mobMods.add(MM_Sprint.class);
         mobMods.add(MM_Sticky.class);
         mobMods.add(MM_Storm.class);
         mobMods.add(MM_Vengeance.class);
         mobMods.add(MM_Weakness.class);
         mobMods.add(MM_Webber.class);
+        mobMods.add(MM_Wither.class);
         
         Iterator<Class<? extends MobModifier>> iter = mobMods.iterator();
         while (iter.hasNext())
@@ -324,7 +329,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         ArrayList<Class<? extends MobModifier>> possibleMods = (ArrayList<Class<? extends MobModifier>>) mobMods.clone();
         
         MobModifier lastMod = null;
-        while (number > 0 && !possibleMods.isEmpty())
+        while (number > 0 && !possibleMods.isEmpty()) // so long we need more and have some
         {
             /* random index of mod list */
             int index = entity.worldObj.rand.nextInt(possibleMods.size());
@@ -390,8 +395,9 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
             /* scratch mod off list */
             possibleMods.remove(index);
             
-            if (allowed)
+            if (allowed) // so can we use it?
             {
+                // link it, note that we need one less, repeat
                 lastMod = nextMod;
                 number--;
             }
@@ -591,10 +597,10 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     @Override
     public void tickEnd(EnumSet<TickType> type, Object... tickData)
     {
-        if (System.currentTimeMillis() > lastExistCheckTime + existCheckDelay)
+        if (System.currentTimeMillis() > nextExistCheckTime)
         {
             Set<EntityLiving> temp = rareMobs.keySet();
-            lastExistCheckTime = System.currentTimeMillis();
+            nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
             for (Entity mob : temp)
             {
                 if (!mob.worldObj.loadedEntityList.contains(mob))

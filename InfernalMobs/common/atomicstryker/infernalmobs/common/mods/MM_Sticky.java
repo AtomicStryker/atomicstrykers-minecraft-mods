@@ -23,7 +23,7 @@ public class MM_Sticky extends MobModifier
         this.nextMod = prevMod;
     }
     
-    private long lastAbilityUse = 0L;
+    private long nextAbilityUse = 0L;
     private final static long coolDown = 15000L;
     
     @Override
@@ -37,10 +37,10 @@ public class MM_Sticky extends MobModifier
             if (weapon != null)
             {
                 long time = System.currentTimeMillis();
-                if (time > lastAbilityUse+coolDown
+                if (time > nextAbilityUse
                 && source.getEntity() != null)
                 {
-                    lastAbilityUse = time;
+                    nextAbilityUse = time+coolDown;
                     EntityItem drop = p.dropPlayerItemWithRandomChoice(p.inventory.decrStackSize(p.inventory.currentItem, 1), false);
                     if (drop != null)
                     {
