@@ -155,7 +155,7 @@ public class PetBatMod implements IProxy
         {
             cfg.load();
             itemIDPocketBat = cfg.getItem("ItemPocketedPetBat", 2528).getInt();
-			manualEnabled = cfg.get(cfg.CATEGORY_GENERAL, "manualEnabled", true).getBoolean(true);
+			manualEnabled = cfg.get(cfg.CATEGORY_GENERAL, "manualEnabled", false).getBoolean(false);
 			glisterBatEffectDuration = cfg.get(cfg.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
 			glisterBatEffectDuration *= 1000; // sec to millisec
         }
