@@ -48,7 +48,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     public static String advMaceName = "Rotary Macerator";
     public static String advCompName = "Singularity Compressor";
     public static String advExtcName = "Centrifuge Extractor";
-    public static String refIronDustName = "refined Iron dust";
+    public static String refIronDustName = "Refined Iron dust";
     
     public static ItemStack overClockerStack;
     public static ItemStack transformerStack;
