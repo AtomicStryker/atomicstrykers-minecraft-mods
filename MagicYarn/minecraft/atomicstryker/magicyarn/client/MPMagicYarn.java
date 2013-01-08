@@ -16,31 +16,31 @@ import cpw.mods.fml.common.network.FMLNetworkHandler;
 
 public class MPMagicYarn
 {
-    
+
     private final Minecraft mcinstance;
     private final MagicYarnClient clientInstance;
-	
-	private long timeStartedHoldingButton;
-	private boolean serverDoesNotHaveMod;
-	
-	public MPMagicYarn(Minecraft mc, MagicYarnClient client)
-	{
-		mcinstance = mc;
-		clientInstance = client;
-		timeStartedHoldingButton = 0;
-		serverDoesNotHaveMod = false;
-		
+
+    private long timeStartedHoldingButton;
+    private boolean serverDoesNotHaveMod;
+
+    public MPMagicYarn(Minecraft mc, MagicYarnClient client)
+    {
+        mcinstance = mc;
+        clientInstance = client;
+        timeStartedHoldingButton = 0;
+        serverDoesNotHaveMod = false;
+
         KeyBinding[] ckey = { new KeyBinding("MagicYarn Clientkey", Keyboard.KEY_J) };
         KeyBinding[] pkey = { new KeyBinding("MagicYarn Playerkey", Keyboard.KEY_K) };
         boolean[] repeat = {false};
         KeyBindingRegistry.registerKeyBinding(new TriggerKey(ckey, repeat));
         KeyBindingRegistry.registerKeyBinding(new PlayerKey(pkey, repeat));
-        
-	}
-	
-	private class TriggerKey extends KeyHandler
-	{
-	    private final EnumSet tickTypes;
+
+    }
+
+    private class TriggerKey extends KeyHandler
+    {
+        private final EnumSet tickTypes;
 
         public TriggerKey(KeyBinding[] keyBindings, boolean[] repeatings)
         {
@@ -92,69 +92,71 @@ public class MPMagicYarn
         {
             return tickTypes;
         }
-	    
-	}
 
-	   private class PlayerKey extends KeyHandler
-	    {
-	        private final EnumSet tickTypes;
-
-	        public PlayerKey(KeyBinding[] keyBindings, boolean[] repeatings)
-	        {
-	            super(keyBindings, repeatings);
-	            tickTypes = EnumSet.of(TickType.CLIENT);
-	        }
-
-	        @Override
-	        public String getLabel()
-	        {
-	            return "MagicYarn Playerkey";
-	        }
-
-	        @Override
-	        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
-	        {
-	        }
-
-	        @Override
-	        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
-	        {
-	            if (mcinstance.currentScreen == null && tickEnd)
-	            {
-	                if (!serverDoesNotHaveMod)
-	                {
-	                    ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
-	                    if (curItem != null && curItem.itemID == MagicYarn.magicYarn.itemID)
-	                    {
-	                        mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
-	                    }
-	                    else
-	                    {
-	                        mcinstance.thePlayer.sendChatToPlayer("This server has Magic Yarn installed. Craft the Item!");
-	                    }
-	                }
-	                else
-	                {
-	                    mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
-	                }
-	            }
-	        }
-
-	        @Override
-	        public EnumSet<TickType> ticks()
-	        {
-	            return tickTypes;
-	        }
-	        
-	    }
-
-	
-    public void checkHasServerMod()
-    {
-        serverDoesNotHaveMod = FMLNetworkHandler.instance().findNetworkModHandler(MagicYarn.instance) == null; // TODO new fml forward
-        if (serverDoesNotHaveMod)
-        {
-            mcinstance.thePlayer.sendChatToPlayer("Magic Yarn found did not find itself on the server. Unlocked free/button mode.");
-        }
     }
+
+    private class PlayerKey extends KeyHandler
+    {
+        private final EnumSet tickTypes;
+
+        public PlayerKey(KeyBinding[] keyBindings, boolean[] repeatings)
+        {
+            super(keyBindings, repeatings);
+            tickTypes = EnumSet.of(TickType.CLIENT);
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return "MagicYarn Playerkey";
+        }
+
+        @Override
+        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
+        {
+        }
+
+        @Override
+        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
+        {
+            if (mcinstance.currentScreen == null && tickEnd)
+            {
+                if (!serverDoesNotHaveMod)
+                {
+                    ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
+                    if (curItem != null && curItem.itemID == MagicYarn.magicYarn.itemID)
+                    {
+                        mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
+                    }
+                    else
+                    {
+                        mcinstance.thePlayer.sendChatToPlayer("This server has Magic Yarn installed. Craft the Item!");
+                    }
+                }
+                else
+                {
+                    mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
+                }
+            }
+        }
+
+        @Override
+        public EnumSet<TickType> ticks()
+        {
+            return tickTypes;
+        }
+
+    }
+    
+    public void onCheckingHasServerMod()
+    {
+        serverDoesNotHaveMod = true;
+    }
+
+    public void onServerHasMod()
+    {
+        serverDoesNotHaveMod = false;
+        mcinstance.thePlayer.sendChatToPlayer("Magic Yarn found on server.");
+    }
+    
 }

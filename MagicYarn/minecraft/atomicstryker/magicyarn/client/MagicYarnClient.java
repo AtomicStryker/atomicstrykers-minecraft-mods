@@ -8,11 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import atomicstryker.PacketWrapper;
 import atomicstryker.magicyarn.common.IProxy;
 import atomicstryker.magicyarn.common.MagicYarn;
 import atomicstryker.magicyarn.common.pathfinding.AStarNode;
 import atomicstryker.magicyarn.common.pathfinding.IAStarPathedEntity;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
@@ -46,9 +48,16 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
         TickRegistry.registerTickHandler(clientTicker, Side.CLIENT);
     }
     
+    @Override
     public void onConnectedToNewServer()
     {
-        mpYarnInstance.checkHasServerMod();
+        PacketDispatcher.sendPacketToServer(PacketWrapper.createPacket("MagicYarn", 1, null));
+        mpYarnInstance.onCheckingHasServerMod();
+    }
+    
+    public void onServerAnsweredChallenge()
+    {
+        mpYarnInstance.onServerHasMod();
     }
     
     public void inputPath(ArrayList<AStarNode> given, boolean noSound)
