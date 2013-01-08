@@ -1,3 +1,6 @@
+1.1.5
+- fixed bug preventing several Mods from being used
+
 1.1.4
 - changed health hack to fire later and be more robust
 - added new Modifiers Cloaking, Sapper and Wither

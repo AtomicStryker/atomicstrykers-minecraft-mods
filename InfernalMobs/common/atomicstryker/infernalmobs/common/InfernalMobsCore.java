@@ -64,7 +64,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.4")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.5")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -353,19 +353,6 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
             }
             
             boolean allowed = true;
-            /* check white and black lists */
-            if (nextMod.getWhiteListMobClasses() != null)
-            {
-                allowed = false;
-                for (Class cl : nextMod.getWhiteListMobClasses())
-                {
-                    if (entity.getClass().isAssignableFrom(cl))
-                    {
-                        allowed = true;
-                        break;
-                    }
-                }
-            }
             if (nextMod.getBlackListMobClasses() != null)
             {
                 for (Class cl : nextMod.getBlackListMobClasses())

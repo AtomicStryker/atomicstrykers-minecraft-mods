@@ -238,14 +238,6 @@ public abstract class MobModifier
     }
 
     /**
-     * @return Array of classes an EntityLiving must equal, implement or extend in order for this MobModifier to be applied to it
-     */
-    public Class[] getWhiteListMobClasses()
-    {
-        return null;
-    }
-
-    /**
      * @return Array of classes an EntityLiving cannot equal, implement or extend in order for this MobModifier to be applied to it
      */
     public Class[] getBlackListMobClasses()

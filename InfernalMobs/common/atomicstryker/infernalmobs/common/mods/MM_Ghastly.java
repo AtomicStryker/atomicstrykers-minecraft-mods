@@ -68,10 +68,4 @@ public class MM_Ghastly extends MobModifier
         }
     }
     
-    @Override
-    public Class[] getWhiteListMobClasses()
-    {
-        return allowed;
-    }
-    private static Class[] allowed = { EntityMob.class, EntityWolf.class };
 }

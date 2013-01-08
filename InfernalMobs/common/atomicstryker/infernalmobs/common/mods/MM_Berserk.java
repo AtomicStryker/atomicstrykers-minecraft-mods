@@ -35,13 +35,6 @@ public class MM_Berserk extends MobModifier
     }
     
     @Override
-    public Class[] getWhiteListMobClasses()
-    {
-        return allowed;
-    }
-    private static Class[] allowed = { EntityMob.class, EntityWolf.class };
-    
-    @Override
     public Class[] getBlackListMobClasses()
     {
         return disallowed;

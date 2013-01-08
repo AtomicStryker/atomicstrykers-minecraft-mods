@@ -34,14 +34,7 @@ public class MM_Lifesteal extends MobModifier
         
         return super.onAttack(entity, source, damage);
     }
-    
-    @Override
-    public Class[] getWhiteListMobClasses()
-    {
-        return allowed;
-    }
-    private static Class[] allowed = { EntityMob.class, EntityWolf.class };
-    
+        
     @Override
     public Class[] getBlackListMobClasses()
     {

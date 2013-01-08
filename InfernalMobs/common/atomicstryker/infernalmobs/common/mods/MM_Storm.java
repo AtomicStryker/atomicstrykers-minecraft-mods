@@ -48,11 +48,4 @@ public class MM_Storm extends MobModifier
             mob.worldObj.addWeatherEffect(new EntityLightningBolt(mob.worldObj, target.posX, target.posY-1, target.posZ));
         }
     }
-    
-    @Override
-    public Class[] getWhiteListMobClasses()
-    {
-        return allowed;
-    }
-    private static Class[] allowed = { EntityMob.class, EntityWolf.class };
 }
