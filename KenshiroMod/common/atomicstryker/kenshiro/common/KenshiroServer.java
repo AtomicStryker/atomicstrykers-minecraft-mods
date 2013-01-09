@@ -96,6 +96,10 @@ public class KenshiroServer
             }
             else
             {
+                if (punchedEntitiesMap.get(player) == null)
+                {
+                    punchedEntitiesMap.put(player, new HashSet<EntityLiving>());
+                }
                 punchedEntitiesMap.get(player).add((EntityLiving) target);
             }
             
@@ -143,7 +147,7 @@ public class KenshiroServer
         playerEnt.addExhaustion(40F);
         playerEnt.addExhaustion(40F);
         
-        punchedEntitiesMap.put((Player) playerEnt, new HashSet());
+        punchedEntitiesMap.put((Player) playerEnt, new HashSet<EntityLiving>());
     }
 
     public void onClientFinishedKenshiroVolley(EntityPlayer playerEnt)

@@ -1,3 +1,6 @@
+1.0.9
+- fixed rare server crash when packets got lost (???)
+
 1.0.8
 - updated to MC 1.4.6
 
