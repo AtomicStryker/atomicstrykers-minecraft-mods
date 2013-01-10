@@ -14,24 +14,54 @@ public class GuiNavigateToPlayer extends GuiScreen
 {
     
     private final String screenTitle = "Try navigating to player:";
+    
+    private final int BUTTON_TO_PLAYER_ID_OFFSET = 2;
+    private final int BUTTONS_WANTED = 3;
+    
     private Object[] playerList;
+    
+    /**
+     * To only keep x players per screen, remember the index we at
+     */
+    private int nextStartIndex;
     
     @Override
     public void initGui()
     {
+        nextStartIndex = 0;
+        playerList = FMLClientHandler.instance().getClient().theWorld.playerEntities.toArray();
+        generateButtons();
+    }
+    
+    private void generateButtons()
+    {
         controlList.clear();
         controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Cancel"));
         
-        playerList = FMLClientHandler.instance().getClient().theWorld.playerEntities.toArray();
+        if (playerList.length > 4)
+        {
+            controlList.add(new GuiButton(1, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "->"));
+        }
+        
+        int targetListSize = controlList.size()+BUTTONS_WANTED;
+        int i = 0;
+        
         EntityPlayer c = FMLClientHandler.instance().getClient().thePlayer;
         EntityPlayer p;
-        for (int x = 0; x < playerList.length ; x++)
+        for (int x = nextStartIndex; x < playerList.length && controlList.size() != targetListSize ; x++)
         {
+            if (nextStartIndex >= playerList.length)
+            {
+                nextStartIndex = 0;
+                x = 0;
+            }
+            
             p = (EntityPlayer) playerList[x];
             if (!p.username.equals(c.username))
             {
-                controlList.add(new GuiButton(x+1, this.width / 2 - 100, this.height / 4 + x*40, p.username));
+                controlList.add(new GuiButton(x+BUTTON_TO_PLAYER_ID_OFFSET, this.width / 2 - 100, this.height / 4 + i++*40, p.username));
             }
+            nextStartIndex = x;
         }
     }
     
@@ -44,9 +74,17 @@ public class GuiNavigateToPlayer extends GuiScreen
             {
                 mc.displayGuiScreen((GuiScreen)null);
             }
+            else if (button.id == 1)
+            {
+                nextStartIndex += BUTTONS_WANTED;
+                generateButtons();
+            }
             else
             {
-                MagicYarnClient.instance.tryPathToPlayer((EntityPlayer) playerList[button.id]);
+                EntityPlayer target = (EntityPlayer) playerList[button.id-BUTTON_TO_PLAYER_ID_OFFSET];
+                MagicYarnClient.instance.tryPathToPlayer(target);
+                mc.thePlayer.sendChatToPlayer("Trying to path to "+target.username);
+                mc.displayGuiScreen((GuiScreen)null);
             }
         }
     }

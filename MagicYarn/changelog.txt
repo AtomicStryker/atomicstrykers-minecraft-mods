@@ -1,3 +1,14 @@
+1.0.0
+- reset version number (NOW I'M SRS PEOPLE)
+- rewrote the mod to have proper client and server sides
+- the mod will still work while only the client has it
+- on a server with the mod installed it will not let you use it "for free"
+- 2 vanilla configurable buttons are added to access the function (as client)
+- default: "J" for the old path laying / finding and "K" for the new...
+- PLAYER FINDING!! Press the button to bring up a menu of players in your world
+- magic yarn will attempt to path you to the selected player
+- target player needs to be on the ground and reachable by foot for that to work
+
 1.4.6
 updated for MC 1.4.6
 

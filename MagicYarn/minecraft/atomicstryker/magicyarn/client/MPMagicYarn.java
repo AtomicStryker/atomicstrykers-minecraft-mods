@@ -12,7 +12,6 @@ import atomicstryker.magicyarn.common.MagicYarn;
 import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
 import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.FMLNetworkHandler;
 
 public class MPMagicYarn
 {
@@ -126,7 +125,7 @@ public class MPMagicYarn
                     ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
                     if (curItem != null && curItem.itemID == MagicYarn.magicYarn.itemID)
                     {
-                        mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
+                        mcinstance.displayGuiScreen(new GuiNavigateToPlayer()); 
                     }
                     else
                     {
