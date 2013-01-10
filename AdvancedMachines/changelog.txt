@@ -1,3 +1,6 @@
+Version 4.7b
+	fixed "pick block" on Advanced Machines
+
 Version 4.7a
 	fixed bug where tier would be 1 lower than intended
 

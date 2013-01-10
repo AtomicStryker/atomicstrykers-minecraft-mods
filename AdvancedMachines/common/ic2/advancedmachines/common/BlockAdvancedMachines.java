@@ -133,10 +133,13 @@ public class BlockAdvancedMachines extends BlockContainer
         return Items.getItem("advancedMachine").itemID;
     }
 
+    /**
+     * Get the block's damage value (for use with pick block).
+     */
     @Override
-    public int damageDropped(int var1)
+    public int getDamageValue(World world, int x, int y, int z)
     {
-        return 12;
+        return world.getBlockMetadata(x, y, z); // advanced machine item meta exactly equals the block meta
     }
 
     @Override
