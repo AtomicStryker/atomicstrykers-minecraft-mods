@@ -1,3 +1,6 @@
+1.0.0 revision 2 (client only, cosmetic only)
+- changed chat message to fire once per server at max
+
 1.0.0
 - reset version number (NOW I'M SRS PEOPLE)
 - rewrote the mod to have proper client and server sides

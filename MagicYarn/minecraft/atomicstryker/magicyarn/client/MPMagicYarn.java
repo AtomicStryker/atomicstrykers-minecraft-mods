@@ -21,6 +21,7 @@ public class MPMagicYarn
 
     private long timeStartedHoldingButton;
     private boolean serverDoesNotHaveMod;
+    private boolean messageShown;
 
     public MPMagicYarn(Minecraft mc, MagicYarnClient client)
     {
@@ -28,6 +29,7 @@ public class MPMagicYarn
         clientInstance = client;
         timeStartedHoldingButton = 0;
         serverDoesNotHaveMod = false;
+        messageShown = false;
 
         KeyBinding[] ckey = { new KeyBinding("MagicYarn Clientkey", Keyboard.KEY_J) };
         KeyBinding[] pkey = { new KeyBinding("MagicYarn Playerkey", Keyboard.KEY_K) };
@@ -69,8 +71,9 @@ public class MPMagicYarn
                         timeStartedHoldingButton = 0;
                     }
                 }
-                else
+                else if (mcinstance.currentScreen == null && !messageShown)
                 {
+                    messageShown = true;
                     mcinstance.thePlayer.sendChatToPlayer("This server has Magic Yarn installed. Craft the Item!");
                 }
             }
@@ -127,12 +130,13 @@ public class MPMagicYarn
                     {
                         mcinstance.displayGuiScreen(new GuiNavigateToPlayer()); 
                     }
-                    else
+                    else if (!messageShown)
                     {
+                        messageShown = true;
                         mcinstance.thePlayer.sendChatToPlayer("This server has Magic Yarn installed. Craft the Item!");
                     }
                 }
-                else
+                else if (mcinstance.currentScreen == null)
                 {
                     mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
                 }
@@ -150,6 +154,7 @@ public class MPMagicYarn
     public void onCheckingHasServerMod()
     {
         serverDoesNotHaveMod = true;
+        messageShown = false;
     }
 
     public void onServerHasMod()
