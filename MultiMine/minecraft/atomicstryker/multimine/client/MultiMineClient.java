@@ -197,20 +197,22 @@ public class MultiMineClient
                 if (iterBlock.isFinished())
                 {
                     EntityPlayer player = thePlayer;
-                    player.worldObj.destroyBlockInWorldPartially(player.entityId, x, y, z, -1);
+                    World w = player.worldObj;
+                    w.destroyBlockInWorldPartially(player.entityId, x, y, z, -1);
                     
-                    int blockID = player.worldObj.getBlockId(x, y, z);
+                    int blockID = w.getBlockId(x, y, z);
                     Block block = Block.blocksList[blockID];
                     if (block != null)
                     {
-                        int meta = player.worldObj.getBlockMetadata(x, y, z);
-                        if (block.removeBlockByPlayer(player.worldObj, player, x, y, z))
+                        int meta = w.getBlockMetadata(x, y, z);
+                        if (block.removeBlockByPlayer(w, player, x, y, z))
                         {
-                            block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
-                            block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                            block.onBlockDestroyedByPlayer(w, x, y, z, meta);
+                            block.harvestBlock(w, player, x, y, z, meta);
                         }
 						
-						player.worldObj.playSound(x+0.5D, y+0.5D, z+0.5D, block.stepSound.getBreakSound(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F, false);
+                        //w.playAuxSFX(2001, x, y, z, blockID + meta << 12);
+						w.playSound(x+0.5D, y+0.5D, z+0.5D, block.stepSound.getBreakSound(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F, false);
                     }
                     onBlockMineFinishedDamagePlayerItem(player, blockID, x, y, z);
 
