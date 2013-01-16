@@ -422,9 +422,13 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
      */
     public boolean onHitTarget(Entity entity)
     {
-        ((EntityLiving)entity).setArrowCountInEntity(((EntityLiving)entity).getArrowCountInEntity() + 1);
-        worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
-        return true;
+        if (entity instanceof EntityLiving)
+        {
+            ((EntityLiving)entity).setArrowCountInEntity(((EntityLiving)entity).getArrowCountInEntity() + 1);
+            worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
+            return true;
+        }
+        return false;
     }
     
     /**
