@@ -18,14 +18,14 @@ import atomicstryker.minions.common.entity.EnumMinionState;
 
 public class BlockTask_MineOreVein extends BlockTask_MineBlock
 {
-    private ArrayList oreVeinBlocks;
+    private ArrayList<ChunkCoordinates> oreVeinBlocks;
 	
     public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
     }
     
-    public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, ArrayList moreBlocks, int ix, int iy, int iz)
+    public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, ArrayList<ChunkCoordinates> moreBlocks, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
     	oreVeinBlocks = moreBlocks;
@@ -42,7 +42,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 
     	if (oreVeinBlocks == null)
     	{
-    		oreVeinBlocks = new ArrayList();
+    		oreVeinBlocks = new ArrayList<ChunkCoordinates>();
     	}
     	checkAdjacentBlocks();
     }
@@ -89,7 +89,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     {
     	if (oreVeinBlocks == null)
     	{
-    		oreVeinBlocks = new ArrayList();
+    		oreVeinBlocks = new ArrayList<ChunkCoordinates>();
     	}
     	
     	ChunkCoordinates check = new ChunkCoordinates(posX, posY, posZ);
@@ -100,7 +100,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 		
 		if (!oreVeinBlocks.isEmpty())
 		{
-			check = (ChunkCoordinates) oreVeinBlocks.get(0);
+			check = oreVeinBlocks.get(0);
 			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.posX, check.posY, check.posZ);
 			worker.giveTask(next);
 		}
