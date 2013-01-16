@@ -1,3 +1,6 @@
+1.5.7 revision 2
+- fixed small and very strange array crash (fully compatible with 1.5.7)
+
 Update 1.5.7
 - rewritten Stripmining several ... SEVERAL ... TOO MANY TIMES
 - it's more reliable now

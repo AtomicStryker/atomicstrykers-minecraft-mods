@@ -98,7 +98,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 			oreVeinBlocks.remove(check);
 		}
 		
-		if (!oreVeinBlocks.isEmpty())
+		if (oreVeinBlocks.size() > 0)
 		{
 			check = oreVeinBlocks.get(0);
 			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.posX, check.posY, check.posZ);
