@@ -1,3 +1,13 @@
+1.2.9
+- found and fixed the chest item crash and disappearance issue
+- buffed item spawn chances across the board
+
+1.2.8
+- added biome registration to config to allow blocking towers from biomes of choice
+- you'll have to create a "dummy" world with your biomes to setup the config
+- fixed spaces in config categories, causes bugs with Forge Configuration
+- this unfortunately means old config categories are incompatible (remove the spaces from the categories!)
+
 1.2.7 (second revision)
 - fixed loot Blocks being restricted to IDs below 256
 

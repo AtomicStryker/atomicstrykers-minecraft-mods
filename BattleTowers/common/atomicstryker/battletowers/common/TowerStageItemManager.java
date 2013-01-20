@@ -52,11 +52,11 @@ public class TowerStageItemManager
 	 */
 	public TowerStageItemManager(TowerStageItemManager toCopy)
 	{
-		itemID = toCopy.itemID;
-		itemDamage = toCopy.itemDamage;
-		chanceToSpawn = toCopy.chanceToSpawn;
-		minAmount = toCopy.minAmount;
-		maxAmount = toCopy.maxAmount;			
+		itemID = toCopy.itemID.clone();
+		itemDamage = toCopy.itemDamage.clone();
+		chanceToSpawn = toCopy.chanceToSpawn.clone();
+		minAmount = toCopy.minAmount.clone();
+		maxAmount = toCopy.maxAmount.clone();			
 	}
 	
 	/**
@@ -78,34 +78,20 @@ public class TowerStageItemManager
 		if (floorHasItemsLeft()
 		&& rand.nextInt(100) < chanceToSpawn[curIndex])
 		{
-			if (itemID[curIndex] < Block.blocksList.length
-			&& Block.blocksList[itemID[curIndex]] != null)
-			{
-                if (itemDamage[curIndex] == 0)
-                {
-                    result = new ItemStack(Block.blocksList[itemID[curIndex]], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]));
-                    //System.out.println("Stashed new Block Stack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
-                }
-                else
-                {
-                    result = new ItemStack(Block.blocksList[itemID[curIndex]], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-                    //System.out.println("Stashed new damaged Block Stack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
-                }
-			}
-			else if (itemID[curIndex] < Item.itemsList.length
-			&& Item.itemsList[itemID[curIndex]] != null)
-			{
-			    if (itemDamage[curIndex] == 0)
-			    {
-			        result = new ItemStack(Item.itemsList[itemID[curIndex]], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]));
-			        //System.out.println("Stashed new ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
-			    }
-			    else
-			    {
-			        result = new ItemStack(Item.itemsList[itemID[curIndex]], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-			        //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
-			    }
-			}
+		    Block block = itemID[curIndex] < Block.blocksList.length ? Block.blocksList[itemID[curIndex]] : null;
+		    Item item = itemID[curIndex] < Item.itemsList.length ? Item.itemsList[itemID[curIndex]] : null;
+		    if (block != null && block.getBlockName() != null)
+		    {
+		        //System.out.println("Stashed block "+block.getBlockName()+" of id "+itemID[curIndex]);
+		        result = new ItemStack(block, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
+		        //System.out.println("Stashed new damaged Block Stack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
+		    }
+		    else if (item != null && item.getItemName() != null)
+		    {
+		        //System.out.println("Stashed item "+item.getItemName()+" of id "+itemID[curIndex]);
+		        result = new ItemStack(item, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
+		        //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
+		    }
 		}
 
 		curIndex++;

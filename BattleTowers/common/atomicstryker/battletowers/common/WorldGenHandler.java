@@ -5,6 +5,7 @@ import java.util.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class WorldGenHandler implements IWorldGenerator
@@ -12,12 +13,22 @@ public class WorldGenHandler implements IWorldGenerator
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
     {
-        if (world.getBiomeGenForCoords(chunkX, chunkZ) != BiomeGenBase.hell)
+        BiomeGenBase target = world.getBiomeGenForCoords(chunkX, chunkZ);
+        if (target != BiomeGenBase.hell && getIsBiomeAllowed(target))
         {
             generateSurface(world, random, chunkX*16, chunkZ*16);
         }
     }
     
+    private boolean getIsBiomeAllowed(BiomeGenBase target)
+    {
+        Configuration config = AS_BattleTowersCore.configuration;
+        config.load();
+        boolean result = config.get("BiomeSpawnAllowed", target.biomeName, true).getBoolean(true);
+        config.save();
+        return result;
+    }
+
     private void generateSurface(World world, Random random, int xActual, int zActual)
     {
         if (AS_BattleTowersCore.canTowerSpawnAt(xActual, zActual))
