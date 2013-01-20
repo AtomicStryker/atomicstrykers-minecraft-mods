@@ -14,22 +14,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler implements IPacketHandler
-{
-    private EntityLiving getEntityFromID(World world, int ID)
-    {
-        for (Object o : world.loadedEntityList)
-        {
-            if (o instanceof EntityLiving)
-            {
-                if (((EntityLiving)o).entityId == ID)
-                {
-                    return (EntityLiving) o;
-                }
-            }
-        }
-        return null;
-    }
-    
+{    
     @Override
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
     {
@@ -43,8 +28,7 @@ public class ServerPacketHandler implements IPacketHandler
             int entID = (Integer) packetReadout[0];
             
             EntityPlayer p = (EntityPlayer) player;
-            EntityLiving ent = getEntityFromID(p.worldObj, entID);
-            
+            EntityLiving ent = (EntityLiving) p.worldObj.getEntityByID(entID);
             if (ent != null)
             {
                 MobModifier mod = InfernalMobsCore.getMobModifiers(ent);
@@ -65,8 +49,7 @@ public class ServerPacketHandler implements IPacketHandler
             int entID = (Integer) packetReadout[0];
             
             EntityPlayer p = (EntityPlayer) player;
-            EntityLiving ent = getEntityFromID(p.worldObj, entID);
-            
+            EntityLiving ent = (EntityLiving) p.worldObj.getEntityByID(entID);
             if (ent != null)
             {
                 MobModifier mod = InfernalMobsCore.getMobModifiers(ent);

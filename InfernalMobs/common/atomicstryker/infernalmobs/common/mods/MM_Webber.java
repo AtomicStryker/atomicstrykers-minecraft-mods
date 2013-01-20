@@ -28,8 +28,8 @@ public class MM_Webber extends MobModifier
     @Override
     public boolean onUpdate()
     {
-        if (mob.getAttackTarget() != null
-        && mob.getAttackTarget() instanceof EntityPlayer)
+        if (getMobTarget() != null
+        && getMobTarget() instanceof EntityPlayer)
         {
             tryAbility(getMobTarget());
         }

@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -14,7 +14,7 @@ public class MM_Gravity extends MobModifier
     {
         this.mob = mob;
         this.modName = "Gravity";
-        offensive = mob.getClass().isAssignableFrom(EntityMob.class);
+        offensive = mob.getClass().isAssignableFrom(IMob.class);
     }
     
     public MM_Gravity(EntityLiving mob, MobModifier prevMod)
@@ -22,7 +22,7 @@ public class MM_Gravity extends MobModifier
         this.mob = mob;
         this.modName = "Gravity";
         this.nextMod = prevMod;
-        offensive = mob.getClass().isAssignableFrom(EntityMob.class);
+        offensive = mob.getClass().isAssignableFrom(IMob.class);
     }
     
     private final boolean offensive;    
