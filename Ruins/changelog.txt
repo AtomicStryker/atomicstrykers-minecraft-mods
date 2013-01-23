@@ -153,3 +153,6 @@ a: setAccessible now true
 + read /mods/resources/ruins/rotation_mappings.txt for information and examples
 + to facilitate the figuring out of block names and metadata, Ruins will now print out the
   relevant information about a block ingame if you tap it with a "stick".
+  
+8.9 (second rev)
++ fixed tiny possible crash with empty lines in template parser. Old versions remain compatible.

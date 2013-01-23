@@ -375,7 +375,7 @@ public class RuinTemplate implements RuinIBuildable {
         String line;
         while( i.hasNext() ) {
             line = i.next();
-            if( ! line.startsWith( "#" ) ) {
+            if( ! line.startsWith( "#" ) && ! line.isEmpty() ) {
                 if( line.startsWith( "layer" ) ) {
                     // add in data until we reach the end of the layer
                     ArrayList<String> layerlines = new ArrayList<String>();
