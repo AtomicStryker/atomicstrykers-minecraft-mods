@@ -1,3 +1,6 @@
+1.4.6b
+added error screen for people who dont read instructions
+
 1.4.6a
 mode swapping on compass will no longer trigger with a target under cursor
 

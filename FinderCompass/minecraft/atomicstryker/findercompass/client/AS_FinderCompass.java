@@ -22,6 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
+import atomicstryker.findercompass.common.ConfigExceptionScreen;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import cpw.mods.fml.client.FMLTextureFX;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -245,58 +246,8 @@ public class AS_FinderCompass extends FMLTextureFX
             else
             {
                 System.out.println("Finder Compass: Did not detect any HD Textures, going with FML FX");
-                this.modState = 0;
-                
-                try
-                {
-                    boolean found = false;
-                    for(Field f : mc.renderEngine.getClass().getDeclaredFields())
-                    {
-                        f.setAccessible(true);
-                        Object data = f.get(mc.renderEngine);
-                        
-                        if (data instanceof List)
-                        {
-                            System.out.println("Found List in RenderEngine...");
-                            
-                            for (Object temp : (List)data)
-                            {
-                                if (temp.getClass().equals(TextureCompassFX.class))
-                                {
-                                    System.out.println("Found Original Compass in RenderEngine List: "+temp.getClass());
-                                    TextureCompassFX original = (TextureCompassFX) temp;
-                                    this.tileSizeBase = original.tileSizeBase;
-                                    this.tileSizeMask = original.tileSizeMask;
-                                    this.tileSizeSquare = original.tileSizeSquare;
-                                    this.tileSizeSquareMask = original.tileSizeSquareMask;
-                                    System.out.println("Pillaged and looted original Compass texture dimensions. YARR");
-                                    this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
-                                    this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
-                                    tileSize_int_compassCrossMin = -(tileSizeBase >> 2);
-                                    tileSize_int_compassCrossMax = (tileSizeBase >> 2);
-                                    tileSize_int_compassNeedleMin = -(tileSizeBase>>2);
-                                    tileSize_int_compassNeedleMax = tileSizeBase;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    
-                    imageData = new byte[tileSizeSquare << 2];
-                    this.texture = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/gui/items.png"));
-                    
-                    if (!found)
-                    {
-                        System.out.println("Could not locate original FML CompassFX Object, Critical failure!");
-                        this.modState = 0;
-                        return;
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+                mc.displayGuiScreen(new ConfigExceptionScreen("Unmodified/Forge textures detected...", "Please use a HD texture fix or Optifine"));
+                return;
             }
         }
         isHackedIn = true;
@@ -347,6 +298,12 @@ public class AS_FinderCompass extends FMLTextureFX
                 isNewSecond = true;
                 ++this.seccounter;
                 this.lastTime = System.currentTimeMillis();
+            }
+            
+            if (currentSetting == null)
+            {
+                mc.displayGuiScreen(new ConfigExceptionScreen("Finder Compass config missing!!", "Read the instructions next time."));
+                return;
             }
 
             if (currentSetting.getHasDefaultNeedle())
