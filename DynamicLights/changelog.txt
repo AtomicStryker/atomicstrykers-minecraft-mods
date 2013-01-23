@@ -1,3 +1,6 @@
+1.1.5 rev2 (client side only)
+- fixed Player self light module to not work after the Player died once
+
 1.1.5
 - update to MC 1.4.6
 

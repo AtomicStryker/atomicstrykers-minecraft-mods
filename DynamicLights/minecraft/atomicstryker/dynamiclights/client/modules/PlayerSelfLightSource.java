@@ -31,7 +31,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.4", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -98,7 +98,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
-            if (lastWorld != FMLClientHandler.instance().getClient().theWorld)
+            if (lastWorld != FMLClientHandler.instance().getClient().theWorld || thePlayer != FMLClientHandler.instance().getClient().thePlayer)
             {
                 thePlayer = FMLClientHandler.instance().getClient().thePlayer;
                 if (thePlayer != null)
