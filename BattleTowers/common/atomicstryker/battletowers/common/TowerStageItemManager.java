@@ -42,7 +42,7 @@ public class TowerStageItemManager
 			chanceToSpawn[i] = Integer.parseInt(settings[2]);
 			minAmount[i] = Integer.parseInt(settings[3]);
 			maxAmount[i] = Integer.parseInt(settings[4]);
-			//System.out.println("TowerStageItemManager parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
+			System.out.println("TowerStageItemManager parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
 			//System.out.println("Name of that Item: "+Item.itemsList[itemID[i]].getItemName());
 		}
 	}
