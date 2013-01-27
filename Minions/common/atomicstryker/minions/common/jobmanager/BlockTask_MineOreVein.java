@@ -1,9 +1,8 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
@@ -18,56 +17,47 @@ import atomicstryker.minions.common.entity.EnumMinionState;
 
 public class BlockTask_MineOreVein extends BlockTask_MineBlock
 {
-    private ArrayList<ChunkCoordinates> oreVeinBlocks;
+    private HashSet<ChunkCoordinates> oreVeinBlocks;
 	
     public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
     }
     
-    public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, ArrayList<ChunkCoordinates> moreBlocks, int ix, int iy, int iz)
+    public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, HashSet<ChunkCoordinates> moreBlocks, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
     	oreVeinBlocks = moreBlocks;
     }
 
+    @Override
     public void onStartedTask()
     {
     	super.onStartedTask();
     }
     
+    @Override
     public void onReachedTaskBlock()
     {
     	super.onReachedTaskBlock();
 
     	if (oreVeinBlocks == null)
     	{
-    		oreVeinBlocks = new ArrayList<ChunkCoordinates>();
+    		oreVeinBlocks = new HashSet<ChunkCoordinates>();
     	}
     	checkAdjacentBlocks();
     }
     
+    @Override
     public void onUpdate()
     {
     	super.onUpdate();	
     }
     
+    @Override
     public void onFinishedTask()
     {
-    	worker.getDataWatcher().updateObject(12, Integer.valueOf(0));
-    	checkDangers();
-    	
-    	this.blockID = worker.worldObj.getBlockId(posX, posY, posZ); // check against interference mining
-    	checkBlockForCaveIn(posX, posY+1, posZ);
-    	if (blockID != 0 && Block.blocksList[blockID].getBlockHardness(worker.worldObj, posX, posY, posZ) >= 0F && blockID != Block.chest.blockID)
-    	{
-    	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-    		if (this.worker.worldObj.setBlockWithNotify(posX, posY, posZ, 0))
-    		{
-    			putBlockHarvestInWorkerInventory(stackList);
-    		}
-    	}
-    	
+        super.onFinishedTask();    	
     	checkForVeinContinueTask();
     }
     
@@ -89,29 +79,27 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     {
     	if (oreVeinBlocks == null)
     	{
-    		oreVeinBlocks = new ArrayList<ChunkCoordinates>();
+    		oreVeinBlocks = new HashSet<ChunkCoordinates>();
     	}
     	
     	ChunkCoordinates check = new ChunkCoordinates(posX, posY, posZ);
-		if (oreVeinBlocks.contains(check))
+		oreVeinBlocks.remove(check);
+		ChunkCoordinates[] arr = new ChunkCoordinates[1];
+		arr = oreVeinBlocks.toArray(arr);
+		if (arr.length > 0 && arr[0] != null)
 		{
-			oreVeinBlocks.remove(check);
-		}
-		
-		if (oreVeinBlocks.size() > 0)
-		{
-			check = oreVeinBlocks.get(0);
+			check = arr[0];
 			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.posX, check.posY, check.posZ);
 			worker.giveTask(next);
 		}
 		else
 		{
 	    	this.worker.currentState = EnumMinionState.AWAITING_JOB;
-	    	this.worker.giveTask(null, true);
+	    	this.worker.giveTask(null);
 		}
 	}
 
-	public void checkAdjacentBlocks()
+	private void checkAdjacentBlocks()
     {
     	// check adjacent blocks for being the same id
     	checkBlockForVein(posX, posY-1, posZ);
@@ -132,11 +120,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 
     	if (checkBlockID == this.blockID)
     	{
-    		ChunkCoordinates check = new ChunkCoordinates(x, y, z);
-    		if (!oreVeinBlocks.contains(check))
-    		{
-    			oreVeinBlocks.add(check);
-    		}
+    		oreVeinBlocks.add(new ChunkCoordinates(x, y, z));
     	}
     }
 }

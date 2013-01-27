@@ -98,7 +98,7 @@ public class BlockTask_MineBlock extends BlockTask
     	}
     }
     
-    public void checkDangers()
+    protected void checkDangers()
     {
     	if (!disableDangerCheck)
     	{

@@ -23,15 +23,15 @@ import atomicstryker.minions.common.pathfinding.AStarStatic;
 
 public abstract class BlockTask
 {
-	public Minion_Job_Manager boss;
+	protected final Minion_Job_Manager boss;
 	public final int posX;
 	public final int posY;
 	public final int posZ;
-	public boolean startedTask;
-	public EntityMinion worker;
+	private boolean startedTask;
+	protected EntityMinion worker;
 	protected double accessRange;
 	protected long taskDurationMillis;
-	public boolean isWorkerInRange;
+	public boolean workerReachedBlock;
 	protected long timeBlockReached;
 	protected AStarNode[] possibleAccessNodes;
 	protected int currentAccessNode;
@@ -58,7 +58,7 @@ public abstract class BlockTask
     	startedTask = false;
     	accessRange = 4.0D;
     	taskDurationMillis = 1000L;
-    	isWorkerInRange = false;
+    	workerReachedBlock = false;
     }
     
     /**
@@ -70,11 +70,19 @@ public abstract class BlockTask
     	this.worker = input;
     }
     
+    /**
+     * Specifies from which "block reach" range this task can be done
+     * @param input
+     */
     public void setAccessRange(double input)
     {
     	this.accessRange = input;
     }
     
+    /**
+     * Specifies the task's work duration in millis
+     * @param input
+     */
     public void setTaskDuration(long input)
     {
     	this.taskDurationMillis = input;
@@ -99,7 +107,7 @@ public abstract class BlockTask
         		//System.out.println("Blocktask worker is full, sending to return goods");
         	}
     	}
-    	else if (!isWorkerInRange && System.currentTimeMillis() - taskTimeStarted > 3000L)
+    	else if (!workerReachedBlock && System.currentTimeMillis() - taskTimeStarted > 3000L)
     	{
     		if (Math.abs(startMinionX - worker.posX) < 1D && Math.abs(startMinionZ - worker.posZ) < 1D)
     		{
@@ -123,9 +131,9 @@ public abstract class BlockTask
     		worker.getDataWatcher().updateObject(15, Integer.valueOf(posZ));
     	}
     	
-    	if (!isWorkerInRange)
+    	if (!workerReachedBlock)
     	{
-    		if (Math.sqrt(this.worker.getDistanceSq(posX+0.5D, posY+0.5D, posZ+0.5D)) < accessRange)
+    		if (isEntityInAccessRange(worker))
     		{
         		this.onReachedTaskBlock();
     		}
@@ -152,7 +160,7 @@ public abstract class BlockTask
     	{
     	    //System.out.println("BlockTask onWorkerPathFailed all paths failed, teleporting dat minion");
     		worker.performTeleportToTarget();
-    		onFinishedTask();
+    		onReachedTaskBlock();
     	}
     }
     
@@ -163,7 +171,7 @@ public abstract class BlockTask
     public void onReachedTaskBlock()
     {
         //System.out.println("BlockTask onReachedTaskBlock");
-    	isWorkerInRange = true;
+    	workerReachedBlock = true;
     	timeBlockReached = System.currentTimeMillis();
     	this.worker.currentState = EnumMinionState.MINING;
     	this.worker.setPathToEntity(null);
@@ -209,15 +217,25 @@ public abstract class BlockTask
     	this.worker.currentState = EnumMinionState.AWAITING_JOB;
     	this.worker.giveTask(null, true);
     	
-    	boss.onTaskFinished(this, posX, posY, posZ);
+    	if (boss != null)
+    	{
+    	    boss.onTaskFinished(this, posX, posY, posZ);
+    	}
     }
     
+    /**
+     * @return true when the worker has moved within reach distance of the target Block, false otherwise
+     */
     public boolean isWorking()
     {
-    	return isWorkerInRange;
+    	return workerReachedBlock;
     }
     
-    public boolean isEntityInAccessRange(EntityLiving ent)
+    /**
+     * @param ent
+     * @return true when the entity currently is within reach distance of the target Block, false otherwise
+     */
+    private boolean isEntityInAccessRange(EntityLiving ent)
     {
     	return (ent.getDistanceSq(this.posX, this.posY, this.posZ) < accessRange);
     }
@@ -228,7 +246,7 @@ public abstract class BlockTask
      * @param workerZ
      * @return an Array of pathable AStarNodes, starting with the closest one to parameter coordinates and ascending. Array can be size 0 but is != null
      */
-    public AStarNode[] getAccessNodesSorted(int workerX, int workerY, int workerZ)
+    private AStarNode[] getAccessNodesSorted(int workerX, int workerY, int workerZ)
     {
     	return AStarStatic.getAccessNodesSorted(worker.worldObj, workerX, workerY, workerZ, posX, posY, posZ);
     }
@@ -236,7 +254,7 @@ public abstract class BlockTask
     /**
      * Figures out what ItemStack would result from breaking a Block in the World
      */
-    public ArrayList<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
+    protected ArrayList<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
     {
     	Block block = Block.blocksList[world.getBlockId(i, j, k)];
     	if (block == null
@@ -251,7 +269,7 @@ public abstract class BlockTask
     	return block.getBlockDropped(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
     }
     
-    public void putBlockHarvestInWorkerInventory(ArrayList<ItemStack> stackList)
+    protected void putBlockHarvestInWorkerInventory(ArrayList<ItemStack> stackList)
     {
         if (stackList != null)
         {
