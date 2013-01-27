@@ -7,7 +7,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 
 public class RuinTemplateRule {
     private int[] blockIDs, blockMDs;
@@ -215,6 +217,11 @@ public class RuinTemplateRule {
         {
             addHardChest( world, random, x, y, z, random.nextInt( 5 ) + 3 );
         }
+        else if (dataString.startsWith("ChestGenHook:"))
+        {
+            String[] s = dataString.split(":");
+            addChestGenChest( world, random, x, y, z, s[1], Integer.valueOf(s[2]) );
+        }
         else
         {
             System.err.println("Ruins Mod could not determine what to spawn for ["+dataString+"] in Ruin template: "+owner.getName());
@@ -225,7 +232,7 @@ public class RuinTemplateRule {
 		return random.nextInt( blockIDs.length );
     }
     
-    private static void addCustomSpawner( World world, int x, int y, int z, String id )
+    private void addCustomSpawner( World world, int x, int y, int z, String id )
     {
         world.setBlockWithNotify( x, y, z, Block.mobSpawner.blockID );
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
@@ -235,7 +242,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addEasyMobSpawn( World world, Random random, int x, int y, int z ) {
+    private void addEasyMobSpawn( World world, Random random, int x, int y, int z ) {
         switch( random.nextInt( 2 ) ) {
         case 0:
             addCustomSpawner( world, x, y, z, "Skeleton" );
@@ -246,7 +253,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addMediumMobSpawn( World world, Random random, int x, int y, int z ) {
+    private void addMediumMobSpawn( World world, Random random, int x, int y, int z ) {
         switch( random.nextInt( 4 ) ) {
         case 0:
             addCustomSpawner( world, x, y, z, "Spider" );
@@ -263,7 +270,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addHardMobSpawn( World world, Random random, int x, int y, int z ) {
+    private void addHardMobSpawn( World world, Random random, int x, int y, int z ) {
         switch( random.nextInt( 4 ) ) {
         case 0:
             addCustomSpawner( world, x, y, z, "Creeper" );
@@ -280,7 +287,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addUprightMobSpawn( World world, Random random, int x, int y, int z ) {
+    private void addUprightMobSpawn( World world, Random random, int x, int y, int z ) {
         switch( random.nextInt( 3 ) ) {
         case 0:
             addCustomSpawner( world, x, y, z, "Creeper" );
@@ -294,7 +301,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addEasyChest( World world, Random random, int x, int y, int z, int items ) {
+    private void addEasyChest( World world, Random random, int x, int y, int z, int items ) {
         world.setBlockWithNotify( x, y, z, Block.chest.blockID );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
@@ -309,7 +316,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addMediumChest( World world, Random random, int x, int y, int z, int items ) {
+    private void addMediumChest( World world, Random random, int x, int y, int z, int items ) {
         world.setBlockWithNotify( x, y, z, Block.chest.blockID );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
@@ -328,7 +335,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static void addHardChest( World world, Random random, int x, int y, int z, int items ) {
+    private void addHardChest( World world, Random random, int x, int y, int z, int items ) {
         world.setBlockWithNotify( x, y, z, Block.chest.blockID );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
@@ -346,8 +353,18 @@ public class RuinTemplateRule {
             }
         }
     }
+    
+    private void addChestGenChest( World world, Random random, int x, int y, int z, String gen, int items ) {
+        world.setBlockWithNotify( x, y, z, Block.chest.blockID );
+        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
+        if (chest != null)
+        {
+            ChestGenHooks info = ChestGenHooks.getInfo(gen);
+            WeightedRandomChestContent.generateChestContents(random, info.getItems(random), chest, items);
+        }
+    }
 
-    private static ItemStack getNormalStack( Random random ) {
+    private ItemStack getNormalStack( Random random ) {
         int rand = random.nextInt( 25 );
         switch( rand ) {
         case 0: case 1:
@@ -383,7 +400,7 @@ public class RuinTemplateRule {
         }
     }
 
-    private static ItemStack getLootStack( Random random ) {
+    private ItemStack getLootStack( Random random ) {
         int rand = random.nextInt( 25 );
         switch( rand ) {
         case 0: case 1: case 2: case 3:
@@ -416,12 +433,14 @@ public class RuinTemplateRule {
             return new ItemStack( Item.appleGold );
         case 23:
             return new ItemStack( Item.bowlSoup, random.nextInt( 2 ) + 1 );
+        case 24:
+            return ChestGenHooks.getOneItem(ChestGenHooks.DUNGEON_CHEST, random);
         default:
             return new ItemStack( Item.diamond, random.nextInt( 4 ) );
         }
     }
 
-	private static int rotateMetadata( int blockID, int metadata, int dir ) {
+	private int rotateMetadata( int blockID, int metadata, int dir ) {
 		// remember that, in this mod, NORTH is the default direction.
 		// this method is unused if the direction is NORTH
 		int tempdata = 0;

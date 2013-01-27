@@ -228,6 +228,18 @@ preserve_plants=0
 #
 # Example 6: rule1=0,50,MobSpawner:Villager
 # This spawns a Mob Spawner with Mob Id "Villager" 50% of the time
+#
+#
+# Ruins 9.0 exposes minecraft ChestGenHook for your meddling. Usage:
+#
+# Example 7: rule1=0,100,ChestGenHook:dungeonChest:10
+# This spawns a chest and tells the Minecraft generator to fill it with "10" items of the "dungeonChest" preset.
+# This might include extremely powerful items added by mods.
+#
+#	here is the complete list (as of mc 1.4.7) of ChestGen presets:
+#   "mineshaftCorridor"; "pyramidDesertyChest"; "pyramidJungleChest"; "pyramidJungleDispenser"; "strongholdCorridor";
+#   "strongholdLibrary"; "strongholdCrossing"; "villageBlacksmith"; "bonusChest"; "dungeonChest";
+#
 
 
 rule1=0,100,0,43,44

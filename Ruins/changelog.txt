@@ -156,3 +156,7 @@ a: setAccessible now true
   
 8.9 (second rev)
 + fixed tiny possible crash with empty lines in template parser. Old versions remain compatible.
+
+9.0
++ added option for chests filled with MC ChestGenHook loot (see template_rules.txt)
++ added a small chance (1/25) for dungeon loot to be put into "loot" chests
