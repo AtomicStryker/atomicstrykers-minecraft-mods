@@ -81,6 +81,20 @@ public class ItemPocketedPetBat extends Item
         return batEnt;
     }
     
+    public static EntityPetBat toBatEntity(World world, ItemStack batStack)
+    {
+        EntityPetBat batEnt = new EntityPetBat(world);
+        String owner = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : ((EntityPlayer)world.playerEntities.get(0)).username;
+        String name = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("display").getString("Name") : "I was cheated";
+        int xp = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getInteger("BatXP") : 0;
+        if (owner.equals("")) owner = ((EntityPlayer)world.playerEntities.get(0)).username;
+        if (name.equals("")) name = "I was cheated";
+        batEnt.setNames(owner, name);
+        batEnt.setEntityHealth(invertHealthValue(batStack.getItemDamage(), 16 + (2*PetBatMod.instance().getLevelFromExperience(xp))));
+        batEnt.setBatExperience(xp);
+        return batEnt;
+    }
+    
     public static void writeBatNameToItemStack(ItemStack stack, String name)
     {
         writeCompoundStringToItemStack(stack, "display", "Name", name);

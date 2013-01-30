@@ -342,6 +342,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         return 16 + (getBatLevel() * 2);
     }
+    
+    @Override
+    public void setInPortal()
+    {
+        //Nope
+    }
 
     public boolean getIsBatHanging()
     {

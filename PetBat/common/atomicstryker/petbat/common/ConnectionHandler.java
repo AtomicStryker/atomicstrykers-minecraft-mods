@@ -21,7 +21,7 @@ public class ConnectionHandler implements IConnectionHandler
     public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
     {
         EntityPlayer p = (EntityPlayer) player;
-        if (PetBatMod.instance().getPetBatManualEnabled() && !p.getEntityData().getBoolean("hasPetBatManual"))
+        if (PetBatMod.instance().getPetBatManualEnabled() && PetBatMod.instance().hasPlayerGotManual())
         {
             ItemStack book = new ItemStack(Item.writtenBook);
             book.stackTagCompound = new NBTTagCompound();

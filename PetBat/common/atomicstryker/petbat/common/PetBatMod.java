@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -17,8 +18,9 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Property;
 import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -40,7 +42,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.3")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.4")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -134,6 +136,7 @@ public class PetBatMod implements IProxy
     private int itemIDPocketBat;
 	private boolean manualEnabled;
     public Item itemPocketedBat;
+    public Configuration config;
     
     private boolean glisterBatEnabled;
     public long glisterBatEffectDuration;
@@ -150,13 +153,13 @@ public class PetBatMod implements IProxy
     @PreInit
     public void preInit(FMLPreInitializationEvent event)
     {        
-        Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
+        config = new Configuration(event.getSuggestedConfigurationFile());
         try
         {
-            cfg.load();
-            itemIDPocketBat = cfg.getItem("ItemPocketedPetBat", 2528).getInt();
-			manualEnabled = cfg.get(cfg.CATEGORY_GENERAL, "manualEnabled", false).getBoolean(false);
-			glisterBatEffectDuration = cfg.get(cfg.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
+            config.load();
+            itemIDPocketBat = config.getItem("ItemPocketedPetBat", 2528).getInt();
+			manualEnabled = config.get(config.CATEGORY_GENERAL, "manualEnabled", false).getBoolean(false);
+			glisterBatEffectDuration = config.get(config.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
 			glisterBatEffectDuration *= 1000; // sec to millisec
         }
         catch (Exception e)
@@ -165,7 +168,7 @@ public class PetBatMod implements IProxy
         }
         finally
         {
-            cfg.save();
+            config.save();
         }
         
     }
@@ -271,28 +274,25 @@ public class PetBatMod implements IProxy
     }
 
     @ForgeSubscribe
-    public void onItemTossed(ItemTossEvent event)
+    public void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.entity.worldObj.isRemote && event.entity instanceof EntityItem)
         {
-            if (event.entityItem.func_92014_d().itemID == itemPocketedBat.itemID)
+            EntityItem item = (EntityItem) event.entity;
+            int id = item.func_92014_d().itemID;
+            if (id == itemPocketedBat.itemID)
             {
-                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(event.player, event.entityItem.func_92014_d());
+                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(item.worldObj, item.func_92014_d());
                 if (bat.getHealth() > 1)
                 {
-                    EntityPlayer p = event.player;
-                    float distance = 1F;
-                    double x = p.posX + (double)(-MathHelper.sin(p.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(p.rotationPitch / 180.0F * (float)Math.PI) * distance);
-                    double z = p.posZ + (double)(MathHelper.cos(p.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(p.rotationPitch / 180.0F * (float)Math.PI) * distance);
-                    double y = p.posY + 1D + (double)(-MathHelper.sin(p.rotationPitch / 180.0F * (float)Math.PI) * distance + 0.1F);
-                    bat.setPosition(x, y, z);
-                    event.player.worldObj.spawnEntityInWorld(bat);
+                    bat.setPosition(item.posX, item.posY, item.posZ);
+                    item.worldObj.spawnEntityInWorld(bat);
                     event.setCanceled(true);
                 }
             }
-            else if (event.entityItem.func_92014_d().itemID == TAME_ITEM_ID)
+            else if (id == TAME_ITEM_ID)
             {
-                List nearEnts = event.entityItem.worldObj.getEntitiesWithinAABBExcludingEntity(event.entityItem, event.entityItem.boundingBox.expand(8D, 8D, 8D));
+                List nearEnts = item.worldObj.getEntitiesWithinAABBExcludingEntity(item, item.boundingBox.expand(8D, 8D, 8D));
                 for (Object o : nearEnts)
                 {
                     if (o instanceof EntityPetBat)
@@ -301,7 +301,7 @@ public class PetBatMod implements IProxy
                         if ((bat.getAttackTarget() == null || !bat.getAttackTarget().isEntityAlive())
                         && (bat.getFoodAttackTarget() == null || bat.getFoodAttackTarget().isEntityAlive()))
                         {
-                            bat.setFoodAttackTarget(event.entityItem);
+                            bat.setFoodAttackTarget(item);
                         }
                     }
                 }
@@ -368,5 +368,15 @@ public class PetBatMod implements IProxy
     public void displayGui(ItemStack itemStack)
     {
         // NOOP, Proxy only relevant on client
+    }
+    
+    public boolean hasPlayerGotManual()
+    {
+        config.load();
+        Property prop = config.get(config.CATEGORY_GENERAL, "playerHadManual", false);
+        boolean result = prop.getBoolean(false);
+        prop.value = "true";
+        config.save();
+        return result;
     }
 }
