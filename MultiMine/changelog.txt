@@ -1,3 +1,6 @@
+1.2.5b (only client, fully compatible with 1.2.5)
+- crash fox MultiMineClient updateCloudTickReading
+
 1.2.5
 - crash fix onBlockMineFinishedDamagePlayerItem
 

@@ -311,7 +311,7 @@ public class MultiMineClient
     
     private void updateCloudTickReading()
     {
-        if (System.currentTimeMillis() > nextTimeCloudTickReading)
+        if (System.currentTimeMillis() > nextTimeCloudTickReading && !vanillaDestroyBlockProgressMap.isEmpty())
         {
             nextTimeCloudTickReading = System.currentTimeMillis() + cloudTickReadingIntervalMillis;
             
