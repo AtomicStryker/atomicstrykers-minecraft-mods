@@ -22,9 +22,10 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
-import atomicstryker.findercompass.common.ConfigExceptionScreen;
 import atomicstryker.findercompass.common.FinderCompassMod;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.FMLTextureFX;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class AS_FinderCompass extends FMLTextureFX
@@ -45,7 +46,11 @@ public class AS_FinderCompass extends FMLTextureFX
     private long lastTime;
     private int seccounter = 0;
     private boolean updateScan = false;
-    public int modState = -1;
+    
+    /**
+     * -1 = not hacked in; 0 = error; 1 = mcpatcher; 2 = optifine; 3 = FML
+     */
+    public static int hackState = -1;
     public BufferedImage texture;
     public int tileSize_int_compassCrossMin = -4;
     public int tileSize_int_compassCrossMax = 4;
@@ -53,7 +58,6 @@ public class AS_FinderCompass extends FMLTextureFX
     public double tileSize_double_compassCenterMax;
     public int tileSize_int_compassNeedleMin;
     public int tileSize_int_compassNeedleMax;
-    public static boolean isHackedIn = false;
     
     public static boolean serverHasFinderCompass = false;
     public static ChunkCoordinates strongholdCoords = new ChunkCoordinates(0, 0, 0);
@@ -85,6 +89,11 @@ public class AS_FinderCompass extends FMLTextureFX
 
     private void checkModState()
     {
+        if (hackState != -1)
+        {
+            return;
+        }
+        
         try
         {
             this.texture = ImageIO.read(Minecraft.class.getResource("/gui/items.png"));
@@ -107,8 +116,8 @@ public class AS_FinderCompass extends FMLTextureFX
 
         if (foundClass != null)
         {
-            System.out.println("Finder Compass: mcpatcher HD Textures detected, setting up...");
-            this.modState = 1;
+            System.out.println("Finder Compass: mcpatcher HD Textures detected, setting up: "+foundClass);
+            this.hackState = 1;
 
             try
             {
@@ -137,7 +146,8 @@ public class AS_FinderCompass extends FMLTextureFX
             }
             catch (Exception var16)
             {
-                var16.printStackTrace();
+                var16.printStackTrace(System.err);
+                performFMLHack();
             }
         }
         else
@@ -153,8 +163,8 @@ public class AS_FinderCompass extends FMLTextureFX
 
             if (foundClass != null)
             {
-                System.out.println("Finder Compass: Optifine HD Textures detected, setting up...");
-                this.modState = 2;
+                System.out.println("Finder Compass: Optifine HD Textures detected, setting up: "+foundClass);
+                this.hackState = 2;
                                 
                 Object targetHDCompassobj = null;
 
@@ -183,8 +193,8 @@ public class AS_FinderCompass extends FMLTextureFX
 					
                     if (targetHDCompassobj == null)
                     {
-                        System.out.println("Finder Compass: Optifine detected but HDCompass Object cannot be located, skipping hack");
-                        this.modState = 0;
+                        System.out.println("Finder Compass: Optifine detected but HDCompass Object cannot be located, reverting to standard fml hack...");
+                        performFMLHack();
                         return;
                     }
                 	
@@ -196,7 +206,7 @@ public class AS_FinderCompass extends FMLTextureFX
                     this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
                     imageData = new byte[tileSizeSquare << 2];
                     
-                    System.out.println("tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
+                    System.out.println("optifine: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
                     
                     ITexturePack ITexturePack = null;
                     for (Field f : foundClass.getDeclaredFields())
@@ -213,7 +223,7 @@ public class AS_FinderCompass extends FMLTextureFX
                     if (ITexturePack == null)
                     {
                         System.out.println("ITexturePack of HDCompass NOT found! Critical failure!");
-                        this.modState = 0;
+                        this.hackState = 0;
                         return;
                     }
                     
@@ -232,7 +242,7 @@ public class AS_FinderCompass extends FMLTextureFX
                             else
                             {
                                 System.out.println("ITexturePack getTexture invoke failed, stream is null, Critical failure!");
-                                this.modState = 0;
+                                performFMLHack();
                                 return;
                             }
                         }
@@ -246,11 +256,30 @@ public class AS_FinderCompass extends FMLTextureFX
             else
             {
                 System.out.println("Finder Compass: Did not detect any HD Textures, going with FML FX");
-                mc.displayGuiScreen(new ConfigExceptionScreen("Unmodified/Forge textures detected...", "Please use a HD texture fix or Optifine"));
-                return;
+                performFMLHack();
             }
         }
-        isHackedIn = true;
+    }
+    
+    private void performFMLHack()
+    {
+        hackState = 3;
+        this.tileSizeBase = TextureCompassFX.instance.stileSizeBase;
+        this.tileSizeSquare = TextureCompassFX.instance.stileSizeSquare;
+        this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
+        this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
+        
+        System.out.println("fml: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
+        
+        try
+        {
+            imageData = new byte[tileSizeSquare << 2];
+            texture = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/gui/items.png"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void askServerForStrongholdCoords()
@@ -302,7 +331,7 @@ public class AS_FinderCompass extends FMLTextureFX
             
             if (currentSetting == null)
             {
-                mc.displayGuiScreen(new ConfigExceptionScreen("Finder Compass config missing!!", "Read the instructions next time."));
+                FMLClientHandler.instance().haltGame("Finder Compass config file cannot be read!", new Throwable("Read the installation instructions"));
                 return;
             }
 
@@ -402,7 +431,7 @@ public class AS_FinderCompass extends FMLTextureFX
 
     public void drawNeedle(int var1, double var2, int[] ints, boolean drawCenter)
     {
-    	double needleLength = modState == 2 ? 0.3D * (this.tileSizeBase / 16) : 0.3D;
+    	double needleLength = hackState == 2 ? 0.3D * (this.tileSizeBase / 16) : 0.3D;
     	
         double var6;
         for (var6 = var2 - this.textureId[var1]; var6 < -3.141592653589793D; var6 += 6.283185307179586D)
@@ -569,6 +598,7 @@ public class AS_FinderCompass extends FMLTextureFX
             else
             {
                 this.mc.ingameGUI.getChatGUI().printChatMessage(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE");
+                FMLClientHandler.instance().haltGame(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE", new Throwable("Read the installation instructions"));
             }
         }
         catch (Exception var6)
@@ -576,6 +606,7 @@ public class AS_FinderCompass extends FMLTextureFX
             System.out.println("EXCEPTION BufferedReader: " + var6);
             var6.printStackTrace();
             this.mc.ingameGUI.getChatGUI().printChatMessage("There was a problem reading your findercompass.cfg, Parser bailed out in line "+curLine);
+            FMLClientHandler.instance().haltGame("There was a problem reading your findercompass.cfg, Parser bailed out in line "+curLine, new Throwable("Fix your config file"));
         }
 
         mc.ingameGUI.getChatGUI().printChatMessage("Finder Compass config loaded; " + settingList.size() + " custom Setting-Sets loaded");

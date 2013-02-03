@@ -37,11 +37,11 @@ public class FinderCompassClientTicker implements ITickHandler
         && mc.thePlayer != null)
         {
             if (!registered
-            && !AS_FinderCompass.isHackedIn
+            && AS_FinderCompass.hackState == -1
             && System.currentTimeMillis() > time + 5000L)
             {
                 AS_FinderCompass replacement = new AS_FinderCompass(mc);
-                if (AS_FinderCompass.isHackedIn)
+                if (AS_FinderCompass.hackState > 0)
                 {
                     mc.renderEngine.registerTextureFX(replacement);
                     registered = true;

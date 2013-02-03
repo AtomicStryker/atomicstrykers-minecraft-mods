@@ -1,3 +1,8 @@
+1.4.6c
+reworked FML Hack. Made other hacks fall back to FML method instead of bugging out
+fixed Hack being tirelessly re-applied when failed or overwritten
+changed error messages to appear in the crash report instead of a blank screen
+
 1.4.6b
 added error screen for people who dont read instructions
 
