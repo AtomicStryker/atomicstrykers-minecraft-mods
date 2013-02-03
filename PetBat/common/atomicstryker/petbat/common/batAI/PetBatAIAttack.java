@@ -83,14 +83,14 @@ public class PetBatAIAttack extends EntityAIBase
                 else if (attackTick == 1)
                 {
                     entityTarget.setDead();
-                    displayEatingEffects(((EntityItem)entityTarget).func_92014_d(), 16);
+                    displayEatingEffects(((EntityItem)entityTarget).getEntityItem(), 16);
                     petBat.worldObj.playSoundAtEntity(petBat, "random.burp", 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
                 else if (attackTick % 3 == 0)
                 {
-                    displayEatingEffects(((EntityItem)entityTarget).func_92014_d(), 5);
+                    displayEatingEffects(((EntityItem)entityTarget).getEntityItem(), 5);
                 }
             }
             else

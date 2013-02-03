@@ -217,7 +217,7 @@ public class DroppedItemsLightSource
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.contains(eI.func_92014_d().itemID);
+            notWaterProof = notWaterProofItems.contains(eI.getEntityItem().itemID);
         }
         
         /**
@@ -232,7 +232,7 @@ public class DroppedItemsLightSource
             }
             else
             {
-                lightLevel = getLightFromItemStack(entity.func_92014_d());
+                lightLevel = getLightFromItemStack(entity.getEntityItem());
                 
                 if (notWaterProof
                 && entity.worldObj.getBlockMaterial(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)) == Material.water)

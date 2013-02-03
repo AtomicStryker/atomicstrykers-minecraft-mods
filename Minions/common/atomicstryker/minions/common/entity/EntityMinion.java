@@ -444,20 +444,20 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	{
     		EntityItem itemEnt = (EntityItem)collider;
     		
-    		if (itemEnt.func_92014_d() != null)
+    		if (itemEnt.getEntityItem() != null)
     		{
     			if (itemEnt.ticksExisted < 200)
     			{
     				return;
     			}
-    			if (this.inventory.addItemStackToInventory(itemEnt.func_92014_d()))
+    			if (this.inventory.addItemStackToInventory(itemEnt.getEntityItem()))
     			{
     				collider.setDead();
     			}
     			else
     			{
         			this.inventoryFull = true;
-        			this.worldObj.spawnEntityInWorld(new EntityItem(worldObj, this.posX, this.posY, this.posZ, itemEnt.func_92014_d()));
+        			this.worldObj.spawnEntityInWorld(new EntityItem(worldObj, this.posX, this.posY, this.posZ, itemEnt.getEntityItem()));
     			}
     		}
     	}

@@ -279,10 +279,10 @@ public class PetBatMod implements IProxy
         if (!event.entity.worldObj.isRemote && event.entity instanceof EntityItem)
         {
             EntityItem item = (EntityItem) event.entity;
-            int id = item.func_92014_d().itemID;
+            int id = item.getEntityItem().itemID;
             if (id == itemPocketedBat.itemID)
             {
-                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(item.worldObj, item.func_92014_d());
+                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(item.worldObj, item.getEntityItem());
                 if (bat.getHealth() > 1)
                 {
                     bat.setPosition(item.posX, item.posY, item.posZ);
