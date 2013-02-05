@@ -1,19 +1,18 @@
 package atomicstryker.ropesplus.common;
 
-import java.io.File;
 import java.util.Iterator;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.BehaviorArrowDispense;
+import net.minecraftforge.common.Configuration;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class CommonProxy implements IProxy
 {
     
     @Override
-    public void loadConfig(File configFile)
+    public void loadConfig(Configuration configFile)
     {
         // NOOP
     }

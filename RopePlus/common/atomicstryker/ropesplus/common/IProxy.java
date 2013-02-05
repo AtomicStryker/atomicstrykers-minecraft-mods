@@ -2,9 +2,11 @@ package atomicstryker.ropesplus.common;
 
 import java.io.File;
 
+import net.minecraftforge.common.Configuration;
+
 public interface IProxy
 {
-    public void loadConfig(File configFile);
+    public void loadConfig(Configuration configFile);
     
     public void load();
 

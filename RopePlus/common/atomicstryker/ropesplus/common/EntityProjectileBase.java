@@ -27,6 +27,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
     public float curvature;
     public float precision;
     public float hitBoxSize;
+    public int configuredDamage;
     public int dmg;
     public ItemStack item;
     public int ttlInGround;
@@ -80,7 +81,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         speed = 1.0F;
         slowdown = 0.99F;
         curvature = 0.03F;
-        dmg = 4;
+        dmg = configuredDamage;//4;
         precision = 1.0F;
         ttlInGround = 1200;
         item = null;

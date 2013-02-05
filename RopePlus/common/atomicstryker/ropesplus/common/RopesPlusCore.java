@@ -44,7 +44,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.5")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.6")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -107,7 +107,7 @@ public class RopesPlusCore
     	playerRopeMap = new HashMap<EntityPlayer, EntityFreeFormRope>();
     	
         Settings_RopePlus.InitSettings(event.getSuggestedConfigurationFile());
-        proxy.loadConfig(event.getSuggestedConfigurationFile());
+        proxy.loadConfig(Settings_RopePlus.config);
     }
     
     @Init
@@ -202,25 +202,26 @@ public class RopesPlusCore
 
 	private static void makeItem(EntityArrow303 entityarrow303, Configuration config)
 	{
-		Item item = null;
+	    ItemArrow303 item = null;
 		if(entityarrow303.itemId == Item.arrow.itemID)
 		{
 		    /*
 		     * dont replace vanilla arrow thank you
-		     * Item.itemsList[Item.arrow.itemID] = null;
-		     * item = Item.arrow = (new ItemArrow303(Item.arrow.itemID - 256, entityarrow303)).setItemName(Item.arrow.getItemName());
 			 */
 		}
-		else if (Item.arrow != null && config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))
+		else if (Item.arrow != null && config.get("ArrowsEnabled", entityarrow303.name, true).getBoolean(true))
 		{
-			item = (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setItemName(entityarrow303.name);
+			item = (ItemArrow303) (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setItemName(entityarrow303.name);
 			ItemStack craftedStack = new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0);
 			
 			GameRegistry.addRecipe(craftedStack, new Object[] {
 				"X", "#", "Y", Character.valueOf('X'), entityarrow303.tip, Character.valueOf('#'), Item.stick, Character.valueOf('Y'), Item.feather
 			});
+			
+			entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage"+entityarrow303.name, "4").getInt();
+			entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize"+entityarrow303.name, "4").getInt();
 
-			arrowItems.add((ItemArrow303) item);
+			arrowItems.add(item);
 			LanguageRegistry.instance().addName(item, entityarrow303.name);
 			item.setIconIndex(entityarrow303.getArrowIconIndex());
 		}
