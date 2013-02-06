@@ -47,6 +47,8 @@ public class RopesPlusClient implements ITickHandler
     private static long timeNextZipUpdate;
     private static int zipTicker;
     
+    public static boolean toolTipEnabled;
+    
     public RopesPlusClient()
     {
         mc = FMLClientHandler.instance().getClient();
@@ -257,7 +259,9 @@ public class RopesPlusClient implements ITickHandler
                 selectAnyArrow();
             }
             
-            if(itemstack != null && (itemstack.itemID == Item.bow.itemID || itemstack.itemID == RopesPlusCore.bowRopesPlus.itemID))
+            if(toolTipEnabled
+            && itemstack != null
+            && (itemstack.itemID == Item.bow.itemID || itemstack.itemID == RopesPlusCore.bowRopesPlus.itemID))
             {
                 boolean hasArrows = selectedArrow != null;
                 String s = hasArrows ? selectedArrow.name : "No arrows";

@@ -17,7 +17,6 @@ public class ClientProxy implements IProxy
     private boolean letGoOfHookShot;
     private boolean pulledByHookShot;
     private boolean hasRopeOut;
-    private boolean toolTipEnabled;
     
     public ClientProxy()
     {
@@ -30,7 +29,7 @@ public class ClientProxy implements IProxy
     public void loadConfig(Configuration config)
     {        
         MinecraftForge.EVENT_BUS.register(new RopesPlusSounds());
-        toolTipEnabled = config.get(config.CATEGORY_GENERAL, "Equipped Bow Tool Tip", true).getBoolean(true);
+        RopesPlusClient.toolTipEnabled = config.get(config.CATEGORY_GENERAL, "Equipped Bow Tool Tip", true).getBoolean(true);
     }
     
     @Override
