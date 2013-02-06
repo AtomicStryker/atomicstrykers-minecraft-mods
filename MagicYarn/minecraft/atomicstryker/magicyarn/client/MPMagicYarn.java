@@ -163,4 +163,9 @@ public class MPMagicYarn
         mcinstance.thePlayer.sendChatToPlayer("Magic Yarn found on server.");
     }
     
+    public boolean getHasServerMod()
+    {
+        return !serverDoesNotHaveMod;
+    }
+    
 }

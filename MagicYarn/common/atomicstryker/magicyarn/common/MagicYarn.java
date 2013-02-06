@@ -20,7 +20,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.0.0")
+@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.0.1")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false, connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MagicYarn" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MagicYarn" }, packetHandler = ServerPacketHandler.class))

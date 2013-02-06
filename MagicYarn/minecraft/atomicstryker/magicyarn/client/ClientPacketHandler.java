@@ -17,9 +17,18 @@ public class ClientPacketHandler implements IPacketHandler
     {
         DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
         int packetType = PacketWrapper.readPacketID(data);
+        
         if (packetType == 1)
         {
             MagicYarnClient.instance.onServerAnsweredChallenge();
+        }
+        else if (packetType == 2)
+        {
+            MagicYarnClient.instance.onReceivedPathPacket(data);
+        }
+        else if (packetType == 3)
+        {
+            MagicYarnClient.instance.onReceivedPathDeletionPacket(data);
         }
     }
 

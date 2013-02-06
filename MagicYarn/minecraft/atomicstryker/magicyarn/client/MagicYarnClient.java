@@ -1,11 +1,16 @@
 package atomicstryker.magicyarn.client;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import atomicstryker.PacketWrapper;
@@ -88,13 +93,15 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             }
             
             mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.levelup", 1.0F, 1.0F, false);
+            
+            sendPathToServer(mcinstance.thePlayer.username, clientTicker.path);
         }
         else if (!noSound)
         {
             mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.drr", 1.0F, 1.0F, false);
         }
     }
-    
+
     public void tryPathToPlayer(EntityPlayer otherPlayer)
     {
         resetPaths();
@@ -219,6 +226,101 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                 System.out.println("Magic Yarn full reset");
                 world.playSound(player.posX, player.posY, player.posZ, "random.fizz", 1.0F, 1.0F, false);
             }
+        }
+    }
+    
+    
+    private void sendPathToServer(String username, ArrayList<AStarNode> path)
+    {
+        if (!mpYarnInstance.getHasServerMod())
+        {
+            return;
+        }
+        
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        DataOutputStream data = new DataOutputStream(bytes);
+        
+        /*
+         * Packet spec: It starts with the int id 2, followed by the path owner's username String,
+         * followed by an int depicting the count of AStarNodes being transferred,
+         * followed by the path AStarNodes as triplets of ints x,y,z. Parents can be reconstructed
+         * as the previous AStarNode in the series, the list is sorted.
+         */
+        try
+        {
+            data.write(2);
+            data.writeUTF(username);
+            data.writeLong(path.size());
+            for (AStarNode n : path)
+            {
+                data.writeInt(n.x);
+                data.writeInt(n.y);
+                data.writeInt(n.z);
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        Packet250CustomPayload packet = new Packet250CustomPayload();
+        packet.channel = "MagicYarn";
+        packet.data = bytes.toByteArray();
+        packet.length = packet.data.length;
+        PacketDispatcher.sendPacketToServer(packet);
+    }
+    
+    private void sendPathDeletionToServer(String username)
+    {
+        if (!mpYarnInstance.getHasServerMod())
+        {
+            return;
+        }
+        
+        Object[] toSend = {username};
+        PacketDispatcher.sendPacketToServer(PacketWrapper.createPacket("MagicYarn", 3, toSend));
+    }
+
+    public void onReceivedPathPacket(DataInputStream data)
+    {
+        try
+        {
+            String username = data.readUTF();
+            if (username.equals(mcinstance.thePlayer.username))
+            {
+                return;
+            }
+            int nodes = data.readInt();
+            AStarNode[] out = new AStarNode[nodes];
+            int i = 0;
+            AStarNode read;
+            AStarNode prevN = null;
+            while (nodes > 0)
+            {
+                read = new AStarNode(data.readInt(), data.readInt(), data.readInt(), 0, prevN);
+                out[i] = read;
+                prevN = read;
+                i++;
+                nodes--;
+            }
+            clientTicker.addOtherPath(username, out);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void onReceivedPathDeletionPacket(DataInputStream data)
+    {
+        try
+        {
+            String username = data.readUTF();
+            clientTicker.removeOtherPath(username);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
     

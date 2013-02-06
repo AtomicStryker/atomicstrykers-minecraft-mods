@@ -2,8 +2,11 @@ package atomicstryker.magicyarn.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityCritFX;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
 import atomicstryker.magicyarn.common.pathfinding.AStarNode;
 import atomicstryker.magicyarn.common.pathfinding.AStarPathPlanner;
@@ -23,10 +26,13 @@ public class ClientTickHandler implements ITickHandler
     
     private final EnumSet<TickType> types = EnumSet.of(TickType.CLIENT);
     
+    private HashMap<String, AStarNode[]> otherPaths;
+    
     public ClientTickHandler(MagicYarnClient client, Minecraft mc)
     {
         clientInstance = client;
         mcinstance = mc;
+        otherPaths = new HashMap<String, AStarNode[]>();
     }
 
     @Override
@@ -49,14 +55,55 @@ public class ClientTickHandler implements ITickHandler
             plannerInstance = new AStarPathPlanner(lastWorld, clientInstance);
         }
         
-        if (showPath && path != null)
+        if (showPath)
         {
-            for (AStarNode temp : path)
+            if (path != null)
             {
-                if (temp.parent != null)
+                EntityFX efx = null;
+                for (AStarNode temp : path)
                 {
-                    mcinstance.renderGlobal.spawnParticle("magicCrit", temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
-                            (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
+                    if (temp.parent != null)
+                    {                        
+                        efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                                (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
+                        efx.setRBGColorF(efx.getRedColorF(), 0, efx.getBlueColorF());
+                        efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
+                        if (efx != null)
+                        {
+                            mcinstance.effectRenderer.addEffect(efx, null);
+                        }
+                    }
+                }
+                
+                if (!otherPaths.isEmpty())
+                {
+                    int colorindex = 0;
+                    for (String user : otherPaths.keySet())
+                    {
+                        AStarNode[] nodes = otherPaths.get(user);
+                        float r = colors[colorindex][0];
+                        float g = colors[colorindex][1];
+                        float b = colors[colorindex][2];
+                        for (AStarNode temp : nodes)
+                        {
+                            if (temp.parent != null)
+                            {                        
+                                efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                                        (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
+                                efx.setRBGColorF(r, g, b);
+                                efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
+                                if (efx != null)
+                                {
+                                    mcinstance.effectRenderer.addEffect(efx, null);
+                                }
+                            }
+                        }
+                        colorindex++;
+                        if (colorindex >= colors.length)
+                        {
+                            colorindex = 0;
+                        }
+                    }
                 }
             }
         }
@@ -74,4 +121,22 @@ public class ClientTickHandler implements ITickHandler
         return "MagicYarn";
     }
     
+    private final float[][] colors = {
+            { 1f, 1f, 0 }, // yellow
+            { 0.75f, 0.5f, 0.25f }, // brown
+            { 0, 0, 1f }, // blue
+            { 1f, 0, 0 }, // red
+            { 0, 1f, 1f }, // cyan
+    };
+    
+    public void addOtherPath(String user, AStarNode[] nodes)
+    {
+        otherPaths.remove(user);
+        otherPaths.put(user, nodes);
+    }
+    
+    public void removeOtherPath(String user)
+    {
+        otherPaths.remove(user);
+    }
 }

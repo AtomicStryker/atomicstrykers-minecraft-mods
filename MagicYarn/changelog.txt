@@ -1,3 +1,7 @@
+1.0.1
+- added new feature: you can now see other players paths
+- only available if the server has the mod
+
 1.0.0 revision 2 (client only, cosmetic only)
 - changed chat message to fire once per server at max
 
