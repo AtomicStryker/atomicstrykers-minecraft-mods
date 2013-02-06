@@ -5,6 +5,7 @@ import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Storm extends MobModifier
@@ -42,7 +43,8 @@ public class MM_Storm extends MobModifier
     {        
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
-        && mob.getDistanceToEntity(target) > MIN_DISTANCE)
+        && mob.getDistanceToEntity(target) > MIN_DISTANCE
+        && target.worldObj.canBlockSeeTheSky(MathHelper.floor_double(target.posX), MathHelper.floor_double(target.posY), MathHelper.floor_double(target.posZ)))
         {
             nextAbilityUse = time+coolDown;
             mob.worldObj.addWeatherEffect(new EntityLightningBolt(mob.worldObj, target.posX, target.posY-1, target.posZ));
