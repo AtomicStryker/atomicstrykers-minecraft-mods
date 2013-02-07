@@ -14,7 +14,6 @@ public class AStarPathPlanner
 {
     private AStarWorker worker;
     private World worldObj;
-    private boolean isWorking;
     private IAStarPathedEntity pathedEntity;
     private boolean accesslock;
     private boolean isJPS;
@@ -26,7 +25,6 @@ public class AStarPathPlanner
         worker = new AStarWorker(this);
         worldObj = world;
         accesslock = false;
-        isWorking = false;
         pathedEntity = ent;
         isJPS = true;
     }
@@ -39,21 +37,34 @@ public class AStarPathPlanner
 
     public boolean isBusy()
     {
-        return isWorking;
+        return worker.getState() != Thread.State.NEW;
     }
 
     public void getPath(int startx, int starty, int startz, int destx, int desty, int destz, boolean allowDropping)
     {        
+        if (!AStarStatic.isViable(worldObj, startx, starty, startz, 0))
+        {
+            starty--;
+        }
+        if (!AStarStatic.isViable(worldObj, startx, starty, startz, 0))
+        {
+            starty+=2;
+        }
+        if (!AStarStatic.isViable(worldObj, startx, starty, startz, 0))
+        {
+            starty--;
+        }
+        
         AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
         AStarNode finish = new AStarNode(destx, desty, destz, -1, null);
-
         getPath(starter, finish, allowDropping);
     }
 
     public void getPath(AStarNode start, AStarNode end, boolean allowDropping)
     {
-        if (isWorking)
+        if (isBusy())
         {
+            //System.out.println("getPath called while busy, stopping...");
             stopPathSearch();
         }
         
@@ -66,7 +77,6 @@ public class AStarPathPlanner
         
         worker.setup(worldObj, start, end, allowDropping);
         worker.start();
-        isWorking = true;
 
         accesslock = false;
     }
@@ -85,12 +95,12 @@ public class AStarPathPlanner
         if (isJPS) // in case of JPS failure switch to old best first algorithm
         {
             setJPS(false);
+            //System.out.println("JPS fail recorded for "+lastStart+" to "+lastEnd);
             getPath(lastStart, lastEnd, false);
-            return;
         }
-        
-        if (pathedEntity != null)
+        else if (pathedEntity != null)
         {
+            //System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
             pathedEntity.onNoPathAvailable();
         }
     }
@@ -108,7 +118,6 @@ public class AStarPathPlanner
     {
         if (!accesslock) // only flush if we arent starting!
         {
-            isWorking = false;
             worker = isJPS ? new AStarWorkerJPS(this) : new AStarWorker(this);
         }
     }

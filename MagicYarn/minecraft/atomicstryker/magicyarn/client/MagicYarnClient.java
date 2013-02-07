@@ -105,9 +105,9 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
     public void tryPathToPlayer(EntityPlayer otherPlayer)
     {
         resetPaths();
-        origin = new AStarNode((int)Math.floor(mcinstance.thePlayer.posX), (int)Math.floor(mcinstance.thePlayer.posY)-1, (int)Math.floor(mcinstance.thePlayer.posZ), 0, null);
-        target = new AStarNode((int)Math.floor(otherPlayer.posX), (int)Math.floor(otherPlayer.posY), (int)Math.floor(otherPlayer.posZ), 0, null);
-        clientTicker.plannerInstance.getPath(origin, target, false);
+        clientTicker.plannerInstance.getPath(
+                (int)Math.floor(mcinstance.thePlayer.posX), (int)Math.floor(mcinstance.thePlayer.posY), (int)Math.floor(mcinstance.thePlayer.posZ),
+                (int)Math.floor(otherPlayer.posX), (int)Math.floor(otherPlayer.posY), (int)Math.floor(otherPlayer.posZ), false);
     }
 
     public void stopPathSearch()

@@ -31,6 +31,7 @@ public class AStarWorkerJPS extends AStarWorker
         openQueue = new PriorityQueue<AStarNode>();
     }
 
+    @Override
     public ArrayList<AStarNode> getPath(AStarNode start, AStarNode end, boolean searchMode)
     {        
         openQueue.offer(start);
@@ -43,7 +44,7 @@ public class AStarWorkerJPS extends AStarWorker
         while (!openQueue.isEmpty() && !shouldInterrupt())
         {
             currentNode = openQueue.poll();
-            //System.out.println("queue popped: "+currentNode);
+            //System.out.println("queue polled: "+currentNode);
             closedNodes.add(currentNode);
             
             if (currentNode.equals(end) || identifySuccessors(currentNode))
@@ -341,8 +342,8 @@ public class AStarWorkerJPS extends AStarWorker
         }
         
         // check for moving up or down along the path
-        int nxY = getGroundNodeHeight(x+dx, y, z   );
-        int nzY = getGroundNodeHeight(x,    y, z+dz);
+        int nxY = (dx != 0) ? getGroundNodeHeight(x+dx, y, z) : 0;
+        int nzY = (dz != 0) ? getGroundNodeHeight(x, y, z+dz) : 0;
         
         // check for forced neighbors along the diagonal
         if (dx != 0 && dz != 0)
@@ -358,20 +359,18 @@ public class AStarWorkerJPS extends AStarWorker
         {
             if (dx != 0)
             { // moving along x
-                int blockCheckY = (nxY != 0) ? nxY : y;
-                if (blockCheckY != y
-                        || (getGroundNodeHeight(x, y, z + 1) == 0 && getGroundNodeHeight(x + dx, blockCheckY, z + 1) != 0)
-                        || (getGroundNodeHeight(x, y, z - 1) == 0 && getGroundNodeHeight(x + dx, blockCheckY, z - 1) != 0))
+                if (nxY != y
+                || (getGroundNodeHeight(x, y, z + 1) == 0 && getGroundNodeHeight(x + dx, nxY, z + 1) != 0)
+                || (getGroundNodeHeight(x, y, z - 1) == 0 && getGroundNodeHeight(x + dx, nxY, z - 1) != 0))
                 {
                     return new AStarNode(x, y, z, dist, currentNode, targetNode);
                 }
             }
             else
             { // moving along z
-                int blockCheckY = (nzY != 0) ? nzY : z;
-                if (blockCheckY != y
-                        || (getGroundNodeHeight(x + 1, y, z) == 0 && getGroundNodeHeight(x + 1, blockCheckY, z + dz) != 0)
-                        || (getGroundNodeHeight(x - 1, y, z) == 0 && getGroundNodeHeight(x - 1, blockCheckY, z + dz) != 0))
+                if (nzY != y
+                || (getGroundNodeHeight(x + 1, y, z) == 0 && getGroundNodeHeight(x + 1, nzY, z + dz) != 0)
+                || (getGroundNodeHeight(x - 1, y, z) == 0 && getGroundNodeHeight(x - 1, nzY, z + dz) != 0))
                 {
                     return new AStarNode(x, y, z, dist, currentNode, targetNode);
                 }
@@ -439,22 +438,22 @@ public class AStarWorkerJPS extends AStarWorker
      */
     private int getGroundNodeHeight(int xN, int yN, int zN)
     {
-        //System.out.println("getGroundNodeHeight ["+xN+"|"+yN+"|"+zN+"]");
         if (AStarStatic.isViable(worldObj, xN, yN, zN, 0))
         {
-            //System.out.println("result "+yN);
+            //System.out.println("getGroundNodeHeight ["+xN+"|"+yN+"|"+zN+"], result "+yN);
             return yN;
         }
-        if (AStarStatic.isViable(worldObj, xN, yN, zN, -1))
+        if (AStarStatic.isViable(worldObj, xN, yN-1, zN, -1))
         {
-            //System.out.println("result "+(yN-1));
+            //System.out.println("getGroundNodeHeight ["+xN+"|"+yN+"|"+zN+"], result "+(yN-1));
             return yN-1;
         }
-        if (AStarStatic.isViable(worldObj, xN, yN, zN, 1))
+        if (AStarStatic.isViable(worldObj, xN, yN+1, zN, 1))
         {
-            //System.out.println("result "+(yN+1));
+            //System.out.println("getGroundNodeHeight ["+xN+"|"+yN+"|"+zN+"], result "+(yN+1));
             return yN+1;
         }
+        //System.out.println("getGroundNodeHeight ["+xN+"|"+yN+"|"+zN+"] found no close height");
         return 0;
     }
 }
