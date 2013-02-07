@@ -160,3 +160,7 @@ a: setAccessible now true
 9.0
 + added option for chests filled with MC ChestGenHook loot (see template_rules.txt)
 + added a small chance (1/25) for dungeon loot to be put into "loot" chests
+
+9.1
++ forced biome folders to always-lowercase, maybe helps mod biome issues
++ (rename your old template folders to be all-lowercase)

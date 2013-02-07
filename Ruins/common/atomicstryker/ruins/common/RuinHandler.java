@@ -218,6 +218,7 @@ public class RuinHandler {
 
 	private void loadSpecificTemplates( PrintWriter pw, File dir, int biome, String bname ) throws Exception {
 		pw.println();
+		bname = bname.toLowerCase();
 		pw.println( "Loading the " + bname + " ruins templates..." );
 		pw.flush();
 		File path_biome = new File( dir, bname );
