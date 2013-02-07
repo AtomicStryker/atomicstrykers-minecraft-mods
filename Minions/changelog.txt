@@ -1,3 +1,12 @@
+Update 1.5.9
+- fixed crash in performTeleportToTarget
+- added Snow to default worthless Blocks
+- made path following and work enforcement code react faster
+- Minions should "stand around waiting" less
+- exchanged "pop" teleport sound for "ender portal"
+- fixed reach distance for Block Tasks being way too low, causing issues
+- WHY DOES EVERYTHING STOP WORKING I DIDNT TOUCH THIS
+
 Update 1.5.8
 - fixed some bugs in Ore Vein Mining and Block Tasks in general
 

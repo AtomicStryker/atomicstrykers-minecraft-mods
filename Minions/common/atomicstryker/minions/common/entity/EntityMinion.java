@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -40,7 +41,7 @@ import atomicstryker.minions.common.pathfinding.IAStarPathedEntity;
 
 public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 {
-    private final int pathingCooldownTicks = 30;
+    private final int pathingCooldownTicks = 10;
     public final InventoryMinion inventory;
     public final AStarPathPlanner pathPlanner;
     
@@ -213,8 +214,11 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     
     public void performTeleportToTarget()
     {
-    	this.setPositionAndUpdate(currentTarget.posX+0.5D, currentTarget.posY, currentTarget.posZ+0.5D);
-    	MinionsCore.proxy.playSoundAtEntity(this, "random.pop", 0.5F, 1.0F);
+        if (currentTarget != null)
+        {
+            this.setPositionAndUpdate(currentTarget.posX+0.5D, currentTarget.posY, currentTarget.posZ+0.5D);
+            MinionsCore.proxy.playSoundAtEntity(this, "mob.endermen.portal", 0.5F, 1.0F);
+        }
     }
     
     public void performRecallTeleportToMaster()
@@ -222,20 +226,15 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	if (master != null)
     	{
     		this.setPositionAndUpdate(master.posX+1, master.posY, master.posZ+1);
-    		MinionsCore.proxy.playSoundAtEntity(this, "random.pop", 0.5F, 1.0F);
+    		MinionsCore.proxy.playSoundAtEntity(this, "mob.endermen.portal", 0.5F, 1.0F);
     	}
     }
     
     public void orderMinionToMoveTo(int targetX, int targetY, int targetZ, boolean allowDropping)
-    {
-    	if (pathPlanner.isBusy())
-    	{
-    		pathPlanner.stopPathSearch();
-    	}
-    	
+    {    	
     	dataWatcher.updateObject(12, Integer.valueOf(0));
 		currentTarget = new ChunkCoordinates(targetX, targetY, targetZ);
-		pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY)-1, doubleToInt(this.posZ), targetX, targetY, targetZ, allowDropping);
+		pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), targetX, targetY, targetZ, allowDropping);
 		//System.out.println("Minion ordered to move to ["+targetX+"|"+targetY+"|"+targetZ+"]");
     }
     
@@ -321,7 +320,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     		}
     		else if(getNavigator().getPath() != null
     		     && getNavigator().getPath() instanceof AS_PathEntity
-    		     && ((AS_PathEntity)getNavigator().getPath()).getTimeSinceLastPathIncrement() > 750L
+    		     && ((AS_PathEntity)getNavigator().getPath()).getTimeSinceLastPathIncrement() > 500L
     		     && !worldObj.isRemote)
     		{
     			currentPathingStopCooldownTick++;
@@ -334,7 +333,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     				if (nextUp != null)
     				{
     				    ((AS_PathEntity)getNavigator().getPath()).advancePathIndex();
-    					this.setPositionAndUpdate(nextUp.xCoord+0.5, nextUp.yCoord+1.5, nextUp.zCoord+0.5);
+    					this.setPositionAndUpdate(nextUp.xCoord+0.5, nextUp.yCoord+0.5, nextUp.zCoord+0.5);
     					this.motionX = 0;
     					this.motionZ = 0;
     					pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY)-1, doubleToInt(this.posZ), currentTarget.posX, currentTarget.posY, currentTarget.posZ, false);
@@ -604,10 +603,53 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 		return null;
 	}
 	
+	@Override
 	public ItemStack getHeldItem()
 	{
 		return this.heldItem;
 	}
+	
+    public void setHeldItemAxe()
+    {
+        heldItem = new ItemStack(Item.axeSteel, 1);
+    }
+    
+    public void setHeldItemPickaxe()
+    {
+        heldItem = new ItemStack(Item.pickaxeSteel, 1);
+    }
+    
+    public void setHeldItemShovel()
+    {
+        heldItem = new ItemStack(Item.shovelSteel, 1);
+    }
+    
+    public void adaptItem(Material mat)
+    {
+        if (mat == Material.clay
+        || mat == Material.grass
+        || mat == Material.ground
+        || mat == Material.sand
+        || mat == Material.snow
+        || mat == Material.sponge)
+        {
+            setHeldItemShovel();
+        }
+        else if (mat == Material.cactus
+        || mat == Material.cloth
+        || mat == Material.leaves
+        || mat == Material.plants
+        || mat == Material.web
+        || mat == Material.wood)
+        {
+            setHeldItemAxe();
+        }
+        else
+        {
+            setHeldItemPickaxe();
+        }
+        //System.out.println("Minion adapted Item: "+heldItem);
+    }
 	
     public void dropMinionItemWithRandomChoice(ItemStack stack)
     {
@@ -632,4 +674,5 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     {
     	return AStarStatic.getIntCoordFromDoubleCoord(input);
     }
+    
 }

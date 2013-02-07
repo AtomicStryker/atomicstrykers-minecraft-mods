@@ -29,7 +29,7 @@ public abstract class BlockTask
 	public final int posZ;
 	private boolean startedTask;
 	protected EntityMinion worker;
-	protected double accessRange;
+	protected double accessRangeSq;
 	protected long taskDurationMillis;
 	public boolean workerReachedBlock;
 	protected long timeBlockReached;
@@ -56,7 +56,7 @@ public abstract class BlockTask
     	this.posY = iy;
     	this.posZ = iz;
     	startedTask = false;
-    	accessRange = 4.0D;
+    	accessRangeSq = 9.0D;
     	taskDurationMillis = 1000L;
     	workerReachedBlock = false;
     }
@@ -76,7 +76,7 @@ public abstract class BlockTask
      */
     public void setAccessRange(double input)
     {
-    	this.accessRange = input;
+    	this.accessRangeSq = input;
     }
     
     /**
@@ -107,7 +107,8 @@ public abstract class BlockTask
         		//System.out.println("Blocktask worker is full, sending to return goods");
         	}
     	}
-    	else if (!workerReachedBlock && System.currentTimeMillis() - taskTimeStarted > 3000L)
+    	else if (!workerReachedBlock
+    	&& System.currentTimeMillis() - taskTimeStarted > 1000L)
     	{
     		if (Math.abs(startMinionX - worker.posX) < 1D && Math.abs(startMinionZ - worker.posZ) < 1D)
     		{
@@ -121,10 +122,9 @@ public abstract class BlockTask
     		}
     	}
     	
-    	if (this.isWorking())
+    	if (isWorking())
     	{
-    		this.worker.faceBlock(posX, posY, posZ);
-    		
+    		worker.faceBlock(posX, posY, posZ);
     		worker.getDataWatcher().updateObject(12, Integer.valueOf(1));
     		worker.getDataWatcher().updateObject(13, Integer.valueOf(posX));
     		worker.getDataWatcher().updateObject(14, Integer.valueOf(posY));
@@ -135,12 +135,12 @@ public abstract class BlockTask
     	{
     		if (isEntityInAccessRange(worker))
     		{
-        		this.onReachedTaskBlock();
+        		onReachedTaskBlock();
     		}
     	}
     	else if ((System.currentTimeMillis() - timeBlockReached) > (taskDurationMillis/worker.workSpeed))
     	{
-    		this.onFinishedTask();
+    		onFinishedTask();
     	}
     }
     
@@ -175,6 +175,8 @@ public abstract class BlockTask
     	timeBlockReached = System.currentTimeMillis();
     	this.worker.currentState = EnumMinionState.MINING;
     	this.worker.setPathToEntity(null);
+    	
+    	worker.adaptItem(worker.worldObj.getBlockMaterial(posX, posY, posZ));
     }
     
     /**
@@ -203,6 +205,7 @@ public abstract class BlockTask
     	}
     	else
     	{
+    	    //System.out.println("Teleporting Minion to impathable task "+this);
     	    worker.performTeleportToTarget();
     	}
     }
@@ -237,7 +240,7 @@ public abstract class BlockTask
      */
     private boolean isEntityInAccessRange(EntityLiving ent)
     {
-    	return (ent.getDistanceSq(this.posX, this.posY, this.posZ) < accessRange);
+    	return (ent.getDistanceSq(this.posX, this.posY, this.posZ) < accessRangeSq);
     }
     
     /**

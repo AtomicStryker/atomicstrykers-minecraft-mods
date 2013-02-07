@@ -264,7 +264,7 @@ public class AStarStatic
         while(size > 0)
         {
             reading = input.get(size-1);
-            points[i] = new AS_PathPoint(reading.x, i == 0 ? reading.y+1 : reading.y, reading.z); // MC demands the first path point to be at +1 height for some fucking reason
+            points[i] = new AS_PathPoint(reading.x, reading.y, reading.z);
             points[i].isFirst = i == 0;
             points[i].setIndex(i);
             points[i].setTotalPathDistance(i);

@@ -29,11 +29,13 @@ public class BlockTask_TreeChop extends BlockTask
     	this.setTaskDuration(1000L * treeBlockList.size());
     }
 
+    @Override
     public void onUpdate()
     {
     	super.onUpdate();
     }
     
+    @Override
     public void onFinishedTask()
     {
     	super.onFinishedTask();
@@ -41,6 +43,13 @@ public class BlockTask_TreeChop extends BlockTask
     	// count tree wood blocks, place wood in minion inventory, destroy tree
     	placeWoodInMinionInventory(this.worker);
     	chopTree();
+    }
+    
+    @Override
+    public void onReachedTaskBlock()
+    {
+        super.onReachedTaskBlock();
+        worker.setHeldItemAxe();
     }
     
     private void placeWoodInMinionInventory(EntityMinion output)

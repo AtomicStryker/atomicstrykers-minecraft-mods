@@ -19,7 +19,7 @@ import atomicstryker.minions.common.entity.EnumMinionState;
 public class Minion_Job_StripMine extends Minion_Job_Manager
 {
 	private final int STRIPMINE_MAX_LENGTH = 80;
-	private final long SEGMENT_MAX_DELAY = 10000L;
+	private final long SEGMENT_MAX_DELAY = 3000L;
 	private final int xDirection;
 	private final int zDirection;
 	

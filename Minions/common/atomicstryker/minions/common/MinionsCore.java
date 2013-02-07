@@ -62,7 +62,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.8")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.5.9")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -198,6 +198,7 @@ public class MinionsCore
         || blockID == Block.stairCompactCobblestone.blockID
         || blockID == Block.netherrack.blockID
         || blockID == Block.slowSand.blockID
+        || blockID == Block.snow.blockID
         || configWorthlessBlocks.contains(blockID))
         {
             return false;
