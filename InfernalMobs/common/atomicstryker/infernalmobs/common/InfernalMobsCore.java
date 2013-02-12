@@ -64,7 +64,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.7")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.8")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -77,6 +77,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     private ArrayList<Integer> dropIdList;
     private static boolean healthHacked;
     private HashMap<String, Boolean> classesAllowedMap;
+    private HashMap<String, Boolean> classesForcedMap;
     
     private static InfernalMobsCore instance;
     
@@ -107,6 +108,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         nextExistCheckTime = System.currentTimeMillis();
         healthHacked = false;
         classesAllowedMap = new HashMap();
+        classesForcedMap = new HashMap();
         
         config = new Configuration(evt.getSuggestedConfigurationFile());
         loadConfig();
@@ -207,7 +209,9 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         {
             if (!getIsRareEntity(entity))
             {
-                if (entity instanceof EntityMob && instance.checkEntityClassAllowed(entity) && entity.worldObj.rand.nextInt(eliteRarity) == 0)
+                if (entity instanceof EntityMob
+                && instance.checkEntityClassAllowed(entity)
+                && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
                     MobModifier mod = createMobModifiers(entity);
                     if (mod != null)
@@ -233,6 +237,22 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
         boolean result = config.get("permittedentities", entName, true).getBoolean(true);
         config.save();
         classesAllowedMap.put(entName, result);
+        
+        return result;
+    }
+    
+    private boolean checkEntityClassForced(EntityLiving entity)
+    {
+        String entName = entity.getEntityName();
+        if (classesForcedMap.containsKey(entName))
+        {
+            return classesForcedMap.get(entName);
+        }
+        
+        config.load();
+        boolean result = config.get("entitiesalwaysinfernal", entName, false).getBoolean(false);
+        config.save();
+        classesForcedMap.put(entName, result);
         
         return result;
     }

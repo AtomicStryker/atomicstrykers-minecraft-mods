@@ -1,5 +1,6 @@
 1.1.8
 - fixed Storm mod to no longer work while under a roof
+- added "always infernal" option for entity classes to config
 
 1.1.7
 - fixed crash with entitylist comodification
