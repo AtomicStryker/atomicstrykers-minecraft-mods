@@ -164,3 +164,6 @@ a: setAccessible now true
 9.1
 + forced biome folders to always-lowercase, maybe helps mod biome issues
 + (rename your old template folders to be all-lowercase)
+
+9.2
++ catches and logs invalid Block IDs when parsing templates, uses air blocks instead

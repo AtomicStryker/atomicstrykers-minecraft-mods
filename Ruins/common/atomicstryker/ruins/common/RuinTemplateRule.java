@@ -21,7 +21,7 @@ public class RuinTemplateRule {
 		owner = r;
         String[] items = rule.split( "," );
         int numblocks = items.length - 2;
-        if( numblocks < 1 ) { throw new Exception( "No blockIDs specified for rule!" ); }
+        if( numblocks < 1 ) { throw new Exception( "No blockIDs specified for rule ["+rule+"] in template "+owner.getName() ); }
         condition = Integer.parseInt( items[0] );
         chance = Integer.parseInt( items[1] );
         blockIDs = new int[numblocks];
@@ -57,6 +57,12 @@ public class RuinTemplateRule {
                 blockIDs[i] = Integer.parseInt(items[i + 2]);
                 blockMDs[i] = 0;
                 blockStrings[i] = "";
+            }
+            
+            if (blockIDs[i] > 0 && Block.blocksList[blockIDs[i]] == null)
+            {
+                System.err.println("Invalid blockID "+blockIDs[i]+" specified in template "+owner.getName()+", rule ["+rule+"], resetting to 0");
+                blockIDs[i] = 0;
             }
         }
     }
