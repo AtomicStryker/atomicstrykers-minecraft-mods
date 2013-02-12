@@ -59,8 +59,8 @@ public class AS_BattleTowersCore
         
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
-        EntityRegistry.registerModEntity(AS_EntityGolem.class, "AS_EntityGolem", 1, this, 25, 5, true);
-        EntityRegistry.registerModEntity(AS_EntityGolemFireball.class, "AS_EntityGolemFireball", 2, this, 25, 5, true);
+        EntityRegistry.registerModEntity(AS_EntityGolem.class, "Battletower Golem", 1, this, 25, 5, true);
+        EntityRegistry.registerModEntity(AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 25, 5, true);
         
         towerPositions = new HashSet<ChunkCoordinates>();
         towerDestroyers = new HashSet<AS_TowerDestroyer>();
