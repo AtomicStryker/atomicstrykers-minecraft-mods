@@ -100,7 +100,7 @@ public class AStarPathPlanner
         }
         else if (pathedEntity != null)
         {
-            System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
+            //System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
             pathedEntity.onNoPathAvailable();
         }
     }

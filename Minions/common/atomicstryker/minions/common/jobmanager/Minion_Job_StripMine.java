@@ -124,13 +124,6 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     }
     
     @Override
-    public void onJobFinished()
-    {
-        worker = null;
-    	super.onJobFinished();
-    }
-    
-    @Override
     public void onTaskFinished(BlockTask task, int x, int y, int z)
     {
         timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
@@ -143,6 +136,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         }
     }
     
+    @Override
     public void setWorkerFree(EntityMinion input)
     {
     	input.isStripMining = false;
