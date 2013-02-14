@@ -28,7 +28,7 @@ public class ServerPacketHandler implements IPacketHandler
         if (packetType == PacketType.HANDSHAKE.ordinal())
         {
         	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.HANDSHAKE.ordinal(), null), player);
-        	KenshiroServer.instance().setClientHasKenshiroInstalled(player, false);
+        	KenshiroServer.instance().setClientHasKenshiroInstalled(playerEnt, false);
         }
         else if (packetType == PacketType.BLOCKPUNCHED.ordinal())
         {
@@ -42,7 +42,7 @@ public class ServerPacketHandler implements IPacketHandler
             Class[] decodeAs = { Integer.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             int entityID = (Integer)packetReadout[0];
-            KenshiroServer.instance().onClientPunchedEntity(player, FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(playerEnt.dimension), entityID);
+            KenshiroServer.instance().onClientPunchedEntity(playerEnt, FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(playerEnt.dimension), entityID);
         }
         else if (packetType == PacketType.KENSHIROSTARTED.ordinal())
         {

@@ -1,3 +1,6 @@
+1.1.0
+- fixed another rare server crash
+
 1.0.9
 - fixed rare server crash when packets got lost (???)
 

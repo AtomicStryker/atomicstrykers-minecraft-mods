@@ -1,5 +1,6 @@
 package atomicstryker.kenshiro.common;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
 import net.minecraft.network.packet.NetHandler;
@@ -17,7 +18,7 @@ public class ConnectionHandler implements IConnectionHandler
     @Override
     public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
     {
-        KenshiroServer.instance().setClientHasKenshiroInstalled(player, false);
+        KenshiroServer.instance().setClientHasKenshiroInstalled((EntityPlayer) player, false);
     }
 
     @Override

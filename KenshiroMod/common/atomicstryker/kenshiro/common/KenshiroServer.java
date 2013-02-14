@@ -25,19 +25,18 @@ import atomicstryker.ForgePacketWrapper;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 public class KenshiroServer
 {
     private static KenshiroServer instance;
-    private Set<Player> hasKenshiroSet;
-    private Map<Player, Set<EntityLiving>> punchedEntitiesMap;
+    private Set<EntityPlayer> hasKenshiroSet;
+    private Map<EntityPlayer, Set<EntityLiving>> punchedEntitiesMap;
     
     public KenshiroServer()
     {
         instance = this;
-        hasKenshiroSet = new HashSet<Player>();
-        punchedEntitiesMap = new HashMap<Player, Set<EntityLiving>>();
+        hasKenshiroSet = new HashSet<EntityPlayer>();
+        punchedEntitiesMap = new HashMap<EntityPlayer, Set<EntityLiving>>();
         MinecraftForge.EVENT_BUS.register(this);
     }
     
@@ -46,12 +45,12 @@ public class KenshiroServer
         return instance;
     }
     
-    public boolean getHasClientKenshiroInstalled(Player player)
+    public boolean getHasClientKenshiroInstalled(EntityPlayer player)
     {
     	return hasKenshiroSet.contains(player);
     }
 
-	public void setClientHasKenshiroInstalled(Player player, boolean value)
+	public void setClientHasKenshiroInstalled(EntityPlayer player, boolean value)
 	{
 		if (!value)
 		{
@@ -80,7 +79,7 @@ public class KenshiroServer
         }
     }
 
-    public void onClientPunchedEntity(Player player, World world, int entityID)
+    public void onClientPunchedEntity(EntityPlayer player, World world, int entityID)
     {
         Entity target = KenshiroMod.instance().getEntityByID(world, entityID);
         if (target != null
@@ -92,7 +91,7 @@ public class KenshiroServer
             
             if (targetEnt.getHealth() > 7)
             {
-                targetEnt.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) player), 7);
+                targetEnt.attackEntityFrom(DamageSource.causePlayerDamage(player), 7);
             }
             else
             {
@@ -147,18 +146,22 @@ public class KenshiroServer
         playerEnt.addExhaustion(40F);
         playerEnt.addExhaustion(40F);
         
-        punchedEntitiesMap.put((Player) playerEnt, new HashSet<EntityLiving>());
+        punchedEntitiesMap.put(playerEnt, new HashSet<EntityLiving>());
     }
 
     public void onClientFinishedKenshiroVolley(EntityPlayer playerEnt)
     {
-        Iterator<EntityLiving> iter = punchedEntitiesMap.get((Player)playerEnt).iterator();
-        while (iter.hasNext())
+        Set s = punchedEntitiesMap.get(playerEnt);
+        if (s != null)
         {
-            EntityLiving target = iter.next();
-            target.attackEntityFrom(DamageSource.causePlayerDamage(playerEnt), 21);
+            Iterator<EntityLiving> iter = s.iterator();
+            while (iter.hasNext())
+            {
+                EntityLiving target = iter.next();
+                target.attackEntityFrom(DamageSource.causePlayerDamage(playerEnt), 21);
+            }
+            punchedEntitiesMap.remove(playerEnt);
         }
-        punchedEntitiesMap.remove(playerEnt);
     }
     
     @ForgeSubscribe
@@ -167,7 +170,7 @@ public class KenshiroServer
         if (event.source.getEntity() != null
         && !(event.source.getEntity() instanceof EntityPlayer))
         {
-            for (Player p : punchedEntitiesMap.keySet())
+            for (EntityPlayer p : punchedEntitiesMap.keySet())
             {
                 if (punchedEntitiesMap.get(p).contains(event.source.getEntity()))
                 {
@@ -193,7 +196,7 @@ public class KenshiroServer
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
-            for (Player p : punchedEntitiesMap.keySet())
+            for (EntityPlayer p : punchedEntitiesMap.keySet())
             {
                 for (EntityLiving e : punchedEntitiesMap.get(p))
                 {
