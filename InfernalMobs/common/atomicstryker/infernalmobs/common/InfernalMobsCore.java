@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -16,6 +17,7 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
@@ -64,7 +66,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.8")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.1.9")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -74,7 +76,11 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     private static final long existCheckDelay = 5000L;
     
     private static long nextExistCheckTime;
-    private ArrayList<Integer> dropIdList;
+    
+    /**
+     * Array of two ints, first Block or Item ID, second meta value, third stacksize (only for blocks)
+     */
+    private ArrayList<Integer[]> dropIdList;
     private static boolean healthHacked;
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
@@ -104,7 +110,7 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     public void preInit(FMLPreInitializationEvent evt)
     {
         instance = this;
-        dropIdList = new ArrayList<Integer>();
+        dropIdList = new ArrayList<Integer[]>();
         nextExistCheckTime = System.currentTimeMillis();
         healthHacked = false;
         classesAllowedMap = new HashMap();
@@ -185,18 +191,57 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
     {
         config.load();
         eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15).value);
-        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,283,284,285,286,292,293,294,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317").value;
+        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,283,284,285,286,292,293,294,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,403").value;
         
         itemIDs = itemIDs.trim();
         String[] numbers = itemIDs.split(",");
         for (String s : numbers)
         {
-            instance.dropIdList.add(Integer.parseInt(s));
+            String[] meta = s.split("-");
+            int id = parseOrFind(meta[0]);
+            if (id > 0)
+            {
+                Integer[] ints = {id, (meta.length > 1) ? Integer.parseInt(meta[1]) : 0, (meta.length > 2) ? Integer.parseInt(meta[2]) : 1 };
+                instance.dropIdList.add(ints);
+            }
         }
         
         loadMods();
         
         config.save();
+    }
+    
+    /**
+     * Attempts to parse a String as number, or the name of a block, or the name of an item
+     * @param s input String or blockname or itemname
+     * @return block or item ID depicted, or 0 if nothing was found
+     */
+    private int parseOrFind(String s)
+    {
+        int result = 0;
+        try
+        {
+            result = Integer.parseInt(s);
+        }
+        catch (NumberFormatException e)
+        {
+            for (Block b : Block.blocksList)
+            {
+                if (b != null && b.getBlockName() != null && b.getBlockName().equals(s))
+                {
+                    return b.blockID;
+                }
+            }
+            
+            for (Item i : Item.itemsList)
+            {
+                if (i != null && i.getItemName() != null && i.getItemName().equals(s))
+                {
+                    return i.itemID;
+                }
+            }
+        }
+        return result;
     }
     
     /**
@@ -549,23 +594,31 @@ public class InfernalMobsCore implements ITickHandler, ISidedProxy
 
     private void dropRandomEnchantedItem(EntityLiving mob)
     {
-        try
+        ItemStack itemStack = getRandomItem(mob);
+        if (itemStack != null && itemStack.itemID > 0)
         {
-            Item item = getRandomItem(mob);
-            ItemStack itemStack = ItemStack.class.getConstructor(new Class[] { Item.class }).newInstance(item);
-            EnchantmentHelper.addRandomEnchantment(mob.worldObj.rand, itemStack, item.getItemEnchantability());
+            Item item = itemStack.getItem();
+            if (item != null && item instanceof Item)
+            {
+                if (item instanceof ItemEnchantedBook)
+                {
+                    itemStack = ((ItemEnchantedBook)item).func_92109_a(mob.getRNG());
+                }
+                else
+                {
+                    EnchantmentHelper.addRandomEnchantment(mob.worldObj.rand, itemStack, item.getItemEnchantability());
+                }
+            }
+            
             EntityItem itemEnt = new EntityItem(mob.worldObj, mob.posX, mob.posY, mob.posZ, itemStack);  
             mob.worldObj.spawnEntityInWorld(itemEnt);
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
     }
     
-    private Item getRandomItem(EntityLiving mob)
+    private ItemStack getRandomItem(EntityLiving mob)
     {
-        return Item.itemsList[instance.dropIdList.get(mob.worldObj.rand.nextInt(instance.dropIdList.size()))];
+        Integer[] ints = instance.dropIdList.get(mob.worldObj.rand.nextInt(instance.dropIdList.size()));
+        return new ItemStack(ints[0], ints[2], ints[1]);
     }
     
     //addVelocity player: Packet ID 2, from server, { double xVel, double yVel, double zVel }

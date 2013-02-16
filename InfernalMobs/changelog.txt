@@ -1,3 +1,13 @@
+1.1.9
+- added possibility for Blocks and metadata/damage in dropped loot
+- old config syntax remains valid, to add Item "500" with meta/damage "3" add "500-3" to config
+- Blocks are added similar, "blockID-metaValue-stackSize", example "35-4-10" is 10 Blocks of yellow Wool (id 35, meta 4)
+- meta and stacksize need not be specified and default to 0 and 1
+- instead of a numeric ID you may also use the code name, example "tile.cloth-4-10" is the same Wool as above
+- this may help with mod items or blocks whose IDs are subject to change
+- only Items can and will be randomly enchanted
+- automatically detects and randomly enchants Enchanted Books. Added those to default ID list (403)
+
 1.1.8
 - fixed Storm mod to no longer work while under a roof
 - added "always infernal" option for entity classes to config
