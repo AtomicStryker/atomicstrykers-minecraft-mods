@@ -33,6 +33,10 @@ public class ClientPacketHandler implements IPacketHandler
             AS_FinderCompass.strongholdCoords = new ChunkCoordinates((Integer)packetData[0], (Integer)packetData[1], (Integer)packetData[2]);
             AS_FinderCompass.hasStronghold = true;
         }
+        else if (packetType == 2)
+        {
+            AS_FinderCompass.inputOverrideConfig(dataIn);
+        }
     }
     
     public static void onClientLoggedInToServer()

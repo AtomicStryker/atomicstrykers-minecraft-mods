@@ -1,7 +1,12 @@
 package atomicstryker.findercompass.common;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -23,6 +28,35 @@ public class ServerPacketHandler implements IPacketHandler
         if (packetType == 0)
         {
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("FindrCmps", 0, null), player);
+            
+            File config = FinderCompassMod.getConfigFile();
+            if (config != null && config.exists())
+            {
+                try
+                {
+                    byte[] fileBArray = new byte[(int)config.length()];
+                    FileInputStream fis = new FileInputStream(config);
+                    fis.read(fileBArray);
+                    
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    DataOutputStream data = new DataOutputStream(bytes);
+                    data.write(2); // packet ID
+                    data.write(fileBArray); // config content
+                    
+                    Packet250CustomPayload packetN = new Packet250CustomPayload();
+                    packetN.channel = packet.channel;
+                    packetN.data = bytes.toByteArray();
+                    packetN.length = packetN.data.length;
+                    
+                    fis.close();
+                    
+                    PacketDispatcher.sendPacketToPlayer(packetN, player);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
         else if (packetType == 1)
         {

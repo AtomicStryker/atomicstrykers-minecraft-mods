@@ -1,3 +1,7 @@
+1.4.6d
+added possibility for servers to override the Finder Compass config of the connected clients
+to override clients, simply install your config on the server like you would on client
+
 1.4.6c
 reworked FML Hack. Made other hacks fall back to FML method instead of bugging out
 fixed Hack being tirelessly re-applied when failed or overwritten
