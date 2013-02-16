@@ -100,11 +100,8 @@ public class RuinsMod
         checkWorld(world);
         if (ruins != null && ruins.loaded && (chunkX != 0 || chunkZ != 0))
         {
-            // can change this generation as needed. We're going for overblown
-            // right now,
-            // checking out side the chunk and such because generation seems to
-            // breaks down.
-
+            // can change this generation as needed. We're going for overblown right now,
+            // checking out side the chunk and such because generation seems to breaks down.
             generator.generateNormal(world, random, chunkX, 0, chunkZ);
         }
     }
