@@ -1,3 +1,7 @@
+1.1.5
+overriding Entity Names now to fix mods like damage indicator
+may or may not break existing bat entities. turn them into items before upgrading!
+
 1.1.4
 rewrote Item-to-Bat transition, should work in more cases now
 that means the "I was cheated" bat wipe should occur less

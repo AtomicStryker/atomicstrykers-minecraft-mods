@@ -503,9 +503,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         return super.getCanSpawnHere();
     }
-
+    
     @Override
-    public void initCreature() {}
+    public String getEntityName()
+    {
+        return "Pet Bat";
+    }
     
     /**
      * setter for the protected texture field

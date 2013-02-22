@@ -42,7 +42,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.4")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.5")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -178,7 +178,7 @@ public class PetBatMod implements IProxy
     {
         instance = this;
         
-        EntityRegistry.registerModEntity(EntityPetBat.class, "EntityPetBat", 1, this, 25, 5, true);
+        EntityRegistry.registerModEntity(EntityPetBat.class, "Pet Bat", 1, this, 25, 5, true);
         MinecraftForge.EVENT_BUS.register(this);
         
         itemPocketedBat = new ItemPocketedPetBat(itemIDPocketBat).setItemName("fed Pet Bat");
