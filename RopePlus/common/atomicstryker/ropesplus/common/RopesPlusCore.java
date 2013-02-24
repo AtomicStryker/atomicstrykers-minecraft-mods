@@ -211,15 +211,15 @@ public class RopesPlusCore
 		}
 		else if (Item.arrow != null && config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))
 		{
+            entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage "+entityarrow303.name, "4").getInt();
+            entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize "+entityarrow303.name, "4").getInt();
+		    
 			item = (ItemArrow303) (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setItemName(entityarrow303.name);
 			ItemStack craftedStack = new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0);
 			
 			GameRegistry.addRecipe(craftedStack, new Object[] {
 				"X", "#", "Y", Character.valueOf('X'), entityarrow303.tip, Character.valueOf('#'), Item.stick, Character.valueOf('Y'), Item.feather
 			});
-			
-			entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage "+entityarrow303.name, "4").getInt();
-			entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize "+entityarrow303.name, "4").getInt();
 
 			arrowItems.add(item);
 			LanguageRegistry.instance().addName(item, entityarrow303.name);
