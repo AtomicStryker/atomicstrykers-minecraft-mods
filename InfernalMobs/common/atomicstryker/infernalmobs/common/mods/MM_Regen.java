@@ -8,13 +8,11 @@ public class MM_Regen extends MobModifier
 {
     public MM_Regen(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Regen";
     }
     
     public MM_Regen(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Regen";
         this.nextMod = prevMod;
     }
@@ -23,9 +21,9 @@ public class MM_Regen extends MobModifier
     private final static long coolDown = 500L;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
-        if (mob.getHealth() < (mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER))
+        if (mob.getHealth() < getActualMaxHealth(mob))
         {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse)
@@ -34,6 +32,6 @@ public class MM_Regen extends MobModifier
                 InfernalMobsCore.setEntityHealthPastMax(mob, mob.getHealth()+1);
             }
         }
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
 }

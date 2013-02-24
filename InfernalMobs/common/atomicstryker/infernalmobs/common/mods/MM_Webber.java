@@ -11,13 +11,11 @@ public class MM_Webber extends MobModifier
 {
     public MM_Webber(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Webber";
     }
     
     public MM_Webber(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Webber";
         this.nextMod = prevMod;
     }
@@ -26,31 +24,36 @@ public class MM_Webber extends MobModifier
     private final static long coolDown = 15000L;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (getMobTarget() != null
         && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility(getMobTarget());
+            tryAbility(mob, getMobTarget());
         }
         
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && source.getEntity() instanceof EntityLiving)
         {
-            tryAbility((EntityLiving) source.getEntity());
+            tryAbility(mob, (EntityLiving) source.getEntity());
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
 
-    private void tryAbility(EntityLiving target)
+    private void tryAbility(EntityLiving mob, EntityLiving target)
     {
+        if (target == null)
+        {
+            return;
+        }
+        
         int x = MathHelper.floor_double(target.posX);
         int y = MathHelper.floor_double(target.posY);
         int z = MathHelper.floor_double(target.posZ);

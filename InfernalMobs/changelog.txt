@@ -1,3 +1,15 @@
+1.2.0
+- Infernal Mob health now directly scales with the amount of Modifiers on it
+- added Ultra and Infernal modified Mobs with up to 15 Modifiers on them
+- reworked enchanting Items to also scale with amount of Modifiers
+- its possible that very weak monsters do not yield enchantments on the loot
+- every 5 Modifiers the Mob will drop an additional Item
+- 25% of Rare Mobs will become Ultra Mobs, 25% of Ultra Mobs will become Infernal
+- added new Modifier Alchemist
+- giant clusterfuck rewrite of Modifier classes fixing around a million bugs
+- may or may not have introduced new bugs
+- removed leather and gold loot. mojang pls buff
+
 1.1.9
 - added possibility for Blocks and metadata/damage in dropped loot
 - old config syntax remains valid, to add Item "500" with meta/damage "3" add "500-3" to config

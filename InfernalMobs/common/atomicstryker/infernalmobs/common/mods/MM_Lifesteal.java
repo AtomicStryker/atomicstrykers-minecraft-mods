@@ -12,13 +12,11 @@ public class MM_Lifesteal extends MobModifier
 {
     public MM_Lifesteal(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "LifeSteal";
     }
     
     public MM_Lifesteal(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "LifeSteal";
         this.nextMod = prevMod;
     }
@@ -26,8 +24,9 @@ public class MM_Lifesteal extends MobModifier
     @Override
     public int onAttack(EntityLiving entity, DamageSource source, int damage)
     {
+        EntityLiving mob = (EntityLiving) source.getEntity();
         if (entity != null
-        && mob.getHealth() < (mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER))
+        && mob.getHealth() < getActualMaxHealth(mob))
         {
             InfernalMobsCore.setEntityHealthPastMax(mob, mob.getHealth()+damage);
         }

@@ -10,19 +10,17 @@ public class MM_Poisonous extends MobModifier
 {
     public MM_Poisonous(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Poisonous";
     }
     
     public MM_Poisonous(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Poisonous";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityLiving))
@@ -34,7 +32,7 @@ public class MM_Poisonous extends MobModifier
             }
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     @Override

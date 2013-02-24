@@ -12,13 +12,11 @@ public class MM_Cloaking extends MobModifier
 {
     public MM_Cloaking(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Cloaking";
     }
     
     public MM_Cloaking(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Cloaking";
         this.nextMod = prevMod;
     }
@@ -27,30 +25,30 @@ public class MM_Cloaking extends MobModifier
     private final static long coolDown = 10000L;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (getMobTarget() != null
         && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility();
+            tryAbility(mob);
         }
         
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && source.getEntity() instanceof EntityLiving)
         {
-            tryAbility();
+            tryAbility(mob);
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
 
-    private void tryAbility()
+    private void tryAbility(EntityLiving mob)
     {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse)

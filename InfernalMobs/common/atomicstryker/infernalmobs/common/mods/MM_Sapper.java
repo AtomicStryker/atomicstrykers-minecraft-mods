@@ -10,19 +10,17 @@ public class MM_Sapper extends MobModifier
 {
     public MM_Sapper(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Sapper";
     }
     
     public MM_Sapper(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Sapper";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityLiving))
@@ -34,7 +32,7 @@ public class MM_Sapper extends MobModifier
             }
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     @Override

@@ -9,13 +9,11 @@ public class MM_Quicksand extends MobModifier
 {
     public MM_Quicksand(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Quicksand";
     }
     
     public MM_Quicksand(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Quicksand";
         this.nextMod = prevMod;
     }
@@ -23,7 +21,7 @@ public class MM_Quicksand extends MobModifier
     int ticker = 0;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (getMobTarget() != null && ++ticker == 50)
         {
@@ -31,6 +29,6 @@ public class MM_Quicksand extends MobModifier
             getMobTarget().addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 45, 0));
         }
         
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
 }

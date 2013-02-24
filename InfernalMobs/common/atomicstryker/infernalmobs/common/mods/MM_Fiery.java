@@ -8,19 +8,17 @@ public class MM_Fiery extends MobModifier
 {
     public MM_Fiery(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Fiery";
     }
     
     public MM_Fiery(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Fiery";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityLiving))
@@ -29,7 +27,7 @@ public class MM_Fiery extends MobModifier
         }
         
         mob.extinguish();
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     @Override

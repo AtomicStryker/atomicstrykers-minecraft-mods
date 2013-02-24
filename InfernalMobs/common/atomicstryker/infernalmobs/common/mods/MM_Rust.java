@@ -9,19 +9,17 @@ public class MM_Rust extends MobModifier
 {
     public MM_Rust(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Rust";
     }
     
     public MM_Rust(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Rust";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityPlayer))
@@ -33,7 +31,7 @@ public class MM_Rust extends MobModifier
             }
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     @Override

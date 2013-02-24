@@ -2,18 +2,14 @@ package atomicstryker.infernalmobs.common;
 
 import java.util.ArrayList;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 
 public abstract class MobModifier
-{
-    /**
-     * modified entity instance
-     */
-    protected EntityLiving mob;
-    
+{    
     /**
      * next MobModifier in a linked chain, on the last one this field is null
      */
@@ -35,16 +31,23 @@ public abstract class MobModifier
     private int actualHealth;
     
     /**
-     * tracks the entity ai type the mod is attached to. 0 = undetermined, 1 = old ai getAttackTarget, 2 = new ai getAITarget
+     * Display-sized (up to 5) series of Modifier Strings, buffered
      */
-    private int aiStatus;
+    private String[] bufferedNames;
+    
+    /**
+     * buffered maximum health
+     */
+    private int actualMaxHealth;
+    
+    private EntityLiving attackTarget;
     
     public MobModifier()
     {
         nextMod = null;
         healthHacked = false;
         actualHealth = 100;
-        aiStatus = 0;
+        actualMaxHealth = -1;
     }
     
     /**
@@ -53,6 +56,32 @@ public abstract class MobModifier
     public String getLinkedModName()
     {
         return (modName + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
+    }
+    
+    /**
+     * @return Display-sized (up to 5) series of Modifier Strings
+     */
+    public String[] getDisplayNames()
+    {
+        if (bufferedNames == null)
+        {
+            String[] allMods = getLinkedModName().split(" ");
+            int index = 0;
+            int j = 0;
+            bufferedNames = new String[3];
+            bufferedNames[index] = "";
+            for (String m : allMods)
+            {
+                bufferedNames[index] = bufferedNames[index] + " " + m;
+                j++;
+                if (j % 5 == 0 && index+1 < bufferedNames.length)
+                {
+                    index++;
+                    bufferedNames[index] = "";
+                }
+            }
+        }
+        return bufferedNames;
     }
     
     /**
@@ -75,10 +104,11 @@ public abstract class MobModifier
 
     /**
      * Called when local Spawn Processing is completed or when a client remote-attached Modifiers to a local Entity
+     * @param entity 
      */
-    public void onSpawningComplete()
+    public void onSpawningComplete(EntityLiving entity)
     {
-        mob.getEntityData().setString(InfernalMobsCore.getNBTTag(), getLinkedModName());
+        entity.getEntityData().setString(InfernalMobsCore.getNBTTag(), getLinkedModName());
     }
 
     public boolean onDeath()
@@ -95,7 +125,7 @@ public abstract class MobModifier
     {
         if (recentlyHit)
         {
-            InfernalMobsCore.instance().dropLootForEnt(moddedMob);
+            InfernalMobsCore.instance().dropLootForEnt(moddedMob, this);
         }
     }
 
@@ -104,6 +134,10 @@ public abstract class MobModifier
         if (nextMod != null)
         {
             nextMod.onSetAttackTarget(target);
+        }
+        else if (target != null)
+        {
+            attackTarget = target;
         }
     }
 
@@ -126,22 +160,24 @@ public abstract class MobModifier
 
     /**
      * Modified Mob is being hurt
+     * @param mob 
      * @param source Damagesource doing the hurting
      * @param damage unmitigated damage value
      * @return damage to be applied after we processed the value
      */
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (nextMod != null)
         {
-            damage = nextMod.onHurt(source, damage);
+            damage = nextMod.onHurt(mob, source, damage);
         }
-        
-        if (source.getEntity() != null
-        && source.getEntity().worldObj.isRemote
-        && source.getEntity() instanceof EntityPlayer)
+        else if (source.getEntity() != null)
         {
-            InfernalMobsCore.instance().sendHealthRequestPacket(mob);
+            if (source.getEntity().worldObj.isRemote
+            && source.getEntity() instanceof EntityPlayer)
+            {
+                InfernalMobsCore.instance().sendHealthRequestPacket(mob);
+            }
         }
 
         return damage;
@@ -165,11 +201,26 @@ public abstract class MobModifier
         }
     }
     
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (nextMod != null)
         {
-            return nextMod.onUpdate();
+            return nextMod.onUpdate(mob);
+        }
+        else
+        {
+            if (attackTarget == null)
+            {
+                attackTarget = mob.worldObj.getClosestVulnerablePlayerToEntity(mob, 12f);
+            }
+            
+            if (attackTarget != null)
+            {
+                if (attackTarget.isDead || attackTarget.getDistanceToEntity(mob) > 15f)
+                {
+                    attackTarget = null;
+                }
+            }
         }
 
         return false;
@@ -178,17 +229,31 @@ public abstract class MobModifier
     /**
      * clientside helper method. Due to the health not being networked, we keep track of it
      * internally, here. Also, this is a good spot for the more-than-allowed health hack.
+     * @param mob 
      */
-    public int getActualHealth()
+    public int getActualHealth(EntityLiving mob)
     {
         if (!healthHacked && !mob.worldObj.isRemote)
         {
-            actualHealth = mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER;
+            actualHealth = getActualMaxHealth(mob);
             InfernalMobsCore.setEntityHealthPastMax(mob, actualHealth);
             healthHacked = true;
         }
         
         return actualHealth;
+    }
+    
+    /**
+     * @param mob 
+     * @return buffered modified max health
+     */
+    public int getActualMaxHealth(EntityLiving mob)
+    {
+        if (actualMaxHealth < 0)
+        {
+            actualMaxHealth = mob.getMaxHealth()*getModSize();
+        }
+        return actualMaxHealth;
     }
     
     /**
@@ -199,42 +264,9 @@ public abstract class MobModifier
         actualHealth = input;
     }
     
-    public void updateEntityReference(EntityLiving ent)
-    {
-        mob = ent;
-    }
-    
-    /**
-     * wrapper helper for the old / new ai systems now both present in mc and mods
-     * buffers the first result so there wont have to be countless re-checks
-     */
     protected EntityLiving getMobTarget()
-    {
-        if (aiStatus == 0)
-        {
-            if (mob.getAITarget() != null)
-            {
-                aiStatus = 2;
-            }
-            else if (mob.getAttackTarget() != null)
-            {
-                aiStatus = 1;
-            }
-        }
-        
-        switch (aiStatus)
-        {
-            case 1:
-            {
-                return mob.getAttackTarget();
-            }
-            case 2:
-            {
-                return mob.getAITarget();
-            }
-        }
-        
-        return null;
+    {        
+        return attackTarget;
     }
 
     /**
@@ -258,5 +290,20 @@ public abstract class MobModifier
     {
         return (o instanceof MobModifier
                 && ((MobModifier)o).modName.equals(modName));
+    }
+    
+    /**
+     * @return size of linked Mod list
+     */
+    public int getModSize()
+    {
+        int r = 1;
+        MobModifier nextmod = this.nextMod;
+        while (nextmod != null)
+        {
+            r++;
+            nextmod = nextmod.nextMod;
+        }
+        return r;
     }
 }

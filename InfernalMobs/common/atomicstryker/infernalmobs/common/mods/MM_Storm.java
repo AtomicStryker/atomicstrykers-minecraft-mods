@@ -12,13 +12,11 @@ public class MM_Storm extends MobModifier
 {
     public MM_Storm(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Storm";
     }
     
     public MM_Storm(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Storm";
         this.nextMod = prevMod;
     }
@@ -28,19 +26,24 @@ public class MM_Storm extends MobModifier
     private final static float MIN_DISTANCE = 3F;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (getMobTarget() != null
         && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility(getMobTarget());
+            tryAbility(mob, getMobTarget());
         }
         
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
 
-    private void tryAbility(EntityLiving target)
-    {        
+    private void tryAbility(EntityLiving mob, EntityLiving target)
+    {
+        if (target == null)
+        {
+            return;
+        }
+        
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
         && mob.getDistanceToEntity(target) > MIN_DISTANCE

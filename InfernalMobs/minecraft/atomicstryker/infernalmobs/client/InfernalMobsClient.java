@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -36,12 +37,14 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     private Minecraft mc;
     private World lastWorld;
     private long nextPacketTime;
+    private ConcurrentHashMap<EntityLiving, MobModifier> rareMobsClient;
     
     @Override
     public void load()
     {
         mc = FMLClientHandler.instance().getClient();
         nextPacketTime = 0;
+        rareMobsClient = new ConcurrentHashMap();
         
         TickRegistry.registerTickHandler(this, Side.CLIENT);
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
@@ -76,13 +79,15 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 
                 EntityLiving target = (EntityLiving) ent;
                 String buffer = EntityList.getEntityString(target);
+                int size = mod.getModSize();
+                String prefix = size <= 5 ? "Rare " : size <= 10 ? "Ultra " : "Infernal ";
                 if (buffer.startsWith("Entity"))
                 {
-                    buffer = buffer.replaceFirst("Entity", "Rare ");
+                    buffer = buffer.replaceFirst("Entity", prefix);
                 }
                 else
                 {
-                    buffer = "Rare "+buffer;
+                    buffer = prefix+buffer;
                 }
                 
                 ScaledResolution resolution = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
@@ -93,7 +98,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 short lifeBarLength = 182;
                 int x = screenwidth / 2 - lifeBarLength / 2;
                 
-                int lifeBarLeft = (int)((float)mod.getActualHealth() / ((float)target.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER) * (float)(lifeBarLength + 1));
+                int lifeBarLeft = (int)((float)mod.getActualHealth(target) / (float)mod.getActualMaxHealth(target) * (float)(lifeBarLength + 1));
                 byte y = 12;
                 gui.drawTexturedModalRect(x, y, 0, 74, lifeBarLength, 5);
                 gui.drawTexturedModalRect(x, y, 0, 74, lifeBarLength, 5);
@@ -103,9 +108,17 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                     gui.drawTexturedModalRect(x, y, 0, 79, lifeBarLeft, 5);
                 }
                 
-                fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, 10, 0x2F96EB);
-                buffer = mod.getLinkedModName();
-                fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, 20, 0xffffff);
+                int yCoord = 10;
+                fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, yCoord, 0x2F96EB);
+                
+                String[] display = mod.getDisplayNames();
+                int i = 0;
+                while (i < display.length && display[i] != null)
+                {
+                    yCoord += 10;
+                    fontR.drawStringWithShadow(display[i], screenwidth / 2 - fontR.getStringWidth(display[i]) / 2, yCoord, 0xffffff);
+                    i++;
+                }
             }
         }
     }
@@ -202,6 +215,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     }
 
     private EnumSet tickTypes = EnumSet.of(TickType.RENDER);
+    
     @Override
     public EnumSet<TickType> ticks()
     {
@@ -212,6 +226,12 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     public String getLabel()
     {
         return "InfernalMobs";
+    }
+
+    @Override
+    public ConcurrentHashMap<EntityLiving, MobModifier> getRareMobs()
+    {
+        return rareMobsClient;
     }
     
 }

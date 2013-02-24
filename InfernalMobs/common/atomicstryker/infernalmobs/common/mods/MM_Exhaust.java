@@ -9,19 +9,17 @@ public class MM_Exhaust extends MobModifier
 {
     public MM_Exhaust(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Exhaust";
     }
     
     public MM_Exhaust(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Exhaust";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityPlayer))
@@ -29,7 +27,7 @@ public class MM_Exhaust extends MobModifier
             ((EntityPlayer)source.getEntity()).addExhaustion(1F);
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     @Override

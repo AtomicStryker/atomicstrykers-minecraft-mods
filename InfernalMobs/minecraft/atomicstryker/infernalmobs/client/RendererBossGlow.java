@@ -41,7 +41,7 @@ public class RendererBossGlow
         double var11 = viewEnt.lastTickPosZ + (viewEnt.posZ - viewEnt.lastTickPosZ) * (double)renderTick;
         f.setPosition(var7, var9, var11);
         
-        for (EntityLiving ent : InfernalMobsCore.getRareMobs().keySet())
+        for (EntityLiving ent : InfernalMobsCore.proxy.getRareMobs().keySet())
         {
             if (ent.isInRangeToRenderVec3D(curPos)
             && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.boundingBox))

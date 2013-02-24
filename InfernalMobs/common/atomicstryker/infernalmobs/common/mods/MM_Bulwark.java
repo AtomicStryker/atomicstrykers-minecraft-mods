@@ -8,20 +8,18 @@ public class MM_Bulwark extends MobModifier
 {
     public MM_Bulwark(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Bulwark";
     }
     
     public MM_Bulwark(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Bulwark";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
-        return super.onHurt(source, Math.max(damage/2, 1));
+        return super.onHurt(mob, source, Math.max(damage/2, 1));
     }
 }

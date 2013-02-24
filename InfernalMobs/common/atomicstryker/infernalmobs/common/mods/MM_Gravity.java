@@ -12,14 +12,12 @@ public class MM_Gravity extends MobModifier
 {
     public MM_Gravity(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Gravity";
         offensive = mob.getClass().isAssignableFrom(IMob.class);
     }
     
     public MM_Gravity(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Gravity";
         this.nextMod = prevMod;
         offensive = mob.getClass().isAssignableFrom(IMob.class);
@@ -30,33 +28,38 @@ public class MM_Gravity extends MobModifier
     private final static long coolDown = 5000L;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (offensive
         && getMobTarget() != null
         && getMobTarget() instanceof EntityPlayer)
         {
-            tryAbility(getMobTarget());
+            tryAbility(mob, getMobTarget());
         }
         
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (!offensive
         && source.getEntity() != null
         && source.getEntity() instanceof EntityLiving)
         {
-            tryAbility((EntityLiving) source.getEntity());
+            tryAbility(mob, (EntityLiving) source.getEntity());
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
 
-    private void tryAbility(EntityLiving target)
+    private void tryAbility(EntityLiving mob, EntityLiving target)
     {
+        if (target == null)
+        {
+            return;
+        }
+        
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse)
         {

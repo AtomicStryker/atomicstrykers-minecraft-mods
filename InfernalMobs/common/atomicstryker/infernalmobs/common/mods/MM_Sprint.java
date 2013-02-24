@@ -7,13 +7,11 @@ public class MM_Sprint extends MobModifier
 {
     public MM_Sprint(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Sprint";
     }
     
     public MM_Sprint(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Sprint";
         this.nextMod = prevMod;
     }
@@ -23,7 +21,7 @@ public class MM_Sprint extends MobModifier
     private boolean sprinting;
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
         if (getMobTarget() != null)
         {
@@ -36,17 +34,17 @@ public class MM_Sprint extends MobModifier
             
             if (sprinting)
             {
-                doSprint();
+                doSprint(mob);
             }
         }
         
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
     
     private double modMotionX;
     private double modMotionZ;
     
-    private void doSprint()
+    private void doSprint(EntityLiving mob)
     {
         float rotationMovement = (float)((Math.atan2(mob.motionX, mob.motionZ) * 180D) / 3.1415D);
         float rotationLook = mob.rotationYaw;

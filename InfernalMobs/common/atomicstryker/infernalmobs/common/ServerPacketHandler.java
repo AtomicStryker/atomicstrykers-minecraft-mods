@@ -38,7 +38,7 @@ public class ServerPacketHandler implements IPacketHandler
                     Object[] toSend = {entID, mod.getLinkedModName()};
                     PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_IM", 1, toSend), player);
                     
-                    InfernalMobsCore.instance().sendHealthPacket(ent, mod.getActualHealth());
+                    InfernalMobsCore.instance().sendHealthPacket(ent, mod.getActualHealth(ent));
                 }
             }
         }

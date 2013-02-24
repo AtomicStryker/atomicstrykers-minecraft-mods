@@ -12,13 +12,11 @@ public class MM_Sticky extends MobModifier
 {
     public MM_Sticky(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Sticky";
     }
     
     public MM_Sticky(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Sticky";
         this.nextMod = prevMod;
     }
@@ -27,7 +25,7 @@ public class MM_Sticky extends MobModifier
     private final static long coolDown = 15000L;
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityPlayer))
@@ -51,7 +49,7 @@ public class MM_Sticky extends MobModifier
             }
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     private Class[] disallowed = { EntityCreeper.class };

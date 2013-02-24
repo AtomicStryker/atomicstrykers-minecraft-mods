@@ -12,13 +12,11 @@ public class MM_Ninja extends MobModifier
 {
     public MM_Ninja(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Ninja";
     }
     
     public MM_Ninja(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Ninja";
         this.nextMod = prevMod;
     }
@@ -27,22 +25,22 @@ public class MM_Ninja extends MobModifier
     private final static long coolDown = 15000L;
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
         && source.getEntity() != null
-        && teleportToEntity(source.getEntity()))
+        && teleportToEntity(mob, source.getEntity()))
         {
             nextAbilityUse = time+coolDown;
             source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), Math.min(damage, 15));
-            return super.onHurt(source, 0);
+            return super.onHurt(mob, source, 0);
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
-    private boolean teleportToEntity(Entity par1Entity)
+    private boolean teleportToEntity(EntityLiving mob, Entity par1Entity)
     {
         Vec3 vector = Vec3.createVectorHelper(mob.posX - par1Entity.posX, mob.boundingBox.minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
@@ -50,10 +48,10 @@ public class MM_Ninja extends MobModifier
         double destX = mob.posX + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;
         double destY = mob.posY + (double)(mob.worldObj.rand.nextInt(16) - 4) - vector.yCoord * telDist;
         double destZ = mob.posZ + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.zCoord * telDist;
-        return teleportTo(destX, destY, destZ);
+        return teleportTo(mob, destX, destY, destZ);
     }
     
-    private boolean teleportTo(double destX, double destY, double destZ)
+    private boolean teleportTo(EntityLiving mob, double destX, double destY, double destZ)
     {
         double oldX = mob.posX;
         double oldY = mob.posY;

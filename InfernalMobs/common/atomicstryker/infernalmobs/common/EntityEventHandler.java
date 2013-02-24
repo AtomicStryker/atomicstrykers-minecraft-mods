@@ -38,17 +38,15 @@ public class EntityEventHandler
     @ForgeSubscribe
     public void onEntityLivingDeath(LivingDeathEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        if (!event.entity.worldObj.isRemote)
         {
-            if (!event.entityLiving.worldObj.isRemote)
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            if (mod != null)
             {
-                mod.updateEntityReference(event.entityLiving);
-            }
-            
-            if(mod.onDeath())
-            {
-                event.setCanceled(true);
+                if(mod.onDeath())
+                {
+                    event.setCanceled(true);
+                }
             }
         }
     }
@@ -56,11 +54,13 @@ public class EntityEventHandler
     @ForgeSubscribe
     public void onEntityLivingSetAttackTarget(LivingSetAttackTargetEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        if (!event.entity.worldObj.isRemote)
         {
-            mod.updateEntityReference(event.entityLiving);
-            mod.onSetAttackTarget(event.target);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            if (mod != null)
+            {
+                mod.onSetAttackTarget(event.target);
+            }
         }
     }
 
@@ -76,10 +76,9 @@ public class EntityEventHandler
         MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
         if (mod != null)
         {
-            mod.updateEntityReference(event.entityLiving);
-            event.ammount = mod.onHurt(event.source, event.ammount);
+            event.ammount = mod.onHurt(event.entityLiving, event.source, event.ammount);
         }
-        
+
         /*
          * We use the Hook two-sided, both with the Mob as possible target and attacker
          */
@@ -90,8 +89,7 @@ public class EntityEventHandler
             mod = InfernalMobsCore.getMobModifiers((EntityLiving) attacker);
             if (mod != null)
             {
-                mod.updateEntityReference((EntityLiving) attacker);
-            	event.ammount = mod.onAttack(event.entityLiving, event.source, event.ammount);
+                event.ammount = mod.onAttack(event.entityLiving, event.source, event.ammount);
             }
         }
     }
@@ -99,45 +97,53 @@ public class EntityEventHandler
     @ForgeSubscribe
     public void onEntityLivingFall(LivingFallEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        if (!event.entity.worldObj.isRemote)
         {
-            mod.updateEntityReference(event.entityLiving);
-            event.setCanceled(mod.onFall(event.distance));
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            if (mod != null)
+            {
+                event.setCanceled(mod.onFall(event.distance));
+            }
         }
     }
     
     @ForgeSubscribe
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        if (!event.entity.worldObj.isRemote)
         {
-            mod.updateEntityReference(event.entityLiving);
-            mod.onJump(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            if (mod != null)
+            {
+                mod.onJump(event.entityLiving);
+            }
         }
     }
 
     @ForgeSubscribe
     public void onEntityLivingUpdate(LivingEvent.LivingUpdateEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        if (!event.entityLiving.worldObj.isRemote)
         {
-            mod.updateEntityReference(event.entityLiving);
-            mod.onUpdate();
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            if (mod != null)
+            {
+                mod.onUpdate(event.entityLiving);
+            }
         }
     }
 
     @ForgeSubscribe
     public void onEntityLivingDrops(LivingDropsEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        if (!event.entity.worldObj.isRemote)
         {
-            mod.updateEntityReference(event.entityLiving);
-            mod.onDropItems(event.entityLiving, event.source, event.drops, event.lootingLevel, event.recentlyHit, event.specialDropValue);
-            InfernalMobsCore.removeEntFromElites(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            if (mod != null)
+            {
+                mod.onDropItems(event.entityLiving, event.source, event.drops, event.lootingLevel, event.recentlyHit, event.specialDropValue);
+                InfernalMobsCore.removeEntFromElites(event.entityLiving);
+            }
         }
     }
 }

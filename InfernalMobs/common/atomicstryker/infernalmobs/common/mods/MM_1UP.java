@@ -11,29 +11,27 @@ public class MM_1UP extends MobModifier
     
     public MM_1UP(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "1UP";
         healed = false;
     }
     
     public MM_1UP(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "1UP";
         this.nextMod = prevMod;
         healed = false;
     }
     
     @Override
-    public boolean onUpdate()
+    public boolean onUpdate(EntityLiving mob)
     {
-        if (!healed && mob.getHealth() < (mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER)/4)
+        if (!healed && mob.getHealth() < (getActualMaxHealth(mob)*0.25))
         {
-            InfernalMobsCore.setEntityHealthPastMax(mob, mob.getMaxHealth()*InfernalMobsCore.RARE_MOB_HEALTH_MODIFIER);
+            InfernalMobsCore.setEntityHealthPastMax(mob, getActualMaxHealth(mob));
             mob.worldObj.playSoundAtEntity(mob, "random.levelup", 1.0F, 1.0F);
             healed = true;
         }
-        return super.onUpdate();
+        return super.onUpdate(mob);
     }
     
     @Override

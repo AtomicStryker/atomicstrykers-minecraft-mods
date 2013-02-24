@@ -10,19 +10,17 @@ public class MM_Wither extends MobModifier
 {
     public MM_Wither(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Wither";
     }
     
     public MM_Wither(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Wither";
         this.nextMod = prevMod;
     }
     
     @Override
-    public int onHurt(DamageSource source, int damage)
+    public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
         if (source.getEntity() != null
         && (source.getEntity() instanceof EntityLiving))
@@ -30,7 +28,7 @@ public class MM_Wither extends MobModifier
             ((EntityLiving)source.getEntity()).addPotionEffect(new PotionEffect(Potion.wither.id, 120, 0));
         }
         
-        return super.onHurt(source, damage);
+        return super.onHurt(mob, source, damage);
     }
     
     @Override

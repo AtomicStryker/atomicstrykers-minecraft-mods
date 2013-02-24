@@ -11,13 +11,11 @@ public class MM_Berserk extends MobModifier
 {
     public MM_Berserk(EntityLiving mob)
     {
-        this.mob = mob;
         this.modName = "Berserk";
     }
     
     public MM_Berserk(EntityLiving mob, MobModifier prevMod)
     {
-        this.mob = mob;
         this.modName = "Berserk";
         this.nextMod = prevMod;
     }
@@ -27,7 +25,7 @@ public class MM_Berserk extends MobModifier
     {
         if (entity != null)
         {
-            mob.attackEntityFrom(DamageSource.generic, damage);
+            source.getEntity().attackEntityFrom(DamageSource.generic, damage);
             damage *= 2;
         }
         
