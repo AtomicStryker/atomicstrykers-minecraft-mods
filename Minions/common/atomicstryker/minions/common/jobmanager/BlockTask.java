@@ -9,10 +9,10 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import atomicstryker.astarpathing.AStarNode;
+import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.entity.EnumMinionState;
-import atomicstryker.minions.common.pathfinding.AStarNode;
-import atomicstryker.minions.common.pathfinding.AStarStatic;
 
 /**
  * Blocktask super schematic. By default a Blocktask doesnt change the Block.

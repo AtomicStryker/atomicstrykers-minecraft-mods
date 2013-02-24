@@ -27,6 +27,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ForgePacketWrapper;
+import atomicstryker.astarpathing.AS_PathEntity;
+import atomicstryker.astarpathing.AS_PathPoint;
+import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.entity.EnumMinionState;
@@ -36,9 +39,6 @@ import atomicstryker.minions.common.jobmanager.Minion_Job_DigMineStairwell;
 import atomicstryker.minions.common.jobmanager.Minion_Job_Manager;
 import atomicstryker.minions.common.jobmanager.Minion_Job_StripMine;
 import atomicstryker.minions.common.jobmanager.Minion_Job_TreeHarvest;
-import atomicstryker.minions.common.pathfinding.AS_PathEntity;
-import atomicstryker.minions.common.pathfinding.AS_PathPoint;
-import atomicstryker.minions.common.pathfinding.AStarNode;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
@@ -62,7 +62,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.0")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.1")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {

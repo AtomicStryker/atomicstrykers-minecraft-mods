@@ -94,7 +94,6 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 		}
 		else
 		{
-	    	this.worker.currentState = EnumMinionState.AWAITING_JOB;
 	    	this.worker.giveTask(null);
 		}
 	}

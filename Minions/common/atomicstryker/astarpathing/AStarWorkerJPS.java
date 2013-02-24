@@ -1,4 +1,4 @@
-package atomicstryker.minions.common.pathfinding;
+package atomicstryker.astarpathing;
 
 import java.util.ArrayList;
 import java.util.Iterator;

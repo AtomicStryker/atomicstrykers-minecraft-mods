@@ -1,3 +1,9 @@
+Update 1.6.1
+- reworked Path Finding again, somewhat, moved it into a seperate package
+- fixed some crashes and bugs
+- Minions now try to walk the ground if directed through Liquids (not lava), they are terrible swimmers
+- if they are in follow mode however ('charge' staff command) they follow you like ducklings
+
 Update 1.6.0
 - fixed NPE crash in Stripmine class
 - removed spammy AStar fail message logging

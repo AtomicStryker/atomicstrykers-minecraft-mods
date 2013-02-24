@@ -23,14 +23,14 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import atomicstryker.astarpathing.AS_PathEntity;
+import atomicstryker.astarpathing.AStarNode;
+import atomicstryker.astarpathing.AStarPathPlanner;
+import atomicstryker.astarpathing.AStarStatic;
+import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.minions.common.MinionsChunkManager;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.jobmanager.BlockTask;
-import atomicstryker.minions.common.pathfinding.AS_PathEntity;
-import atomicstryker.minions.common.pathfinding.AStarNode;
-import atomicstryker.minions.common.pathfinding.AStarPathPlanner;
-import atomicstryker.minions.common.pathfinding.AStarStatic;
-import atomicstryker.minions.common.pathfinding.IAStarPathedEntity;
 
 /**
  * Minion Entity class, this is where the evil magic happens
@@ -349,9 +349,10 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	&& master != null
     	&& !hasPath())
     	{
-    		if (this.getDistanceToEntity(master) < 3F && currentState == EnumMinionState.RETURNING_GOODS && returnChestOrInventory == null && this.inventory.containsItems())
+    		if (this.getDistanceToEntity(master) < 2F && currentState == EnumMinionState.RETURNING_GOODS && returnChestOrInventory == null && this.inventory.containsItems())
     		{
     			dropAllItemsToWorld();
+    			getNavigator().setPath(null, this.moveSpeed);
     		}
     	}
     	else if ((currentState == EnumMinionState.RETURNING_GOODS)

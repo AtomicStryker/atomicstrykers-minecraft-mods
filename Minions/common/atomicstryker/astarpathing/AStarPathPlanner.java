@@ -1,4 +1,4 @@
-package atomicstryker.minions.common.pathfinding;
+package atomicstryker.astarpathing;
 
 import java.util.ArrayList;
 
@@ -15,16 +15,13 @@ public class AStarPathPlanner
     private AStarWorker worker;
     private World worldObj;
     private IAStarPathedEntity pathedEntity;
-    private boolean accesslock;
     private boolean isJPS;
     private AStarNode lastStart;
     private AStarNode lastEnd;
     
     public AStarPathPlanner(World world, IAStarPathedEntity ent)
     {
-        worker = new AStarWorker(this);
         worldObj = world;
-        accesslock = false;
         pathedEntity = ent;
         isJPS = true;
     }
@@ -32,11 +29,14 @@ public class AStarPathPlanner
     public void setJPS(boolean b)
     {
         isJPS = b;
-        flushWorker();
     }
 
     public boolean isBusy()
     {
+        if (worker == null)
+        {
+            return false;
+        }
         return worker.getState() != Thread.State.NEW;
     }
 
@@ -60,33 +60,25 @@ public class AStarPathPlanner
         getPath(starter, finish, allowDropping);
     }
 
-    public void getPath(AStarNode start, AStarNode end, boolean allowDropping)
-    {
-        if (isBusy())
-        {
-            //System.out.println("getPath called while busy, stopping...");
-            stopPathSearch();
-        }
-        
-        while (accesslock) { Thread.yield(); }
-        flushWorker();
-        accesslock = true;
-        
+    public synchronized void getPath(AStarNode start, AStarNode end, boolean allowDropping)
+    {        
         lastStart = start;
         lastEnd = end;
         
+        worker = isJPS ? new AStarWorkerJPS(this) : new AStarWorker(this);
         worker.setup(worldObj, start, end, allowDropping);
         worker.start();
-
-        accesslock = false;
     }
 
-    public void onFoundPath(ArrayList<AStarNode> result)
+    public void onFoundPath(AStarWorker aStarWorker, ArrayList<AStarNode> result)
     {
-        setJPS(true);
-        if (pathedEntity != null)
+        if (aStarWorker.equals(worker)) // disregard solutions from abandoned workers
         {
-            pathedEntity.onFoundPath(result);
+            setJPS(true);
+            if (pathedEntity != null)
+            {
+                pathedEntity.onFoundPath(result);
+            }
         }
     }
 
@@ -102,23 +94,6 @@ public class AStarPathPlanner
         {
             //System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
             pathedEntity.onNoPathAvailable();
-        }
-    }
-
-    public void stopPathSearch()
-    {
-        flushWorker();
-        if (pathedEntity != null)
-        {
-            pathedEntity.onNoPathAvailable();
-        }
-    }
-
-    private void flushWorker()
-    {
-        if (!accesslock) // only flush if we arent starting!
-        {
-            worker = isJPS ? new AStarWorkerJPS(this) : new AStarWorker(this);
         }
     }
 }

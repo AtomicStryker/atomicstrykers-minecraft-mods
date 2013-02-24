@@ -324,7 +324,7 @@ public class ChickenLightningBolt
 		}
 	}
 	
-	private void vecBBDamageSegment(Vector3 start, Vector3 end, ArrayList<Entity> entitylist)
+	private void vecBBDamageSegment(Vector3 start, Vector3 end, List<Entity> entitylist)
 	{
 		Vec3 start3D = start.toVec3D();
 		Vec3 end3D = end.toVec3D();
@@ -373,7 +373,7 @@ public class ChickenLightningBolt
 				continue;
 			}
 			
-			vecBBDamageSegment(segment.startpoint.point, segment.endpoint.point, (ArrayList<Entity>) nearentities);
+			vecBBDamageSegment(segment.startpoint.point, segment.endpoint.point, nearentities);
 		}
 	}
 	

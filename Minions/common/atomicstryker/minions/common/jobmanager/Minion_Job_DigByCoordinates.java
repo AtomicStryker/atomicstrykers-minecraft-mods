@@ -6,8 +6,8 @@ import java.util.Iterator;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.pathfinding.AStarStatic;
 
 /**
  * Minion Job class for digging out a NxN sized space, automatically digging a support stairwell if one is needed
