@@ -1,3 +1,6 @@
+1.0.2
+- added current AStar implementation
+
 1.0.1
 - added new feature: you can now see other players paths
 - only available if the server has the mod

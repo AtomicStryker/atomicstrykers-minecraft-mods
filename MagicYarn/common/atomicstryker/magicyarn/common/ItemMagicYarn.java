@@ -5,7 +5,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import atomicstryker.magicyarn.common.pathfinding.AStarNode;
+import atomicstryker.astarpathing.AStarNode;
 
 public class ItemMagicYarn extends Item
 {

@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityCritFX;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
-import atomicstryker.magicyarn.common.pathfinding.AStarNode;
-import atomicstryker.magicyarn.common.pathfinding.AStarPathPlanner;
+import atomicstryker.astarpathing.AStarNode;
+import atomicstryker.astarpathing.AStarPathPlanner;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
@@ -48,10 +48,6 @@ public class ClientTickHandler implements ITickHandler
         if (lastWorld != mcinstance.theWorld)
         {
             lastWorld = mcinstance.theWorld;
-            if (plannerInstance != null)
-            {
-                plannerInstance.stopPathSearch();
-            }
             plannerInstance = new AStarPathPlanner(lastWorld, clientInstance);
         }
         

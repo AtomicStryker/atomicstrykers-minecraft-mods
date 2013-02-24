@@ -1,4 +1,4 @@
-package atomicstryker.magicyarn.common.pathfinding;
+package atomicstryker.astarpathing;
 
 import java.lang.reflect.Field;
 

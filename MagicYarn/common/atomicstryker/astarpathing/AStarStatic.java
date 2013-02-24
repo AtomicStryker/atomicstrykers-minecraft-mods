@@ -1,4 +1,4 @@
-package atomicstryker.magicyarn.common.pathfinding;
+package atomicstryker.astarpathing;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,21 +48,37 @@ public class AStarStatic
 	    }
 
 	    if (!isPassableBlock(worldObj, x, y, z)
-	    || !isPassableBlock(worldObj, x, y+1, z)
-	    || (isPassableBlock(worldObj, x, y-1, z) && (id != Block.waterStill.blockID || id != Block.waterMoving.blockID)))
+	    || !isPassableBlock(worldObj, x, y+1, z))
 	    {
 	        return false;
 	    }
-
-	    if (yoffset < 0) yoffset *= -1;
-	    int ycheckhigher = 1;
-	    while (ycheckhigher <= yoffset)
+	    
+	    if (isPassableBlock(worldObj, x, y-1, z))
 	    {
-	        if (!isPassableBlock(worldObj, x, y+yoffset, z))
+	        if (id > 0
+	        && Block.blocksList[id] != null
+	        && !Block.blocksList[id].getBlocksMovement(worldObj, x, y-1, z))
+	        {
+	            // is a traversable fluid, allow navigating
+	        }
+	        else
 	        {
 	            return false;
 	        }
-	        ycheckhigher++;
+	    }
+	    
+	    if (yoffset < 0) // when descending, make sure your head doesnt hit a ceiling block
+	    {
+	        yoffset *= -1;
+	        int ycheckhigher = 1;
+	        while (ycheckhigher <= yoffset)
+	        {
+	            if (!isPassableBlock(worldObj, x, y+yoffset, z))
+	            {
+	                return false;
+	            }
+	            ycheckhigher++;
+	        }
 	    }
 
 	    return true;

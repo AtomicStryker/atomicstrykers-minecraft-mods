@@ -1,4 +1,4 @@
-package atomicstryker.magicyarn.common.pathfinding;
+package atomicstryker.astarpathing;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.pathfinding.PathEntity;

@@ -14,10 +14,10 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import atomicstryker.PacketWrapper;
+import atomicstryker.astarpathing.AStarNode;
+import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
 import atomicstryker.magicyarn.common.MagicYarn;
-import atomicstryker.magicyarn.common.pathfinding.AStarNode;
-import atomicstryker.magicyarn.common.pathfinding.IAStarPathedEntity;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.TickRegistry;
@@ -109,11 +109,6 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                 (int)Math.floor(mcinstance.thePlayer.posX), (int)Math.floor(mcinstance.thePlayer.posY), (int)Math.floor(mcinstance.thePlayer.posZ),
                 (int)Math.floor(otherPlayer.posX), (int)Math.floor(otherPlayer.posY), (int)Math.floor(otherPlayer.posZ), false);
     }
-
-    public void stopPathSearch()
-    {
-        clientTicker.plannerInstance.stopPathSearch();
-    }
     
     @Override
     public void onFoundPath(ArrayList<AStarNode> result)
@@ -137,7 +132,6 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
         origin = null;
         target = null;
         inputPath(null, true);
-        clientTicker.plannerInstance.stopPathSearch();
         clientTicker.path = null;
         clientTicker.showPath = false;
     }
@@ -202,7 +196,6 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                         origin = clientTicker.path.get(0);
                         target = null;
                         //inputPath(null, true);
-                        clientTicker.plannerInstance.stopPathSearch();
                         System.out.println("Magic Yarn preparing for next target");
                         if (!soundplayed)
                         {
