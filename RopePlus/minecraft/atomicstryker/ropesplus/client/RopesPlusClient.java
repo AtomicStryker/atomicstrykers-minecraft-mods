@@ -40,7 +40,6 @@ public class RopesPlusClient implements ITickHandler
     private int countDownToArrowCount;
     
     public static boolean grapplingHookOut;
-    public static int renderIDGrapplingHook;
     
     private static EntityFreeFormRope onZipLine;
     private static float lastZipLineLength;
@@ -70,8 +69,6 @@ public class RopesPlusClient implements ITickHandler
         KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsForward(keyf, repeat));
         KeyBinding[] keyb = {new KeyBinding("SwapArrowsBackward", Keyboard.KEY_PERIOD)};
         KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsBackward(keyb, repeat));
-
-        renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
     }
     
     private void selectAnyArrow()

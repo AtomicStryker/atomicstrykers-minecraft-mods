@@ -7,34 +7,29 @@ import net.minecraft.world.IBlockAccess;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class BlockRenderHandler
-{
-    public static BlockRenderHandler instance = new BlockRenderHandler();
-    
-    public class BlockGrapplingHookRenderHandler implements ISimpleBlockRenderingHandler
+public class BlockRenderHandler implements ISimpleBlockRenderingHandler
+{    
+    @Override
+    public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer)
     {
-        @Override
-        public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer)
-        {
-        }
+    }
 
-        @Override
-        public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer)
-        {
-            return renderGrapplingHook(renderer, block, x, y, z, world);
-        }
+    @Override
+    public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer)
+    {
+        return renderGrapplingHook(renderer, block, x, y, z, world);
+    }
 
-        @Override
-        public boolean shouldRender3DInInventory()
-        {
-            return false;
-        }
+    @Override
+    public boolean shouldRender3DInInventory()
+    {
+        return false;
+    }
 
-        @Override
-        public int getRenderId()
-        {
-            return RopesPlusCore.blockGrapplingHook.getRenderType();
-        }
+    @Override
+    public int getRenderId()
+    {
+        return RopesPlusCore.proxy.getGrapplingHookRenderId();
     }
 
     private boolean renderGrapplingHook(RenderBlocks renderblocks, Block block, int i, int j, int k, IBlockAccess iblockaccess)

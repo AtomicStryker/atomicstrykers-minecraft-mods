@@ -12,6 +12,8 @@ import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class ItemBowRopesPlus extends ItemBow
 {
+    private int heldTicksBuffer;
+    
 	public ItemBowRopesPlus(int i)
 	{
 		super(i);
@@ -23,6 +25,7 @@ public class ItemBowRopesPlus extends ItemBow
 	@Override
     public void onPlayerStoppedUsing(ItemStack usedItemStack, World world, EntityPlayer player, int heldTicks)
     {
+	    heldTicksBuffer = heldTicks;
         // get vanilla bow
         ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
 	    
@@ -106,5 +109,35 @@ public class ItemBowRopesPlus extends ItemBow
     {
     	par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
         return par1ItemStack;
+    }
+	
+	// these two enable the icon change to render an arrow on the drawn bow
+	@Override
+    public boolean requiresMultipleRenderPasses()
+    {
+        return true;
+    }
+	
+	@Override
+    public int getIconIndex(ItemStack stack, int pass)
+    {
+        int remainingUseDur = stack.getMaxItemUseDuration() - heldTicksBuffer;
+
+        if (remainingUseDur >= 18)
+        {
+            return 133;
+        }
+
+        if (remainingUseDur > 13)
+        {
+            return 117;
+        }
+
+        if (remainingUseDur > 0)
+        {
+            return 101;
+        }
+	    
+        return super.getIconIndex(stack, pass);
     }
 }

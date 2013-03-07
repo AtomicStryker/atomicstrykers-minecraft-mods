@@ -17,6 +17,7 @@ public class ClientProxy implements IProxy
     private boolean letGoOfHookShot;
     private boolean pulledByHookShot;
     private boolean hasRopeOut;
+    private int renderIDGrapplingHook;
     
     public ClientProxy()
     {
@@ -42,7 +43,8 @@ public class ClientProxy implements IProxy
             RenderingRegistry.registerEntityRenderingHandler(arrow, arrowRenderer);
         }
         
-        RenderingRegistry.registerBlockHandler(BlockRenderHandler.instance.new BlockGrapplingHookRenderHandler());
+        renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
+        RenderingRegistry.registerBlockHandler(new BlockRenderHandler());
         
         RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope());
         
@@ -81,7 +83,7 @@ public class ClientProxy implements IProxy
     @Override
     public int getGrapplingHookRenderId()
     {
-        return RopesPlusClient.renderIDGrapplingHook;
+        return renderIDGrapplingHook;
     }
 
     @Override
