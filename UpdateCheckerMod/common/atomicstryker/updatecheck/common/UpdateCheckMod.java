@@ -19,7 +19,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.0.5")
+@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.0.6")
 public class UpdateCheckMod
 {
     private final String updateURL = "http://atomicstryker.net/updatemanager/modversions.txt";
