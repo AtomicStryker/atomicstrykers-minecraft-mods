@@ -50,4 +50,5 @@ public class TileEntityCentrifugeExtractor extends TileEntityAdvancedMachine
     {
         return AdvancedMachines.interruptSound;
     }
+    
 }

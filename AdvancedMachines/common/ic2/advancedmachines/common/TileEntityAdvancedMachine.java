@@ -7,10 +7,10 @@ import java.util.List;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.ISidedInventory;
 
 public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory
 {
@@ -288,13 +288,13 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     public abstract Container getGuiContainer(InventoryPlayer var1);
 
     @Override
-    public int getStartInventorySide(ForgeDirection side)
+    public int func_94127_c(int side) //getStartInventorySide(ForgeDirection side) 
     {
         switch (side)
         {
-            case DOWN:
+            case 0: // DOWN
                 return 0; // power slot always 0
-            case UP:
+            case 1: // UP
                 return inputs[0];
             default:
                 return outputs[0];
@@ -302,13 +302,13 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     }
 
     @Override
-    public int getSizeInventorySide(ForgeDirection side)
+    public int func_94128_d(int side) //getSizeInventorySide(ForgeDirection side)
     {
         switch (side)
         {
-            case DOWN:
+            case 0: // DOWN
                 return 1;
-            case UP:
+            case 1: // UP
                 return this.inputs.length;
             default:
                 return this.outputs.length;

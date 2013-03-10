@@ -10,52 +10,105 @@ import java.util.Random;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 
 public class BlockAdvancedMachines extends BlockContainer
 {
-    public int[][] sprites;
+    
     private final int idWrench;
     private final int idEWrench;
+    private Icon[][] iconBuffer;
 
     public BlockAdvancedMachines(int var1)
     {
         super(var1, Material.iron);
         this.setHardness(2.0F);
         this.setStepSound(soundMetalFootstep);
-        this.sprites = new int[][] {{86, 20, 86, 19, 86, 21, 86, 19}, {86, 26, 86, 27, 86, 26, 86, 28}, {86, 86, 24, 22, 86, 86, 25, 23}};
-        this.blockIndexInTexture = this.sprites[0][0];
         
         idWrench = Items.getItem("wrench").itemID;
         idEWrench = Items.getItem("electricWrench").itemID;
     }
 
     @Override
-    public int getBlockTexture(IBlockAccess world, int x, int y, int z, int blockSide)
+    public void func_94332_a(IconRegister par1IconRegister)
+    {
+        iconBuffer = new Icon[3][12]; // 3 machines, 6 sides each, in ON and OFF states
+        
+        // meta 0, macerator
+        // first the 6 sides in OFF state
+        iconBuffer[0][0] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
+        iconBuffer[0][1] = par1IconRegister.func_94245_a("advancedmachines:topMaceratorOFF"); // top
+        iconBuffer[0][2] = par1IconRegister.func_94245_a("advancedmachines:front"); // north
+        iconBuffer[0][3] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
+        iconBuffer[0][4] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
+        iconBuffer[0][5] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        // then the 6 sides in ON state
+        iconBuffer[0][6] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
+        iconBuffer[0][7] = par1IconRegister.func_94245_a("advancedmachines:topMaceratorON"); // top
+        iconBuffer[0][8] = par1IconRegister.func_94245_a("advancedmachines:front"); // north
+        iconBuffer[0][9] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
+        iconBuffer[0][10] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
+        iconBuffer[0][11] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        
+        // meta 1, compressor
+        // first the 6 sides in OFF state
+        iconBuffer[1][0] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
+        iconBuffer[1][1] = par1IconRegister.func_94245_a("advancedmachines:topCompressor"); // top
+        iconBuffer[1][2] = par1IconRegister.func_94245_a("advancedmachines:frontCompressorOFF"); // north
+        iconBuffer[1][3] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
+        iconBuffer[1][4] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
+        iconBuffer[1][5] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        // then the 6 sides in ON state
+        iconBuffer[1][6] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
+        iconBuffer[1][7] = par1IconRegister.func_94245_a("advancedmachines:topCompressor"); // top
+        iconBuffer[1][8] = par1IconRegister.func_94245_a("advancedmachines:frontCompressorON"); // north
+        iconBuffer[1][9] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
+        iconBuffer[1][10] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
+        iconBuffer[1][11] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        
+        // meta 2, extractor
+        // first the 6 sides in OFF state
+        iconBuffer[2][0] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
+        iconBuffer[2][1] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // top
+        iconBuffer[2][2] = par1IconRegister.func_94245_a("advancedmachines:frontExtractorOFF"); // north
+        iconBuffer[2][3] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorOFF"); // east
+        iconBuffer[2][4] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorOFF"); // south
+        iconBuffer[2][5] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorOFF"); // west
+        // then the 6 sides in ON state
+        iconBuffer[2][6] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
+        iconBuffer[2][7] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // top
+        iconBuffer[2][8] = par1IconRegister.func_94245_a("advancedmachines:frontExtractorON"); // north
+        iconBuffer[2][9] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorON"); // east
+        iconBuffer[2][10] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorON"); // south
+        iconBuffer[2][11] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorON"); // west
+    }
+    
+    /**
+     * Retrieves the block texture to use based on the display side. Args: iBlockAccess, x, y, z, side
+     */
+    @Override
+    public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int blockSide)
     {
         int blockMeta = world.getBlockMetadata(x, y, z);
-
         TileEntity te = world.getBlockTileEntity(x, y, z);
         int facing = (te instanceof TileEntityBlock) ? ((int) (((TileEntityBlock)te).getFacing())) : 0;
+        
         if(isActive(world, x, y, z))
-        	return blockMeta + (AdvancedMachinesClient.sideAndFacingToSpriteOffset[blockSide][facing] + 6) * 16;
+            return iconBuffer[blockMeta][AdvancedMachinesClient.sideAndFacingToSpriteOffset[blockSide][facing]+6];
         else
-        	return blockMeta + AdvancedMachinesClient.sideAndFacingToSpriteOffset[blockSide][facing] * 16;
-    }
-
-    @Override
-    public int getBlockTextureFromSideAndMetadata(int blockSide, int metaData)
-    {
-        return metaData + AdvancedMachinesClient.sideAndFacingToSpriteOffset[blockSide][3] * 16;
+            return iconBuffer[blockMeta][AdvancedMachinesClient.sideAndFacingToSpriteOffset[blockSide][facing]];
     }
 
     @Override
@@ -65,7 +118,7 @@ public class BlockAdvancedMachines extends BlockContainer
     }
     
     @Override
-    public TileEntity createNewTileEntity(World world, int meta)
+    public TileEntity createTileEntity(World world, int meta)
     {
         return getBlockEntity(meta);
     }
@@ -179,9 +232,9 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLiving player)
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLiving player, ItemStack stack)
     {
-        super.onBlockPlacedBy(world, x, y, z, player);
+        super.onBlockPlacedBy(world, x, y, z, player, stack);
         int heading = MathHelper.floor_double((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
         TileEntityAdvancedMachine te = (TileEntityAdvancedMachine)world.getBlockTileEntity(x, y, z);
         switch (heading)
@@ -264,4 +317,5 @@ public class BlockAdvancedMachines extends BlockContainer
             }
         }
     }
+    
 }

@@ -29,7 +29,7 @@ public class ItemAdvancedMachine extends ItemBlock
     }
 
     @Override
-    public String getItemNameIS(ItemStack var1)
+    public String getUnlocalizedName(ItemStack var1)
     {
         int var2 = var1.getItemDamage();
         switch (var2)

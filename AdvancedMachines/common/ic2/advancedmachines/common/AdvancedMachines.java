@@ -24,7 +24,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "4.7b", dependencies = "required-after:IC2")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "4.8", dependencies = "required-after:IC2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -80,7 +80,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 188).getInt()).setBlockName("blockAdvMachine");
+        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 188).getInt()).setUnlocalizedName("blockAdvMachine");
         refIronID = config.getItem("IDs", "refIronID", 29775).getInt(29775);
 
         guiIdRotary = config.get("IDs", "guiIdRotary", 40).getInt();
@@ -89,20 +89,20 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         
         Property  prop = config.get("Sounds", "advCompressorSound", advCompSound);
         prop.comment = "Sound files to use on operation. Remember to use '/' instead of backslashes and the Sound directory starts on ic2/sounds. Set empty to disable.";
-        advCompSound = prop.value;
-        advExtcSound = config.get("Sounds", "advExtractorSound", advExtcSound).value;
-        advMaceSound = config.get("Sounds", "advMaceratorSound", advMaceSound).value;
+        advCompSound = prop.getString();
+        advExtcSound = config.get("Sounds", "advExtractorSound", advExtcSound).getString();
+        advMaceSound = config.get("Sounds", "advMaceratorSound", advMaceSound).getString();
         
         prop = config.get("Sounds", "interuptSound", interruptSound);
         prop.comment = "Sound played when a machine process is interrupted";
-        interruptSound = prop.value;
+        interruptSound = prop.getString();
         
         prop = config.get("translation", "nameAdvCompressor", advCompName);
         prop.comment = "Item names. This will also affect their GUI";
-        advCompName = prop.value;
-        advExtcName = config.get("translation", "nameAdvExtractor", advExtcName).value;
-        advMaceName = config.get("translation", "nameAdvMacerator", advMaceName).value;
-        refIronDustName = config.get("translation", "nameAdvRefIronDust", refIronDustName).value;
+        advCompName = prop.getString();
+        advExtcName = config.get("translation", "nameAdvExtractor", advExtcName).getString();
+        advMaceName = config.get("translation", "nameAdvMacerator", advMaceName).getString();
+        refIronDustName = config.get("translation", "nameAdvRefIronDust", refIronDustName).getString();
         
         prop = config.get("OPness control", "baseEnergyConsumption", "3");
         prop.comment = "Base power draw per work tick.";
@@ -118,15 +118,15 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         
         prop = config.get("OPness control", "overClockEnergyRatio", "2.0");
         prop.comment = "Exponent of Overclocker energy consumption function. 2.0 equals a squared rise of power draw as you add Overclockers.";
-        overClockEnergyRatio = Double.valueOf(prop.value);
+        overClockEnergyRatio = Double.valueOf(prop.getString());
         
         prop = config.get("OPness control", "overClockAccelRatio", "1.6");
         prop.comment = "Exponent of Overclocker acceleration function. 1.6 equals a less-than-squared rise of acceleration speed as you add Overclockers.";
-        overClockAccelRatio = Double.valueOf(prop.value);
+        overClockAccelRatio = Double.valueOf(prop.getString());
         
         prop = config.get("OPness control", "overLoadInputRatio", "4.0");
         prop.comment = "Exponent of Transformer input function. Determines rise of maximum power intake as you add Transformers.";
-        overLoadInputRatio = Double.valueOf(prop.value);
+        overLoadInputRatio = Double.valueOf(prop.getString());
         
         if (config != null)
         {
@@ -175,7 +175,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         transformerStack = Items.getItem("transformerUpgrade");
         energyStorageUpgradeStack = Items.getItem("energyStorageUpgrade");
         
-        refinedIronDust = new ItemDust(refIronID).setItemName("refinedIronDust");
+        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("refinedIronDust");
         LanguageRegistry.addName(refinedIronDust, refIronDustName);
         GameRegistry.addSmelting(refinedIronDust.itemID, Items.getItem("refinedIronIngot"), 1.0f);
     }
