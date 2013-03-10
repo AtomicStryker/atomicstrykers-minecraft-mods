@@ -70,7 +70,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.0")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.1")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -191,8 +191,8 @@ public class InfernalMobsCore implements ITickHandler
     private void loadConfig()
     {
         config.load();
-        eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15).value);
-        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403").value;
+        eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15).getString());
+        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403").getString();
         
         itemIDs = itemIDs.trim();
         String[] numbers = itemIDs.split(",");
@@ -228,7 +228,7 @@ public class InfernalMobsCore implements ITickHandler
         {
             for (Block b : Block.blocksList)
             {
-                if (b != null && b.getBlockName() != null && b.getBlockName().equals(s))
+                if (b != null && b.getUnlocalizedName() != null && b.getUnlocalizedName().equals(s))
                 {
                     return b.blockID;
                 }
@@ -236,7 +236,7 @@ public class InfernalMobsCore implements ITickHandler
             
             for (Item i : Item.itemsList)
             {
-                if (i != null && i.getItemName() != null && i.getItemName().equals(s))
+                if (i != null && i.getUnlocalizedName() != null && i.getUnlocalizedName().equals(s))
                 {
                     return i.itemID;
                 }

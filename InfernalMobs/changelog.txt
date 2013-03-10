@@ -1,3 +1,6 @@
+1.2.1
+- updated for MC 1.5
+
 1.2.0
 - Infernal Mob health now directly scales with the amount of Modifiers on it
 - added Ultra and Infernal modified Mobs with up to 15 Modifiers on them
