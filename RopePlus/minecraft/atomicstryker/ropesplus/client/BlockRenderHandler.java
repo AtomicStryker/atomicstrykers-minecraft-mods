@@ -68,8 +68,9 @@ public class BlockRenderHandler implements ISimpleBlockRenderingHandler
             tessellator.setBrightness(block.getMixedBrightnessForBlock(iblockaccess, i, j, k));
             tessellator.setColorOpaque_F(1.0F, 1.0F, 1.0F);
 
-            int i1 = block.getBlockTexture(iblockaccess, i, j, k, 1);
-            renderGrapplingHook3(block, i, j, k, i1, l);
+            // TODO figure out how to fix this
+            //int i1 = block.getBlockTexture(iblockaccess, i, j, k, 1);
+            //renderGrapplingHook3(block, i, j, k, i1, l);
             flag = true;
         }
         return flag;

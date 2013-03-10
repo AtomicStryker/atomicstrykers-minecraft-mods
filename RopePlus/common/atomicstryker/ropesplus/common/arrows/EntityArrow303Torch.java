@@ -31,12 +31,7 @@ public class EntityArrow303Torch extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowTorch;
         tip = Block.torchWood;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 11;
+        icon = "ropesplus:torcharrow";
     }
 
     @Override

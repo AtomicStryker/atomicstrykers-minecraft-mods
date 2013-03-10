@@ -297,10 +297,8 @@ public class EntityGrapplingHook extends Entity
                     		yRope--;
                     	}
                     	
-                        worldObj.setBlockWithNotify(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook.blockID);
-                        worldObj.setBlockMetadataWithNotify(xTile, yTile + 1, zTile, metaData);
-                        worldObj.setBlockWithNotify(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos.blockID);
-                        worldObj.setBlockMetadataWithNotify(xRope, yRope, zRope, metaData);
+                        worldObj.setBlockAndMetadataWithNotify(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook.blockID, metaData, 3);
+                        worldObj.setBlockAndMetadataWithNotify(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos.blockID, metaData, 3);
                         
                         TileEntityRope newent = new TileEntityRope(worldObj, xRope, yRope, zRope, 32);
                         RopesPlusCore.addRopeToArray(newent);
@@ -345,7 +343,7 @@ public class EntityGrapplingHook extends Entity
         {
             double d10 = ((boundingBox.minY + ((boundingBox.maxY - boundingBox.minY) * (double)(l + 0)) / (double)k) - 0.125D) + 0.125D;
             double d11 = ((boundingBox.minY + ((boundingBox.maxY - boundingBox.minY) * (double)(l + 1)) / (double)k) - 0.125D) + 0.125D;
-            AxisAlignedBB axisalignedbb1 = AxisAlignedBB.getAABBPool().addOrModifyAABBInPool(boundingBox.minX, d10, boundingBox.minZ, boundingBox.maxX, d11, boundingBox.maxZ);
+            AxisAlignedBB axisalignedbb1 = AxisAlignedBB.getAABBPool().getAABB(boundingBox.minX, d10, boundingBox.minZ, boundingBox.maxX, d11, boundingBox.maxZ);
         }
 
         if(d7 > 0.0D)

@@ -29,12 +29,7 @@ public class EntityArrow303Dirt extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowDirt;
         tip = Block.dirt;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 1;
+        icon = "ropesplus:dirtarrow";
     }
 
     @Override

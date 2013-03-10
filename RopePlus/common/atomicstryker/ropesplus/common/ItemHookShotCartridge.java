@@ -3,18 +3,18 @@ package atomicstryker.ropesplus.common;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;
 
-public class ItemRope extends Item
+public class ItemHookShotCartridge extends Item
 {
-    
-    public ItemRope(int i)
+
+    public ItemHookShotCartridge(int id)
     {
-        super(i);
+        super(id);
     }
     
     @Override
     public void func_94581_a(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.func_94245_a("ropesplus:itemRope");
+        iconIndex = iconRegister.func_94245_a("ropesplus:hscartridge");
     }
-    
+
 }

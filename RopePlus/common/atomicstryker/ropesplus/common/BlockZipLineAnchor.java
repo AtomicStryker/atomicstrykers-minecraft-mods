@@ -2,6 +2,7 @@ package atomicstryker.ropesplus.common;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
@@ -13,12 +14,18 @@ import cpw.mods.fml.common.network.Player;
 
 public class BlockZipLineAnchor extends BlockContainer
 {
-    public BlockZipLineAnchor(int blockIndex, int iconIndex)
+    public BlockZipLineAnchor(int blockIndex)
     {
-        super(blockIndex, iconIndex, Material.vine);
+        super(blockIndex, Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
         setTextureFile("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
+    }
+    
+    @Override
+    public void func_94332_a(IconRegister par1IconRegister)
+    {
+        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:grhkanchor");
     }
     
     @Override
@@ -75,7 +82,7 @@ public class BlockZipLineAnchor extends BlockContainer
         if(!world.isBlockOpaqueCube(i, j + 1, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockWithNotify(i, j, k, 0);
+            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
         }
     }
 

@@ -1,11 +1,13 @@
 package atomicstryker.ropesplus.common;
 
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
@@ -18,6 +20,12 @@ public class ItemBowRopesPlus extends ItemBow
 	{
 		super(i);
 	}
+	
+    @Override
+    public void func_94581_a(IconRegister iconRegister)
+    {
+        iconIndex = iconRegister.func_94245_a("bow");
+    }
 
     /**
      * called when the player releases the use item button.
@@ -119,25 +127,25 @@ public class ItemBowRopesPlus extends ItemBow
     }
 	
 	@Override
-    public int getIconIndex(ItemStack stack, int pass)
+    public Icon getIcon(ItemStack stack, int pass)
     {
         int remainingUseDur = stack.getMaxItemUseDuration() - heldTicksBuffer;
 
         if (remainingUseDur >= 18)
         {
-            return 133;
+            return Item.bow.func_94599_c(2);
         }
 
         if (remainingUseDur > 13)
         {
-            return 117;
+            return Item.bow.func_94599_c(1);
         }
 
         if (remainingUseDur > 0)
         {
-            return 101;
+            return Item.bow.func_94599_c(0);
         }
 	    
-        return super.getIconIndex(stack, pass);
+        return super.getIcon(stack, pass);
     }
 }

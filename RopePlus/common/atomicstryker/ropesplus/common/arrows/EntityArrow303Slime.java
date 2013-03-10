@@ -35,12 +35,7 @@ public class EntityArrow303Slime extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowSlime;
         tip = Item.slimeBall;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 10;
+        icon = "ropesplus:slimearrow";
     }
 
     private EntityLiving makeMob()

@@ -2,6 +2,7 @@ package atomicstryker.ropesplus.common;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,12 +11,18 @@ import net.minecraft.world.World;
 
 public class BlockRopeCenter extends Block
 {
-    public BlockRopeCenter(int blockIndex, int iconIndex)
+    public BlockRopeCenter(int blockIndex)
     {
-        super(blockIndex, iconIndex, Material.vine);
+        super(blockIndex, Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
         setTextureFile("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
+    }
+    
+    @Override
+    public void func_94332_a(IconRegister par1IconRegister)
+    {
+        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:rope");
     }
     
     @Override
@@ -61,8 +68,8 @@ public class BlockRopeCenter extends Block
                 if((ropeending == 0) & (world.getBlockId(i + xoffset, j - length, k + zoffset) == 0))
                 {
                     ropeending = 1;
-                    world.setBlockWithNotify(i, j, k, 0);
-                    world.setBlockWithNotify(i + xoffset, j - length, k + zoffset, this.blockID);
+                    world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
+                    world.setBlockAndMetadataWithNotify(i + xoffset, j - length, k + zoffset, this.blockID, 0, 3);
                 }
             }
 
@@ -70,7 +77,7 @@ public class BlockRopeCenter extends Block
         if((ropeending == 0 || ropeending == 2) & (world.getBlockId(i, j + 1, k) != this.blockID) && !world.isBlockOpaqueCube(i, j + 1, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockWithNotify(i, j, k, 0);
+            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
         }
     }
 
@@ -106,7 +113,7 @@ public class BlockRopeCenter extends Block
         if(!blockstays)
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockWithNotify(i, j, k, 0);
+            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
         }
     }
 
@@ -153,7 +160,7 @@ public class BlockRopeCenter extends Block
 		
 		if (world.getBlockId(a, b, c) == this.blockID)
 		{
-			world.setBlockWithNotify(a, b, c, 0);
+			world.setBlockAndMetadataWithNotify(a, b, c, 0, 0, 3);
 		}
 		
 		for(int x = 1;; x++)
@@ -183,7 +190,7 @@ public class BlockRopeCenter extends Block
 		{
 			coords = RopesPlusCore.areCoordsArrowRope(a, rope_min_y+x, c);
 			
-			world.setBlockWithNotify(a, rope_min_y+x, c, 0);
+			world.setBlockAndMetadataWithNotify(a, rope_min_y+x, c, 0, 0, 3);
 			
 			if (coords != null)
 			{

@@ -23,6 +23,7 @@ public class EntityArrow303 extends EntityProjectileBase
     public Object tip;
     public Entity target;
     protected boolean isArrowHoming;
+    protected String icon;
     
     protected final static int candidates[][] = { { 0, 0, 0 }, { 0, -1, 0 }, { 0, 1, 0 }, { -1, 0, 0 }, { 1, 0, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, -1, 0 }, { -1, 0, -1 }, { -1, 0, 1 }, { -1, 1, 0 },
             { 0, -1, -1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, 1, 1 }, { 1, -1, 0 }, { 1, 0, -1 }, { 1, 0, 1 }, { 1, 1, 0 }, { -1, -1, -1 }, { -1, -1, 1 }, { -1, 1, -1 }, { -1, 1, 1 }, { 1, -1, -1 },
@@ -64,9 +65,9 @@ public class EntityArrow303 extends EntityProjectileBase
         }
     }
     
-    public int getArrowIconIndex()
+    public String getIcon()
     {
-        return 0;
+        return icon;
     }
 
     @Override
@@ -177,7 +178,7 @@ public class EntityArrow303 extends EntityProjectileBase
             int ix = candidateCoords[0];
             int iy = candidateCoords[1];
             int iz = candidateCoords[2];
-            if (worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, 1, (Entity) null))
+            if (worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, 1, null, item))
             {
                 x += ix;
                 y += iy;
@@ -206,7 +207,7 @@ public class EntityArrow303 extends EntityProjectileBase
                 int prevBlockMeta = worldObj.getBlockMetadata(x, y, z);
                 Block.blocksList[prevBlockID].harvestBlock(worldObj, shooter, x, y, z, prevBlockMeta);
             }
-            worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, 0);
+            worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, 0, 3);
         }
 
         return true;

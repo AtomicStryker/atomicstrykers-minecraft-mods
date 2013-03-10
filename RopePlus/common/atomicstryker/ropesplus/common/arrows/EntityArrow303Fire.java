@@ -31,12 +31,7 @@ public class EntityArrow303Fire extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowFire;
         tip = Item.coal;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 4;
+        icon = "ropesplus:fiarrow";
     }
 
     @Override

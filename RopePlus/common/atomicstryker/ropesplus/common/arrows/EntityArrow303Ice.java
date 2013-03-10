@@ -39,12 +39,7 @@ public class EntityArrow303Ice extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowIce;
         tip = Item.snowball;
         item = new ItemStack(itemId, 1, 0);
-    }
-
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 6;
+        icon = "ropesplus:icearrow";
     }
 
     @Override
@@ -145,24 +140,23 @@ public class EntityArrow303Ice extends EntityArrow303
                 {
                     if (worldObj.getBlockMaterial(iX, iY, iZ) == Material.water && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.setBlockWithNotify(iX, iY, iZ, Block.ice.blockID);
+                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, Block.ice.blockID, 0, 3);
                         continue;
                     }
                     if (worldObj.getBlockMaterial(iX, iY, iZ) == Material.lava && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.setBlockWithNotify(iX, iY, iZ, Block.cobblestone.blockID);
+                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, Block.cobblestone.blockID, 0, 3);
                         continue;
                     }
                     if (worldObj.getBlockId(iX, iY, iZ) == Block.fire.blockID)
                     {
-                        worldObj.setBlockWithNotify(iX, iY, iZ, 0);
+                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, 0, 0, 3);
                         continue;
                     }
                     if (worldObj.getBlockId(iX, iY, iZ) == Block.torchWood.blockID)
                     {
                         Block.blocksList[Block.torchWood.blockID].dropBlockAsItemWithChance(worldObj, iX, iY, iZ, worldObj.getBlockMetadata(iX, iY, iZ), 1.0F, 0);
-                        worldObj.setBlockWithNotify(iX, iY, iZ, 0);
-                        Block.blocksList[Block.torchWood.blockID].onBlockDestroyedByExplosion(worldObj, iX, iY, iZ);
+                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, 0, 0, 3);
                     }
                 }
             }

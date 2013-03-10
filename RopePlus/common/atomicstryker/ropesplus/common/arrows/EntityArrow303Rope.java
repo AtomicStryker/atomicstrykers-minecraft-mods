@@ -32,12 +32,7 @@ public class EntityArrow303Rope extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowRope;
         tip = RopesPlusCore.blockRopeCentralPos;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 9;
+        icon = "ropesplus:ropearrow";
     }
 
     @Override
@@ -104,7 +99,7 @@ public class EntityArrow303Rope extends EntityArrow303
             int ix = coords[0];
             int iy = coords[1];
             int iz = coords[2];
-            if(worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, blockSide, (Entity)null))
+            if(worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, blockSide, null, item))
             {
                 x += ix;
                 y += iy;
@@ -123,8 +118,7 @@ public class EntityArrow303Rope extends EntityArrow303
         
         if(!worldObj.isRemote)
         {
-            worldObj.setBlockWithNotify(x, y, z, blockID);
-            worldObj.setBlockMetadataWithNotify(x, y, z, targetMeta);
+            worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, targetMeta, 3);
         }
 
         placeCoords[0] = x;

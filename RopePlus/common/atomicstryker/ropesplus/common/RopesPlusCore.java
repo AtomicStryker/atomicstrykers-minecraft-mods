@@ -44,7 +44,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.6")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.3.7")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -113,16 +113,16 @@ public class RopesPlusCore
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        blockRopeCentralPos = (new BlockRopeCenter(Settings_RopePlus.blockIdRopeDJRoslin, Settings_RopePlus.ropeTexture)).setHardness(0.3F).setBlockName("blockRopeCentral");
+        blockRopeCentralPos = (new BlockRopeCenter(Settings_RopePlus.blockIdRopeDJRoslin).setHardness(0.3F).setUnlocalizedName("blockRopeCentral"));
 
-        itemGrapplingHook = new ItemGrapplingHook(Settings_RopePlus.itemIdGrapplingHook).setIconIndex(13).setItemName("itemGrapplingHook");
-        blockRopeWallPos = (new BlockRopeWall(Settings_RopePlus.blockIdRope, Settings_RopePlus.ropeTexture)).setHardness(0.5F).setStepSound(Block.soundClothFootstep).setBlockName("blockRope");
-        blockGrapplingHook = (new BlockGrapplingHook(Settings_RopePlus.blockIdGrapplingHook, 0)).setHardness(0.0F).setStepSound(Block.soundMetalFootstep).setBlockName("blockGrHk");
+        itemGrapplingHook = new ItemGrapplingHook(Settings_RopePlus.itemIdGrapplingHook).setUnlocalizedName("itemGrapplingHook");
+        blockRopeWallPos = (new BlockRopeWall(Settings_RopePlus.blockIdRope).setHardness(0.5F).setStepSound(Block.soundClothFootstep).setUnlocalizedName("blockRope"));
+        blockGrapplingHook = (new BlockGrapplingHook(Settings_RopePlus.blockIdGrapplingHook)).setHardness(0.0F).setStepSound(Block.soundMetalFootstep).setUnlocalizedName("blockGrHk");
         
-        blockZipLineAnchor = new BlockZipLineAnchor(Settings_RopePlus.blockIdZipLineAnchor, 3).setHardness(0.3F).setBlockName("blockZiplineAnchor");
+        blockZipLineAnchor = new BlockZipLineAnchor(Settings_RopePlus.blockIdZipLineAnchor).setHardness(0.3F).setUnlocalizedName("blockZiplineAnchor");
         
-        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setIconIndex(17).setItemName("itemHookshot");
-        itemHookShotCartridge = new Item(Settings_RopePlus.itemIdHookshotCartridge).setIconIndex(18).setTextureFile("/atomicstryker/ropesplus/client/ropesPlusItems.png").setItemName("HookshotCartridge");
+        itemHookShot = new ItemHookshot(Settings_RopePlus.itemIdHookShot).setUnlocalizedName("itemHookshot");
+        itemHookShotCartridge = new ItemHookShotCartridge(Settings_RopePlus.itemIdHookshotCartridge).setUnlocalizedName("HookshotCartridge");
         
         GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
         GameRegistry.registerBlock(blockRopeWallPos, "blockRope");
@@ -159,7 +159,7 @@ public class RopesPlusCore
         EntityRegistry.registerModEntity(EntityGrapplingHook.class, "GrapplingHook", 1, this, 25, 5, true);
         EntityRegistry.registerModEntity(EntityFreeFormRope.class, "FreeFormRope", 2, this, 75, 5, false);
         
-        bowRopesPlus = new ItemBowRopesPlus(Settings_RopePlus.itemIdRopesPlusBow).setIconCoord(5, 1).setItemName("bowRopesPlus");
+        bowRopesPlus = new ItemBowRopesPlus(Settings_RopePlus.itemIdRopesPlusBow).setUnlocalizedName("bowRopesPlus");
         LanguageRegistry.instance().addName(bowRopesPlus, "RopesPlusBow");
         
         for(Class c : coreArrowClasses)
@@ -214,7 +214,7 @@ public class RopesPlusCore
             entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage "+entityarrow303.name, "4").getInt();
             entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize "+entityarrow303.name, "4").getInt();
 		    
-			item = (ItemArrow303) (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setItemName(entityarrow303.name);
+			item = (ItemArrow303) (new ItemArrow303(entityarrow303.itemId - 256, entityarrow303)).setUnlocalizedName(entityarrow303.name);
 			ItemStack craftedStack = new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0);
 			
 			GameRegistry.addRecipe(craftedStack, new Object[] {
@@ -223,7 +223,6 @@ public class RopesPlusCore
 
 			arrowItems.add(item);
 			LanguageRegistry.instance().addName(item, entityarrow303.name);
-			item.setIconIndex(entityarrow303.getArrowIconIndex());
 		}
 	}
 

@@ -34,12 +34,7 @@ public class EntityArrow303Confusion extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowConfusion;
         tip = Block.sand;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 0;
+        icon = "ropesplus:confusionarrow";
     }
 
     @Override

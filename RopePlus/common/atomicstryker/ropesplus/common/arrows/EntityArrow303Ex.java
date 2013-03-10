@@ -38,12 +38,7 @@ public class EntityArrow303Ex extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowExplosion;
         tip = Item.gunpowder;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 3;
+        icon = "ropesplus:exarrow";
     }
 
     @Override

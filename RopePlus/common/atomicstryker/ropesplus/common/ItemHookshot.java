@@ -1,5 +1,6 @@
 package atomicstryker.ropesplus.common;
 
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -20,7 +21,12 @@ public class ItemHookshot extends Item
     {
         super(i);
         maxStackSize = 1;
-        setTextureFile("/atomicstryker/ropesplus/client/ropesPlusItems.png");
+    }
+    
+    @Override
+    public void func_94581_a(IconRegister iconRegister)
+    {
+        iconIndex = iconRegister.func_94245_a("ropesplus:hookshot");
     }
 
     @Override

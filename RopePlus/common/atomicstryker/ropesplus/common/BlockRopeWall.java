@@ -5,19 +5,27 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockRopeWall extends BlockContainer
 {
-    public BlockRopeWall(int blockIndex, int iconIndex)
+    public BlockRopeWall(int blockIndex)
     {
-        super(blockIndex, iconIndex, Material.vine);
+        super(blockIndex, Material.vine);
         setTextureFile("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
+    }
+    
+    @Override
+    public void func_94332_a(IconRegister par1IconRegister)
+    {
+        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:rope");
     }
     
     @Override
@@ -178,7 +186,7 @@ public class BlockRopeWall extends BlockContainer
     }
 
 	@Override
-    public void onBlockDestroyedByExplosion(World world, int i, int j, int k)
+    public void onBlockDestroyedByExplosion(World world, int i, int j, int k, Explosion e)
     {
         onBlockDestroyed(world, i, j, k);
     }
@@ -217,7 +225,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 0; x <= ropelenght; x++)
 		{
-			world.setBlockWithNotify(a, rope_max_y-x, c, 0);
+			world.setBlockAndMetadataWithNotify(a, rope_max_y-x, c, 0, 0, 3);
 		}
 		
 		//ModLoader.getMinecraftInstance().ingameGUI.addChatMessage("Rope height of ["+(h-b)+"] removed");
@@ -236,7 +244,7 @@ public class BlockRopeWall extends BlockContainer
 		{
 			if(world.getBlockId(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.blockGrapplingHook.blockID)
 			{
-				world.setBlockWithNotify(candidates[y][0], candidates[y][1], candidates[y][2], 0);
+				world.setBlockAndMetadataWithNotify(candidates[y][0], candidates[y][1], candidates[y][2], 0, 0, 3);
 				
 				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.itemGrapplingHook));
 				entityitem.delayBeforeCanPickup = 5;

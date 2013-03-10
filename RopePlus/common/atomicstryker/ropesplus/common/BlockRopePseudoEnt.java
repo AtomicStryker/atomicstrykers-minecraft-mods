@@ -37,7 +37,7 @@ public class BlockRopePseudoEnt
 					return true;
 				}
 				
-				world.setBlockWithNotify(ix, iy - 1, iz, RopesPlusCore.blockRopeCentralPos.blockID);
+				world.setBlockAndMetadataWithNotify(ix, iy - 1, iz, RopesPlusCore.blockRopeCentralPos.blockID, 0, 3);
 				BlockRopePseudoEnt newent = new BlockRopePseudoEnt(world, ix, iy - 1, iz, remainrope);
 				RopesPlusCore.addRopeToArray(newent);
 				

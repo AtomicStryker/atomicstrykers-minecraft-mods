@@ -48,12 +48,7 @@ public class EntityArrow303Laser extends EntityArrow303
         pierced = false;
         piercedMobs = new HashSet();
         item = new ItemStack(itemId, 1, 0);
-    }
-
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 7;
+        icon = "ropesplus:laserarrow";
     }
 
     @Override

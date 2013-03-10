@@ -43,15 +43,11 @@ public class ClientProxy implements IProxy
             RenderingRegistry.registerEntityRenderingHandler(arrow, arrowRenderer);
         }
         
-        renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
-        RenderingRegistry.registerBlockHandler(new BlockRenderHandler());
+        //renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
+        //RenderingRegistry.registerBlockHandler(new BlockRenderHandler());
+        //TODO disabled for now
         
         RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope());
-        
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropesPlusItems.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/itemGrapplingHookThrown.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/ropesplus/client/ropeSegment.png");
         
         TickRegistry.registerTickHandler(new RopesPlusClient(), Side.CLIENT);
     }

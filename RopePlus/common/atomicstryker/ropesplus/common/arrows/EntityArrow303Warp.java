@@ -28,12 +28,7 @@ public class EntityArrow303Warp extends EntityArrow303
         itemId = Settings_RopePlus.itemIdArrowWarp;
         tip = Block.obsidian;
         item = new ItemStack(itemId, 1, 0);
-    }
-    
-    @Override
-    public int getArrowIconIndex()
-    {
-        return 12;
+        icon = "ropesplus:warparrow";
     }
 
     @Override

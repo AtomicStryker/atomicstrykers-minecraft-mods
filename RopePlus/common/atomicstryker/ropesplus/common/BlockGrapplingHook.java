@@ -4,16 +4,23 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 public class BlockGrapplingHook extends Block
 {
-    public BlockGrapplingHook(int i, int j)
+    public BlockGrapplingHook(int i)
     {
-        super(i, j, Material.wood);
+        super(i, Material.wood);
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.125F, 1.0F);
-        setTextureFile("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
+    }
+    
+    @Override
+    public void func_94332_a(IconRegister par1IconRegister)
+    {
+        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:blockGrapplingHook");
     }
 
     @Override
@@ -53,7 +60,7 @@ public class BlockGrapplingHook extends Block
         if(!canPlaceBlockAt(world, i, j, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockWithNotify(i, j, k, 0);
+            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
             onBlockDestroyed(world, i, j, k);
         }
     }
@@ -77,7 +84,7 @@ public class BlockGrapplingHook extends Block
     }
 
     @Override
-    public void onBlockDestroyedByExplosion(World world, int i, int j, int k)
+    public void onBlockDestroyedByExplosion(World world, int i, int j, int k, Explosion e)
     {
         onBlockDestroyed(world, i, j, k);
     }
@@ -108,7 +115,7 @@ public class BlockGrapplingHook extends Block
             
             for(int m = candidates[l][1]; world.getBlockId(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.blockRopeWallPos.blockID; m--)
             {
-                world.setBlockWithNotify(candidates[l][0], m, candidates[l][2], 0);
+                world.setBlockAndMetadataWithNotify(candidates[l][0], m, candidates[l][2], 0, 0, 3);
             }
         }
     }
@@ -116,6 +123,6 @@ public class BlockGrapplingHook extends Block
     @Override
     public int getRenderType()
     {
-        return RopesPlusCore.proxy.getGrapplingHookRenderId();
+        return 23; //RopesPlusCore.proxy.getGrapplingHookRenderId();
     }
 }

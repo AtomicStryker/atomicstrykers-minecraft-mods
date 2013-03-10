@@ -1,3 +1,6 @@
+RopesPlus 1.3.7
+- update to mc 1.5
+
 RopesPlus 1.3.6 (rev3, no change to version number)
 - thank Zorn_Taov from Forge IRC for pointing out where MC draws the arrows on the bow
 - Ropes+ arrows now show up when drawing the bow
