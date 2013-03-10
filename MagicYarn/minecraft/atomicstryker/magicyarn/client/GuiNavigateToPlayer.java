@@ -35,20 +35,20 @@ public class GuiNavigateToPlayer extends GuiScreen
     
     private void generateButtons()
     {
-        controlList.clear();
-        controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Cancel"));
+        buttonList.clear();
+        buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Cancel"));
         
         if (playerList.length > 4)
         {
-            controlList.add(new GuiButton(1, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "->"));
+            buttonList.add(new GuiButton(1, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "->"));
         }
         
-        int targetListSize = controlList.size()+BUTTONS_WANTED;
+        int targetListSize = buttonList.size()+BUTTONS_WANTED;
         int i = 0;
         
         EntityPlayer c = FMLClientHandler.instance().getClient().thePlayer;
         EntityPlayer p;
-        for (int x = nextStartIndex; x < playerList.length && controlList.size() != targetListSize ; x++)
+        for (int x = nextStartIndex; x < playerList.length && buttonList.size() != targetListSize ; x++)
         {
             if (nextStartIndex >= playerList.length)
             {
@@ -59,7 +59,7 @@ public class GuiNavigateToPlayer extends GuiScreen
             p = (EntityPlayer) playerList[x];
             if (!p.username.equals(c.username))
             {
-                controlList.add(new GuiButton(x+BUTTON_TO_PLAYER_ID_OFFSET, this.width / 2 - 100, this.height / 4 + i++*40, p.username));
+                buttonList.add(new GuiButton(x+BUTTON_TO_PLAYER_ID_OFFSET, this.width / 2 - 100, this.height / 4 + i++*40, p.username));
             }
             nextStartIndex = x;
         }

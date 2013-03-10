@@ -63,10 +63,10 @@ public class ClientTickHandler implements ITickHandler
                         efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
                                 (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
                         efx.setRBGColorF(efx.getRedColorF(), 0, efx.getBlueColorF());
-                        efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
+                        //efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
                         if (efx != null)
                         {
-                            mcinstance.effectRenderer.addEffect(efx, null);
+                            mcinstance.effectRenderer.addEffect(efx);
                         }
                     }
                 }
@@ -87,10 +87,10 @@ public class ClientTickHandler implements ITickHandler
                                 efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
                                         (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
                                 efx.setRBGColorF(r, g, b);
-                                efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
+                                //efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
                                 if (efx != null)
                                 {
-                                    mcinstance.effectRenderer.addEffect(efx, null);
+                                    mcinstance.effectRenderer.addEffect(efx);
                                 }
                             }
                         }

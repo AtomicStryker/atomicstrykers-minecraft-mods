@@ -42,7 +42,7 @@ public class MagicYarn implements IProxy
         config.load();
         int itemID = config.getItem("magicyarnitem", 4734, "Item ID of Magic Yarn item").getInt();
         config.save();
-        magicYarn = (new ItemMagicYarn(itemID)).setItemName("Magic Yarn");
+        magicYarn = (new ItemMagicYarn(itemID)).setUnlocalizedName("Magic Yarn");
         proxy.preInit(cfile);
     }
     

@@ -1,4 +1,5 @@
 1.0.2
+- updated for MC 1.5
 - added current AStar implementation
 
 1.0.1

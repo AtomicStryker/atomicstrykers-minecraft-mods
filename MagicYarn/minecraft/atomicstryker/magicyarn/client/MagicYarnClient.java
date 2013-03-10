@@ -26,8 +26,6 @@ import cpw.mods.fml.relauncher.Side;
 public class MagicYarnClient implements IProxy, IAStarPathedEntity
 {
     
-    private final String textureFile = "/atomicstryker/magicyarn/client/sprites/magicYarnTextures.png";
-    
     private Minecraft mcinstance;
     private ClientTickHandler clientTicker;
     public static MagicYarnClient instance;
@@ -43,10 +41,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
         instance = this;
         origin = null;
         target = null;
-        
-        MinecraftForgeClient.preloadTexture(textureFile);
-        MagicYarn.magicYarn.setTextureFile(textureFile);
-        
+          
         clientTicker = new ClientTickHandler(this, mcinstance);
         mpYarnInstance = new MPMagicYarn(mcinstance, this);
         

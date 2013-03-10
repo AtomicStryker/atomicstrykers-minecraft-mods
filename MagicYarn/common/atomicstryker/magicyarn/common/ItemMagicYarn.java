@@ -1,5 +1,6 @@
 package atomicstryker.magicyarn.common;
 
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -18,6 +19,12 @@ public class ItemMagicYarn extends Item
 		this.setMaxDamage(64);
 		this.setMaxStackSize(1);
 	}
+	
+	@Override
+    public void func_94581_a(IconRegister iconRegister)
+    {
+        iconIndex = iconRegister.func_94245_a("magicyarn:magicYarn");
+    }
 
 	@Override
 	public boolean isFull3D()
