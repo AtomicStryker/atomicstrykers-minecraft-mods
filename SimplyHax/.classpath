@@ -6,11 +6,9 @@
 	<classpathentry kind="lib" path="./../../mcp/jars/bin/jinput.jar"/>
 	<classpathentry kind="lib" path="./../../mcp/jars/bin/lwjgl.jar"/>
 	<classpathentry kind="lib" path="./../../mcp/jars/bin/lwjgl_util.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/argo-2.25.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/asm-all-4.0.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/asm-all-4.0-source.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/guava-12.0.1.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/lib/guava-12.0.1-sources.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/argo-3.2-src.jar"/>
+    <classpathentry exported="true" kind="lib" path="../../mcp/lib/asm-debug-all-4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../mcp/lib/guava-14.0-rc3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

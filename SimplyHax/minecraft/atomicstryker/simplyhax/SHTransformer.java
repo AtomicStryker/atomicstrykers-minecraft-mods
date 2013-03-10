@@ -33,7 +33,7 @@ public class SHTransformer implements IClassTransformer
     private final String classNamePlayer = "net.minecraft.client.entity.EntityPlayerSP";
     
     @Override
-    public byte[] transform(String name, byte[] bytes)
+    public byte[] transform(String name, String newName, byte[] bytes)
     {
         //System.out.println("transforming: "+name);
         if (name.equals(classNamePlayerObfusc))

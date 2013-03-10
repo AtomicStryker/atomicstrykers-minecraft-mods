@@ -1,3 +1,6 @@
+1.5
+-updated to 1.5
+
 1.4.6
 -updated to 1.4.6
 -fixed the bug where deactivating flying, falling,

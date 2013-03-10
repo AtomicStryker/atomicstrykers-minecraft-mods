@@ -30,7 +30,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.4.6")
+@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.5")
 public class SimplyHaxFlying
 {
     private long lastTime;
