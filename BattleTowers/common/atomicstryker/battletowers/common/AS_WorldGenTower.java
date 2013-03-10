@@ -156,7 +156,7 @@ public class AS_WorldGenTower extends WorldGenerator
 		
 		underground = world.rand.nextInt(100)+1 < AS_BattleTowersCore.chanceTowerIsUnderGround;
 		
-		int startingHeight = underground ? Math.max(jy-70, 15) : jy - 6; // TODO make sure that works
+		int startingHeight = underground ? Math.max(jy-70, 15) : jy - 6;
 		int maximumHeight = underground ? jy+7 : 120;
 		
         floor = 1;
@@ -204,11 +204,11 @@ public class AS_WorldGenTower extends WorldGenerator
                                 {
                                     if (!(underground && floor == 1))
                                     {
-                                        world.setBlock(iCurrent, jCurrent, zCurrent, towerChosen.GetStairBlockID());  // TODO underground towers, remove first stairs?
+                                        world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, towerChosen.GetStairBlockID(), 0, 3);
                                     }
                                     if(floorIterator == 5)
                                     {
-                                        world.setBlock(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID);
+                                        world.setBlockAndMetadataWithNotify(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID, 0, 3);
                                     }
                                     if(floorIterator == 6 && topFloor) // top ledge part
                                     {
@@ -218,7 +218,7 @@ public class AS_WorldGenTower extends WorldGenerator
                                 }
                                 if(xIterator < 4 && xIterator > -5) // tower insides
                                 {
-                                    world.setBlock(iCurrent, jCurrent, zCurrent, 0);
+                                    world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                                 }
                                 continue;
                             }
@@ -239,7 +239,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
 							else
                             {
-                                world.setBlock(iCurrent, jCurrent, zCurrent, 0); // stairwell space
+                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3); // stairwell space
                             }
                             continue;
                         }
@@ -261,7 +261,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
                             if(world.getBlockId(iCurrent, jCurrent, zCurrent) != Block.chest.blockID) // tower inside space
                             {
-                                world.setBlock(iCurrent, jCurrent, zCurrent, 0);
+                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                             }
                             continue;
                         }
@@ -275,7 +275,7 @@ public class AS_WorldGenTower extends WorldGenerator
                                 }
 								else
                                 {
-                                    world.setBlock(iCurrent, jCurrent, zCurrent, 0);
+                                    world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                                 }
                                 continue;
                             }
@@ -289,7 +289,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
 							else
                             {
-                                world.setBlock(iCurrent, jCurrent, zCurrent, 0);
+                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                             }
                             continue;
                         }
@@ -310,7 +310,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
 							else
                             {
-                                world.setBlock(iCurrent, jCurrent, zCurrent, 0);
+                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                             }
                             continue;
                         }
@@ -354,10 +354,10 @@ public class AS_WorldGenTower extends WorldGenerator
 
             if(floor == 2)
             {
-                world.setBlock(ix + 3, builderHeight, kz - 5, towerWallBlockID);
-                world.setBlock(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID);
+                world.setBlockAndMetadataWithNotify(ix + 3, builderHeight, kz - 5, towerWallBlockID, 0, 3);
+                world.setBlockAndMetadataWithNotify(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID, 0, 3);
             }
-            if((!underground && topFloor) || (underground && floor == 1))  // TODO underground towers
+            if((!underground && topFloor) || (underground && floor == 1))
             {
                 double d = ix;
                 double d1 = builderHeight + 6;
@@ -369,29 +369,29 @@ public class AS_WorldGenTower extends WorldGenerator
             }
 			else
             {
-                world.setBlockWithNotify(ix + 2, builderHeight + 6, kz + 2, Block.mobSpawner.blockID);
+                world.setBlockAndMetadataWithNotify(ix + 2, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
                 TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix + 2, builderHeight + 6, kz + 2);
                 if (tileentitymobspawner != null)
                 {
-                    tileentitymobspawner.setMobID(getMobType(random));
+                    tileentitymobspawner.func_98049_a().func_98272_a(getMobType(random));
                 }
                 
-                world.setBlockWithNotify(ix - 3, builderHeight + 6, kz + 2, Block.mobSpawner.blockID);
+                world.setBlockAndMetadataWithNotify(ix - 3, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
                 tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix - 3, builderHeight + 6, kz + 2);
                 if (tileentitymobspawner != null)
                 {
-                    tileentitymobspawner.setMobID(getMobType(random));
+                    tileentitymobspawner.func_98049_a().func_98272_a(getMobType(random));
                 }
             }
             // chest petal
-            world.setBlock(ix, builderHeight + 6, kz + 3, towerFloorBlockID);
-            world.setBlock(ix - 1, builderHeight + 6, kz + 3, towerFloorBlockID);
+            world.setBlockAndMetadataWithNotify(ix, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
+            world.setBlockAndMetadataWithNotify(ix - 1, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
             
             if(builderHeight + 56 >= 120 && floor == 1)
             {
                 floor = 2;
             }
-            // chest  // TODO underground towers
+            // chest
             TowerStageItemManager floorChestManager = null;
             if (!underground)
             {
@@ -404,7 +404,7 @@ public class AS_WorldGenTower extends WorldGenerator
             
             for(int chestlength = 0; chestlength < 2; chestlength++)
             {
-                world.setBlockAndMetadata(ix - chestlength, builderHeight + 7, kz + 3, Block.chest.blockID, 2);
+                world.setBlockAndMetadataWithNotify(ix - chestlength, builderHeight + 7, kz + 3, Block.chest.blockID, 2, 3);
                 TileEntityChest tileentitychest = new TileEntityChest();
                 world.setBlockTileEntity(ix - chestlength, builderHeight + 7, kz + 3, tileentitychest);
                 for(int attempt = 0; attempt < (underground ? AS_BattleTowersCore.itemGenerateAttemptsPerFloor*2 : AS_BattleTowersCore.itemGenerateAttemptsPerFloor); attempt++)
@@ -423,10 +423,10 @@ public class AS_WorldGenTower extends WorldGenerator
 				builderHeight+=2;
 			}
 			
-            world.setBlock(ix + 3, builderHeight, kz - 6, towerLightBlockID);
-            world.setBlock(ix - 4, builderHeight, kz - 6, towerLightBlockID);
-            world.setBlock(ix + 1, builderHeight, kz - 4, towerLightBlockID);
-            world.setBlock(ix - 2, builderHeight, kz - 4, towerLightBlockID);
+            world.setBlockAndMetadataWithNotify(ix + 3, builderHeight, kz - 6, towerLightBlockID, 0, 3);
+            world.setBlockAndMetadataWithNotify(ix - 4, builderHeight, kz - 6, towerLightBlockID, 0, 3);
+            world.setBlockAndMetadataWithNotify(ix + 1, builderHeight, kz - 4, towerLightBlockID, 0, 3);
+            world.setBlockAndMetadataWithNotify(ix - 2, builderHeight, kz - 4, towerLightBlockID, 0, 3);
 			
 			if (towerLightBlockID != 0 && Block.blocksList[towerLightBlockID].isOpaqueCube())
 			{
@@ -446,7 +446,7 @@ public class AS_WorldGenTower extends WorldGenerator
                 j6 += kz;
                 if(world.getBlockId(k4, k5, j6) == towerFloorBlockID && world.getBlockId(k4, k5 + 1, j6) != Block.mobSpawner.blockID)
                 {
-                    world.setBlock(k4, k5, j6, 0);
+                    world.setBlockAndMetadataWithNotify(k4, k5, j6, 0, 0, 3);
                 }
             }
 
@@ -460,17 +460,17 @@ public class AS_WorldGenTower extends WorldGenerator
 	
 	private void BuildFloorPiece(World world, int i, int j, int k, int towerFloorBlockID)
 	{
-		world.setBlock(i, j, k, towerFloorBlockID);
+		world.setBlockAndMetadataWithNotify(i, j, k, towerFloorBlockID, 0, 3);
 		
 		if (towerChosen.GetFloorBlockMetaData() != 0)
 		{
-			world.setBlockMetadataWithNotify(i, j, k, towerChosen.GetFloorBlockMetaData());
+			world.setBlockMetadataWithNotify(i, j, k, towerChosen.GetFloorBlockMetaData(), 3);
 		}
 	}
 	
 	private void BuildWallPiece(World world, int i, int j, int k, int towerWallBlockID)
 	{
-		world.setBlock(i, j, k, towerWallBlockID);
+		world.setBlockAndMetadataWithNotify(i, j, k, towerWallBlockID, 0, 3);
 		if(floor == 1 && floorIterator == 4)
 		{
 			FillTowerBaseToGround(world, i, j, k, towerWallBlockID);
@@ -482,7 +482,7 @@ public class AS_WorldGenTower extends WorldGenerator
 		int x = j-1;
 		while(x>0 && !IsBuildableBlockID(world.getBlockId(i, x, k)))
 		{
-			world.setBlock(i, x, k, blocktype);
+			world.setBlockAndMetadataWithNotify(i, x, k, blocktype, 0, 3);
 			x--;
 		}
 	}
