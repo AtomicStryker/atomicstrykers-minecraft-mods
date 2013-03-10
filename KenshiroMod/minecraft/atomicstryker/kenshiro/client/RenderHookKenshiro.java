@@ -157,7 +157,7 @@ public class RenderHookKenshiro extends Render
 	            RenderPlayer var24 = (RenderPlayer)var21;
 	            var13 = 1.0F;
 	            GL11.glScalef(var13, var13, var13);
-	            var24.func_82441_a(var3); // drawFirstPersonHand()
+	            var24.renderFirstPersonArm(var3);
 	            GL11.glPopMatrix();
 	         }
 
@@ -174,7 +174,7 @@ public class RenderHookKenshiro extends Render
 	         GL11.glTranslatef(-1.0F, -1.0F, 0.0F);
 	         var10 = 0.015625F;
 	         GL11.glScalef(var10, var10, var10);
-	         this.mc.renderEngine.bindTexture(this.mc.renderEngine.getTexture("/misc/mapbg.png"));
+	         this.mc.renderEngine.func_98187_b("/misc/mapbg.png");
 	         Tessellator var27 = Tessellator.instance;
 	         GL11.glNormal3f(0.0F, 0.0F, -1.0F);
 	         var27.startDrawingQuads();
@@ -292,7 +292,7 @@ public class RenderHookKenshiro extends Render
 	         RenderPlayer var22 = (RenderPlayer)var19;
 	         var10 = 1.0F;
 	         GL11.glScalef(var10, var10, var10);
-	         var22.func_82441_a(var3); //drawFirstPersonHand()
+	         var22.renderFirstPersonArm(var3);
 	         GL11.glPopMatrix();
 	      }
 
