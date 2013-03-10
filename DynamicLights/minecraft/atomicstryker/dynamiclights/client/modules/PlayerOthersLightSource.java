@@ -60,7 +60,7 @@ public class PlayerOthersLightSource
         updateI.comment = "Update Interval time for all other player entities in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        String[] tokens = itemsList.value.split(",");
+        String[] tokens = itemsList.getString().split(",");
         for (String pair : tokens)
         {
             String[] values = pair.split(":");

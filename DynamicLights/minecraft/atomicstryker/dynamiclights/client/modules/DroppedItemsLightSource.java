@@ -64,7 +64,7 @@ public class DroppedItemsLightSource
         updateI.comment = "Update Interval time for all Item entities in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        String[] tokens = itemsList.value.split(",");
+        String[] tokens = itemsList.getString().split(",");
         for (String pair : tokens)
         {
             String[] values = pair.split(":");
@@ -75,7 +75,7 @@ public class DroppedItemsLightSource
         
         Property notWaterProofList = config.get(config.CATEGORY_GENERAL, "TurnedOffByWaterItems", "50,327");
         notWaterProofList.comment = "Item IDs that do not shine light when dropped and in water, have to be present in LightItems. Syntax: ItemID, seperated by commas";
-        tokens = notWaterProofList.value.split(",");
+        tokens = notWaterProofList.getString().split(",");
         for (String oneId : tokens)
         {
             notWaterProofItems.add(Integer.valueOf(oneId));

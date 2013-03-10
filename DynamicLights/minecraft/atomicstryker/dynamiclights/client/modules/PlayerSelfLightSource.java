@@ -52,7 +52,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         Property itemsList = config.get(config.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14");
         itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON YOURSELF] Syntax: ItemID:LightValue, seperated by commas";
         
-        String[] tokens = itemsList.value.split(",");
+        String[] tokens = itemsList.getString().split(",");
         for (String pair : tokens)
         {
             String[] values = pair.split(":");
@@ -63,7 +63,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         
         Property notWaterProofList = config.get(config.CATEGORY_GENERAL, "TurnedOffByWaterItems", "50,327");
         notWaterProofList.comment = "Item IDs that do not shine light when held in water, have to be present in LightItems. Syntax: ItemID, seperated by commas";
-        tokens = notWaterProofList.value.split(",");
+        tokens = notWaterProofList.getString().split(",");
         for (String oneId : tokens)
         {
             notWaterProofItems.add(Integer.valueOf(oneId));

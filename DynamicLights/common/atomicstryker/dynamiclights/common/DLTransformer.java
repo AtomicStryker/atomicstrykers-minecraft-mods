@@ -1,20 +1,12 @@
 package atomicstryker.dynamiclights.common;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ILOAD;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.ISTORE;
+import static org.objectweb.asm.Opcodes.*;
 
 import java.util.Iterator;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
 
@@ -29,22 +21,26 @@ import cpw.mods.fml.relauncher.IClassTransformer;
 public class DLTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.World */
-    private final String classNameWorldObfusc = "yc"; // 1.4.6 obfuscation
+    private final String classNameWorldObfusc = "zv";
     
     /* class net.minecraft.src.IBlockAccess */
-    private final String classNameBlockAccessObfusc = "ym"; // 1.4.6 obfuscation
+    private final String classNameBlockAccessObfusc = "aae";
     
-    /* method World.computeBlockLightValue(IIIIII)I */
-    private final String computeBlockLightMethodNameO = "g"; // both 1.4.2 and 1.4.4 obfuscation
+    /* method World.computeBlockLightValue(IIILnet/minecraft/world/EnumSkyBlock;)I aka func_98179_a*/
+    private final String computeBlockLightMethodNameO = "a";
+    
+    /* class net.minecraft.world.EnumSkyBlock */
+    private final String enumSkyBlockObfusc = "aag";
     
     
     private final String classNameWorld = "net.minecraft.world.World";
     private final String classNameWorldJava = "net/minecraft/world/World";
     private final String blockAccessJava = "net/minecraft/world/IBlockAccess";
-    private final String computeBlockLightMethodName = "computeBlockLightValue";
+    private final String computeBlockLightMethodName = "func_98179_a";
+    
     
     @Override
-    public byte[] transform(String name, byte[] bytes)
+    public byte[] transform(String name, String newName, byte[] bytes)
     {
         //System.out.println("transforming: "+name);
         if (name.equals(classNameWorldObfusc))
@@ -71,42 +67,66 @@ public class DLTransformer implements IClassTransformer
         while(methods.hasNext())
         {
             MethodNode m = methods.next();
-            if (m.name.equals( obfuscated ? computeBlockLightMethodNameO : computeBlockLightMethodName) && m.desc.equals("(IIIIII)I"))
+            if (m.name.equals( obfuscated ? computeBlockLightMethodNameO : computeBlockLightMethodName)
+            && m.desc.equals( obfuscated ? "(IIIL"+enumSkyBlockObfusc+";)I" : "(IIILnet/minecraft/world/EnumSkyBlock;)I"))
             {
                 System.out.println("In target method! Patching!");
                 
                 AbstractInsnNode targetNode = null;
                 Iterator iter = m.instructions.iterator();
+                boolean deleting = false;
+                boolean replacing = false;
                 while (iter.hasNext())
                 {
                     targetNode = (AbstractInsnNode) iter.next();
-                    if (targetNode.getOpcode() != ISTORE)
+                    
+                    if (targetNode instanceof VarInsnNode)
                     {
+                        VarInsnNode vNode = (VarInsnNode) targetNode;
+                        if (vNode.var == 6)
+                        {
+                            if (vNode.getOpcode() == ASTORE)
+                            {
+                                System.out.println("Bytecode ASTORE 6 case!");
+                                deleting = true;
+                                continue;
+                            }
+                            else if (vNode.getOpcode() == ISTORE)
+                            {
+                                System.out.println("Bytecode ISTORE 6 case!");
+                                replacing = true;
+                                targetNode = (AbstractInsnNode) iter.next();
+                                break;
+                            }
+                        }
+                        
+                        if (vNode.var == 7 && deleting)
+                        {
+                            break;
+                        }
+                    }
+                    
+                    if (deleting)
+                    {
+                        System.out.println("Removing "+targetNode);
                         iter.remove();
                     }
-                    else
-                    {
-                        // leave the ISTORE node, we'll inject our code infront of it instead
-                        break;
-                    }
-                }
-                
-                if (targetNode == null)
-                {
-                    System.err.println("Dynamic Lights transformer did not run into ISTORE node! ABANDON CLASS!");
-                    return bytes;
                 }
                 
                 // make new instruction list
                 InsnList toInject = new InsnList();
                 
-                // argument mapping! 0 is World, 5 is blockID, 234 are xyz
+                // argument mapping! 0 is World, 5 is blockID, 123 are xyz
                 toInject.add(new VarInsnNode(ALOAD, 0));
                 toInject.add(new VarInsnNode(ILOAD, 5));
+                toInject.add(new VarInsnNode(ILOAD, 1));
                 toInject.add(new VarInsnNode(ILOAD, 2));
                 toInject.add(new VarInsnNode(ILOAD, 3));
-                toInject.add(new VarInsnNode(ILOAD, 4));
                 toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+(obfuscated ? classNameBlockAccessObfusc : blockAccessJava)+";IIII)I"));
+                if (replacing)
+                {
+                    toInject.add(new VarInsnNode(ISTORE, 6));
+                }
                 
                 // inject new instruction list into method instruction list
                 m.instructions.insertBefore(targetNode, toInject);
