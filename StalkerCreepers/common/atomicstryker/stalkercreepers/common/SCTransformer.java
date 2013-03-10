@@ -1,10 +1,28 @@
 package atomicstryker.stalkercreepers.common;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.ICONST_1;
+import static org.objectweb.asm.Opcodes.IFNE;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.IRETURN;
 
 import java.util.Iterator;
-import org.objectweb.asm.*;
-import org.objectweb.asm.tree.*;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
 
@@ -13,12 +31,12 @@ public class SCTransformer implements IClassTransformer
     /* Obfuscated Names for EntityAICreeperSwell Transformation */
     
     /* class net.minecraft.src.EntityAICreeperSwell */
-    private final String entityAICreeperSwellClassNameO = "ob";
-    private final String entityAICreeperSwellJavaClassNameO = "ob";
+    private final String entityAICreeperSwellClassNameO = "pf";
+    private final String entityAICreeperSwellJavaClassNameO = "pf";
     /* class net.minecraft.src.EntityLiving */
-    private final String entityLivingJavaClassNameO = "md";
+    private final String entityLivingJavaClassNameO = "ng";
     /* class net.minecraft.src.EntityCreeper */
-    private final String entityCreeperJavaClassNameO = "qc";
+    private final String entityCreeperJavaClassNameO = "ro";
     /* method shouldExecute(), unlikely to change */
     private final String shouldExecuteMethodNameO = "a";
     /* field swellingCreeper, unlikely to change */
@@ -34,7 +52,7 @@ public class SCTransformer implements IClassTransformer
     private final String entityCreeperJavaClassName = "net/minecraft/entity/monster/EntityCreeper";
     
     @Override
-    public byte[] transform(String name, byte[] bytes)
+    public byte[] transform(String name, String newName, byte[] bytes)
     {
         //System.out.println("transforming: "+name);
         if (name.equals(entityAICreeperSwellClassNameO))
