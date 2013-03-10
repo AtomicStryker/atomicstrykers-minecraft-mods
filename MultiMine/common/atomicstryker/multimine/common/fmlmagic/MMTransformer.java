@@ -39,16 +39,16 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for NetServerHandler Transformation */
     
     /* net/minecraft/network/packet/Packet14BlockDig */
-    private final String packet14BlockDigNameO = "eg";
+    private final String packet14BlockDigNameO = "el";
     /* net.minecraft.network.NetServerHandler */
-    private final String netServerHandlerClassNameO = "iv";
-    private final String netServerHandlerJavaClassNameO = "iv";
+    private final String netServerHandlerClassNameO = "jh";
+    private final String netServerHandlerJavaClassNameO = "jh";
     /* handleBlockDig */
     private final String netServerHandlertargetMethodNameO = "a";
     /* playerEntity */
     private final String netServerHandlerEntIDFieldNameO = "d";
     /* net/minecraft/src/EntityPlayerMP */
-    private final String entityPlayerMPJavaClassNameO = "iq";
+    private final String entityPlayerMPJavaClassNameO = "jc";
     /* entityId */
     private final String entityPlayerMPEntIDFieldNameO = "k";
     
@@ -56,8 +56,8 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for PlayerControllerMP Transformation */
     
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "ayo";
-    private final String playerControllerMPJavaClassNameO = "ayo";
+    private final String playerControllerMPClassNameO = "bdl";
+    private final String playerControllerMPJavaClassNameO = "bdl";
     /* onPlayerDamageBlock */
     private final String playerControllerMPtargetMethodNameO = "c";
     /* currentBlockX */
@@ -89,7 +89,7 @@ public class MMTransformer implements IClassTransformer
     private final String entityPlayerMPEntIDFieldName = "entityId";
     
     @Override
-    public byte[] transform(String name, byte[] bytes)
+    public byte[] transform(String name, String newName, byte[] bytes)
     {
         //System.out.println("transforming: "+name);
         if (name.equals(netServerHandlerClassNameO))

@@ -20,7 +20,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.2.5")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.2.6")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ServerPacketHandler.class),
@@ -51,8 +51,8 @@ public class MultiMine
         initialBlockRegenDelay = config.get("general", "Initial Block Regen Delay in ms", 5000).getInt();
         blockRegenInterval = config.get("general", "Block 10 percent Regen Interval in ms", 1000).getInt();
         
-        excludedBlocksString = config.get("general", "Excluded Block IDs", "6,31,37,38,39,40,50,51,55,59,64,69,75,76,83,93,94,96,104,105,111,131,132,141,142").value;
-        excludedItemsString = config.get("general", "Excluded Item IDs", "290,291,292,293,294,359").value;
+        excludedBlocksString = config.get("general", "Excluded Block IDs", "6,31,37,38,39,40,50,51,55,59,64,69,75,76,83,93,94,96,104,105,111,131,132,141,142").getString();
+        excludedItemsString = config.get("general", "Excluded Item IDs", "290,291,292,293,294,359").getString();
         
         config.save();
         

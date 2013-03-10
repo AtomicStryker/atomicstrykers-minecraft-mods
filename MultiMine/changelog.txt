@@ -1,3 +1,6 @@
+1.2.6
+- update to MC 1.5
+
 1.2.5b (only client, fully compatible with 1.2.5)
 - crash fox MultiMineClient updateCloudTickReading
 
