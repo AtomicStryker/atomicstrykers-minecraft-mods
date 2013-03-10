@@ -13,7 +13,7 @@ public class GlisterBatAdapter implements IDynamicLightSource
     {
         bat = attachmentBat;
         lastsUntil = System.currentTimeMillis() + PetBatMod.instance().glisterBatEffectDuration;
-        bat.setTexture("/atomicstryker/petbat/client/texture/petbat_glister.png");
+        bat.setTexture("/mods/petbat/textures/model/petbat_glister.png");
         DynamicLights.addLightSource(this);
     }
 
@@ -28,7 +28,7 @@ public class GlisterBatAdapter implements IDynamicLightSource
     {
         if (System.currentTimeMillis() > lastsUntil)
         {
-            bat.setTexture("/atomicstryker/petbat/client/texture/petbat.png");
+            bat.setTexture("/mods/petbat/textures/model/petbat.png");
             return 0;
         }
         

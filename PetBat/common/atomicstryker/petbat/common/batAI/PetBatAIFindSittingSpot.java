@@ -27,12 +27,6 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
     }
     
     @Override
-    public boolean isContinuous()
-    {
-        return false;
-    }
-    
-    @Override
     public boolean shouldExecute()
     {
         return !isSearching

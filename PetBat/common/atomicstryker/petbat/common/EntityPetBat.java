@@ -39,7 +39,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public EntityPetBat(World par1World)
     {
         super(par1World);
-        texture = "/atomicstryker/petbat/client/texture/petbat.png";
+        texture = "/mods/petbat/textures/model/petbat.png";
         setSize(0.5F, 0.9F);
         setIsBatHanging(false);
         ownerName = "";

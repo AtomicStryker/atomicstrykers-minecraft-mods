@@ -13,8 +13,6 @@ public class ClientProxy implements IProxy
     @Override
     public void onModLoad()
     {
-        MinecraftForgeClient.preloadTexture("/atomicstryker/petbat/client/texture/petbat.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/petbat/client/texture/petBatItems.png");
         RenderingRegistry.registerEntityRenderingHandler(EntityPetBat.class, new RenderPetBat());
     }
 

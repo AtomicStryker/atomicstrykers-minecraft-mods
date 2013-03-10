@@ -1,5 +1,6 @@
 package atomicstryker.petbat.common;
 
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -13,11 +14,15 @@ public class ItemPocketedPetBat extends Item
     protected ItemPocketedPetBat(int par1)
     {
         super(par1);
-        setTextureFile("/atomicstryker/petbat/client/texture/petBatItems.png");
-        setIconIndex(0);
         maxStackSize = 1;
         setMaxDamage(28);
         setCreativeTab(CreativeTabs.tabCombat);
+    }
+    
+    @Override
+    public void func_94581_a(IconRegister iconRegister)
+    {
+        iconIndex = iconRegister.func_94245_a("petbat:pocketbat");
     }
     
     @Override

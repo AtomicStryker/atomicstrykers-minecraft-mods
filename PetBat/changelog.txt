@@ -1,3 +1,6 @@
+1.1.6
+update to mc 1.5
+
 1.1.5
 overriding Entity Names now to fix mods like damage indicator
 may or may not break existing bat entities. turn them into items before upgrading!
