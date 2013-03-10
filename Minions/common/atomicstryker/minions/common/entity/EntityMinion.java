@@ -75,7 +75,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 		
         this.moveSpeed = 0.35F;
         
-        this.texture = "/atomicstryker/minions/client/textures/AS_EntityMinion.png";
+        this.texture = "/mods/minions/textures/model/AS_EntityMinion.png";
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
         
         this.getNavigator().setAvoidsWater(false);

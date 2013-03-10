@@ -48,11 +48,6 @@ public class ClientProxy extends CommonProxy
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityMinion.class, new RenderMinion(new ModelMinion(), 0.25F));
         RenderingRegistry.registerEntityRenderingHandler(RenderEntLahwran_Minions.class, new MinionsRenderHook(FMLClientHandler.instance().getClient()));
-        
-        MinecraftForgeClient.preloadTexture("/atomicstryker/minions/client/textures/AS_EntityMinion.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/minions/client/textures/masterstaff.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/minions/client/textures/codechicken/lightning_outer.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/minions/client/textures/codechicken/lightning_inner.png");
     }
     
     @Override

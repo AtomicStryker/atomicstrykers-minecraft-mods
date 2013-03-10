@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.src.ModLoader;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
 
@@ -50,7 +49,7 @@ public class RenderChickenLightningBolt
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
-        ForgeHooksClient.bindTexture("/atomicstryker/minions/client/textures/lightning_outer.png", 0);
+        renderer.renderEngine.func_98187_b("/mods/minions/textures/lightning_outer.png");
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
@@ -59,7 +58,7 @@ public class RenderChickenLightningBolt
 		}
         tessellator.draw();
         
-        ForgeHooksClient.bindTexture("/atomicstryker/minions/client/textures/lightning_inner.png", 0);
+        renderer.renderEngine.func_98187_b("/mods/minions/textures/lightning_inner.png");
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)

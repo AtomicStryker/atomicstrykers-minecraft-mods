@@ -62,7 +62,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.1")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -103,9 +103,9 @@ public class MinionsCore
             minionsPerPlayer = cfg.get(cfg.CATEGORY_GENERAL, "minionsAmountPerPlayer", 4).getInt();
             
             cfg.get(cfg.CATEGORY_GENERAL, "FoodCostSmall", "1.5").comment = "Food cost per tick of casting lightning";
-            exhaustAmountSmall = Float.valueOf(cfg.get(cfg.CATEGORY_GENERAL, "FoodCostSmall", "1.5").value);
+            exhaustAmountSmall = Float.valueOf(cfg.get(cfg.CATEGORY_GENERAL, "FoodCostSmall", "1.5").getString());
             cfg.get(cfg.CATEGORY_GENERAL, "FoodCostBig", "20").comment = "Food cost of summoning Minions and giving complex orders";
-            exhaustAmountBig = Float.valueOf(cfg.get(cfg.CATEGORY_GENERAL, "FoodCostBig", "20").value);
+            exhaustAmountBig = Float.valueOf(cfg.get(cfg.CATEGORY_GENERAL, "FoodCostBig", "20").getString());
         }
         catch (Exception e)
         {
@@ -131,7 +131,7 @@ public class MinionsCore
         MinecraftForge.EVENT_BUS.register(new MinionsChunkManager());
         
         EntityRegistry.registerModEntity(EntityMinion.class, "AS_EntityMinion", 1, this, 25, 5, true);        
-        itemMastersStaff = (new ItemMastersStaff(masterStaffItemID).setItemName("Master's Staff"));
+        itemMastersStaff = (new ItemMastersStaff(masterStaffItemID).setUnlocalizedName("Master's Staff"));
         LanguageRegistry.instance().addName(itemMastersStaff, "Master's Staff");
         
         proxy.registerRenderInformation();
@@ -211,7 +211,7 @@ public class MinionsCore
     {       
         for (Block iter : Block.blocksList)
         {
-            if (iter != null && iter.getBlockName() != null && (iter instanceof BlockLog || iter.getBlockName().contains("log")))
+            if (iter != null && iter.getUnlocalizedName() != null && (iter instanceof BlockLog || iter.getUnlocalizedName().contains("log")))
             {
                 foundTreeBlocks.add(iter.blockID);
             }

@@ -67,7 +67,7 @@ public class MinionsClient
         try
         {
             cfg.load();
-            s_MenuKey = cfg.get(cfg.CATEGORY_GENERAL, "Minion_Menu_Key", "M").value;
+            s_MenuKey = cfg.get(cfg.CATEGORY_GENERAL, "Minion_Menu_Key", "M").getString();
             i_MenuKey = Keyboard.getKeyIndex(s_MenuKey);
             
         }

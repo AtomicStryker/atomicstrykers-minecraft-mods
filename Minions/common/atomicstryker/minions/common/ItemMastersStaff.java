@@ -1,5 +1,6 @@
 package atomicstryker.minions.common;
 
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -25,13 +26,16 @@ public class ItemMastersStaff extends Item
         this.maxStackSize = 1;
         System.out.println("Minions Master Staff created! ID: "+itemID);
         
-        this.setCreativeTab(CreativeTabs.tabCombat);
-        setTextureFile("/atomicstryker/minions/client/textures/MinionItems.png");
-        setIconIndex(0);
-        
+        this.setCreativeTab(CreativeTabs.tabCombat);        
         lastTime = System.currentTimeMillis();
     }
-
+	
+	@Override
+	public void func_94581_a(IconRegister iconRegister)
+	{
+	    iconIndex = iconRegister.func_94245_a("minions:masterstaff");
+	}
+	
 	@Override
     public void onPlayerStoppedUsing(ItemStack var1, World var2, EntityPlayer var3, int ticksHeld)
     {
@@ -56,7 +60,7 @@ public class ItemMastersStaff extends Item
     }
 
 	@Override
-    public ItemStack onFoodEaten(ItemStack var1, World var2, EntityPlayer var3)
+    public ItemStack onEaten(ItemStack var1, World var2, EntityPlayer var3)
     {
         return var1;
     }

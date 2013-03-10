@@ -91,7 +91,7 @@ public class BlockTask_MineBlock extends BlockTask
     	if (blockID != 0 && Block.blocksList[blockID].getBlockHardness(worker.worldObj, posX, posY, posZ) >= 0F)
     	{
     	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-    		if (worker.worldObj.setBlockWithNotify(posX, posY, posZ, 0))
+    		if (worker.worldObj.setBlockAndMetadataWithNotify(posX, posY, posZ, 0, 0, 3))
     		{
     			putBlockHarvestInWorkerInventory(stackList);
     		}
@@ -125,7 +125,7 @@ public class BlockTask_MineBlock extends BlockTask
     			putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
     			
             	this.worker.inventory.consumeInventoryItem(Block.dirt.blockID);
-            	this.worker.worldObj.setBlockWithNotify(x, y, z, Block.dirt.blockID);
+            	this.worker.worldObj.setBlockAndMetadataWithNotify(x, y, z, Block.dirt.blockID, 0, 3);
     		}
     	}
 	}
@@ -159,14 +159,14 @@ public class BlockTask_MineBlock extends BlockTask
         	if (checkBlockID != 0)
         	{
         	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-        		if (this.worker.worldObj.setBlockWithNotify(x, y, z, 0))
+        		if (this.worker.worldObj.setBlockAndMetadataWithNotify(x, y, z, 0, 0, 3))
         		{
         			putBlockHarvestInWorkerInventory(stackList);
         		}
         	}
         	
         	this.worker.inventory.consumeInventoryItem(Block.dirt.blockID);
-        	this.worker.worldObj.setBlockWithNotify(x, y, z, Block.dirt.blockID);
+        	this.worker.worldObj.setBlockAndMetadataWithNotify(x, y, z, Block.dirt.blockID, 0, 3);
     	}
     }
 }

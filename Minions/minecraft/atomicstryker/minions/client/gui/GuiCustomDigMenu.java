@@ -27,26 +27,26 @@ public class GuiCustomDigMenu extends GuiScreen
     	xzSize = MinionsClient.customSizeXZ;
     	ySize = MinionsClient.customSizeY;
     	
-        this.controlList.clear();
+        this.buttonList.clear();
         
-        this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
-        this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 10, "Reset Dimensions"));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
+        this.buttonList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 10, "Reset Dimensions"));
         
-        this.controlList.add(new GuiButton(3, this.width / 10 * 6, this.height / 4 + 35, 50, 20, "+2"));
-        this.controlList.add(new GuiButton(4, this.width / 10 * 3, this.height / 4 + 35, 50, 20, "-2"));
+        this.buttonList.add(new GuiButton(3, this.width / 10 * 6, this.height / 4 + 35, 50, 20, "+2"));
+        this.buttonList.add(new GuiButton(4, this.width / 10 * 3, this.height / 4 + 35, 50, 20, "-2"));
         
-        this.controlList.add(new GuiButton(5, this.width / 10 * 8, this.height / 4 + 35, 50, 20, "+10"));
-        this.controlList.add(new GuiButton(6, this.width / 10 * 1, this.height / 4 + 35, 50, 20, "-10"));
+        this.buttonList.add(new GuiButton(5, this.width / 10 * 8, this.height / 4 + 35, 50, 20, "+10"));
+        this.buttonList.add(new GuiButton(6, this.width / 10 * 1, this.height / 4 + 35, 50, 20, "-10"));
         
-        this.controlList.add(new GuiButton(7, this.width / 10 * 6, this.height / 4 + 75, 50, 20, "+1"));
-        this.controlList.add(new GuiButton(8, this.width / 10 * 3, this.height / 4 + 75, 50, 20, "-1"));
+        this.buttonList.add(new GuiButton(7, this.width / 10 * 6, this.height / 4 + 75, 50, 20, "+1"));
+        this.buttonList.add(new GuiButton(8, this.width / 10 * 3, this.height / 4 + 75, 50, 20, "-1"));
         
-        this.controlList.add(new GuiButton(9, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "+5"));
-        this.controlList.add(new GuiButton(10, this.width / 10 * 1, this.height / 4 + 75, 50, 20, "-5"));
+        this.buttonList.add(new GuiButton(9, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "+5"));
+        this.buttonList.add(new GuiButton(10, this.width / 10 * 1, this.height / 4 + 75, 50, 20, "-5"));
         
-        //this.controlList.add(new GuiButton(4, this.width / 4 - 100, this.height / 4 + 80, "Strip Mine"));
+        //this.buttonList.add(new GuiButton(4, this.width / 4 - 100, this.height / 4 + 80, "Strip Mine"));
 
-        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 -20, "Make it so!"));
+        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 -20, "Make it so!"));
 
     }
 

@@ -70,7 +70,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     		if (checkBlockID == Block.sand.blockID || checkBlockID == Block.gravel.blockID)
     		{            	
             	this.worker.inventory.consumeInventoryItem(Block.dirt.blockID);
-            	this.worker.worldObj.setBlockWithNotify(x, y, z, Block.dirt.blockID);
+            	this.worker.worldObj.setBlockAndMetadataWithNotify(x, y, z, Block.dirt.blockID, 0, 3);
     		}
     	}
 	}

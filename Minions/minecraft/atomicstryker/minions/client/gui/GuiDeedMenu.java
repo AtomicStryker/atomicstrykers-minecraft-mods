@@ -38,9 +38,9 @@ public class GuiDeedMenu extends GuiScreen
     @Override
     public void initGui()
     {
-        this.controlList.clear();
+        this.buttonList.clear();
         
-        this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Chicken out"));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Chicken out"));
         
     	ArrayList copy = (ArrayList) MinionsCore.evilDoings.clone();
     	deedButtons = new ArrayList();
@@ -52,14 +52,14 @@ public class GuiDeedMenu extends GuiScreen
     		copy.remove(i);
     	}
     	
-    	this.controlList.clear();
+    	this.buttonList.clear();
     	
-    	this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
+    	this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
     	
     	for (int x = 0; x < 3; x++)
     	{
     		EvilDeed deed = (EvilDeed) deedButtons.get(x);
-    		this.controlList.add(new GuiButton(x+1, this.width / 2 - 100, this.height / 4 + x*40, deed.getButtonText()));
+    		this.buttonList.add(new GuiButton(x+1, this.width / 2 - 100, this.height / 4 + x*40, deed.getButtonText()));
     	}
     }
 

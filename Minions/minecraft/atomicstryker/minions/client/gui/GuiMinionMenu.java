@@ -23,29 +23,29 @@ public class GuiMinionMenu extends GuiScreen
     @Override
     public void initGui()
     {
-        this.controlList.clear();
+        this.buttonList.clear();
         
-        this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
         
         if (MinionsClient.hasMinionsSMPOverride)
         {
-        	this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Unsummon Minions"));
-        	this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 40, "Dig Mineshaft"));
-        	this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 80, "Strip Mine"));
+        	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Unsummon Minions"));
+        	this.buttonList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 40, "Dig Mineshaft"));
+        	this.buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 80, "Strip Mine"));
         	
-        	this.controlList.add(new GuiButton(4, this.width / 4 *3, this.height / 4 + 40, 100, 20, "Dig..."));
+        	this.buttonList.add(new GuiButton(4, this.width / 4 *3, this.height / 4 + 40, 100, 20, "Dig..."));
         }
 		else if (MinionsCore.evilDeedXPCost == -1)
 		{
-			this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Deeds Disabled by config!"));
+			this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Deeds Disabled by config!"));
 		}
 		else if (MinionsCore.evilDoings == null || MinionsCore.evilDoings.size() == 0)
 		{
-		    this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Missing Deed config file!"));
+		    this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Missing Deed config file!"));
 		}
         else if (mc.thePlayer.experienceLevel >= MinionsCore.evilDeedXPCost)
         {
-        	this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Commit to Evil"));
+        	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Commit to Evil"));
         }
     }
 
