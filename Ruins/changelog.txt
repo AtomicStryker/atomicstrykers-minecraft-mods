@@ -167,3 +167,6 @@ a: setAccessible now true
 
 9.2
 + catches and logs invalid Block IDs when parsing templates, uses air blocks instead
+
+9.3
++ update to MC 1.5

@@ -29,7 +29,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.2", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.3", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -56,7 +56,7 @@ public class RuinsMod
         if (is != null && is.itemID == Item.stick.itemID && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
-            event.entityPlayer.sendChatToPlayer(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getBlockName(), event.block.blockID, event.metadata));
+            event.entityPlayer.sendChatToPlayer(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getUnlocalizedName(), event.block.blockID, event.metadata));
         }
     }
     

@@ -161,7 +161,7 @@ public class CustomRotationMapping
     {
         for (Block b : Block.blocksList)
         {
-            if (b != null && b.getBlockName() != null && b.getBlockName().equals(blockName))
+            if (b != null && b.getUnlocalizedName() != null && b.getUnlocalizedName().equals(blockName))
             {
                 return b.blockID;
             }
