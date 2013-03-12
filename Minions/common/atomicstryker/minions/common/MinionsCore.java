@@ -635,6 +635,7 @@ public class MinionsCore
                 {
                     if (!lineString.startsWith("//"))
                     {
+                        lineString = lineString.trim();
                         if (lineString.startsWith("registerBlockIDasTreeBlock"))
                         {
                             String[] stringArray = lineString.split(":");

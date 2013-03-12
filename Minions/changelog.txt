@@ -1,5 +1,6 @@
 Update 1.6.2
 - updated for MC 1.5
+- added trimming when parsing config lines. Leaving spaces will no longer break everything
 
 Update 1.6.1
 - reworked Path Finding again, somewhat, moved it into a seperate package
