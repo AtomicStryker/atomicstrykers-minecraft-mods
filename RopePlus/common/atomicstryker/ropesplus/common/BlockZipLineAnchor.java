@@ -19,7 +19,6 @@ public class BlockZipLineAnchor extends BlockContainer
         super(blockIndex, Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
-        setTextureFile("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
     }
     
     @Override

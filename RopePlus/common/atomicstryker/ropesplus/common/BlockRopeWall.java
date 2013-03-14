@@ -19,7 +19,6 @@ public class BlockRopeWall extends BlockContainer
     public BlockRopeWall(int blockIndex)
     {
         super(blockIndex, Material.vine);
-        setTextureFile("/atomicstryker/ropesplus/client/ropesPlusBlocks.png");
     }
     
     @Override
