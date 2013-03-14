@@ -195,12 +195,6 @@ public class BlockAdvancedMachines extends BlockContainer
         return world.getBlockMetadata(x, y, z); // advanced machine item meta exactly equals the block meta
     }
 
-    @Override
-    public String getTextureFile()
-    {
-        return "/ic2/advancedmachines/client/sprites/block_advmachine.png";
-    }
-
     public int getGui(World var1, int var2, int var3, int var4, EntityPlayer var5)
     {
         switch (var1.getBlockMetadata(var2, var3, var4))
