@@ -80,7 +80,10 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 EntityLiving target = (EntityLiving) ent;
                 String buffer = EntityList.getEntityString(target);
                 String[] subStrings = buffer.split("."); // in case of Package.Class.EntityName derps
-                buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
+                if (subStrings.length > 1)
+                {
+                    buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
+                }
                 int size = mod.getModSize();
                 String prefix = size <= 5 ? "Rare " : size <= 10 ? "Ultra " : "Infernal ";
                 if (buffer.startsWith("Entity"))
