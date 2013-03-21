@@ -39,34 +39,34 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for NetServerHandler Transformation */
     
     /* net/minecraft/network/packet/Packet14BlockDig */
-    private final String packet14BlockDigNameO = "el";
+    private final String packet14BlockDigNameO = "ej";
     /* net.minecraft.network.NetServerHandler */
     private final String netServerHandlerClassNameO = "jh";
     private final String netServerHandlerJavaClassNameO = "jh";
-    /* handleBlockDig */
+    /* handleBlockDig / func_72510_a */
     private final String netServerHandlertargetMethodNameO = "a";
-    /* playerEntity */
+    /* playerEntity / field_72574_e */
     private final String netServerHandlerEntIDFieldNameO = "c";
     /* net/minecraft/src/EntityPlayerMP */
     private final String entityPlayerMPJavaClassNameO = "jc";
-    /* entityId */
+    /* entityId / field_70157_k */
     private final String entityPlayerMPEntIDFieldNameO = "k";
     
     
     /* Obfuscated Names for PlayerControllerMP Transformation */
     
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bdl";
-    private final String playerControllerMPJavaClassNameO = "bdl";
-    /* onPlayerDamageBlock */
+    private final String playerControllerMPClassNameO = "bds";
+    private final String playerControllerMPJavaClassNameO = "bds";
+    /* onPlayerDamageBlock / func_78759_c */
     private final String playerControllerMPtargetMethodNameO = "c";
-    /* currentBlockX */
+    /* currentBlockX / field_78775_c */
     private final String playerControllerMPcurrentBlockXFieldNameO = "c";
-    /* currentBlockY */
+    /* currentBlockY / field_78772_d */
     private final String playerControllerMPcurrentBlockYFieldNameO = "d";
-    /* currentBlockZ */
+    /* currentBlockZ / field_78773_e */
     private final String playerControllerMPcurrentBlockZFieldNameO = "e";
-    /* curBlockDamageMP */
+    /* curBlockDamageMP / field_78770_f */
     private final String playerControllerMPcurrentBlockDamageFieldNameO = "g";
     
     

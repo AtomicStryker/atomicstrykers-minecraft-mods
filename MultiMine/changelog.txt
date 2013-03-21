@@ -1,3 +1,6 @@
+1.2.7
+- update to MC 1.5.1
+
 1.2.6 (fix)
 - fixed crash in NetServerHandler
 
