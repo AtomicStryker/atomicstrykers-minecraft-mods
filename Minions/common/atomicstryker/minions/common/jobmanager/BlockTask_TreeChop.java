@@ -77,7 +77,7 @@ public class BlockTask_TreeChop extends BlockTask
     	for (int i = treeBlockList.size()-1; i >= 0; i--)
     	{
     		tempCoords = treeBlockList.get(i);
-    		worker.worldObj.setBlockAndMetadataWithNotify(tempCoords.posX, tempCoords.posY, tempCoords.posZ, 0, 0, 3);
+    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, 0, 0, 3);
     	}
     	
     	if (leaveBlockList.size() > 0)
@@ -91,7 +91,7 @@ public class BlockTask_TreeChop extends BlockTask
     	    	{
     	    		tempCoords = leaveBlockList.get(i);
     	    		leave.dropBlockAsItem(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
-    	    		worker.worldObj.setBlockAndMetadataWithNotify(tempCoords.posX, tempCoords.posY, tempCoords.posZ, 0, 0, 3);
+    	    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, 0, 0, 3);
     	    	}
     		}
     	}

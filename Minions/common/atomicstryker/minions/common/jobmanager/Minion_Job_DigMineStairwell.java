@@ -165,7 +165,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     	
     	if (currentSegment == 1 && ((xDiff-1) == (currentDepth%4)) && zDiff == 0)
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairCompactCobblestone.blockID, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairsCobblestone.blockID, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 2 && xDiff == 4 &&
@@ -173,7 +173,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		|| (zDiff == 2 && currentDepth%4 == 0)
     		|| (zDiff == 3 && currentDepth%4 == 1)))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairCompactCobblestone.blockID, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairsCobblestone.blockID, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 3 && zDiff == 4 &&
@@ -181,12 +181,12 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		|| (xDiff == 2 && currentDepth%4 == 3)
     		|| (xDiff == 1 && currentDepth%4 == 0)))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairCompactCobblestone.blockID, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairsCobblestone.blockID, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 4 && xDiff == 0 && areModsCounterPosed(zDiff, currentDepth))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairCompactCobblestone.blockID, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Block.stairsCobblestone.blockID, getCurrentStairMeta()));
     		return true;
     	}
     	

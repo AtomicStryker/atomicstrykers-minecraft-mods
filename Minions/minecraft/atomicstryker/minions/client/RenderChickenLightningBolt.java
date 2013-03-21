@@ -49,7 +49,7 @@ public class RenderChickenLightningBolt
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
-        renderer.renderEngine.func_98187_b("/mods/minions/textures/lightning_outer.png");
+        renderer.renderEngine.bindTexture("/mods/minions/textures/lightning_outer.png");
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
@@ -58,7 +58,7 @@ public class RenderChickenLightningBolt
 		}
         tessellator.draw();
         
-        renderer.renderEngine.func_98187_b("/mods/minions/textures/lightning_inner.png");
+        renderer.renderEngine.bindTexture("/mods/minions/textures/lightning_inner.png");
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)

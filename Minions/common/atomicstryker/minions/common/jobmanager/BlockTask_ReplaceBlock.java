@@ -25,6 +25,6 @@ public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
     {
     	super.onFinishedTask();
     	
-    	this.worker.worldObj.setBlockAndMetadataWithNotify(posX, posY, posZ, blockToPlace, metaToPlace, 3);
+    	this.worker.worldObj.setBlock(posX, posY, posZ, blockToPlace, metaToPlace, 3);
     }
 }

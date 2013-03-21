@@ -170,7 +170,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
    		{
    			if (worldObj.getLightBrightness(nextX, startY, nextZ) < 10F)
    			{
-   				worldObj.setBlockAndMetadataWithNotify(nextX-2*xDirection, startY, nextZ-2*zDirection, Block.torchWood.blockID, 0, 3);
+   				worldObj.setBlock(nextX-2*xDirection, startY, nextZ-2*zDirection, Block.torchWood.blockID, 0, 3);
    			}
    		}
    		
