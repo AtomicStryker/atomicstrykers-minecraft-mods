@@ -175,16 +175,15 @@ public class RuinTemplateRule {
 		if( canReplace( blockIDs[blocknum], world.getBlockId( x, y, z ) ) ) {
 			if( rotate != RuinsMod.DIR_NORTH ) {
 				int metadata = rotateMetadata( blockIDs[blocknum], blockMDs[blocknum], rotate );
-				world.setBlockAndMetadataWithNotify( x, y, z, blockIDs[blocknum], metadata, 3 );
+				world.setBlock( x, y, z, blockIDs[blocknum], metadata, 3 );
 			} else {
-				world.setBlockAndMetadataWithNotify( x, y, z, blockIDs[blocknum], blockMDs[blocknum], 3 );
+				world.setBlock( x, y, z, blockIDs[blocknum], blockMDs[blocknum], 3 );
 			}
 		}
 	}
 
     public void doSpecialBlock( World world, Random random, int x, int y, int z, String dataString )
     {
-        
         if (dataString.equals("preserveBlock"))
         {
             // NOOP
@@ -238,11 +237,11 @@ public class RuinTemplateRule {
     
     private void addCustomSpawner( World world, int x, int y, int z, String id )
     {
-        world.setBlockAndMetadataWithNotify( x, y, z, Block.mobSpawner.blockID, 0, 3 );
+        world.setBlock( x, y, z, Block.mobSpawner.blockID, 0, 3 );
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
         if (mobspawner != null)
         {
-            mobspawner.func_98049_a().func_98272_a(id);
+            mobspawner.func_98049_a().setMobID(id);
         }
     }
 
@@ -306,7 +305,7 @@ public class RuinTemplateRule {
     }
 
     private void addEasyChest( World world, Random random, int x, int y, int z, int items ) {
-        world.setBlockAndMetadataWithNotify( x, y, z, Block.chest.blockID, 0, 3 );
+        world.setBlock( x, y, z, Block.chest.blockID, 0, 3 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {
@@ -321,7 +320,7 @@ public class RuinTemplateRule {
     }
 
     private void addMediumChest( World world, Random random, int x, int y, int z, int items ) {
-        world.setBlockAndMetadataWithNotify( x, y, z, Block.chest.blockID, 0, 3 );
+        world.setBlock( x, y, z, Block.chest.blockID, 0, 3 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {
@@ -340,7 +339,7 @@ public class RuinTemplateRule {
     }
 
     private void addHardChest( World world, Random random, int x, int y, int z, int items ) {
-        world.setBlockAndMetadataWithNotify( x, y, z, Block.chest.blockID, 0, 3 );
+        world.setBlock( x, y, z, Block.chest.blockID, 0, 3 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {
@@ -359,7 +358,7 @@ public class RuinTemplateRule {
     }
     
     private void addChestGenChest( World world, Random random, int x, int y, int z, String gen, int items ) {
-        world.setBlockAndMetadataWithNotify( x, y, z, Block.chest.blockID, 0, 3 );
+        world.setBlock( x, y, z, Block.chest.blockID, 0, 3 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {

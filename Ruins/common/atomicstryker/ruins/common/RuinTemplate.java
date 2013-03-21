@@ -325,7 +325,7 @@ public class RuinTemplate implements RuinIBuildable {
 			for( int x1 = 0; x1 < xDim; x1++ ) {
 				for( int z1 = 0; z1 < zDim; z1++ ) {
 					if( ! preserveBlock( world.getBlockId( x + x1, y + y1, z + z1 ) ) ) {
-						world.setBlockAndMetadataWithNotify( x + x1, y + y1, z + z1, 0, 0, 3 );
+						world.setBlock( x + x1, y + y1, z + z1, 0, 0, 3 );
 					}
 				}
 			}
@@ -355,7 +355,7 @@ public class RuinTemplate implements RuinIBuildable {
 			for( int x1 = 0; x1 < xDim; x1++ ) {
 				for( int z1 = 0; z1 < zDim; z1++ ) {
 					if( isAir( world.getBlockId( x + x1, y + y1, z + z1 ) ) ) {
-						world.setBlockAndMetadataWithNotify( x + x1, y + y1, z + z1, fillBlockID, 0, 3 );
+						world.setBlock( x + x1, y + y1, z + z1, fillBlockID, 0, 3 );
 					}
 				}
 			}

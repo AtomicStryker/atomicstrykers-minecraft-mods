@@ -170,3 +170,6 @@ a: setAccessible now true
 
 9.3
 + update to MC 1.5
+
+9.4
++ update to MC 1.5.1

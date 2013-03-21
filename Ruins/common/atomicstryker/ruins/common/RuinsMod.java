@@ -29,7 +29,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.3", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.4", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
