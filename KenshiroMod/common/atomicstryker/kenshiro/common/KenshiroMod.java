@@ -23,7 +23,7 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 
-@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.1.1")
+@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.1.2")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_KSM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_KSM"}, packetHandler = ServerPacketHandler.class)

@@ -174,7 +174,7 @@ public class RenderHookKenshiro extends Render
 	         GL11.glTranslatef(-1.0F, -1.0F, 0.0F);
 	         var10 = 0.015625F;
 	         GL11.glScalef(var10, var10, var10);
-	         this.mc.renderEngine.func_98187_b("/misc/mapbg.png");
+	         this.mc.renderEngine.bindTexture("/misc/mapbg.png");
 	         Tessellator var27 = Tessellator.instance;
 	         GL11.glNormal3f(0.0F, 0.0F, -1.0F);
 	         var27.startDrawingQuads();
