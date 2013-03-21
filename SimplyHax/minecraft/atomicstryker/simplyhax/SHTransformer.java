@@ -28,7 +28,7 @@ import cpw.mods.fml.relauncher.IClassTransformer;
 public class SHTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.EntityPlayerSP */
-    private final String classNamePlayerObfusc = "bag"; // 1.4.6 obfuscation
+    private final String classNamePlayerObfusc = "bfk";
     
     private final String classNamePlayer = "net.minecraft.client.entity.EntityPlayerSP";
     
