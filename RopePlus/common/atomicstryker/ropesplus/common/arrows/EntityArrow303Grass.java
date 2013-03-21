@@ -38,19 +38,19 @@ public class EntityArrow303Grass extends EntityArrow303
         int hitBlockID = worldObj.getBlockId(blockX, blockY, blockZ);
         if(hitBlockID == Block.dirt.blockID)
         {
-            worldObj.setBlockAndMetadataWithNotify(blockX, blockY, blockZ, Block.grass.blockID, 0, 3);
+            worldObj.setBlock(blockX, blockY, blockZ, Block.grass.blockID, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
         else if(hitBlockID == Block.cobblestone.blockID)
         {
-            worldObj.setBlockAndMetadataWithNotify(blockX, blockY, blockZ, Block.cobblestoneMossy.blockID, 0, 3);
+            worldObj.setBlock(blockX, blockY, blockZ, Block.cobblestoneMossy.blockID, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
         else if(hitBlockID == Block.tilledField.blockID && worldObj.getBlockId(blockX, blockY+1, blockZ) == 0)
         {
-            worldObj.setBlockAndMetadataWithNotify(blockX, blockY+1, blockZ, Block.crops.blockID, 0, 3);
+            worldObj.setBlock(blockX, blockY+1, blockZ, Block.crops.blockID, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }

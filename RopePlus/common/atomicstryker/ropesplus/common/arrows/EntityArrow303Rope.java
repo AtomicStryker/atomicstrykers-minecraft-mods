@@ -118,7 +118,7 @@ public class EntityArrow303Rope extends EntityArrow303
         
         if(!worldObj.isRemote)
         {
-            worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, targetMeta, 3);
+            worldObj.setBlock(x, y, z, blockID, targetMeta, 3);
         }
 
         placeCoords[0] = x;

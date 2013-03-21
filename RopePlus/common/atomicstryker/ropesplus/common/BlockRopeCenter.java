@@ -19,9 +19,9 @@ public class BlockRopeCenter extends Block
     }
     
     @Override
-    public void func_94332_a(IconRegister par1IconRegister)
+    public void registerIcons(IconRegister par1IconRegister)
     {
-        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:rope");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:rope");
     }
     
     @Override
@@ -67,8 +67,8 @@ public class BlockRopeCenter extends Block
                 if((ropeending == 0) & (world.getBlockId(i + xoffset, j - length, k + zoffset) == 0))
                 {
                     ropeending = 1;
-                    world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
-                    world.setBlockAndMetadataWithNotify(i + xoffset, j - length, k + zoffset, this.blockID, 0, 3);
+                    world.setBlock(i, j, k, 0, 0, 3);
+                    world.setBlock(i + xoffset, j - length, k + zoffset, this.blockID, 0, 3);
                 }
             }
 
@@ -76,7 +76,7 @@ public class BlockRopeCenter extends Block
         if((ropeending == 0 || ropeending == 2) & (world.getBlockId(i, j + 1, k) != this.blockID) && !world.isBlockOpaqueCube(i, j + 1, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
         }
     }
 
@@ -112,7 +112,7 @@ public class BlockRopeCenter extends Block
         if(!blockstays)
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
         }
     }
 
@@ -159,7 +159,7 @@ public class BlockRopeCenter extends Block
 		
 		if (world.getBlockId(a, b, c) == this.blockID)
 		{
-			world.setBlockAndMetadataWithNotify(a, b, c, 0, 0, 3);
+			world.setBlock(a, b, c, 0, 0, 3);
 		}
 		
 		for(int x = 1;; x++)
@@ -189,7 +189,7 @@ public class BlockRopeCenter extends Block
 		{
 			coords = RopesPlusCore.areCoordsArrowRope(a, rope_min_y+x, c);
 			
-			world.setBlockAndMetadataWithNotify(a, rope_min_y+x, c, 0, 0, 3);
+			world.setBlock(a, rope_min_y+x, c, 0, 0, 3);
 			
 			if (coords != null)
 			{

@@ -297,8 +297,8 @@ public class EntityGrapplingHook extends Entity
                     		yRope--;
                     	}
                     	
-                        worldObj.setBlockAndMetadataWithNotify(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook.blockID, metaData, 3);
-                        worldObj.setBlockAndMetadataWithNotify(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos.blockID, metaData, 3);
+                        worldObj.setBlock(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook.blockID, metaData, 3);
+                        worldObj.setBlock(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos.blockID, metaData, 3);
                         
                         TileEntityRope newent = new TileEntityRope(worldObj, xRope, yRope, zRope, 32);
                         RopesPlusCore.addRopeToArray(newent);

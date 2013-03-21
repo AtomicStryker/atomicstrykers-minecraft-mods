@@ -37,7 +37,7 @@ public class TileEntityRope
 					return true;
 				}
 				
-				world.setBlockAndMetadataWithNotify(ix, iy - 1, iz, RopesPlusCore.blockRopeWallPos.blockID, world.getBlockMetadata(ix, iy, iz), 3);
+				world.setBlock(ix, iy - 1, iz, RopesPlusCore.blockRopeWallPos.blockID, world.getBlockMetadata(ix, iy, iz), 3);
 				TileEntityRope newent = new TileEntityRope(world, ix, iy - 1, iz, remainrope);
 				RopesPlusCore.addRopeToArray(newent);
 			}

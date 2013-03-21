@@ -207,7 +207,7 @@ public class EntityArrow303 extends EntityProjectileBase
                 int prevBlockMeta = worldObj.getBlockMetadata(x, y, z);
                 Block.blocksList[prevBlockID].harvestBlock(worldObj, shooter, x, y, z, prevBlockMeta);
             }
-            worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, 0, 3);
+            worldObj.setBlock(x, y, z, blockID, 0, 3);
         }
 
         return true;

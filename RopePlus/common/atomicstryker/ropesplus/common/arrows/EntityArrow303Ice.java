@@ -140,23 +140,23 @@ public class EntityArrow303Ice extends EntityArrow303
                 {
                     if (worldObj.getBlockMaterial(iX, iY, iZ) == Material.water && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, Block.ice.blockID, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, Block.ice.blockID, 0, 3);
                         continue;
                     }
                     if (worldObj.getBlockMaterial(iX, iY, iZ) == Material.lava && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, Block.cobblestone.blockID, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, Block.cobblestone.blockID, 0, 3);
                         continue;
                     }
                     if (worldObj.getBlockId(iX, iY, iZ) == Block.fire.blockID)
                     {
-                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, 0, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, 0, 0, 3);
                         continue;
                     }
                     if (worldObj.getBlockId(iX, iY, iZ) == Block.torchWood.blockID)
                     {
                         Block.blocksList[Block.torchWood.blockID].dropBlockAsItemWithChance(worldObj, iX, iY, iZ, worldObj.getBlockMetadata(iX, iY, iZ), 1.0F, 0);
-                        worldObj.setBlockAndMetadataWithNotify(iX, iY, iZ, 0, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, 0, 0, 3);
                     }
                 }
             }

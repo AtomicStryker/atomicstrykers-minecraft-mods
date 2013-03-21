@@ -22,9 +22,9 @@ public class BlockZipLineAnchor extends BlockContainer
     }
     
     @Override
-    public void func_94332_a(IconRegister par1IconRegister)
+    public void registerIcons(IconRegister par1IconRegister)
     {
-        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:grhkanchor");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:grhkanchor");
     }
     
     @Override
@@ -81,7 +81,7 @@ public class BlockZipLineAnchor extends BlockContainer
         if(!world.isBlockOpaqueCube(i, j + 1, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
         }
     }
 

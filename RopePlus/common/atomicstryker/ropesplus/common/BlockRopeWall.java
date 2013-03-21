@@ -22,9 +22,9 @@ public class BlockRopeWall extends BlockContainer
     }
     
     @Override
-    public void func_94332_a(IconRegister par1IconRegister)
+    public void registerIcons(IconRegister par1IconRegister)
     {
-        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:rope");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:rope");
     }
     
     @Override
@@ -224,7 +224,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 0; x <= ropelenght; x++)
 		{
-			world.setBlockAndMetadataWithNotify(a, rope_max_y-x, c, 0, 0, 3);
+			world.setBlock(a, rope_max_y-x, c, 0, 0, 3);
 		}
 		
 		//ModLoader.getMinecraftInstance().ingameGUI.addChatMessage("Rope height of ["+(h-b)+"] removed");
@@ -243,7 +243,7 @@ public class BlockRopeWall extends BlockContainer
 		{
 			if(world.getBlockId(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.blockGrapplingHook.blockID)
 			{
-				world.setBlockAndMetadataWithNotify(candidates[y][0], candidates[y][1], candidates[y][2], 0, 0, 3);
+				world.setBlock(candidates[y][0], candidates[y][1], candidates[y][2], 0, 0, 3);
 				
 				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.itemGrapplingHook));
 				entityitem.delayBeforeCanPickup = 5;

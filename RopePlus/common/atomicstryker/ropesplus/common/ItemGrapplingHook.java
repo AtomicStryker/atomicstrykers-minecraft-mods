@@ -20,9 +20,9 @@ public class ItemGrapplingHook extends Item
     }
     
     @Override
-    public void func_94581_a(IconRegister iconRegister)
+    public void updateIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.func_94245_a("ropesplus:itemGrapplingHook");
+        iconIndex = iconRegister.registerIcon("ropesplus:itemGrapplingHook");
     }
 
     @Override

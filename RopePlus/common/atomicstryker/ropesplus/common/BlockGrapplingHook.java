@@ -18,9 +18,9 @@ public class BlockGrapplingHook extends Block
     }
     
     @Override
-    public void func_94332_a(IconRegister par1IconRegister)
+    public void registerIcons(IconRegister par1IconRegister)
     {
-        this.field_94336_cN = par1IconRegister.func_94245_a("ropesplus:blockGrapplingHook");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:blockGrapplingHook");
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BlockGrapplingHook extends Block
         if(!canPlaceBlockAt(world, i, j, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockAndMetadataWithNotify(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
             onBlockDestroyed(world, i, j, k);
         }
     }
@@ -115,7 +115,7 @@ public class BlockGrapplingHook extends Block
             
             for(int m = candidates[l][1]; world.getBlockId(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.blockRopeWallPos.blockID; m--)
             {
-                world.setBlockAndMetadataWithNotify(candidates[l][0], m, candidates[l][2], 0, 0, 3);
+                world.setBlock(candidates[l][0], m, candidates[l][2], 0, 0, 3);
             }
         }
     }
