@@ -287,32 +287,33 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     public abstract Container getGuiContainer(InventoryPlayer var1);
 
+    // ISidedInventory Overrides
+    
     @Override
-    public int func_94127_c(int side) //getStartInventorySide(ForgeDirection side) 
+    public int[] getSizeInventorySide(int side)
     {
         switch (side)
         {
             case 0: // DOWN
-                return 0; // power slot always 0
+                int[] r = {0};
+                return r; // power slot always 0
             case 1: // UP
-                return inputs[0];
+                return inputs;
             default:
-                return outputs[0];
+                return outputs;
         }
     }
-
+    
     @Override
-    public int func_94128_d(int side) //getSizeInventorySide(ForgeDirection side)
+    public boolean func_102007_a(int slotSize, ItemStack itemstack, int j) // TODO
     {
-        switch (side)
-        {
-            case 0: // DOWN
-                return 1;
-            case 1: // UP
-                return this.inputs.length;
-            default:
-                return this.outputs.length;
-        }
+        return true;
+    }
+    
+    @Override
+    public boolean func_102008_b(int slotSize, ItemStack itemstack, int j) // TODO
+    {
+        return true;
     }
 
     public String printFormattedData()

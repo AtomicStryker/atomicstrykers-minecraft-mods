@@ -42,57 +42,57 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public void func_94332_a(IconRegister par1IconRegister)
+    public void registerIcons(IconRegister par1IconRegister)
     {
         iconBuffer = new Icon[3][12]; // 3 machines, 6 sides each, in ON and OFF states
         
         // meta 0, macerator
         // first the 6 sides in OFF state
-        iconBuffer[0][0] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
-        iconBuffer[0][1] = par1IconRegister.func_94245_a("advancedmachines:topMaceratorOFF"); // top
-        iconBuffer[0][2] = par1IconRegister.func_94245_a("advancedmachines:front"); // north
-        iconBuffer[0][3] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
-        iconBuffer[0][4] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
-        iconBuffer[0][5] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        iconBuffer[0][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[0][1] = par1IconRegister.registerIcon("advancedmachines:topMaceratorOFF"); // top
+        iconBuffer[0][2] = par1IconRegister.registerIcon("advancedmachines:front"); // north
+        iconBuffer[0][3] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // east
+        iconBuffer[0][4] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
+        iconBuffer[0][5] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         // then the 6 sides in ON state
-        iconBuffer[0][6] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
-        iconBuffer[0][7] = par1IconRegister.func_94245_a("advancedmachines:topMaceratorON"); // top
-        iconBuffer[0][8] = par1IconRegister.func_94245_a("advancedmachines:front"); // north
-        iconBuffer[0][9] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
-        iconBuffer[0][10] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
-        iconBuffer[0][11] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        iconBuffer[0][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[0][7] = par1IconRegister.registerIcon("advancedmachines:topMaceratorON"); // top
+        iconBuffer[0][8] = par1IconRegister.registerIcon("advancedmachines:front"); // north
+        iconBuffer[0][9] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // east
+        iconBuffer[0][10] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
+        iconBuffer[0][11] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         
         // meta 1, compressor
         // first the 6 sides in OFF state
-        iconBuffer[1][0] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
-        iconBuffer[1][1] = par1IconRegister.func_94245_a("advancedmachines:topCompressor"); // top
-        iconBuffer[1][2] = par1IconRegister.func_94245_a("advancedmachines:frontCompressorOFF"); // north
-        iconBuffer[1][3] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
-        iconBuffer[1][4] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
-        iconBuffer[1][5] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        iconBuffer[1][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[1][1] = par1IconRegister.registerIcon("advancedmachines:topCompressor"); // top
+        iconBuffer[1][2] = par1IconRegister.registerIcon("advancedmachines:frontCompressorOFF"); // north
+        iconBuffer[1][3] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // east
+        iconBuffer[1][4] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
+        iconBuffer[1][5] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         // then the 6 sides in ON state
-        iconBuffer[1][6] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
-        iconBuffer[1][7] = par1IconRegister.func_94245_a("advancedmachines:topCompressor"); // top
-        iconBuffer[1][8] = par1IconRegister.func_94245_a("advancedmachines:frontCompressorON"); // north
-        iconBuffer[1][9] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // east
-        iconBuffer[1][10] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // south
-        iconBuffer[1][11] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // west
+        iconBuffer[1][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[1][7] = par1IconRegister.registerIcon("advancedmachines:topCompressor"); // top
+        iconBuffer[1][8] = par1IconRegister.registerIcon("advancedmachines:frontCompressorON"); // north
+        iconBuffer[1][9] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // east
+        iconBuffer[1][10] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
+        iconBuffer[1][11] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         
         // meta 2, extractor
         // first the 6 sides in OFF state
-        iconBuffer[2][0] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
-        iconBuffer[2][1] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // top
-        iconBuffer[2][2] = par1IconRegister.func_94245_a("advancedmachines:frontExtractorOFF"); // north
-        iconBuffer[2][3] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorOFF"); // east
-        iconBuffer[2][4] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorOFF"); // south
-        iconBuffer[2][5] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorOFF"); // west
+        iconBuffer[2][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[2][1] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // top
+        iconBuffer[2][2] = par1IconRegister.registerIcon("advancedmachines:frontExtractorOFF"); // north
+        iconBuffer[2][3] = par1IconRegister.registerIcon("advancedmachines:sideExtractorOFF"); // east
+        iconBuffer[2][4] = par1IconRegister.registerIcon("advancedmachines:sideExtractorOFF"); // south
+        iconBuffer[2][5] = par1IconRegister.registerIcon("advancedmachines:sideExtractorOFF"); // west
         // then the 6 sides in ON state
-        iconBuffer[2][6] = par1IconRegister.func_94245_a("advancedmachines:bottom"); // bottom
-        iconBuffer[2][7] = par1IconRegister.func_94245_a("advancedmachines:sideplate"); // top
-        iconBuffer[2][8] = par1IconRegister.func_94245_a("advancedmachines:frontExtractorON"); // north
-        iconBuffer[2][9] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorON"); // east
-        iconBuffer[2][10] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorON"); // south
-        iconBuffer[2][11] = par1IconRegister.func_94245_a("advancedmachines:sideExtractorON"); // west
+        iconBuffer[2][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[2][7] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // top
+        iconBuffer[2][8] = par1IconRegister.registerIcon("advancedmachines:frontExtractorON"); // north
+        iconBuffer[2][9] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // east
+        iconBuffer[2][10] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // south
+        iconBuffer[2][11] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // west
     }
     
     /**

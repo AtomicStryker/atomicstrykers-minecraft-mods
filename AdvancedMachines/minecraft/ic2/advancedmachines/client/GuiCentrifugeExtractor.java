@@ -30,7 +30,7 @@ public class GuiCentrifugeExtractor extends GuiContainer
     @Override
     protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3)
     {
-        this.mc.renderEngine.func_98187_b("/ic2/advancedmachines/client/sprites/GUICenterfuge.png");
+        this.mc.renderEngine.bindTexture("/ic2/advancedmachines/client/sprites/GUICenterfuge.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         int var5 = (this.width - this.xSize) / 2;
         int var6 = (this.height - this.ySize) / 2;
