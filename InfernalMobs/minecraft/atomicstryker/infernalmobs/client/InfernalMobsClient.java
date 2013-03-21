@@ -126,7 +126,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 }
                 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                mc.renderEngine.func_98187_b("/gui/icons.png");
+                mc.renderEngine.bindTexture("/gui/icons.png");
             }
         }
     }
