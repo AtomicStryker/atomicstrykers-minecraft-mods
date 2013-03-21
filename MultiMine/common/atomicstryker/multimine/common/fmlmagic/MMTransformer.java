@@ -46,7 +46,7 @@ public class MMTransformer implements IClassTransformer
     /* handleBlockDig */
     private final String netServerHandlertargetMethodNameO = "a";
     /* playerEntity */
-    private final String netServerHandlerEntIDFieldNameO = "d";
+    private final String netServerHandlerEntIDFieldNameO = "c";
     /* net/minecraft/src/EntityPlayerMP */
     private final String entityPlayerMPJavaClassNameO = "jc";
     /* entityId */
