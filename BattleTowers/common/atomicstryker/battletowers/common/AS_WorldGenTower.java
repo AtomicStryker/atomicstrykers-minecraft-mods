@@ -204,11 +204,11 @@ public class AS_WorldGenTower extends WorldGenerator
                                 {
                                     if (!(underground && floor == 1))
                                     {
-                                        world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, towerChosen.GetStairBlockID(), 0, 3);
+                                        world.setBlock(iCurrent, jCurrent, zCurrent, towerChosen.GetStairBlockID(), 0, 3);
                                     }
                                     if(floorIterator == 5)
                                     {
-                                        world.setBlockAndMetadataWithNotify(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID, 0, 3);
+                                        world.setBlock(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID, 0, 3);
                                     }
                                     if(floorIterator == 6 && topFloor) // top ledge part
                                     {
@@ -218,7 +218,7 @@ public class AS_WorldGenTower extends WorldGenerator
                                 }
                                 if(xIterator < 4 && xIterator > -5) // tower insides
                                 {
-                                    world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
+                                    world.setBlock(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                                 }
                                 continue;
                             }
@@ -239,7 +239,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
 							else
                             {
-                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3); // stairwell space
+                                world.setBlock(iCurrent, jCurrent, zCurrent, 0, 0, 3); // stairwell space
                             }
                             continue;
                         }
@@ -261,7 +261,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
                             if(world.getBlockId(iCurrent, jCurrent, zCurrent) != Block.chest.blockID) // tower inside space
                             {
-                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
+                                world.setBlock(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                             }
                             continue;
                         }
@@ -275,7 +275,7 @@ public class AS_WorldGenTower extends WorldGenerator
                                 }
 								else
                                 {
-                                    world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
+                                    world.setBlock(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                                 }
                                 continue;
                             }
@@ -289,7 +289,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
 							else
                             {
-                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
+                                world.setBlock(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                             }
                             continue;
                         }
@@ -310,7 +310,7 @@ public class AS_WorldGenTower extends WorldGenerator
                             }
 							else
                             {
-                                world.setBlockAndMetadataWithNotify(iCurrent, jCurrent, zCurrent, 0, 0, 3);
+                                world.setBlock(iCurrent, jCurrent, zCurrent, 0, 0, 3);
                             }
                             continue;
                         }
@@ -354,8 +354,8 @@ public class AS_WorldGenTower extends WorldGenerator
 
             if(floor == 2)
             {
-                world.setBlockAndMetadataWithNotify(ix + 3, builderHeight, kz - 5, towerWallBlockID, 0, 3);
-                world.setBlockAndMetadataWithNotify(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID, 0, 3);
+                world.setBlock(ix + 3, builderHeight, kz - 5, towerWallBlockID, 0, 3);
+                world.setBlock(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID, 0, 3);
             }
             if((!underground && topFloor) || (underground && floor == 1))
             {
@@ -369,23 +369,23 @@ public class AS_WorldGenTower extends WorldGenerator
             }
 			else
             {
-                world.setBlockAndMetadataWithNotify(ix + 2, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
+                world.setBlock(ix + 2, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
                 TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix + 2, builderHeight + 6, kz + 2);
                 if (tileentitymobspawner != null)
                 {
-                    tileentitymobspawner.func_98049_a().func_98272_a(getMobType(random));
+                    tileentitymobspawner.func_98049_a().setMobID(getMobType(random));
                 }
                 
-                world.setBlockAndMetadataWithNotify(ix - 3, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
+                world.setBlock(ix - 3, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
                 tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix - 3, builderHeight + 6, kz + 2);
                 if (tileentitymobspawner != null)
                 {
-                    tileentitymobspawner.func_98049_a().func_98272_a(getMobType(random));
+                    tileentitymobspawner.func_98049_a().setMobID(getMobType(random));
                 }
             }
             // chest petal
-            world.setBlockAndMetadataWithNotify(ix, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
-            world.setBlockAndMetadataWithNotify(ix - 1, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
+            world.setBlock(ix, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
+            world.setBlock(ix - 1, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
             
             if(builderHeight + 56 >= 120 && floor == 1)
             {
@@ -404,7 +404,7 @@ public class AS_WorldGenTower extends WorldGenerator
             
             for(int chestlength = 0; chestlength < 2; chestlength++)
             {
-                world.setBlockAndMetadataWithNotify(ix - chestlength, builderHeight + 7, kz + 3, Block.chest.blockID, 2, 3);
+                world.setBlock(ix - chestlength, builderHeight + 7, kz + 3, Block.chest.blockID, 2, 3);
                 TileEntityChest tileentitychest = new TileEntityChest();
                 world.setBlockTileEntity(ix - chestlength, builderHeight + 7, kz + 3, tileentitychest);
                 for(int attempt = 0; attempt < (underground ? AS_BattleTowersCore.itemGenerateAttemptsPerFloor*2 : AS_BattleTowersCore.itemGenerateAttemptsPerFloor); attempt++)
@@ -423,10 +423,10 @@ public class AS_WorldGenTower extends WorldGenerator
 				builderHeight+=2;
 			}
 			
-            world.setBlockAndMetadataWithNotify(ix + 3, builderHeight, kz - 6, towerLightBlockID, 0, 3);
-            world.setBlockAndMetadataWithNotify(ix - 4, builderHeight, kz - 6, towerLightBlockID, 0, 3);
-            world.setBlockAndMetadataWithNotify(ix + 1, builderHeight, kz - 4, towerLightBlockID, 0, 3);
-            world.setBlockAndMetadataWithNotify(ix - 2, builderHeight, kz - 4, towerLightBlockID, 0, 3);
+            world.setBlock(ix + 3, builderHeight, kz - 6, towerLightBlockID, 0, 3);
+            world.setBlock(ix - 4, builderHeight, kz - 6, towerLightBlockID, 0, 3);
+            world.setBlock(ix + 1, builderHeight, kz - 4, towerLightBlockID, 0, 3);
+            world.setBlock(ix - 2, builderHeight, kz - 4, towerLightBlockID, 0, 3);
 			
 			if (towerLightBlockID != 0 && Block.blocksList[towerLightBlockID].isOpaqueCube())
 			{
@@ -446,7 +446,7 @@ public class AS_WorldGenTower extends WorldGenerator
                 j6 += kz;
                 if(world.getBlockId(k4, k5, j6) == towerFloorBlockID && world.getBlockId(k4, k5 + 1, j6) != Block.mobSpawner.blockID)
                 {
-                    world.setBlockAndMetadataWithNotify(k4, k5, j6, 0, 0, 3);
+                    world.setBlock(k4, k5, j6, 0, 0, 3);
                 }
             }
 
@@ -460,7 +460,7 @@ public class AS_WorldGenTower extends WorldGenerator
 	
 	private void BuildFloorPiece(World world, int i, int j, int k, int towerFloorBlockID)
 	{
-		world.setBlockAndMetadataWithNotify(i, j, k, towerFloorBlockID, 0, 3);
+		world.setBlock(i, j, k, towerFloorBlockID, 0, 3);
 		
 		if (towerChosen.GetFloorBlockMetaData() != 0)
 		{
@@ -470,7 +470,7 @@ public class AS_WorldGenTower extends WorldGenerator
 	
 	private void BuildWallPiece(World world, int i, int j, int k, int towerWallBlockID)
 	{
-		world.setBlockAndMetadataWithNotify(i, j, k, towerWallBlockID, 0, 3);
+		world.setBlock(i, j, k, towerWallBlockID, 0, 3);
 		if(floor == 1 && floorIterator == 4)
 		{
 			FillTowerBaseToGround(world, i, j, k, towerWallBlockID);
@@ -482,7 +482,7 @@ public class AS_WorldGenTower extends WorldGenerator
 		int x = j-1;
 		while(x>0 && !IsBuildableBlockID(world.getBlockId(i, x, k)))
 		{
-			world.setBlockAndMetadataWithNotify(i, x, k, blocktype, 0, 3);
+			world.setBlock(i, x, k, blocktype, 0, 3);
 			x--;
 		}
 	}
@@ -533,13 +533,13 @@ public class AS_WorldGenTower extends WorldGenerator
 	
 	public enum towerTypes
 	{
-		CobbleStone(Block.cobblestone.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 0, Block.stairCompactCobblestone.blockID),
-		CobbleStoneMossy(Block.cobblestoneMossy.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 0, Block.stairCompactCobblestone.blockID),
-		SandStone(Block.sandStone.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 1, Block.stairCompactCobblestone.blockID),
-		Ice(Block.ice.blockID, 0 /*Block.glowStone.blockID*/, Block.blockClay.blockID, 2, Block.stairCompactPlanks.blockID), // since when does glowstone melt ice
-		SmoothStone(Block.stone.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 3, Block.stairCompactCobblestone.blockID),
-		Netherrack(Block.netherrack.blockID, Block.glowStone.blockID, Block.slowSand.blockID, 0, Block.stairCompactCobblestone.blockID),
-		Jungle(Block.cobblestoneMossy.blockID, Block.web.blockID, Block.dirt.blockID, 0, Block.stairCompactPlanks.blockID);
+		CobbleStone(Block.cobblestone.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 0, Block.stairsCobblestone.blockID),
+		CobbleStoneMossy(Block.cobblestoneMossy.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 0, Block.stairsCobblestone.blockID),
+		SandStone(Block.sandStone.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 1, Block.stairsCobblestone.blockID),
+		Ice(Block.ice.blockID, 0 /*Block.glowStone.blockID*/, Block.blockClay.blockID, 2, Block.stairsWoodOak.blockID), // since when does glowstone melt ice
+		SmoothStone(Block.stone.blockID, Block.torchWood.blockID, Block.stoneDoubleSlab.blockID, 3, Block.stairsCobblestone.blockID),
+		Netherrack(Block.netherrack.blockID, Block.glowStone.blockID, Block.slowSand.blockID, 0, Block.stairsCobblestone.blockID),
+		Jungle(Block.cobblestoneMossy.blockID, Block.web.blockID, Block.dirt.blockID, 0, Block.stairsWoodOak.blockID);
 		
 		// meta data slabs: a[] = { "stone", "sand", "wood", "cobble" };
 		

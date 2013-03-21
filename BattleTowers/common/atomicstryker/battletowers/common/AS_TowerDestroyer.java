@@ -106,7 +106,7 @@ public class AS_TowerDestroyer
 				{
 					if(world.getBlockId(x+xIterator, ytemp+yIterator, z+zIterator) != 0)
 					{
-						world.setBlockAndMetadataWithNotify(x+xIterator, ytemp+yIterator, z+zIterator, 0, 0 ,3);
+						world.setBlock(x+xIterator, ytemp+yIterator, z+zIterator, 0, 0 ,3);
 					}
 				}
 			}
