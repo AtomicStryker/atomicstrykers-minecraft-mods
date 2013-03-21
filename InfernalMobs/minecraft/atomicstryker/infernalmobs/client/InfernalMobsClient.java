@@ -73,8 +73,8 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
             {
                 askServerHealth(ent);
                 
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture("/gui/icons.png"));
+                //GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                //GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture("/gui/icons.png"));
                 GL11.glDisable(GL11.GL_BLEND);
                 
                 EntityLiving target = (EntityLiving) ent;
@@ -124,6 +124,9 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                     fontR.drawStringWithShadow(display[i], screenwidth / 2 - fontR.getStringWidth(display[i]) / 2, yCoord, 0xffffff);
                     i++;
                 }
+                
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                mc.renderEngine.func_98187_b("/gui/icons.png");
             }
         }
     }

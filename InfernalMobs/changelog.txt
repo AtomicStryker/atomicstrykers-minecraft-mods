@@ -1,3 +1,6 @@
+1.2.1 (fix)
+- fixed Infernal Mob Name display
+
 1.2.1
 - updated for MC 1.5
 
