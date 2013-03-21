@@ -21,16 +21,16 @@ import cpw.mods.fml.relauncher.IClassTransformer;
 public class DLTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.World */
-    private final String classNameWorldObfusc = "zv";
+    private final String classNameWorldObfusc = "aab";
     
     /* class net.minecraft.src.IBlockAccess */
-    private final String classNameBlockAccessObfusc = "aae";
+    private final String classNameBlockAccessObfusc = "aak";
     
     /* method World.computeBlockLightValue(IIILnet/minecraft/world/EnumSkyBlock;)I aka func_98179_a*/
     private final String computeBlockLightMethodNameO = "a";
     
     /* class net.minecraft.world.EnumSkyBlock */
-    private final String enumSkyBlockObfusc = "aag";
+    private final String enumSkyBlockObfusc = "aam";
     
     
     private final String classNameWorld = "net.minecraft.world.World";
