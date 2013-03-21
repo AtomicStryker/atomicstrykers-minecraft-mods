@@ -3,8 +3,8 @@
   "modid": "MagicYarn",
   "name": "Magic Yarn",
   "description": "Trace your path like heroes of ancient times! Never get lost again!",
-  "version": "1.0.2",
-  "mcversion": "1.5",
+  "version": "1.0.3",
+  "mcversion": "1.5.1",
   "url": "http://www.atomicstryker.net/",
   "updateUrl": "",
   "authors": [
