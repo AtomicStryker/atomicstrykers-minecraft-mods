@@ -1,3 +1,6 @@
+1.5
+updated to mc 1.5
+
 1.4.6d
 added possibility for servers to override the Finder Compass config of the connected clients
 to override clients, simply install your config on the server like you would on client

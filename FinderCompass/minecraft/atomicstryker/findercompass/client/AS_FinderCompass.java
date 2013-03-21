@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,19 +20,22 @@ import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texturefx.TextureCompassFX;
+import net.minecraft.client.renderer.texture.Texture;
+import net.minecraft.client.renderer.texture.TextureCompass;
+import net.minecraft.client.renderer.texture.TextureStitched;
 import net.minecraft.client.texturepacks.ITexturePack;
 import net.minecraft.item.Item;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Icon;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.FMLTextureFX;
-import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.client.TextureFXManager;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
-public class AS_FinderCompass extends FMLTextureFX
+public class AS_FinderCompass extends TextureCompass
 {
     private static Minecraft mc;
     private int[] tsize;
@@ -50,11 +54,16 @@ public class AS_FinderCompass extends FMLTextureFX
     private int seccounter = 0;
     private boolean updateScan = false;
     
+    private Texture texObject;
+    private ByteBuffer imageData;
+    private int tileSizeBase;
+    private int tileSizeSquare;
+    
     /**
      * -1 = not hacked in; 0 = error; 1 = mcpatcher; 2 = optifine; 3 = FML
      */
     public static int hackState = -1;
-    public BufferedImage texture;
+
     public int tileSize_int_compassCrossMin = -4;
     public int tileSize_int_compassCrossMax = 4;
     public double tileSize_double_compassCenterMin;
@@ -71,26 +80,56 @@ public class AS_FinderCompass extends FMLTextureFX
 
     public AS_FinderCompass(Minecraft var1)
     {
-        super(Item.compass.getIconFromDamage(0));
+        super();
         this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
         this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
         this.tileSize_int_compassNeedleMin = -8;
         this.tileSize_int_compassNeedleMax = 16;
 		this.mc = var1;
-        this.checkModState();
-        this.tsize = new int[this.tileSizeSquare];
-        this.tileImage = 1;
-        BufferedImage var2 = this.texture;
-        int var3 = this.iconIndex % 16 * this.tileSizeBase;
-        int var4 = this.iconIndex / 16 * this.tileSizeBase;
-        var2.getRGB(var3, var4, this.tileSizeBase, this.tileSizeBase, this.tsize, 0, this.tileSizeBase);
-        
-        lastTime = System.currentTimeMillis();
-        if (settingList == null)
-        {
-            settingList = new ArrayList<CompassSetting>();
-            initializeSettingsFile();
-        }
+		
+		try
+		{
+		    Field originalField = null;
+		    TextureCompass original = null;
+		    Field[] fields = Item.class.getDeclaredFields();
+		    for (Field f : fields)
+		    {
+		        if (f.getType().equals(Icon.class))
+		        {
+		            f.setAccessible(true);
+		            originalField = f;
+		            original = (TextureCompass) f.get(Item.compass);
+		            break;
+		        }
+		    }
+
+		    System.out.println("Original compass texture: "+original);
+		    texObject = ReflectionHelper.getPrivateValue(TextureStitched.class, original, 1);
+		    textureSheet = texObject;
+		    imageData = texObject.getTextureData();
+		    tileSizeBase = 16; // TODO der
+
+		    this.checkModState();
+
+		    this.tsize = new int[this.tileSizeSquare];
+
+		    lastTime = System.currentTimeMillis();
+		    if (settingList == null)
+		    {
+		        settingList = new ArrayList<CompassSetting>();
+		        initializeSettingsFile();
+		    }
+
+		    originalField.set(Item.compass, this);
+		}
+		catch (IllegalArgumentException e)
+		{
+		    e.printStackTrace();
+		}
+		catch (IllegalAccessException e)
+		{
+		    e.printStackTrace();
+		}
     }
 
     private void checkModState()
@@ -100,178 +139,10 @@ public class AS_FinderCompass extends FMLTextureFX
             return;
         }
         
-        try
-        {
-            this.texture = ImageIO.read(Minecraft.class.getResource("/gui/items.png"));
-        }
-        catch (IOException var9)
-        {
-            var9.printStackTrace();
-        }
-
-        Class foundClass = null;
-
-        try
-        {
-            foundClass = Class.forName("com.pclewis.mcpatcher.mod.TileSize");
-        }
-        catch (ClassNotFoundException var8)
-        {
-            System.out.println("Finder Compass: Did not detect mcpatcher HD Textures");
-        }
-
-        if (foundClass != null)
-        {
-            System.out.println("Finder Compass: mcpatcher HD Textures detected, setting up: "+foundClass);
-            this.hackState = 1;
-
-            try
-            {
-                this.tileSizeBase = ((Integer)foundClass.getField("int_size").get((Object)null)).intValue();
-                this.tileSizeSquare = ((Integer)foundClass.getField("int_numPixels").get((Object)null)).intValue();
-                this.tileSize_int_compassCrossMin = ((Integer)foundClass.getField("int_compassCrossMin").get((Object)null)).intValue();
-                this.tileSize_int_compassCrossMax = ((Integer)foundClass.getField("int_compassCrossMax").get((Object)null)).intValue();
-                this.tileSize_int_compassNeedleMin = ((Integer)foundClass.getField("int_compassNeedleMin").get((Object)null)).intValue();
-                this.tileSize_int_compassNeedleMax = ((Integer)foundClass.getField("int_compassNeedleMax").get((Object)null)).intValue();
-                this.tileSize_double_compassCenterMin = ((Double)foundClass.getField("double_compassCenterMin").get((Object)null)).doubleValue();
-                this.tileSize_double_compassCenterMax = ((Double)foundClass.getField("double_compassCenterMax").get((Object)null)).doubleValue();
-                
-                foundClass = Class.forName("com.pclewis.mcpatcher.mod.TextureUtils");
-                Method[] var2 = foundClass.getMethods();
-
-                for (int var3 = 0; var3 < var2.length; ++var3)
-                {
-                    Method var4 = var2[var3];
-                    if (var4.getName().equals("getResourceAsBufferedImage") && var4.getParameterTypes().length == 1)
-                    {
-                        Object[] var5 = new Object[] {new String("/gui/items.png")};
-                        imageData = new byte[tileSizeSquare << 2];
-                        this.texture = (BufferedImage)var4.invoke((Object)null, var5);
-                    }
-                }
-            }
-            catch (Exception var16)
-            {
-                var16.printStackTrace(System.err);
-                performFMLHack();
-            }
-        }
-        else
-        {
-            try
-            {
-                foundClass = Class.forName("TextureHDCompassFX");
-            }
-            catch (ClassNotFoundException var7)
-            {
-                System.out.println("Finder Compass: Did not detect Optifine HD Textures");
-            }
-
-            if (foundClass != null)
-            {
-                System.out.println("Finder Compass: Optifine HD Textures detected, setting up: "+foundClass);
-                this.hackState = 2;
-                                
-                Object targetHDCompassobj = null;
-
-                try
-                {
-        			for(Field f : mc.renderEngine.getClass().getDeclaredFields())
-        			{
-        				f.setAccessible(true);
-        				Object data = f.get(mc.renderEngine);
-        				if (data instanceof List)
-        				{
-        					System.out.println("Found List in RenderEngine...");
-        					Iterator itr = ((List) data).iterator();
-        					while (itr.hasNext())
-        					{
-        						Object temp = itr.next();
-        						if (temp.getClass().equals(foundClass))
-        						{
-        							System.out.println("Found TextureHDCompassFX in RenderEngine List: "+temp.getClass());
-        							targetHDCompassobj = temp;
-        							break;
-        						}
-        					}
-        				}
-        			}
-					
-                    if (targetHDCompassobj == null)
-                    {
-                        System.out.println("Finder Compass: Optifine detected but HDCompass Object cannot be located, reverting to standard fml hack...");
-                        performFMLHack();
-                        return;
-                    }
-                	
-        			Field tilewidth = foundClass.getDeclaredField("tileWidth");
-        			tilewidth.setAccessible(true);                    
-                    this.tileSizeBase = ((Integer)tilewidth.get(targetHDCompassobj)).intValue();
-                    this.tileSizeSquare = this.tileSizeBase * this.tileSizeBase;
-                    this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
-                    this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
-                    imageData = new byte[tileSizeSquare << 2];
-                    
-                    System.out.println("optifine: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
-                    
-                    ITexturePack ITexturePack = null;
-                    for (Field f : foundClass.getDeclaredFields())
-                    {
-                        f.setAccessible(true);
-                        if (f.getType().equals(ITexturePack.class))
-                        {
-                            ITexturePack = (ITexturePack) f.get(targetHDCompassobj);
-                            System.out.println("ITexturePack of HDCompass found...");
-                            break;
-                        }
-                    }
-                    
-                    if (ITexturePack == null)
-                    {
-                        System.out.println("ITexturePack of HDCompass NOT found! Critical failure!");
-                        this.hackState = 0;
-                        return;
-                    }
-                    
-                    for (Method m : ITexturePack.class.getDeclaredMethods())
-                    {
-                        m.setAccessible(true);
-                        if (m.getReturnType().equals(InputStream.class))
-                        {
-                            InputStream stream = (InputStream)m.invoke(ITexturePack, new Object[] {"/gui/items.png"});
-                            if (stream != null)
-                            {
-                                this.texture = ImageIO.read(stream);
-                                System.out.println("Successfully read texture from ITexturePack, texture = "+this.texture);
-                                break;
-                            }
-                            else
-                            {
-                                System.out.println("ITexturePack getTexture invoke failed, stream is null, Critical failure!");
-                                performFMLHack();
-                                return;
-                            }
-                        }
-                    }
-                }
-                catch (Exception var10)
-                {
-                    var10.printStackTrace();
-                }
-            }
-            else
-            {
-                System.out.println("Finder Compass: Did not detect any HD Textures, going with FML FX");
-                performFMLHack();
-            }
-        }
-    }
-    
-    private void performFMLHack()
-    {
         hackState = 3;
-        this.tileSizeBase = TextureCompassFX.instance.stileSizeBase;
-        this.tileSizeSquare = TextureCompassFX.instance.stileSizeSquare;
+        tileSizeSquare = texObject.getWidth()*texObject.getWidth();
+        tileSizeBase = (int) Math.sqrt(tileSizeSquare);
+        
         this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
         this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
         tileSize_int_compassNeedleMin = -(tileSizeBase >> 2);
@@ -279,16 +150,6 @@ public class AS_FinderCompass extends FMLTextureFX
         
         System.out.println("fml: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
         System.out.println("fml: compassNeedleMin = "+tileSize_int_compassNeedleMin+"; compassNeedleMax = "+tileSize_int_compassNeedleMax+";");
-        
-        try
-        {
-            imageData = new byte[tileSizeSquare << 2];
-            texture = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/gui/items.png"));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     private void askServerForStrongholdCoords()
@@ -300,8 +161,9 @@ public class AS_FinderCompass extends FMLTextureFX
     }
 
     @Override
-    public void onTick()
+    public void updateAnimation() //onTick
     {
+        super.updateAnimation();
         int var1;
         int var2;
         
@@ -311,6 +173,8 @@ public class AS_FinderCompass extends FMLTextureFX
             var1 = this.tsize[pixelIndex] >> 16 & 255;
             int var5 = this.tsize[pixelIndex] >> 8 & 255;
             var2 = this.tsize[pixelIndex] >> 0 & 255;
+            
+            /*
             if (this.anaglyphEnabled)
             {
                 int var6 = (var1 * 30 + var5 * 59 + var2 * 11) / 100;
@@ -320,11 +184,12 @@ public class AS_FinderCompass extends FMLTextureFX
                 var5 = var7;
                 var2 = var8;
             }
-
-            this.imageData[pixelIndex * 4 + 0] = (byte)var1;
-            this.imageData[pixelIndex * 4 + 1] = (byte)var5;
-            this.imageData[pixelIndex * 4 + 2] = (byte)var2;
-            this.imageData[pixelIndex * 4 + 3] = (byte)var4;
+            */
+            
+            imageData.put(pixelIndex * 4 + 0, (byte)var1);
+            imageData.put(pixelIndex * 4 + 1, (byte)var5);
+            imageData.put(pixelIndex * 4 + 2, (byte)var2);
+            imageData.put(pixelIndex * 4 + 3, (byte)var4);
         }
 
         if (this.mc.theWorld != null && this.mc.thePlayer != null)
@@ -438,19 +303,19 @@ public class AS_FinderCompass extends FMLTextureFX
         return var2;
     }
 
-    public void drawNeedle(int var1, double var2, int[] ints, boolean drawCenter)
+    public void drawNeedle(int needleNum, double heading, int[] rgbColors, boolean drawCenter)
     {
     	double needleLength = hackState == 2 ? 0.3D * (this.tileSizeBase / 16) : 0.3D;
     	
         double var6;
-        for (var6 = var2 - this.textureId[var1]; var6 < -3.141592653589793D; var6 += 6.283185307179586D)
+        for (var6 = heading - this.textureId[needleNum]; var6 < -Math.PI; var6 += 2*Math.PI)
         {
             ;
         }
 
-        while (var6 >= 3.141592653589793D)
+        while (var6 >= Math.PI)
         {
-            var6 -= 6.283185307179586D;
+            var6 -= 2*Math.PI;
         }
 
         if (var6 < -1.0D)
@@ -463,11 +328,11 @@ public class AS_FinderCompass extends FMLTextureFX
             var6 = 1.0D;
         }
 
-        this.textureId[var1] += var6 * 0.1D;
-        this.tileSize[var1] *= 0.8D;
-        this.tileSize[var1] += this.textureId[var1];
-        double var8 = Math.sin(this.textureId[var1]);
-        double var10 = Math.cos(this.textureId[var1]);
+        this.textureId[needleNum] += var6 * 0.1D;
+        this.tileSize[needleNum] *= 0.8D;
+        this.tileSize[needleNum] += this.textureId[needleNum];
+        double var8 = Math.sin(this.textureId[needleNum]);
+        double var10 = Math.cos(this.textureId[needleNum]);
         int var12;
         int var13;
         int var14;
@@ -490,6 +355,8 @@ public class AS_FinderCompass extends FMLTextureFX
                 var17 = 100;
                 var18 = 100;
                 var19 = 255;
+                
+                /*
                 if (this.anaglyphEnabled)
                 {
                     var20 = (var16 * 30 + var17 * 59 + var18 * 11) / 100;
@@ -499,11 +366,12 @@ public class AS_FinderCompass extends FMLTextureFX
                     var17 = var21;
                     var18 = var22;
                 }
+                */
 
-                this.imageData[var15 * 4 + 0] = (byte)var16;
-                this.imageData[var15 * 4 + 1] = (byte)var17;
-                this.imageData[var15 * 4 + 2] = (byte)var18;
-                this.imageData[var15 * 4 + 3] = (byte)var19;
+                imageData.put(var15 * 4 + 0, (byte)var16);
+                imageData.put(var15 * 4 + 1, (byte)var17);
+                imageData.put(var15 * 4 + 2, (byte)var18);
+                imageData.put(var15 * 4 + 3, (byte)var19);
             }
         }
 
@@ -512,10 +380,12 @@ public class AS_FinderCompass extends FMLTextureFX
             var13 = (int)(this.tileSize_double_compassCenterMax + var8 * (double)var12 * needleLength);
             var14 = (int)(this.tileSize_double_compassCenterMin + var10 * (double)var12 * needleLength * 0.5D);
             var15 = var14 * this.tileSizeBase + var13;
-            var16 = var12 < 0 ? 100 : ints[0];
-            var17 = var12 < 0 ? 100 : ints[1];
-            var18 = var12 < 0 ? 100 : ints[2];
+            var16 = var12 < 0 ? 100 : rgbColors[0];
+            var17 = var12 < 0 ? 100 : rgbColors[1];
+            var18 = var12 < 0 ? 100 : rgbColors[2];
             var19 = 255;
+            
+            /*
             if (this.anaglyphEnabled)
             {
                 var20 = (var16 * 30 + var17 * 59 + var18 * 11) / 100;
@@ -525,12 +395,15 @@ public class AS_FinderCompass extends FMLTextureFX
                 var17 = var21;
                 var18 = var22;
             }
+            */
 
-            this.imageData[var15 * 4 + 0] = (byte)var16;
-            this.imageData[var15 * 4 + 1] = (byte)var17;
-            this.imageData[var15 * 4 + 2] = (byte)var18;
-            this.imageData[var15 * 4 + 3] = (byte)var19;
+            imageData.put(var15 * 4 + 0, (byte)var16);
+            imageData.put(var15 * 4 + 1, (byte)var17);
+            imageData.put(var15 * 4 + 2, (byte)var18);
+            imageData.put(var15 * 4 + 3, (byte)var19);
         }
+        
+        imageData.position(texObject.getWidth() * texObject.getHeight() * 4);
     }
     
     /**

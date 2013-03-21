@@ -43,7 +43,7 @@ public class FinderCompassClientTicker implements ITickHandler
                 AS_FinderCompass replacement = new AS_FinderCompass(mc);
                 if (AS_FinderCompass.hackState > 0)
                 {
-                    mc.renderEngine.registerTextureFX(replacement);
+                    mc.renderEngine.textureMapItems.setTextureEntry("compass", replacement);
                     registered = true;
                 }
             }
