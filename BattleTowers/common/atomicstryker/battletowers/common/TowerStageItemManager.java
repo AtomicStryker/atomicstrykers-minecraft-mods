@@ -80,17 +80,17 @@ public class TowerStageItemManager
 		{
 		    Block block = itemID[curIndex] < Block.blocksList.length ? Block.blocksList[itemID[curIndex]] : null;
 		    Item item = itemID[curIndex] < Item.itemsList.length ? Item.itemsList[itemID[curIndex]] : null;
-		    if (block != null && block.getUnlocalizedName() != null)
+            if (item != null && item.getUnlocalizedName() != null)
+            {
+                //System.out.println("Stashed item "+item.getUnlocalizedName()+" of id "+itemID[curIndex]);
+                result = new ItemStack(item, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
+                //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
+            }
+            else if (block != null && block.getUnlocalizedName() != null && !block.getUnlocalizedName().equals("tile.ForgeFiller"))
 		    {
-		        //System.out.println("Stashed block "+block.getBlockName()+" of id "+itemID[curIndex]);
+		        //System.out.println("Stashed block "+block.getUnlocalizedName()+" of id "+itemID[curIndex]);
 		        result = new ItemStack(block, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
 		        //System.out.println("Stashed new damaged Block Stack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
-		    }
-		    else if (item != null && item.getUnlocalizedName() != null)
-		    {
-		        //System.out.println("Stashed item "+item.getItemName()+" of id "+itemID[curIndex]);
-		        result = new ItemStack(item, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-		        //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
 		    }
 		}
 
