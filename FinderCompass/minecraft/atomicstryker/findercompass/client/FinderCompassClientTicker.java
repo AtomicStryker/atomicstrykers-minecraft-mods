@@ -14,14 +14,14 @@ public class FinderCompassClientTicker implements ITickHandler
     private final Minecraft mc;
     private final int COMPASS_ITEM_ID = 345;
     private long time;
-    private boolean registered;
+    private boolean fired;
     private boolean repeat;
     
     public FinderCompassClientTicker()
     {
         mc = FMLClientHandler.instance().getClient();
         time = System.currentTimeMillis();
-        registered = false;
+        fired = false;
         repeat = false;
     }
 
@@ -36,18 +36,16 @@ public class FinderCompassClientTicker implements ITickHandler
         if (mc.theWorld != null
         && mc.thePlayer != null)
         {
-            if (!registered
-            && AS_FinderCompass.hackState == -1
-            && System.currentTimeMillis() > time + 5000L)
+            if (!fired
+            && System.currentTimeMillis() > time + 15000L)
             {
-                AS_FinderCompass replacement = new AS_FinderCompass(mc);
-                if (AS_FinderCompass.hackState > 0)
-                {
-                    mc.renderEngine.textureMapItems.setTextureEntry("compass", replacement);
-                    registered = true;
-                }
+                System.out.println("Finder Compass replacement timer triggered!!");
+                fired = true;
+                
+                //AS_FinderCompass replacement = new AS_FinderCompass(mc);
             }
             
+            /*
             if (mc.thePlayer.getCurrentEquippedItem() != null
             && mc.thePlayer.getCurrentEquippedItem().itemID == COMPASS_ITEM_ID
             && mc.gameSettings.keyBindUseItem.pressed
@@ -64,6 +62,7 @@ public class FinderCompassClientTicker implements ITickHandler
             {
                 repeat = false;
             }
+            */
         }
     }
 
