@@ -186,7 +186,7 @@ preserve_plants=0
 #         * Conversion table from old Ruins 8.5 template style to new 8.6+ style
 #         * 
 #         * Just handling the part where you used to specify 'special' blocks
-#         * Full Example: "rule1=0,25,MediumChest" turns into "rule1=0,25,MediumChest"
+#         * Full Example: "rule1=0,25,310" turns into "rule1=0,25,MediumChest"
 #         * 
 #         * 300 -> preserveBlock
 #         * 301 -> MobSpawner:Zombie

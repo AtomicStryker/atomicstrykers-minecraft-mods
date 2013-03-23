@@ -59,10 +59,30 @@ public class RuinTemplateRule {
                 blockStrings[i] = "";
             }
             
-            if (blockIDs[i] > 0 && Block.blocksList[blockIDs[i]] == null)
+            if (blockIDs[i] > 0
+            && (Block.blocksList[blockIDs[i]] == null
+               || Block.blocksList[blockIDs[i]].getUnlocalizedName() == null
+               || Block.blocksList[blockIDs[i]].getUnlocalizedName().equals("tile.ForgeFiller")))
             {
-                System.err.println("Invalid blockID "+blockIDs[i]+" specified in template "+owner.getName()+", rule ["+rule+"], resetting to 0");
-                blockIDs[i] = 0;
+                System.err.println("Invalid blockID "+blockIDs[i]+" specified in template "+owner.getName()+", rule ["+rule+"], attempting to fallback...");
+                blockIDs[i] = -1;
+                switch(blockIDs[i])
+                {
+                    case 300: blockStrings[i] = "preserveBlock"; System.err.println("should be preserveBlock!");
+                    case 301: blockStrings[i] = "MobSpawner:Zombie"; System.err.println("should be MobSpawner:Zombie!");
+                    case 302: blockStrings[i] = "MobSpawner:Skeleton"; System.err.println("should be MobSpawner:Skeleton!");
+                    case 303: blockStrings[i] = "MobSpawner:Spider"; System.err.println("should be MobSpawner:Spider!");
+                    case 304: blockStrings[i] = "MobSpawner:Creeper"; System.err.println("should be MobSpawner:Creeper!");
+                    case 305: blockStrings[i] = "UprightMobSpawn"; System.err.println("should be UprightMobSpawn!");
+                    case 306: blockStrings[i] = "EasyMobSpawn"; System.err.println("should be EasyMobSpawn!");
+                    case 307: blockStrings[i] = "MediumMobSpawn"; System.err.println("should be MediumMobSpawn!");
+                    case 308: blockStrings[i] = "HardMobSpawn"; System.err.println("should be HardMobSpawn!");
+                    case 309: blockStrings[i] = "EasyChest"; System.err.println("should be EasyChest!");
+                    case 310: blockStrings[i] = "MediumChest"; System.err.println("should be MediumChest!");
+                    case 311: blockStrings[i] = "HardChest"; System.err.println("should be HardChest!");
+                    case 315: blockIDs[i] = 0; System.err.println("is old style Mobspawner, cannot fix, should be like MobSpawner:Villager, setting 0");
+                    default: blockIDs[i] = 0; System.err.println("no fallback found, setting to 0");
+                }
             }
         }
     }

@@ -173,3 +173,7 @@ a: setAccessible now true
 
 9.4
 + update to MC 1.5.1
+
+9.5
++ added fallback methods and error logging when using pre-8.6 style templates or invalid blocks
++ subsequently found and fixed errors in 2 default templates

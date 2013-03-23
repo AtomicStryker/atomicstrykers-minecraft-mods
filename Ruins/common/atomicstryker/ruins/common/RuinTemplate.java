@@ -20,6 +20,7 @@ public class RuinTemplate implements RuinIBuildable {
 
     public RuinTemplate( String filename ) throws Exception {
         // load in the given file as a template
+        name = filename;
         try {
             ArrayList<String> lines = new ArrayList<String>();
             BufferedReader br = new BufferedReader( new FileReader( filename ) );
@@ -29,7 +30,6 @@ public class RuinTemplate implements RuinIBuildable {
                 read = br.readLine();
             }
             parseFile( lines );
-			name = filename;
         } catch ( Exception e ) {
             System.err.println( "Failed loading template: " + filename );
             e.printStackTrace();
