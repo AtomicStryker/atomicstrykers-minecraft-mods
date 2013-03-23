@@ -20,7 +20,8 @@ public class MM_Vengeance extends MobModifier
     @Override
     public int onHurt(EntityLiving mob, DamageSource source, int damage)
     {
-        if (source.getEntity() != null)
+        if (source.getEntity() != null
+        && source.getEntity() != mob)
         {
             source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), Math.max(damage/2, 1));
         }

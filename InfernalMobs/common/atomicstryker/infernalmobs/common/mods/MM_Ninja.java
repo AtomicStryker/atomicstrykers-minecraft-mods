@@ -30,6 +30,7 @@ public class MM_Ninja extends MobModifier
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
         && source.getEntity() != null
+        && source.getEntity() != mob
         && teleportToEntity(mob, source.getEntity()))
         {
             nextAbilityUse = time+coolDown;
