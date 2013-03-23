@@ -2,6 +2,8 @@ package atomicstryker.findercompass.client;
 
 import java.util.EnumSet;
 
+import atomicstryker.findercompass.common.FinderCompassMod;
+
 import net.minecraft.client.Minecraft;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
@@ -13,15 +15,11 @@ public class FinderCompassClientTicker implements ITickHandler
     
     private final Minecraft mc;
     private final int COMPASS_ITEM_ID = 345;
-    private long time;
-    private boolean fired;
     private boolean repeat;
     
     public FinderCompassClientTicker()
     {
         mc = FMLClientHandler.instance().getClient();
-        time = System.currentTimeMillis();
-        fired = false;
         repeat = false;
     }
 
@@ -33,19 +31,10 @@ public class FinderCompassClientTicker implements ITickHandler
     @Override
     public void tickEnd(EnumSet<TickType> type, Object... tickData)
     {
-        if (mc.theWorld != null
+        if (!FinderCompassMod.itemEnabled
+        && mc.theWorld != null
         && mc.thePlayer != null)
-        {
-            if (!fired
-            && System.currentTimeMillis() > time + 15000L)
-            {
-                System.out.println("Finder Compass replacement timer triggered!!");
-                fired = true;
-                
-                //AS_FinderCompass replacement = new AS_FinderCompass(mc);
-            }
-            
-            /*
+        {            
             if (mc.thePlayer.getCurrentEquippedItem() != null
             && mc.thePlayer.getCurrentEquippedItem().itemID == COMPASS_ITEM_ID
             && mc.gameSettings.keyBindUseItem.pressed
@@ -62,7 +51,6 @@ public class FinderCompassClientTicker implements ITickHandler
             {
                 repeat = false;
             }
-            */
         }
     }
 

@@ -41,6 +41,7 @@ public class ServerPacketHandler implements IPacketHandler
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                     DataOutputStream data = new DataOutputStream(bytes);
                     data.write(2); // packet ID
+                    data.write(FinderCompassMod.itemEnabled ? 1 : 0);
                     data.write(fileBArray); // config content
                     
                     Packet250CustomPayload packetN = new Packet250CustomPayload();

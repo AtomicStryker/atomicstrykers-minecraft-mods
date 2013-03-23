@@ -2,11 +2,14 @@ package atomicstryker.findercompass.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.ForgePacketWrapper;
+import atomicstryker.findercompass.common.FinderCompassMod;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -35,6 +38,15 @@ public class ClientPacketHandler implements IPacketHandler
         }
         else if (packetType == 2)
         {
+            try
+            {
+                FinderCompassMod.itemEnabled = (dataIn.readInt() == 1);
+                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage("Finder Compass Item enabled: "+FinderCompassMod.itemEnabled);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
             AS_FinderCompass.inputOverrideConfig(dataIn);
         }
     }

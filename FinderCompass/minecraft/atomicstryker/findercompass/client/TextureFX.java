@@ -18,13 +18,12 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 
  * @author immibis
  * Part of Immibis Core, http://www.minecraftforum.net/topic/1001131-
- * Slightly modified
+ * Modified by AtomicStryker to allow the display of a texture file aswell
  *
  */
 @SideOnly(Side.CLIENT)
 public abstract class TextureFX extends TextureStitched
 {
-    
     /**
      * Texture width in pixels
      */
@@ -123,12 +122,7 @@ public abstract class TextureFX extends TextureStitched
     private void onSetup()
     {
         imageData = new byte[width * height * 4];
-
-        String texName = getIconName();
-
-        // second arg for texture type, 2 results in no texture data and id -1 ... no clue what for
-        // clamp/repeat mode and interpolation mode ignored since we don't render directly from this texture
-        dynamicTexture = new Texture(texName, 0, width, height, 1, GL11.GL_CLAMP, GL11.GL_RGBA, GL11.GL_LINEAR, GL11.GL_LINEAR, null);
+        dynamicTexture = new Texture(getIconName(), 2, width, height, 1, GL11.GL_CLAMP, GL11.GL_RGBA, GL11.GL_NEAREST, GL11.GL_NEAREST, null);
     }
 
 }

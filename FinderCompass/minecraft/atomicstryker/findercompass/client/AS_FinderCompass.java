@@ -1,17 +1,24 @@
 package atomicstryker.findercompass.client;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import javax.imageio.ImageIO;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.Item;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Icon;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
 import atomicstryker.findercompass.common.FinderCompassMod;
@@ -21,7 +28,6 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 public class AS_FinderCompass extends TextureFX
 {
     private static Minecraft mc;
-    private int[] tsize;
     private double[] textureId = new double[30];
     private double[] tileSize = new double[30];
     private int[] spawnNeedlecolor = new int[] {255, 20, 20};
@@ -52,13 +58,14 @@ public class AS_FinderCompass extends TextureFX
     private int tileSize_int_compassNeedleMin;
     private int tileSize_int_compassNeedleMax;
     
+    private int[] baseTexture;
+    
     public AS_FinderCompass(Minecraft var1)
     {
         super("findercompass:compass", 16, 16);
 		this.mc = var1;
 		
         setupTileSizes();
-        this.tsize = new int[tileSizeSquare];
 
         lastTime = System.currentTimeMillis();
         if (settingList == null)
@@ -66,20 +73,53 @@ public class AS_FinderCompass extends TextureFX
             settingList = new ArrayList<CompassSetting>();
             initializeSettingsFile();
         }
+        
+        if (!FinderCompassMod.itemEnabled)
+        {
+            try
+            {
+                Field[] fields = Item.class.getDeclaredFields();
+                for (Field f : fields)
+                {
+                    if (f.getType().equals(Icon.class))
+                    {
+                        f.setAccessible(true);
+                        f.set(Item.compass, this);
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setupTileSizes()
     {
-        tileSizeBase = this.getWidth();
-        tileSizeSquare = tileSizeBase*tileSizeBase;
-        
-        this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
-        this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
-        tileSize_int_compassNeedleMin = -(tileSizeBase >> 2);
-        tileSize_int_compassNeedleMax = tileSizeBase;
-        
-        System.out.println("fml: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
-        System.out.println("fml: compassNeedleMin = "+tileSize_int_compassNeedleMin+"; compassNeedleMax = "+tileSize_int_compassNeedleMax+";");
+        try
+        {
+            BufferedImage image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass.png"));
+            
+            tileSizeBase = image.getWidth();
+            tileSizeSquare = tileSizeBase*tileSizeBase;
+            
+            this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
+            this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
+            tileSize_int_compassNeedleMin = -(tileSizeBase >> 2);
+            tileSize_int_compassNeedleMax = (int) (tileSizeBase == 16 ? 16 : tileSizeBase*0.6);
+            
+            System.out.println("finder compass: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
+            System.out.println("finder compass: compassNeedleMin = "+tileSize_int_compassNeedleMin+"; compassNeedleMax = "+tileSize_int_compassNeedleMax+";");
+            
+            baseTexture = new int[tileSizeSquare];
+            image.getRGB(0, 0, tileSizeBase, tileSizeBase, baseTexture, 0, tileSizeBase);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void askServerForStrongholdCoords()
@@ -91,24 +131,18 @@ public class AS_FinderCompass extends TextureFX
     }
     
     @Override
-    protected void onTick(byte[] imageData)
+    protected final void onTick(byte[] imageData)
     {
-        int var1;
-        int var2;
+        int[] originalTex = baseTexture;
         
-        for (int pixelIndex = 0; pixelIndex < this.tileSizeSquare; ++pixelIndex)
+        for (int pixIndex = 0; pixIndex < tileSizeSquare; ++pixIndex)
         {
-            int var4 = this.tsize[pixelIndex] >> 24 & 255;
-            var1 = this.tsize[pixelIndex] >> 16 & 255;
-            int var5 = this.tsize[pixelIndex] >> 8 & 255;
-            var2 = this.tsize[pixelIndex] >> 0 & 255;
-            
-            imageData[pixelIndex * 4 + 0] = (byte)var1;
-            imageData[pixelIndex * 4 + 1] = (byte)var5;
-            imageData[pixelIndex * 4 + 2] = (byte)var2;
-            imageData[pixelIndex * 4 + 3] = (byte)var4;
+            imageData[pixIndex * 4 + 0] = (byte) (originalTex[pixIndex] >> 16 & 255);
+            imageData[pixIndex * 4 + 1] = (byte) (originalTex[pixIndex] >> 8 & 255);
+            imageData[pixIndex * 4 + 2] = (byte) (originalTex[pixIndex] >> 0 & 255);
+            imageData[pixIndex * 4 + 3] = (byte) (originalTex[pixIndex] >> 24 & 255);
         }
-
+        
         if (this.mc.theWorld != null && this.mc.thePlayer != null)
         {
             boolean isNewSecond = false;
@@ -188,7 +222,7 @@ public class AS_FinderCompass extends TextureFX
                 }
             }
 
-            var1 = 3;
+            int var1 = 3;
             iter = currentSetting.getCustomNeedleTargets().entrySet().iterator();
 
             while (iter.hasNext())
@@ -383,31 +417,34 @@ public class AS_FinderCompass extends TextureFX
     }
     
     private void initializeSettingsFile()
-    {        
-        settingsFile = FinderCompassMod.getConfigFile();
-        System.out.println("initializeSettingsFile() running");
-        
-        if (settingsFile.exists())
+    {
+        if (settingsFile != null)
         {
-            System.out.println(settingsFile.getAbsolutePath()+" found and opened");
-            try
+            settingsFile = FinderCompassMod.getConfigFile();
+            System.out.println("initializeSettingsFile() running");
+            
+            if (settingsFile.exists())
             {
-                parse(new BufferedReader(new FileReader(settingsFile)));
+                System.out.println(settingsFile.getAbsolutePath()+" found and opened");
+                try
+                {
+                    parse(new BufferedReader(new FileReader(settingsFile)));
+                }
+                catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+                }
             }
-            catch (FileNotFoundException e)
+            else
             {
-                e.printStackTrace();
+                //mc.ingameGUI.getChatGUI().printChatMessage(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE");
+                FMLClientHandler.instance().haltGame(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE", new Throwable("Read the installation instructions"));
             }
-        }
-        else
-        {
-            mc.ingameGUI.getChatGUI().printChatMessage(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE");
-            FMLClientHandler.instance().haltGame(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE", new Throwable("Read the installation instructions"));
-        }
 
-        mc.ingameGUI.getChatGUI().printChatMessage("Finder Compass config loaded; " + settingList.size() + " custom Setting-Sets loaded");
-        System.out.println("Finder Compass config file reading finished");
-        switchSetting();
+            //mc.ingameGUI.getChatGUI().printChatMessage("Finder Compass config loaded; " + settingList.size() + " custom Setting-Sets loaded");
+            System.out.println("Finder Compass config file reading finished");
+            switchSetting();
+        }
     }
     
     /**

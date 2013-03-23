@@ -1,5 +1,12 @@
-1.5
-updated to mc 1.5
+1.5.1
+updated to MC 1.5.1 and the new MC Texture System
+Finder Compass now has a texture file at /mods/findercompass/textures/items/compass.png
+If you have a texture pack and want high-res Finder compass, it needs to override that file!!!
+Finder Compass now needs an Item ID (to setup a fake/real texture)
+if you so desire, it can also be an actual craftable Item (see new FinderCompassItemConfig.cfg)
+if the Item is enabled, the standard compass remains unchanged (server authority)
+the Item recipe is a compass in middle, plus diamonds on all 4 sides
+Finder Compass (Item or hack) uses an included 32x texture
 
 1.4.6d
 added possibility for servers to override the Finder Compass config of the connected clients
