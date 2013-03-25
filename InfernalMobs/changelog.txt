@@ -1,3 +1,6 @@
+1.2.3 (fix)
+- <diesieben07> in Forge IRC chat was so kind to provide a fix to health bars
+
 1.2.3
 - fixed Vengeance, Ninja, Ender self-damage stackoverflow crashes
 

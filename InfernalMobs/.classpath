@@ -3,11 +3,11 @@
 	<classpathentry kind="src" path="common"/>
 	<classpathentry kind="src" path="minecraft"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="./../../mcp/jars/bin/jinput.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/jars/bin/lwjgl.jar"/>
-	<classpathentry kind="lib" path="./../../mcp/jars/bin/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="../../mcp/jars/bin/jinput.jar"/>
+	<classpathentry kind="lib" path="../../mcp/jars/bin/lwjgl.jar" sourcepath="D:/mcmodding/mcp/lib/lwjgl-source-2.8.5.zip"/>
+	<classpathentry kind="lib" path="../../mcp/jars/bin/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="../../mcp/lib/argo-3.2-src.jar"/>
-    <classpathentry exported="true" kind="lib" path="../../mcp/lib/asm-debug-all-4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../mcp/lib/asm-debug-all-4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="../../mcp/lib/guava-14.0-rc3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
 	<classpathentry kind="output" path="bin"/>
