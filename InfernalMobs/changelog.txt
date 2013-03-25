@@ -1,3 +1,6 @@
+1.2.4
+- added IMob to the possible Infernal Mobs. Now both IMob and EntityMob entities can become infernal!
+
 1.2.3 (fix)
 - <diesieben07> in Forge IRC chat was so kind to provide a fix to health bars
 
