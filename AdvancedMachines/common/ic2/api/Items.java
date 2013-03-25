@@ -396,6 +396,6 @@ public final class Items {
 		else return "ic2";
 	}
 	
-	private static Class Ic2Items;
+	private static Class<?> Ic2Items;
 }
 

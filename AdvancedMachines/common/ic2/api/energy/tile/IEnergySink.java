@@ -11,6 +11,8 @@ public interface IEnergySink extends IEnergyAcceptor {
 	 *
 	 * This value is unrelated to getMaxSafeInput().
 	 *
+	 * Make sure that injectEnergy() does accepts energy if demandsEnergy() returns anything > 0.
+	 *
 	 * @return max accepted input in eu
 	 */
 	int demandsEnergy();

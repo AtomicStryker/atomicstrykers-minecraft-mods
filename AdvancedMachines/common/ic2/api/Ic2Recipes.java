@@ -44,6 +44,7 @@ public final class Ic2Recipes {
 	 *
 	 * @return Recipe list as a list of map entries, the key is the input and the value is the output
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Map.Entry<ItemStack, ItemStack> > getCompressorRecipes() {
 		if (TileEntityCompressor_recipes == null) {
 			try {
@@ -83,6 +84,7 @@ public final class Ic2Recipes {
 	 *
 	 * @return Recipe list as a list of map entries, the key is the input and the value is the output
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Map.Entry<ItemStack, ItemStack> > getExtractorRecipes() {
 		if (TileEntityExtractor_recipes == null) {
 			try {
@@ -122,6 +124,7 @@ public final class Ic2Recipes {
 	 *
 	 * @return Recipe list as a list of map entries, the key is the input and the value is the output
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Map.Entry<ItemStack, ItemStack> > getMaceratorRecipes() {
 		if (TileEntityMacerator_recipes == null) {
 			try {
@@ -177,6 +180,7 @@ public final class Ic2Recipes {
 	 *
 	 * @return Blacklist
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<ItemStack> getRecyclerBlacklist() {
 		if (TileEntityRecycler_blacklist == null) {
 			try {
@@ -236,6 +240,7 @@ public final class Ic2Recipes {
 	 *
 	 * @return Drops as a list of item stack and float (chance) pairs
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Map.Entry<ItemStack,Float>> getScrapboxDrops() {
 		try {
 			return (List<Map.Entry<ItemStack,Float>>) Class.forName(getPackage() + ".core.item.ItemScrapbox").getMethod("getDropList").invoke(null);
@@ -296,6 +301,7 @@ public final class Ic2Recipes {
 	 *
 	 * @return Amplifiers as a list of item stack and integer (amplifier value) pairs
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Map.Entry<ItemStack, Integer> > getMatterAmplifiers() {
 		if (TileEntityMatter_amplifiers == null) {
 			try {

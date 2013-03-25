@@ -15,15 +15,10 @@ public class AdvancedMachinesClient implements IProxy
 
     @Override
     public void load()
-    {
-        MinecraftForgeClient.preloadTexture("/ic2/advancedmachines/client/sprites/block_advmachine.png");
-        MinecraftForgeClient.preloadTexture("/ic2/advancedmachines/client/sprites/GUICenterfuge.png");
-        MinecraftForgeClient.preloadTexture("/ic2/advancedmachines/client/sprites/GUIRotary.png");
-        MinecraftForgeClient.preloadTexture("/ic2/advancedmachines/client/sprites/GUISingularity.png");
-        
+    {        
         try
         {
-            sideAndFacingToSpriteOffset = (int[][])Class.forName("ic2.common.BlockMultiID").getField("sideAndFacingToSpriteOffset").get(null);
+            sideAndFacingToSpriteOffset = (int[][])Class.forName("ic2.core.block.BlockMultiID").getField("sideAndFacingToSpriteOffset").get(null);
         }
         catch (Exception e)
         {

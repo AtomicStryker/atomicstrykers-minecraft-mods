@@ -138,7 +138,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
             int fuelID = inventory[fuelslot].itemID;
             if (Item.itemsList[fuelID] instanceof IElectricItem)
             {
-                if (!((IElectricItem)Item.itemsList[fuelID]).canProvideEnergy())
+                if (!((IElectricItem)Item.itemsList[fuelID]).canProvideEnergy(inventory[fuelslot]))
                 {
                     return false;
                 }
