@@ -30,7 +30,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.5.1")
+@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.5.1B")
 public class SimplyHaxFlying
 {
     private long lastTime;
@@ -44,6 +44,10 @@ public class SimplyHaxFlying
 	private static int itogglekey = Keyboard.getKeyIndex(togglekey);
 	private static String sprintkey = "LSHIFT";
 	private static int isprintkey = Keyboard.getKeyIndex(sprintkey);
+	private static String flyupkey;
+	private static int iflyupkey;
+	private static String flydownkey;
+	private static int iflydownkey;
 	private static double maxflyspeed = 1.0D;
 	private static float fovModifier = 20F;
 	
@@ -64,6 +68,7 @@ public class SimplyHaxFlying
     @Init
     public void load(FMLInitializationEvent evt)
     {
+        mcinstance = FMLClientHandler.instance().getClient();
         lastTime = System.currentTimeMillis();
         TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
         InitSettings();
@@ -92,6 +97,11 @@ public class SimplyHaxFlying
 			isprintkey = Keyboard.getKeyIndex(sprintkey);
 			maxflyspeed = Double.parseDouble(properties.getProperty("maxflyspeed", "1.0"));
 			fovModifier = Float.parseFloat(properties.getProperty("fovModifier", "20.0"));
+			
+			flyupkey = properties.getProperty("keyupwards", "JUMP");
+			iflyupkey = flyupkey.equals("JUMP") ? mcinstance.gameSettings.keyBindJump.keyCode : Keyboard.getKeyIndex(flyupkey);
+			flydownkey = properties.getProperty("keydownwards", "SNEAK");
+			iflydownkey = flydownkey.equals("SNEAK") ? mcinstance.gameSettings.keyBindSneak.keyCode : Keyboard.getKeyIndex(flydownkey);
 		}
 		else
 		{
@@ -109,8 +119,8 @@ public class SimplyHaxFlying
 			
 			properties.setProperty("flyingToggleKey", "R");
 			properties.setProperty("sprintKey", "LSHIFT");
-			properties.setProperty("keydownwards", "LCONTROL");
-			properties.setProperty("keyupwards", "SPACE");
+			properties.setProperty("keydownwards", "SNEAK");
+			properties.setProperty("keyupwards", "JUMP");
 			properties.setProperty("maxflyspeed", "1.0");
 			properties.setProperty("fovModifier", "20.0");
 			
@@ -141,12 +151,7 @@ public class SimplyHaxFlying
 
 		@Override
 		public void tickEnd(EnumSet<TickType> type, Object... tickData)
-		{
-			if (mcinstance != FMLClientHandler.instance().getClient())
-			{
-				mcinstance = FMLClientHandler.instance().getClient();
-			}
-		
+		{		
 			if (mcinstance.theWorld != null && mcinstance.thePlayer != null)
 			{			
 				long l = System.currentTimeMillis();
@@ -330,12 +335,12 @@ public class SimplyHaxFlying
 	{
 		entityplayer.distanceWalkedModified = distanceWalkedModified;	// fix the step sounds
 		
-		if (mcinstance.gameSettings.keyBindJump.pressed && !isMenuOpen())
+		if (Keyboard.isKeyDown(iflyupkey) && !isMenuOpen())
 		{
 			entityplayer.motionY = (isSprinting ? 1D : 0.35D);
 			modposY = entityplayer.posY;
 		}
-		else if (mcinstance.gameSettings.keyBindSneak.pressed && !isMenuOpen())
+		else if (Keyboard.isKeyDown(iflydownkey) && !isMenuOpen())
 		{
 			entityplayer.motionY = (isSprinting ? -1D : -0.35D);
 			modposY = entityplayer.posY;
