@@ -74,6 +74,7 @@ public class AS_FinderCompass extends TextureFX
             initializeSettingsFile();
         }
         
+        // if the mod item is disabled, we replace the default compass Icon object with this
         if (!FinderCompassMod.itemEnabled)
         {
             try
@@ -152,6 +153,11 @@ public class AS_FinderCompass extends TextureFX
                 isNewSecond = true;
                 ++this.seccounter;
                 this.lastTime = System.currentTimeMillis();
+            }
+            
+            if (currentSetting == null)
+            {
+                initializeSettingsFile();
             }
             
             if (currentSetting == null)
@@ -418,33 +424,30 @@ public class AS_FinderCompass extends TextureFX
     
     private void initializeSettingsFile()
     {
-        if (settingsFile != null)
-        {
-            settingsFile = FinderCompassMod.getConfigFile();
-            System.out.println("initializeSettingsFile() running");
-            
-            if (settingsFile.exists())
-            {
-                System.out.println(settingsFile.getAbsolutePath()+" found and opened");
-                try
-                {
-                    parse(new BufferedReader(new FileReader(settingsFile)));
-                }
-                catch (FileNotFoundException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else
-            {
-                //mc.ingameGUI.getChatGUI().printChatMessage(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE");
-                FMLClientHandler.instance().haltGame(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE", new Throwable("Read the installation instructions"));
-            }
+        settingsFile = FinderCompassMod.getConfigFile();
+        System.out.println("initializeSettingsFile() running");
 
-            //mc.ingameGUI.getChatGUI().printChatMessage("Finder Compass config loaded; " + settingList.size() + " custom Setting-Sets loaded");
-            System.out.println("Finder Compass config file reading finished");
-            switchSetting();
+        if (settingsFile.exists())
+        {
+            System.out.println(settingsFile.getAbsolutePath()+" found and opened");
+            try
+            {
+                parse(new BufferedReader(new FileReader(settingsFile)));
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
         }
+        else
+        {
+            //mc.ingameGUI.getChatGUI().printChatMessage(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE");
+            FMLClientHandler.instance().haltGame(settingsFile.getAbsolutePath()+" not found, Finder Compass NOT ACTIVE", new Throwable("Read the installation instructions"));
+        }
+
+        //mc.ingameGUI.getChatGUI().printChatMessage("Finder Compass config loaded; " + settingList.size() + " custom Setting-Sets loaded");
+        System.out.println("Finder Compass config file reading finished");
+        switchSetting();
     }
     
     /**

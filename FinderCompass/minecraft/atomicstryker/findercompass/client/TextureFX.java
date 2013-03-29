@@ -44,12 +44,6 @@ public abstract class TextureFX extends TextureStitched
      */
     private Texture dynamicTexture;
     
-    /**
-     * To use with TextureMap.setTextureEntry, TextureMap is passed as IconRegister for Block and Item
-     * @param name
-     * @param width
-     * @param height
-     */
     protected TextureFX(String name, int width, int height)
     {
         super(name);

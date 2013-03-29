@@ -1,3 +1,6 @@
+1.5.1B
+fixed crash upon MP server connecting
+
 1.5.1
 updated to MC 1.5.1 and the new MC Texture System
 Finder Compass now has a texture file at /mods/findercompass/textures/items/compass.png
