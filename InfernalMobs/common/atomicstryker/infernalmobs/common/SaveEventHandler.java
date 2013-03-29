@@ -21,10 +21,10 @@ public class SaveEventHandler
                 if (newEnt instanceof EntityLiving)
                 {
                     /* an EntityLiving was just loaded from a save file and spawned into the world */
-                    String savedMods = newEnt.getEntityData().getString(InfernalMobsCore.getNBTTag());
+                    String savedMods = newEnt.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
                     if (!savedMods.equals(""))
                     {
-                        InfernalMobsCore.addEntityModifiersByString((EntityLiving) newEnt, savedMods);
+                        InfernalMobsCore.instance().addEntityModifiersByString((EntityLiving) newEnt, savedMods);
                     }
                 }
             }

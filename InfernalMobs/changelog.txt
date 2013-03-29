@@ -1,3 +1,19 @@
+1.2.7
+- moved Item config to postInit, might fix mod issues
+- added another Item config parse run (on failed settings) to the first loot drop as last ditch effort
+- added partial matches to work for Item configs
+- if no full match for a Block or Item name can be found, the mod will go with the first that merely contains the target string
+
+1.2.6
+- fixed bug where all EntityMob types got infernal by default
+
+1.2.5
+- added Ultra and Inferno Mob chances to configuration. These stack iteratively:
+- the Ultra chance only applies ONTOP of the Elite (old) chance
+- the Inferno chance only applies ONTOP of the Ultra chance
+- Values of 3, 5, 10 would mean one out of 3 Mobs gets Rare, of those Rares one out of 5 becomes Ultra, of those Ultras one out of 10 becomes Infernal
+- absolute chances for an Infernal then: 1/3 * 1/5 * 1/10 = 1/150 one out of 150 Mobs gets Infernal
+
 1.2.4
 - added IMob to the possible Infernal Mobs. Now both IMob and EntityMob entities can become infernal!
 

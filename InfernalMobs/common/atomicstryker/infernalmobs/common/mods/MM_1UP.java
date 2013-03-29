@@ -27,7 +27,7 @@ public class MM_1UP extends MobModifier
     {
         if (!healed && mob.getHealth() < (getActualMaxHealth(mob)*0.25))
         {
-            InfernalMobsCore.setEntityHealthPastMax(mob, getActualMaxHealth(mob));
+            InfernalMobsCore.instance().setEntityHealthPastMax(mob, getActualMaxHealth(mob));
             mob.worldObj.playSoundAtEntity(mob, "random.levelup", 1.0F, 1.0F);
             healed = true;
         }

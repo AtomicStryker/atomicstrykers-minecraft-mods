@@ -56,11 +56,13 @@ import atomicstryker.infernalmobs.common.mods.MM_Wither;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
+import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.Mod.ServerStarted;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.network.NetworkMod;
@@ -70,23 +72,24 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.4")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.7")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
 public class InfernalMobsCore implements ITickHandler
 {
-    private static final long existCheckDelay = 5000L;
+    private final long existCheckDelay = 5000L;
     
-    private static long nextExistCheckTime;
+    private long nextExistCheckTime;
     
     /**
      * Array of two ints, first Block or Item ID, second meta value, third stacksize (only for blocks)
      */
     private ArrayList<Integer[]> dropIdList;
-    private static boolean healthHacked;
+    private boolean healthHacked;
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
+    private ArrayList<String[]> failedItemStrings;
     
     private static InfernalMobsCore instance;
     
@@ -95,15 +98,17 @@ public class InfernalMobsCore implements ITickHandler
         return instance;
     }
     
-    public static String getNBTTag()
+    public String getNBTTag()
     {
         return "InfernalMobsMod";
     }
     
-    private static ArrayList<Class<? extends MobModifier>> mobMods;
+    private ArrayList<Class<? extends MobModifier>> mobMods;
     
-    private static int eliteRarity;
-    public static Configuration config;
+    private int eliteRarity;
+    private int ultraRarity;
+    private int infernoRarity;
+    public Configuration config;
     
     @SidedProxy(clientSide = "atomicstryker.infernalmobs.client.InfernalMobsClient", serverSide = "atomicstryker.infernalmobs.common.InfernalMobsServer")
     public static ISidedProxy proxy;
@@ -117,9 +122,10 @@ public class InfernalMobsCore implements ITickHandler
         healthHacked = false;
         classesAllowedMap = new HashMap();
         classesForcedMap = new HashMap();
+        failedItemStrings = new ArrayList<String[]>();
         
         config = new Configuration(evt.getSuggestedConfigurationFile());
-        loadConfig();
+        loadMods();
     }
     
     @Init
@@ -131,6 +137,13 @@ public class InfernalMobsCore implements ITickHandler
         proxy.load();
         
         System.out.println("InfernalMobsCore load() completed! Modifiers ready: "+mobMods.size());
+    }
+    
+    @PostInit
+    public void postInit(FMLPostInitializationEvent evt)
+    {
+        // lets use postInit so mod Blocks and Items are present
+        loadConfig();
     }
     
     @ServerStarted
@@ -174,6 +187,7 @@ public class InfernalMobsCore implements ITickHandler
         mobMods.add(MM_Webber.class);
         mobMods.add(MM_Wither.class);
         
+        config.load();
         Iterator<Class<? extends MobModifier>> iter = mobMods.iterator();
         while (iter.hasNext())
         {
@@ -183,6 +197,7 @@ public class InfernalMobsCore implements ITickHandler
                 iter.remove();
             }
         }
+        config.save();
     }
 
     /**
@@ -191,7 +206,10 @@ public class InfernalMobsCore implements ITickHandler
     private void loadConfig()
     {
         config.load();
+        
         eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15).getString());
+        ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7).getString());
+        infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7).getString());
         String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403").getString();
         
         itemIDs = itemIDs.trim();
@@ -205,9 +223,11 @@ public class InfernalMobsCore implements ITickHandler
                 Integer[] ints = {id, (meta.length > 1) ? Integer.parseInt(meta[1]) : 0, (meta.length > 2) ? Integer.parseInt(meta[2]) : 1 };
                 instance.dropIdList.add(ints);
             }
+            else
+            {
+                failedItemStrings.add(meta);
+            }
         }
-        
-        loadMods();
         
         config.save();
     }
@@ -226,6 +246,14 @@ public class InfernalMobsCore implements ITickHandler
         }
         catch (NumberFormatException e)
         {
+            result = 0;
+            for (Item i : Item.itemsList)
+            {
+                if (i != null && i.getUnlocalizedName() != null && i.getUnlocalizedName().equals(s))
+                {
+                    return i.itemID;
+                }
+            }
             for (Block b : Block.blocksList)
             {
                 if (b != null && b.getUnlocalizedName() != null && b.getUnlocalizedName().equals(s))
@@ -234,12 +262,26 @@ public class InfernalMobsCore implements ITickHandler
                 }
             }
             
-            for (Item i : Item.itemsList)
+            if (result == 0)
             {
-                if (i != null && i.getUnlocalizedName() != null && i.getUnlocalizedName().equals(s))
+                System.out.println("Infernal Mobs Item config failed to find match for ["+s+"], checking for partial matches...");
+                for (Item i : Item.itemsList)
                 {
-                    return i.itemID;
+                    if (i != null && i.getUnlocalizedName() != null && i.getUnlocalizedName().contains(s))
+                    {
+                        System.out.println("Infernal Mobs Item config going with partial match ["+i.getUnlocalizedName()+"], id "+i.itemID+" "+i);
+                        return i.itemID;
+                    }
                 }
+                for (Block b : Block.blocksList)
+                {
+                    if (b != null && b.getUnlocalizedName() != null && b.getUnlocalizedName().contains(s))
+                    {
+                        System.out.println("Infernal Mobs Item config going with partial match ["+b.getUnlocalizedName()+"], id "+b.blockID+" "+b);
+                        return b.blockID;
+                    }
+                }
+                System.out.println("Infernal Mobs Item config failed to find any match for ["+s+"]");
             }
         }
         return result;
@@ -249,13 +291,13 @@ public class InfernalMobsCore implements ITickHandler
      * Called when an Entity is spawned by natural (Biome Spawning) means, turn them into Elites here
      * @param entity Entity in question
      */
-    public static void processEntitySpawn(EntityLiving entity)
+    public void processEntitySpawn(EntityLiving entity)
     {
         if (!entity.worldObj.isRemote)
         {
             if (!getIsRareEntity(entity))
             {
-                if (entity instanceof EntityMob || entity instanceof IMob
+                if ((entity instanceof EntityMob || entity instanceof IMob)
                 && instance.checkEntityClassAllowed(entity)
                 && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
@@ -310,7 +352,7 @@ public class InfernalMobsCore implements ITickHandler
      * @param entity Entity instance whose health you want changed
      * @param amount value to set
      */
-    public static void setEntityHealthPastMax(EntityLiving entity, int amount)
+    public void setEntityHealthPastMax(EntityLiving entity, int amount)
     {
         if (!healthHacked)
         {
@@ -334,7 +376,7 @@ public class InfernalMobsCore implements ITickHandler
         }
     }
     
-    private static void hackHealth(EntityLiving entity)
+    private void hackHealth(EntityLiving entity)
     {
         System.out.println("Infernal Mobs health hack attempt now running...");
         ArrayList<Field> possibleFields = new ArrayList<Field>();
@@ -394,11 +436,11 @@ public class InfernalMobsCore implements ITickHandler
         /* lets just be lazy and scratch mods off a list copy */
         ArrayList<Class<? extends MobModifier>> possibleMods = (ArrayList<Class<? extends MobModifier>>) mobMods.clone();
         
-        if (entity.worldObj.rand.nextInt(4) == 0) // ultra mobs
+        if (entity.worldObj.rand.nextInt(ultraRarity) == 0) // ultra mobs
         {
             number += 3 + entity.worldObj.rand.nextInt(2);
             
-            if (entity.worldObj.rand.nextInt(4) == 0) // infernal mobs
+            if (entity.worldObj.rand.nextInt(infernoRarity) == 0) // infernal mobs
             {
                 number += 3 + entity.worldObj.rand.nextInt(2);
             }
@@ -474,14 +516,14 @@ public class InfernalMobsCore implements ITickHandler
      * @param entity Target Entity
      * @param savedMods String depicting the MobModifiers, equal to the ingame Display
      */
-    public static void addEntityModifiersByString(EntityLiving entity, String savedMods)
+    public void addEntityModifiersByString(EntityLiving entity, String savedMods)
     {
         MobModifier mod = stringToMobModifiers(entity, savedMods);
         proxy.getRareMobs().put(entity, mod);
         mod.onSpawningComplete(entity);
     }
     
-    private static MobModifier stringToMobModifiers(EntityLiving entity, String buffer)
+    private MobModifier stringToMobModifiers(EntityLiving entity, String buffer)
     {
         MobModifier lastMod = null;
         
@@ -567,7 +609,7 @@ public class InfernalMobsCore implements ITickHandler
      * @param entID unique Entity ID
      * @param mods MobModifier compliant data String from the server
      */
-    public static void addRemoteEntityModifiers(World world, int entID, String mods)
+    public void addRemoteEntityModifiers(World world, int entID, String mods)
     {
         Entity ent = world.getEntityByID(entID);
         if (ent != null)
@@ -585,6 +627,21 @@ public class InfernalMobsCore implements ITickHandler
             int xpDrop = EntityXPOrb.getXPSplit(xpValue);
             xpValue -= xpDrop;
             mob.worldObj.spawnEntityInWorld(new EntityXPOrb(mob.worldObj, mob.posX, mob.posY, mob.posZ, xpDrop));
+        }
+        
+        if (!failedItemStrings.isEmpty())
+        {
+            System.out.println("Infernal Mobs last ditch effort to identify Items commencing...");
+            for (String[] meta : failedItemStrings)
+            {
+                int id = parseOrFind(meta[0]);
+                if (id > 0)
+                {
+                    Integer[] ints = {id, (meta.length > 1) ? Integer.parseInt(meta[1]) : 0, (meta.length > 2) ? Integer.parseInt(meta[2]) : 1 };
+                    instance.dropIdList.add(ints);
+                }
+            }
+            failedItemStrings.clear();
         }
         
         dropRandomEnchantedItems(mob, mods);

@@ -108,7 +108,7 @@ public abstract class MobModifier
      */
     public void onSpawningComplete(EntityLiving entity)
     {
-        entity.getEntityData().setString(InfernalMobsCore.getNBTTag(), getLinkedModName());
+        entity.getEntityData().setString(InfernalMobsCore.instance().getNBTTag(), getLinkedModName());
     }
 
     public boolean onDeath()
@@ -236,7 +236,7 @@ public abstract class MobModifier
         if (!healthHacked && !mob.worldObj.isRemote)
         {
             actualHealth = getActualMaxHealth(mob);
-            InfernalMobsCore.setEntityHealthPastMax(mob, actualHealth);
+            InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
             healthHacked = true;
         }
         

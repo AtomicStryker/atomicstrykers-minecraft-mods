@@ -23,14 +23,14 @@ public class EntityEventHandler
     {
         if (event.entity instanceof EntityLiving)
         {
-            String savedMods = event.entity.getEntityData().getString(InfernalMobsCore.getNBTTag());
+            String savedMods = event.entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
             if (!savedMods.equals(""))
             {
-                InfernalMobsCore.addEntityModifiersByString((EntityLiving) event.entity, savedMods);
+                InfernalMobsCore.instance().addEntityModifiersByString((EntityLiving) event.entity, savedMods);
             }
             else
             {
-                InfernalMobsCore.processEntitySpawn((EntityLiving) event.entity);
+                InfernalMobsCore.instance().processEntitySpawn((EntityLiving) event.entity);
             }
         }
     }

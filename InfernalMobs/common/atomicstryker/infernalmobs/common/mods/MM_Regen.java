@@ -29,7 +29,7 @@ public class MM_Regen extends MobModifier
             if (time > nextAbilityUse)
             {
                 nextAbilityUse = time+coolDown;
-                InfernalMobsCore.setEntityHealthPastMax(mob, mob.getHealth()+1);
+                InfernalMobsCore.instance().setEntityHealthPastMax(mob, mob.getHealth()+1);
             }
         }
         return super.onUpdate(mob);
