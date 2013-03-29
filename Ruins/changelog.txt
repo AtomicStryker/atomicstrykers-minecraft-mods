@@ -177,3 +177,9 @@ a: setAccessible now true
 9.5
 + added fallback methods and error logging when using pre-8.6 style templates or invalid blocks
 + subsequently found and fixed errors in 2 default templates
+
+9.6
++ added generation for the End (Biome "sky")
++ added EnderCrystal entities for placement. Usage like spawners, keyphrase EnderCrystal
++ example: rule1=0,100,EnderCrystal
++ will turn target Block into Bedrock(!!!!) and an Ender Crystal ontop of it

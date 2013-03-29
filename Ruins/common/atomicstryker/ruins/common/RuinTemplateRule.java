@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
@@ -245,6 +246,10 @@ public class RuinTemplateRule {
             String[] s = dataString.split(":");
             addChestGenChest( world, random, x, y, z, s[1], Integer.valueOf(s[2]) );
         }
+        else if (dataString.equals("EnderCrystal"))
+        {
+            spawnEnderCrystal( world, x, y, z );
+        }
         else
         {
             System.err.println("Ruins Mod could not determine what to spawn for ["+dataString+"] in Ruin template: "+owner.getName());
@@ -253,6 +258,14 @@ public class RuinTemplateRule {
 
     private int getBlockNum( Random random ) {
 		return random.nextInt( blockIDs.length );
+    }
+    
+    private void spawnEnderCrystal( World world, int x, int y, int z)
+    {
+        EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
+        entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
+        world.spawnEntityInWorld(entityendercrystal);
+        world.setBlock(x, y, z, Block.bedrock.blockID, 0, 2);
     }
     
     private void addCustomSpawner( World world, int x, int y, int z, String id )

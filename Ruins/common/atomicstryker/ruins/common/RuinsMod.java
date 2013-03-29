@@ -13,6 +13,8 @@ import java.util.Random;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProviderEnd;
+import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
@@ -29,7 +31,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.5", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.6", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -65,13 +67,13 @@ public class RuinsMod
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
         {
-            if (world.getBiomeGenForCoords(chunkX, chunkZ) == BiomeGenBase.hell)
+            if (world.provider instanceof WorldProviderHell)
             {
                 generateNether(world, random, chunkX*16, chunkZ*16);
             }
-            else if (world.getBiomeGenForCoords(chunkX, chunkZ) == BiomeGenBase.sky)
+            else if (world.provider instanceof WorldProviderEnd)
             {
-                // the end!
+                generateSurface(world, random, chunkX*16, chunkZ*16);
             }
             else // normal world
             {
@@ -81,16 +83,11 @@ public class RuinsMod
     }
 
 
-    private void generateNether(World world, Random random, int chunkX, int chunkZ)
+    private synchronized void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
         checkWorld(world);
         if (ruins != null && ruins.loaded)
         {
-            // can change this generation as needed. We're going for overblown
-            // right now,
-            // checking out side the chunk and such because generation seems to
-            // breaks down.
-
             generator.generateNether(world, random, chunkX, 0, chunkZ);
         }
     }
@@ -100,8 +97,6 @@ public class RuinsMod
         checkWorld(world);
         if (ruins != null && ruins.loaded && (chunkX != 0 || chunkZ != 0))
         {
-            // can change this generation as needed. We're going for overblown right now,
-            // checking out side the chunk and such because generation seems to breaks down.
             generator.generateNormal(world, random, chunkX, 0, chunkZ);
         }
     }
