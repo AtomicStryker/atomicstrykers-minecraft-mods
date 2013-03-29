@@ -14,6 +14,7 @@ import java.util.Properties;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -29,7 +30,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.5.1")
+@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.5.1B")
 public class SimplyHaxVision
 {
 	private final static String modname = "Vision";
@@ -45,6 +46,7 @@ public class SimplyHaxVision
 	private boolean rendererReplaced = false;
 	private static RenderGlobal original;
 	private static RenderGlobal replacement;
+	private ItemStack item;
 	
     @PreInit
     public void preInit(FMLPreInitializationEvent evt)
@@ -91,6 +93,15 @@ public class SimplyHaxVision
 					rendererReplaced = visionActive;
 					copyAllClassFields(RenderGlobal.class, rendererReplaced ? original : replacement, rendererReplaced ? replacement : original);
 					mcinstance.renderGlobal = rendererReplaced ? replacement : original;
+				}
+				
+				if (mcinstance.thePlayer.getCurrentEquippedItem() != item)
+				{
+				    item = mcinstance.thePlayer.getCurrentEquippedItem();
+				    if (item != null)
+				    {
+				        System.out.println("Player swapped Item to ["+item.getItemName()+"]");
+				    }
 				}
 			}
 		}
