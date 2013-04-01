@@ -46,35 +46,33 @@ public class BlockAdvancedMachines extends BlockContainer
     {
         iconBuffer = new Icon[3][12]; // 3 machines, 6 sides each, in ON and OFF states
         
-        
-        // TODO swap east, south
         // meta 0, macerator
         // first the 6 sides in OFF state
         iconBuffer[0][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
         iconBuffer[0][1] = par1IconRegister.registerIcon("advancedmachines:topMaceratorOFF"); // top
         iconBuffer[0][2] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // north
-        iconBuffer[0][3] = par1IconRegister.registerIcon("advancedmachines:front"); // east
+        iconBuffer[0][3] = par1IconRegister.registerIcon("advancedmachines:frontMaceratorOFF"); // east
         iconBuffer[0][4] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
         iconBuffer[0][5] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         // then the 6 sides in ON state
         iconBuffer[0][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
         iconBuffer[0][7] = par1IconRegister.registerIcon("advancedmachines:topMaceratorON"); // top
         iconBuffer[0][8] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // north
-        iconBuffer[0][9] = par1IconRegister.registerIcon("advancedmachines:front"); // east
+        iconBuffer[0][9] = par1IconRegister.registerIcon("advancedmachines:frontMaceratorON"); // east
         iconBuffer[0][10] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
         iconBuffer[0][11] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         
         // meta 1, compressor
         // first the 6 sides in OFF state
         iconBuffer[1][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
-        iconBuffer[1][1] = par1IconRegister.registerIcon("advancedmachines:topCompressor"); // top
+        iconBuffer[1][1] = par1IconRegister.registerIcon("advancedmachines:topCompressorOFF"); // top
         iconBuffer[1][2] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // north
         iconBuffer[1][3] = par1IconRegister.registerIcon("advancedmachines:frontCompressorOFF"); // east
         iconBuffer[1][4] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
         iconBuffer[1][5] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
         // then the 6 sides in ON state
         iconBuffer[1][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
-        iconBuffer[1][7] = par1IconRegister.registerIcon("advancedmachines:topCompressor"); // top
+        iconBuffer[1][7] = par1IconRegister.registerIcon("advancedmachines:topCompressorON"); // top
         iconBuffer[1][8] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // north
         iconBuffer[1][9] = par1IconRegister.registerIcon("advancedmachines:frontCompressorON"); // east
         iconBuffer[1][10] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
@@ -83,14 +81,14 @@ public class BlockAdvancedMachines extends BlockContainer
         // meta 2, extractor
         // first the 6 sides in OFF state
         iconBuffer[2][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
-        iconBuffer[2][1] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // top
+        iconBuffer[2][1] = par1IconRegister.registerIcon("advancedmachines:topExtractorOFF"); // top
         iconBuffer[2][2] = par1IconRegister.registerIcon("advancedmachines:sideExtractorOFF"); // north
         iconBuffer[2][3] = par1IconRegister.registerIcon("advancedmachines:frontExtractorOFF"); // east
         iconBuffer[2][4] = par1IconRegister.registerIcon("advancedmachines:sideExtractorOFF"); // south
         iconBuffer[2][5] = par1IconRegister.registerIcon("advancedmachines:sideExtractorOFF"); // west
         // then the 6 sides in ON state
         iconBuffer[2][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
-        iconBuffer[2][7] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // top
+        iconBuffer[2][7] = par1IconRegister.registerIcon("advancedmachines:topExtractorON"); // top
         iconBuffer[2][8] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // north
         iconBuffer[2][9] = par1IconRegister.registerIcon("advancedmachines:frontExtractorON"); // east
         iconBuffer[2][10] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // south
