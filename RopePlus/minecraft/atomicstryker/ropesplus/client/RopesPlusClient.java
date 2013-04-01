@@ -287,7 +287,7 @@ public class RopesPlusClient implements ITickHandler
             else if (System.currentTimeMillis() > timeNextZipUpdate)
             {
                 double startCoords[] = onZipLine.getCoordsAtRelativeLength(lastZipLineLength);
-                localPlayer.setPosition(startCoords[0], startCoords[1]-2.5D, startCoords[2]);
+                localPlayer.setPosition(startCoords[0], startCoords[1]-0.2D, startCoords[2]);
                 localPlayer.setVelocity(0, 0, 0);
                 localPlayer.fallDistance = 0f;
                 lastZipLineLength += 0.025;
