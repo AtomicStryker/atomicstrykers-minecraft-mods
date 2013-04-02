@@ -67,6 +67,11 @@ public class RuinsMod
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
         {
+            if (Math.abs(chunkX) < 3 && Math.abs(chunkZ) < 3)
+            {
+                return; // the 0,0 bug is really annoying. SLEDGEHAMMER FIX!
+            }
+            
             if (world.provider instanceof WorldProviderHell)
             {
                 generateNether(world, random, chunkX*16, chunkZ*16);
@@ -95,7 +100,7 @@ public class RuinsMod
     private synchronized void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
         checkWorld(world);
-        if (ruins != null && ruins.loaded && (chunkX != 0 || chunkZ != 0))
+        if (ruins != null && ruins.loaded)
         {
             generator.generateNormal(world, random, chunkX, 0, chunkZ);
         }
