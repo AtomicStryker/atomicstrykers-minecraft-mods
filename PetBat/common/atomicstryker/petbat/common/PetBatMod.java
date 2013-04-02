@@ -42,7 +42,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.7")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.8")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -184,8 +184,15 @@ public class PetBatMod implements IProxy
         itemPocketedBat = new ItemPocketedPetBat(itemIDPocketBat).setUnlocalizedName("fed Pet Bat");
         LanguageRegistry.addName(itemPocketedBat, "fed Pet Bat");
         
-        ItemStack fedBat = new ItemStack(itemPocketedBat.itemID, 1, -1);
-        GameRegistry.addShapelessRecipe(new ItemStack(itemPocketedBat.itemID, 1, 0), fedBat, new ItemStack(TAME_ITEM_ID, 1, 0));
+        ItemStack fedBat = new ItemStack(itemPocketedBat);
+        ItemStack tameItemStack = new ItemStack(TAME_ITEM_ID, 1, 0);
+        ItemStack damagedBat;
+        for (int dmgVal = 27; dmgVal >= 0; dmgVal--)
+        {
+            damagedBat = new ItemStack(itemPocketedBat, 1, dmgVal);
+            GameRegistry.addShapelessRecipe(fedBat, new Object[] { damagedBat, tameItemStack });
+        }
+        
         GameRegistry.registerCraftingHandler(new BatHealCraftingHandler());
         
         proxy.onModLoad();
