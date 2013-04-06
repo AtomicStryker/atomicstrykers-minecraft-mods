@@ -186,3 +186,8 @@ a: setAccessible now true
 
 9.6 (second coming)
 + disabled spawning in Chunks at 0,0 and the 2 adjacent chunks altogether
+
+9.7
++ changed setBlock back to work without block update, allows update based traps again
++ added Mooshroom rotational mappings courtesy of Arrrg
++ added End structures courtesy of Arrrg

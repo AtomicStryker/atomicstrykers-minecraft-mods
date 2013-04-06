@@ -134,3 +134,44 @@ WEST-12-11
 WEST-13-10
 WEST-10-12
 WEST-11-13
+
+# Mushroom blocks, courtesy of Arrrg
+# They can point in all 8 directions and have center, inside, and stem parts.
+# inside Nw N Ne W center E Sw S Se stem: 0 1 2 3 4 5 6 7 8 9 10
+BlockID=99;100
+
+EAST-0-0
+EAST-1-3
+EAST-2-6
+EAST-3-9
+EAST-4-2
+EAST-5-5
+EAST-6-8
+EAST-7-1
+EAST-8-4
+EAST-9-7
+EAST-10-10
+
+SOUTH-0-0
+SOUTH-1-9
+SOUTH-2-8
+SOUTH-3-7
+SOUTH-4-6
+SOUTH-5-5
+SOUTH-6-4
+SOUTH-7-3
+SOUTH-8-2
+SOUTH-9-1
+SOUTH-10-10
+
+WEST-0-0
+WEST-1-7
+WEST-2-4
+WEST-3-1
+WEST-4-8
+WEST-5-5
+WEST-6-2
+WEST-7-9
+WEST-8-6
+WEST-9-3
+WEST-10-10
