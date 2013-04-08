@@ -37,13 +37,20 @@ public class TowerStageItemManager
 		{
 			String[] settings = elements[i].trim().split("-");
 			
-			itemID[i] = Integer.parseInt(settings[0]);
-			itemDamage[i] = Integer.parseInt(settings[1]);
-			chanceToSpawn[i] = Integer.parseInt(settings[2]);
-			minAmount[i] = Integer.parseInt(settings[3]);
-			maxAmount[i] = Integer.parseInt(settings[4]);
-			System.out.println("TowerStageItemManager parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
-			//System.out.println("Name of that Item: "+Item.itemsList[itemID[i]].getItemName());
+			if (settings.length < 5)
+			{
+			    System.err.println("Battletowers skipping invalid entry ["+elements[i].trim()+"], fix config file!");
+			}
+			else
+			{
+	            itemID[i] = Integer.parseInt(settings[0]);
+	            itemDamage[i] = Integer.parseInt(settings[1]);
+	            chanceToSpawn[i] = Integer.parseInt(settings[2]);
+	            minAmount[i] = Integer.parseInt(settings[3]);
+	            maxAmount[i] = Integer.parseInt(settings[4]);
+	            System.out.println("Battletowers parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
+	            //System.out.println("Name of that Item: "+Item.itemsList[itemID[i]].getItemName());
+			}
 		}
 	}
 	
