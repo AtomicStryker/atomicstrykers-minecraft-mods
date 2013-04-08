@@ -339,7 +339,7 @@ public abstract class MobModifier
                 buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
             }
             int size = getModSize();
-            String prefix = size <= 5 ? "§bRare " : size <= 10 ? "§6Ultra " : "§4Infernal ";
+            String prefix = size <= 5 ? "Â§bRare " : size <= 10 ? "Â§6Ultra " : "Â§4Infernal ";
             if (buffer.startsWith("Entity"))
             {
                 buffer = buffer.replaceFirst("Entity", prefix);
