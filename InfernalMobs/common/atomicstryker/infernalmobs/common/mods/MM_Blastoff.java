@@ -76,4 +76,12 @@ public class MM_Blastoff extends MobModifier
         return modBans;
     }
     private static Class[] modBans = { MM_Webber.class };
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Mission Control", " the NASA", " of WEEEEE" };
+    
 }

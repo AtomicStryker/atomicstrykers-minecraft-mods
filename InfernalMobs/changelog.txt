@@ -1,3 +1,10 @@
+1.2.8
+- boss designation now has color!
+- added useSimpleEntityClassnames to config, set to true if you have config problems with generated entity names
+  you will likely have to re-configure all entities with their new designations if you do so
+  i do suggest deleting the old lines if you do this
+- added first iteration of monster name suffixes (not really happy with them yet)
+
 1.2.7
 - moved Item config to postInit, might fix mod issues
 - added another Item config parse run (on failed settings) to the first loot drop as last ditch effort

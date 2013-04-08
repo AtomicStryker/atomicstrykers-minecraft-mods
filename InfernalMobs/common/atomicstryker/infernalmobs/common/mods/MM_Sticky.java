@@ -59,4 +59,12 @@ public class MM_Sticky extends MobModifier
     {
         return disallowed;
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Snagging", " the Quick Fingered", " of Petty Theft", " .. YOINK" };
+    
 }

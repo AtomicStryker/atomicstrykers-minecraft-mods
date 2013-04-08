@@ -40,4 +40,12 @@ public class MM_Fiery extends MobModifier
         
         return super.onAttack(entity, source, damage);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Conflagration", " the Phoenix", " of Crispyness" };
+    
 }

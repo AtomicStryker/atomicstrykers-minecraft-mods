@@ -53,4 +53,12 @@ public class MM_Storm extends MobModifier
             mob.worldObj.addWeatherEffect(new EntityLightningBolt(mob.worldObj, target.posX, target.posY-1, target.posZ));
         }
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Lightning", " the Raiden" };
+    
 }

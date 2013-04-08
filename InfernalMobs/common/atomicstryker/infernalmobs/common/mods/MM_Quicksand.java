@@ -31,4 +31,12 @@ public class MM_Quicksand extends MobModifier
         
         return super.onUpdate(mob);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of You-Cant-Run", " the slowing B****" };
+    
 }

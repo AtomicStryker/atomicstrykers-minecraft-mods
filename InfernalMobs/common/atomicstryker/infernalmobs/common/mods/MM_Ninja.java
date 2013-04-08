@@ -97,4 +97,12 @@ public class MM_Ninja extends MobModifier
         }
         return true;
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " the Zen Master", " of Equilibrium", " of Inner Peace" };
+    
 }

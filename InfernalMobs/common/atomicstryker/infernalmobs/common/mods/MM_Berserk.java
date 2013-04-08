@@ -38,4 +38,12 @@ public class MM_Berserk extends MobModifier
         return disallowed;
     }
     private static Class[] disallowed = { EntityCreeper.class };
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Recklessness", " the Raging", " of Smashing" };
+    
 }

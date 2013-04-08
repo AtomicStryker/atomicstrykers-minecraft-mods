@@ -61,4 +61,11 @@ public class MM_Ghastly extends MobModifier
         }
     }
     
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " OMFGFIREBALLS", " the Bomber", " of Balls of Fire" };
+    
 }

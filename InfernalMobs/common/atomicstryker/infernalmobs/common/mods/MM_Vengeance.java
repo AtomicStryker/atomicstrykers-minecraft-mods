@@ -28,4 +28,12 @@ public class MM_Vengeance extends MobModifier
         
         return super.onHurt(mob, source, damage);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Retribution", " the Thorned", " of Striking Back" };
+    
 }

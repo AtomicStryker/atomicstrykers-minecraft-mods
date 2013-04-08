@@ -40,4 +40,12 @@ public class MM_Lifesteal extends MobModifier
         return disallowed;
     }
     private static Class[] disallowed = { EntityCreeper.class };
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " the Vampire", " of Transfusion", " the Bloodsucker" };
+    
 }

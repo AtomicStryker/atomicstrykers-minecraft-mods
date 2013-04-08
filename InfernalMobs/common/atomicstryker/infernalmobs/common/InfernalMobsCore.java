@@ -72,7 +72,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.7")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.8")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -90,6 +90,7 @@ public class InfernalMobsCore implements ITickHandler
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
     private ArrayList<String[]> failedItemStrings;
+    private boolean useSimpleEntityClassNames;
     
     private static InfernalMobsCore instance;
     
@@ -211,6 +212,7 @@ public class InfernalMobsCore implements ITickHandler
         ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7).getString());
         infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7).getString());
         String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403").getString();
+        useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", false).getBoolean(false);
         
         itemIDs = itemIDs.trim();
         String[] numbers = itemIDs.split(",");
@@ -315,7 +317,7 @@ public class InfernalMobsCore implements ITickHandler
     
     private boolean checkEntityClassAllowed(EntityLiving entity)
     {
-        String entName = entity.getEntityName();
+        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : entity.getEntityName();
         if (classesAllowedMap.containsKey(entName))
         {
             return classesAllowedMap.get(entName);
@@ -331,7 +333,7 @@ public class InfernalMobsCore implements ITickHandler
     
     private boolean checkEntityClassForced(EntityLiving entity)
     {
-        String entName = entity.getEntityName();
+        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : entity.getEntityName();
         if (classesForcedMap.containsKey(entName))
         {
             return classesForcedMap.get(entName);

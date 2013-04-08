@@ -71,4 +71,11 @@ public class MM_Alchemist extends MobModifier
         }
     }
     
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " the Witchkin", " the Brewmaster", " the Singed" };
+    
 }

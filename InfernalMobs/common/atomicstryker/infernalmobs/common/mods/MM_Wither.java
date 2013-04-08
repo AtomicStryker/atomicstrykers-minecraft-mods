@@ -41,4 +41,12 @@ public class MM_Wither extends MobModifier
         
         return super.onAttack(entity, source, damage);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Dark Skulls" };
+    
 }

@@ -41,4 +41,11 @@ public class MM_Weakness extends MobModifier
         
         return super.onAttack(entity, source, damage);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Apathy", " the Deceiver" };
 }

@@ -46,4 +46,12 @@ public class MM_Sapper extends MobModifier
         
         return super.onAttack(entity, source, damage);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Hunger", " the Pale Rider" };
+    
 }

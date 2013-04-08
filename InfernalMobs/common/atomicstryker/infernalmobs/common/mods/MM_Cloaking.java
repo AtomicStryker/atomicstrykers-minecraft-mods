@@ -65,4 +65,11 @@ public class MM_Cloaking extends MobModifier
         return r;
     }
     
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Stalking", " the Unseen", " the Predator" };
+    
 }

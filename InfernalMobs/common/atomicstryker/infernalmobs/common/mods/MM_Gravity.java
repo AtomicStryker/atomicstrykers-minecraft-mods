@@ -111,4 +111,12 @@ public class MM_Gravity extends MobModifier
         return modBans;
     }
     private static Class[] modBans = { MM_Webber.class };
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Repulsion", " the Flipper" };
+    
 }

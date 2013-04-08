@@ -87,4 +87,12 @@ public class MM_Webber extends MobModifier
         return modBans;
     }
     private static Class[] modBans = { MM_Gravity.class, MM_Blastoff.class };
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Traps", " the Mutated", " the Spider" };
+    
 }

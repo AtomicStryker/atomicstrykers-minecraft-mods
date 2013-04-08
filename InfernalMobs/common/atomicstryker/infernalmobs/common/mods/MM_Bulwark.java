@@ -22,4 +22,12 @@ public class MM_Bulwark extends MobModifier
     {
         return super.onHurt(mob, source, Math.max(damage/2, 1));
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Turtling", " the Defender", " of effing Armor" };
+    
 }

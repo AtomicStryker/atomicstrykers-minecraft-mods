@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common;
 import java.util.ArrayList;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,12 +43,17 @@ public abstract class MobModifier
     
     private EntityLiving attackTarget;
     
+    private int bufferedSize;
+    
+    private String bufferedEntityName;
+    
     public MobModifier()
     {
         nextMod = null;
         healthHacked = false;
         actualHealth = 100;
         actualMaxHealth = -1;
+        bufferedSize = 0;
     }
     
     /**
@@ -297,13 +303,69 @@ public abstract class MobModifier
      */
     public int getModSize()
     {
-        int r = 1;
-        MobModifier nextmod = this.nextMod;
-        while (nextmod != null)
+        if (bufferedSize == 0)
         {
-            r++;
-            nextmod = nextmod.nextMod;
+            bufferedSize = 1;
+            MobModifier nextmod = this.nextMod;
+            while (nextmod != null)
+            {
+                bufferedSize++;
+                nextmod = nextmod.nextMod;
+            }
+            System.out.println("bufferedSize result: "+bufferedSize);
         }
-        return r;
+        
+        return bufferedSize;
+    }
+    
+    protected String[] getModNameSuffix()
+    {
+        return null;
+    }
+    
+    /**
+     * Creates the Entity name the Infernal Mobs GUI displays, and buffers it
+     * @param target Entity to create the Name from
+     * @return Entity display name such as 'Rare Zombie'
+     */
+    public String getEntityDisplayName(EntityLiving target)
+    {
+        if (bufferedEntityName == null)
+        {
+            String buffer = EntityList.getEntityString(target);
+            String[] subStrings = buffer.split("."); // in case of Package.Class.EntityName derps
+            if (subStrings.length > 1)
+            {
+                buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
+            }
+            int size = getModSize();
+            String prefix = size <= 5 ? "§bRare " : size <= 10 ? "§6Ultra " : "§4Infernal ";
+            if (buffer.startsWith("Entity"))
+            {
+                buffer = buffer.replaceFirst("Entity", prefix);
+            }
+            else
+            {
+                buffer = prefix+buffer;
+            }
+            
+            int randomMod = target.getRNG().nextInt(getModSize());
+            MobModifier chosen = this;
+            while (randomMod > 0)
+            {
+                chosen = chosen.nextMod;
+                randomMod--;
+            }
+            
+            if (chosen.getModNameSuffix() != null)
+            {
+                String pick = getModNameSuffix()[target.getRNG().nextInt(getModNameSuffix().length)];
+                buffer = buffer+pick;
+            }
+            
+            bufferedEntityName = buffer;
+        }
+        
+        return bufferedEntityName;
     }
 }

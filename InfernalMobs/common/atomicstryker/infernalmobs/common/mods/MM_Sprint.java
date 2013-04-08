@@ -98,4 +98,12 @@ public class MM_Sprint extends MobModifier
     {
         return Math.sqrt(modMotionX*modMotionX + modMotionZ*modMotionZ);
     }
+    
+    @Override
+    protected String[] getModNameSuffix()
+    {
+        return suffix;
+    }
+    private static String[] suffix = { " of Bolting", " the Swift One", " of being in your Face" };
+    
 }

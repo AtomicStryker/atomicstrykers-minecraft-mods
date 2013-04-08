@@ -78,22 +78,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 GL11.glDisable(GL11.GL_BLEND);
                 
                 EntityLiving target = (EntityLiving) ent;
-                String buffer = EntityList.getEntityString(target);
-                String[] subStrings = buffer.split("."); // in case of Package.Class.EntityName derps
-                if (subStrings.length > 1)
-                {
-                    buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
-                }
-                int size = mod.getModSize();
-                String prefix = size <= 5 ? "Rare " : size <= 10 ? "Ultra " : "Infernal ";
-                if (buffer.startsWith("Entity"))
-                {
-                    buffer = buffer.replaceFirst("Entity", prefix);
-                }
-                else
-                {
-                    buffer = prefix+buffer;
-                }
+                String buffer = mod.getEntityDisplayName(target);
                 
                 ScaledResolution resolution = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
                 int screenwidth = resolution.getScaledWidth();
