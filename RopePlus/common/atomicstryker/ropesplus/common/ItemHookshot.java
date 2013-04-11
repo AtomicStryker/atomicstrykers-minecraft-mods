@@ -24,9 +24,9 @@ public class ItemHookshot extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("ropesplus:hookshot");
+        itemIcon = iconRegister.registerIcon("ropesplus:hookshot");
     }
 
     @Override

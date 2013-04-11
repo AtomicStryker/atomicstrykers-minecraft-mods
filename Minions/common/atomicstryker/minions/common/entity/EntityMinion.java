@@ -85,7 +85,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.tasks.addTask(3, new MinionAIWander(this, this.moveSpeed));
         
         inventory = new InventoryMinion(this);
-        heldItem = new ItemStack(Item.pickaxeSteel, 1);
+        heldItem = new ItemStack(Item.pickaxeIron, 1);
         inventoryFull = false;
         currentState = lastOrderedState = EnumMinionState.IDLE;
         nextState = null;
@@ -612,17 +612,17 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	
     public void setHeldItemAxe()
     {
-        heldItem = new ItemStack(Item.axeSteel, 1);
+        heldItem = new ItemStack(Item.axeIron, 1);
     }
     
     public void setHeldItemPickaxe()
     {
-        heldItem = new ItemStack(Item.pickaxeSteel, 1);
+        heldItem = new ItemStack(Item.pickaxeIron, 1);
     }
     
     public void setHeldItemShovel()
     {
-        heldItem = new ItemStack(Item.shovelSteel, 1);
+        heldItem = new ItemStack(Item.shovelIron, 1);
     }
     
     public void adaptItem(Material mat)

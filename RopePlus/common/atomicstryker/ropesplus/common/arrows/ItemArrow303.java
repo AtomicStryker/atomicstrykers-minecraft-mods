@@ -17,9 +17,9 @@ public class ItemArrow303 extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon(arrow.getIcon());
+        itemIcon = iconRegister.registerIcon(arrow.getIcon());
     }
     
 }

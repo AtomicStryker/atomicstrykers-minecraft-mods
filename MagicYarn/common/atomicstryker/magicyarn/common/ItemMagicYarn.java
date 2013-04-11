@@ -21,9 +21,9 @@ public class ItemMagicYarn extends Item
 	}
 	
 	@Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("magicyarn:magicYarn");
+        itemIcon = iconRegister.registerIcon("magicyarn:magicYarn");
     }
 
 	@Override

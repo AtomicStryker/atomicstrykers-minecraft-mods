@@ -109,7 +109,7 @@ public class BlockAdvancedMachines extends BlockContainer
     }
     
     @Override
-    public Icon getBlockTextureFromSideAndMetadata(int blockSide, int blockMeta)
+    public Icon getIcon(int blockSide, int blockMeta)
     {
         return iconBuffer[blockMeta][AdvancedMachinesClient.sideAndFacingToSpriteOffset[blockSide][3]];
     }

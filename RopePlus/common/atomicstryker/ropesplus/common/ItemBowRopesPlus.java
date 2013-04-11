@@ -22,9 +22,9 @@ public class ItemBowRopesPlus extends ItemBow
 	}
 	
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("bow");
+        itemIcon = iconRegister.registerIcon("bow");
     }
 
     /**

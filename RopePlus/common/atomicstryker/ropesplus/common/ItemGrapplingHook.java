@@ -20,9 +20,9 @@ public class ItemGrapplingHook extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("ropesplus:itemGrapplingHook");
+        itemIcon = iconRegister.registerIcon("ropesplus:itemGrapplingHook");
     }
 
     @Override

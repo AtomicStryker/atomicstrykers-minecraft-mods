@@ -20,9 +20,9 @@ public class ItemPocketedPetBat extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("petbat:pocketbat");
+        itemIcon = iconRegister.registerIcon("petbat:pocketbat");
     }
     
     @Override

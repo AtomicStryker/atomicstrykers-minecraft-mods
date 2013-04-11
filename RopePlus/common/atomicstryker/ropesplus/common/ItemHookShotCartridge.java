@@ -12,9 +12,9 @@ public class ItemHookShotCartridge extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("ropesplus:hscartridge");
+        itemIcon = iconRegister.registerIcon("ropesplus:hscartridge");
     }
 
 }

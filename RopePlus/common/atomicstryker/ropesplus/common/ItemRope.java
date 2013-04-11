@@ -12,9 +12,9 @@ public class ItemRope extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("ropesplus:itemRope");
+        itemIcon = iconRegister.registerIcon("ropesplus:itemRope");
     }
     
 }

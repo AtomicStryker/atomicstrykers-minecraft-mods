@@ -21,10 +21,10 @@ public class ItemFinderCompass extends Item
     
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateIcons(IconRegister reg)
+    public void registerIcons(IconRegister reg)
     {
         AS_FinderCompass tex = new AS_FinderCompass(Minecraft.getMinecraft());
-        iconIndex = tex;
+        itemIcon = tex;
         ((TextureMap)reg).setTextureEntry("findercompass:compass", tex);
     }
     

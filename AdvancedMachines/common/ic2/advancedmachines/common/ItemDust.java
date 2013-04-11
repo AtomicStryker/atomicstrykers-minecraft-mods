@@ -12,9 +12,9 @@ public class ItemDust extends Item
     }
     
     @Override
-    public void updateIcons(IconRegister iconRegister)
+    public void registerIcons(IconRegister iconRegister)
     {
-        iconIndex = iconRegister.registerIcon("advancedmachines:refinedIronDust");
+        itemIcon = iconRegister.registerIcon("advancedmachines:refinedIronDust");
     }
     
 }
