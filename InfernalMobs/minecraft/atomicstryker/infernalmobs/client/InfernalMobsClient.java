@@ -63,6 +63,11 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     
     private void renderBossOverlay(float renderTick, Minecraft mc)
     {
+        if (InfernalMobsCore.instance().getIsHealthBarDisabled())
+        {
+            return;
+        }
+        
         Entity ent = getEntityCrosshairOver(renderTick, mc);
         
         if (ent != null

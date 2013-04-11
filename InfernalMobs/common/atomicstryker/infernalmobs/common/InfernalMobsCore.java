@@ -91,6 +91,7 @@ public class InfernalMobsCore implements ITickHandler
     private HashMap<String, Boolean> classesForcedMap;
     private ArrayList<String[]> failedItemStrings;
     private boolean useSimpleEntityClassNames;
+    private boolean disableHealthBar;
     
     private static InfernalMobsCore instance;
     
@@ -213,6 +214,7 @@ public class InfernalMobsCore implements ITickHandler
         infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7).getString());
         String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403").getString();
         useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", false).getBoolean(false);
+        disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false).getBoolean(false);
         
         itemIDs = itemIDs.trim();
         String[] numbers = itemIDs.split(",");
@@ -771,5 +773,10 @@ public class InfernalMobsCore implements ITickHandler
     public String getLabel()
     {
         return "InfernalMobs";
+    }
+
+    public boolean getIsHealthBarDisabled()
+    {
+        return disableHealthBar;
     }
 }
