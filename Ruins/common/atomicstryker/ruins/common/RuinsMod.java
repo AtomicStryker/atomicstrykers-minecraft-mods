@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
+import java.util.Collections;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,7 +33,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.7", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.8", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -42,10 +44,12 @@ public class RuinsMod
     private RuinHandler ruins;
     private RuinGenerator generator;
     private World curWorld = null;
+    private Set<int[]> currentlyGenerating;
 
     @Init
     public void load(FMLInitializationEvent evt)
     {
+        currentlyGenerating = Collections.synchronizedSet(Collections.EMPTY_SET);
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -93,7 +97,17 @@ public class RuinsMod
         checkWorld(world);
         if (ruins != null && ruins.loaded)
         {
-            generator.generateNether(world, random, chunkX, 0, chunkZ);
+            int[] tuple = { chunkX, chunkZ };
+            if (!currentlyGenerating.contains(tuple))
+            {
+                currentlyGenerating.add(tuple);
+                generator.generateNether(world, random, chunkX, 0, chunkZ);
+                currentlyGenerating.remove(tuple);
+            }
+            else
+            {
+                System.out.println("Ruins Mod caught circular Stacktrace while Nether-Spawning!");
+            }
         }
     }
 
@@ -102,7 +116,17 @@ public class RuinsMod
         checkWorld(world);
         if (ruins != null && ruins.loaded)
         {
-            generator.generateNormal(world, random, chunkX, 0, chunkZ);
+            int[] tuple = { chunkX, chunkZ };
+            if (!currentlyGenerating.contains(tuple))
+            {
+                currentlyGenerating.add(tuple);
+                generator.generateNormal(world, random, chunkX, 0, chunkZ);
+                currentlyGenerating.remove(tuple);
+            }
+            else
+            {
+                System.out.println("Ruins Mod caught circular Stacktrace while World-Spawning!");
+            }
         }
     }
 

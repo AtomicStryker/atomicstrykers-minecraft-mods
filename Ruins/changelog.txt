@@ -191,3 +191,6 @@ a: setAccessible now true
 + changed setBlock back to work without block update, allows update based traps again
 + added Mooshroom rotational mappings courtesy of Arrrg
 + added End structures courtesy of Arrrg
+
+9.8
++ added circular code check to prevent a reported StackOverFlow crash

@@ -410,9 +410,9 @@ public class RuinTemplateRule {
         case 4: case 5:
             return new ItemStack( Item.wheat, random.nextInt( 8 ) + 8 );
         case 6:
-            return new ItemStack( Item.hoeSteel );
+            return new ItemStack( Item.hoeIron );
         case 7:
-            return new ItemStack( Item.shovelSteel );
+            return new ItemStack( Item.shovelIron );
         case 8: case 9:
             return new ItemStack( Item.silk, random.nextInt( 3 ) + 1 );
         case 10: case 11: case 12:
@@ -448,13 +448,13 @@ public class RuinTemplateRule {
         case 8: case 9:
             return new ItemStack( Item.flintAndSteel );
         case 10: case 11:
-            return new ItemStack( Item.axeSteel );
+            return new ItemStack( Item.axeIron );
         case 12:
-            return new ItemStack( Item.swordSteel );
+            return new ItemStack( Item.swordIron );
         case 13:
-            return new ItemStack( Item.pickaxeSteel );
+            return new ItemStack( Item.pickaxeIron );
         case 14: case 15:
-            return new ItemStack( Item.helmetSteel );
+            return new ItemStack( Item.helmetIron );
         case 16:
             return new ItemStack( Item.plateChain );
         case 17: case 18:
