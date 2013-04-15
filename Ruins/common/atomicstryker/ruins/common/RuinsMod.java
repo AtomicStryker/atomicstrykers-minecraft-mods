@@ -8,9 +8,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
-import java.util.Collections;
 import java.util.Random;
-import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -44,12 +43,12 @@ public class RuinsMod
     private RuinHandler ruins;
     private RuinGenerator generator;
     private World curWorld = null;
-    private Set<int[]> currentlyGenerating;
+    private ConcurrentLinkedQueue<int[]> currentlyGenerating;
 
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        currentlyGenerating = Collections.synchronizedSet(Collections.EMPTY_SET);
+        currentlyGenerating = new ConcurrentLinkedQueue();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
         MinecraftForge.EVENT_BUS.register(this);
     }
