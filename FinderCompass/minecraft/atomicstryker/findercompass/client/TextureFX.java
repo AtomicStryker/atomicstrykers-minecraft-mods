@@ -75,27 +75,19 @@ public abstract class TextureFX extends TextureStitched
     @Override
     public final void updateAnimation()
     {
-        if (textureList.size() > 2)
+        if (dynamicTexture == null)
         {
-            // if a texture pack has an animation (with 3+ frames) it overrides the procedural one
-            super.updateAnimation();
+            onSetup();
         }
-        else
-        {
-            if (dynamicTexture == null)
-            {
-                onSetup();
-            }
 
-            onTick(imageData);
+        onTick(imageData);
 
-            // copy the texture into dynamicTexture's buffer, then to the texture sheet
-            ByteBuffer intermediate = dynamicTexture.getTextureData();
-            intermediate.position(0);
-            intermediate.put(imageData);
+        // copy the texture into dynamicTexture's buffer, then to the texture sheet
+        ByteBuffer intermediate = dynamicTexture.getTextureData();
+        intermediate.position(0);
+        intermediate.put(imageData);
 
-            textureSheet.copyFrom(originX, originY, dynamicTexture, rotated);
-        }
+        textureSheet.copyFrom(originX, originY, dynamicTexture, rotated);
     }
 
     @Override
