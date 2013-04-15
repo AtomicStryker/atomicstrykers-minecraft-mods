@@ -312,7 +312,6 @@ public abstract class MobModifier
                 bufferedSize++;
                 nextmod = nextmod.nextMod;
             }
-            System.out.println("bufferedSize result: "+bufferedSize);
         }
         
         return bufferedSize;
