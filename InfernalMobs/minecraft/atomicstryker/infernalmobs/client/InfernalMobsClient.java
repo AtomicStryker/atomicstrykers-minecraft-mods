@@ -195,7 +195,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     @Override
     public void tickEnd(EnumSet<TickType> type, Object... tickData)
     {
-        if (mc.theWorld == null) return;
+        if (mc.theWorld == null || mc.isGamePaused) return;
         
         renderBossOverlay((Float)tickData[0], mc);
         

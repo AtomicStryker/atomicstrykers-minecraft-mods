@@ -217,8 +217,7 @@ public class InfernalMobsCore implements ITickHandler
         disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false).getBoolean(false);
         
         itemIDs = itemIDs.trim();
-        String[] numbers = itemIDs.split(",");
-        for (String s : numbers)
+        for (String s : itemIDs.split(","))
         {
             String[] meta = s.split("-");
             int id = parseOrFind(meta[0]);
