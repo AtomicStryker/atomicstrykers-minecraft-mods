@@ -96,22 +96,34 @@ public class AS_FinderCompass extends TextureFX
             }
         }
     }
-
+    
     private void setupTileSizes()
+    {
+        setupTileSizes(false);
+    }
+
+    private void setupTileSizes(boolean optifinePresent)
     {
         try
         {
             BufferedImage image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass.png"));
             
-            tileSizeBase = image.getWidth();
-            tileSizeSquare = tileSizeBase*tileSizeBase;
+            if (!optifinePresent)
+            {
+                tileSizeBase = image.getWidth();
+                tileSizeSquare = tileSizeBase*tileSizeBase;
+            }
+            else if (tileSizeBase == 16)
+            {
+                image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass16.png"));
+            }
             
             this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
             this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
             tileSize_int_compassNeedleMin = -(tileSizeBase >> 2);
             tileSize_int_compassNeedleMax = (int) (tileSizeBase == 16 ? 16 : tileSizeBase*0.6);
             
-            System.out.println("finder compass: tilesize_intsize = "+tileSizeBase+"; tilesize_numpixels = "+tileSizeSquare+";");
+            System.out.println("finder compass: tilesize_intsize = "+tileSizeBase+"; tilesizeSquare = "+tileSizeSquare+";");
             System.out.println("finder compass: compassNeedleMin = "+tileSize_int_compassNeedleMin+"; compassNeedleMax = "+tileSize_int_compassNeedleMax+";");
             
             baseTexture = new int[tileSizeSquare];
@@ -134,6 +146,15 @@ public class AS_FinderCompass extends TextureFX
     @Override
     protected final void onTick(byte[] imageData)
     {
+        if (imageData.length != baseTexture.length*4)
+        {
+            System.out.println("OptifFFFFFFFF");
+            
+            tileSizeSquare = imageData.length/4;
+            tileSizeBase = (int) Math.sqrt(tileSizeSquare);
+            setupTileSizes(true);
+        }
+        
         int[] originalTex = baseTexture;
         
         for (int pixIndex = 0; pixIndex < tileSizeSquare; ++pixIndex)

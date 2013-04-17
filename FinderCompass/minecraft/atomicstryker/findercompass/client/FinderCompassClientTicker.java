@@ -5,6 +5,8 @@ import java.util.EnumSet;
 import atomicstryker.findercompass.common.FinderCompassMod;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -14,13 +16,20 @@ public class FinderCompassClientTicker implements ITickHandler
     private EnumSet tickTypes = EnumSet.of(TickType.CLIENT);
     
     private final Minecraft mc;
-    private final int COMPASS_ITEM_ID = 345;
+    private int COMPASS_ITEM_ID;
     private boolean repeat;
     
     public FinderCompassClientTicker()
     {
         mc = FMLClientHandler.instance().getClient();
         repeat = false;
+        
+        COMPASS_ITEM_ID = Item.compass.itemID;
+        MinecraftForgeClient.registerItemRenderer(FinderCompassMod.compass.itemID, new CompassCustomRenderer());
+        if (!FinderCompassMod.itemEnabled)
+        {
+            MinecraftForgeClient.registerItemRenderer(COMPASS_ITEM_ID, new CompassCustomRenderer());
+        }
     }
 
     @Override

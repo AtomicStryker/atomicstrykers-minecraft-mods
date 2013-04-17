@@ -30,7 +30,7 @@ public class FinderCompassMod
 {
     private static File config;
     private int itemID;
-    private ItemFinderCompass compass;
+    public static ItemFinderCompass compass;
     public static boolean itemEnabled;
     
     public static File getConfigFile()
@@ -54,11 +54,6 @@ public class FinderCompassMod
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            TickRegistry.registerTickHandler(new FinderCompassClientTicker(), Side.CLIENT);
-        }
-        
         // i need the Item even if it isn't craftable so MC sets up and updates the texture for it
         compass = (ItemFinderCompass) new ItemFinderCompass(itemID).setUnlocalizedName("Finder Compass");
         LanguageRegistry.addName(compass, "Finder Compass");
@@ -67,6 +62,11 @@ public class FinderCompassMod
         {
             compass.setCreativeTab(CreativeTabs.tabTools);
             GameRegistry.addRecipe(new ItemStack(compass), new Object[] {" # ", "#X#", " # ", Character.valueOf('#'), Item.diamond, Character.valueOf('X'), Item.compass});
+        }
+        
+        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        {
+            TickRegistry.registerTickHandler(new FinderCompassClientTicker(), Side.CLIENT);
         }
     }
 }
