@@ -22,8 +22,6 @@ public class ClientProxy extends CommonProxy
     public void load()
     {
         TickRegistry.registerTickHandler(new ClientTickHandler(), Side.CLIENT);
-        MinecraftForgeClient.preloadTexture("/atomicstryker/battletowers/client/golemdormant.png");
-        MinecraftForgeClient.preloadTexture("/atomicstryker/battletowers/client/golem.png");
         RenderingRegistry.registerEntityRenderingHandler(AS_EntityGolem.class, new AS_RenderGolem());
         RenderingRegistry.registerEntityRenderingHandler(AS_EntityGolemFireball.class, new AS_RenderFireball(0.5f));
     }
