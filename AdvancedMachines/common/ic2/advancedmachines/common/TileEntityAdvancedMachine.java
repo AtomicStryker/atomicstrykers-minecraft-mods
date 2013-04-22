@@ -1,6 +1,7 @@
 package ic2.advancedmachines.common;
 
 import ic2.api.Direction;
+import ic2.api.IElectricItem;
 import ic2.api.network.NetworkHelper;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
 
 public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory
 {
@@ -305,15 +305,25 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     }
     
     @Override
-    public boolean func_102007_a(int slotSize, ItemStack itemstack, int j) // TODO
+    public boolean func_102007_a(int slotSize, ItemStack itemstack, int blockSide)
     {
-        return true;
+        if (blockSide == 0)
+        {
+            return itemstack.getItem() instanceof IElectricItem;
+        }
+        return isStackValidForSlot(slotSize, itemstack, blockSide);
     }
     
     @Override
-    public boolean func_102008_b(int slotSize, ItemStack itemstack, int j) // TODO
+    public boolean func_102008_b(int slotSize, ItemStack itemstack, int blockSide)
     {
-        return true;
+        // 'can be sucked out' boolean, itemstack is the one to be removed
+        return !(itemstack.getItem() instanceof IElectricItem) && blockSide > 1;
+    }
+    
+    protected boolean isStackValidForSlot(int slotSize, ItemStack itemstack, int blockSide)
+    {
+        return isStackValidForSlot(slotSize, itemstack);
     }
 
     public String printFormattedData()

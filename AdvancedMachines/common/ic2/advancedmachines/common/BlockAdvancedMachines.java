@@ -213,7 +213,7 @@ public class BlockAdvancedMachines extends BlockContainer
         }
     }
 
-    public TileEntityAdvancedMachine getBlockEntity(int var1)
+    private TileEntityAdvancedMachine getBlockEntity(int var1)
     {
         switch (var1)
         {

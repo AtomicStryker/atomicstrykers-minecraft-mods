@@ -35,6 +35,16 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
         bronzeDust = Items.getItem("bronzeDust");
         hydratedCoalDust = Items.getItem("hydratedCoalDust");
     }
+    
+    @Override
+    protected boolean isStackValidForSlot(int slotSize, ItemStack itemstack, int blockSide)
+    {
+        if (blockSide == 1)
+        {
+            return getResultFor(itemstack, false) != null;
+        }
+        return isStackValidForSlot(slotSize, itemstack);
+    }
 
     @Override
     public Container getGuiContainer(InventoryPlayer var1)

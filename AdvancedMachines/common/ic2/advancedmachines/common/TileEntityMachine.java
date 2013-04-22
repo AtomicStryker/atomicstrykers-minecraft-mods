@@ -147,6 +147,7 @@ public abstract class TileEntityMachine extends TileEntityBlock implements IInve
     @Override
     public boolean isStackValidForSlot(int i, ItemStack itemstack)
     {
+        // TODO override this maybe
         return true;
     }
 }
