@@ -72,7 +72,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.8")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.9")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -83,7 +83,7 @@ public class InfernalMobsCore implements ITickHandler
     private long nextExistCheckTime;
     
     /**
-     * Array of two ints, first Block or Item ID, second meta value, third stacksize (only for blocks)
+     * Array of two ints, first Block or Item ID, second meta value, third stacksize, fourth randomizerRange
      */
     private ArrayList<Integer[]> dropIdList;
     private boolean healthHacked;
@@ -92,6 +92,7 @@ public class InfernalMobsCore implements ITickHandler
     private ArrayList<String[]> failedItemStrings;
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
+    private double modHealthFactor;
     
     private static InfernalMobsCore instance;
     
@@ -209,21 +210,30 @@ public class InfernalMobsCore implements ITickHandler
     {
         config.load();
         
-        eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15).getString());
-        ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7).getString());
-        infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7).getString());
-        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs", "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403").getString();
-        useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", false).getBoolean(false);
-        disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false).getBoolean(false);
+        eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15, "One in THIS many Mobs will become atleast rare").getString());
+        ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7, "One in THIS many already rare Mobs will become atleast ultra").getString());
+        infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7, "One in THIS many already ultra Mobs will become infernal").getString());
+        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs",
+                "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403",
+                "List of equally likely to drop Items seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString();
+        useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", false, "Use Entity class names instead of ingame Entity names for the config").getBoolean(false);
+        disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false, "Disables the ingame Health and Name overlay").getBoolean(false);
+        modHealthFactor = config.get(Configuration.CATEGORY_GENERAL, "mobHealthFactor", "1.0", "Multiplier applied ontop of all of the modified Mobs health").getDouble(1.0D);
         
         itemIDs = itemIDs.trim();
         for (String s : itemIDs.split(","))
         {
             String[] meta = s.split("-");
+            
             int id = parseOrFind(meta[0]);
             if (id > 0)
             {
-                Integer[] ints = {id, (meta.length > 1) ? Integer.parseInt(meta[1]) : 0, (meta.length > 2) ? Integer.parseInt(meta[2]) : 1 };
+                Integer[] ints = {
+                        id,
+                        (meta.length > 1) ? Integer.parseInt(meta[1]) : 0,
+                        (meta.length > 2) ? Integer.parseInt(meta[2]) : 1,
+                        (meta.length > 3) ? Integer.parseInt(meta[3]) : 0
+                                };
                 instance.dropIdList.add(ints);
             }
             else
@@ -640,7 +650,12 @@ public class InfernalMobsCore implements ITickHandler
                 int id = parseOrFind(meta[0]);
                 if (id > 0)
                 {
-                    Integer[] ints = {id, (meta.length > 1) ? Integer.parseInt(meta[1]) : 0, (meta.length > 2) ? Integer.parseInt(meta[2]) : 1 };
+                    Integer[] ints = {
+                            id,
+                            (meta.length > 1) ? Integer.parseInt(meta[1]) : 0,
+                            (meta.length > 2) ? Integer.parseInt(meta[2]) : 1,
+                            (meta.length > 3) ? Integer.parseInt(meta[3]) : 0
+                                    };
                     instance.dropIdList.add(ints);
                 }
             }
@@ -707,7 +722,18 @@ public class InfernalMobsCore implements ITickHandler
     private ItemStack getRandomItem(EntityLiving mob)
     {
         Integer[] ints = instance.dropIdList.get(mob.worldObj.rand.nextInt(instance.dropIdList.size()));
-        return new ItemStack(ints[0], ints[2], ints[1]);
+        int stackSize = ints[2];
+        if (ints[3] != 0) // randomizer
+        {
+            stackSize += mob.getRNG().nextInt(ints[3])+1;
+            stackSize -= mob.getRNG().nextInt(ints[3])+1;
+            if (stackSize < 1)
+            {
+                stackSize = 1;
+            }
+        }
+        
+        return new ItemStack(ints[0], stackSize, ints[1]);
     }
     
     //addVelocity player: Packet ID 2, from server, { double xVel, double yVel, double zVel }
@@ -777,5 +803,10 @@ public class InfernalMobsCore implements ITickHandler
     public boolean getIsHealthBarDisabled()
     {
         return disableHealthBar;
+    }
+    
+    public double getMobModHealthFactor()
+    {
+        return modHealthFactor;
     }
 }

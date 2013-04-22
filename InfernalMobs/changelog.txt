@@ -1,3 +1,9 @@
+1.2.9
+- fixed infernal particle spam when pausing/unpausing
+- added randomized stacksize ability to config, a setting of "1-0-32-8" will yield a stack of 32 +-8, eg. 24 to 40, stone
+- added mob health factor for further customization. Rare Mob health is multiplied with the Mod count, and is then multiplied with the "mobHealthFactor"
+- added some explanation as configuration comments
+
 1.2.8
 - boss designation now has color!
 - added useSimpleEntityClassnames to config, set to true if you have config problems with generated entity names

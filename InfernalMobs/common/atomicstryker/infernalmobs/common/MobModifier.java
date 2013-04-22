@@ -257,7 +257,7 @@ public abstract class MobModifier
     {
         if (actualMaxHealth < 0)
         {
-            actualMaxHealth = mob.getMaxHealth()*getModSize();
+            actualMaxHealth = (int) Math.rint(mob.getMaxHealth()*getModSize()*InfernalMobsCore.instance().getMobModHealthFactor());
         }
         return actualMaxHealth;
     }
