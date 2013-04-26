@@ -11,19 +11,19 @@ import org.lwjgl.opengl.GL11;
 
 public class CompassCustomRenderer implements IItemRenderer
 {
-    private boolean optiffffff;
+    private boolean optifine;
     
     public CompassCustomRenderer()
     {
         try
         {
-            optiffffff = Class.forName("TextureAnimation") != null;
+            optifine = Class.forName("TextureAnimation") != null;
         }
         catch (ClassNotFoundException e)
         {
-            optiffffff = false;
+            optifine = false;
         }
-        System.out.println("Finder Compass detected Optifine: "+optiffffff);
+        System.out.println("Finder Compass detected Optifine: "+optifine);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CompassCustomRenderer implements IItemRenderer
         GL11.glRotatef(rotateAngle, 0, 1.0F, 0);
         Icon icon = item.getIconIndex();
         
-        if (optiffffff && icon instanceof TextureFX)
+        if (optifine && icon instanceof TextureFX)
         {
             ((TextureFX)icon).updateAnimation();
         }
