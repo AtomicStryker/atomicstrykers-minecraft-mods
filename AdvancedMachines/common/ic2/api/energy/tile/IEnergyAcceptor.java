@@ -1,8 +1,7 @@
 package ic2.api.energy.tile;
 
-import net.minecraft.tileentity.TileEntity;
-
 import ic2.api.Direction;
+import net.minecraft.tileentity.TileEntity;
 
 /**
  * For internal usage only.

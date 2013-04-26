@@ -1,9 +1,6 @@
 package ic2.advancedmachines.common;
 
-import ic2.api.Ic2Recipes;
-
-import java.util.List;
-
+import ic2.api.recipe.Recipes;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -30,17 +27,11 @@ public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
     {
         return new ContainerSingularityCompressor(var1, this);
     }
-
-    @Override
-    protected List getResultMap()
-    {
-        return Ic2Recipes.getCompressorRecipes();
-    }
-
+    
     @Override
     public ItemStack getResultFor(ItemStack input, boolean adjustOutput)
     {
-        return Ic2Recipes.getCompressorOutputFor(input, adjustOutput);
+        return Recipes.compressor.getOutputFor(input, adjustOutput);
     }
     
     @Override

@@ -3,9 +3,6 @@ package ic2.advancedmachines.common;
 import ic2.api.Direction;
 import ic2.api.IElectricItem;
 import ic2.api.network.NetworkHelper;
-
-import java.util.List;
-
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ISidedInventory;
@@ -282,8 +279,6 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
      * @return ItemStack that results from processing the Input, or null if no processing is possible
      */
     public abstract ItemStack getResultFor(ItemStack input, boolean adjustOutput);
-
-    protected abstract List getResultMap();
 
     public abstract Container getGuiContainer(InventoryPlayer var1);
 
