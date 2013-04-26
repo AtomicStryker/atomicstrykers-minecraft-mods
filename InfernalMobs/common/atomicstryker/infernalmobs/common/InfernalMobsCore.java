@@ -532,8 +532,11 @@ public class InfernalMobsCore implements ITickHandler
     public void addEntityModifiersByString(EntityLiving entity, String savedMods)
     {
         MobModifier mod = stringToMobModifiers(entity, savedMods);
-        proxy.getRareMobs().put(entity, mod);
-        mod.onSpawningComplete(entity);
+        if (mod != null)
+        {
+            proxy.getRareMobs().put(entity, mod);
+            mod.onSpawningComplete(entity);
+        }
     }
     
     private MobModifier stringToMobModifiers(EntityLiving entity, String buffer)
