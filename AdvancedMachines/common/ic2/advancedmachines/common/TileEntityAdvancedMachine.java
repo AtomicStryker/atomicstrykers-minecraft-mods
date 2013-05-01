@@ -1,7 +1,7 @@
 package ic2.advancedmachines.common;
 
 import ic2.api.Direction;
-import ic2.api.IElectricItem;
+import ic2.api.item.IElectricItem;
 import ic2.api.network.NetworkHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;

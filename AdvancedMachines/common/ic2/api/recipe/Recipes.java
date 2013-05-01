@@ -33,4 +33,6 @@ public class Recipes {
 	 */
 	public static IMachineRecipeManager<Float> scrapboxDrops;
 	public static IListRecipeManager recyclerBlacklist;
+	
+	public static ICraftingRecipeManager advRecipes;
 }

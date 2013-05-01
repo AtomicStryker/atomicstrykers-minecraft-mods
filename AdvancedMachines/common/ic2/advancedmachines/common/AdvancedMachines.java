@@ -1,7 +1,6 @@
 package ic2.advancedmachines.common;
 
-import ic2.api.Ic2Recipes;
-import ic2.api.Items;
+import ic2.api.item.Items;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -148,7 +147,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     public void afterModsLoaded(FMLPostInitializationEvent evt)
     {
         stackRotaryMacerator = new ItemStack(blockAdvancedMachine, 1, 0);
-        Ic2Recipes.addCraftingRecipe(stackRotaryMacerator,
+        GameRegistry.addRecipe(stackRotaryMacerator,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Items.getItem("refinedIronIngot"),
         	Character.valueOf('M'), Items.getItem("macerator"),
@@ -156,7 +155,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         LanguageRegistry.addName(stackRotaryMacerator, advMaceName);
         
         stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 1);
-        Ic2Recipes.addCraftingRecipe(stackSingularityCompressor,
+        GameRegistry.addRecipe(stackSingularityCompressor,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Block.obsidian,
         	Character.valueOf('M'), Items.getItem("compressor"),
@@ -164,7 +163,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         LanguageRegistry.addName(stackSingularityCompressor, advCompName);
         
         stackCentrifugeExtractor = new ItemStack(blockAdvancedMachine, 1, 2);
-        Ic2Recipes.addCraftingRecipe(stackCentrifugeExtractor,
+        GameRegistry.addRecipe(stackCentrifugeExtractor,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Items.getItem("electrolyzedWaterCell"),
         	Character.valueOf('M'), Items.getItem("extractor"),

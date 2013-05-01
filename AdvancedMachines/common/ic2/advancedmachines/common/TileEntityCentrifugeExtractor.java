@@ -31,7 +31,7 @@ public class TileEntityCentrifugeExtractor extends TileEntityAdvancedMachine
     @Override
     public ItemStack getResultFor(ItemStack input, boolean adjustOutput)
     {
-        return Recipes.extractor.getOutputFor(input, adjustOutput);
+        return (ItemStack) Recipes.extractor.getOutputFor(input, adjustOutput);
     }
     
     @Override

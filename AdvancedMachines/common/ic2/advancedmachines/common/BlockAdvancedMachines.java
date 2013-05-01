@@ -1,8 +1,8 @@
 package ic2.advancedmachines.common;
 
 import ic2.advancedmachines.client.AdvancedMachinesClient;
-import ic2.api.Items;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.item.Items;
 
 import java.util.ArrayList;
 import java.util.Iterator;

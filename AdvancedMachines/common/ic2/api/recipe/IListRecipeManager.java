@@ -28,7 +28,9 @@ public interface IListRecipeManager extends Iterable<ItemStack> {
 	/**
 	 * Gets the list of stacks.
 	 * 
-	 * @return Unmodifiable list of stacks
+	 * You're a mad evil scientist if you ever modify this.
+	 * 
+	 * @return List of stacks
 	 */
 	public List<ItemStack> getStacks();
 }

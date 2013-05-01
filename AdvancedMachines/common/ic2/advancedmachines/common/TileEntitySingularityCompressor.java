@@ -31,7 +31,7 @@ public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
     @Override
     public ItemStack getResultFor(ItemStack input, boolean adjustOutput)
     {
-        return Recipes.compressor.getOutputFor(input, adjustOutput);
+        return (ItemStack) Recipes.compressor.getOutputFor(input, adjustOutput);
     }
     
     @Override

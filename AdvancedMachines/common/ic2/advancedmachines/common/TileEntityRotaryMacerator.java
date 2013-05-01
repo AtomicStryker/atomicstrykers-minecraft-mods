@@ -1,6 +1,6 @@
 package ic2.advancedmachines.common;
 
-import ic2.api.Items;
+import ic2.api.item.Items;
 import ic2.api.recipe.Recipes;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -52,7 +52,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     @Override
     public ItemStack getResultFor(ItemStack macerated, boolean adjustOutput)
     {
-    	ItemStack result = Recipes.macerator.getOutputFor(macerated, adjustOutput);
+    	ItemStack result = (ItemStack) Recipes.macerator.getOutputFor(macerated, adjustOutput);
     	ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
     	
     	if(supplement != null)
@@ -97,7 +97,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     {
     	if(result != null && supplement != null)
     	{
-    		ItemStack supplementOutput = Recipes.macerator.getOutputFor(supplement, bool);
+    		ItemStack supplementOutput = (ItemStack) Recipes.macerator.getOutputFor(supplement, bool);
     		
     		if (result.itemID == this.idIronDust && supplement.itemID == Item.coal.itemID)
     		{
