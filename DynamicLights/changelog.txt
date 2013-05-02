@@ -1,3 +1,10 @@
+1.1.9
+- update to MC 1.5.2
+
+1.1.8
+- added module for EntityLiving equipment (eg Zombies with armor or Items)
+- same module also lights up Infernal Mobs!
+
 1.1.7
 - update to MC 1.5.1
 
