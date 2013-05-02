@@ -1,3 +1,6 @@
+1.2.8
+- update to MC 1.5.2
+
 1.2.7
 - update to MC 1.5.1
 
