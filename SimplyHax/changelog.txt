@@ -1,3 +1,6 @@
+1.5.2
+-updated for MC 1.5.2
+
 1.5.1B
 -readded configurable UP and DOWN keys. Using JUMP and SNEAK as settings uses the mc bindings instead.
 -added Item tracker and debug printout to Simply Hax Vision, useful to find unlocalized names
