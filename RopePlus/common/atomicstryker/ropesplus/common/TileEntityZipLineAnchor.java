@@ -10,6 +10,7 @@ public class TileEntityZipLineAnchor extends TileEntity
     private int targetY;
     private int targetZ;
     private EntityFreeFormRope ropeEnt;
+    private boolean errored;
     
     public TileEntityZipLineAnchor()
     {
@@ -101,9 +102,10 @@ public class TileEntityZipLineAnchor extends TileEntity
                 ropeEnt.setLoosening();
                 worldObj.spawnEntityInWorld(ropeEnt);
             }
-            else
+            else if (!errored)
             {
-                System.out.println("zipline target coords are not an opaque block!!");
+                System.out.printf("zipline target coords [%d|%d|%d] are not an opaque block!!\n", targetX, targetY, targetZ);
+                errored = true;
             }
         }
     }

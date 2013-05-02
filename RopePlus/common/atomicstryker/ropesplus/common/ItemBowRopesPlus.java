@@ -133,17 +133,17 @@ public class ItemBowRopesPlus extends ItemBow
 
         if (remainingUseDur >= 18)
         {
-            return Item.bow.func_94599_c(2);
+            return Item.bow.getItemIconForUseDuration(2);
         }
 
         if (remainingUseDur > 13)
         {
-            return Item.bow.func_94599_c(1);
+            return Item.bow.getItemIconForUseDuration(1);
         }
 
         if (remainingUseDur > 0)
         {
-            return Item.bow.func_94599_c(0);
+            return Item.bow.getItemIconForUseDuration(0);
         }
 	    
         return super.getIcon(stack, pass);
