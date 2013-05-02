@@ -285,7 +285,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     // ISidedInventory Overrides
     
     @Override
-    public int[] getSizeInventorySide(int side)
+    public int[] getAccessibleSlotsFromSide(int side)
     {
         switch (side)
         {
@@ -300,7 +300,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     }
     
     @Override
-    public boolean func_102007_a(int slotSize, ItemStack itemstack, int blockSide)
+    public boolean canInsertItem(int slotSize, ItemStack itemstack, int blockSide)
     {
         if (blockSide == 0)
         {
@@ -310,7 +310,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     }
     
     @Override
-    public boolean func_102008_b(int slotSize, ItemStack itemstack, int blockSide)
+    public boolean canExtractItem(int slotSize, ItemStack itemstack, int blockSide)
     {
         // 'can be sucked out' boolean, itemstack is the one to be removed
         return !(itemstack.getItem() instanceof IElectricItem) && blockSide > 1;
