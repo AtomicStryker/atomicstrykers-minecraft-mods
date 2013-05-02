@@ -47,8 +47,7 @@ Mods with special Needs:
 - similar to Multi Mine. sourcefile is "common\atomicstryker\stalkercreepers\common\SCTransformer.java"
 
 -- Finder Compass
-- Finder Compass uses some really hacky solutions to get the current texturepack resolution from multiple MC setups. Break easily.
-- will crash if broken, so thats a good indicator. Testrun with HD textures and Optifine!
+- Finder Compass now uses a somewhat stable Texture hack. Check for working with Optifine.
 
 -- Kenshiro Mod
 - uses some hacky stuff for rendering and manipulating punched entities. Will probably crash if broken.
