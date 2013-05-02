@@ -1,6 +1,8 @@
+1.5.2
+updated to MC 1.5.1
+
 1.5.1C
-fixed 16x texturepack display with Optifine using a custom Item Renderer and very ugly code
-other resolutions: NO!!! DONT ASK!!!!
+fixed display with Optifine using a custom Item Renderer
 
 1.5.1B
 fixed crash upon MP server connecting
