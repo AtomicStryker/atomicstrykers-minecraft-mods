@@ -1,3 +1,10 @@
+1.3.0
+- updated for MC 1.5.2
+
+1.2.9 (rev 2)
+- now catching and logging getEntityName() crashes, using the classname instead
+- compatible with 1.2.9, update optional
+
 1.2.9
 - fixed infernal particle spam when pausing/unpausing
 - added randomized stacksize ability to config, a setting of "1-0-32-8" will yield a stack of 32 +-8, eg. 24 to 40, stone

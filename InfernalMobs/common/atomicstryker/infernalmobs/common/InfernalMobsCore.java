@@ -72,7 +72,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.2.9")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.0")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -326,9 +326,25 @@ public class InfernalMobsCore implements ITickHandler
         }
     }
     
+    private String getEntityNameSafe(Entity entity)
+    {
+        String result;
+        try
+        {
+            result = entity.getEntityName();
+        }
+        catch (Exception e)
+        {
+            result = entity.getClass().getSimpleName();
+            System.err.println("Entity of class "+result+" crashed when getEntityName() was queried, for shame! Using classname instead.");
+            System.err.println("If this message is spamming too much for your taste set useSimpleEntityClassnames true in your Infernal Mobs config");
+        }
+        return result;
+    }
+    
     private boolean checkEntityClassAllowed(EntityLiving entity)
     {
-        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : entity.getEntityName();
+        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : getEntityNameSafe(entity);
         if (classesAllowedMap.containsKey(entName))
         {
             return classesAllowedMap.get(entName);
@@ -344,7 +360,7 @@ public class InfernalMobsCore implements ITickHandler
     
     private boolean checkEntityClassForced(EntityLiving entity)
     {
-        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : entity.getEntityName();
+        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : getEntityNameSafe(entity);
         if (classesForcedMap.containsKey(entName))
         {
             return classesForcedMap.get(entName);
