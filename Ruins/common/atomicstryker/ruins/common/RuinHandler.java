@@ -83,22 +83,25 @@ public class RuinHandler {
 		}
 		
 		// dynamic Biome config loader, gets all information straight from BiomeGenBase
-		for (int x = 0; x < BiomeGenBase.biomeList.length && BiomeGenBase.biomeList[x] != null; x++)
-		{			
-			try
-			{
-				loadSpecificTemplates( pw, templPath, BiomeGenBase.biomeList[x].biomeID, BiomeGenBase.biomeList[x].biomeName );
-				pw.println("Loaded "+BiomeGenBase.biomeList[x].biomeName+" ruins templates, biomeID "+BiomeGenBase.biomeList[x].biomeID);
-			}
-			catch( Exception e )
-			{
-				printErrorToLog( pw, e, "There was an error when loading the "+BiomeGenBase.biomeList[x].biomeName+" ruins templates:" );
-			}
+		for (int x = 0; x < BiomeGenBase.biomeList.length; x++)
+		{
+		    if (BiomeGenBase.biomeList[x] != null)
+		    {
+	            try
+	            {
+	                loadSpecificTemplates( pw, templPath, BiomeGenBase.biomeList[x].biomeID, BiomeGenBase.biomeList[x].biomeName );
+	                pw.println("Loaded "+BiomeGenBase.biomeList[x].biomeName+" ruins templates, biomeID "+BiomeGenBase.biomeList[x].biomeID);
+	            }
+	            catch( Exception e )
+	            {
+	                printErrorToLog( pw, e, "There was an error when loading the "+BiomeGenBase.biomeList[x].biomeName+" ruins templates:" );
+	            }
+		    }
 		}
 		
+		/* unneeded? TODO
 		try
 		{
-		    // ExtraBiomesXL sigh
 		    Class extraBiomesManager = null;
 		    extraBiomesManager = Class.forName("extrabiomes.api.BiomeManager");
 		    if (extraBiomesManager != null)
@@ -120,6 +123,7 @@ public class RuinHandler {
 		{
 		    pw.println("ExtraBiomesXL not found, skipping over their BiomeManager hook");
 		}
+		*/
 
 		// Find and load the excluded file.  If this does not exist, no worries.
 		try {
@@ -289,9 +293,9 @@ public class RuinHandler {
             	read = read.split("_")[1];
             	check = read.split( "=" );
             	boolean found = false;
-                for ( int i = 0; i < BiomeGenBase.biomeList.length && BiomeGenBase.biomeList[i] != null; i++ )
+                for ( int i = 0; i < BiomeGenBase.biomeList.length; i++ )
                 {
-                	if ( BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase( check[0] ) )
+                	if ( BiomeGenBase.biomeList[i] != null && BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase( check[0] ) )
                 	{
                 		vars[CHANCE][i] = Integer.parseInt( check[1] );
                 		System.out.println("Parsed config line ["+read+"], vars[CHANCE]["+i+"] set to "+Integer.parseInt( check[1] ));

@@ -32,7 +32,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "9.8", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.0", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -199,7 +199,7 @@ public class RuinsMod
     {
         for (int i = 0; i < BiomeGenBase.biomeList.length; i++)
         {
-            if (BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase(name))
+            if (BiomeGenBase.biomeList[i] != null && BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase(name))
             {
                 return BiomeGenBase.biomeList[i].biomeID;
             }
@@ -305,9 +305,12 @@ public class RuinsMod
         pw.println("chunks_behind_nether=5");
         pw.println();
         // print all the biomes!
-        for (int i = 0; i < BiomeGenBase.biomeList.length && BiomeGenBase.biomeList[i] != null; i++)
+        for (int i = 0; i < BiomeGenBase.biomeList.length; i++)
         {
-            pw.println("specific_" + BiomeGenBase.biomeList[i].biomeName + "=75");
+            if (BiomeGenBase.biomeList[i] != null)
+            {
+                pw.println("specific_" + BiomeGenBase.biomeList[i].biomeName + "=75");
+            }
         }
         pw.flush();
         pw.close();

@@ -194,3 +194,12 @@ a: setAccessible now true
 
 9.8
 + added circular code check to prevent a reported StackOverFlow crash
+
+9.9
++ fixed Ruins to no longer disregard non-consecutive Biomes in the Biome array
+
+9.9 rev2 (same version)
++ fixed consecutive Biomes bug in 2 more places
+
+10.0
++ update to MC 1.5.2
