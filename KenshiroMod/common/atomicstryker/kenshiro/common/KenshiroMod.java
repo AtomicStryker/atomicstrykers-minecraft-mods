@@ -53,20 +53,21 @@ public class KenshiroMod
         new KenshiroServer();
     }
     
-    public void stopSkeletonShooter(EntitySkeleton skelly)
+    @SuppressWarnings("unchecked")
+	public void stopSkeletonShooter(EntitySkeleton skelly)
     {
         Field[] taskfields = skelly.tasks.getClass().getDeclaredFields();
         taskfields[0].setAccessible(true);
         taskfields[1].setAccessible(true);
         
-        ArrayList list = null;
+        ArrayList<EntityAITaskEntry> list = null;
         try
         {
             for(int i = 0; i<= 1; i++)
             {
-                list = (ArrayList)taskfields[i].get(skelly.tasks);
+                list = (ArrayList<EntityAITaskEntry>)taskfields[i].get(skelly.tasks);
                 
-                Iterator iter = list.iterator();
+                Iterator<EntityAITaskEntry> iter = list.iterator();
                 while (iter.hasNext())
                 {
                     EntityAITaskEntry task = (EntityAITaskEntry)iter.next();
