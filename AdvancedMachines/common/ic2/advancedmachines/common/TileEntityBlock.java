@@ -20,13 +20,13 @@ public abstract class TileEntityBlock extends TileEntity implements IWrenchable,
     public short facing = 5;
     public boolean prevActive = false;
     public short prevFacing = 0;
-    public static List networkedFields;
+    public static List<String> networkedFields;
     
     public TileEntityBlock()
     {
     	if (networkedFields == null)
     	{
-            networkedFields = new ArrayList();
+            networkedFields = new ArrayList<String>();
             networkedFields.add("active");
             networkedFields.add("facing");
     	}

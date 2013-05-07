@@ -134,9 +134,9 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public ArrayList getBlockDropped(World var1, int var2, int var3, int var4, int var5, int var6)
+    public ArrayList<ItemStack> getBlockDropped(World var1, int var2, int var3, int var4, int var5, int var6)
     {
-        ArrayList var7 = super.getBlockDropped(var1, var2, var3, var4, var5, var6);
+        ArrayList<ItemStack> var7 = super.getBlockDropped(var1, var2, var3, var4, var5, var6);
         TileEntity var8 = var1.getBlockTileEntity(var2, var3, var4);
         if (var8 instanceof IInventory)
         {
@@ -160,7 +160,7 @@ public class BlockAdvancedMachines extends BlockContainer
     public void breakBlock(World world, int x, int y, int z, int par5, int par6)
     {
         boolean var5 = true;
-        for (Iterator iter = this.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 0).iterator(); iter.hasNext(); var5 = false)
+        for (Iterator<ItemStack> iter = this.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 0).iterator(); iter.hasNext(); var5 = false)
         {
             ItemStack var7 = (ItemStack)iter.next();
             if (!var5)
