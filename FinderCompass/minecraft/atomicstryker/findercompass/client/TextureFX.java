@@ -90,7 +90,8 @@ public abstract class TextureFX extends TextureStitched
         textureSheet.copyFrom(originX, originY, dynamicTexture, rotated);
     }
 
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public final boolean loadTexture(TextureManager manager, ITexturePack texturepack, String name, String fileName, BufferedImage image, ArrayList textures)
     {
         if (image != null)
