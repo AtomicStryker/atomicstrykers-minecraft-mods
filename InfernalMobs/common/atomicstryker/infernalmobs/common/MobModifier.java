@@ -93,7 +93,7 @@ public abstract class MobModifier
     /**
      * Helper to avoid adding the same mod twice
      */
-    public boolean containsModifierClass(Class checkfor)
+    public boolean containsModifierClass(Class<?> checkfor)
     {
         if (checkfor.equals(this.getClass()))
         {
