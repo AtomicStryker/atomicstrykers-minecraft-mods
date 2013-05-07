@@ -67,7 +67,7 @@ public class MinionsClient
         try
         {
             cfg.load();
-            s_MenuKey = cfg.get(cfg.CATEGORY_GENERAL, "Minion_Menu_Key", "M").getString();
+            s_MenuKey = cfg.get(Configuration.CATEGORY_GENERAL, "Minion_Menu_Key", "M").getString();
             i_MenuKey = Keyboard.getKeyIndex(s_MenuKey);
             
         }
@@ -222,7 +222,7 @@ public class MinionsClient
         {
             case HASMINIONS:
             {
-                Class[] decodeAs = {Integer.class, Integer.class};
+                Class<?>[] decodeAs = {Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 hasMinionsSMPOverride = ((Integer)packetReadout[0] == 1);
                 hasAllMinionsSMPOverride = ((Integer)packetReadout[1] == 1);
@@ -232,7 +232,7 @@ public class MinionsClient
             
             case SOUNDTOALL:
             {
-                Class[] decodeAs = {Integer.class, String.class};
+                Class<?>[] decodeAs = {Integer.class, String.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
 
                 int entID = (Integer) packetReadout[0];
@@ -243,10 +243,11 @@ public class MinionsClient
                 Entity temp = null;
                 boolean found = false;
 
-                Iterator iter = mcinstance.theWorld.loadedEntityList.iterator();
+                @SuppressWarnings("unchecked")
+				Iterator<Entity> iter = mcinstance.theWorld.loadedEntityList.iterator();
                 while (iter.hasNext())
                 {
-                    temp = (Entity) iter.next();
+                    temp = iter.next();
                     if (temp.entityId == entID)
                     {
                         found = true;
@@ -263,7 +264,7 @@ public class MinionsClient
             
             case REQUESTXPSETTING:
             {
-                Class[] decodeAs = {Integer.class};
+                Class<?>[] decodeAs = {Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
 
                 if (MinionsCore.evilDeedXPCost != (Integer)packetReadout[0])
@@ -289,7 +290,7 @@ public class MinionsClient
             
             case LIGHTNINGBOLT:
             {
-                Class[] decodeAs = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Long.class};
+                Class<?>[] decodeAs = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Long.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
 
                 Vector3 start = new Vector3((Double)packetReadout[0], (Double)packetReadout[1], (Double)packetReadout[2]);
@@ -302,7 +303,7 @@ public class MinionsClient
             case ENTITYMOUNTED:
             {
                 // System.out("client received mount packet!");
-                Class[] decodeAs = {Integer.class, Integer.class};
+                Class<?>[] decodeAs = {Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 Entity minion = MinionsCore.findEntityByID(mcinstance.theWorld, (Integer) packetReadout[0]);
                 Entity target = MinionsCore.findEntityByID(mcinstance.theWorld, (Integer) packetReadout[1]);
@@ -314,6 +315,8 @@ public class MinionsClient
                 }
                 break;
             }
+		default:
+			break;
         }
     }
     
@@ -387,8 +390,6 @@ public class MinionsClient
             }
             else if (target instanceof EntityMinion)
             {
-                EntityMinion minion = (EntityMinion) target;
-
                 Object[] toSend = {playerEnt.username, playerEnt.entityId, target.entityId};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDDROPALL.ordinal(), toSend)); // minion drop items command packet
             }

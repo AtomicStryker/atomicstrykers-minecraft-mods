@@ -25,12 +25,12 @@ import atomicstryker.minions.client.render.region.CuboidRegion;
 
 public class MinionsRenderHook extends Render
 {
-	private static Minecraft mcinstance;
+	private Minecraft mcinstance;
 	public static Entity renderHookEnt;
 	
 	private static CuboidRegion selection = new CuboidRegion();
 	
-	private static ArrayList additionalCubes = new ArrayList();
+	private static ArrayList<PointCube> additionalCubes = new ArrayList<PointCube>();
 	
 	public MinionsRenderHook(Minecraft mc)
 	{
@@ -44,7 +44,6 @@ public class MinionsRenderHook extends Render
         render(renderTick);
     }
 	
-    @SuppressWarnings("static-access")
     private void render(float renderTick)
 	{
         RenderHelper.disableStandardItemLighting();  
@@ -64,7 +63,7 @@ public class MinionsRenderHook extends Render
         
         selection.render();
         
-        Iterator iter = additionalCubes.iterator();
+        Iterator<PointCube> iter = additionalCubes.iterator();
         while (iter.hasNext())
         {
         	((PointCube)iter.next()).render();

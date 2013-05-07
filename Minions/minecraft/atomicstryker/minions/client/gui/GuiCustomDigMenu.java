@@ -21,7 +21,8 @@ public class GuiCustomDigMenu extends GuiScreen
     private int xzSize = 3;
     private int ySize = 3;
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void initGui()
     {
     	xzSize = MinionsClient.customSizeXZ;

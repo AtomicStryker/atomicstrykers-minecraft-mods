@@ -39,7 +39,6 @@ public class ChickenLightningBolt
     public int numsegments0;
     private int numsplits;
     private boolean finalized;
-    private boolean canhittarget = true;
     private Random rand;
     public long seed;
     
@@ -426,7 +425,6 @@ public class ChickenLightningBolt
 		
 		if(lastactivesegment.get(0) + 1 < numsegments0)
 		{
-			canhittarget = false;
 		}
 	}
 	

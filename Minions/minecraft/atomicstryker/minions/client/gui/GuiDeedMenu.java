@@ -3,6 +3,7 @@ package atomicstryker.minions.client.gui;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -32,18 +33,19 @@ public class GuiDeedMenu extends GuiScreen
     private long timeStayBlack = 1000L;
     private long timeFadeStart = 0L;
     
-    private ArrayList deedButtons;
+    private ArrayList<EvilDeed> deedButtons;
 
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void initGui()
     {
         this.buttonList.clear();
         
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Chicken out"));
         
-    	ArrayList copy = (ArrayList) MinionsCore.evilDoings.clone();
-    	deedButtons = new ArrayList();
+    	ArrayList<EvilDeed> copy = (ArrayList<EvilDeed>) MinionsCore.evilDoings.clone();
+    	deedButtons = new ArrayList<EvilDeed>();
     	Random rand = new Random();
     	while (deedButtons.size() < 3)
     	{
@@ -162,7 +164,7 @@ public class GuiDeedMenu extends GuiScreen
     	{
     		if (fadeState == 0)
     		{
-    			this.drawRect(0, 0, mc.displayWidth, mc.displayHeight, -16777216);
+    			Gui.drawRect(0, 0, mc.displayWidth, mc.displayHeight, -16777216);
     			return;
     		}
     		
@@ -177,7 +179,7 @@ public class GuiDeedMenu extends GuiScreen
     		{
     			fadeIn = (j4 << 24);
     		}
-    		this.drawRect(0, 0, mc.displayWidth, mc.displayHeight, 0 - fadeIn);
+    		Gui.drawRect(0, 0, mc.displayWidth, mc.displayHeight, 0 - fadeIn);
     	}
     }
 }

@@ -18,7 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -418,13 +417,14 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	
     	if (canPickUpItems)
     	{
-            List collidingEntities = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
+            @SuppressWarnings("unchecked")
+			List<Entity> collidingEntities = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
 
             if (collidingEntities != null && collidingEntities.size() > 0)
             {
                 for (int i = collidingEntities.size()-1; i >= 0; i--)
                 {
-                    Entity ent = (Entity)collidingEntities.get(i);
+                    Entity ent = collidingEntities.get(i);
                     if (!ent.isDead)
                     {
                     	onCollisionWithEntity(ent);

@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.minions.common.CommonProxy;
 import atomicstryker.minions.common.MinionsCore;
@@ -76,7 +75,7 @@ public class ClientProxy extends CommonProxy
     
     public class ClientRenderTickHandler implements ITickHandler
     {
-        private final EnumSet tickTypes = EnumSet.of(TickType.RENDER);
+        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.RENDER);
         
         @Override
         public void tickStart(EnumSet<TickType> type, Object... tickData)
@@ -105,7 +104,7 @@ public class ClientProxy extends CommonProxy
     
     public class ClientWorldTickHandler implements ITickHandler
     {
-        private final EnumSet tickTypes = EnumSet.of(TickType.CLIENT);
+        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.CLIENT);
         
         @Override
         public void tickStart(EnumSet<TickType> type, Object... tickData)

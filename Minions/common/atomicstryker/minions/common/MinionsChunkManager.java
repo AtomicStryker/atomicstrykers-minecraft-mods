@@ -24,7 +24,7 @@ public class MinionsChunkManager
 	public MinionsChunkManager()
 	{
 		loaderEntities = new ConcurrentHashMap<Entity, Byte>();
-		loadedChunks = new HashSet();
+		loadedChunks = new HashSet<ChunkCoordIntPair>();
 	}
 	
 	public static void registerChunkLoaderEntity(Entity ent)

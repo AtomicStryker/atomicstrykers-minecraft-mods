@@ -2,12 +2,10 @@ package atomicstryker.minions.common.entity;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.world.World;
 
 public class MinionAIStalkAndGrab extends EntityAIBase
 {
     private EntityMinion theMinion;
-    private World theWorld;
     private EntityLiving target;
 
     int grabDelay = 0;
@@ -17,7 +15,6 @@ public class MinionAIStalkAndGrab extends EntityAIBase
     public MinionAIStalkAndGrab(EntityMinion minion, float par2)
     {
         this.theMinion = minion;
-        this.theWorld = minion.worldObj;
         this.moveSpeed = par2;
         this.setMutexBits(3);
         target = null;

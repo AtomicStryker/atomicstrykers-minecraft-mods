@@ -43,8 +43,8 @@ public abstract class Minion_Job_Manager
 	
 	public Minion_Job_Manager()
 	{
-	    workerList = new ArrayList();
-	    jobQueue = new ArrayList();
+	    workerList = new ArrayList<EntityMinion>();
+	    jobQueue = new ArrayList<BlockTask>();
 	    isWorking = false;
 	    masterName = null;
 	}

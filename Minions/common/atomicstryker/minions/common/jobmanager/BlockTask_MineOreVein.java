@@ -2,11 +2,9 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.HashSet;
 
-import net.minecraft.block.Block;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.entity.EnumMinionState;
 
 /**
  * Blocktask for destroying any number of interconnected Blocks
@@ -60,20 +58,6 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
         super.onFinishedTask();    	
     	checkForVeinContinueTask();
     }
-    
-    private void checkBlockForCaveIn(int x, int y, int z)
-    {
-    	int checkBlockID = worker.worldObj.getBlockId(x, y, z);
-    	
-    	if (checkBlockID > 0)
-    	{
-    		if (checkBlockID == Block.sand.blockID || checkBlockID == Block.gravel.blockID)
-    		{            	
-            	this.worker.inventory.consumeInventoryItem(Block.dirt.blockID);
-            	this.worker.worldObj.setBlock(x, y, z, Block.dirt.blockID, 0, 3);
-    		}
-    	}
-	}
     
     private void checkForVeinContinueTask()
     {

@@ -34,9 +34,6 @@ public class MinionsServer
         {
             case EVILDEEDDONE:
             {
-                Class[] decodeAs = {String.class};
-                Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                
                 if (player != null && player.experienceLevel >= MinionsCore.evilDeedXPCost)
                 {
                     player.addExperienceLevel(-MinionsCore.evilDeedXPCost);
@@ -47,9 +44,8 @@ public class MinionsServer
             
             case CMDPICKUPENT:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                int playerID = (Integer) packetReadout[1];
                 int targetID = (Integer) packetReadout[2];
                 
                 Entity target = MinionsCore.findEntityByID(player.worldObj, targetID);
@@ -62,9 +58,8 @@ public class MinionsServer
             
             case CMDDROPALL:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                int playerID = (Integer) packetReadout[1];
                 int targetID = (Integer) packetReadout[2];
                 
                 Entity target = MinionsCore.findEntityByID(player.worldObj, targetID);
@@ -77,7 +72,7 @@ public class MinionsServer
             
             case CMDMINIONSPAWN:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
                 if (MinionsCore.hasPlayerWillPower(player))
@@ -99,7 +94,7 @@ public class MinionsServer
             
             case CMDCHOPTREES:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 if (MinionsCore.hasPlayerWillPower(player))
                 {
@@ -114,7 +109,7 @@ public class MinionsServer
             
             case CMDSTAIRWELL:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
                 if (MinionsCore.hasPlayerWillPower(player))
@@ -130,7 +125,7 @@ public class MinionsServer
             
             case CMDSTRIPMINE:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
                 if (MinionsCore.hasPlayerWillPower(player))
@@ -146,7 +141,7 @@ public class MinionsServer
             
             case CMDASSIGNCHEST:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 int x = (Integer) packetReadout[1];
                 int y = (Integer) packetReadout[2];
@@ -157,7 +152,7 @@ public class MinionsServer
             
             case CMDMOVETO:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 int x = (Integer) packetReadout[1];
                 int y = (Integer) packetReadout[2];
@@ -168,7 +163,7 @@ public class MinionsServer
             
             case CMDMINEOREVEIN:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 int x = (Integer) packetReadout[1];
                 int y = (Integer) packetReadout[2];
@@ -179,8 +174,6 @@ public class MinionsServer
             
             case CMDFOLLOW:
             {
-                Class[] decodeAs = {String.class};
-                Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 MinionsCore.orderMinionsToFollow(player);
                 break;
             }
@@ -195,9 +188,6 @@ public class MinionsServer
             
             case CMDUNSUMMON:
             {
-                Class[] decodeAs = {String.class};
-                Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                
                 if (player != null)
                 {
                     MinionsCore.unSummonPlayersMinions(player);
@@ -207,7 +197,7 @@ public class MinionsServer
             
             case CMDCUSTOMDIG:
             {
-                Class[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
                 if (player != null && MinionsCore.hasPlayerWillPower(player))
@@ -220,7 +210,7 @@ public class MinionsServer
             
             case LIGHTNINGBOLT:
             {
-                Class[] decodeAs = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class};
+                Class<?>[] decodeAs = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
                 Vector3 start = new Vector3((Double)packetReadout[0], (Double)packetReadout[1], (Double)packetReadout[2]);
@@ -246,7 +236,7 @@ public class MinionsServer
             
             case SOUNDTOALL:
             {
-                Class[] decodeAs = {Integer.class, String.class};
+                Class<?>[] decodeAs = {Integer.class, String.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 Entity ent = MinionsCore.findEntityByID(player.worldObj, (Integer) packetReadout[0]);
                 if (ent != null)
@@ -261,6 +251,8 @@ public class MinionsServer
                 player.addExperience(200);
                 break;
             }
+		default:
+			break;
         }
     }
     

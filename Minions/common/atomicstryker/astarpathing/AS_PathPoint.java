@@ -26,7 +26,7 @@ public class AS_PathPoint extends PathPoint
         
         if (!init)
         {
-            Class ppClass = getClass().getSuperclass();
+            Class<?> ppClass = getClass().getSuperclass();
             fieldIndex = ppClass.getDeclaredFields()[4];
             fieldIndex.setAccessible(true);
             fieldTotalDistance = ppClass.getDeclaredFields()[5];

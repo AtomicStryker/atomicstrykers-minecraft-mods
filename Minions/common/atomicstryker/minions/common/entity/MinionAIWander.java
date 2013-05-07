@@ -35,7 +35,6 @@ public class MinionAIWander extends EntityAIBase
         }
         else if (lastMoveTime+currentTimeInterval < System.currentTimeMillis())
         {
-            boolean doStroll = false;
             float var5 = -99999.0F;
 
             for (int var6 = 0; var6 < 10; ++var6)

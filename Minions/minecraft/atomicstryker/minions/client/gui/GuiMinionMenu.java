@@ -18,9 +18,9 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class GuiMinionMenu extends GuiScreen
 {
     protected String screenTitle = "The Darkness listens...";
-    private int updateCounter;
-
-    @Override
+    
+    @SuppressWarnings("unchecked")
+	@Override
     public void initGui()
     {
         this.buttonList.clear();
@@ -58,7 +58,6 @@ public class GuiMinionMenu extends GuiScreen
     @Override
     public void updateScreen()
     {
-        ++this.updateCounter;
     }
 
     @Override

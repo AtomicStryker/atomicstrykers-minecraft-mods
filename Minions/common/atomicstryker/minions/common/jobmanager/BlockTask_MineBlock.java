@@ -16,7 +16,6 @@ import atomicstryker.minions.common.entity.EntityMinion;
 public class BlockTask_MineBlock extends BlockTask
 {
     public Block targetBlock;
-    private int blocksDropped;
     public int blockID;
     public int blockmetadata;
     public boolean disableDangerCheck;
@@ -31,7 +30,6 @@ public class BlockTask_MineBlock extends BlockTask
     public BlockTask_MineBlock(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
-    	blocksDropped = 0;
     	disableDangerCheck = false;
     }
     
@@ -138,7 +136,6 @@ public class BlockTask_MineBlock extends BlockTask
     private void checkBlockForDanger(int x, int y, int z, boolean putFloor)
     {
     	int checkBlockID = worker.worldObj.getBlockId(x, y, z);
-    	int meta = 0;
     	boolean replaceBlock = false;
     	
     	if (checkBlockID == 0)
@@ -150,7 +147,7 @@ public class BlockTask_MineBlock extends BlockTask
     	}
     	else if (!Block.blocksList[checkBlockID].blockMaterial.isSolid() && checkBlockID != Block.torchWood.blockID)
     	{
-    		meta = worker.worldObj.getBlockMetadata(x, y, z);
+    		worker.worldObj.getBlockMetadata(x, y, z);
     		replaceBlock = true;
     	}
     	

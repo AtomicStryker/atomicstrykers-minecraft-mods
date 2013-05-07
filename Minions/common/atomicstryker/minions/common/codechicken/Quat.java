@@ -122,6 +122,7 @@ public class Quat
         formatter.format("  < %f %f %f %f >\n", new Object[] {
             Double.valueOf(s), Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)
         });
+        formatter.close();
         return stringbuilder.toString();
     }
 

@@ -27,9 +27,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ForgePacketWrapper;
-import atomicstryker.astarpathing.AS_PathEntity;
-import atomicstryker.astarpathing.AS_PathPoint;
-import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.entity.EnumMinionState;
@@ -76,7 +73,7 @@ public class MinionsCore
 	
     public static int evilDeedXPCost = 2;
     public static int minionsPerPlayer = 4;
-    public static ArrayList<EvilDeed> evilDoings = new ArrayList();
+    public static ArrayList<EvilDeed> evilDoings = new ArrayList<EvilDeed>();
     
     private static float exhaustAmountSmall;
     private static float exhaustAmountBig;
@@ -98,14 +95,14 @@ public class MinionsCore
         try
         {
             cfg.load();
-            masterStaffItemID = cfg.get(cfg.CATEGORY_ITEM, "masterStaffItemID", 2527).getInt();
-            evilDeedXPCost = cfg.get(cfg.CATEGORY_GENERAL, "evilDeedXPCost", 2).getInt();
-            minionsPerPlayer = cfg.get(cfg.CATEGORY_GENERAL, "minionsAmountPerPlayer", 4).getInt();
+            masterStaffItemID = cfg.get(Configuration.CATEGORY_ITEM, "masterStaffItemID", 2527).getInt();
+            evilDeedXPCost = cfg.get(Configuration.CATEGORY_GENERAL, "evilDeedXPCost", 2).getInt();
+            minionsPerPlayer = cfg.get(Configuration.CATEGORY_GENERAL, "minionsAmountPerPlayer", 4).getInt();
             
-            cfg.get(cfg.CATEGORY_GENERAL, "FoodCostSmall", "1.5").comment = "Food cost per tick of casting lightning";
-            exhaustAmountSmall = Float.valueOf(cfg.get(cfg.CATEGORY_GENERAL, "FoodCostSmall", "1.5").getString());
-            cfg.get(cfg.CATEGORY_GENERAL, "FoodCostBig", "20").comment = "Food cost of summoning Minions and giving complex orders";
-            exhaustAmountBig = Float.valueOf(cfg.get(cfg.CATEGORY_GENERAL, "FoodCostBig", "20").getString());
+            cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostSmall", "1.5").comment = "Food cost per tick of casting lightning";
+            exhaustAmountSmall = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostSmall", "1.5").getString());
+            cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").comment = "Food cost of summoning Minions and giving complex orders";
+            exhaustAmountBig = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").getString());
         }
         catch (Exception e)
         {
@@ -132,7 +129,8 @@ public class MinionsCore
         
         EntityRegistry.registerModEntity(EntityMinion.class, "AS_EntityMinion", 1, this, 25, 5, true);        
         itemMastersStaff = (new ItemMastersStaff(masterStaffItemID).setUnlocalizedName("Master's Staff"));
-        LanguageRegistry.instance().addName(itemMastersStaff, "Master's Staff");
+        LanguageRegistry.instance();
+		LanguageRegistry.addName(itemMastersStaff, "Master's Staff");
         
         proxy.registerRenderInformation();
     }
@@ -167,7 +165,7 @@ public class MinionsCore
             MinionsChunkManager.updateLoadedChunks();
         }
 
-        Iterator iter = runningJobList.iterator();
+        Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
         while (iter.hasNext())
         {
             if (finishedJobList.contains(iter))
@@ -255,7 +253,7 @@ public class MinionsCore
     public static void cancelRunningJobsForMaster(String name)
     {
         Minion_Job_Manager temp;
-        Iterator iter = runningJobList.iterator();
+        Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
         while (iter.hasNext())
         {
             temp = (Minion_Job_Manager) iter.next();
@@ -677,7 +675,7 @@ public class MinionsCore
     
     public class ServerTickHandler implements ITickHandler
     {
-        private final EnumSet tickTypes = EnumSet.of(TickType.WORLD);
+        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.WORLD);
         
         @Override
         public void tickStart(EnumSet<TickType> type, Object... tickData)

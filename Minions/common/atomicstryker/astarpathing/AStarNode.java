@@ -1,6 +1,5 @@
 package atomicstryker.astarpathing;
 
-import java.util.Comparator;
 
 /**
  * Path Node class for AstarPath
@@ -9,7 +8,7 @@ import java.util.Comparator;
  * @author AtomicStryker
  */
 
-public class AStarNode implements Comparable
+public class AStarNode implements Comparable<AStarNode>, Cloneable
 {
 	final public int x;
 	final public int y;
@@ -105,19 +104,15 @@ public class AStarNode implements Comparable
 	}
     
     @Override
-    public int compareTo(Object o)
+    public int compareTo(AStarNode o)
     {
-        if (o instanceof AStarNode)
+        if (getF() < o.getF()) // lower cost = smaller natural value
         {
-            AStarNode other = (AStarNode) o;
-            if (getF() < other.getF()) // lower cost = smaller natural value
-            {
-                return -1;
-            }
-            else if (getF() > other.getF()) // higher cost = higher natural value
-            {
-                return 1;
-            }
+            return -1;
+        }
+        else if (getF() > o.getF()) // higher cost = higher natural value
+        {
+            return 1;
         }
         
     	return 0;

@@ -43,19 +43,6 @@ public class InventoryMinion implements IInventory
         return -1;
     }
 
-    private int getInventorySlotContainItemAndDamage(int var1, int var2)
-    {
-        for (int var3 = 0; var3 < this.mainInventory.length; ++var3)
-        {
-            if (this.mainInventory[var3] != null && this.mainInventory[var3].itemID == var1 && this.mainInventory[var3].getItemDamage() == var2)
-            {
-                return var3;
-            }
-        }
-
-        return -1;
-    }
-
     private int storeItemStack(ItemStack var1)
     {
         for (int var2 = 0; var2 < this.mainInventory.length; ++var2)

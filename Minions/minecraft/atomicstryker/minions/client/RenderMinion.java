@@ -98,8 +98,6 @@ public class RenderMinion extends RenderLiving
     {
         if (Minecraft.isGuiEnabled() && var1 != this.renderManager.livingPlayer)
         {
-            float var8 = 1.6F;
-            float var9 = 0.01666667F * var8;
             float var10 = var1.getDistanceToEntity(this.renderManager.livingPlayer);
             float var11 = 12.0F;
             if (var10 < var11)

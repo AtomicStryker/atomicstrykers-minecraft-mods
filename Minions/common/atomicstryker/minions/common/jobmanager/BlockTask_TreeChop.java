@@ -20,7 +20,7 @@ public class BlockTask_TreeChop extends BlockTask
     private final ArrayList<ChunkCoordinates> treeBlockList;
     private final ArrayList<ChunkCoordinates> leaveBlockList;
 	
-    public BlockTask_TreeChop(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, ArrayList treeBlocks, ArrayList leaveBlocks)
+    public BlockTask_TreeChop(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, ArrayList<ChunkCoordinates> treeBlocks, ArrayList<ChunkCoordinates> leaveBlocks)
     {
     	super(boss, input, ix, iy, iz);
     	

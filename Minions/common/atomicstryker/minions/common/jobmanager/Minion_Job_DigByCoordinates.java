@@ -38,14 +38,12 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 	private final int xDirection;
 	private final int zDirection;
 	
-	private boolean isFinished;
-	
 	private int[] stopCoords = new int[3];
 	private boolean indexFinished;
 	private ArrayList<BlockTask> blocksToMine;
 	
 	private int stairDirection[] = new int[2];
-	private ArrayList<StairSegment> stairSegments = new ArrayList();
+	private ArrayList<StairSegment> stairSegments = new ArrayList<StairSegment>();
 	
 	private long lastTaskCompleteTime = -1L;
 	
@@ -188,7 +186,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 			stopCoords[0] = minX;
 			stopCoords[1] = maxY;
 			stopCoords[2] = minZ;
-			blocksToMine = new ArrayList();
+			blocksToMine = new ArrayList<BlockTask>();
 			
 			//System.out.println("Indexing starts at ["+minX+"|"+maxY+"|"+minZ+"]");
 		}

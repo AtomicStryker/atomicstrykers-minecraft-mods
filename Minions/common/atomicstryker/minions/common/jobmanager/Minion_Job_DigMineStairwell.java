@@ -1,7 +1,6 @@
 package atomicstryker.minions.common.jobmanager;
 
 import net.minecraft.block.Block;
-import net.minecraft.world.World;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -13,8 +12,6 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
 {
-	private World worldObj;
-	
 	private int currentDepth = -1;
 	private int currentSegment = 0;
 	
@@ -27,8 +24,6 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     public Minion_Job_DigMineStairwell(EntityMinion[] minions, int ix, int iy, int iz)
     {
     	super(minions, ix, iy, iz);
-    	this.worldObj = minions[0].worldObj;
-    	
     	startX = this.pointOfOrigin.posX;
     	startY = this.pointOfOrigin.posY;
     	startZ = this.pointOfOrigin.posZ;
