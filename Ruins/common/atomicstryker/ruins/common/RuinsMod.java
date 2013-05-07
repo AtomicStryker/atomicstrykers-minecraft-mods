@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.item.Item;
@@ -32,7 +33,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.0", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.1", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -40,15 +41,24 @@ public class RuinsMod
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
 
-    private RuinHandler ruins;
-    private RuinGenerator generator;
-    private World curWorld = null;
-    private ConcurrentLinkedQueue<int[]> currentlyGenerating;
+    private ConcurrentHashMap<World, WorldHandle> generatorMap;
+    
+    private class WorldHandle
+    {
+        WorldHandle()
+        {
+            currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
+        }
+        
+        RuinHandler ruins;
+        RuinGenerator generator;
+        ConcurrentLinkedQueue<int[]> currentlyGenerating;
+    }
 
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        currentlyGenerating = new ConcurrentLinkedQueue();
+        generatorMap = new ConcurrentHashMap<World, WorldHandle>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -93,15 +103,15 @@ public class RuinsMod
 
     private synchronized void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
-        checkWorld(world);
-        if (ruins != null && ruins.loaded)
+        WorldHandle wh = getWorldHandle(world);
+        if (wh.ruins != null && wh.ruins.loaded)
         {
             int[] tuple = { chunkX, chunkZ };
-            if (!currentlyGenerating.contains(tuple))
+            if (!wh.currentlyGenerating.contains(tuple))
             {
-                currentlyGenerating.add(tuple);
-                generator.generateNether(world, random, chunkX, 0, chunkZ);
-                currentlyGenerating.remove(tuple);
+                wh.currentlyGenerating.add(tuple);
+                wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
+                wh.currentlyGenerating.remove(tuple);
             }
             else
             {
@@ -112,15 +122,15 @@ public class RuinsMod
 
     private synchronized void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
-        checkWorld(world);
-        if (ruins != null && ruins.loaded)
+        WorldHandle wh = getWorldHandle(world);
+        if (wh.ruins != null && wh.ruins.loaded)
         {
             int[] tuple = { chunkX, chunkZ };
-            if (!currentlyGenerating.contains(tuple))
+            if (!wh.currentlyGenerating.contains(tuple))
             {
-                currentlyGenerating.add(tuple);
-                generator.generateNormal(world, random, chunkX, 0, chunkZ);
-                currentlyGenerating.remove(tuple);
+                wh.currentlyGenerating.add(tuple);
+                wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
+                wh.currentlyGenerating.remove(tuple);
             }
             else
             {
@@ -128,40 +138,22 @@ public class RuinsMod
             }
         }
     }
-
-    private void checkWorld(World world)
+    
+    private synchronized WorldHandle getWorldHandle(World world)
     {
-        if (curWorld == world)
+        WorldHandle wh = null;
+        if (!generatorMap.containsKey(world))
         {
-            return;
-        }
-        if (curWorld == null)
-        {
-            // new world has definitely been created.
-            curWorld = world;
-            createHandler(curWorld);
+            wh = new WorldHandle();
+            createHandler(wh, world);
+            generatorMap.put(world, wh);
         }
         else
         {
-            // we check the filename here in case we simply went to the nether.
-            File olddir = getWorldSaveDir(curWorld);
-            File newdir = getWorldSaveDir(world);
-            if (olddir.compareTo(newdir) != 0)
-            {
-                // new world has definitely been created.
-                try
-                {
-                    ruins.writeExclusions(olddir);
-                }
-                catch (Exception e)
-                {
-                    System.err.println("Could not write exclusions for world: " + olddir.getName());
-                    e.printStackTrace();
-                }
-                curWorld = world;
-                createHandler(curWorld);
-            }
+            wh = generatorMap.get(world);
         }
+        
+        return wh;
     }
 
     public static File getWorldSaveDir(World world)
@@ -208,7 +200,8 @@ public class RuinsMod
         return -1;
     }
 
-    public static File getMinecraftBaseDir()
+    @SuppressWarnings("static-access")
+	public static File getMinecraftBaseDir()
     {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
@@ -218,14 +211,14 @@ public class RuinsMod
         return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
     }
 
-    private void createHandler(World world)
+    private void createHandler(WorldHandle worldHandle, World world)
     {
         // load in defaults
         try
         {
             File worlddir = getWorldSaveDir(world);
-            ruins = new RuinHandler(worlddir);
-            generator = new RuinGenerator(ruins);
+            worldHandle.ruins = new RuinHandler(worlddir);
+            worldHandle.generator = new RuinGenerator(worldHandle.ruins);
         }
         catch (Exception e)
         {
@@ -249,8 +242,10 @@ public class RuinsMod
         {
             createDefaultGlobalOptions(basedir);
         }
-        FileChannel in = new FileInputStream(basefile).getChannel();
-        FileChannel out = new FileOutputStream(copyfile).getChannel();
+        FileInputStream fis = new FileInputStream(basefile);
+        FileOutputStream fos = new FileOutputStream(copyfile);
+        FileChannel in = fis.getChannel();
+        FileChannel out = fos.getChannel();
         try
         {
             in.transferTo(0, in.size(), out);
@@ -264,10 +259,12 @@ public class RuinsMod
             if (in != null)
             {
                 in.close();
+                fis.close();
             }
             if (out != null)
             {
                 out.close();
+                fos.close();
             }
         }
     }
@@ -303,6 +300,7 @@ public class RuinsMod
         pw.println("chance_to_spawn_nether=10");
         pw.println("chance_for_site_nether=15");
         pw.println("chunks_behind_nether=5");
+        pw.println("disableRuinSpawnCoordsLogging=true");
         pw.println();
         // print all the biomes!
         for (int i = 0; i < BiomeGenBase.biomeList.length; i++)

@@ -8,19 +8,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
 public class RuinGenerator {
-	private RuinHandler Ruins;
+	private RuinHandler ruinsHandler;
 	private RuinStats stats;
-	private LinkedList<RuinIBuildable> curSite;
 	private LinkedList<RuinBoundingBox> lastTen;
 	private int NumTries = 0, LastNumTries = 0;
-	private boolean ignorePlants = true;
-	
 	private final int WORLD_MAX_HEIGHT = 256;
 
     public RuinGenerator( RuinHandler rh ) {
-		Ruins = rh;
+		ruinsHandler = rh;
 		stats = new RuinStats();
-		curSite = new LinkedList<RuinIBuildable>();
+		new LinkedList<RuinIBuildable>();
 		lastTen = new LinkedList<RuinBoundingBox>();
     }
 
@@ -28,8 +25,8 @@ public class RuinGenerator {
 		// here we're generating 5 chunks behind normal.
 		// This should hopefully solve the "wanderer" problem with edge chunks.
 
-    	for( int c = 0; c < Ruins.triesPerChunkNormal; c++ ) {
-    		if( random.nextInt( 100 ) < Ruins.chanceToSpawnNormal ) {
+    	for( int c = 0; c < ruinsHandler.triesPerChunkNormal; c++ ) {
+    		if( random.nextInt( 100 ) < ruinsHandler.chanceToSpawnNormal ) {
     			// ditch the y coord, we'll be coming down from the top, checking
     			// for a suitable square to start.
     			//					int xMod = ( random.nextInt( 2 ) == 1 ? random.nextInt( 16 ) : 0 - random.nextInt( 16 ) );
@@ -45,8 +42,8 @@ public class RuinGenerator {
     }
 
     public boolean generateNether( World world, Random random, int xBase, int j, int zBase ) {
-        for( int c = 0; c < Ruins.triesPerChunkNether; c++ ) {
-            if( random.nextInt( 100 ) < Ruins.chanceToSpawnNether ) {
+        for( int c = 0; c < ruinsHandler.triesPerChunkNether; c++ ) {
+            if( random.nextInt( 100 ) < ruinsHandler.chanceToSpawnNether ) {
                 // ditch the y coord, we'll be coming down from the top, checking
                 // for a suitable square to start.
 				int xMod = ( random.nextInt( 2 ) == 1 ? random.nextInt( 16 ) : 0 - random.nextInt( 16 ) );
@@ -65,13 +62,13 @@ public class RuinGenerator {
 		String biomeName = world.getWorldChunkManager().getBiomeGenAt(x, z).biomeName;
         int nextMinDistance = 0;
         
-		if( Ruins.useGeneric( random, biomeID ) )
+		if( ruinsHandler.useGeneric( random, biomeID ) )
 		{
 			biomeID = RuinsMod.BIOME_NONE;
 		}
 		stats.biomes[biomeID]++;
 		
-		RuinIBuildable ruinTemplate = Ruins.getTemplate( random, biomeID );
+		RuinIBuildable ruinTemplate = ruinsHandler.getTemplate( random, biomeID );
 		if( ruinTemplate == null )
 		{
 			return;
@@ -111,20 +108,22 @@ public class RuinGenerator {
         if( y > 0 ) {
 //            if( r.checkArea( world, x, y, z, rotate, stats ) ) {
             if( ruinTemplate.checkArea( world, x, y, z, rotate ) ) {
-				if( minDistance != 0 ) {
-					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeName+" as part of a site at x:" + x + ", y:" + y + ", z:" + z );
-				} else {
-					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeName+" at x:" + x + ", y:" + y + ", z:" + z );
-				}
+            	if (!ruinsHandler.disableLogging) {
+    				if( minDistance != 0 ) {
+    					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeName+" as part of a site at x:" + x + ", y:" + y + ", z:" + z );
+    				} else {
+    					System.out.println( "Creating ruin "+ruinTemplate.getName()+" of Biome "+biomeName+" at x:" + x + ", y:" + y + ", z:" + z );
+    				}
+            	}
 				stats.NumCreated++;
 
 				ruinTemplate.doBuild( world, random, x, y, z, rotate );
 				manageLastTen( ruinTemplate, x, z, rotate );
 				nextMinDistance = ruinTemplate.getMinDistance();
 				if( ruinTemplate.isUnique() ) {
-					Ruins.removeTemplate( ruinTemplate, biomeID );
+					ruinsHandler.removeTemplate( ruinTemplate, biomeID );
 					try {
-						Ruins.writeExclusions( RuinsMod.getWorldSaveDir( world ) );
+						ruinsHandler.writeExclusions( RuinsMod.getWorldSaveDir( world ) );
 					} catch( Exception e ) {
 						System.err.println( "Could not write exclusions for world: " + RuinsMod.getWorldSaveDir( world ) );
 						e.printStackTrace();
@@ -134,11 +133,11 @@ public class RuinGenerator {
                 return;
             }
 			if( Nether ) {
-				if( random.nextInt( 100 ) < Ruins.chanceForSiteNether ) {
+				if( random.nextInt( 100 ) < ruinsHandler.chanceForSiteNether ) {
 					createBuilding( world, random, x, z, nextMinDistance, true );
 				}
 			} else {
-				if( random.nextInt( 100 ) < Ruins.chanceForSiteNormal ) {
+				if( random.nextInt( 100 ) < ruinsHandler.chanceForSiteNormal ) {
 					createBuilding( world, random, x, z, nextMinDistance, false );
 				}
 			}
@@ -150,28 +149,30 @@ public class RuinGenerator {
     }
 
 	private void printStats() {
-		int total = stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails + stats.BoundingBoxFails;
-		System.out.println( "Current Stats:" );
-		System.out.println( "    Total Tries:                 " + total );
-		System.out.println( "    Number Created:              " + stats.NumCreated );
-		System.out.println( "    Site Tries:                  " + stats.SiteTries );
-		System.out.println( "    Within Another Bounding Box: " + stats.BoundingBoxFails );
-		System.out.println( "    Bad Blocks:                  " + stats.BadBlockFails );
-		System.out.println( "    No Leveling:                 " + stats.LevelingFails );
-		System.out.println( "    No Cut-In:                   " + stats.CutInFails );
-		
-		for (int i = 0; i < stats.biomes.length; i++)
-		{
-			if (stats.biomes[i] != 0)
+		if (!ruinsHandler.disableLogging) {
+			int total = stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails + stats.BoundingBoxFails;
+			System.out.println( "Current Stats:" );
+			System.out.println( "    Total Tries:                 " + total );
+			System.out.println( "    Number Created:              " + stats.NumCreated );
+			System.out.println( "    Site Tries:                  " + stats.SiteTries );
+			System.out.println( "    Within Another Bounding Box: " + stats.BoundingBoxFails );
+			System.out.println( "    Bad Blocks:                  " + stats.BadBlockFails );
+			System.out.println( "    No Leveling:                 " + stats.LevelingFails );
+			System.out.println( "    No Cut-In:                   " + stats.CutInFails );
+			
+			for (int i = 0; i < stats.biomes.length; i++)
 			{
-				if (i != RuinsMod.BIOME_NONE)
-					System.out.println(BiomeGenBase.biomeList[i].biomeName+": "+stats.biomes[i]+" Biome building attempts");
-				else
-					System.out.println("Any-Biome: "+stats.biomes[i]+" building attempts");
+				if (stats.biomes[i] != 0)
+				{
+					if (i != RuinsMod.BIOME_NONE)
+						System.out.println(BiomeGenBase.biomeList[i].biomeName+": "+stats.biomes[i]+" Biome building attempts");
+					else
+						System.out.println("Any-Biome: "+stats.biomes[i]+" building attempts");
+				}
 			}
+			
+			System.out.println();
 		}
-		
-		System.out.println();
 	}
 	
 	private int getRandomAdjustment( Random random, int base, int minDistance ) {
@@ -220,8 +221,6 @@ public class RuinGenerator {
 			}
 			return -1;
 		} else {
-			// find the first good square from the top of the map at the given coord
-			boolean bad = false;
 			for( int y = WORLD_MAX_HEIGHT-1; y > -1; y-- ) {
 				if( r.isAcceptable( world, x, y, z ) ) { return y; }
 				if( ! r.isAir( world.getBlockId( x, y, z ) ) ) { return -1; }

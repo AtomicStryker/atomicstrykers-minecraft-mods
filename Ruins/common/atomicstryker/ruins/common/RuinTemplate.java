@@ -21,19 +21,15 @@ public class RuinTemplate implements RuinIBuildable {
     public RuinTemplate( String filename ) throws Exception {
         // load in the given file as a template
         name = filename;
-        try {
-            ArrayList<String> lines = new ArrayList<String>();
-            BufferedReader br = new BufferedReader( new FileReader( filename ) );
-            String read = br.readLine();
-            while( read != null ) {
-                lines.add( read );
-                read = br.readLine();
-            }
-            parseFile( lines );
-        } catch ( Exception e ) {
-            System.err.println( "Failed loading template: " + filename );
-            e.printStackTrace();
+        ArrayList<String> lines = new ArrayList<String>();
+        BufferedReader br = new BufferedReader( new FileReader( filename ) );
+        String read = br.readLine();
+        while( read != null ) {
+        	lines.add( read );
+        	read = br.readLine();
         }
+        parseFile( lines );
+        br.close();
     }
 
 	public String getName() {

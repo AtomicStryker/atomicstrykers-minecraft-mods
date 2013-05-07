@@ -30,11 +30,13 @@ public class CustomRotationMapping
     /**
      * Maps a numeric blockID to another Map containing the direction Map
      */
-    private final TreeMap<Integer, TreeMap[]> blockIDMap;
+    @SuppressWarnings("rawtypes")
+	private final TreeMap<Integer, TreeMap[]> blockIDMap;
     
     private final ArrayList<Integer> currentBlockIDs;
     
-    public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
+    @SuppressWarnings("rawtypes")
+	public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
     {
         instance = this;
         blockIDMap = new TreeMap<Integer, TreeMap[]>();
@@ -52,7 +54,8 @@ public class CustomRotationMapping
         }
     }
 
-    public static int getMapping(int blockID, int metadata, int dir)
+    @SuppressWarnings("unchecked")
+	public static int getMapping(int blockID, int metadata, int dir)
     {        
         TreeMap<Integer, Integer>[] bIdMap = instance.blockIDMap.get(blockID);
         if (bIdMap == null)
@@ -142,7 +145,8 @@ public class CustomRotationMapping
         }
     }
     
-    private void putMapping(int blockID, int metadata, int dir, int result)
+    @SuppressWarnings("unchecked")
+	private void putMapping(int blockID, int metadata, int dir, int result)
     {
         TreeMap<Integer, Integer>[] bIdMap = blockIDMap.get(blockID);
         if (bIdMap == null)

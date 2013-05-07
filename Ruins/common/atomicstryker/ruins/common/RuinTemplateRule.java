@@ -101,7 +101,8 @@ public class RuinTemplateRule {
         return -1;
     }
 
-    private boolean isNumber(String s)
+    @SuppressWarnings("unused")
+	private boolean isNumber(String s)
     {
         if (s == null || s.equals(""))
         {

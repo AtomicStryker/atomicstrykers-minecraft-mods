@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -22,6 +21,7 @@ public class RuinHandler {
 	protected int triesPerChunkNormal = 6, chanceToSpawnNormal = 10, chanceForSiteNormal = 15, chunksBehindNormal = 5,
 				  triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15, chunksBehindNether = 5;
 	public boolean loaded = false;
+	public boolean disableLogging;
 
 	public RuinHandler( File worldPath ) {
 		// create the vars array fitting to the number of Biomes present
@@ -62,13 +62,12 @@ public class RuinHandler {
 			return;
 		}
 
-		// path variables for template loading
-		Iterator<RuinIBuildable> i = null;
 		File templPath = new File( basedir, "resources" );
 		templPath = new File( templPath, "ruins" );
 		if( ! templPath.exists() ) {
 			System.out.println( "Could not access the resources path for the ruins templates, file doesn't exist!" );
 			System.err.println( "The ruins mod could not be loaded." );
+			pw.close();
 			return;
 		}
 
@@ -254,38 +253,35 @@ public class RuinHandler {
         BufferedReader br = new BufferedReader( new FileReader( file ) );
         String read = br.readLine();
         String[] check;
-        while( read != null ) {        	
-            if( read.startsWith( "tries_per_chunk_normal" ) ) {
-				check = read.split( "=" );
+        while( read != null ) {
+        	check = read.split( "=" );
+            if( check[0].equals( "tries_per_chunk_normal" ) ) {
                 triesPerChunkNormal = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "chance_to_spawn_normal" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "chance_to_spawn_normal" ) ) {
                 chanceToSpawnNormal = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "chance_for_site_normal" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "chance_for_site_normal" ) ) {
                 chanceForSiteNormal = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "chunks_behind_normal" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "chunks_behind_normal" ) ) {
                 chunksBehindNormal = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "tries_per_chunk_nether" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "tries_per_chunk_nether" ) ) {
                 triesPerChunkNether = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "chance_to_spawn_nether" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "chance_to_spawn_nether" ) ) {
                 chanceToSpawnNether = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "chance_for_site_nether" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "chance_for_site_nether" ) ) {
                 chanceForSiteNether = Integer.parseInt( check[1] );
             }
-            if( read.startsWith( "chunks_behind_nether" ) ) {
-				check = read.split( "=" );
+            if( check[0].equals( "chunks_behind_nether" ) ) {
                 chunksBehindNether = Integer.parseInt( check[1] );
+            }
+            
+            if( check[0].equals( "disableRuinSpawnCoordsLogging" ) ) {
+				disableLogging = Boolean.parseBoolean(check[1]);
             }
             
             if ( read.startsWith( "specific_" ) )

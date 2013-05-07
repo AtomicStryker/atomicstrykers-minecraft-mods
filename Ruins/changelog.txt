@@ -203,3 +203,7 @@ a: setAccessible now true
 
 10.0
 + update to MC 1.5.2
+
+10.1
++ made Ruins logic distinctly and concurrently per-world and atomic, should fix server Dimension oddness
++ disabled Ruins excessive logging by default. You can re-enable it in ruins.txt in your world save directory

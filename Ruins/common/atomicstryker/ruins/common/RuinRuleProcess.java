@@ -7,8 +7,6 @@ import net.minecraft.world.World;
 public class RuinRuleProcess {
 	private RuinTemplateRule rule;
 	private int x, y, z, rotate;
-	private boolean isUnderwater;
-
 	public RuinRuleProcess( RuinTemplateRule r, int xbase, int ybase, int zbase, int rot ) {
 		rule = r;
 		x = xbase;
