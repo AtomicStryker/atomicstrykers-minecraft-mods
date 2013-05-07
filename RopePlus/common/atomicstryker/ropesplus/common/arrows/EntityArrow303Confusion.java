@@ -56,7 +56,7 @@ public class EntityArrow303Confusion extends EntityArrow303
     private void confuse(Entity entity)
     {
         Object[] ents = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE)).toArray();
-        ArrayList<EntityCreature> hitList = new ArrayList();
+        ArrayList<EntityCreature> hitList = new ArrayList<EntityCreature>();
         for (Object o : ents)
         {
             if (o instanceof EntityCreature && o != shooter)

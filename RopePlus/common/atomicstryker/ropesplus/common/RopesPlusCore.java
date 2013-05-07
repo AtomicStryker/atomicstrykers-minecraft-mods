@@ -54,7 +54,7 @@ public class RopesPlusCore
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
     public static IProxy proxy;
     
-	public final static Class coreArrowClasses[] =
+	public final static Class<?> coreArrowClasses[] =
 	{
 			EntityArrow303Dirt.class,
 			EntityArrow303Ex.class,
@@ -75,7 +75,7 @@ public class RopesPlusCore
 	public static RopesPlusCore instance;
 	
     public static Block blockRopeCentralPos;
-    public static List ropeEntArray;
+    public static List<Object> ropeEntArray;
     private static List<int[]> ropePosArray;
     
     public static Block blockRopeWallPos;
@@ -85,8 +85,6 @@ public class RopesPlusCore
     
     /* Arrow Selection Maps */
     private static HashMap<EntityPlayer, Integer> selectedSlotMap;
-    private HashMap<EntityPlayer, Boolean> cycledMap;
-    
     public static Item itemHookShot;
     public static Block blockZipLineAnchor;
     public static Item itemHookShotCartridge;
@@ -97,13 +95,13 @@ public class RopesPlusCore
     public void preInit(FMLPreInitializationEvent event)
     {
     	instance = this;
-    	arrows = new ArrayList();
-    	arrowItems = new ArrayList();
-    	ropeEntArray = new ArrayList();
-    	ropePosArray = new ArrayList();
+    	arrows = new ArrayList<EntityArrow303>();
+    	arrowItems = new ArrayList<ItemArrow303>();
+    	ropeEntArray = new ArrayList<Object>();
+    	ropePosArray = new ArrayList<int[]>();
     	grapplingHookMap = new HashMap<EntityPlayer, EntityGrapplingHook>();
     	selectedSlotMap = new HashMap<EntityPlayer, Integer>();
-    	cycledMap = new HashMap<EntityPlayer, Boolean>();
+    	new HashMap<EntityPlayer, Boolean>();
     	playerRopeMap = new HashMap<EntityPlayer, EntityFreeFormRope>();
     	
         Settings_RopePlus.InitSettings(event.getSuggestedConfigurationFile());
@@ -145,14 +143,14 @@ public class RopesPlusCore
         ItemStack stackCartridge = new ItemStack(itemHookShotCartridge, 4);
         GameRegistry.addRecipe(stackCartridge, new Object[] {" # ", "#X#", " # ", Character.valueOf('#'), Item.paper, Character.valueOf('X'), Item.gunpowder});
         
-        LanguageRegistry.instance().addName(blockRopeCentralPos, "Rope");
-        LanguageRegistry.instance().addName(blockRopeWallPos, "GrHk Rope");
-        LanguageRegistry.instance().addName(blockGrapplingHook, "Grappling Hook");
-        LanguageRegistry.instance().addName(stackHookShot, "Hookshot");
-        LanguageRegistry.instance().addName(itemGrapplingHook, "Grappling Hook");
-        LanguageRegistry.instance().addName(blockZipLineAnchor, "Zipline Anchor");
-        LanguageRegistry.instance().addName(stackZipAnchor, "Zipline Anchor");
-        LanguageRegistry.instance().addName(itemHookShotCartridge, "Hookshot Cartridge");
+		LanguageRegistry.addName(blockRopeCentralPos, "Rope");
+		LanguageRegistry.addName(blockRopeWallPos, "GrHk Rope");
+		LanguageRegistry.addName(blockGrapplingHook, "Grappling Hook");
+		LanguageRegistry.addName(stackHookShot, "Hookshot");
+		LanguageRegistry.addName(itemGrapplingHook, "Grappling Hook");
+		LanguageRegistry.addName(blockZipLineAnchor, "Zipline Anchor");
+		LanguageRegistry.addName(stackZipAnchor, "Zipline Anchor");
+		LanguageRegistry.addName(itemHookShotCartridge, "Hookshot Cartridge");
         
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
@@ -160,9 +158,10 @@ public class RopesPlusCore
         EntityRegistry.registerModEntity(EntityFreeFormRope.class, "FreeFormRope", 2, this, 75, 5, false);
         
         bowRopesPlus = new ItemBowRopesPlus(Settings_RopePlus.itemIdRopesPlusBow).setUnlocalizedName("bowRopesPlus");
-        LanguageRegistry.instance().addName(bowRopesPlus, "RopesPlusBow");
+        LanguageRegistry.instance();
+		LanguageRegistry.addName(bowRopesPlus, "RopesPlusBow");
         
-        for(Class c : coreArrowClasses)
+        for(Class<?> c : coreArrowClasses)
         {
             addArrowToRegister(constructArrowInstance(c));
         }
@@ -180,7 +179,7 @@ public class RopesPlusCore
         EntityArrow303 entArrow303 = null;
         Configuration c = Settings_RopePlus.config;
         c.load();
-        for(Iterator iter = RopesPlusCore.arrows.iterator(); iter.hasNext();)
+        for(Iterator<EntityArrow303> iter = RopesPlusCore.arrows.iterator(); iter.hasNext();)
         {
             entArrow303 = (EntityArrow303)iter.next();
             makeItem(entArrow303, c);
@@ -222,11 +221,12 @@ public class RopesPlusCore
 			});
 
 			arrowItems.add(item);
-			LanguageRegistry.instance().addName(item, entityarrow303.name);
+			LanguageRegistry.instance();
+			LanguageRegistry.addName(item, entityarrow303.name);
 		}
 	}
 
-	public static EntityArrow303 constructArrowInstance(Class class1)
+	public static EntityArrow303 constructArrowInstance(Class<?> class1)
 	{
 		try
 		{
@@ -245,7 +245,7 @@ public class RopesPlusCore
 	
 	public static Item getArrowItemByTip(Object desiredtip)
 	{
-		for(Iterator iterator = arrowItems.iterator(); iterator.hasNext();)
+		for(Iterator<ItemArrow303> iterator = arrowItems.iterator(); iterator.hasNext();)
 		{
 			ItemArrow303 itemarrow303 = (ItemArrow303)iterator.next();
 			if(itemarrow303.arrow.tip == desiredtip)
