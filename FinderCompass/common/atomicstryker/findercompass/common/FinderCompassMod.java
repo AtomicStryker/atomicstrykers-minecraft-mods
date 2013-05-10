@@ -21,7 +21,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.5.2")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.5.2B")
 @NetworkMod(
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "FindrCmps" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "FindrCmps" }, packetHandler = ServerPacketHandler.class),
@@ -47,7 +47,7 @@ public class FinderCompassMod
         Configuration c = new Configuration(new File(target));
         c.load();
         itemID = c.getItem("finderCompassID", 4356).getInt();
-        itemEnabled = c.get(c.CATEGORY_ITEM, "isFinderCompassNewItem", false).getBoolean(false);
+        itemEnabled = c.get(Configuration.CATEGORY_ITEM, "isFinderCompassNewItem", false).getBoolean(false);
         c.save();
     }
     

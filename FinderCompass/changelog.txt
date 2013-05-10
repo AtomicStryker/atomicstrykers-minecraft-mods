@@ -1,3 +1,8 @@
+1.5.2B
+Finder Compass now has a texture file for each resolution at /mods/findercompass/textures/items/compass*.png
+With * being the texture size eg 16,32,64,128 and 256
+This was necessary because Optifine does not allow different texture sizes to be loaded at the same time
+
 1.5.2
 updated to MC 1.5.1
 

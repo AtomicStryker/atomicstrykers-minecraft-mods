@@ -33,8 +33,6 @@ public class AS_FinderCompass extends TextureFX
     private int[] spawnNeedlecolor = new int[] {255, 20, 20};
     private int[] strongholdNeedlecolor = new int[] {175, 220, 0};    
     private static File settingsFile;
-    private final double HEADING_DOWN = 0.0D;
-    private final double HEADING_UP = 135.0D;
     private int x;
     private int y;
     private int z;
@@ -63,7 +61,7 @@ public class AS_FinderCompass extends TextureFX
     public AS_FinderCompass(Minecraft var1)
     {
         super("findercompass:compass", 16, 16);
-		this.mc = var1;
+		AS_FinderCompass.mc = var1;
 		
         setupTileSizes();
 
@@ -96,34 +94,25 @@ public class AS_FinderCompass extends TextureFX
             }
         }
     }
-    
-    private void setupTileSizes()
-    {
-        setupTileSizes(false);
-    }
 
-    private void setupTileSizes(boolean optifinePresent)
+    private void setupTileSizes()
     {
         try
         {
-            BufferedImage image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass.png"));
+            // load default compass to figure out texture size
+            BufferedImage image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/textures/items/compass.png"));
             
-            if (!optifinePresent)
-            {
-                tileSizeBase = image.getWidth();
-                tileSizeSquare = tileSizeBase*tileSizeBase;
-            }
-            else if (tileSizeBase == 16)
-            {
-                image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass16.png"));
-            }
+            tileSizeBase = image.getWidth();
+            tileSizeSquare = tileSizeBase*tileSizeBase;
+            System.out.println("finder compass: tilesize_intsize = "+tileSizeBase+"; tilesizeSquare = "+tileSizeSquare+";");
+            
+            image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass"+tileSizeBase+".png"));
             
             this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
             this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
             tileSize_int_compassNeedleMin = -(tileSizeBase >> 2);
             tileSize_int_compassNeedleMax = (int) (tileSizeBase == 16 ? 16 : tileSizeBase*0.6);
             
-            System.out.println("finder compass: tilesize_intsize = "+tileSizeBase+"; tilesizeSquare = "+tileSizeSquare+";");
             System.out.println("finder compass: compassNeedleMin = "+tileSize_int_compassNeedleMin+"; compassNeedleMax = "+tileSize_int_compassNeedleMax+";");
             
             baseTexture = new int[tileSizeSquare];
@@ -146,15 +135,6 @@ public class AS_FinderCompass extends TextureFX
     @Override
     protected final void onTick(byte[] imageData)
     {
-        if (imageData.length != baseTexture.length*4)
-        {
-            System.out.println("OptifFFFFFFFF");
-            
-            tileSizeSquare = imageData.length/4;
-            tileSizeBase = (int) Math.sqrt(tileSizeSquare);
-            setupTileSizes(true);
-        }
-        
         int[] originalTex = baseTexture;
         
         for (int pixIndex = 0; pixIndex < tileSizeSquare; ++pixIndex)
@@ -165,7 +145,7 @@ public class AS_FinderCompass extends TextureFX
             imageData[pixIndex * 4 + 3] = (byte) (originalTex[pixIndex] >> 24 & 255);
         }
         
-        if (this.mc.theWorld != null && this.mc.thePlayer != null)
+        if (AS_FinderCompass.mc.theWorld != null && AS_FinderCompass.mc.thePlayer != null)
         {
             boolean isNewSecond = false;
             boolean is15SecInterval = false;
@@ -189,19 +169,19 @@ public class AS_FinderCompass extends TextureFX
 
             if (currentSetting.getHasDefaultNeedle())
             {
-                this.drawNeedle(imageData, 0, this.computeNeedleHeading(this.mc.theWorld.getSpawnPoint()), this.spawnNeedlecolor, true);
+                this.drawNeedle(imageData, 0, this.computeNeedleHeading(AS_FinderCompass.mc.theWorld.getSpawnPoint()), this.spawnNeedlecolor, true);
             }
 
             if (currentSetting.getHasStrongholdNeedle() && hasStronghold)
             {
-                this.drawNeedle(imageData, 1, this.computeNeedleHeading(this.strongholdCoords), this.strongholdNeedlecolor, false);
+                this.drawNeedle(imageData, 1, this.computeNeedleHeading(AS_FinderCompass.strongholdCoords), this.strongholdNeedlecolor, false);
             }
 
-            if ((int)this.mc.thePlayer.posX != this.x || (int)this.mc.thePlayer.posY != this.y || (int)this.mc.thePlayer.posZ != this.z)
+            if ((int)AS_FinderCompass.mc.thePlayer.posX != this.x || (int)AS_FinderCompass.mc.thePlayer.posY != this.y || (int)AS_FinderCompass.mc.thePlayer.posZ != this.z)
             {
-                this.x = (int)this.mc.thePlayer.posX;
-                this.y = (int)this.mc.thePlayer.posY;
-                this.z = (int)this.mc.thePlayer.posZ;
+                this.x = (int)AS_FinderCompass.mc.thePlayer.posX;
+                this.y = (int)AS_FinderCompass.mc.thePlayer.posY;
+                this.z = (int)AS_FinderCompass.mc.thePlayer.posZ;
                 this.updateScan = true;
             }
 
@@ -210,15 +190,15 @@ public class AS_FinderCompass extends TextureFX
                 this.seccounter = 0;
                 is15SecInterval = true;
                 
-                this.hasStronghold = false;
+                AS_FinderCompass.hasStronghold = false;
                 askServerForStrongholdCoords();
             }
 
             int[] configInts;
             AS_FinderCompassIntPair blockInts;
             ChunkCoordinates coords;
-            Iterator iter;
-            Entry iterEntry;
+            Iterator<Entry<AS_FinderCompassIntPair, int[]>> iter;
+            Entry<AS_FinderCompassIntPair, int[]> iterEntry;
             if (this.updateScan && isNewSecond)
             {
                 this.updateScan = false;
@@ -226,9 +206,9 @@ public class AS_FinderCompass extends TextureFX
 
                 while (iter.hasNext())
                 {
-                    iterEntry = (Entry)iter.next();
-                    blockInts = ((AS_FinderCompassIntPair)iterEntry.getKey());
-                    configInts = (int[])iterEntry.getValue();
+                    iterEntry = iter.next();
+                    blockInts = iterEntry.getKey();
+                    configInts = iterEntry.getValue();
                     if (is15SecInterval || configInts[7] == 0)
                     {
                         coords = this.findNearestBlockChunkOfIDInRange(blockInts.getBlockID(), blockInts.getDamage(), this.x, this.y, this.z, configInts[3], configInts[4], configInts[5], configInts[6]);
@@ -249,17 +229,15 @@ public class AS_FinderCompass extends TextureFX
                 }
             }
 
-            int var1 = 3;
-            iter = currentSetting.getCustomNeedleTargets().entrySet().iterator();
-
-            while (iter.hasNext())
+            int needleIndex = 3;
+            Iterator<Entry<AS_FinderCompassIntPair, ChunkCoordinates>> iterTargets = currentSetting.getCustomNeedleTargets().entrySet().iterator();
+            Entry<AS_FinderCompassIntPair, ChunkCoordinates> entryTarget;
+            while (iterTargets.hasNext())
             {
-                iterEntry = (Entry)iter.next();
-                blockInts = (AS_FinderCompassIntPair) iterEntry.getKey();
-                coords = (ChunkCoordinates)iterEntry.getValue();
-                configInts = currentSetting.getCustomNeedles().get(blockInts);
-                ++var1;
-                this.drawNeedle(imageData, var1, this.computeNeedleHeading(coords), configInts, false);
+                entryTarget = iterTargets.next();
+                configInts = currentSetting.getCustomNeedles().get(entryTarget.getKey());
+                ++needleIndex;
+                this.drawNeedle(imageData, needleIndex, this.computeNeedleHeading(entryTarget.getValue()), configInts, false);
             }
         }
     }
@@ -267,12 +245,12 @@ public class AS_FinderCompass extends TextureFX
     public double computeNeedleHeading(ChunkCoordinates coords)
     {
         double var2 = 0.0D;
-        if (this.mc.theWorld != null && this.mc.thePlayer != null)
+        if (AS_FinderCompass.mc.theWorld != null && AS_FinderCompass.mc.thePlayer != null)
         {
-            double var4 = (double)coords.posX+0.5D - this.mc.thePlayer.posX;
-            double var6 = (double)coords.posZ+0.5D - this.mc.thePlayer.posZ;
-            var2 = (double)(this.mc.thePlayer.rotationYaw - 90.0F) * 3.141592653589793D / 180.0D - Math.atan2(var6, var4);
-            if (this.mc.theWorld.provider.isHellWorld)
+            double var4 = (double)coords.posX+0.5D - AS_FinderCompass.mc.thePlayer.posX;
+            double var6 = (double)coords.posZ+0.5D - AS_FinderCompass.mc.thePlayer.posZ;
+            var2 = (double)(AS_FinderCompass.mc.thePlayer.rotationYaw - 90.0F) * 3.141592653589793D / 180.0D - Math.atan2(var6, var4);
+            if (AS_FinderCompass.mc.theWorld.provider.isHellWorld)
             {
                 var2 = Math.random() * 3.1415927410125732D * 2.0D;
             }
@@ -319,9 +297,6 @@ public class AS_FinderCompass extends TextureFX
         int var16;
         short var19;
         int var18;
-        int var21;
-        int var20;
-        int var22;
         if (drawCenter)
         {            
             for (var12 = this.tileSize_int_compassCrossMin; var12 <= this.tileSize_int_compassCrossMax; ++var12)

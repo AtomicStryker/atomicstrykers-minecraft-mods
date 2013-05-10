@@ -13,7 +13,7 @@ import cpw.mods.fml.common.TickType;
 
 public class FinderCompassClientTicker implements ITickHandler
 {
-    private EnumSet tickTypes = EnumSet.of(TickType.CLIENT);
+    private EnumSet<TickType> tickTypes = EnumSet.of(TickType.CLIENT);
     
     private final Minecraft mc;
     private int COMPASS_ITEM_ID;
