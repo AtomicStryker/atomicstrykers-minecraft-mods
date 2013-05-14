@@ -30,11 +30,6 @@ public abstract class TextureFX extends TextureStitched
     protected int width;
     
     /**
-     * Texture height in pixels
-     */
-    protected int height;
-    
-    /**
      * Texture pixels as byte array, RGBA format
      */
     protected byte[] imageData;
@@ -48,29 +43,12 @@ public abstract class TextureFX extends TextureStitched
     {
         super(name);
         this.width = width;
-        this.height = height;
     }
 
     /**
      * @param imageData Texture pixels as byte array, RGBA format
      */
     protected abstract void onTick(byte[] imageData);
-    
-    /**
-     * @return Texture width in pixels
-     */
-    public int getWidth()
-    {
-        return width;
-    }
-    
-    /**
-     * @return Texture height in pixels
-     */
-    public int getHeight()
-    {
-        return height;
-    }
 
     @Override
     public final void updateAnimation()
@@ -97,7 +75,6 @@ public abstract class TextureFX extends TextureStitched
         if (image != null)
         {
             width = image.getWidth();
-            height = image.getHeight();
         }
         onSetup();
         // add it twice, else mc does not consider it animated
@@ -108,8 +85,10 @@ public abstract class TextureFX extends TextureStitched
     
     private void onSetup()
     {
-        imageData = new byte[width * height * 4];
-        dynamicTexture = new Texture(getIconName(), 2, width, height, 1, GL11.GL_CLAMP, GL11.GL_RGBA, GL11.GL_NEAREST, GL11.GL_NEAREST, null);
+        width = AS_FinderCompass.getTileSize();
+        imageData = new byte[width * width * 4];
+        System.out.println("Finder Compass Dynamic Texture setup, Image Width: "+width);
+        dynamicTexture = new Texture(getIconName(), 2, width, width, 1, GL11.GL_CLAMP, GL11.GL_RGBA, GL11.GL_NEAREST, GL11.GL_NEAREST, null);
     }
 
 }

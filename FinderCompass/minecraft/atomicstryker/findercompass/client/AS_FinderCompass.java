@@ -49,8 +49,8 @@ public class AS_FinderCompass extends TextureFX
     
     private final int tileSize_int_compassCrossMin = -4;
     private final int tileSize_int_compassCrossMax = 4;
-    private int tileSizeBase;
-    private int tileSizeSquare;
+    private static int tileSizeBase;
+    private static int tileSizeSquare;
     private double tileSize_double_compassCenterMin;
     private double tileSize_double_compassCenterMax;
     private int tileSize_int_compassNeedleMin;
@@ -108,10 +108,19 @@ public class AS_FinderCompass extends TextureFX
             
             image = ImageIO.read(mc.texturePackList.getSelectedTexturePack().getResourceAsStream("/mods/findercompass/textures/items/compass"+tileSizeBase+".png"));
             
-            this.tileSize_double_compassCenterMin = (double)(this.tileSizeBase / 2) - 0.5D;
-            this.tileSize_double_compassCenterMax = (double)(this.tileSizeBase / 2) + 0.5D;
+            this.tileSize_double_compassCenterMin = (double)(AS_FinderCompass.tileSizeBase / 2) - 0.5D;
+            this.tileSize_double_compassCenterMax = (double)(AS_FinderCompass.tileSizeBase / 2) + 0.5D;
+            
             tileSize_int_compassNeedleMin = -(tileSizeBase >> 2);
             tileSize_int_compassNeedleMax = (int) (tileSizeBase == 16 ? 16 : tileSizeBase*0.6);
+            if (tileSize_int_compassNeedleMax > 25) // yeah im not even going to pretend to fix the math
+            {
+                tileSize_int_compassNeedleMax = 25;
+            }
+            if (tileSize_int_compassNeedleMin < -24)
+            {
+                tileSize_int_compassNeedleMin = -24;
+            }
             
             System.out.println("finder compass: compassNeedleMin = "+tileSize_int_compassNeedleMin+"; compassNeedleMax = "+tileSize_int_compassNeedleMax+";");
             
@@ -261,7 +270,7 @@ public class AS_FinderCompass extends TextureFX
 
     public void drawNeedle(byte[] imageData, int needleNum, double heading, int[] rgbColors, boolean drawCenter)
     {
-    	double needleLength = 0.3D * (this.tileSizeBase / 16);
+    	double needleLength = 0.3D * (AS_FinderCompass.tileSizeBase / 16);
     	
         double var6;
         for (var6 = heading - this.textureId[needleNum]; var6 < -Math.PI; var6 += 2*Math.PI)
@@ -289,7 +298,7 @@ public class AS_FinderCompass extends TextureFX
         this.tileSize[needleNum] += this.textureId[needleNum];
         double var8 = Math.sin(this.textureId[needleNum]);
         double var10 = Math.cos(this.textureId[needleNum]);
-        int var12;
+        int index;
         int var13;
         int var14;
         int var15;
@@ -299,11 +308,11 @@ public class AS_FinderCompass extends TextureFX
         int var18;
         if (drawCenter)
         {            
-            for (var12 = this.tileSize_int_compassCrossMin; var12 <= this.tileSize_int_compassCrossMax; ++var12)
+            for (index = this.tileSize_int_compassCrossMin; index <= this.tileSize_int_compassCrossMax; ++index)
             {
-                var13 = (int)(this.tileSize_double_compassCenterMax + var10 * (double)var12 * needleLength);
-                var14 = (int)(this.tileSize_double_compassCenterMin - var8 * (double)var12 * needleLength * 0.5D);
-                var15 = var14 * this.tileSizeBase + var13;
+                var13 = (int)(this.tileSize_double_compassCenterMax + var10 * (double)index * needleLength);
+                var14 = (int)(this.tileSize_double_compassCenterMin - var8 * (double)index * needleLength * 0.5D);
+                var15 = var14 * AS_FinderCompass.tileSizeBase + var13;
                 var16 = 100;
                 var17 = 100;
                 var18 = 100;
@@ -316,16 +325,16 @@ public class AS_FinderCompass extends TextureFX
             }
         }
 
-        for (var12 = this.tileSize_int_compassNeedleMin; var12 <= this.tileSize_int_compassNeedleMax; ++var12)
+        for (index = this.tileSize_int_compassNeedleMin; index <= this.tileSize_int_compassNeedleMax; ++index)
         {
-            var13 = (int)(this.tileSize_double_compassCenterMax + var8 * (double)var12 * needleLength);
-            var14 = (int)(this.tileSize_double_compassCenterMin + var10 * (double)var12 * needleLength * 0.5D);
-            var15 = var14 * this.tileSizeBase + var13;
-            var16 = var12 < 0 ? 100 : rgbColors[0];
-            var17 = var12 < 0 ? 100 : rgbColors[1];
-            var18 = var12 < 0 ? 100 : rgbColors[2];
+            var13 = (int)(this.tileSize_double_compassCenterMax + var8 * (double)index * needleLength);
+            var14 = (int)(this.tileSize_double_compassCenterMin + var10 * (double)index * needleLength * 0.5D);
+            var15 = var14 * AS_FinderCompass.tileSizeBase + var13;
+            var16 = index < 0 ? 100 : rgbColors[0];
+            var17 = index < 0 ? 100 : rgbColors[1];
+            var18 = index < 0 ? 100 : rgbColors[2];
             var19 = 255;
-
+            
             imageData[var15 * 4 + 0] = (byte)var16;
             imageData[var15 * 4 + 1] = (byte)var17;
             imageData[var15 * 4 + 2] = (byte)var18;
@@ -512,6 +521,11 @@ public class AS_FinderCompass extends TextureFX
 		{
 			mc.ingameGUI.getChatGUI().printChatMessage("Finder Compass config error - no Settings defined! YOU FOOL!");
 		}
+    }
+    
+    public static int getTileSize()
+    {
+        return tileSizeBase;
     }
 
 }

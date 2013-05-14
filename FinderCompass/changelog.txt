@@ -1,3 +1,7 @@
+1.5.2C
+and more code for Optifine, yay
+holding needle length calculation together with duct tape at this point
+
 1.5.2B
 Finder Compass now has a texture file for each resolution at /mods/findercompass/textures/items/compass*.png
 With * being the texture size eg 16,32,64,128 and 256
