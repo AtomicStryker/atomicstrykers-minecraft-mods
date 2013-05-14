@@ -45,6 +45,7 @@ public class ItemAdvancedMachine extends ItemBlock
         }
     }
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
     {

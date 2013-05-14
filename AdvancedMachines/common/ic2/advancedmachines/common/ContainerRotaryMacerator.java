@@ -90,7 +90,7 @@ public class ContainerRotaryMacerator extends Container
                 this.tileentity.energy = this.tileentity.energy & '\uffff' | var2 << 16;
                 break;
             case 3:
-                this.tileentity.speed = (short)var2;
+                this.tileentity.speed = var2;
         }
     }
     

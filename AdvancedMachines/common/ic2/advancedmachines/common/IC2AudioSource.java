@@ -8,20 +8,23 @@ public class IC2AudioSource
 {
 	private static boolean initFailed = false;
 	
-	private static Class audioManagerClass;
+	@SuppressWarnings("rawtypes")
+    private static Class audioManagerClass;
 	private static Object audioManagerInstance;
 	private static Method audioManagercreateSource;
 	private static Method audioManagerremoveSource;
 	private static Method audioManagerplayOnce;
 	
-	private static Class audioSourceClass;
+	@SuppressWarnings("rawtypes")
+    private static Class audioSourceClass;
 	private static Method audioSourcePlay;
 	private static Method audioSourceStop;
 	private static Method audioSourceRemove;
 	
 	private Object audioSourceinstance;
 	
-	public IC2AudioSource(TileEntity tEnt, String soundfile)
+	@SuppressWarnings("unchecked")
+    public IC2AudioSource(TileEntity tEnt, String soundfile)
 	{		
 		if (audioManagerClass == null && !initFailed)
 		{

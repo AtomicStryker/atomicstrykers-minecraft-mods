@@ -18,8 +18,6 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     private String inventoryName;
     private int[] inputs;
     private int[] outputs;
-    short speed;
-    short progress;
     private String dataFormat;
     private int dataScaling;
     
@@ -31,6 +29,9 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     private int energyConsume = 2;
     private int acceleration = 1;
     private int maxSpeed;
+    
+    public int speed;
+    public short progress;
 
     public TileEntityAdvancedMachine(String invName, String dataForm, int dataScale, int[] inputSlots, int[] outputSlots)
     {
@@ -48,7 +49,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     public void readFromNBT(NBTTagCompound var1)
     {
         super.readFromNBT(var1);
-        this.speed = var1.getShort("speed");
+        this.speed = var1.getInteger("speed");
         this.progress = var1.getShort("progress");
     }
 
@@ -56,7 +57,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     public void writeToNBT(NBTTagCompound var1)
     {
         super.writeToNBT(var1);
-        var1.setShort("speed", this.speed);
+        var1.setInteger("speed", this.speed);
         var1.setShort("progress", this.progress);
     }
 
@@ -115,7 +116,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             }
             else
             {
-            	speed = (short) maxSpeed;
+            	speed = maxSpeed;
             	energy -= AdvancedMachines.defaultEnergyConsume;
             }
 
@@ -125,7 +126,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         else
         {
         	boolean wasWorking = speed != 0;
-            speed = (short)(speed - Math.min(speed, 4));
+            speed = speed - Math.min(speed, 4);
             if (wasWorking && speed == 0)
             {
             	NetworkHelper.initiateTileEntityEvent(this, EventInterrupt, true);
@@ -323,7 +324,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     public String printFormattedData()
     {
-        return String.format(this.dataFormat, new Object[] {Integer.valueOf(this.speed * this.dataScaling)});
+        return String.format(this.dataFormat, new Object[] {Integer.valueOf(speed * this.dataScaling)});
     }
     
     @Override
@@ -405,7 +406,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     		}
     	}
 
-    	if (overclockerUpgradeCount > 32) overclockerUpgradeCount = 32;
+    	if (overclockerUpgradeCount > 16) overclockerUpgradeCount = 16;
     	if (transformerUpgradeCount > 10) transformerUpgradeCount = 10;
 
     	this.energyConsume = (int)(AdvancedMachines.defaultEnergyConsume * Math.pow(AdvancedMachines.overClockEnergyRatio, overclockerUpgradeCount));

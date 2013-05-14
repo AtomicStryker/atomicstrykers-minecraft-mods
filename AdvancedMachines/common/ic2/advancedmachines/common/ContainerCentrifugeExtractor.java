@@ -144,7 +144,7 @@ public class ContainerCentrifugeExtractor extends Container
                 this.tileentity.energy = this.tileentity.energy & '\uffff' | value << 16;
                 break;
             case 3:
-                this.tileentity.speed = (short)value;
+                this.tileentity.speed = value;
         }
     }
 
