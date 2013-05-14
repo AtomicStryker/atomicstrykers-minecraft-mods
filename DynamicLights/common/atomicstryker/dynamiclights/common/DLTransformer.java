@@ -34,9 +34,8 @@ public class DLTransformer implements IClassTransformer
     
     
     private final String classNameWorld = "net.minecraft.world.World";
-    private final String classNameWorldJava = "net/minecraft/world/World";
     private final String blockAccessJava = "net/minecraft/world/IBlockAccess";
-    private final String computeBlockLightMethodName = "func_98179_a";
+    private final String computeBlockLightMethodName = "computeLightValue";
     
     
     @Override
@@ -73,7 +72,7 @@ public class DLTransformer implements IClassTransformer
                 System.out.println("In target method! Patching!");
                 
                 AbstractInsnNode targetNode = null;
-                Iterator iter = m.instructions.iterator();
+                Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 boolean deleting = false;
                 boolean replacing = false;
                 while (iter.hasNext())

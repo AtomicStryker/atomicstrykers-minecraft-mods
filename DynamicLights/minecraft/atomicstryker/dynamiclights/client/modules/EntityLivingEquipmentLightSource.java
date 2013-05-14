@@ -9,10 +9,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
@@ -55,12 +52,12 @@ public class EntityLivingEquipmentLightSource
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        Property updateI = config.get(config.CATEGORY_GENERAL, "update Interval", 1000);
+        Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
         updateI.comment = "Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
         itemsMap = new HashMap<Integer, Integer>();
-        Property itemsList = config.get(config.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14");
         itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
         String[] tokens = itemsList.getString().split(",");
         for (String pair : tokens)
@@ -68,7 +65,6 @@ public class EntityLivingEquipmentLightSource
             String[] values = pair.split(":");
             int id = Integer.valueOf(values[0]);
             int value = Integer.valueOf(values[1]);
-            System.out.println("Dynamic Lights: Read Item ID "+id+" with light value "+value+" for handheld Items!");
             itemsMap.put(id, value);
         }
         
@@ -105,7 +101,7 @@ public class EntityLivingEquipmentLightSource
     
     private class TickHandler implements ITickHandler
     {
-        private final EnumSet ticks;
+        private final EnumSet<TickType> ticks;
         public TickHandler()
         {
             ticks = EnumSet.of(TickType.CLIENT);
@@ -116,6 +112,7 @@ public class EntityLivingEquipmentLightSource
         {
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {

@@ -51,7 +51,7 @@ public class BurningEntitiesLightSource
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        Property updateI = config.get(config.CATEGORY_GENERAL, "update Interval", 1000);
+        Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
         updateI.comment = "Update Interval time for all burning EntityLiving, Arrows and Fireballs in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
@@ -70,7 +70,7 @@ public class BurningEntitiesLightSource
     
     private class TickHandler implements ITickHandler
     {
-        private final EnumSet ticks;
+        private final EnumSet<TickType> ticks;
         public TickHandler()
         {
             ticks = EnumSet.of(TickType.CLIENT);
@@ -81,6 +81,7 @@ public class BurningEntitiesLightSource
         {
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
