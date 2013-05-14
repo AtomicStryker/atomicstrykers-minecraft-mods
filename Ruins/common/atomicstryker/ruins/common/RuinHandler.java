@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -14,7 +15,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class RuinHandler {
 	private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
-	private ArrayList<ArrayList<RuinIBuildable>> templates = new ArrayList<ArrayList<RuinIBuildable>>();
+	private ArrayList<HashSet<RuinIBuildable>> templates = new ArrayList<HashSet<RuinIBuildable>>();
 	private ArrayList<Exclude> excluded = new ArrayList<Exclude>();
 	protected int[][] vars;
 	
@@ -34,7 +35,7 @@ public class RuinHandler {
 		
 		// fill up the template arraylist
 		for( int fill = 0; fill < biomeAmountPlusOne; fill++ ) {
-			templates.add( new ArrayList<RuinIBuildable>() );
+			templates.add( new HashSet<RuinIBuildable>() );
 		}
 
 		PrintWriter pw;
@@ -74,7 +75,7 @@ public class RuinHandler {
 		try {
 			// load in the generic templates
 			pw.println( "Loading the generic ruins templates..." );
-			templates.set( RuinsMod.BIOME_NONE, getRuins( pw, templPath ) );
+			addRuins( pw, new File(templPath, "generic"), RuinsMod.BIOME_NONE );
 			vars[COUNT][RuinsMod.BIOME_NONE] = templates.get( RuinsMod.BIOME_NONE ).size();
 			recalcBiomeWeight( RuinsMod.BIOME_NONE );
 		} catch( Exception e ) {
@@ -98,32 +99,6 @@ public class RuinHandler {
 		    }
 		}
 		
-		/* unneeded? TODO
-		try
-		{
-		    Class extraBiomesManager = null;
-		    extraBiomesManager = Class.forName("extrabiomes.api.BiomeManager");
-		    if (extraBiomesManager != null)
-		    {
-		        Collection xlBiomes = (Collection) extraBiomesManager.getDeclaredMethod("getBiomes", (Class[])null).invoke(null, (Object[])null);
-		        if (xlBiomes != null)
-		        {
-		            Iterator iter = xlBiomes.iterator();
-		            while (iter.hasNext())
-		            {
-		                BiomeGenBase xlBase = (BiomeGenBase) iter.next();
-		                loadSpecificTemplates( pw, templPath, xlBase.biomeID, xlBase.biomeName );
-		                pw.println("Loaded ExtraBiomesXL "+xlBase.biomeName+" ruins templates, biomeID "+xlBase.biomeID);
-		            }
-		        }
-		    }
-		}
-		catch (Exception e)
-		{
-		    pw.println("ExtraBiomesXL not found, skipping over their BiomeManager hook");
-		}
-		*/
-
 		// Find and load the excluded file.  If this does not exist, no worries.
 		try {
 			pw.println();
@@ -225,7 +200,7 @@ public class RuinHandler {
 		pw.println( "Loading the " + bname + " ruins templates..." );
 		pw.flush();
 		File path_biome = new File( dir, bname );
-		templates.set( biome, getRuins( pw, path_biome ) );
+		addRuins( pw, path_biome, biome );
 		vars[COUNT][biome] = templates.get( biome ).size();
 		recalcBiomeWeight( biome );
 	}
@@ -329,8 +304,8 @@ public class RuinHandler {
 		br.close();
 	}
 
-    private ArrayList<RuinIBuildable> getRuins( PrintWriter pw, File path ) throws Exception {
-        ArrayList<RuinIBuildable> retval = new ArrayList<RuinIBuildable>();
+    private void addRuins( PrintWriter pw, File path, int biomeID ) throws Exception {
+        HashSet<RuinIBuildable> targetList = templates.get(biomeID);
         RuinIBuildable r;
         if (path.listFiles() != null)
         {
@@ -339,7 +314,23 @@ public class RuinHandler {
     				switch( checkFileType( f.getName() ) ) {
     				case RuinsMod.FILE_TEMPLATE:
     					r = new RuinTemplate( f.getCanonicalPath() );
-    					retval.add( r );
+    					targetList.add( r );
+    					
+    					String candidate;
+    					for (String biomeName : ((RuinTemplate)r).getBiomesToSpawnIn()) {
+    					    for (int x = 0; x < BiomeGenBase.biomeList.length; x++) {
+    					        if (BiomeGenBase.biomeList[x] != null) {
+    					            candidate = BiomeGenBase.biomeList[x].biomeName.toLowerCase();
+    					            if (candidate.equals(biomeName)) {
+    					                if (BiomeGenBase.biomeList[x].biomeID != biomeID) {
+    					                    templates.get(x).add( r );
+    					                }
+    					                break;
+    					            }
+    					        }
+    					    }
+    					}
+    					
     					pw.println( "Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + "." );
     					break;
     				case RuinsMod.FILE_COMPLEX:
@@ -362,7 +353,6 @@ public class RuinHandler {
         	pw.println( "Did not find any Building data for "+path+", creating empty folder for it: "+(path.mkdir() ? "success" : "failed") );
         }
 		pw.flush();
-        return retval;
     }
 
     private static int checkFileType( String s ) {

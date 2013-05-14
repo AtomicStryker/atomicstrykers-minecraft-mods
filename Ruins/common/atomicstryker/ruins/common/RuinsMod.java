@@ -33,7 +33,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.1", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.2", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -42,23 +42,13 @@ public class RuinsMod
     public static final int BIOME_NONE = 500;
 
     private ConcurrentHashMap<World, WorldHandle> generatorMap;
-    
-    private class WorldHandle
-    {
-        WorldHandle()
-        {
-            currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
-        }
-        
-        RuinHandler ruins;
-        RuinGenerator generator;
-        ConcurrentLinkedQueue<int[]> currentlyGenerating;
-    }
+    private ConcurrentLinkedQueue<int[]> currentlyGenerating;
 
     @Init
     public void load(FMLInitializationEvent evt)
     {
         generatorMap = new ConcurrentHashMap<World, WorldHandle>();
+        currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -85,61 +75,56 @@ public class RuinsMod
                 return; // the 0,0 bug is really annoying. SLEDGEHAMMER FIX!
             }
             
-            if (world.provider instanceof WorldProviderHell)
+            int[] tuple = { chunkX, chunkZ };
+            if (currentlyGenerating.contains(tuple))
             {
-                generateNether(world, random, chunkX*16, chunkZ*16);
+                System.out.printf("Ruins Mod caught recursive generator call at chunk [%d|%d]", chunkX, chunkZ);
             }
-            else if (world.provider instanceof WorldProviderEnd)
+            else
             {
-                generateSurface(world, random, chunkX*16, chunkZ*16);
-            }
-            else // normal world
-            {
-                generateSurface(world, random, chunkX*16, chunkZ*16);
+                currentlyGenerating.add(tuple);
+                if (world.provider instanceof WorldProviderHell)
+                {
+                    generateNether(world, random, chunkX*16, chunkZ*16);
+                }
+                else if (world.provider instanceof WorldProviderEnd)
+                {
+                    generateSurface(world, random, chunkX*16, chunkZ*16);
+                }
+                else // normal world
+                {
+                    generateSurface(world, random, chunkX*16, chunkZ*16);
+                }
+                currentlyGenerating.remove(tuple);
             }
         }
     }
 
-
-    private synchronized void generateNether(World world, Random random, int chunkX, int chunkZ)
+    private void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
         WorldHandle wh = getWorldHandle(world);
         if (wh.ruins != null && wh.ruins.loaded)
         {
-            int[] tuple = { chunkX, chunkZ };
-            if (!wh.currentlyGenerating.contains(tuple))
-            {
-                wh.currentlyGenerating.add(tuple);
-                wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
-                wh.currentlyGenerating.remove(tuple);
-            }
-            else
-            {
-                System.out.println("Ruins Mod caught circular Stacktrace while Nether-Spawning!");
-            }
+            wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
         }
     }
 
-    private synchronized void generateSurface(World world, Random random, int chunkX, int chunkZ)
+    private void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
         WorldHandle wh = getWorldHandle(world);
         if (wh.ruins != null && wh.ruins.loaded)
         {
-            int[] tuple = { chunkX, chunkZ };
-            if (!wh.currentlyGenerating.contains(tuple))
-            {
-                wh.currentlyGenerating.add(tuple);
-                wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
-                wh.currentlyGenerating.remove(tuple);
-            }
-            else
-            {
-                System.out.println("Ruins Mod caught circular Stacktrace while World-Spawning!");
-            }
+            wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
         }
     }
     
-    private synchronized WorldHandle getWorldHandle(World world)
+    private class WorldHandle
+    {        
+        RuinHandler ruins;
+        RuinGenerator generator;
+    }
+    
+    private WorldHandle getWorldHandle(World world)
     {
         WorldHandle wh = null;
         if (!generatorMap.containsKey(world))

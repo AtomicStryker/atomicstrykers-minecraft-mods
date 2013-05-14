@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -17,6 +18,7 @@ public class RuinTemplate implements RuinIBuildable {
 					unique = false;
     private ArrayList<RuinTemplateRule> rules = new ArrayList<RuinTemplateRule>();
     private ArrayList<RuinTemplateLayer> layers = new ArrayList<RuinTemplateLayer>();
+    private HashSet<String> biomes = new HashSet<String>();
 
     public RuinTemplate( String filename ) throws Exception {
         // load in the given file as a template
@@ -31,6 +33,19 @@ public class RuinTemplate implements RuinIBuildable {
         parseFile( lines );
         br.close();
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof RuinTemplate) {
+            return ((RuinTemplate)o).name.equals(name);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 
 	public String getName() {
 		return name;
@@ -38,6 +53,10 @@ public class RuinTemplate implements RuinIBuildable {
 
 	public int getWeight() {
 		return weight;
+	}
+	
+	public HashSet<String> getBiomesToSpawnIn() {
+	    return biomes;
 	}
 
 	public int getMinDistance() {
@@ -415,55 +434,60 @@ public class RuinTemplate implements RuinIBuildable {
                     width = Integer.parseInt( check[1] );
                     length = Integer.parseInt( check[2] );
                 }
-                if( line.startsWith( "weight" ) ) {
+                else if( line.startsWith( "biomesToSpawnIn" ) ) {
+                    for (String s : line.split( "=" )[1].split(",")) {
+                        biomes.add(s);
+                    }
+                }
+                else if( line.startsWith( "weight" ) ) {
                     String[] check = line.split( "=" );
                     weight = Integer.parseInt( check[1] );
                 }
-                if( line.startsWith( "unique" ) ) {
+                else if( line.startsWith( "unique" ) ) {
                     String[] check = line.split( "=" );
 					if( Integer.parseInt( check[1] ) == 1 ) {
 						unique = true;
 					}
                 }
-                if( line.startsWith( "embed_into_distance" ) ) {
+                else if( line.startsWith( "embed_into_distance" ) ) {
                     String[] check = line.split( "=" );
                     embed = Integer.parseInt( check[1] );
                 }
-                if( line.startsWith( "allowable_overhang" ) ) {
+                else if( line.startsWith( "allowable_overhang" ) ) {
                     String[] check = line.split( "=" );
                     overhang = Integer.parseInt( check[1] );
                 }
-                if( line.startsWith( "max_cut_in" ) ) {
+                else if( line.startsWith( "max_cut_in" ) ) {
                     String[] check = line.split( "=" );
                     cutIn = Integer.parseInt( check[1] );
                 }
-                if( line.startsWith( "cut_in_buffer" ) ) {
+                else if( line.startsWith( "cut_in_buffer" ) ) {
                     String[] check = line.split( "=" );
                     cbuffer = Integer.parseInt( check[1] );
 					if( cbuffer > 5 ) { cbuffer = 5; }
                 }
-                if( line.startsWith( "max_leveling" ) ) {
+                else if( line.startsWith( "max_leveling" ) ) {
                     String[] check = line.split( "=" );
                     leveling = Integer.parseInt( check[1] );
                 }
-                if( line.startsWith( "leveling_buffer" ) ) {
+                else if( line.startsWith( "leveling_buffer" ) ) {
                     String[] check = line.split( "=" );
                     lbuffer = Integer.parseInt( check[1] );
 					if( lbuffer > 5 ) { lbuffer = 5; }
                 }
-                if( line.startsWith( "preserve_water" ) ) {
+                else if( line.startsWith( "preserve_water" ) ) {
                     String[] check = line.split( "=" );
 					if( Integer.parseInt( check[1] ) == 1 ) {
 						preserveWater = true;
 					}
                 }
-                if( line.startsWith( "preserve_lava" ) ) {
+                else if( line.startsWith( "preserve_lava" ) ) {
                     String[] check = line.split( "=" );
 					if( Integer.parseInt( check[1] ) == 1 ) {
 						preserveLava = true;
 					}
                 }
-                if( line.startsWith( "preserve_plants" ) ) {
+                else if( line.startsWith( "preserve_plants" ) ) {
                     String[] check = line.split( "=" );
 					if( Integer.parseInt( check[1] ) == 1 ) {
 						preservePlants = true;

@@ -207,3 +207,10 @@ a: setAccessible now true
 10.1
 + made Ruins logic distinctly and concurrently per-world and atomic, should fix server Dimension oddness
 + disabled Ruins excessive logging by default. You can re-enable it in ruins.txt in your world save directory
+
+10.1b
++ moved the recursive generator check back into the main mod from per-world logic, does not seem to catch with multimc
+
+10.2
++ added biomesToSpawnIn optional setting to template rules
++ added "generic" folder which is now supposed to contain the "common" templates instead of the /resources/ruins/ base folder

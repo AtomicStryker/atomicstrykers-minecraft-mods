@@ -26,6 +26,16 @@
 
 
 # VARIABLES
+#
+# biomesToSpawnIn=<name1>,<name2>,<name3>...
+# Adds the Template being loaded (regardless which folder it is in) to a Ruins Biome
+# found in the Minecraft Biomelist so that <namex> matches the Biome's name.
+# If you don't know a Biome's name, find it's folder. The foldername equals the
+# Biome name. Case insensitive. A Template cannot be added to a Biome more than once.
+# The Template is still added to the corresponding folder it was loaded from (if not already in).
+# example: biomesToSpawnIn=forest,foresthills,taiga
+# Optional. You can use the folders as before, or use this to save space, or both.
+#
 # weight=<weight>
 # Weight is how much weight this template has during random generation.  When
 # the mod asks for a template to place it adds up the weights of all templates
