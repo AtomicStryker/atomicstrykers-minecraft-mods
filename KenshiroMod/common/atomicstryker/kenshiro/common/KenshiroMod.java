@@ -23,7 +23,7 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 
-@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.1.3")
+@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.1.4")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_KSM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_KSM"}, packetHandler = ServerPacketHandler.class)
@@ -86,7 +86,7 @@ public class KenshiroMod
     
     public void stopCreeperExplosion(EntityCreeper creeper)
     {
-        ObfuscationReflectionHelper.setPrivateValue(EntityCreeper.class, creeper, (Object)0, (Integer)0);
+        ObfuscationReflectionHelper.setPrivateValue(EntityCreeper.class, creeper, (Integer)1, 1);
     }
     
     public void debuffEntityLiving(EntityLiving target)

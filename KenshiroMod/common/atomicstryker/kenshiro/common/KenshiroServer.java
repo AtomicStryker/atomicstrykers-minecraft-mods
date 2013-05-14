@@ -25,6 +25,8 @@ import atomicstryker.ForgePacketWrapper;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class KenshiroServer
 {
@@ -38,6 +40,7 @@ public class KenshiroServer
         hasKenshiroSet = new HashSet<EntityPlayer>();
         punchedEntitiesMap = new HashMap<EntityPlayer, Set<EntityLiving>>();
         MinecraftForge.EVENT_BUS.register(this);
+        TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
     }
     
     public static KenshiroServer instance()
@@ -151,7 +154,7 @@ public class KenshiroServer
 
     public void onClientFinishedKenshiroVolley(EntityPlayer playerEnt)
     {
-        Set s = punchedEntitiesMap.get(playerEnt);
+        Set<EntityLiving> s = punchedEntitiesMap.get(playerEnt);
         if (s != null)
         {
             Iterator<EntityLiving> iter = s.iterator();
@@ -182,7 +185,7 @@ public class KenshiroServer
     
     private class ServerTickHandler implements ITickHandler
     {
-        private final EnumSet tickTypes;
+        private final EnumSet<TickType> tickTypes;
         public ServerTickHandler()
         {
             tickTypes = EnumSet.of(TickType.WORLD);

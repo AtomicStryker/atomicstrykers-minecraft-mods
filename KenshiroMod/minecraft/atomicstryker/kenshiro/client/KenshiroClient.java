@@ -49,7 +49,6 @@ public class KenshiroClient
 	private long triggerTime = 0L;
 	private long smashTime = 0L;
 	private long fxTime = 0L;
-	private boolean shindeiru = false;
 	private long shindeiruTime = 0L;
 	
 	private Set<Entity> entitesHit;
@@ -81,7 +80,7 @@ public class KenshiroClient
     
     private class ClientTickHandler implements ITickHandler
     {
-        private final EnumSet tickTypes;
+        private final EnumSet<TickType> tickTypes;
         public ClientTickHandler()
         {
             tickTypes = EnumSet.of(TickType.RENDER);
@@ -159,7 +158,7 @@ public class KenshiroClient
 					}
         			
         			if (((hardness <= 3.0F && hardness >= 0F) || blockID == Block.wood.blockID || blockID == Block.web.blockID)
-        			&& currtime > smashTime+150L)
+        			&& currtime > smashTime+250L)
         			{
         			    sendPacketToServerHasDestroyedBlock(x, y, z);
         			    
@@ -376,7 +375,6 @@ public class KenshiroClient
     }
     
     private final int ANIMATION_SWING = 1;
-    private final int ANIMATION_CRIT_FX = 6;
     private final int ANIMATION_CRITMAGIC_FX = 7;
     private void sendAnimationPacketToServer(int animation)
     {
@@ -386,7 +384,10 @@ public class KenshiroClient
 
     public boolean getKenshiroMode()
     {
-    	if (triggeredKenshiro) return true;
+        if (triggeredKenshiro)
+        {
+            return true;
+        }
     	
     	return (canKenshiro && entPlayer.prevSwingProgress == 0F);
     }

@@ -36,7 +36,6 @@ public class RenderHookKenshiro extends Render
         render(renderTick);
     }
 	
-    @SuppressWarnings("static-access")
     private void render(float renderTick)
 	{
         RenderHelper.disableStandardItemLighting();
