@@ -73,9 +73,9 @@ public class WorldGenHandler implements IWorldGenerator
         {
             floor = AS_BattleTowersCore.floorItemManagers.length-1;
         }
-        if (floor < 1)
+        if (floor < 0)
         {
-            floor = 1;
+            floor = 0;
         }
         
         return new TowerStageItemManager(AS_BattleTowersCore.floorItemManagers[floor]);

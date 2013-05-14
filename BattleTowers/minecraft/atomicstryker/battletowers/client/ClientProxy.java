@@ -1,6 +1,5 @@
 package atomicstryker.battletowers.client;
 
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.battletowers.client.sound.BattleTowerSounds;
 import atomicstryker.battletowers.common.AS_EntityGolem;

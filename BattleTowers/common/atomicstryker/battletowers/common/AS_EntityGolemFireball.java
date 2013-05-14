@@ -51,6 +51,7 @@ public class AS_EntityGolemFireball extends Entity
         accelerationZ = (diffZ / targetDistance) * 0.1D;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void onUpdate()
     {

@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class ClientTickHandler implements ITickHandler
 {
-    private final EnumSet tickTypes;
+    private final EnumSet<TickType> tickTypes;
     
     private MovingObjectPosition playerTarget;
     private boolean hackFailed;
@@ -43,7 +43,7 @@ public class ClientTickHandler implements ITickHandler
         if (mc.currentScreen != null
         && mc.currentScreen instanceof GuiChest)
         {
-            List ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(mc.thePlayer.posX - 8D, mc.thePlayer.posY - 8D, mc.thePlayer.posZ - 8D, mc.thePlayer.posX + 8D, mc.thePlayer.posY + 8D, mc.thePlayer.posZ + 8D));
+            List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(mc.thePlayer.posX - 8D, mc.thePlayer.posY - 8D, mc.thePlayer.posZ - 8D, mc.thePlayer.posX + 8D, mc.thePlayer.posY + 8D, mc.thePlayer.posZ + 8D));
             if (!ents.isEmpty())
             {
                 for (int i = ents.size() - 1; i >= 0; i--)
@@ -76,7 +76,7 @@ public class ClientTickHandler implements ITickHandler
 
             if (mc.theWorld.getBlockId(x, y, z) == Block.chest.blockID)
             {
-                List ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
+                List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
                 if (!ents.isEmpty())
                 {
                     for (int i = ents.size() - 1; i >= 0; i--)

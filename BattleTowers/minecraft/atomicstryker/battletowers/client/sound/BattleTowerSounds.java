@@ -1,6 +1,5 @@
 package atomicstryker.battletowers.client.sound;
 
-import java.io.File;
 import java.net.URL;
 
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
