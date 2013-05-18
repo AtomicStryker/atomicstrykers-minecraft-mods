@@ -311,10 +311,10 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     }
     
     @Override
-    public boolean canExtractItem(int slotSize, ItemStack itemstack, int blockSide)
+    public boolean canExtractItem(int slot, ItemStack itemstack, int blockSide)
     {
         // 'can be sucked out' boolean, itemstack is the one to be removed
-        return !(itemstack.getItem() instanceof IElectricItem) && blockSide > 1;
+        return !(itemstack.getItem() instanceof IElectricItem) && blockSide > 1 && slot < getUpgradeSlotsStartSlot();
     }
     
     protected boolean isStackValidForSlot(int slotSize, ItemStack itemstack, int blockSide)
