@@ -46,33 +46,31 @@ public class MinionsChunkManager
 		}
 	}
 	
+	public static void onWorldUnloaded()
+	{
+	    loadedChunks.clear();
+	    loaderEntities.clear();
+	}
+	
 	private static void loadChunksAroundCoords(World world, int x, int z)
 	{
-		for (int xIter = -LOAD_CHUNKS_IN_ALL_DIRECTIONS; xIter <= LOAD_CHUNKS_IN_ALL_DIRECTIONS; xIter++)
-		{
-			for (int zIter = -LOAD_CHUNKS_IN_ALL_DIRECTIONS; zIter <= LOAD_CHUNKS_IN_ALL_DIRECTIONS; zIter++)
-			{
-				loadChunkAtCoords(world, x + (xIter*CHUNK_LENGTH), z + (zIter*CHUNK_LENGTH));
-			}
-		}
+	    if (world != null)
+	    {
+	        for (int xIter = -LOAD_CHUNKS_IN_ALL_DIRECTIONS; xIter <= LOAD_CHUNKS_IN_ALL_DIRECTIONS; xIter++)
+	        {
+	            for (int zIter = -LOAD_CHUNKS_IN_ALL_DIRECTIONS; zIter <= LOAD_CHUNKS_IN_ALL_DIRECTIONS; zIter++)
+	            {
+	                loadChunkAtCoords(world, x + (xIter*CHUNK_LENGTH), z + (zIter*CHUNK_LENGTH));
+	            }
+	        }
+	    }
 	}
 	
 	private static void loadChunkAtCoords(World world, int x, int z)
 	{
 		loadedChunks.add(world.getChunkFromBlockCoords(x, z).getChunkCoordIntPair());
 	}
-
-	/*
-	 * NOT IMPLEMENTED IN FORGE YET
-	 * 
-		@ForgeSubscribe
-		public void addActiveChunks(World world, Set<ChunkCoordIntPair> chunkList)
-		{
-			chunkList.addAll(loadedChunks);
-		}
 	
-	*/
-
 	@ForgeSubscribe
 	public void canUnloadChunk(ChunkEvent.Load event)
 	{

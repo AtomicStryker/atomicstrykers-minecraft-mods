@@ -1,3 +1,7 @@
+Update 1.6.5
+- Minions now resets when unloading a world (to prevent bugs when opening another)
+- fixed crash in MinionsChunkManager
+
 Update 1.6.4
 - updated for MC 1.5.2
 

@@ -26,6 +26,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
@@ -59,7 +61,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.4")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.5")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -126,6 +128,7 @@ public class MinionsCore
         proxy.load(evt);
         
         MinecraftForge.EVENT_BUS.register(new MinionsChunkManager());
+        MinecraftForge.EVENT_BUS.register(this);
         
         EntityRegistry.registerModEntity(EntityMinion.class, "AS_EntityMinion", 1, this, 25, 5, true);        
         itemMastersStaff = (new ItemMastersStaff(masterStaffItemID).setUnlocalizedName("Master's Staff"));
@@ -149,8 +152,19 @@ public class MinionsCore
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         NetworkRegistry.instance().registerChannel(new ServerPacketHandler(), MinionsCore.getPacketChannel(), Side.SERVER);
     }
+    
+    @ForgeSubscribe
+    public void onWorldUnLoad(WorldEvent.Unload event)
+    {
+        System.out.println("Minions detected World unload");
+        finishedJobList.clear();
+        runningJobList.clear();
+        masterNames.clear();
+        masterCommits.clear();
+        MinionsChunkManager.onWorldUnloaded();
+    }
 	
-    public static void onTick()
+    public static void onTick(World world)
     {
         if (!hasBooted)
         {
@@ -162,6 +176,7 @@ public class MinionsCore
         else if (System.currentTimeMillis() > time)
         {
             time = System.currentTimeMillis() + 1000L;
+            
             MinionsChunkManager.updateLoadedChunks();
         }
 
@@ -686,7 +701,7 @@ public class MinionsCore
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
-            onTick();
+            onTick((World)tickData[0]);
         }
 
         @Override
