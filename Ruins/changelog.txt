@@ -214,3 +214,7 @@ a: setAccessible now true
 10.2
 + added biomesToSpawnIn optional setting to template rules
 + added "generic" folder which is now supposed to contain the "common" templates instead of the /resources/ruins/ base folder
+
+10.2 rev2 (same version)
++ fixed "Ruins Mod determines ..." log spam
++ slightly improved world handling

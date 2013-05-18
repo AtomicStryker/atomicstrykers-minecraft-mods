@@ -23,6 +23,7 @@ public class RuinHandler {
 				  triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15, chunksBehindNether = 5;
 	public boolean loaded = false;
 	public boolean disableLogging;
+	public File saveFolder;
 
 	public RuinHandler( File worldPath ) {
 		// create the vars array fitting to the number of Biomes present
@@ -32,6 +33,8 @@ public class RuinHandler {
 		{
 			vars[CHANCE][j] = 75;
 		}
+		
+		saveFolder = worldPath;
 		
 		// fill up the template arraylist
 		for( int fill = 0; fill < biomeAmountPlusOne; fill++ ) {

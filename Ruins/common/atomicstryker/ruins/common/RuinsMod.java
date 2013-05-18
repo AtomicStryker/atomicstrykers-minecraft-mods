@@ -41,13 +41,13 @@ public class RuinsMod
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
 
-    private ConcurrentHashMap<World, WorldHandle> generatorMap;
+    private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
     private ConcurrentLinkedQueue<int[]> currentlyGenerating;
 
     @Init
     public void load(FMLInitializationEvent evt)
     {
-        generatorMap = new ConcurrentHashMap<World, WorldHandle>();
+        generatorMap = new ConcurrentHashMap<Integer, WorldHandle>();
         currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
         MinecraftForge.EVENT_BUS.register(this);
@@ -73,6 +73,11 @@ public class RuinsMod
             if (Math.abs(chunkX) < 3 && Math.abs(chunkZ) < 3)
             {
                 return; // the 0,0 bug is really annoying. SLEDGEHAMMER FIX!
+            }
+            
+            if (world.isRemote)
+            {
+                return;
             }
             
             int[] tuple = { chunkX, chunkZ };
@@ -127,15 +132,15 @@ public class RuinsMod
     private WorldHandle getWorldHandle(World world)
     {
         WorldHandle wh = null;
-        if (!generatorMap.containsKey(world))
+        if (!generatorMap.containsKey(world.getWorldInfo().getDimension()))
         {
             wh = new WorldHandle();
             createHandler(wh, world);
-            generatorMap.put(world, wh);
+            generatorMap.put(world.getWorldInfo().getDimension(), wh);
         }
         else
         {
-            wh = generatorMap.get(world);
+            wh = generatorMap.get(world.getWorldInfo().getDimension());
         }
         
         return wh;

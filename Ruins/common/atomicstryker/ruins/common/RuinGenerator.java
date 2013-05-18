@@ -123,9 +123,9 @@ public class RuinGenerator {
 				if( ruinTemplate.isUnique() ) {
 					ruinsHandler.removeTemplate( ruinTemplate, biomeID );
 					try {
-						ruinsHandler.writeExclusions( RuinsMod.getWorldSaveDir( world ) );
+						ruinsHandler.writeExclusions( ruinsHandler.saveFolder );
 					} catch( Exception e ) {
-						System.err.println( "Could not write exclusions for world: " + RuinsMod.getWorldSaveDir( world ) );
+						System.err.println( "Could not write exclusions for world: " + ruinsHandler.saveFolder );
 						e.printStackTrace();
 					}
 				}
