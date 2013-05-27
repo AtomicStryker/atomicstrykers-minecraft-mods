@@ -2,7 +2,6 @@ package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
-import atomicstryker.dynamiclights.client.ItemData;
+import atomicstryker.dynamiclights.client.ItemConfigHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
@@ -35,7 +34,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.4", dependencies = "required-after:DynamicLights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;
@@ -45,18 +44,17 @@ public class PlayerOthersLightSource
     private Thread thread;
     private boolean threadRunning;
     
-    private HashMap<ItemData, Integer> itemsMap;
+    private ItemConfigHelper itemsMap;
     
     @PreInit
     public void preInit(FMLPreInitializationEvent evt)
     {
-        itemsMap = new HashMap<ItemData, Integer>();
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50,89=12,348=10,91,327,76=10,331=10,314=14");
         itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON OTHERS] Syntax: ItemID[-MetaValue]:LightValue, seperated by commas";
-        DynamicLights.configParseHelperLightValues(itemsList, itemsMap);
+        itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
         updateI.comment = "Update Interval time for all other player entities in milliseconds. The lower the better and costlier.";
@@ -123,11 +121,8 @@ public class PlayerOthersLightSource
     {
         if (stack != null)
         {
-            Integer i = itemsMap.get(new ItemData(stack.itemID, stack.getItemDamage()));
-            if (i != null)
-            {
-                return i;
-            }
+            int r = itemsMap.retrieveValue(stack.itemID, stack.getItemDamage());
+            return r < 0 ? 0 : r;
         }
         return 0;
     }

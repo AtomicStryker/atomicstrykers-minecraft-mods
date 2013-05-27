@@ -1,8 +1,6 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,7 +10,7 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
-import atomicstryker.dynamiclights.client.ItemData;
+import atomicstryker.dynamiclights.client.ItemConfigHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
@@ -32,31 +30,29 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.5", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.6", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
     private World lastWorld;
     private int lightLevel;
     private boolean enabled;
-    private HashMap<ItemData, Integer> itemsMap;
-    private HashSet<ItemData> notWaterProofItems;
+    private ItemConfigHelper itemsMap;
+    private ItemConfigHelper notWaterProofItems;
     
     @PreInit
     public void preInit(FMLPreInitializationEvent evt)
     {
-        itemsMap = new HashMap<ItemData, Integer>();
-        notWaterProofItems = new HashSet<ItemData>();
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14");
-        itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON YOURSELF] Syntax: ItemID[-MetaValue]:LightValue, seperated by commas";
-        DynamicLights.configParseHelperLightValues(itemsList, itemsMap);
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50,89=12,348=10,91,327,76=10,331=10,314=14");
+        itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON YOURSELF]";
+        itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "50,327");
-        notWaterProofList.comment = "Item IDs that do not shine light when held in water, have to be present in LightItems. Syntax: ItemID[-MetaValue], seperated by commas";
-        DynamicLights.configParseHelperItemsList(notWaterProofList, notWaterProofItems);
+        notWaterProofList.comment = "Item IDs that do not shine light when held in water, have to be present in LightItems.";
+        notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
         
         config.save();
     }
@@ -104,7 +100,8 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             {
                 int prevLight = lightLevel;
                 
-                lightLevel = getLightFromItemStack(thePlayer.getCurrentEquippedItem());
+                ItemStack item = thePlayer.getCurrentEquippedItem();
+                lightLevel = getLightFromItemStack(item);
                 for (ItemStack armor : thePlayer.inventory.armorInventory)
                 {
                     lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
@@ -123,8 +120,8 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                     else
                     {
                         if (thePlayer.isInWater()
-                        && thePlayer.getCurrentEquippedItem() != null
-                        && notWaterProofItems.contains(new ItemData(thePlayer.getCurrentEquippedItem().itemID, thePlayer.getCurrentEquippedItem().getItemDamage())))
+                        && item != null
+                        && notWaterProofItems.retrieveValue(item.itemID, item.getItemDamage()) == 1)
                         {
                             lightLevel = 0;
                         }
@@ -159,11 +156,8 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     {
         if (stack != null)
         {
-            Integer i = itemsMap.get(new ItemData(stack.itemID, stack.getItemDamage()));
-            if (i != null)
-            {
-                return i;
-            }
+            int r = itemsMap.retrieveValue(stack.itemID, stack.getItemDamage());
+            return r < 0 ? 0 : r;
         }
         return 0;
     }

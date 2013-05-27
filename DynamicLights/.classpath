@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="../../mcp/jars/bin/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="../../mcp/lib/argo-3.2-src.jar"/>
 	<classpathentry exported="true" kind="lib" path="../../mcp/lib/asm-debug-all-4.1.jar" sourcepath="D:/mcmodding/mcp/lib/asm-4.1-src.zip"/>
-	<classpathentry kind="lib" path="../../mcp/lib/guava-14.0-rc3.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/guava-14.0-rc3.jar" sourcepath="D:/mcmodding/mcp/lib/guava-14.0-rc3-sources.jar"/>
 	<classpathentry kind="lib" path="../../mcp/lib/guava-14.0-rc3-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
 	<classpathentry kind="output" path="bin"/>

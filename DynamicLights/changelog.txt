@@ -1,3 +1,9 @@
+1.2.1
+- rewrote configuration parsing again, now supports names, ranges and wildcards
+- this applies to DynamicLights_thePlayer, DynamicLights_dropItems and DynamicLights_otherPlayers configs only
+- delete or fix your old config files, they are unfortunately not compatible
+- see MCF thread on how to use the new config syntax
+
 1.2.0
 - changed configuration files in SelfLight, DroppedItems and OthersLight modules
 - you can now optionally specify Item meta values, eg "35-10" instead of "35" for just cyan wool

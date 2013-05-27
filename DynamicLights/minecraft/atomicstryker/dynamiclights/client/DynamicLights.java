@@ -1,9 +1,7 @@
 package atomicstryker.dynamiclights.client;
 
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -14,7 +12,6 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.Property;
 
 import org.lwjgl.input.Keyboard;
 
@@ -42,7 +39,7 @@ import cpw.mods.fml.relauncher.Side;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.0")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.1")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -326,31 +323,6 @@ public class DynamicLights
                     }
                 }
             }
-        }
-    }
-    
-    public static void configParseHelperLightValues(Property itemsList, Map<ItemData, Integer> itemsMap)
-    {
-        String[] tokens = itemsList.getString().split(",");
-        for (String pair : tokens)
-        {
-            String[] values = pair.split(":");
-            
-            String[] idvalues = values[0].split("-");
-            ItemData id = new ItemData(Integer.valueOf(idvalues[0]), (idvalues.length > 1) ? Integer.valueOf(idvalues[1]) : 0);
-            
-            int value = Integer.valueOf(values[1]);
-            itemsMap.put(id, value);
-        }
-    }
-    
-    public static void configParseHelperItemsList(Property itemsList, Collection<ItemData> items)
-    {
-        for (String oneId : itemsList.getString().split(","))
-        {
-            String[] idvalues = oneId.split("-");
-            ItemData id = new ItemData(Integer.valueOf(idvalues[0]), (idvalues.length > 1) ? Integer.valueOf(idvalues[1]) : 0);
-            items.add(id);
         }
     }
 }
