@@ -39,6 +39,7 @@ public class MultiMineClient
      * the current Block being mined, and hacks into the vanilla "partially Destroyed Blocks" RenderMap.
      * Also handles Packets sent from server to announce other people's damaged Blocks.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public MultiMineClient()
     {
         instance = this;
@@ -90,7 +91,6 @@ public class MultiMineClient
             curBlockX = x;
             curBlockY = y;
             curBlockZ = z;
-            int dimension = FMLClientHandler.instance().getClient().theWorld.getWorldInfo().getDimension();
             Object[] toSend = {x, y, z, thePlayer.dimension};
             PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));   
         }

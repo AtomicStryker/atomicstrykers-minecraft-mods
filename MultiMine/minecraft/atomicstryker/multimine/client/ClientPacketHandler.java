@@ -11,6 +11,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class ClientPacketHandler implements IPacketHandler
 {
+    @SuppressWarnings("rawtypes")
     @Override
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
     {

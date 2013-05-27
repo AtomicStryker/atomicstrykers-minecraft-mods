@@ -32,7 +32,7 @@ public class MultiMineServer
 {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
-    private HashMap<Integer, List> partiallyMinedBlocksListByDimension;
+    private HashMap<Integer, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
     private HashSet<Integer> registeredMultiMineUsers;
     private BlockRegenQueue blockRegenQueue;
     
@@ -43,7 +43,7 @@ public class MultiMineServer
      */
     public MultiMineServer()
     {
-        partiallyMinedBlocksListByDimension = Maps.<Integer, List>newHashMap();
+        partiallyMinedBlocksListByDimension = Maps.<Integer, List<PartiallyMinedBlock>>newHashMap();
         registeredMultiMineUsers = Sets.<Integer>newHashSet();
         instance = this;
         blockRegenQueue = new BlockRegenQueue(30, new BlockAgeComparator());
@@ -299,7 +299,7 @@ public class MultiMineServer
      */
     private class ServerTickHandler implements ITickHandler
     {
-        private final EnumSet tickTypes = EnumSet.of(TickType.WORLD);
+        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.WORLD);
         
         @Override
         public void tickStart(EnumSet<TickType> type, Object... tickData)
@@ -381,7 +381,9 @@ public class MultiMineServer
      */
     private class BlockRegenQueue extends PriorityQueue<PartiallyMinedBlock>
     {
-        public BlockRegenQueue(int initialSize, Comparator comparator)
+        private static final long serialVersionUID = 1L;
+
+        public BlockRegenQueue(int initialSize, Comparator<PartiallyMinedBlock> comparator)
         {
             super(initialSize, comparator);
         }

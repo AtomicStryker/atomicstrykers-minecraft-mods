@@ -54,13 +54,14 @@ public final class ForgePacketWrapper
      * @param data byte array input
      * @param packetDataTypes array of class types to decode the byte array as
      */
+    @SuppressWarnings("rawtypes")
     public static Object[] readPacketData(DataInputStream data, Class[] packetDataTypes)
     {
-        List result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<Object>();
 
         try
         {
-            for (Class curClass : packetDataTypes)
+            for (Class<?> curClass : packetDataTypes)
             {
                 result.add(readObjectFromStream(data, curClass));
             }
@@ -73,6 +74,7 @@ public final class ForgePacketWrapper
         return result.toArray();
     }
 
+    @SuppressWarnings("rawtypes")
     private static void writeObjectToStream(Object obj, DataOutputStream data) throws IOException
     {
         Class objClass = obj.getClass();
@@ -111,7 +113,7 @@ public final class ForgePacketWrapper
         }
     }
 
-    private static Object readObjectFromStream(DataInputStream data, Class curClass) throws IOException
+    private static Object readObjectFromStream(DataInputStream data, Class<?> curClass) throws IOException
     {
         if (curClass.equals(Boolean.class))
         {
