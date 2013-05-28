@@ -34,6 +34,7 @@ public class ItemConfigHelper
             catch (Exception e)
             {
                 System.err.println("Error, String ["+s+"] is not a valid Entry, skipping.");
+                e.printStackTrace();
             }
         }
     }
@@ -65,8 +66,8 @@ public class ItemConfigHelper
         int len = strings.length;
         int sid = tryFindingItemID(strings[0]);
         int eid = len > 3 ? tryFindingItemID(strings[1]) : sid;
-        int sm = len > 1 ? catchWildcard(strings[2]) : WILDCARD;
-        int em = len > 2 ? catchWildcard(strings[3]) : sm;
+        int sm = len > 1 ? catchWildcard(strings[len > 3 ? 2 : 1]) : WILDCARD;
+        int em = len > 2 ? catchWildcard(strings[len > 3 ? 3 : 2]) : sm;
         return new ItemData(sid, eid, sm, em);
     }
     
