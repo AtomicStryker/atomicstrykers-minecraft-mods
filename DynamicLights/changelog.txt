@@ -1,3 +1,6 @@
+1.2.2
+- hand held Light Items that are not waterproof will now only deactivate once you actually submerge
+
 1.2.1
 - rewrote configuration parsing again, now supports names, ranges and wildcards
 - this applies to DynamicLights_thePlayer, DynamicLights_dropItems and DynamicLights_otherPlayers configs only

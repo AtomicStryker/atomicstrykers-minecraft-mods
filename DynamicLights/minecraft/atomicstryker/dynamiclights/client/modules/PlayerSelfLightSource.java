@@ -2,9 +2,11 @@ package atomicstryker.dynamiclights.client.modules;
 
 import java.util.EnumSet;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
@@ -30,7 +32,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.6", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.7", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -119,7 +121,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                     }
                     else
                     {
-                        if (thePlayer.isInWater()
+                        if (checkPlayerWater(thePlayer)
                         && item != null
                         && notWaterProofItems.retrieveValue(item.itemID, item.getItemDamage()) == 1)
                         {
@@ -137,6 +139,18 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                     disableLight();
                 }
             }
+        }
+        
+        private boolean checkPlayerWater(EntityPlayer thePlayer)
+        {
+            if (thePlayer.isInWater())
+            {
+                int x = MathHelper.floor_double(thePlayer.posX + 0.5D);
+                int y = MathHelper.floor_double(thePlayer.posY + thePlayer.getEyeHeight());
+                int z = MathHelper.floor_double(thePlayer.posZ + 0.5D);
+                return thePlayer.worldObj.getBlockMaterial(x, y, z) == Material.water;
+            }
+            return false;
         }
 
         @Override
