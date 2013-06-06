@@ -1,3 +1,6 @@
+1.0.5
+- fixed crash when cutting a path to length zero
+
 1.0.4
 - updated for MC 1.5.2
 

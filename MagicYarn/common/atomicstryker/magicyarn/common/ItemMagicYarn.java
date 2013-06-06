@@ -6,13 +6,9 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import atomicstryker.astarpathing.AStarNode;
 
 public class ItemMagicYarn extends Item
 {
-	private AStarNode origin = null;
-	private AStarNode target = null;
-
 	public ItemMagicYarn(int var1)
 	{
 		super(var1);

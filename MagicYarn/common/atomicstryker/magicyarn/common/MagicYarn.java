@@ -20,7 +20,7 @@ import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.0.4")
+@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.0.5")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false, connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = { "MagicYarn" }, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = { "MagicYarn" }, packetHandler = ServerPacketHandler.class))
@@ -54,8 +54,8 @@ public class MagicYarn implements IProxy
 	
     @Init
     public void load(FMLInitializationEvent evt)
-    {	    
-	    LanguageRegistry.instance().addName(magicYarn, "Magic Yarn");
+    {
+        LanguageRegistry.addName(magicYarn, "Magic Yarn");
 	    
         GameRegistry.addRecipe(new ItemStack(magicYarn, 1), new Object[]{
             "###", "#X#", "###", Character.valueOf('X'), Item.compass, Character.valueOf('#'), Block.cloth

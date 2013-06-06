@@ -117,7 +117,6 @@ public class AStarWorkerJPS extends AStarWorker
         int x = node.x;
         int y = node.y;
         int z = node.z;
-        int dist = node.getG();
         
         ArrayList<AStarNode> successors = findNeighbours(node);
         for (AStarNode s : successors)

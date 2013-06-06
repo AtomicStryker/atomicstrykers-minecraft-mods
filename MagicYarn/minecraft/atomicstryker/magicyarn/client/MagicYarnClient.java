@@ -6,18 +6,15 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
 import atomicstryker.PacketWrapper;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
-import atomicstryker.magicyarn.common.MagicYarn;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.TickRegistry;
@@ -169,14 +166,14 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                     if (clientTicker.path != null && !clientTicker.path.isEmpty())
                     {
                         target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
-                        for (int i = clientTicker.path.size()-1; i != 0; i--)
+                        for (int i = 0; i < clientTicker.path.size(); i++)
                         {
                             if (clientTicker.path.get(i).equals(target))
                             {
                                 System.out.println("Magic Yarn being cut shorter!");
                                 world.playSound(player.posX, player.posY, player.posZ, "random.break", 1.0F, 1.0F, false);
                                 soundplayed = true;
-                                while (i >= 0)
+                                while (i > 0)
                                 {
                                     clientTicker.path.remove(i);
                                     i--;
@@ -258,17 +255,6 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
         PacketDispatcher.sendPacketToServer(packet);
     }
     
-    private void sendPathDeletionToServer(String username)
-    {
-        if (!mpYarnInstance.getHasServerMod())
-        {
-            return;
-        }
-        
-        Object[] toSend = {username};
-        PacketDispatcher.sendPacketToServer(PacketWrapper.createPacket("MagicYarn", 3, toSend));
-    }
-
     public void onReceivedPathPacket(DataInputStream data)
     {
         try

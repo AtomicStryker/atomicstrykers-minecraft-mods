@@ -1,14 +1,12 @@
 package atomicstryker.magicyarn.client;
 
-import java.util.List;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiNavigateToPlayer extends GuiScreen
 {
@@ -33,6 +31,7 @@ public class GuiNavigateToPlayer extends GuiScreen
         generateButtons();
     }
     
+    @SuppressWarnings("unchecked")
     private void generateButtons()
     {
         buttonList.clear();

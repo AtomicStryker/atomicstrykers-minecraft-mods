@@ -17,8 +17,6 @@ public class MPMagicYarn
 {
 
     private final Minecraft mcinstance;
-    private final MagicYarnClient clientInstance;
-
     private long timeStartedHoldingButton;
     private boolean serverDoesNotHaveMod;
     private boolean messageShown;
@@ -26,7 +24,6 @@ public class MPMagicYarn
     public MPMagicYarn(Minecraft mc, MagicYarnClient client)
     {
         mcinstance = mc;
-        clientInstance = client;
         timeStartedHoldingButton = 0;
         serverDoesNotHaveMod = false;
         messageShown = false;
@@ -41,7 +38,7 @@ public class MPMagicYarn
 
     private class TriggerKey extends KeyHandler
     {
-        private final EnumSet tickTypes;
+        private final EnumSet<TickType> tickTypes;
 
         public TriggerKey(KeyBinding[] keyBindings, boolean[] repeatings)
         {
@@ -99,7 +96,7 @@ public class MPMagicYarn
 
     private class PlayerKey extends KeyHandler
     {
-        private final EnumSet tickTypes;
+        private final EnumSet<TickType> tickTypes;
 
         public PlayerKey(KeyBinding[] keyBindings, boolean[] repeatings)
         {
