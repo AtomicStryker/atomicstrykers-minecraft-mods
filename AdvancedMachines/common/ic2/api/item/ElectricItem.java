@@ -1,7 +1,5 @@
 package ic2.api.item;
 
-import java.lang.reflect.Method;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -13,6 +11,20 @@ import net.minecraft.item.ItemStack;
  */
 public final class ElectricItem {
 	/**
+	 * IElectricItemManager to use for interacting with IElectricItem ItemStacks.
+	 * 
+	 * This manager will act as a gateway and delegate the tasks to the final implementation
+	 * (rawManager or a custom one) as necessary.
+	 */
+	public static IElectricItemManager manager;
+
+	/**
+	 * Standard IElectricItemManager implementation, only call it directly from another
+	 * IElectricItemManager. Use manager instead.
+	 */
+	public static IElectricItemManager rawManager;
+
+	/**
 	 * Charge an item with a specified amount of energy
 	 *
 	 * @param itemStack electric item's stack
@@ -21,15 +33,12 @@ public final class ElectricItem {
 	 * @param ignoreTransferLimit ignore the transfer limit specified by getTransferLimit()
 	 * @param simulate don't actually change the item, just determine the return value
 	 * @return Energy transferred into the electric item
+	 * 
+	 * @deprecated use manager.charge() instead
 	 */
+	@Deprecated
 	public static int charge(ItemStack itemStack, int amount, int tier, boolean ignoreTransferLimit, boolean simulate) {
-		try {
-			if (ElectricItem_charge == null) ElectricItem_charge = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("charge", ItemStack.class, Integer.TYPE, Integer.TYPE, Boolean.TYPE, Boolean.TYPE);
-
-			return (Integer) ElectricItem_charge.invoke(null, itemStack, amount, tier, ignoreTransferLimit, simulate);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return manager.charge(itemStack, amount, tier, ignoreTransferLimit, simulate);
 	}
 
 	/**
@@ -41,15 +50,12 @@ public final class ElectricItem {
 	 * @param ignoreTransferLimit ignore the transfer limit specified by getTransferLimit()
 	 * @param simulate don't actually discharge the item, just determine the return value
 	 * @return Energy retrieved from the electric item
+	 * 
+	 * @deprecated use manager.discharge() instead
 	 */
+	@Deprecated
 	public static int discharge(ItemStack itemStack, int amount, int tier, boolean ignoreTransferLimit, boolean simulate) {
-		try {
-			if (ElectricItem_discharge == null) ElectricItem_discharge = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("discharge", ItemStack.class, Integer.TYPE, Integer.TYPE, Boolean.TYPE, Boolean.TYPE);
-
-			return (Integer) ElectricItem_discharge.invoke(null, itemStack, amount, tier, ignoreTransferLimit, simulate);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return manager.discharge(itemStack, amount, tier, ignoreTransferLimit, simulate);
 	}
 
 	/**
@@ -60,15 +66,12 @@ public final class ElectricItem {
 	 * @param itemStack electric item's stack
 	 * @param amount minimum amount of energy required
 	 * @return true if there's enough energy
+	 * 
+	 * @deprecated use manager.canUse() instead
 	 */
+	@Deprecated
 	public static boolean canUse(ItemStack itemStack, int amount) {
-		try {
-			if (ElectricItem_canUse == null) ElectricItem_canUse = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("canUse", ItemStack.class, Integer.TYPE);
-
-			return (Boolean) ElectricItem_canUse.invoke(null, itemStack, amount);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return manager.canUse(itemStack, amount);
 	}
 
 	/**
@@ -79,15 +82,12 @@ public final class ElectricItem {
 	 * @param amount amount of energy to discharge in EU
 	 * @param player player holding the item
 	 * @return true if the operation succeeded
+	 * 
+	 * @deprecated use manager.use() instead
 	 */
+	@Deprecated
 	public static boolean use(ItemStack itemStack, int amount, EntityPlayer player) {
-		try {
-			if (ElectricItem_use == null) ElectricItem_use = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("use", ItemStack.class, Integer.TYPE, EntityPlayer.class);
-
-			return (Boolean) ElectricItem_use.invoke(null, itemStack, amount, player);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return manager.use(itemStack, amount, player);
 	}
 
 	/**
@@ -97,38 +97,12 @@ public final class ElectricItem {
 	 *
 	 * @param itemStack electric item's stack
 	 * @param player player holding the item
+	 * 
+	 * @deprecated use manager.chargeFromArmor() instead
 	 */
+	@Deprecated
 	public static void chargeFromArmor(ItemStack itemStack, EntityPlayer player) {
-		try {
-			if (ElectricItem_chargeFromArmor == null) ElectricItem_chargeFromArmor = Class.forName(getPackage() + ".core.item.ElectricItem").getMethod("chargeFromArmor", ItemStack.class, EntityPlayer.class);
-
-			ElectricItem_chargeFromArmor.invoke(null, itemStack, player);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		manager.chargeFromArmor(itemStack, player);
 	}
-
-	/**
-	 * Get the base IC2 package name, used internally.
-	 *
-	 * @return IC2 package name, if unable to be determined defaults to ic2
-	 */
-	private static String getPackage() {
-		Package pkg = ElectricItem.class.getPackage();
-
-		if (pkg != null) {
-			String packageName = pkg.getName();
-
-			return packageName.substring(0, packageName.length() - ".api.item".length());
-		}
-
-		return "ic2";
-	}
-
-	private static Method ElectricItem_charge;
-	private static Method ElectricItem_discharge;
-	private static Method ElectricItem_canUse;
-	private static Method ElectricItem_use;
-	private static Method ElectricItem_chargeFromArmor;
 }
 
