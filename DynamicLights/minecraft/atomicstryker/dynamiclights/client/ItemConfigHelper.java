@@ -134,11 +134,7 @@ public class ItemConfigHelper
         
         private boolean isContained(int s, int e, int i)
         {
-            if (s == WILDCARD)
-            {
-                return true;
-            }
-            return i >= s && i <= e;
+            return (s == WILDCARD || i >= s) && (e == WILDCARD || i <= e);
         }
         
         @Override
