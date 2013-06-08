@@ -157,8 +157,9 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public void breakBlock(World world, int x, int y, int z, int par5, int par6)
+    public void breakBlock(World world, int x, int y, int z, int blockID, int blockMeta)
     {
+        super.breakBlock(world, x, y, z, blockID, blockMeta);
         boolean var5 = true;
         for (Iterator<ItemStack> iter = this.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 0).iterator(); iter.hasNext(); var5 = false)
         {
