@@ -121,12 +121,6 @@ public abstract class TileEntityMachine extends TileEntityBlock implements IInve
     }
 
     @Override
-    public void updateEntity()
-    {
-        super.updateEntity();
-    }
-
-    @Override
     public void openChest() {}
 
     @Override
@@ -142,12 +136,5 @@ public abstract class TileEntityMachine extends TileEntityBlock implements IInve
     public boolean isInvNameLocalized()
     {
         return false;
-    }
-
-    @Override
-    public boolean isStackValidForSlot(int i, ItemStack itemstack)
-    {
-        // TODO override this maybe
-        return true;
     }
 }

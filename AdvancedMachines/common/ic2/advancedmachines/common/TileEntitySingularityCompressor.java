@@ -11,16 +11,6 @@ public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
     {
         super("Singularity Compressor", "%6d PSI", 10, new int[] {1}, new int[] {2});
     }
-    
-    @Override
-    protected boolean isStackValidForSlot(int slotSize, ItemStack itemstack, int blockSide)
-    {
-        if (blockSide == 1)
-        {
-            return getResultFor(itemstack, false) != null;
-        }
-        return isStackValidForSlot(slotSize, itemstack);
-    }
 
     @Override
     public Container getGuiContainer(InventoryPlayer var1)

@@ -68,7 +68,6 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
             MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
             this.addedToEnergyNet = false;
         }
-
         super.invalidate();
     }
 
@@ -144,7 +143,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
                 }
                 else
                 {
-                    int charge = ElectricItem.discharge(inventory[fuelslot], maxEnergy - energy, tier, false, false);
+                    int charge = ElectricItem.manager.discharge(inventory[fuelslot], maxEnergy - energy, tier, false, false);
                     energy += charge;
                     return charge > 0;
                 }

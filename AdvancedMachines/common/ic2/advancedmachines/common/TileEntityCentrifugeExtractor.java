@@ -13,16 +13,6 @@ public class TileEntityCentrifugeExtractor extends TileEntityAdvancedMachine
     }
     
     @Override
-    protected boolean isStackValidForSlot(int slotSize, ItemStack itemstack, int blockSide)
-    {
-        if (blockSide == 1)
-        {
-            return getResultFor(itemstack, false) != null;
-        }
-        return isStackValidForSlot(slotSize, itemstack);
-    }
-    
-    @Override
     public Container getGuiContainer(InventoryPlayer var1)
     {
         return new ContainerCentrifugeExtractor(var1, this);
