@@ -49,9 +49,6 @@ public class GuiPetBatRename extends GuiScreen
     {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        int var1 = width / 2;
-        int var2 = height / 2;
-        
         textfield = new GuiTextField(fontRenderer, this.width / 2 - 75, 60, 150, 20);
         textfield.setTextColor(-1);
         textfield.setMaxStringLength(30);

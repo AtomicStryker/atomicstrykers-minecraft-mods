@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Property;
@@ -42,7 +41,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.1.9")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -140,6 +139,7 @@ public class PetBatMod implements IProxy
     
     private boolean glisterBatEnabled;
     public long glisterBatEffectDuration;
+    private boolean batInventoryTeleport;
     
     @SidedProxy(clientSide = "atomicstryker.petbat.client.ClientProxy", serverSide = "atomicstryker.petbat.common.PetBatMod")
     public static IProxy proxy;
@@ -158,8 +158,9 @@ public class PetBatMod implements IProxy
         {
             config.load();
             itemIDPocketBat = config.getItem("ItemPocketedPetBat", 2528).getInt();
-			manualEnabled = config.get(config.CATEGORY_GENERAL, "manualEnabled", false).getBoolean(false);
-			glisterBatEffectDuration = config.get(config.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
+			manualEnabled = config.get(Configuration.CATEGORY_GENERAL, "manualEnabled", false).getBoolean(false);
+			batInventoryTeleport = config.get(Configuration.CATEGORY_GENERAL, "teleportIntoInventory", true).getBoolean(true);
+			glisterBatEffectDuration = config.get(Configuration.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
 			glisterBatEffectDuration *= 1000; // sec to millisec
         }
         catch (Exception e)
@@ -211,6 +212,11 @@ public class PetBatMod implements IProxy
 	{
 		return manualEnabled;
 	}
+	
+	public boolean getPetBatInventoryTeleportEnabled()
+	{
+	    return batInventoryTeleport;
+	}
     
     @ForgeSubscribe
     public void onPlayerLeftClick(BreakSpeed event)
@@ -219,6 +225,7 @@ public class PetBatMod implements IProxy
         ItemStack item = p.inventory.getCurrentItem();
         if (item != null && item.itemID == TAME_ITEM_ID)
         {
+            @SuppressWarnings("unchecked")
             List<Entity> entityList = p.worldObj.getEntitiesWithinAABBExcludingEntity(p, p.boundingBox.expand(10D, 10D, 10D));
             ChunkCoordinates coords = new ChunkCoordinates((int)(p.posX+0.5D), (int)(p.posY+1.5D), (int)(p.posZ+0.5D));
             for (Entity ent : entityList)
@@ -299,6 +306,7 @@ public class PetBatMod implements IProxy
             }
             else if (id == TAME_ITEM_ID)
             {
+                @SuppressWarnings("rawtypes")
                 List nearEnts = item.worldObj.getEntitiesWithinAABBExcludingEntity(item, item.boundingBox.expand(8D, 8D, 8D));
                 for (Object o : nearEnts)
                 {
@@ -380,7 +388,7 @@ public class PetBatMod implements IProxy
     public boolean hasPlayerGotManual()
     {
         config.load();
-        Property prop = config.get(config.CATEGORY_GENERAL, "playerHadManual", false);
+        Property prop = config.get(Configuration.CATEGORY_GENERAL, "playerHadManual", false);
         boolean result = prop.getBoolean(false);
         prop.set("true");
         config.save();

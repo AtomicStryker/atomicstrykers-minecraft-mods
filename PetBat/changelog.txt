@@ -1,3 +1,9 @@
+1.2.0
+added rudimentary pathfind raytrace to help getting stuck in ceilings
+disabled Pet Bats taking damage from wall hugging
+added configuration option to disable the into-inventory-teleport
+-> will teleport to the player's location instead
+
 1.1.9
 update to mc 1.5.2
 

@@ -1,7 +1,6 @@
 package atomicstryker.petbat.client;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.MinecraftForgeClient;
 import atomicstryker.petbat.common.EntityPetBat;
 import atomicstryker.petbat.common.IProxy;
 import cpw.mods.fml.client.FMLClientHandler;

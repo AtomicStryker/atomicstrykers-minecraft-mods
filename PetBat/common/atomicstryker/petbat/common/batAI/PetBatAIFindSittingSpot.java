@@ -114,11 +114,6 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
             
             startZ = (int)(petBat.posZ+0.5D);
             
-            /**
-             * What can i say. This did not work right away :)
-             */
-            int debugCounter = 0;
-            
             World w = petBat.worldObj;
             for (int y = minY; y <= maxY; y++)
             {
@@ -130,9 +125,6 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                 
                 for(;;)
                 {
-                    debugCounter++;
-                    // System.out.println("now at X: "+curX+", Z: "+curZ);
-                    
                     // arrived at top left corner of search grid, break out of this level
                     if (curX == maxX && direction == 0 && stepsToDo == 1)
                     {

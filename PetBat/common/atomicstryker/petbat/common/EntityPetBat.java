@@ -176,6 +176,11 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public boolean attackEntityFrom(DamageSource source, int amount)
     {
+        if (source.equals(DamageSource.inWall))
+        {
+            return true;
+        }
+        
         if (!this.worldObj.isRemote)
         {
             if (getIsBatHanging())
@@ -268,7 +273,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     protected boolean canDespawn()
     {
-        // TODO: save the bat to be returned to its master? naaah
         return false;
     }
     

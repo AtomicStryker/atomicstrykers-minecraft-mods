@@ -7,8 +7,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import atomicstryker.petbat.common.EntityPetBat;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
+import atomicstryker.petbat.common.PetBatMod;
 
 public class PetBatAIFlying extends EntityAIBase
 {
@@ -90,14 +93,21 @@ public class PetBatAIFlying extends EntityAIBase
 
             if (petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TELEPORT)
             {
-                ItemStack batstack = ItemPocketedPetBat.fromBatEntity(petBat);
-                if (batstack != null)
+                if (PetBatMod.instance().getPetBatInventoryTeleportEnabled())
                 {
-                    if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
+                    ItemStack batstack = ItemPocketedPetBat.fromBatEntity(petBat);
+                    if (batstack != null)
                     {
-                        petBat.worldObj.playSoundAtEntity(petBat.getOwnerEntity(), "mob.slime.big", 1F, 1F);
-                        petBat.setDeadWithoutRecall();
+                        if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
+                        {
+                            petBat.worldObj.playSoundAtEntity(petBat.getOwnerEntity(), "mob.slime.big", 1F, 1F);
+                            petBat.setDeadWithoutRecall();
+                        }
                     }
+                }
+                else
+                {
+                    petBat.setPosition(petBat.getOwnerEntity().posX, petBat.getOwnerEntity().posY, petBat.getOwnerEntity().posZ);
                 }
             }
         }
@@ -192,12 +202,29 @@ public class PetBatAIFlying extends EntityAIBase
                 petBat.updateOwnerCoords();
             }
         }
+        
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        Vec3 orig;
+        Vec3 dest;
+        MovingObjectPosition movingobjectposition;
+        for (int i = 0; i < 10; i++)
+        {
+            x = petBat.getLastOwnerX() + rand.nextInt(7) - rand.nextInt(7);
+            y = petBat.getLastOwnerY() + rand.nextInt(6) - 2 + BAT_OWNER_FOLLOW_Y_OFFSET;
+            z = petBat.getLastOwnerZ() + rand.nextInt(7) - rand.nextInt(7);
+            
+            orig = petBat.worldObj.getWorldVec3Pool().getVecFromPool(petBat.posX, petBat.posY, petBat.posZ);
+            dest = petBat.worldObj.getWorldVec3Pool().getVecFromPool(x+0.5D, y+0.5D, z+0.5D);
+            movingobjectposition = petBat.worldObj.rayTraceBlocks_do_do(orig, dest, false, true);
+            if (movingobjectposition == null) // no collision detected, path is free
+            {
+                break;
+            }
+        }
 
-        return new ChunkCoordinates(
-                petBat.getLastOwnerX() + rand.nextInt(7) - rand.nextInt(7),
-                petBat.getLastOwnerY() + rand.nextInt(6) - 2 + BAT_OWNER_FOLLOW_Y_OFFSET,
-                petBat.getLastOwnerZ() + rand.nextInt(7) - rand.nextInt(7)
-                );
+        return new ChunkCoordinates(x, y, z);
     }
     
     private void lookForOwnerEntity()
