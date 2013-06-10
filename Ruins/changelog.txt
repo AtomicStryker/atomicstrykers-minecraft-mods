@@ -218,3 +218,7 @@ a: setAccessible now true
 10.2 rev2 (same version)
 + fixed "Ruins Mod determines ..." log spam
 + slightly improved world handling
+
+10.3
++ ninja'd Biome code change
++ added Command Block support, example: rule1=0,100,CommandBlock:command:sender

@@ -250,6 +250,10 @@ preserve_plants=0
 #   "mineshaftCorridor"; "pyramidDesertyChest"; "pyramidJungleChest"; "pyramidJungleDispenser"; "strongholdCorridor";
 #   "strongholdLibrary"; "strongholdCrossing"; "villageBlacksmith"; "bonusChest"; "dungeonChest";
 #
+#
+# Ruins 10.3 adds Command Block Support. Usage:
+# Example 8: rule1=0,100,CommandBlock:command:sender
+# command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
 
 
 rule1=0,100,0,43,44

@@ -7,6 +7,7 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
@@ -251,6 +252,11 @@ public class RuinTemplateRule {
         {
             spawnEnderCrystal( world, x, y, z );
         }
+        else if (dataString.startsWith("CommandBlock:"))
+        {
+            String[] s = dataString.split(":");
+            addCommandBlock( world, x, y, z, s[1], s[2]);
+        }
         else
         {
             System.err.println("Ruins Mod could not determine what to spawn for ["+dataString+"] in Ruin template: "+owner.getName());
@@ -398,6 +404,17 @@ public class RuinTemplateRule {
         {
             ChestGenHooks info = ChestGenHooks.getInfo(gen);
             WeightedRandomChestContent.generateChestContents(random, info.getItems(random), chest, items);
+        }
+    }
+    
+    private void addCommandBlock(World world, int x, int y, int z, String command, String sender)
+    {
+        world.setBlock( x, y, z, Block.commandBlock.blockID, 0, 2 );
+        TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getBlockTileEntity(x, y, z);
+        if (tecb != null)
+        {
+            tecb.setCommand(command);
+            tecb.setCommandSenderName(sender);
         }
     }
 
