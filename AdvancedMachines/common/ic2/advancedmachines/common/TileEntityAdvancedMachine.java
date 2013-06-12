@@ -49,8 +49,13 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     public void readFromNBT(NBTTagCompound var1)
     {
         super.readFromNBT(var1);
-        this.speed = var1.getInteger("speed");
-        this.progress = var1.getShort("progress");
+        
+        try
+        {
+            speed = var1.getInteger("speed");
+            progress = var1.getShort("progress");
+        }
+        catch (Exception e) {}
     }
 
     @Override
