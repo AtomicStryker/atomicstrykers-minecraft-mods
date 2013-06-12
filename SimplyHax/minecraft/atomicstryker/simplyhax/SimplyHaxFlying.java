@@ -138,7 +138,7 @@ public class SimplyHaxFlying
 	
 	private class TickHandler implements ITickHandler
 	{
-		private final EnumSet ticks;
+		private final EnumSet<TickType> ticks;
 		public TickHandler()
 		{
 			ticks = EnumSet.of(TickType.RENDER);

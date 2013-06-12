@@ -65,12 +65,12 @@ public class SHTransformer implements IClassTransformer
                 System.out.println("In target method! Patching!");
                 
                 AbstractInsnNode targetNode = null;
-                Iterator iter = m.instructions.iterator();
+                Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 int index = 0;
                 while (iter.hasNext())
                 {
                     index++;
-                    targetNode = (AbstractInsnNode) iter.next();
+                    targetNode = iter.next();
                     if (targetNode.getOpcode() == RETURN)
                     {
                         break;

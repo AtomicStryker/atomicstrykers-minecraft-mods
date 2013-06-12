@@ -35,7 +35,6 @@ public class SimplyHaxVision
 {
 	private final static String modname = "Vision";
 	private static File configfile;
-	private static boolean configLoaded = false;
 	private static Minecraft mcinstance;
 	
 	private static String visionkey = "I";
@@ -62,7 +61,7 @@ public class SimplyHaxVision
 	
 	private class TickHandler implements ITickHandler
 	{
-		private final EnumSet ticks;
+		private final EnumSet<TickType> ticks;
 		public TickHandler()
 		{
 			ticks = EnumSet.of(TickType.RENDER);
@@ -157,7 +156,7 @@ public class SimplyHaxVision
 		copyAllClassFields(RenderGlobal.class, original, replacement);
 	}
 	
-    private void copyAllClassFields(Class copiedclass, Object originalinstance, Object newinstance)
+    private void copyAllClassFields(Class<RenderGlobal> copiedclass, Object originalinstance, Object newinstance)
     {
         try
         {
@@ -243,11 +242,6 @@ public class SimplyHaxVision
     private static FloatBuffer makeBuffer(int length)
 	{
 		return ByteBuffer.allocateDirect(length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-	}
-	
-    private static FloatBuffer makeBuffer(float[] array)
-	{
-		return (FloatBuffer)ByteBuffer.allocateDirect(array.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(array).flip();
 	}
 	
     private static float sgn(float f)
