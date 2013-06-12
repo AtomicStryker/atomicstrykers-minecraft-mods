@@ -1,5 +1,6 @@
 1.2.2
 - hand held Light Items that are not waterproof will now only deactivate once you actually submerge
++ (hotfix) hand held items that are not waterproof will no longer switch off the armor light aswell
 
 1.2.1
 - rewrote configuration parsing again, now supports names, ranges and wildcards

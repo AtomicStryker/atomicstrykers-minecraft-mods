@@ -32,7 +32,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.8", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -104,6 +104,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                 
                 ItemStack item = thePlayer.getCurrentEquippedItem();
                 lightLevel = getLightFromItemStack(item);
+                
                 for (ItemStack armor : thePlayer.inventory.armorInventory)
                 {
                     lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
@@ -126,6 +127,14 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                         && notWaterProofItems.retrieveValue(item.itemID, item.getItemDamage()) == 1)
                         {
                             lightLevel = 0;
+                            
+                            for (ItemStack armor : thePlayer.inventory.armorInventory)
+                            {
+                                if (armor != null && notWaterProofItems.retrieveValue(armor.itemID, item.getItemDamage()) == 0)
+                                {
+                                    lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
+                                }
+                            }
                         }
                     }
                 }
