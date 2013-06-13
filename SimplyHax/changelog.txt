@@ -1,3 +1,6 @@
+1.5.2B
+-added EntityList dump module for your custom Mobspawner needs
+
 1.5.2
 -updated for MC 1.5.2
 
