@@ -59,11 +59,11 @@ public class MM_Cloaking extends MobModifier
     }
     
     @Override
-    public Class[] getBlackListMobClasses()
+    public Class<?>[] getBlackListMobClasses()
     {
-        Class[] r = { EntitySpider.class };
-        return r;
+        return disallowed;
     }
+    private static Class<?>[] disallowed = { EntitySpider.class };
     
     @Override
     protected String[] getModNameSuffix()
@@ -71,5 +71,12 @@ public class MM_Cloaking extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Stalking", " the Unseen", " the Predator" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " stalking ", " unseen ", " hunting " };
     
 }

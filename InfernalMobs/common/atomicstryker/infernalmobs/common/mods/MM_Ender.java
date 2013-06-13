@@ -58,6 +58,7 @@ public class MM_Ender extends MobModifier
         double oldX = mob.posX;
         double oldY = mob.posY;
         double oldZ = mob.posZ;
+        boolean success = false;
         mob.posX = destX;
         mob.posY = destY;
         mob.posZ = destZ;
@@ -71,44 +72,57 @@ public class MM_Ender extends MobModifier
             boolean hitGround = false;
             while (!hitGround && y < 96)
             {
-                blockID = mob.worldObj.getBlockId(x, y + 1, z);
+                blockID = mob.worldObj.getBlockId(x, y - 1, z);
 
-                if (blockID == 0 || !Block.blocksList[blockID].blockMaterial.blocksMovement())
+                if (blockID != 0 && Block.blocksList[blockID].blockMaterial.blocksMovement())
                 {
                     hitGround = true;
                 }
                 else
                 {
-                    ++mob.posY;
-                    ++y;
+                    --mob.posY;
+                    --y;
                 }
             }
 
             if (hitGround)
             {
                 mob.setPosition(mob.posX, mob.posY, mob.posZ);
+                
+                if (mob.worldObj.getCollidingBoundingBoxes(mob, mob.boundingBox).isEmpty() && !mob.worldObj.isAnyLiquid(mob.boundingBox))
+                {
+                    success = true;
+                }
             }
             else
             {
                 return false;
             }
         }
-        
-        short var30 = 128;
-        for (blockID = 0; blockID < var30; ++blockID)
+
+        if (!success)
         {
-            double var19 = (double)blockID / ((double)var30 - 1.0D);
-            float var21 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
-            float var22 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
-            float var23 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
-            double var24 = oldX + (mob.posX - oldX) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double)mob.width * 2.0D;
-            double var26 = oldY + (mob.posY - oldY) * var19 + mob.worldObj.rand.nextDouble() * (double)mob.height;
-            double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double)mob.width * 2.0D;
-            mob.worldObj.spawnParticle("portal", var24, var26, var28, (double)var21, (double)var22, (double)var23);
+            mob.setPosition(oldX, oldY, oldZ);
+            return false;
         }
-        
-        mob.worldObj.playSoundEffect(oldX, oldY, oldZ, "mob.endermen.portal", 1.0F, 1.0F);
-        mob.worldObj.playSoundAtEntity(mob, "mob.endermen.portal", 1.0F, 1.0F);
+        else
+        {
+            short range = 128;
+            for (int i = 0; i < range; ++i)
+            {
+                double var19 = (double)i / ((double)range - 1.0D);
+                float var21 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
+                float var22 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
+                float var23 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
+                double var24 = oldX + (mob.posX - oldX) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double)mob.width * 2.0D;
+                double var26 = oldY + (mob.posY - oldY) * var19 + mob.worldObj.rand.nextDouble() * (double)mob.height;
+                double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double)mob.width * 2.0D;
+                mob.worldObj.spawnParticle("portal", var24, var26, var28, (double)var21, (double)var22, (double)var23);
+            }
+            
+            mob.worldObj.playSoundEffect(oldX, oldY, oldZ, "mob.endermen.portal", 1.0F, 1.0F);
+            mob.worldObj.playSoundAtEntity(mob, "mob.endermen.portal", 1.0F, 1.0F);
+        }
         return true;
     }
     
@@ -118,5 +132,12 @@ public class MM_Ender extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " the Enderborn", " the Trickster" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " enderborn ", " tricky " };
     
 }

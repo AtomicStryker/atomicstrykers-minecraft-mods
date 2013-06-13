@@ -48,4 +48,11 @@ public class MM_Weakness extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Apathy", " the Deceiver" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " apathetic ", " deceiving " };
 }

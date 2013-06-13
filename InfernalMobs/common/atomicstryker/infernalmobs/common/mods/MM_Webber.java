@@ -49,7 +49,7 @@ public class MM_Webber extends MobModifier
 
     private void tryAbility(EntityLiving mob, EntityLiving target)
     {
-        if (target == null)
+        if (target == null || !mob.canEntityBeSeen(target))
         {
             return;
         }
@@ -82,11 +82,11 @@ public class MM_Webber extends MobModifier
     }
     
     @Override
-    public Class[] getModsNotToMixWith()
+    public Class<?>[] getModsNotToMixWith()
     {
         return modBans;
     }
-    private static Class[] modBans = { MM_Gravity.class, MM_Blastoff.class };
+    private static Class<?>[] modBans = { MM_Gravity.class, MM_Blastoff.class };
     
     @Override
     protected String[] getModNameSuffix()
@@ -94,5 +94,12 @@ public class MM_Webber extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Traps", " the Mutated", " the Spider" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " ensnaring ", " webbing " };
     
 }

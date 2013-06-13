@@ -49,4 +49,11 @@ public class MM_Wither extends MobModifier
     }
     private static String[] suffix = { " of Dark Skulls" };
     
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " withering " };
+    
 }

@@ -41,4 +41,11 @@ public class MM_Regen extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of WTF IMBA", " the Cancerous", " of First Aid" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " regenerating ", " healing ", " nigh unkillable " };
 }

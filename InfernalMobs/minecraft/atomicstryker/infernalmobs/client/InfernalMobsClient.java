@@ -1,6 +1,5 @@
 package atomicstryker.infernalmobs.client;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +9,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
@@ -44,7 +42,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     {
         mc = FMLClientHandler.instance().getClient();
         nextPacketTime = 0;
-        rareMobsClient = new ConcurrentHashMap();
+        rareMobsClient = new ConcurrentHashMap<EntityLiving, MobModifier>();
         
         TickRegistry.registerTickHandler(this, Side.CLIENT);
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
@@ -143,7 +141,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 Vec3 actualReachVector = viewEntPositionVec.addVector(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance, viewEntityLookVec.zCoord * reachDistance);
                 Entity pointedEntity = null;
                 float expandBBvalue = 1.0F;
-                List entsInBBList = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.renderViewEntity, mc.renderViewEntity.boundingBox.addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance, viewEntityLookVec.zCoord * reachDistance).expand((double)expandBBvalue, (double)expandBBvalue, (double)expandBBvalue));
+                List<?> entsInBBList = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.renderViewEntity, mc.renderViewEntity.boundingBox.addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance, viewEntityLookVec.zCoord * reachDistance).expand((double)expandBBvalue, (double)expandBBvalue, (double)expandBBvalue));
                 double lowestDistance = reachDist2;
 
                 for (int i = 0; i < entsInBBList.size(); ++i)
@@ -212,7 +210,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
         }
     }
 
-    private EnumSet tickTypes = EnumSet.of(TickType.RENDER);
+    private EnumSet<TickType> tickTypes = EnumSet.of(TickType.RENDER);
     
     @Override
     public EnumSet<TickType> ticks()

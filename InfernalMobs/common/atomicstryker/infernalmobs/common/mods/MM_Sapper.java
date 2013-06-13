@@ -54,4 +54,11 @@ public class MM_Sapper extends MobModifier
     }
     private static String[] suffix = { " of Hunger", " the Pale Rider" };
     
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " hungering ", " starving " };
+    
 }

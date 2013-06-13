@@ -1,10 +1,8 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.MobModifier;
 
@@ -39,7 +37,7 @@ public class MM_Alchemist extends MobModifier
     
     private void tryAbility(EntityLiving mob, EntityLiving target)
     {
-        if (target == null)
+        if (target == null || !mob.canEntityBeSeen(target))
         {
             return;
         }
@@ -77,5 +75,12 @@ public class MM_Alchemist extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " the Witchkin", " the Brewmaster", " the Singed" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " witchkin ", " brewing ", " singed " };
     
 }

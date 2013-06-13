@@ -52,10 +52,10 @@ public class MM_Sticky extends MobModifier
         return super.onHurt(mob, source, damage);
     }
     
-    private Class[] disallowed = { EntityCreeper.class };
+    private Class<?>[] disallowed = { EntityCreeper.class };
     
     @Override
-    public Class[] getBlackListMobClasses()
+    public Class<?>[] getBlackListMobClasses()
     {
         return disallowed;
     }
@@ -66,5 +66,12 @@ public class MM_Sticky extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Snagging", " the Quick Fingered", " of Petty Theft", " .. YOINK" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " thieving ", " snagging ", " quick fingered " };
     
 }

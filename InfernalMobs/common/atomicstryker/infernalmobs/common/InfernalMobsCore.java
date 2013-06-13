@@ -72,7 +72,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.0")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.1")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -123,8 +123,8 @@ public class InfernalMobsCore implements ITickHandler
         dropIdList = new ArrayList<Integer[]>();
         nextExistCheckTime = System.currentTimeMillis();
         healthHacked = false;
-        classesAllowedMap = new HashMap();
-        classesForcedMap = new HashMap();
+        classesAllowedMap = new HashMap<String, Boolean>();
+        classesForcedMap = new HashMap<String, Boolean>();
         failedItemStrings = new ArrayList<String[]>();
         
         config = new Configuration(evt.getSuggestedConfigurationFile());
@@ -194,8 +194,8 @@ public class InfernalMobsCore implements ITickHandler
         Iterator<Class<? extends MobModifier>> iter = mobMods.iterator();
         while (iter.hasNext())
         {
-            Class c = iter.next();
-            if (!config.get(config.CATEGORY_GENERAL, c.getSimpleName()+" enabled", true).getBoolean(true))
+            Class<?> c = iter.next();
+            if (!config.get(Configuration.CATEGORY_GENERAL, c.getSimpleName()+" enabled", true).getBoolean(true))
             {
                 iter.remove();
             }
@@ -213,7 +213,7 @@ public class InfernalMobsCore implements ITickHandler
         eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15, "One in THIS many Mobs will become atleast rare").getString());
         ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7, "One in THIS many already rare Mobs will become atleast ultra").getString());
         infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7, "One in THIS many already ultra Mobs will become infernal").getString());
-        String itemIDs = config.get(config.CATEGORY_GENERAL, "droppedItemIDs",
+        String itemIDs = config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDs",
                 "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403",
                 "List of equally likely to drop Items seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString();
         useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", false, "Use Entity class names instead of ingame Entity names for the config").getBoolean(false);
@@ -458,6 +458,7 @@ public class InfernalMobsCore implements ITickHandler
      * @param entity Target Entity
      * @return null or the first linked MobModifier instance for the Entity
      */
+    @SuppressWarnings("unchecked")
     private MobModifier createMobModifiers(EntityLiving entity)
     {
         /* 2-5 modifications standard */
@@ -502,7 +503,7 @@ public class InfernalMobsCore implements ITickHandler
             boolean allowed = true;
             if (nextMod.getBlackListMobClasses() != null)
             {
-                for (Class cl : nextMod.getBlackListMobClasses())
+                for (Class<?> cl : nextMod.getBlackListMobClasses())
                 {
                     if (entity.getClass().isAssignableFrom(cl))
                     {
@@ -515,7 +516,7 @@ public class InfernalMobsCore implements ITickHandler
             {
                 if (lastMod.getModsNotToMixWith() != null)
                 {
-                    for (Class cl : lastMod.getModsNotToMixWith())
+                    for (Class<?> cl : lastMod.getModsNotToMixWith())
                     {
                         if (lastMod.containsModifierClass(cl))
                         {
@@ -564,7 +565,6 @@ public class InfernalMobsCore implements ITickHandler
         {
             String modName = tokens[j];
             
-            boolean found;
             MobModifier nextMod = null;
             for (int i = 0; i < mobMods.size(); i++)
             {
@@ -725,10 +725,10 @@ public class InfernalMobsCore implements ITickHandler
     private void enchantRandomly(Random rand, ItemStack itemStack, int itemEnchantability, int modStr)
     {
         int remainStr = (modStr+1) / 2; // should result in 1-3
-        List enchantments = EnchantmentHelper.buildEnchantmentList(rand, itemStack, itemEnchantability);
+        List<?> enchantments = EnchantmentHelper.buildEnchantmentList(rand, itemStack, itemEnchantability);
         if (enchantments != null)
         {
-            Iterator iter = enchantments.iterator();
+            Iterator<?> iter = enchantments.iterator();
             while (iter.hasNext() && remainStr > 0)
             {
                 remainStr--;
@@ -806,7 +806,7 @@ public class InfernalMobsCore implements ITickHandler
         }
     }
 
-    private final EnumSet tickTypes = EnumSet.of(TickType.WORLD);
+    private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.WORLD);
     @Override
     public EnumSet<TickType> ticks()
     {

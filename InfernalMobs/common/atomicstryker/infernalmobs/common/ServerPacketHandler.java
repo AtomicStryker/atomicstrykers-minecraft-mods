@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.world.World;
 import atomicstryker.ForgePacketWrapper;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -15,6 +14,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler implements IPacketHandler
 {    
+    @SuppressWarnings("rawtypes")
     @Override
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
     {

@@ -1,18 +1,11 @@
 package atomicstryker.infernalmobs.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.culling.Frustrum;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
-
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 
 public class RendererBossGlow

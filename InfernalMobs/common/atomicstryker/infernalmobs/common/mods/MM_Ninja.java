@@ -105,4 +105,11 @@ public class MM_Ninja extends MobModifier
     }
     private static String[] suffix = { " the Zen Master", " of Equilibrium", " of Inner Peace" };
     
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " totally zen ", " innerly peaceful ", " Ronin " };
+    
 }

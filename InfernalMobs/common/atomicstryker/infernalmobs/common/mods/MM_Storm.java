@@ -2,8 +2,6 @@ package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.MobModifier;
@@ -39,7 +37,7 @@ public class MM_Storm extends MobModifier
 
     private void tryAbility(EntityLiving mob, EntityLiving target)
     {
-        if (target == null)
+        if (target == null || !mob.canEntityBeSeen(target))
         {
             return;
         }
@@ -60,5 +58,12 @@ public class MM_Storm extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Lightning", " the Raiden" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " striking ", " thundering ", " electrified " };
     
 }

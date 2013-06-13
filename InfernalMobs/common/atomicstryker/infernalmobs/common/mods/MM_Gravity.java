@@ -55,7 +55,7 @@ public class MM_Gravity extends MobModifier
 
     private void tryAbility(EntityLiving mob, EntityLiving target)
     {
-        if (target == null)
+        if (target == null || !mob.canEntityBeSeen(target))
         {
             return;
         }
@@ -106,11 +106,11 @@ public class MM_Gravity extends MobModifier
     }
     
     @Override
-    public Class[] getModsNotToMixWith()
+    public Class<?>[] getModsNotToMixWith()
     {
         return modBans;
     }
-    private static Class[] modBans = { MM_Webber.class };
+    private static Class<?>[] modBans = { MM_Webber.class };
     
     @Override
     protected String[] getModNameSuffix()
@@ -118,5 +118,12 @@ public class MM_Gravity extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Repulsion", " the Flipper" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " repulsing ", " sproing " };
     
 }

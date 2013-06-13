@@ -2,8 +2,6 @@ package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.DamageSource;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
@@ -35,11 +33,11 @@ public class MM_Lifesteal extends MobModifier
     }
         
     @Override
-    public Class[] getBlackListMobClasses()
+    public Class<?>[] getBlackListMobClasses()
     {
         return disallowed;
     }
-    private static Class[] disallowed = { EntityCreeper.class };
+    private static Class<?>[] disallowed = { EntityCreeper.class };
     
     @Override
     protected String[] getModNameSuffix()
@@ -47,5 +45,12 @@ public class MM_Lifesteal extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " the Vampire", " of Transfusion", " the Bloodsucker" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " vampiric ", " transfusing ", " bloodsucking " };
     
 }

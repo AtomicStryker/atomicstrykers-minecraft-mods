@@ -23,7 +23,9 @@ public class MM_Quicksand extends MobModifier
     @Override
     public boolean onUpdate(EntityLiving mob)
     {
-        if (getMobTarget() != null && ++ticker == 50)
+        if (getMobTarget() != null
+        && mob.canEntityBeSeen(getMobTarget())
+        && ++ticker == 50)
         {
             ticker = 0;
             getMobTarget().addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 45, 0));
@@ -38,5 +40,12 @@ public class MM_Quicksand extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of You-Cant-Run", " the slowing B****" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " slowing ", " Quicksand " };
     
 }

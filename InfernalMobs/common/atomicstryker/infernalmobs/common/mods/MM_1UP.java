@@ -35,11 +35,11 @@ public class MM_1UP extends MobModifier
     }
     
     @Override
-    public Class[] getBlackListMobClasses()
+    public Class<?>[] getBlackListMobClasses()
     {
         return disallowed;
     }
-    private static Class[] disallowed = { EntityCreeper.class };
+    private static Class<?>[] disallowed = { EntityCreeper.class };
     
     @Override
     protected String[] getModNameSuffix()
@@ -47,4 +47,11 @@ public class MM_1UP extends MobModifier
         return suffix;
     }
     private static String[] suffix = { " of Recurrence", " the Undying", " of twin Lives" };
+    
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " recurring ", " undying ", " twinlived " };
 }

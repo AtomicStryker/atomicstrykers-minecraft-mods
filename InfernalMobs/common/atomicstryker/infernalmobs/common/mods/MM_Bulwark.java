@@ -30,4 +30,11 @@ public class MM_Bulwark extends MobModifier
     }
     private static String[] suffix = { " of Turtling", " the Defender", " of effing Armor" };
     
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " turtling ", " defensive ", " armoured " };
+    
 }

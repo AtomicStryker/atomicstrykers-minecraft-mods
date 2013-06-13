@@ -2,7 +2,6 @@ package atomicstryker.infernalmobs.common;
 
 import java.util.ArrayList;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
@@ -278,7 +277,7 @@ public abstract class MobModifier
     /**
      * @return Array of classes an EntityLiving cannot equal, implement or extend in order for this MobModifier to be applied to it
      */
-    public Class[] getBlackListMobClasses()
+    public Class<?>[] getBlackListMobClasses()
     {
         return null;
     }
@@ -286,7 +285,7 @@ public abstract class MobModifier
     /**
      * @return Array of MobModifiers a considered MobModifier should not be mixed with. Both sides need to exclude each other for this to work.
      */
-    public Class[] getModsNotToMixWith()
+    public Class<?>[] getModsNotToMixWith()
     {
         return null;
     }
@@ -317,6 +316,11 @@ public abstract class MobModifier
         return bufferedSize;
     }
     
+    protected String[] getModNamePrefix()
+    {
+        return null;
+    }
+    
     protected String[] getModNameSuffix()
     {
         return null;
@@ -338,28 +342,39 @@ public abstract class MobModifier
                 buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
             }
             int size = getModSize();
-            String prefix = size <= 5 ? "§bRare " : size <= 10 ? "§6Ultra " : "§4Infernal ";
-            if (buffer.startsWith("Entity"))
-            {
-                buffer = buffer.replaceFirst("Entity", prefix);
-            }
-            else
-            {
-                buffer = prefix+buffer;
-            }
             
             int randomMod = target.getRNG().nextInt(getModSize());
-            MobModifier chosen = this;
+            MobModifier mod = this;
             while (randomMod > 0)
             {
-                chosen = chosen.nextMod;
+                mod = mod.nextMod;
                 randomMod--;
             }
             
-            if (chosen.getModNameSuffix() != null)
+            String modprefix = "";
+            if (mod.getModNamePrefix() != null)
             {
-                String pick = getModNameSuffix()[target.getRNG().nextInt(getModNameSuffix().length)];
-                buffer = buffer+pick;
+                modprefix = mod.getModNamePrefix()[target.getRNG().nextInt(mod.getModNamePrefix().length)];
+            }
+            
+            String prefix = size <= 5 ? "§bRare" : size <= 10 ? "§6Ultra" : "§4Infernal";
+            if (buffer.startsWith("Entity"))
+            {
+                buffer = buffer.replaceFirst("Entity", prefix+modprefix);
+            }
+            else
+            {
+                buffer = prefix+modprefix+buffer;
+            }
+            
+            if (size > 1)
+            {
+                mod = mod.nextMod != null ? mod.nextMod : this;
+                if (mod.getModNameSuffix() != null)
+                {
+                    String pick = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
+                    buffer = buffer+pick;
+                }
             }
             
             bufferedEntityName = buffer;

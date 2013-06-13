@@ -106,4 +106,11 @@ public class MM_Sprint extends MobModifier
     }
     private static String[] suffix = { " of Bolting", " the Swift One", " of being in your Face" };
     
+    @Override
+    protected String[] getModNamePrefix()
+    {
+        return prefix;
+    }
+    private static String[] prefix = { " sprinting ", " swift ", " charging " };
+    
 }
