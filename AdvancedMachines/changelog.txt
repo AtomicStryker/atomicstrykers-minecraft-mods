@@ -2,6 +2,8 @@ Version 4.9 (still, no IC2 release yet)
 	update to MC 1.5.2
 	changed internal speed value from short to int type, should fix overflows
 	changed max working overclocker count per machine to 16, down from 32
+	various fixes
+	IC2 API will no longer be included
 
 Version 4.9
 	update to MC 1.5.1

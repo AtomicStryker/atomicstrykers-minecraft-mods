@@ -111,6 +111,9 @@
 		<copy todir="${build.dir}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" excludes=".svn/**, *.txt" />
 		</copy>
+		
+		<!-- Delete included IC2 API, only needed that for compiling -->
+		<delete dir="${build.dir}/ic2/api"/>
 
 		<!-- Copy mcmod.info and changelog.txt into distributable -->
 		<copy file="./mcmod.info" todir="${build.dir}" />
