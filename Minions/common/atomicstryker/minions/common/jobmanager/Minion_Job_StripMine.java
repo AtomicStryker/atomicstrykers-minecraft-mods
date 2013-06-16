@@ -23,7 +23,6 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 	private final int xDirection;
 	private final int zDirection;
 	
-	private EntityMinion worker;
 	private World worldObj;
 	private int currentSegment;
 	
@@ -40,7 +39,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     	{
             if (!m.isStripMining)
             {
-                worker = m;
+                workerList.add(m);
                 m.isStripMining = true;
                 
                 m.giveTask(null, true);
@@ -60,7 +59,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
             }
     	}
     	
-    	if (worker == null)
+    	if (workerList.isEmpty())
     	{
     		System.out.println("Attempted to create Strip Mine Job, but all Minions are already stripmining!");
     		zDirection = xDirection = startX = startY = startZ = 0;
@@ -69,13 +68,13 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     	{
             this.pointOfOrigin = new ChunkCoordinates(ix, iy, iz);
 
-            this.worldObj = minions[0].worldObj;
+            worldObj = workerList.get(0).worldObj;
 
             startX = this.pointOfOrigin.posX;
             startY = this.pointOfOrigin.posY;
             startZ = this.pointOfOrigin.posZ;
 
-            Entity boss = minions[0].master;
+            Entity boss = workerList.get(0).master;
             int bossX = MathHelper.floor_double(boss.posX);
             int bossZ = MathHelper.floor_double(boss.posZ);
             
@@ -103,17 +102,17 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     public void onJobUpdateTick()
     {
     	super.onJobUpdateTick();
-    	if (worker == null)
+    	if (workerList.isEmpty())
     	{
     	    onJobFinished();
     	    return;
     	}
-    	else if (!worker.hasTask() && !jobQueue.isEmpty())
+    	else if (!workerList.get(0).hasTask() && !jobQueue.isEmpty())
     	{
             BlockTask job = (BlockTask) this.jobQueue.get(0);
-            worker.currentState = EnumMinionState.THINKING;
-            worker.giveTask(job);           
-            job.setWorker(worker);
+            workerList.get(0).currentState = EnumMinionState.THINKING;
+            workerList.get(0).giveTask(job);           
+            job.setWorker(workerList.get(0));
     	}
     	
         if (System.currentTimeMillis() > timeForceNextSegment)
@@ -150,8 +149,8 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     private boolean queueCurrentSegmentJobs()
     {
         jobQueue.clear();
-        worker.giveTask(null, true);
-        worker.currentState = EnumMinionState.AWAITING_JOB;
+        workerList.get(0).giveTask(null, true);
+        workerList.get(0).currentState = EnumMinionState.AWAITING_JOB;
         
     	timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
     	
