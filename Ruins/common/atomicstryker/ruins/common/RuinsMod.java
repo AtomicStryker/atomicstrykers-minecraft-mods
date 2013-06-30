@@ -284,12 +284,10 @@ public class RuinsMod
         pw.println("tries_per_chunk_normal=6");
         pw.println("chance_to_spawn_normal=10");
         pw.println("chance_for_site_normal=15");
-        pw.println("chunks_behind_normal=5");
         pw.println();
         pw.println("tries_per_chunk_nether=6");
         pw.println("chance_to_spawn_nether=10");
         pw.println("chance_for_site_nether=15");
-        pw.println("chunks_behind_nether=5");
         pw.println("disableRuinSpawnCoordsLogging=true");
         pw.println();
         // print all the biomes!

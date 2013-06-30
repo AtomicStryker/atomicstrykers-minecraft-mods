@@ -19,8 +19,8 @@ public class RuinHandler {
 	private ArrayList<Exclude> excluded = new ArrayList<Exclude>();
 	protected int[][] vars;
 	
-	protected int triesPerChunkNormal = 6, chanceToSpawnNormal = 10, chanceForSiteNormal = 15, chunksBehindNormal = 5,
-				  triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15, chunksBehindNether = 5;
+	protected int triesPerChunkNormal = 6, chanceToSpawnNormal = 10, chanceForSiteNormal = 15,
+				  triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15;
 	public boolean loaded = false;
 	public boolean disableLogging;
 	public File saveFolder;
@@ -242,9 +242,6 @@ public class RuinHandler {
             if( check[0].equals( "chance_for_site_normal" ) ) {
                 chanceForSiteNormal = Integer.parseInt( check[1] );
             }
-            if( check[0].equals( "chunks_behind_normal" ) ) {
-                chunksBehindNormal = Integer.parseInt( check[1] );
-            }
             if( check[0].equals( "tries_per_chunk_nether" ) ) {
                 triesPerChunkNether = Integer.parseInt( check[1] );
             }
@@ -253,11 +250,7 @@ public class RuinHandler {
             }
             if( check[0].equals( "chance_for_site_nether" ) ) {
                 chanceForSiteNether = Integer.parseInt( check[1] );
-            }
-            if( check[0].equals( "chunks_behind_nether" ) ) {
-                chunksBehindNether = Integer.parseInt( check[1] );
-            }
-            
+            }            
             if( check[0].equals( "disableRuinSpawnCoordsLogging" ) ) {
 				disableLogging = Boolean.parseBoolean(check[1]);
             }
