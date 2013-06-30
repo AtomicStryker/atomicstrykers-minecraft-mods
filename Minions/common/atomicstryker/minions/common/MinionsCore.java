@@ -61,7 +61,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.6")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.7")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -89,6 +89,8 @@ public class MinionsCore
     public static CopyOnWriteArrayList<Minion_Job_Manager> finishedJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
     public static Map<String, EntityMinion[]> masterNames = new HashMap<String, EntityMinion[]>();
     public static Map<String, Integer> masterCommits = new HashMap<String, Integer>();
+    
+    public static int secondsWithoutMasterDespawn;
 
     @PreInit
     public void preInit(FMLPreInitializationEvent event)
@@ -105,6 +107,8 @@ public class MinionsCore
             exhaustAmountSmall = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostSmall", "1.5").getString());
             cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").comment = "Food cost of summoning Minions and giving complex orders";
             exhaustAmountBig = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").getString());
+            
+            secondsWithoutMasterDespawn = cfg.get(Configuration.CATEGORY_GENERAL, "automaticDespawnDelay", 300, "Time in seconds after which a Minion without a Master ingame despawns").getInt();
         }
         catch (Exception e)
         {

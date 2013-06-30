@@ -66,6 +66,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	public boolean canPickUpItems;
 	private long canPickUpItemsAgainAt;
 	private long closeChestTime;
+	private long despawnTime;
 
 	public EntityMinion(World var1)
 	{
@@ -97,6 +98,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         canPickUpItems = true;
         canPickUpItemsAgainAt = 0L;
         closeChestTime = 0;
+        despawnTime = -1l;
 	}
 	
 	public void setMaster(EntityPlayer creator)
@@ -245,6 +247,24 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	if (this.riddenByEntity != null && this.riddenByEntity.equals(master) && this.getNavigator().noPath())
     	{
     		this.rotationYaw = this.rotationPitch = 0;
+    	}
+    	
+    	if ((master != null && master.isDead) || master == null)
+    	{
+            if (despawnTime < 0)
+            {
+                despawnTime = System.currentTimeMillis() + MinionsCore.secondsWithoutMasterDespawn*1000l;
+            }
+            else if (System.currentTimeMillis() > despawnTime)
+            {
+                master = null;
+                dropAllItemsToWorld();
+                setDead();
+            }
+    	}
+    	else
+    	{
+    	    despawnTime = -1l;
     	}
     	
     	if (this.dataWatcher.getWatchableObjectInt(12) != 0)
