@@ -4,6 +4,8 @@ Version 4.9 (still, no IC2 release yet)
 	changed max working overclocker count per machine to 16, down from 32
 	various fixes
 	IC2 API will no longer be included
+	fixed bug that prevented advanced machines from accepting automated/hopper input
+	changed advanced machines bottom side, can now do automated (hopper) output too
 
 Version 4.9
 	update to MC 1.5.1
