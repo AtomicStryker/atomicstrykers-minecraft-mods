@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>MCP Minecraft</name>
+	<name>Minecraft</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,38 +16,68 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>jars</name>
+			<type>2</type>
+			<locationURI>MCP_LOC/jars</locationURI>
+		</link>
+		<link>
+			<name>lib</name>
+			<type>2</type>
+			<locationURI>MCP_LOC/lib</locationURI>
+		</link>
+		<link>
 			<name>minecraft</name>
 			<type>2</type>
-			<locationURI>PARENT-1-WORKSPACE_LOC/mcp/src/minecraft</locationURI>
+			<location>D:/mcmodding/mcp/src/minecraft</location>
+		</link>
+		<link>
+			<name>src</name>
+			<type>2</type>
+			<locationURI>MCP_LOC/src/minecraft</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1307293455427</id>
+			<id>0</id>
 			<name>jars</name>
 			<type>13</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-bin</arguments>
+				<arguments>1.0-name-matches-false-false-libraries</arguments>
 			</matcher>
 		</filter>
 		<filter>
-			<id>1307293504507</id>
-			<name>jars/bin</name>
-			<type>5</type>
+			<id>0</id>
+			<name>jars</name>
+			<type>13</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-versions</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>0</id>
+			<name>jars</name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-natives</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1372126425043</id>
+			<name>jars/libraries</name>
+			<type>21</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-*.jar</arguments>
 			</matcher>
 		</filter>
-		<filter>
-			<id>1307293480435</id>
-			<name>jars/bin/natives</name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*</arguments>
-			</matcher>
-		</filter>
 	</filteredResources>
+	<variableList>
+		<variable>
+			<name>MCP_LOC</name>
+			<value>$%7BPARENT-1-WORKSPACE_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

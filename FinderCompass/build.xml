@@ -19,8 +19,7 @@
 	<property name="mcp.dir" location="./../../mcp" />
 
 	<!-- Source folder locations relative to this file -->
-	<property name="common.src.dir" location="./common" />
-	<property name="client.src.dir" location="./minecraft" />
+	<property name="common.src.dir" location="./src" />
 
 	<!-- Directory for the packaged result, relative to this file -->
 	<property name="dist.dir" location="./dist" />
@@ -31,7 +30,6 @@
 	<!-- MCP directories, shouldnt have to change this -->
 	<property name="mcp.srcdir" location="${mcp.dir}/src" />
 	<property name="client.mcp.srcdir" location="${mcp.srcdir}/minecraft" />
-	<property name="common.mcp.srcdir" location="${mcp.srcdir}/common" />
 
 	<!-- Update to point to your Python executable. Example: /usr/bin/python -->
 	<!-- The following location is relative, for Windows: -->
@@ -65,9 +63,6 @@
 	<!-- This method detects files in the source folders and copies them into the MCP source folders -->
 	<target name="mergesources" depends="init">
 		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
-			<fileset dir="${client.src.dir}" />
-		</copy>
-		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
 			<fileset dir="${common.src.dir}" includes="**/*.java" />
 		</copy>
 	</target>
@@ -99,9 +94,6 @@
 	<target name="clean-source">
 		<delete verbose="true">
 			<fileset dir="${client.mcp.srcdir}">
-				<present present="both" targetdir="${client.src.dir}" />
-			</fileset>
-			<fileset dir="${client.mcp.srcdir}">
 				<present present="both" targetdir="${common.src.dir}" />
 			</fileset>
 		</delete>
@@ -118,7 +110,7 @@
 
 		<!-- Copy non-code files in client source folder (eg textures) into distributable -->
 		<copy todir="${build.dir}">
-			<fileset dir="${client.src.dir}" excludes="**/*.java" />
+			<fileset dir="${common.src.dir}" excludes="**/*.java" />
 		</copy>
 
 	</target>
@@ -158,13 +150,8 @@
 
 		<!-- Copy source code and files into download -->
 		<mkdir dir="${temp.dir}/src" />
-		<mkdir dir="${temp.dir}/src/common" />
-		<mkdir dir="${temp.dir}/src/minecraft" />
-		<copy todir="${temp.dir}/src/common">
+		<copy todir="${temp.dir}/src">
 			<fileset dir="${common.src.dir}" />
-		</copy>
-		<copy todir="${temp.dir}/src/minecraft">
-			<fileset dir="${client.src.dir}" />
 		</copy>
 
 		<!-- Copy any additional files into download package -->
