@@ -126,7 +126,7 @@
 	</target>
 
 	<!-- Directory name for the finished modfile, inside the downloadable archive -->
-	<property name="moddir" value="setup/coremods" />
+	<property name="moddir" value="setup/mods" />
 
 	<!-- Directory name for anything else to copy into the downloadable archive -->
 	<property name="resources.dir" location="./resources" />
