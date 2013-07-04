@@ -5,7 +5,7 @@ import net.minecraftforge.event.ForgeSubscribe;
 
 public class KenshiroSounds
 {
-    private static final String SOUND_RESOURCE_LOCATION = "/assets/kenshiro/sound/";
+    private static final String SOUND_RESOURCE_LOCATION = "kenshiro:";
 
     private final String[] soundFiles = { "kenshirocharge.ogg", "kenshiroheartbeat.ogg", "kenshiropunch.ogg", "kenshiroshindeiru.ogg", "kenshirosmash.ogg", "kenshirostyle.ogg" };
 

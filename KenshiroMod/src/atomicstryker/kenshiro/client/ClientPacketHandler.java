@@ -71,7 +71,7 @@ public class ClientPacketHandler implements IPacketHandler
             Class[] decodeAs = { String.class, Integer.class, Integer.class, Integer.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             String sound = (String) packetReadout[0];
-            FMLClientHandler.instance().getClient().theWorld.playSound((Integer)packetReadout[1]+0.5D, (Integer)packetReadout[2]+0.5D, (Integer)packetReadout[3]+0.5D, sound, 1.0F, 1.0F, false);
+            FMLClientHandler.instance().getClient().theWorld.playSound((Integer)packetReadout[1]+0.5D, (Integer)packetReadout[2]+0.5D, (Integer)packetReadout[3]+0.5D, "kenshiro:"+sound, 1.0F, 1.0F, false);
         }
     }
 
