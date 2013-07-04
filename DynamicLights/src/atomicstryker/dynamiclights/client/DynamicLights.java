@@ -20,8 +20,7 @@ import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Mod.PreInit;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -39,7 +38,7 @@ import cpw.mods.fml.relauncher.Side;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.2")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.3")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -63,7 +62,7 @@ public class DynamicLights
      */
     private boolean globalLightsOff;
     
-    @PreInit
+    @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
         instance = this;
@@ -72,7 +71,7 @@ public class DynamicLights
         worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();
     }
     
-    @Init
+    @EventHandler
     public void load(FMLInitializationEvent evt)
     {
         TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);

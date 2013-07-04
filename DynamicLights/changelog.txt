@@ -1,3 +1,6 @@
+1.2.3
+- update to MC 1.6.1
+
 1.2.2
 - hand held Light Items that are not waterproof will now only deactivate once you actually submerge
 + (hotfix) hand held items that are not waterproof will no longer switch off the armor light aswell

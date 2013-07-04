@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "4.9", dependencies = "required-after:IC2")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.0", dependencies = "required-after:IC2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -133,6 +133,9 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         proxy.load();
 
         GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
+        
+        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("refinedIronDust");
+        GameRegistry.registerItem(refinedIronDust, "refinedIronDust");
 
         GameRegistry.registerTileEntity(TileEntityRotaryMacerator.class, "Rotary Macerator");
         GameRegistry.registerTileEntity(TileEntitySingularityCompressor.class, "Singularity Compressor");
@@ -172,7 +175,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         transformerStack = Items.getItem("transformerUpgrade");
         energyStorageUpgradeStack = Items.getItem("energyStorageUpgrade");
         
-        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("refinedIronDust");
         LanguageRegistry.addName(refinedIronDust, refIronDustName);
         GameRegistry.addSmelting(refinedIronDust.itemID, Items.getItem("refinedIronIngot"), 1.0f);
     }

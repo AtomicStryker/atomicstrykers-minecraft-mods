@@ -1,3 +1,6 @@
+1.1.5
+- updated to MC 1.6.1
+
 1.1.4
 - cleaned up code a bit, fixed punched creepers still exploding sometimes
 - nerfed block breaking speed during kenshiro (4 blocks per sec max)

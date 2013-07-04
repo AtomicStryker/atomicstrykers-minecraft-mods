@@ -1,3 +1,6 @@
+1.2.1
+update to mc 1.6.1
+
 1.2.0
 added rudimentary pathfind raytrace to help getting stuck in ceilings
 disabled Pet Bats taking damage from wall hugging

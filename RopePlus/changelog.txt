@@ -1,3 +1,6 @@
+RopesPlus 1.4.1
+- update to mc 1.6.1
+
 RopesPlus 1.4.0
 - update to mc 1.5.2
 

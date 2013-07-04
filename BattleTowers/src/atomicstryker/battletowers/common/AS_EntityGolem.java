@@ -2,7 +2,7 @@ package atomicstryker.battletowers.common;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -143,7 +143,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         && damageSource.getEntity() instanceof EntityPlayer)
         {
             setAwake();
-            setTarget((EntityLiving) damageSource.getEntity());
+            setTarget((EntityLivingBase) damageSource.getEntity());
         }
         
         return super.attackEntityFrom(damageSource, amount);

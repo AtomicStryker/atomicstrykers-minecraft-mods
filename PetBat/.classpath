@@ -33,5 +33,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DynamicLights"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

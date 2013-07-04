@@ -1,4 +1,5 @@
 Update 1.6.7
+- updated for MC 1.6.1
 - added automatic unsummoning when Owner is dead or disconnected, defaults to 5 minutes delay
 
 Update 1.6.6

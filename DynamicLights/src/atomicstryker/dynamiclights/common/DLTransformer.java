@@ -1,14 +1,23 @@
 package atomicstryker.dynamiclights.common;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ASTORE;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.ISTORE;
 
 import java.util.Iterator;
 
+import net.minecraft.launchwrapper.IClassTransformer;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.tree.*;
-
-import cpw.mods.fml.relauncher.IClassTransformer;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 /**
  * 
@@ -21,21 +30,21 @@ import cpw.mods.fml.relauncher.IClassTransformer;
 public class DLTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.World */
-    private final String classNameWorldObfusc = "aab";
+    private final String classNameWorldObfusc = "abr";
     
     /* class net.minecraft.src.IBlockAccess */
-    private final String classNameBlockAccessObfusc = "aak";
+    private final String classNameBlockAccessObfusc = "aca";
     
-    /* method World.computeBlockLightValue(IIILnet/minecraft/world/EnumSkyBlock;)I aka func_98179_a*/
-    private final String computeBlockLightMethodNameO = "a";
+    /* method World.computeLightValue(IIILnet/minecraft/world/EnumSkyBlock;)I aka func_98179_a*/
+    private final String computeLightValueMethodNameO = "a";
     
     /* class net.minecraft.world.EnumSkyBlock */
-    private final String enumSkyBlockObfusc = "aam";
+    private final String enumSkyBlockObfusc = "acc";
     
     
     private final String classNameWorld = "net.minecraft.world.World";
     private final String blockAccessJava = "net/minecraft/world/IBlockAccess";
-    private final String computeBlockLightMethodName = "computeLightValue";
+    private final String computeLightValueMethodName = "computeLightValue";
     
     
     @Override
@@ -62,16 +71,18 @@ public class DLTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
+        @SuppressWarnings("unchecked")
         Iterator<MethodNode> methods = classNode.methods.iterator();
         while(methods.hasNext())
         {
             MethodNode m = methods.next();
-            if (m.name.equals( obfuscated ? computeBlockLightMethodNameO : computeBlockLightMethodName)
+            if (m.name.equals( obfuscated ? computeLightValueMethodNameO : computeLightValueMethodName)
             && m.desc.equals( obfuscated ? "(IIIL"+enumSkyBlockObfusc+";)I" : "(IIILnet/minecraft/world/EnumSkyBlock;)I"))
             {
                 System.out.println("In target method! Patching!");
                 
                 AbstractInsnNode targetNode = null;
+                @SuppressWarnings("unchecked")
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 boolean deleting = false;
                 boolean replacing = false;

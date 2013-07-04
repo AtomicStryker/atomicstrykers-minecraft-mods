@@ -222,3 +222,6 @@ a: setAccessible now true
 10.3
 + ninja'd Biome code change
 + added Command Block support, example: rule1=0,100,CommandBlock:command:sender
+
+10.4
++ update to MC 1.6.1
