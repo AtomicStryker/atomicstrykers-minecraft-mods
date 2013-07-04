@@ -124,7 +124,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         {
             if (getIsDormant())
             {
-                worldObj.playSoundAtEntity(this, "golemawaken", getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+                worldObj.playSoundAtEntity(this, "battletowers:golemawaken", getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
             }
             
             this.dataWatcher.updateObject(16, new Integer(Integer.valueOf(0)));
@@ -218,7 +218,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             }
 			else if(rageCounter <= 0 && explosionAttack == 0)
             {
-			    worldObj.playSoundAtEntity(this, "golemspecial", getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+			    worldObj.playSoundAtEntity(this, "battletowers:golemspecial", getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 			    motionY += 0.9D;
 			    explosionAttack = 1;
             }
@@ -282,7 +282,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             
             if (attackCounter == 10)
             {
-                worldObj.playSoundAtEntity(this, "golemcharge", getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
+                worldObj.playSoundAtEntity(this, "battletowers:golemcharge", getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
             }
             attackCounter++;
             if (attackCounter >= 20)
@@ -390,7 +390,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     {
         if(!this.getIsDormant())
         {
-            return "golem";
+            return "battletowers:golem";
         }
         else
         {
@@ -401,13 +401,13 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     @Override
     protected String getHurtSound()
     {
-        return "golemhurt";
+        return "battletowers:golemhurt";
     }
 
     @Override
     protected String getDeathSound()
     {
-        return "golemdeath";
+        return "battletowers:golemdeath";
     }
 
     @Override
