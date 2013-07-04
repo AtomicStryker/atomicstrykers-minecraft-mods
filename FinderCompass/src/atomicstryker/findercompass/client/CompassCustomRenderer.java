@@ -67,7 +67,7 @@ public class CompassCustomRenderer implements IItemRenderer
             ((TextureFX)icon).updateAnimation();
         }
         
-        ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getSheetWidth(), icon.getSheetHeight(), 0.0825F);
+        ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getOriginX(), icon.getOriginY(), 0.0825F);
     }
 
 }
