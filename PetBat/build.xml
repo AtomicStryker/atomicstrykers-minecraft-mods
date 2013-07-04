@@ -68,10 +68,7 @@
 
 		<!-- add Dynamic Lights to sources -->
 		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
-			<fileset dir="./../DynamicLights/minecraft" />
-		</copy>
-		<copy todir="${client.mcp.srcdir}" overwrite="true" verbose="true">
-			<fileset dir="./../DynamicLights/common" includes="**/*.java" />
+			<fileset dir="./../DynamicLights/src" />
 		</copy>
 	</target>
 
@@ -107,10 +104,7 @@
 
 			<!-- and Dynamic Lights sources -->
 			<fileset dir="${client.mcp.srcdir}">
-				<present present="both" targetdir="./../DynamicLights/minecraft" />
-			</fileset>
-			<fileset dir="${client.mcp.srcdir}">
-				<present present="both" targetdir="./../DynamicLights/common" />
+				<present present="both" targetdir="./../DynamicLights/src" />
 			</fileset>
 		</delete>
 	</target>
