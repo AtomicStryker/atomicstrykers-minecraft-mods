@@ -46,14 +46,14 @@ public class RenderPetBat extends RenderLiving
      * Passes the specialRender and renders it
      */
     @Override
-    protected void func_130008_a(EntityLivingBase par1EntityLiving, double par2, double par4, double par6)
+    protected void passSpecialRender(EntityLivingBase par1EntityLiving, double par2, double par4, double par6)
     {
         String name = ((EntityPetBat)par1EntityLiving).getDisplayName();
         if (!name.equals(""))
         {
             renderLivingLabel(par1EntityLiving, name, par2, par4-1D, par6, 64);
         }
-        super.func_130008_a(par1EntityLiving, par2, par4, par6);
+        super.passSpecialRender(par1EntityLiving, par2, par4, par6);
     }
     
     @Override
