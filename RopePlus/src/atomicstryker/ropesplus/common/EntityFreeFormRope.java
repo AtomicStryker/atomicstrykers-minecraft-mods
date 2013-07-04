@@ -21,7 +21,6 @@ public class EntityFreeFormRope extends Entity
     private EntityPlayer shooter;
     private double maxLength;
     private double inertiaSpeed;
-    private int swingFactor;
     private long nextSoundTime;
     private boolean jungleCall;
     
@@ -33,7 +32,6 @@ public class EntityFreeFormRope extends Entity
         shooter = null;
         maxLength = 999D;
         inertiaSpeed = -1;
-        swingFactor = -1;
         nextSoundTime = 0;
         jungleCall = false;
     }
@@ -153,8 +151,6 @@ public class EntityFreeFormRope extends Entity
         setEndY(compound.getDouble("endY"));
         setEndZ(compound.getDouble("endZ"));
         setPowValue(compound.getDouble("ropePOWvalue"));
-        
-        this.setDead(); // TODO dont forget to remove this
     }
 
     @Override
@@ -258,12 +254,12 @@ public class EntityFreeFormRope extends Entity
                             if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
                             {
                                 jungleCall = true;
-                                Object[] toSend = { "jungleking" };
+                                Object[] toSend = { "ropesplus:jungleking" };
                                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 8, toSend));
                             }
                             else
                             {
-                                Object[] toSend = { "ropetension" };
+                                Object[] toSend = { "ropesplus:ropetension" };
                                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 8, toSend));
                             }
                         }

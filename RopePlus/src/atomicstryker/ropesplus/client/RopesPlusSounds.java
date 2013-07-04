@@ -5,7 +5,7 @@ import net.minecraftforge.event.ForgeSubscribe;
 
 public class RopesPlusSounds
 {
-    private static final String SOUND_RESOURCE_LOCATION = "/assets/ropesplus/sound/";
+    private static final String SOUND_RESOURCE_LOCATION = "ropesplus:";
     
     private final String[] soundFiles = {
             "hookshotfire.ogg",

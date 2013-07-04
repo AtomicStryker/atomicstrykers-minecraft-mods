@@ -107,7 +107,7 @@ public class ItemHookshot extends Item
                                 
                                 Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
-                                world.playSoundAtEntity(entityplayer, "hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+                                world.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
                                 entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge.itemID);
                             }
                         }
@@ -140,7 +140,7 @@ public class ItemHookshot extends Item
         {
             // activate hook pull on clientside
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 5, null), (Player) entityplayer);
-            world.playSoundAtEntity(entityplayer, "hookshotpull", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+            world.playSoundAtEntity(entityplayer, "ropesplus:hookshotpull", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
         }
     }
 
