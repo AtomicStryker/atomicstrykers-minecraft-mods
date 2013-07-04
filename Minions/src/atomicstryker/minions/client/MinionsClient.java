@@ -333,7 +333,7 @@ public class MinionsClient
         
         if (timeLastSound + timeSoundDelay < System.currentTimeMillis())
         {
-            playSoundToAllPlayersOnServer(shooter, "mod_minions.bolt");
+            playSoundToAllPlayersOnServer(shooter, "minions:bolt");
             timeLastSound = System.currentTimeMillis();
         }
     }
@@ -343,7 +343,7 @@ public class MinionsClient
         if (timeLastSound + timeSoundDelay*2 < System.currentTimeMillis())
         {
             timeLastSound = System.currentTimeMillis();
-            playSoundToAllPlayersOnServer(player, "mod_minions.fart");
+            playSoundToAllPlayersOnServer(player, "minions:fart");
         }
     }
     

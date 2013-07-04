@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -347,20 +347,20 @@ public class MinionsCore
 
             if (commits == 4)
             {
-            	proxy.playSoundAtEntity(player, "mod_minions.thegodshaverewardedyouroffering", 1.0F, 1.0F);
+            	proxy.playSoundAtEntity(player, "minions:thegodshaverewardedyouroffering", 1.0F, 1.0F);
                 // give master item to player
                 player.inventory.addItemStackToInventory(new ItemStack(MinionsCore.itemMastersStaff.itemID, 1, 0));
             }
             else
             {
                 masterCommits.put(player.username, commits);
-                proxy.playSoundAtEntity(player, "mod_minions.thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
+                proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
             }
         }
         else
         {
             masterCommits.put(player.username, 1);
-            proxy.playSoundAtEntity(player, "mod_minions.thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
+            proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
         }
     }
     
@@ -384,7 +384,7 @@ public class MinionsCore
         return false;
     }
     
-    public static void orderMinionToPickupEntity(EntityPlayer playerEnt, EntityLiving target)
+    public static void orderMinionToPickupEntity(EntityPlayer playerEnt, EntityLivingBase target)
     {
         EntityMinion[] minions = (EntityMinion[]) masterNames.get(playerEnt.username);
         if (minions == null)
@@ -398,9 +398,9 @@ public class MinionsCore
 
             if (minions[i].riddenByEntity == null)
             {
-                minions[i].targetEntityToGrab = (EntityLiving) target;
+                minions[i].targetEntityToGrab = (EntityLivingBase) target;
                 minions[i].currentState = EnumMinionState.STALKING_TO_GRAB;
-                proxy.sendSoundToClients(minions[i], "mod_minions.grabanimalorder");
+                proxy.sendSoundToClients(minions[i], "minions:grabanimalorder");
                 break;
             }
         }
@@ -410,12 +410,12 @@ public class MinionsCore
     {
         if (minion.riddenByEntity != null)
         {
-            proxy.sendSoundToClients(minion, "mod_minions.foryou");
+            proxy.sendSoundToClients(minion, "minions:foryou");
             minion.riddenByEntity.mountEntity(null);
         }
         else if (minion.inventory.containsItems())
         {
-            proxy.sendSoundToClients(minion, "mod_minions.foryou");
+            proxy.sendSoundToClients(minion, "minions:foryou");
             minion.dropAllItemsToWorld();
         }
     }
@@ -447,7 +447,7 @@ public class MinionsCore
             arrayplusone[prevArraySize].setPosition(x, y+1, z);
             playerEnt.worldObj.spawnEntityInWorld(arrayplusone[prevArraySize]);
             arrayplusone[prevArraySize].setMaster(playerEnt);
-            MinionsCore.proxy.sendSoundToClients(arrayplusone[prevArraySize], "mod_minions.minionspawn");
+            MinionsCore.proxy.sendSoundToClients(arrayplusone[prevArraySize], "minions:minionspawn");
 
             masterNames.put(playerEnt.username, arrayplusone);
             //System.out.println("spawned missing minion for "+var3.username);
@@ -475,7 +475,7 @@ public class MinionsCore
         
         cancelRunningJobsForMaster(playerEnt.username);
         runningJobList.add(new Minion_Job_TreeHarvest(minions, x, y, z));
-        proxy.sendSoundToClients(minions[0], "mod_minions.ordertreecutting");
+        proxy.sendSoundToClients(minions[0], "minions:ordertreecutting");
     }
     
     public static void orderMinionsToDigStairWell(EntityPlayer playerEnt, int x, int y, int z)
@@ -495,7 +495,7 @@ public class MinionsCore
         // stairwell job
         cancelRunningJobsForMaster(playerEnt.username);
         runningJobList.add(new Minion_Job_DigMineStairwell(minions, x, y-1, z));
-        proxy.sendSoundToClients(minions[0], "mod_minions.ordermineshaft");
+        proxy.sendSoundToClients(minions[0], "minions:ordermineshaft");
     }
     
     public static void orderMinionsToDigStripMineShaft(EntityPlayer playerEnt, int x, int y, int z)
@@ -515,7 +515,7 @@ public class MinionsCore
         // strip mine job
         minions[0].master = playerEnt;
         runningJobList.add(new Minion_Job_StripMine(minions, x, y-1, z));
-        proxy.sendSoundToClients(minions[0], "mod_minions.randomorder");
+        proxy.sendSoundToClients(minions[0], "minions:randomorder");
     }
     
     public static void orderMinionsToChestBlock(EntityPlayer playerEnt, int x, int y, int z)
@@ -531,7 +531,7 @@ public class MinionsCore
                 && chestOrInventoryBlock instanceof IInventory)
         {
             cancelRunningJobsForMaster(playerEnt.username);
-            proxy.sendSoundToClients(minions[0], "mod_minions.randomorder");
+            proxy.sendSoundToClients(minions[0], "minions:randomorder");
             for (int i = 0; i < minions.length; i++)
             {
                 minions[i].master = playerEnt;
@@ -551,7 +551,7 @@ public class MinionsCore
         }
         
         cancelRunningJobsForMaster(playerEnt.username);
-        proxy.sendSoundToClients(minions[0], "mod_minions.randomorder");
+        proxy.sendSoundToClients(minions[0], "minions:randomorder");
         for (int i = 0; i < minions.length; i++)
         {
             minions[i].master = playerEnt;
@@ -572,7 +572,7 @@ public class MinionsCore
         if (isBlockValueable(playerEnt.worldObj.getBlockId(x, y-1, z)))
         {
             cancelRunningJobsForMaster(playerEnt.username);
-            proxy.sendSoundToClients(minions[0], "mod_minions.randomorder");
+            proxy.sendSoundToClients(minions[0], "minions:randomorder");
             for (int i = 0; i < minions.length; i++)
             {
                 minions[i].master = playerEnt;
@@ -596,7 +596,7 @@ public class MinionsCore
             return;
         }
         
-        proxy.sendSoundToClients(minions[0], "mod_minions.orderfollowplayer");
+        proxy.sendSoundToClients(minions[0], "minions:orderfollowplayer");
         for (int i = 0; i < minions.length; i++)
         {
             minions[i].master = entPlayer;
@@ -635,7 +635,7 @@ public class MinionsCore
         // custom dig job
         minions[0].master = playerEnt;
         runningJobList.add(new Minion_Job_DigByCoordinates(minions, x, y-1, z, XZsize, ySize));
-        proxy.playSoundAtEntity(playerEnt, "mod_minions.randomorder", 1.0F, 1.0F);
+        proxy.playSoundAtEntity(playerEnt, "minions:randomorder", 1.0F, 1.0F);
     }
     
     private void initializeSettingsFile(File settingsFile)

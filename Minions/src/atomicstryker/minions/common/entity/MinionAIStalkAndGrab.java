@@ -1,12 +1,12 @@
 package atomicstryker.minions.common.entity;
 
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
 public class MinionAIStalkAndGrab extends EntityAIBase
 {
     private EntityMinion theMinion;
-    private EntityLiving target;
+    private EntityLivingBase target;
 
     int grabDelay = 0;
     final int maxGrabDelay = 20;

@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.item.EntityItem;
@@ -59,7 +59,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	private int pathFindingFails;
 	private int currentPathingStopCooldownTick;
 	private BlockTask currentTask;
-	public EntityLiving targetEntityToGrab;
+	public EntityLivingBase targetEntityToGrab;
 	public float workSpeed;
 	private long workBoostTime;
 	public boolean isStripMining;
@@ -482,7 +482,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     public void dropAllItemsToWorld()
     {
     	blockItemPickUp();
-    	MinionsCore.proxy.sendSoundToClients(this, "mod_minions.foryou");
+    	MinionsCore.proxy.sendSoundToClients(this, "minions:foryou");
 		if (master != null)
 		{
 			this.faceEntity(master, 180F, 180F);
@@ -546,8 +546,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         		workSpeed = 2.0F;
         		
         		master.onCriticalHit(this);
-        		MinionsCore.proxy.sendSoundToClients(this, "mod_minions.minionsqueak");
-        		//worldObj.playSoundAtEntity(this, "mod_minions.minionsqueak", 1.0F, 1.0F);
+        		MinionsCore.proxy.sendSoundToClients(this, "minions:minionsqueak");
+        		//worldObj.playSoundAtEntity(this, "minions:minionsqueak", 1.0F, 1.0F);
         		
     			if (this.riddenByEntity != null)
     			{

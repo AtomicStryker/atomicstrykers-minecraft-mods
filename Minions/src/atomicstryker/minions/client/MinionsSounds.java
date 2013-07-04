@@ -13,6 +13,7 @@ import cpw.mods.fml.common.ModContainer;
 public class MinionsSounds
 {
     private static final String SOUND_RESOURCE_LOCATION = "assets/minions/sound";
+    private static final String SOUND_PREFIX = "minions:";
 
     @ForgeSubscribe
     public void onSoundLoad(SoundLoadEvent event)
@@ -30,7 +31,7 @@ public class MinionsSounds
                     System.out.println("Directory detected! Iterating...");
                     for (String soundFile : fileCandidate.list())
                     {
-                        String s = SOUND_RESOURCE_LOCATION + soundFile;
+                        String s = SOUND_PREFIX + soundFile;
                         event.manager.soundPoolSounds.addSound(s);
                         System.out.println("loaded soundfile " + s);
                     }
@@ -53,8 +54,8 @@ public class MinionsSounds
                                 && s.length() > 0
                                 && s.startsWith(SOUND_RESOURCE_LOCATION))
                                 {
-                                    event.manager.soundPoolSounds.addSound(s);
-                                    System.out.println("loaded soundfile " + s);
+                                    event.manager.soundPoolSounds.addSound(SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
+                                    System.out.println("loaded soundfile " + SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
                                 }
                             }
                             zis.closeEntry();

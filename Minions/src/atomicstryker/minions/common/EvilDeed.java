@@ -16,7 +16,7 @@ public class EvilDeed
     public EvilDeed(String text, String file, int length)
     {
     	buttonText = text;
-    	soundFile = file;
+    	soundFile = "minions:"+file;
     	soundLength = length;
     }
 

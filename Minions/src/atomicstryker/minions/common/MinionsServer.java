@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,7 +51,7 @@ public class MinionsServer
                 Entity target = MinionsCore.findEntityByID(player.worldObj, targetID);
                 if (target instanceof EntityAnimal || target instanceof EntityPlayer)
                 {
-                    MinionsCore.orderMinionToPickupEntity(player, (EntityLiving) target);
+                    MinionsCore.orderMinionToPickupEntity(player, (EntityLivingBase) target);
                 }
                 break;
             }
