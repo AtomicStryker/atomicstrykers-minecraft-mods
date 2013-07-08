@@ -128,7 +128,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
         jobQueue.remove(task);
         
-        if (jobQueue.isEmpty())
+        if (jobQueue.isEmpty() && !workerList.isEmpty())
         {
             currentSegment++;
             queueCurrentSegmentJobs();
@@ -149,6 +149,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     private boolean queueCurrentSegmentJobs()
     {
         jobQueue.clear();
+        
         workerList.get(0).giveTask(null, true);
         workerList.get(0).currentState = EnumMinionState.AWAITING_JOB;
         

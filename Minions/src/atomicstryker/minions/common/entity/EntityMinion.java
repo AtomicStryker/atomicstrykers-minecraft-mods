@@ -76,7 +76,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 		this.isImmuneToFire = true;
 		
         this.moveSpeed = 1.2F;
-        func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(moveSpeed); // movespeed attribute
+        func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.225D); // movespeed attribute
         
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
         
