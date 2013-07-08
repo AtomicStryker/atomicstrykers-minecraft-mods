@@ -176,6 +176,7 @@ public class SimplyHaxFlying
 					
 					if (isFlying)
 					{
+					    mcinstance.thePlayer.capabilities.allowFlying = true;
 						modposY = mcinstance.thePlayer.posY;
 						distanceWalkedModified = mcinstance.thePlayer.distanceWalkedModified;
 					}
@@ -372,7 +373,7 @@ public class SimplyHaxFlying
 	{
 	    if (isFlying && event.entityLiving.equals(mcinstance.thePlayer))
 	    {
-	        event.setCanceled(true);
+	        event.distance = 0f;
 	    }
 	}
 	
