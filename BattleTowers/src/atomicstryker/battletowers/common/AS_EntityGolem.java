@@ -140,10 +140,10 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     public boolean attackEntityFrom(DamageSource damageSource, float amount)
     {
         if (damageSource.getEntity() != null
-        && damageSource.getEntity() instanceof EntityPlayer)
+        && damageSource.getEntity() instanceof EntityLivingBase)
         {
             setAwake();
-            setTarget((EntityLivingBase) damageSource.getEntity());
+            setTarget(damageSource.getEntity());
         }
         
         return super.attackEntityFrom(damageSource, amount);
