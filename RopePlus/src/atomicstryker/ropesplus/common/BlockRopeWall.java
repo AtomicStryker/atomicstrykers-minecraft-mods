@@ -119,7 +119,6 @@ public class BlockRopeWall extends BlockContainer
         float var10 = 0.0F;
         float var11 = 0.0F;
         float var12 = 0.0F;
-        boolean var13 = metaData > 0;
         if ((metaData & 2) != 0)
         {
             var10 = Math.max(var10, 0.0625F);
@@ -128,7 +127,6 @@ public class BlockRopeWall extends BlockContainer
             var11 = 1.0F;
             var9 = 0.0F;
             var12 = 1.0F;
-            var13 = true;
         }
 
         if ((metaData & 8) != 0)
@@ -139,7 +137,6 @@ public class BlockRopeWall extends BlockContainer
             var11 = 1.0F;
             var9 = 0.0F;
             var12 = 1.0F;
-            var13 = true;
         }
 
         if ((metaData & 4) != 0)
@@ -150,7 +147,6 @@ public class BlockRopeWall extends BlockContainer
             var10 = 1.0F;
             var8 = 0.0F;
             var11 = 1.0F;
-            var13 = true;
         }
 
         if ((metaData & 1) != 0)
@@ -161,7 +157,6 @@ public class BlockRopeWall extends BlockContainer
             var10 = 1.0F;
             var8 = 0.0F;
             var11 = 1.0F;
-            var13 = true;
         }
 
         this.setBlockBounds(var7, var8, var9, var10, var11, var12);

@@ -18,7 +18,7 @@ public class RopesPlusBowController
     {
         if (event.entityPlayer.getCurrentEquippedItem().getItem().itemID != RopesPlusCore.bowRopesPlus.itemID)
         {
-            ItemStack selected = event.entityPlayer.inventory.mainInventory[RopesPlusCore.instance.selectedSlot(event.entityPlayer)];
+            ItemStack selected = event.entityPlayer.inventory.mainInventory[RopesPlusCore.selectedSlot(event.entityPlayer)];
             if (selected != null
             && selected.getItem() instanceof ItemArrow303
             && ((ItemArrow303)selected.getItem()).arrow.tip != Item.flint)

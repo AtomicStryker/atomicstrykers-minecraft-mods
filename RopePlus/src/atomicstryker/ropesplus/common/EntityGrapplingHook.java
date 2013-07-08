@@ -189,6 +189,7 @@ public class EntityGrapplingHook extends Entity
             vec31 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
         }
         Entity entity = null;
+        @SuppressWarnings("rawtypes")
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double d3 = 0.0D;
         for(int j = 0; j < list.size(); j++)
@@ -337,15 +338,7 @@ public class EntityGrapplingHook extends Entity
         {
             f1 = 0.5F;
         }
-        int k = 5;
         double d7 = 0.0D;
-        for(int l = 0; l < k; l++)
-        {
-            double d10 = ((boundingBox.minY + ((boundingBox.maxY - boundingBox.minY) * (double)(l + 0)) / (double)k) - 0.125D) + 0.125D;
-            double d11 = ((boundingBox.minY + ((boundingBox.maxY - boundingBox.minY) * (double)(l + 1)) / (double)k) - 0.125D) + 0.125D;
-            AxisAlignedBB axisalignedbb1 = AxisAlignedBB.getAABBPool().getAABB(boundingBox.minX, d10, boundingBox.minZ, boundingBox.maxX, d11, boundingBox.maxZ);
-        }
-
         if(d7 > 0.0D)
         {
             if(ticksCatchable > 0)

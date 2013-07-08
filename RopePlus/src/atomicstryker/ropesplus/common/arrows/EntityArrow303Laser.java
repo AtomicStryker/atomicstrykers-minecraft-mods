@@ -21,16 +21,16 @@ public class EntityArrow303Laser extends EntityArrow303
     private final String sound = "damage.fallbig";
     
     public boolean pierced;
-    public Set piercedMobs;
+    public Set<Entity> piercedMobs;
     
     public EntityArrow303Laser(World world)
     {
         super(world);
     }
 
-    public EntityArrow303Laser(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303Laser(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, EntityLivingBase, power);
+        super(world, entityLivingBase, power);
     }
     
     @Override
@@ -46,7 +46,7 @@ public class EntityArrow303Laser extends EntityArrow303
         precision = 0.0F;
         speed = 2.0F;
         pierced = false;
-        piercedMobs = new HashSet();
+        piercedMobs = new HashSet<Entity>();
         item = new ItemStack(itemId, 1, 0);
         icon = "ropesplus:laserarrow";
     }

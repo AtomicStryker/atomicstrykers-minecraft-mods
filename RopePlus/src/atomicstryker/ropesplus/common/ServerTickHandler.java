@@ -7,7 +7,7 @@ import cpw.mods.fml.common.TickType;
 
 public class ServerTickHandler implements ITickHandler
 {
-    private final EnumSet tickTypes;
+    private final EnumSet<TickType> tickTypes;
     
     public ServerTickHandler()
     {

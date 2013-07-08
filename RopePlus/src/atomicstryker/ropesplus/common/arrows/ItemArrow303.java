@@ -7,7 +7,6 @@ public class ItemArrow303 extends Item
 {
     
 	public EntityArrow303 arrow;
-	private String icon;
 
     public ItemArrow303(int i, EntityArrow303 entityarrow303)
     {

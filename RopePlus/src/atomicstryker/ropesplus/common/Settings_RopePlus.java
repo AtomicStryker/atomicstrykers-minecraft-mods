@@ -37,30 +37,30 @@ public class Settings_RopePlus
 		config = new Configuration(suggested);
 		config.load();
 		
-		blockIdRope = config.getBlock(config.CATEGORY_BLOCK, "blockIdRope", blockIdRope).getInt();
-		blockIdGrapplingHook = config.getBlock(config.CATEGORY_BLOCK, "blockIdGrapplingHook", blockIdGrapplingHook).getInt();
-		blockIdRopeDJRoslin = config.getBlock(config.CATEGORY_BLOCK, "blockIdRopeDJRoslin", blockIdRopeDJRoslin).getInt();
+		blockIdRope = config.getBlock(Configuration.CATEGORY_BLOCK, "blockIdRope", blockIdRope).getInt();
+		blockIdGrapplingHook = config.getBlock(Configuration.CATEGORY_BLOCK, "blockIdGrapplingHook", blockIdGrapplingHook).getInt();
+		blockIdRopeDJRoslin = config.getBlock(Configuration.CATEGORY_BLOCK, "blockIdRopeDJRoslin", blockIdRopeDJRoslin).getInt();
 		
-		itemIdRope = config.getItem(config.CATEGORY_ITEM, "itemIdRope", itemIdRope).getInt();
-		itemIdGrapplingHook = config.getItem(config.CATEGORY_ITEM, "itemIdGrapplingHook", itemIdGrapplingHook).getInt();
-		itemIdRopesPlusBow = config.getItem(config.CATEGORY_ITEM, "itemIdRopesPlusBow", itemIdRopesPlusBow).getInt();
+		itemIdRope = config.getItem(Configuration.CATEGORY_ITEM, "itemIdRope", itemIdRope).getInt();
+		itemIdGrapplingHook = config.getItem(Configuration.CATEGORY_ITEM, "itemIdGrapplingHook", itemIdGrapplingHook).getInt();
+		itemIdRopesPlusBow = config.getItem(Configuration.CATEGORY_ITEM, "itemIdRopesPlusBow", itemIdRopesPlusBow).getInt();
 		
-		itemIdArrowConfusion = config.getItem(config.CATEGORY_ITEM, "itemIdArrowConfusion", itemIdArrowConfusion).getInt();
-		itemIdArrowDirt = config.getItem(config.CATEGORY_ITEM, "itemIdArrowDirt", itemIdArrowDirt).getInt();
-		itemIdArrowExplosion = config.getItem(config.CATEGORY_ITEM, "itemIdArrowExplosion", itemIdArrowExplosion).getInt();
-		itemIdArrowFire = config.getItem(config.CATEGORY_ITEM, "itemIdArrowFire", itemIdArrowFire).getInt();
-		itemIdArrowGrass = config.getItem(config.CATEGORY_ITEM, "itemIdArrowGrass", itemIdArrowGrass).getInt();
-		itemIdArrowIce = config.getItem(config.CATEGORY_ITEM, "itemIdArrowIce", itemIdArrowIce).getInt();
-		itemIdArrowLaser = config.getItem(config.CATEGORY_ITEM, "itemIdArrowLaser", itemIdArrowLaser).getInt();
-		itemIdArrowRope = config.getItem(config.CATEGORY_ITEM, "itemIdArrowRope", itemIdArrowRope).getInt();
-		itemIdArrowSlime = config.getItem(config.CATEGORY_ITEM, "itemIdArrowSlime", itemIdArrowSlime).getInt();
-		itemIdArrowTorch = config.getItem(config.CATEGORY_ITEM, "itemIdArrowTorch", itemIdArrowTorch).getInt();
-		itemIdArrowWarp = config.getItem(config.CATEGORY_ITEM, "itemIdArrowWarp", itemIdArrowWarp).getInt();
+		itemIdArrowConfusion = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowConfusion", itemIdArrowConfusion).getInt();
+		itemIdArrowDirt = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowDirt", itemIdArrowDirt).getInt();
+		itemIdArrowExplosion = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowExplosion", itemIdArrowExplosion).getInt();
+		itemIdArrowFire = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowFire", itemIdArrowFire).getInt();
+		itemIdArrowGrass = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowGrass", itemIdArrowGrass).getInt();
+		itemIdArrowIce = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowIce", itemIdArrowIce).getInt();
+		itemIdArrowLaser = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowLaser", itemIdArrowLaser).getInt();
+		itemIdArrowRope = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowRope", itemIdArrowRope).getInt();
+		itemIdArrowSlime = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowSlime", itemIdArrowSlime).getInt();
+		itemIdArrowTorch = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowTorch", itemIdArrowTorch).getInt();
+		itemIdArrowWarp = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowWarp", itemIdArrowWarp).getInt();
 		
 		blockIdZipLineAnchor = config.getBlock("blockIdZipLineAnchor", blockIdZipLineAnchor).getInt();
-		itemIdHookShot = config.getItem(config.CATEGORY_ITEM, "itemIdHookShot", itemIdHookShot).getInt();
-		maxHookShotRopeLength = config.get(config.CATEGORY_GENERAL, "max HookShot Rope Length", 50).getInt();
-		itemIdHookshotCartridge = config.getItem(config.CATEGORY_ITEM, "itemIdHookshotCartridge", itemIdHookshotCartridge).getInt();
+		itemIdHookShot = config.getItem(Configuration.CATEGORY_ITEM, "itemIdHookShot", itemIdHookShot).getInt();
+		maxHookShotRopeLength = config.get(Configuration.CATEGORY_GENERAL, "max HookShot Rope Length", 50).getInt();
+		itemIdHookshotCartridge = config.getItem(Configuration.CATEGORY_ITEM, "itemIdHookshotCartridge", itemIdHookshotCartridge).getInt();
 		
 		config.save();
 	}

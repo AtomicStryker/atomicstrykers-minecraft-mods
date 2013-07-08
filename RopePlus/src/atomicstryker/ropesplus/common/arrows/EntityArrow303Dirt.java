@@ -15,9 +15,9 @@ public class EntityArrow303Dirt extends EntityArrow303
         super(world);
     }
 
-    public EntityArrow303Dirt(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303Dirt(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, EntityLivingBase, power);
+        super(world, entityLivingBase, power);
     }
     
     @Override

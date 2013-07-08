@@ -17,9 +17,9 @@ public class EntityArrow303Fire extends EntityArrow303
         super(world);
     }
 
-    public EntityArrow303Fire(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303Fire(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, EntityLivingBase, power);
+        super(world, entityLivingBase, power);
     }
 
     @Override

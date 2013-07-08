@@ -22,9 +22,9 @@ public class EntityArrow303Ex extends EntityArrow303
         entStuckIn = null;
     }
 
-    public EntityArrow303Ex(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303Ex(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, EntityLivingBase, power);
+        super(world, entityLivingBase, power);
         isCharged = false;
         entStuckIn = null;
     }

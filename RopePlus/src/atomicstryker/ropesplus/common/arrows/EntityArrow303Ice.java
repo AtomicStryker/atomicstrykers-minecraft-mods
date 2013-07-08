@@ -25,9 +25,9 @@ public class EntityArrow303Ice extends EntityArrow303
         super(world);
     }
 
-    public EntityArrow303Ice(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303Ice(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, EntityLivingBase, power);
+        super(world, entityLivingBase, power);
     }
 
     @Override
@@ -50,6 +50,7 @@ public class EntityArrow303Ice extends EntityArrow303
             return false;
         }
         
+        @SuppressWarnings("rawtypes")
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(3D, 3D, 3D));
         for (int i = 0; i < list.size(); i++)
         {

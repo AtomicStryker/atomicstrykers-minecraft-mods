@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -20,9 +20,9 @@ public class EntityArrow303Confusion extends EntityArrow303
         super(world);
     }
 
-    public EntityArrow303Confusion(World world, EntityLiving entityliving, float power)
+    public EntityArrow303Confusion(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, entityliving, power);
+        super(world, entityLivingBase, power);
     }
 
     @Override

@@ -214,6 +214,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         }
         
         Entity entityHit = null;
+        @SuppressWarnings("rawtypes")
         List possibleHitsList = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double nearestHit = 0.0D;
         for (int k = 0; k < possibleHitsList.size(); k++)

@@ -35,17 +35,17 @@ public class EntityArrow303 extends EntityProjectileBase
         isArrowHoming = false;
     }
 
-    public EntityArrow303(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303(World world, EntityLivingBase entityLivingBase, float power)
     {
-        super(world, EntityLivingBase, power);
+        super(world, entityLivingBase, power);
         isArrowHoming = false;
     }
     
-    public EntityArrow303 newArrow(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityArrow303 newArrow(World world, EntityLivingBase entityLivingBase, float power)
     {
         try
         {
-            return (EntityArrow303) getClass().getConstructor(new Class[] { World.class, EntityLivingBase.class, float.class }).newInstance(new Object[] { world, EntityLivingBase, power });
+            return (EntityArrow303) getClass().getConstructor(new Class[] { World.class, EntityLivingBase.class, float.class }).newInstance(new Object[] { world, entityLivingBase, power });
         }
         catch (Throwable throwable)
         {
@@ -140,6 +140,7 @@ public class EntityArrow303 extends EntityProjectileBase
     {
         float nearestDist = -1F;
         Entity entity = null;
+        @SuppressWarnings("rawtypes")
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(boxSize, boxSize, boxSize));
         for (int i = 0; i < list.size(); i++)
         {
