@@ -52,7 +52,6 @@ public abstract class TileEntityBlock extends TileEntity implements IWrenchable,
         if (!this.created)
         {
             this.created = true;
-            NetworkHelper.requestInitialData(this);
             NetworkHelper.announceBlockUpdate(worldObj, xCoord, yCoord, zCoord);
         }
     }

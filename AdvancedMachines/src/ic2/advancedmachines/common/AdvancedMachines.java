@@ -2,6 +2,7 @@ package ic2.advancedmachines.common;
 
 import ic2.api.item.Items;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -72,14 +73,24 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         instance = this;
         config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
+        
+        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 1188).getInt()).setUnlocalizedName("blockAdvMachine");
+        blockAdvancedMachine.setCreativeTab(CreativeTabs.tabRedstone);
+        refIronID = config.getItem("IDs", "refIronID", 29775).getInt(29775);
+        
+        GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
+        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("refinedIronDust");
+        refinedIronDust.setCreativeTab(CreativeTabs.tabMaterials);
+        GameRegistry.registerItem(refinedIronDust, "refinedIronDust");
+        
+        stackRotaryMacerator = new ItemStack(blockAdvancedMachine, 1, 0);
+        stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 1);
+        stackCentrifugeExtractor = new ItemStack(blockAdvancedMachine, 1, 2);
     }
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
-        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 188).getInt()).setUnlocalizedName("blockAdvMachine");
-        refIronID = config.getItem("IDs", "refIronID", 29775).getInt(29775);
-
         guiIdRotary = config.get("IDs", "guiIdRotary", 40).getInt();
         guiIdSingularity = config.get("IDs", "guiIdSingularity", 41).getInt();
         guiIdCentrifuge = config.get("IDs", "guiIdCentrifuge", 42).getInt();
@@ -132,11 +143,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         
         proxy.load();
 
-        GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
-        
-        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("refinedIronDust");
-        GameRegistry.registerItem(refinedIronDust, "refinedIronDust");
-
         GameRegistry.registerTileEntity(TileEntityRotaryMacerator.class, "Rotary Macerator");
         GameRegistry.registerTileEntity(TileEntitySingularityCompressor.class, "Singularity Compressor");
         GameRegistry.registerTileEntity(TileEntityCentrifugeExtractor.class, "Centrifuge Extractor");
@@ -147,7 +153,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     @EventHandler
     public void afterModsLoaded(FMLPostInitializationEvent evt)
     {
-        stackRotaryMacerator = new ItemStack(blockAdvancedMachine, 1, 0);
         GameRegistry.addRecipe(stackRotaryMacerator,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Items.getItem("refinedIronIngot"),
@@ -155,7 +160,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         	Character.valueOf('A'), Items.getItem("advancedMachine")});
         LanguageRegistry.addName(stackRotaryMacerator, advMaceName);
         
-        stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 1);
         GameRegistry.addRecipe(stackSingularityCompressor,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Block.obsidian,
@@ -163,7 +167,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         	Character.valueOf('A'), Items.getItem("advancedMachine")});
         LanguageRegistry.addName(stackSingularityCompressor, advCompName);
         
-        stackCentrifugeExtractor = new ItemStack(blockAdvancedMachine, 1, 2);
         GameRegistry.addRecipe(stackCentrifugeExtractor,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Items.getItem("electrolyzedWaterCell"),
