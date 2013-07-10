@@ -281,7 +281,7 @@ public class RuinTemplateRule {
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
         if (mobspawner != null)
         {
-            mobspawner.func_98049_a().setMobID(id);
+            mobspawner.getSpawnerLogic().setMobID(id);
         }
     }
 

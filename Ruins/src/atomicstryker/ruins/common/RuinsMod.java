@@ -33,7 +33,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.4", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.5", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -132,15 +132,15 @@ public class RuinsMod
     private WorldHandle getWorldHandle(World world)
     {
         WorldHandle wh = null;
-        if (!generatorMap.containsKey(world.getWorldInfo().getDimension()))
+        if (!generatorMap.containsKey(world.provider.dimensionId))
         {
             wh = new WorldHandle();
             createHandler(wh, world);
-            generatorMap.put(world.getWorldInfo().getDimension(), wh);
+            generatorMap.put(world.provider.dimensionId, wh);
         }
         else
         {
-            wh = generatorMap.get(world.getWorldInfo().getDimension());
+            wh = generatorMap.get(world.provider.dimensionId);
         }
         
         return wh;
