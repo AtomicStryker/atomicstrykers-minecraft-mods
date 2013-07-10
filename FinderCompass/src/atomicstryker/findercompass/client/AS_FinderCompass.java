@@ -19,10 +19,10 @@ import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.ResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
 import atomicstryker.findercompass.common.FinderCompassMod;

@@ -4,8 +4,8 @@ import ic2.advancedmachines.common.AdvancedMachines;
 import ic2.advancedmachines.common.ContainerCentrifugeExtractor;
 import ic2.advancedmachines.common.TileEntityCentrifugeExtractor;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.resources.ResourceLocation;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 

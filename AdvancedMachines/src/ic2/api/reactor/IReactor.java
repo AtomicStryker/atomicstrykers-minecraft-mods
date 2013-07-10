@@ -1,7 +1,7 @@
 package ic2.api.reactor;
 
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
 /**

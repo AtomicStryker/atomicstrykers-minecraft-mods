@@ -1,6 +1,5 @@
 package ic2.advancedmachines.client;
 
-import ic2.advancedmachines.common.AdvancedMachines;
 
 public class NEIAdvancedMachinesConfig //implements IConfigureNEI
 {

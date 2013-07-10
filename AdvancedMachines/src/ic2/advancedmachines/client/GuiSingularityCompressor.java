@@ -4,8 +4,8 @@ import ic2.advancedmachines.common.AdvancedMachines;
 import ic2.advancedmachines.common.ContainerSingularityCompressor;
 import ic2.advancedmachines.common.TileEntitySingularityCompressor;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.resources.ResourceLocation;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 

@@ -1,11 +1,11 @@
 package ic2.api.energy;
 
+import ic2.api.energy.tile.IEnergySource;
+
 import java.lang.reflect.Method;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
-import ic2.api.energy.tile.IEnergySource;
 
 /**
  * Provides access to the energy network.

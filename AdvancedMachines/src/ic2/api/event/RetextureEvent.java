@@ -1,7 +1,6 @@
 package ic2.api.event;
 
 import net.minecraft.world.World;
-
 import net.minecraftforge.event.Cancelable;
 import net.minecraftforge.event.world.WorldEvent;
 

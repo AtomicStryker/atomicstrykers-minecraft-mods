@@ -2,11 +2,10 @@ package atomicstryker.findercompass.client;
 
 import java.util.EnumSet;
 
-import atomicstryker.findercompass.common.FinderCompassMod;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
+import atomicstryker.findercompass.common.FinderCompassMod;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;

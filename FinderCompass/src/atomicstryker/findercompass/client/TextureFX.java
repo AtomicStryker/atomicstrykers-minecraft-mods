@@ -8,8 +8,8 @@ import javax.imageio.ImageIO;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.Resource;
-import net.minecraft.client.resources.ResourceLocation;
 import net.minecraft.client.resources.ResourceManager;
+import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.Lists;
 

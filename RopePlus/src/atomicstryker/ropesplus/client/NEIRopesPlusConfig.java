@@ -1,8 +1,5 @@
 package atomicstryker.ropesplus.client;
 
-import net.minecraft.item.Item;
-import atomicstryker.ropesplus.common.RopesPlusCore;
-import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class NEIRopesPlusConfig //implements IConfigureNEI
 {
