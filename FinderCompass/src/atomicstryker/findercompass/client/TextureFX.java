@@ -34,7 +34,7 @@ public abstract class TextureFX extends TextureAtlasSprite
     protected TextureFX(String name, int width, int height)
     {
         super(name);
-        this.width = width;
+        this.field_130223_c = width;
     }
 
     /**
@@ -79,10 +79,10 @@ public abstract class TextureFX extends TextureAtlasSprite
         
         InputStream inputstream = par1Resource.func_110527_b();
         BufferedImage bufferedimage = ImageIO.read(inputstream);
-        this.height = bufferedimage.getHeight();
-        this.width = bufferedimage.getWidth();
-        imageData = new int[this.height * this.width];
-        bufferedimage.getRGB(0, 0, this.width, this.height, imageData, 0, this.width);
+        this.field_130224_d = bufferedimage.getHeight();
+        this.field_130223_c = bufferedimage.getWidth();
+        imageData = new int[this.field_130224_d * this.field_130223_c];
+        bufferedimage.getRGB(0, 0, this.field_130223_c, this.field_130224_d, imageData, 0, this.field_130223_c);
         // add it twice, else mc does not consider it animated
         field_110976_a.add(imageData);
         field_110976_a.add(imageData);
