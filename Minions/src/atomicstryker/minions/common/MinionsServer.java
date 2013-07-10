@@ -225,7 +225,7 @@ public class MinionsServer
                     // (startx, starty, startz, endx, endy, endz, randomlong)
                     Object[] toSend = { start.x, start.y, start.z, end.x, end.y, end.z, randomizer };
                     Packet pcket = ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.LIGHTNINGBOLT.ordinal(), toSend);
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendToAllNear(caster.posX, caster.posY, caster.posZ, 50D, caster.worldObj.getWorldInfo().getDimension(), pcket);
+                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendToAllNear(caster.posX, caster.posY, caster.posZ, 50D, caster.worldObj.provider.dimensionId, pcket);
                     
                     spawnLightningBolt(caster.worldObj, caster, start, end, randomizer);
                     

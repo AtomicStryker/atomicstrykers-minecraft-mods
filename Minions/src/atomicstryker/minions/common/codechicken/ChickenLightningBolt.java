@@ -299,7 +299,7 @@ public class ChickenLightningBolt
 	
 	private float rayTraceResistance(Vector3 start, Vector3 end, float prevresistance)
 	{
-		MovingObjectPosition mop = world.rayTraceBlocks(start.toVec3D(), end.toVec3D());
+		MovingObjectPosition mop = world.clip(start.toVec3D(), end.toVec3D());
 		
 		if(mop == null)
 		{

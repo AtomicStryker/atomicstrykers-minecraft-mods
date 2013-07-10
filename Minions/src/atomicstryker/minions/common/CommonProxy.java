@@ -34,7 +34,7 @@ public class CommonProxy
     public void sendSoundToClients(Entity ent, String string)
     {
         Object[] toSend = {ent.entityId, string};
-        FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 15, ent.worldObj.getWorldInfo().getDimension(), ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend));
+        FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 15, ent.worldObj.provider.dimensionId, ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend));
     }
 
     public void OnMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
