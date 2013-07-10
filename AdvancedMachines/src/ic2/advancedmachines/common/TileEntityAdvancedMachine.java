@@ -303,7 +303,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     }
     
     @Override
-    public boolean isStackValidForSlot(int i, ItemStack itemstack)
+    public boolean isItemValidForSlot(int i, ItemStack itemstack)
     {
         for (int ins : inputs)
         {
@@ -327,7 +327,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         {
             return getResultFor(itemstack, false) != null;
         }
-        return isStackValidForSlot(slotSize, itemstack);
+        return isItemValidForSlot(slotSize, itemstack);
     }
     
     @Override
