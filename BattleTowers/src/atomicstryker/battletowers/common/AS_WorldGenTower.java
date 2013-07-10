@@ -373,14 +373,14 @@ public class AS_WorldGenTower extends WorldGenerator
                 TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix + 2, builderHeight + 6, kz + 2);
                 if (tileentitymobspawner != null)
                 {
-                    tileentitymobspawner.func_98049_a().setMobID(getMobType(random));
+                    tileentitymobspawner.getSpawnerLogic().setMobID(getMobType(random));
                 }
                 
                 world.setBlock(ix - 3, builderHeight + 6, kz + 2, Block.mobSpawner.blockID, 0, 3);
                 tileentitymobspawner = (TileEntityMobSpawner)world.getBlockTileEntity(ix - 3, builderHeight + 6, kz + 2);
                 if (tileentitymobspawner != null)
                 {
-                    tileentitymobspawner.func_98049_a().setMobID(getMobType(random));
+                    tileentitymobspawner.getSpawnerLogic().setMobID(getMobType(random));
                 }
             }
             // chest petal

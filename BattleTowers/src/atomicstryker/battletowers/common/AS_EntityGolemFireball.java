@@ -60,7 +60,7 @@ public class AS_EntityGolemFireball extends Entity
         
         Vec3 curVec = Vec3.createVectorHelper(posX, posY, posZ);
         Vec3 nextVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
-        MovingObjectPosition collisionPosition = worldObj.rayTraceBlocks(curVec, nextVec);
+        MovingObjectPosition collisionPosition = worldObj.clip(curVec, nextVec);
         curVec = Vec3.createVectorHelper(posX, posY, posZ);
         nextVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
         if(collisionPosition != null)

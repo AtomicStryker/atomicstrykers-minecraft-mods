@@ -21,7 +21,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.3.5")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.3.6")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),
@@ -147,7 +147,7 @@ public class AS_BattleTowersCore
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
         Packet3Chat packet = new Packet3Chat("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...");
-        PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100, td.player.worldObj.getWorldInfo().getDimension(), packet);
+        //PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100, td.player.worldObj.provider.dimensionId, packet);
         towerDestroyers.add(td);
     }
 	
