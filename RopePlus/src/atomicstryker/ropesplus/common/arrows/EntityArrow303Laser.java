@@ -70,7 +70,7 @@ public class EntityArrow303Laser extends EntityArrow303
 
     private boolean canSee(Entity entity, Entity ent)
     {
-        MovingObjectPosition mop = worldObj.rayTraceBlocks(worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ),
+        MovingObjectPosition mop = worldObj.clip(worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ),
                 worldObj.getWorldVec3Pool().getVecFromPool(ent.posX, ent.posY + (double) ent.getEyeHeight(), ent.posZ));
         return mop == null || mop.typeOfHit == EnumMovingObjectType.TILE && isTransparent(worldObj.getBlockId(mop.blockX, mop.blockY, mop.blockZ));
     }

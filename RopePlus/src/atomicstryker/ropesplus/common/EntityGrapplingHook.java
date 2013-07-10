@@ -181,7 +181,7 @@ public class EntityGrapplingHook extends Entity
         }
         Vec3 vec3 = Vec3.createVectorHelper(posX, posY, posZ);
         Vec3 vec31 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
-        MovingObjectPosition movingobjectposition = worldObj.rayTraceBlocks(vec3, vec31);
+        MovingObjectPosition movingobjectposition = worldObj.clip(vec3, vec31);
         vec3 = Vec3.createVectorHelper(posX, posY, posZ);
         vec31 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
         if(movingobjectposition != null)

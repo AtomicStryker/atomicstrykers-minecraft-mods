@@ -88,7 +88,7 @@ public class EntityArrow303 extends EntityProjectileBase
 
     public boolean isInSight(Entity entity)
     {
-        return worldObj.rayTraceBlocks(worldObj.getWorldVec3Pool().getVecFromPool(posX, posY + (double) getEyeHeight(), posZ),
+        return worldObj.clip(worldObj.getWorldVec3Pool().getVecFromPool(posX, posY + (double) getEyeHeight(), posZ),
                 worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ)) == null;
     }
     

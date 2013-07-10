@@ -22,7 +22,7 @@ public class CommonProxy implements IProxy
         for(Iterator<EntityArrow303> iterator = RopesPlusCore.arrows.iterator(); iterator.hasNext();)
         {
             EntityArrow303 arrow = iterator.next();
-            Object arrowBehaviour = BlockDispenser.dispenseBehaviorRegistry.func_82594_a(Item.arrow);
+            Object arrowBehaviour = BlockDispenser.dispenseBehaviorRegistry.getObject(Item.arrow);
             BlockDispenser.dispenseBehaviorRegistry.putObject(arrow.item, arrowBehaviour);
         }
     }
