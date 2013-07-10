@@ -69,7 +69,7 @@ public class KenshiroServer
     {
         int blockID = player.worldObj.getBlockId(x, y, z);
         Block block = Block.blocksList[blockID];
-        PacketDispatcher.sendPacketToAllAround(x, y, z, 30D, player.worldObj.getWorldInfo().getDimension(), new Packet53BlockChange(x, y, z, player.worldObj));
+        PacketDispatcher.sendPacketToAllAround(x, y, z, 30D, player.worldObj.provider.dimensionId, new Packet53BlockChange(x, y, z, player.worldObj));
         
         if (block != null)
         {
@@ -107,7 +107,7 @@ public class KenshiroServer
             
             Object[] toSend = {entityID};
             Packet250CustomPayload packetNew = ForgePacketWrapper.createPacket("AS_KSM", PacketType.ENTITYPUNCHED.ordinal(), toSend);
-            PacketDispatcher.sendPacketToAllAround(target.posX, target.posY, target.posZ, 30D, world.getWorldInfo().getDimension(), packetNew);
+            PacketDispatcher.sendPacketToAllAround(target.posX, target.posY, target.posZ, 30D, world.provider.dimensionId, packetNew);
         }
         
         if (target instanceof EntityCreeper)
@@ -140,7 +140,7 @@ public class KenshiroServer
         
         Object[] toSend = {player.entityId, target.entityId};
         Packet250CustomPayload packetNew = ForgePacketWrapper.createPacket("AS_KSM", PacketType.ENTITYKICKED.ordinal(), toSend);
-        PacketDispatcher.sendPacketToAllAround(target.posX, target.posY, target.posZ, 30D, player.worldObj.getWorldInfo().getDimension(), packetNew);
+        PacketDispatcher.sendPacketToAllAround(target.posX, target.posY, target.posZ, 30D, player.worldObj.provider.dimensionId, packetNew);
     }
 
     public void onClientUnleashedKenshiroVolley(EntityPlayer playerEnt)
