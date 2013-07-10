@@ -183,7 +183,7 @@ public class MultiMineServer
      */
     public void onPlayerLoggedIn(Player player)
     {
-        int dimension = ((EntityPlayer)player).worldObj.getWorldInfo().getDimension();
+        int dimension = ((EntityPlayer)player).worldObj.provider.dimensionId;
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
         registeredMultiMineUsers.add(((EntityPlayer)player).entityId);
         

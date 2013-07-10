@@ -3,8 +3,8 @@
   "modid": "AS_MultiMine",
   "name": "Multi Mine",
   "description": "Partially Mined Blocks stay broken and regenerate slowly! Mine parallel or in tandem! Fully networked!",
-  "version": "1.2.9",
-  "mcversion": "1.6.1",
+  "version": "1.3.0",
+  "mcversion": "1.6.2",
   "url": "http://www.minecraftforum.net/topic/485526-",
   "updateUrl": "",
   "authors": [

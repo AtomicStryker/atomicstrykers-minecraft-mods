@@ -41,14 +41,14 @@ public class MMTransformer implements IClassTransformer
     /* net/minecraft/network/packet/Packet14BlockDig */
     private final String packet14BlockDigNameO = "fa";
     /* net.minecraft.network.NetServerHandler */
-    private final String netServerHandlerClassNameO = "jx";
-    private final String netServerHandlerJavaClassNameO = "jx";
+    private final String netServerHandlerClassNameO = "jz";
+    private final String netServerHandlerJavaClassNameO = "jz";
     /* handleBlockDig / func_72510_a */
     private final String netServerHandlertargetMethodNameO = "a";
     /* playerEntity / field_72574_e */
     private final String netServerHandlerEntIDFieldNameO = "c";
     /* net/minecraft/src/EntityPlayerMP */
-    private final String entityPlayerMPJavaClassNameO = "js";
+    private final String entityPlayerMPJavaClassNameO = "ju";
     /* entityId / field_70157_k */
     private final String entityPlayerMPEntIDFieldNameO = "k";
     
@@ -56,8 +56,8 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for PlayerControllerMP Transformation */
     
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bct";
-    private final String playerControllerMPJavaClassNameO = "bct";
+    private final String playerControllerMPClassNameO = "bcz";
+    private final String playerControllerMPJavaClassNameO = "bcz";
     /* onPlayerDamageBlock / func_78759_c */
     private final String playerControllerMPtargetMethodNameO = "c";
     /* currentBlockX / field_78775_c */
