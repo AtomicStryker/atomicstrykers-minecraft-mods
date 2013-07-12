@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -160,22 +161,22 @@ public class SimplyHaxVision
         try
         {
             Field[] fieldarray = copiedclass.getDeclaredFields();
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
 			
 			for(int i = 0; i < fieldarray.length; i++)
 			{
+			    modifiersField.setInt(fieldarray[i], fieldarray[i].getModifiers() & ~Modifier.FINAL);
+			    
 				fieldarray[i].setAccessible(true);
 				Object data = fieldarray[i].get(originalinstance);
 				fieldarray[i].set(newinstance, data);
 			}
         }
-        catch(IllegalAccessException illegalaccessexception)
+        catch(Exception exception)
         {
-			System.out.println("SimplyHax"+modname+" exception: "+illegalaccessexception);
+			System.out.println("SimplyHax"+modname+" exception: "+exception);
         }
-        catch(SecurityException securityexception)
-        {
-			System.out.println("SimplyHax"+modname+" exception: "+securityexception);
-		}
     }
 	
 	public static void InitSettings()
