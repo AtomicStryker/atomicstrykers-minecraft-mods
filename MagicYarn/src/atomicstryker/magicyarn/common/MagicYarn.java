@@ -3,6 +3,7 @@ package atomicstryker.magicyarn.common;
 import java.io.File;
 
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,7 @@ public class MagicYarn implements IProxy
         int itemID = config.getItem("magicyarnitem", 4734, "Item ID of Magic Yarn item").getInt();
         config.save();
         magicYarn = (new ItemMagicYarn(itemID)).setUnlocalizedName("Magic Yarn");
+        magicYarn.setCreativeTab(CreativeTabs.tabTools);
         proxy.preInit(cfile);
     }
     
