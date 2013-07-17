@@ -1,6 +1,5 @@
 package atomicstryker.infernalmobs.common;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -29,10 +28,32 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.infernalmobs.client.ClientPacketHandler;
-
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-
+import atomicstryker.infernalmobs.common.mods.MM_1UP;
+import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
+import atomicstryker.infernalmobs.common.mods.MM_Berserk;
+import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
+import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
+import atomicstryker.infernalmobs.common.mods.MM_Darkness;
+import atomicstryker.infernalmobs.common.mods.MM_Ender;
+import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
+import atomicstryker.infernalmobs.common.mods.MM_Fiery;
+import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
+import atomicstryker.infernalmobs.common.mods.MM_Ninja;
+import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
+import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
+import atomicstryker.infernalmobs.common.mods.MM_Regen;
+import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
+import atomicstryker.infernalmobs.common.mods.MM_Sprint;
+import atomicstryker.infernalmobs.common.mods.MM_Sticky;
+import atomicstryker.infernalmobs.common.mods.MM_Storm;
+import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
+import atomicstryker.infernalmobs.common.mods.MM_Weakness;
+import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -134,11 +155,10 @@ public class InfernalMobsCore implements ITickHandler
      * Registers the MobModifier classes for consideration
      * @param config 
      */
-    @SuppressWarnings("unchecked")
     private void loadMods()
     {
         mobMods = new HashSet<Class<? extends MobModifier>>();
-        
+        /*
         try
         {
             Class<?> cx;
@@ -147,7 +167,6 @@ public class InfernalMobsCore implements ITickHandler
             for (ClassInfo c : cp.getTopLevelClasses("atomicstryker.infernalmobs.common.mods"))
             {
                 cx = c.load();
-                System.out.println("Infernal Mobs found class: "+cx);
                 mobMods.add((Class<? extends MobModifier>) cx);
             }
         }
@@ -155,8 +174,8 @@ public class InfernalMobsCore implements ITickHandler
         {
             e.printStackTrace();
         }
+        */
         
-        /*
         mobMods.add(MM_1UP.class);
         mobMods.add(MM_Alchemist.class);
         mobMods.add(MM_Berserk.class);
@@ -183,7 +202,6 @@ public class InfernalMobsCore implements ITickHandler
         mobMods.add(MM_Weakness.class);
         mobMods.add(MM_Webber.class);
         mobMods.add(MM_Wither.class);
-        */
         
         config.load();
         Iterator<Class<? extends MobModifier>> iter = mobMods.iterator();
