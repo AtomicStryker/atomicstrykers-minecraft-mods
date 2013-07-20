@@ -71,7 +71,13 @@ public class RuinGenerator {
 		RuinIBuildable ruinTemplate = ruinsHandler.getTemplate( random, biomeID );
 		if( ruinTemplate == null )
 		{
-			return;
+		    biomeID = RuinsMod.BIOME_NONE;
+		    ruinTemplate = ruinsHandler.getTemplate( random, biomeID );
+		    
+		    if (ruinTemplate == null)
+		    {
+		        return;
+		    }
 		}
 
 		NumTries++;

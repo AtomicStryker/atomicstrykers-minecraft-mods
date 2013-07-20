@@ -113,8 +113,9 @@ public class RuinTemplate implements RuinIBuildable {
 
     public boolean isAcceptable( World world, int x, int y, int z ) {
         // checks if the square is acceptable for a ruin to be built upon
+        int id = world.getBlockId( x, y, z );
         for( int i = 0; i < targets.length; i++ ) {
-            if( world.getBlockId( x, y, z ) == targets[i] ) { return true; }
+            if( id == targets[i] ) { return true; }
         }
         return false;
     }

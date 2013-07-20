@@ -231,22 +231,44 @@ public class RuinTemplateRule {
         {
             addHardMobSpawn( world, random, x, y, z );
         }
-        else if (dataString.equals("EasyChest"))
+        else if (dataString.startsWith("EasyChest"))
         {
-            addEasyChest( world, random, x, y, z, random.nextInt( 3 ) + 3 );
+            int meta = 0;
+            if (dataString.contains("-"))
+            {
+                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-")+1));
+            }
+            addEasyChest( world, random, x, y, z, meta, random.nextInt( 3 ) + 3 );
         }
-        else if (dataString.equals("MediumChest"))
+        else if (dataString.startsWith("MediumChest"))
         {
-            addMediumChest( world, random, x, y, z, random.nextInt( 4 ) + 3 );
+            int meta = 0;
+            if (dataString.contains("-"))
+            {
+                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-")+1));
+            }
+            addMediumChest( world, random, x, y, z, meta, random.nextInt( 4 ) + 3 );
         }
-        else if (dataString.equals("HardChest"))
+        else if (dataString.startsWith("HardChest"))
         {
-            addHardChest( world, random, x, y, z, random.nextInt( 5 ) + 3 );
+            int meta = 0;
+            if (dataString.contains("-"))
+            {
+                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-")+1));
+            }
+            addHardChest( world, random, x, y, z, meta, random.nextInt( 5 ) + 3 );
         }
         else if (dataString.startsWith("ChestGenHook:"))
         {
+            int meta = 0;
+            if (dataString.contains("-"))
+            {
+                int index = dataString.indexOf("-");
+                meta = Integer.valueOf(dataString.substring(index+1));
+                dataString = dataString.substring(0, index);
+            }
             String[] s = dataString.split(":");
-            addChestGenChest( world, random, x, y, z, s[1], Integer.valueOf(s[2]) );
+            addChestGenChest( world, random, x, y, z, s[1], Integer.valueOf(s[2]), meta );
         }
         else if (dataString.equals("EnderCrystal"))
         {
@@ -344,8 +366,8 @@ public class RuinTemplateRule {
         }
     }
 
-    private void addEasyChest( World world, Random random, int x, int y, int z, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, 0, 2 );
+    private void addEasyChest( World world, Random random, int x, int y, int z, int meta, int items ) {
+        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {
@@ -359,8 +381,8 @@ public class RuinTemplateRule {
         }
     }
 
-    private void addMediumChest( World world, Random random, int x, int y, int z, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, 0, 2 );
+    private void addMediumChest( World world, Random random, int x, int y, int z, int meta, int items ) {
+        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {
@@ -378,8 +400,8 @@ public class RuinTemplateRule {
         }
     }
 
-    private void addHardChest( World world, Random random, int x, int y, int z, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, 0, 2 );
+    private void addHardChest( World world, Random random, int x, int y, int z, int meta, int items ) {
+        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {
@@ -397,8 +419,8 @@ public class RuinTemplateRule {
         }
     }
     
-    private void addChestGenChest( World world, Random random, int x, int y, int z, String gen, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, 0, 2 );
+    private void addChestGenChest( World world, Random random, int x, int y, int z, String gen, int items, int meta ) {
+        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
         TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
         if (chest != null)
         {

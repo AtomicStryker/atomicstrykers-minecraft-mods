@@ -228,3 +228,7 @@ a: setAccessible now true
 
 10.5
 + update to MC 1.6.2
+
+10.6
++ changed Chest rules to allow metadata specification (optional)
++ added unique Floater and Underwater base templates, courtesy of Count_Chuckula
