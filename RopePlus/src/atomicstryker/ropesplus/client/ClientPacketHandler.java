@@ -78,7 +78,7 @@ public class ClientPacketHandler implements IPacketHandler
         {
             Class[] decodeAs = { Boolean.class };
             Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
-            Settings_RopePlus.disableBowHook = (boolean) readOut[0];
+            Settings_RopePlus.disableBowHook = (Boolean) readOut[0];
         }
 	}
 
