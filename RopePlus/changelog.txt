@@ -1,3 +1,6 @@
+RopesPlus 1.4.4
+- added config option to disable bow hook, default false. Server overrides client setting.
+
 RopesPlus 1.4.3
 - update to mc 1.6.2
 

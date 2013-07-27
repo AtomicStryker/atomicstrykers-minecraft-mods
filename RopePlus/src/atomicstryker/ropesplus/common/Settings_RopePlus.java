@@ -29,6 +29,8 @@ public class Settings_RopePlus
 	public static int itemIdHookShot = 2524;
     public static int maxHookShotRopeLength;
     public static int itemIdHookshotCartridge = 2525;
+    
+    public static boolean disableBowHook = false;
 	
 	public static Configuration config;
 	
@@ -61,6 +63,8 @@ public class Settings_RopePlus
 		itemIdHookShot = config.getItem(Configuration.CATEGORY_ITEM, "itemIdHookShot", itemIdHookShot).getInt();
 		maxHookShotRopeLength = config.get(Configuration.CATEGORY_GENERAL, "max HookShot Rope Length", 50).getInt();
 		itemIdHookshotCartridge = config.getItem(Configuration.CATEGORY_ITEM, "itemIdHookshotCartridge", itemIdHookshotCartridge).getInt();
+		
+		disableBowHook = config.get(Configuration.CATEGORY_GENERAL, "disableBowHook", false, "Set this true if you intend to use a conflicting archery mod").getBoolean(false);
 		
 		config.save();
 	}

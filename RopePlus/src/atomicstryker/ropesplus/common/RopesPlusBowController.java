@@ -16,7 +16,8 @@ public class RopesPlusBowController
     @ForgeSubscribe
     public void onArrowNock(ArrowNockEvent event)
     {
-        if (event.entityPlayer.getCurrentEquippedItem().getItem().itemID != RopesPlusCore.bowRopesPlus.itemID)
+        if (!Settings_RopePlus.disableBowHook
+        && event.entityPlayer.getCurrentEquippedItem().getItem().itemID != RopesPlusCore.bowRopesPlus.itemID)
         {
             ItemStack selected = event.entityPlayer.inventory.mainInventory[RopesPlusCore.selectedSlot(event.entityPlayer)];
             if (selected != null

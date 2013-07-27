@@ -9,6 +9,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.Settings_RopePlus;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -72,6 +73,12 @@ public class ClientPacketHandler implements IPacketHandler
             Class[] decodeAs = { Integer.class };
             Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
             RopesPlusClient.onUsedZipLine((Integer) readOut[0]);
+        }
+        else if (packetID == 8) // server tells client bow hook setting to override client setting { boolean bowHookDisabled }
+        {
+            Class[] decodeAs = { Boolean.class };
+            Object[] readOut = ForgePacketWrapper.readPacketData(data, decodeAs);
+            Settings_RopePlus.disableBowHook = (boolean) readOut[0];
         }
 	}
 
