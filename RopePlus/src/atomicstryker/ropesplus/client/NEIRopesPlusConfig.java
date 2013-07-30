@@ -1,9 +1,15 @@
 package atomicstryker.ropesplus.client;
 
+import net.minecraft.item.Item;
+import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.arrows.ItemArrow303;
+import codechicken.nei.MultiItemRange;
+import codechicken.nei.api.API;
+import codechicken.nei.api.IConfigureNEI;
 
-public class NEIRopesPlusConfig //implements IConfigureNEI
+
+public class NEIRopesPlusConfig implements IConfigureNEI
 {
-    /*
 
     @Override
     public void loadConfig()
@@ -45,5 +51,5 @@ public class NEIRopesPlusConfig //implements IConfigureNEI
     {
         return "1.0.0";
     }
-*/
+
 }
