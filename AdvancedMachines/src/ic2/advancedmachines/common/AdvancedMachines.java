@@ -22,7 +22,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1", dependencies = "required-after:IC2")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1.1", dependencies = "required-after:IC2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -51,7 +51,8 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     public static ItemStack overClockerStack;
     public static ItemStack transformerStack;
     public static ItemStack energyStorageUpgradeStack;
-
+    public static ItemStack ejectorUpgradeStack;
+    
     public static String advMaceSound = "Machines/MaceratorOp.ogg";
     public static String advCompSound = "Machines/CompressorOp.ogg";
     public static String advExtcSound = "Machines/ExtractorOp.ogg";
@@ -177,6 +178,7 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         overClockerStack = Items.getItem("overclockerUpgrade");
         transformerStack = Items.getItem("transformerUpgrade");
         energyStorageUpgradeStack = Items.getItem("energyStorageUpgrade");
+        ejectorUpgradeStack = Items.getItem("ejectorUpgrade");
         
         LanguageRegistry.addName(refinedIronDust, refIronDustName);
         GameRegistry.addSmelting(refinedIronDust.itemID, Items.getItem("refinedIronIngot"), 1.0f);

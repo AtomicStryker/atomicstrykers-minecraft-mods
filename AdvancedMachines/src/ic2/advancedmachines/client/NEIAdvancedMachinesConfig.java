@@ -1,9 +1,14 @@
 package ic2.advancedmachines.client;
 
+import ic2.advancedmachines.common.AdvancedMachines;
+import codechicken.nei.MultiItemRange;
+import codechicken.nei.api.API;
+import codechicken.nei.api.IConfigureNEI;
 
-public class NEIAdvancedMachinesConfig //implements IConfigureNEI
+
+public class NEIAdvancedMachinesConfig implements IConfigureNEI
 {
-/*
+
     @Override
     public void loadConfig()
     {
@@ -38,5 +43,5 @@ public class NEIAdvancedMachinesConfig //implements IConfigureNEI
     {
         return "1.0.0";
     }
-*/
+
 }

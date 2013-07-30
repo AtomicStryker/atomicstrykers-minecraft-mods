@@ -67,6 +67,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     @Override
     public void onFinishedProcessingItem()
     {
+        super.onFinishedProcessingItem();
     	if (supplementedItemsLeft != 0)
     	{
     		if (supplementedItemsLeft == 1)

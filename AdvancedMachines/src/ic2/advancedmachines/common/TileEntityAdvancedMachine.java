@@ -3,11 +3,14 @@ package ic2.advancedmachines.common;
 import ic2.api.Direction;
 import ic2.api.item.IElectricItem;
 import ic2.api.network.NetworkHelper;
+import ic2.core.util.StackUtil;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory
 {
@@ -20,16 +23,17 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     private int[] outputs;
     private String dataFormat;
     private int dataScaling;
-    
+
     private IC2AudioSource audioSource;
     private static final int EventStart = 0;
     private static final int EventInterrupt = 1;
     private static final int EventStop = 2;
-    
+
     private int energyConsume = 2;
     private int acceleration = 1;
     private int maxSpeed;
-    
+    private int ejectors;
+
     public int speed;
     public short progress;
 
@@ -49,13 +53,15 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     public void readFromNBT(NBTTagCompound var1)
     {
         super.readFromNBT(var1);
-        
+
         try
         {
             speed = var1.getInteger("speed");
             progress = var1.getShort("progress");
         }
-        catch (Exception e) {}
+        catch (Exception e)
+        {
+        }
     }
 
     @Override
@@ -86,18 +92,18 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     public void updateEntity()
     {
         super.updateEntity();
-        
+
         if (worldObj.isRemote)
         {
             return;
         }
-        
+
         boolean newItemProcessing = false;
         if (energy <= maxEnergy)
         {
             getPowerFromFuelSlot();
         }
-        
+
         boolean isActive = getActive();
         if (this.progress >= MAX_PROGRESS)
         {
@@ -105,15 +111,15 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             newItemProcessing = true;
             this.progress = 0;
             isActive = false;
-            
+
             NetworkHelper.initiateTileEntityEvent(this, EventStop, true);
         }
 
         boolean bCanOperate = canOperate();
         if (energy > 0 && (bCanOperate || isRedstonePowered()))
         {
-        	setOverclockRates();
-        	
+            setOverclockRates();
+
             if (speed < maxSpeed)
             {
                 speed += acceleration;
@@ -121,8 +127,8 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             }
             else
             {
-            	speed = maxSpeed;
-            	energy -= AdvancedMachines.defaultEnergyConsume;
+                speed = maxSpeed;
+                energy -= AdvancedMachines.defaultEnergyConsume;
             }
 
             isActive = true;
@@ -130,11 +136,11 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         else
         {
-        	boolean wasWorking = speed != 0;
+            boolean wasWorking = speed != 0;
             speed = speed - Math.min(speed, 4);
             if (wasWorking && speed == 0)
             {
-            	NetworkHelper.initiateTileEntityEvent(this, EventInterrupt, true);
+                NetworkHelper.initiateTileEntityEvent(this, EventInterrupt, true);
             }
         }
 
@@ -164,32 +170,74 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
         if (isActive && bCanOperate)
         {
-            progress = (short)(progress + speed / 30);
+            progress = (short) (progress + speed / 30);
         }
+        
+        runEjectorLogic();
 
         if (newItemProcessing)
         {
             onInventoryChanged();
         }
-        if(isActive != getActive())
-    	{
-    		worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
-    		setActive(isActive);
-    	}
+        if (isActive != getActive())
+        {
+            worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
+            setActive(isActive);
+        }
     }
-    
+
+    private void runEjectorLogic()
+    {
+        int toEject = ejectors;
+        TileEntity te;
+        boolean done = false;
+        while (toEject > 0 && energy > 20)
+        {
+            for (int index = 0; index < outputs.length; ++index)
+            {                
+                if (inventory[outputs[index]] != null)
+                {
+                    int amount = Math.min(inventory[outputs[index]].stackSize, energy / 20);
+                    for (Direction dir : Direction.values())
+                    {
+                        te = dir.applyToTileEntity(this);
+                        if (te != null && te instanceof IInventory)
+                        {
+                            amount = StackUtil.putInInventory((IInventory)te, StackUtil.copyWithSize(inventory[outputs[index]], amount), false);
+                            inventory[outputs[index]].stackSize -= amount;
+                            if (inventory[outputs[index]].stackSize < 1)
+                            {
+                                inventory[outputs[index]] = null;
+                            }
+                            energy -= 20 * amount;
+                            done = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (done)
+                {
+                    break;
+                }
+            }
+            
+            toEject--;
+        }
+    }
+
     @Override
     public int injectEnergy(Direction var1, int var2)
     {
-    	this.setOverclockRates();
-		return super.injectEnergy(var1, var2);
+        this.setOverclockRates();
+        return super.injectEnergy(var1, var2);
     }
 
     private void operate()
     {
         if (canOperate())
         {
-			ItemStack resultStack = getResultFor(inventory[inputs[0]], true).copy();
+            ItemStack resultStack = getResultFor(inventory[inputs[0]], true).copy();
             int[] stackSizeSpaceAvailableInOutput = new int[outputs.length];
             int resultMaxStackSize = resultStack.getMaxStackSize();
 
@@ -235,10 +283,10 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             }
         }
     }
-    
+
     public void onFinishedProcessingItem()
     {
-    	
+        
     }
 
     private boolean canOperate()
@@ -275,33 +323,39 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             }
         }
     }
-    
+
     /**
-     * Returns the ItemStack that results from processing whatever is in the Input, or null
-     * @param input ItemStack to be processed
-     * @param adjustOutput if true, whatever was used as input will be taken from the input slot and destroyed,
-     * if false, the input Slots remain as they are
+     * Returns the ItemStack that results from processing whatever is in the
+     * Input, or null
      * 
-     * @return ItemStack that results from processing the Input, or null if no processing is possible
+     * @param input
+     *            ItemStack to be processed
+     * @param adjustOutput
+     *            if true, whatever was used as input will be taken from the
+     *            input slot and destroyed, if false, the input Slots remain as
+     *            they are
+     * 
+     * @return ItemStack that results from processing the Input, or null if no
+     *         processing is possible
      */
     public abstract ItemStack getResultFor(ItemStack input, boolean adjustOutput);
 
     public abstract Container getGuiContainer(InventoryPlayer var1);
 
     // ISidedInventory Overrides
-    
+
     @Override
     public int[] getAccessibleSlotsFromSide(int side)
     {
         switch (side)
         {
-            case 1: // UP
-                return inputs;
-            default:
-                return outputs;
+        case 1: // UP
+            return inputs;
+        default:
+            return outputs;
         }
     }
-    
+
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack)
     {
@@ -312,10 +366,10 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
                 return getResultFor(itemstack, false) != null;
             }
         }
-        
+
         return false;
     }
-    
+
     @Override
     public boolean canInsertItem(int slotSize, ItemStack itemstack, int blockSide)
     {
@@ -329,7 +383,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         return isItemValidForSlot(slotSize, itemstack);
     }
-    
+
     @Override
     public boolean canExtractItem(int slot, ItemStack itemstack, int blockSide)
     {
@@ -339,37 +393,37 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     public String printFormattedData()
     {
-        return String.format(this.dataFormat, new Object[] {Integer.valueOf(speed * this.dataScaling)});
+        return String.format(this.dataFormat, new Object[] { Integer.valueOf(speed * this.dataScaling) });
     }
-    
+
     @Override
     public void invalidate()
     {
-    	if (this.audioSource != null)
-    	{
-    		IC2AudioSource.removeSource(audioSource);
-    		this.audioSource = null;
-    	}
-    	super.invalidate();
+        if (this.audioSource != null)
+        {
+            IC2AudioSource.removeSource(audioSource);
+            this.audioSource = null;
+        }
+        super.invalidate();
     }
-    
+
     protected String getStartSoundFile()
     {
-    	return null;
+        return null;
     }
 
     protected String getInterruptSoundFile()
     {
-    	return null;
+        return null;
     }
 
     @Override
     public void onNetworkEvent(int event)
     {
-    	super.onNetworkEvent(event);
-    	
-    	if (worldObj.isRemote)
-    	{
+        super.onNetworkEvent(event);
+
+        if (worldObj.isRemote)
+        {
             if ((this.audioSource == null) && (getStartSoundFile() != null))
             {
                 this.audioSource = new IC2AudioSource(this, getStartSoundFile());
@@ -377,30 +431,34 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
             switch (event)
             {
-                case EventStart:
-                    this.setActiveWithoutNotify(true);
-                    if (this.audioSource == null) break;
-                    this.audioSource.play();
+            case EventStart:
+                this.setActiveWithoutNotify(true);
+                if (this.audioSource == null)
                     break;
-                case EventInterrupt:
-                    this.setActiveWithoutNotify(false);
-                    if (this.audioSource == null) break;
-                    this.audioSource.stop();
-                    if (getInterruptSoundFile() == null) break;
-                    IC2AudioSource.playOnce(this, getInterruptSoundFile());
+                this.audioSource.play();
+                break;
+            case EventInterrupt:
+                this.setActiveWithoutNotify(false);
+                if (this.audioSource == null)
                     break;
-                case EventStop:
-                    this.setActiveWithoutNotify(false);
-                    if (this.audioSource == null) break;
-                    this.audioSource.stop();
+                this.audioSource.stop();
+                if (getInterruptSoundFile() == null)
+                    break;
+                IC2AudioSource.playOnce(this, getInterruptSoundFile());
+                break;
+            case EventStop:
+                this.setActiveWithoutNotify(false);
+                if (this.audioSource == null)
+                    break;
+                this.audioSource.stop();
             }
-    	}
-    	
-    	NetworkHelper.announceBlockUpdate(worldObj, xCoord, yCoord, zCoord);
+        }
+
+        NetworkHelper.announceBlockUpdate(worldObj, xCoord, yCoord, zCoord);
     }
-    
+
     public abstract int getUpgradeSlotsStartSlot();
-    
+
     public void setOverclockRates()
     {
     	int overclockerUpgradeCount = 0;
@@ -410,14 +468,16 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     	for (int i = 0; i < 4; i++) {
     		ItemStack itemStack = this.inventory[getUpgradeSlotsStartSlot() + i];
 
-    		if (itemStack != null) {
+    		if (itemStack != null)
+    		{
     			if (itemStack.isItemEqual(AdvancedMachines.overClockerStack))
     				overclockerUpgradeCount += itemStack.stackSize;
     			else if (itemStack.isItemEqual(AdvancedMachines.transformerStack))
     				transformerUpgradeCount += itemStack.stackSize;
-    			else if (itemStack.isItemEqual(AdvancedMachines.energyStorageUpgradeStack)) {
+    			else if (itemStack.isItemEqual(AdvancedMachines.energyStorageUpgradeStack))
     				energyStorageUpgradeCount += itemStack.stackSize;
-    			}
+    			else if (itemStack.isItemEqual(AdvancedMachines.ejectorUpgradeStack))
+    			    ejectors += itemStack.stackSize;
     		}
     	}
 
