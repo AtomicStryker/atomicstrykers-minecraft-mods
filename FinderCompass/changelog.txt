@@ -1,3 +1,7 @@
+1.6.2
+finally figured out how to make it work in 1.6.2
+does not currently work on nonvanilla resolutions and i dont know why
+
 1.5.2C
 and more code for Optifine, yay
 holding needle length calculation together with duct tape at this point

@@ -27,7 +27,7 @@ public class ItemFinderCompass extends Item
     {
         AS_FinderCompass tex = new AS_FinderCompass(Minecraft.getMinecraft());
         itemIcon = tex;
-        ((TextureMap)reg).setTextureEntry("findercompass:compass", tex);
+        ((TextureMap)reg).setTextureEntry("findercompass:compass"+AS_FinderCompass.tileSizeBase, tex);
     }
     
     @Override

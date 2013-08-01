@@ -55,7 +55,7 @@ public class AS_FinderCompass extends TextureFX
 
     private final int tileSize_int_compassCrossMin = -4;
     private final int tileSize_int_compassCrossMax = 4;
-    private static int tileSizeBase;
+    public static int tileSizeBase;
     private static int tileSizeSquare;
     private double tileSize_double_compassCenterMin;
     private double tileSize_double_compassCenterMax;
@@ -112,10 +112,10 @@ public class AS_FinderCompass extends TextureFX
 
             tileSizeBase = image.getWidth();
             tileSizeSquare = tileSizeBase * tileSizeBase;
-            System.out.println("finder compass: tilesize_intsize = " + tileSizeBase + "; tilesizeSquare = " + tileSizeSquare + ";");
+            System.out.println("finder compass: default compass tilesize_intsize = " + tileSizeBase + "; tilesizeSquare = " + tileSizeSquare + ";");
 
             image = loadTextureFile();
-            System.out.println("loaded fc file width: "+image.getWidth());
+            System.out.println("loaded mod finder compass icon with width: "+image.getWidth());
 
             this.tileSize_double_compassCenterMin = (double) (AS_FinderCompass.tileSizeBase / 2) - 0.5D;
             this.tileSize_double_compassCenterMax = (double) (AS_FinderCompass.tileSizeBase / 2) + 0.5D;
@@ -135,6 +135,7 @@ public class AS_FinderCompass extends TextureFX
 
             baseTexture = new int[tileSizeSquare];
             image.getRGB(0, 0, tileSizeBase, tileSizeBase, baseTexture, 0, tileSizeBase);
+            //TextureUtil.func_110998_a(baseTexture, this.field_130223_c, this.field_130224_d, this.field_110975_c, this.field_110974_d, false, false);
         }
         catch (IOException e)
         {
@@ -200,14 +201,10 @@ public class AS_FinderCompass extends TextureFX
     @Override
     protected final void onTick(int[] imageData)
     {
-        int[] originalTex = baseTexture;
-
         for (int pixIndex = 0; pixIndex < tileSizeSquare; ++pixIndex)
         {
-            imageData[pixIndex * 4 + 0] = (byte) (originalTex[pixIndex] >> 16 & 255);
-            imageData[pixIndex * 4 + 1] = (byte) (originalTex[pixIndex] >> 8 & 255);
-            imageData[pixIndex * 4 + 2] = (byte) (originalTex[pixIndex] >> 0 & 255);
-            imageData[pixIndex * 4 + 3] = (byte) (originalTex[pixIndex] >> 24 & 255);
+            // TODO RGB copy old image over
+            imageData[pixIndex] = baseTexture[pixIndex];
         }
 
         if (AS_FinderCompass.mc.theWorld != null && AS_FinderCompass.mc.thePlayer != null)
@@ -359,10 +356,11 @@ public class AS_FinderCompass extends TextureFX
         int var13;
         int var14;
         int var15;
-        int var17;
-        int var16;
-        short var19;
-        int var18;
+        int green;
+        int red;
+        int blue;
+        
+        short alpha = 255;
         if (drawCenter)
         {
             for (index = this.tileSize_int_compassCrossMin; index <= this.tileSize_int_compassCrossMax; ++index)
@@ -370,15 +368,11 @@ public class AS_FinderCompass extends TextureFX
                 var13 = (int) (this.tileSize_double_compassCenterMax + var10 * (double) index * needleLength);
                 var14 = (int) (this.tileSize_double_compassCenterMin - var8 * (double) index * needleLength * 0.5D);
                 var15 = var14 * AS_FinderCompass.tileSizeBase + var13;
-                var16 = 100;
-                var17 = 100;
-                var18 = 100;
-                var19 = 255;
-
-                imageData[var15 * 4 + 0] = (byte) var16;
-                imageData[var15 * 4 + 1] = (byte) var17;
-                imageData[var15 * 4 + 2] = (byte) var18;
-                imageData[var15 * 4 + 3] = (byte) var19;
+                red = 100;
+                green = 100;
+                blue = 100;
+                // TODO RGB draw compass center
+                imageData[var15] = ((alpha & 0x0FF) << 24) | ((red & 0x0FF) << 16) | ((green & 0x0FF) << 8) | (blue & 0x0FF);
             }
         }
 
@@ -387,15 +381,11 @@ public class AS_FinderCompass extends TextureFX
             var13 = (int) (this.tileSize_double_compassCenterMax + var8 * (double) index * needleLength);
             var14 = (int) (this.tileSize_double_compassCenterMin + var10 * (double) index * needleLength * 0.5D);
             var15 = var14 * AS_FinderCompass.tileSizeBase + var13;
-            var16 = index < 0 ? 100 : rgbColors[0];
-            var17 = index < 0 ? 100 : rgbColors[1];
-            var18 = index < 0 ? 100 : rgbColors[2];
-            var19 = 255;
-
-            imageData[var15 * 4 + 0] = (byte) var16;
-            imageData[var15 * 4 + 1] = (byte) var17;
-            imageData[var15 * 4 + 2] = (byte) var18;
-            imageData[var15 * 4 + 3] = (byte) var19;
+            red = index < 0 ? 100 : rgbColors[0];
+            green = index < 0 ? 100 : rgbColors[1];
+            blue = index < 0 ? 100 : rgbColors[2];
+            // TODO draw compass needle
+            imageData[var15] = ((alpha & 0x0FF) << 24) | ((red & 0x0FF) << 16) | ((green & 0x0FF) << 8) | (blue & 0x0FF);
         }
     }
 

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
 import net.minecraft.client.resources.ResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -27,7 +28,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public abstract class TextureFX extends TextureAtlasSprite
 {    
     /**
-     * Texture pixels as byte array, RGBA format
+     * Texture pixels as array, default RGB model
      */
     protected int[] imageData;
     
@@ -45,27 +46,22 @@ public abstract class TextureFX extends TextureAtlasSprite
     @SuppressWarnings("unchecked")
     @Override
     public final void updateAnimation()
-    {
+    {        
         onTick(imageData);
         
         field_110976_a.clear();
         // add it twice, else mc does not consider it animated
         field_110976_a.add(imageData);
         field_110976_a.add(imageData);
+        
+        // this overwrites the Texture in the stitched-together atlas
+        TextureUtil.func_110998_a(imageData, getOriginX(), getOriginY(), func_130010_a(), func_110967_i(), false, false);
     }
     
-    /**
-     * Load the specified resource as this sprite's data.
-     * Returning false from this function will prevent this icon from being stitched onto the master texture. 
-     * @param manager Main resource manager
-     * @param location File resource location
-     * @return False to prevent this Icon from being stitched
-     * @throws IOException
-     */
     @Override
     public boolean load(ResourceManager manager, ResourceLocation location) throws IOException
     {
-        super.load(manager, location);
+        func_130100_a(manager.func_110536_a(location));
         return true;
     }
     
@@ -86,6 +82,16 @@ public abstract class TextureFX extends TextureAtlasSprite
         // add it twice, else mc does not consider it animated
         field_110976_a.add(imageData);
         field_110976_a.add(imageData);
+    }
+    
+    @Override
+    public int[] func_110965_a(int par1)
+    {
+        if (par1 == 0 || par1 == 1)
+        {
+            return imageData;
+        }
+        return null;
     }
 
 }
