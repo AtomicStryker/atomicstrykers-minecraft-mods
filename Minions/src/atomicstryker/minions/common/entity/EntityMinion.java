@@ -194,7 +194,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     {
         super.writeEntityToNBT(var1);
         var1.setTag("MinionInventory", this.inventory.writeToNBT(new NBTTagList()));
-        var1.setString("masterUsername", masterUsername);
+        var1.setString("masterUsername", masterUsername != null ? masterUsername : "");
     }
     
 	@Override
