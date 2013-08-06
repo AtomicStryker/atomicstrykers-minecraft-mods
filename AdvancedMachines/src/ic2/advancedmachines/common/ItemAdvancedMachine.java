@@ -35,11 +35,11 @@ public class ItemAdvancedMachine extends ItemBlock
         switch (var2)
         {
             case 0:
-                return "blockRotaryMacerator";
+                return "item.advancedmachines:rotaryMacerator";
             case 1:
-                return "blockSingularityCompressor";
+                return "item.advancedmachines:singularityCompressor";
             case 2:
-                return "blockCentrifugeExtractor";
+                return "item.advancedmachines:centrifugeExtractor";
             default:
                 return null;
         }

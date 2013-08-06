@@ -1,11 +1,11 @@
 package ic2.advancedmachines.client;
 
-import ic2.advancedmachines.common.AdvancedMachines;
 import ic2.advancedmachines.common.ContainerCentrifugeExtractor;
 import ic2.advancedmachines.common.TileEntityCentrifugeExtractor;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -23,7 +23,7 @@ public class GuiCentrifugeExtractor extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString(AdvancedMachines.advExtcName, 49, 6, 4210752);
+        this.fontRenderer.drawString(StatCollector.translateToLocal("item.advancedmachines:centrifugeExtractor.name"), 49, 6, 4210752);
         this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
         this.fontRenderer.drawString("Speed:", 10, 36, 4210752);
         this.fontRenderer.drawString(this.tileentity.printFormattedData(), 10, 44, 4210752);

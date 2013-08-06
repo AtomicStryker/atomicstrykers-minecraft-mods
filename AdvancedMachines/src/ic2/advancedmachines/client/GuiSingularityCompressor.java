@@ -1,11 +1,11 @@
 package ic2.advancedmachines.client;
 
-import ic2.advancedmachines.common.AdvancedMachines;
 import ic2.advancedmachines.common.ContainerSingularityCompressor;
 import ic2.advancedmachines.common.TileEntitySingularityCompressor;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -23,7 +23,7 @@ public class GuiSingularityCompressor extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString(AdvancedMachines.advCompName, 32, 6, 4210752);
+        this.fontRenderer.drawString(StatCollector.translateToLocal("item.advancedmachines:singularityCompressor.name"), 32, 6, 4210752);
         this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
         this.fontRenderer.drawString("Pressure:", 6, 36, 4210752);
         this.fontRenderer.drawString(this.tileentity.printFormattedData(), 10, 44, 4210752);

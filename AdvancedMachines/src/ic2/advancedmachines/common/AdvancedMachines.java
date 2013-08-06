@@ -20,9 +20,8 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1.1", dependencies = "required-after:IC2")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1.2", dependencies = "required-after:IC2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -42,11 +41,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     public static int guiIdRotary;
     public static int guiIdSingularity;
     public static int guiIdCentrifuge;
-    
-    public static String advMaceName = "Rotary Macerator";
-    public static String advCompName = "Singularity Compressor";
-    public static String advExtcName = "Centrifuge Extractor";
-    public static String refIronDustName = "Refined Iron Dust";
     
     public static ItemStack overClockerStack;
     public static ItemStack transformerStack;
@@ -75,12 +69,12 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 1188).getInt()).setUnlocalizedName("blockAdvMachine");
+        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 1188).getInt());
         blockAdvancedMachine.setCreativeTab(CreativeTabs.tabRedstone);
         refIronID = config.getItem("IDs", "refIronID", 29775).getInt(29775);
         
         GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
-        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("refinedIronDust");
+        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("advancedmachines:refinedIronDust");
         refinedIronDust.setCreativeTab(CreativeTabs.tabMaterials);
         GameRegistry.registerItem(refinedIronDust, "refinedIronDust");
         
@@ -105,13 +99,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         prop = config.get("Sounds", "interuptSound", interruptSound);
         prop.comment = "Sound played when a machine process is interrupted";
         interruptSound = prop.getString();
-        
-        prop = config.get("translation", "nameAdvCompressor", advCompName);
-        prop.comment = "Item names. This will also affect their GUI";
-        advCompName = prop.getString();
-        advExtcName = config.get("translation", "nameAdvExtractor", advExtcName).getString();
-        advMaceName = config.get("translation", "nameAdvMacerator", advMaceName).getString();
-        refIronDustName = config.get("translation", "nameAdvRefIronDust", refIronDustName).getString();
         
         prop = config.get("OPness control", "baseEnergyConsumption", "3");
         prop.comment = "Base power draw per work tick.";
@@ -159,28 +146,24 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         	Character.valueOf('R'), Items.getItem("refinedIronIngot"),
         	Character.valueOf('M'), Items.getItem("macerator"),
         	Character.valueOf('A'), Items.getItem("advancedMachine")});
-        LanguageRegistry.addName(stackRotaryMacerator, advMaceName);
         
         GameRegistry.addRecipe(stackSingularityCompressor,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Block.obsidian,
         	Character.valueOf('M'), Items.getItem("compressor"),
         	Character.valueOf('A'), Items.getItem("advancedMachine")});
-        LanguageRegistry.addName(stackSingularityCompressor, advCompName);
         
         GameRegistry.addRecipe(stackCentrifugeExtractor,
         		new Object[] {"RRR", "RMR", "RAR",
         	Character.valueOf('R'), Items.getItem("electrolyzedWaterCell"),
         	Character.valueOf('M'), Items.getItem("extractor"),
         	Character.valueOf('A'), Items.getItem("advancedMachine")});
-        LanguageRegistry.addName(stackCentrifugeExtractor, advExtcName);
         
         overClockerStack = Items.getItem("overclockerUpgrade");
         transformerStack = Items.getItem("transformerUpgrade");
         energyStorageUpgradeStack = Items.getItem("energyStorageUpgrade");
         ejectorUpgradeStack = Items.getItem("ejectorUpgrade");
         
-        LanguageRegistry.addName(refinedIronDust, refIronDustName);
         GameRegistry.addSmelting(refinedIronDust.itemID, Items.getItem("refinedIronIngot"), 1.0f);
     }
     
