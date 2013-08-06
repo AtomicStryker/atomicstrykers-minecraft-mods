@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.StatCollector;
 
 public abstract class MobModifier
 {    
@@ -60,7 +61,7 @@ public abstract class MobModifier
      */
     public String getLinkedModName()
     {
-        return (modName + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
+        return (StatCollector.translateToLocal("translation.infernalmobs:mod."+modName) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
     }
     
     /**
@@ -355,9 +356,10 @@ public abstract class MobModifier
             if (mod.getModNamePrefix() != null)
             {
                 modprefix = mod.getModNamePrefix()[target.getRNG().nextInt(mod.getModNamePrefix().length)];
+                modprefix = StatCollector.translateToLocal("translation.infernalmobs:prefix."+modprefix);
             }
             
-            String prefix = size <= 5 ? "§bRare" : size <= 10 ? "§6Ultra" : "§4Infernal";
+            String prefix = size <= 5 ? "§b"+StatCollector.translateToLocal("translation.infernalmobs:rareClass") : size <= 10 ? "§6"+StatCollector.translateToLocal("translation.infernalmobs:ultraClass") : "§4"+StatCollector.translateToLocal("translation.infernalmobs:infernalClass");
             if (buffer.startsWith("Entity"))
             {
                 buffer = buffer.replaceFirst("Entity", prefix+modprefix);
@@ -373,6 +375,7 @@ public abstract class MobModifier
                 if (mod.getModNameSuffix() != null)
                 {
                     String pick = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
+                    pick = StatCollector.translateToLocal("translation.infernalmobs:suffix."+pick);
                     buffer = buffer+pick;
                 }
             }

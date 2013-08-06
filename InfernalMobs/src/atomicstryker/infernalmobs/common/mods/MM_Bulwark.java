@@ -28,13 +28,13 @@ public class MM_Bulwark extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Turtling", " the Defender", " of effing Armor" };
+    private static String[] suffix = { "ofTurtling", "theDefender", "ofeffingArmor" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " turtling ", " defensive ", " armoured " };
+    private static String[] prefix = { "turtling", "defensive", "armoured" };
     
 }

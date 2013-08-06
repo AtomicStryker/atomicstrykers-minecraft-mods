@@ -51,13 +51,13 @@ public class MM_Rust extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Decay", " the Equipment Haunter" };
+    private static String[] suffix = { "ofDecay", "theEquipmentHaunter" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " rusting ", " decaying " };
+    private static String[] prefix = { "rusting", "decaying" };
     
 }

@@ -52,13 +52,13 @@ public class MM_Sapper extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Hunger", " the Pale Rider" };
+    private static String[] suffix = { "ofHunger", "thePaleRider" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " hungering ", " starving " };
+    private static String[] prefix = { "hungering", "starving" };
     
 }

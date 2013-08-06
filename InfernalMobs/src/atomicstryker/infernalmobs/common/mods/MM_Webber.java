@@ -93,13 +93,13 @@ public class MM_Webber extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Traps", " the Mutated", " the Spider" };
+    private static String[] suffix = { "ofTraps", "theMutated", "theSpider" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " ensnaring ", " webbing " };
+    private static String[] prefix = { "ensnaring", "webbing" };
     
 }

@@ -65,13 +65,13 @@ public class MM_Ghastly extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " OMFGFIREBALLS", " the Bomber", " of Balls of Fire" };
+    private static String[] suffix = { "OMFGFIREBALLS", "theBomber", "ofBallsofFire" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " bombing ", " fireballsy " };
+    private static String[] prefix = { "bombing", "fireballsy" };
     
 }

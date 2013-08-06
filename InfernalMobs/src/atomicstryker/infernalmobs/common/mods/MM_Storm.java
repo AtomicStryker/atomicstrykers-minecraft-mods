@@ -57,13 +57,13 @@ public class MM_Storm extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Lightning", " the Raiden" };
+    private static String[] suffix = { "ofLightning", "theRaiden" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " striking ", " thundering ", " electrified " };
+    private static String[] prefix = { "striking", "thundering", "electrified" };
     
 }

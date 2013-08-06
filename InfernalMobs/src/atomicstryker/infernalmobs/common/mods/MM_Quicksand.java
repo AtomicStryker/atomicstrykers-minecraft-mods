@@ -39,13 +39,13 @@ public class MM_Quicksand extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of You-Cant-Run", " the slowing B****" };
+    private static String[] suffix = { "ofYouCantRun", "theSlowingB" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " slowing ", " Quicksand " };
+    private static String[] prefix = { "slowing", "Quicksand" };
     
 }

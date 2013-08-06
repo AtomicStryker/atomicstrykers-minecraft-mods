@@ -70,13 +70,13 @@ public class MM_Cloaking extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Stalking", " the Unseen", " the Predator" };
+    private static String[] suffix = { "ofStalking", "theUnseen", "thePredator" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " stalking ", " unseen ", " hunting " };
+    private static String[] prefix = { "stalking", "unseen", "hunting" };
     
 }

@@ -117,13 +117,13 @@ public class MM_Gravity extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Repulsion", " the Flipper" };
+    private static String[] suffix = { "ofRepulsion", "theFlipper" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " repulsing ", " sproing " };
+    private static String[] prefix = { "repulsing", "sproing" };
     
 }

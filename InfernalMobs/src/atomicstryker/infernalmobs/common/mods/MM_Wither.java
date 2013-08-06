@@ -47,13 +47,13 @@ public class MM_Wither extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Dark Skulls" };
+    private static String[] suffix = { "ofDarkSkulls", "Doomskull" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " withering " };
+    private static String[] prefix = { "withering" };
     
 }

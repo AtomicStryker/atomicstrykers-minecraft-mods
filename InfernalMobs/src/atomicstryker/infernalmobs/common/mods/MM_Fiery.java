@@ -46,13 +46,13 @@ public class MM_Fiery extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Conflagration", " the Phoenix", " of Crispyness" };
+    private static String[] suffix = { "ofConflagration", "thePhoenix", "ofCrispyness" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " burning ", " toasting " };
+    private static String[] prefix = { "burning", "toasting" };
     
 }

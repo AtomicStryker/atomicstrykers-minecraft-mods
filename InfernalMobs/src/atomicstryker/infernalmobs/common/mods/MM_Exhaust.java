@@ -47,13 +47,13 @@ public class MM_Exhaust extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Fatigue", " the Drainer" };
+    private static String[] suffix = { "ofFatigue", "theDrainer" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " exhausting ", " draining " };
+    private static String[] prefix = { "exhausting", "draining" };
     
 }

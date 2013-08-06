@@ -82,13 +82,13 @@ public class MM_Blastoff extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Mission Control", " the NASA", " of WEEEEE" };
+    private static String[] suffix = { "ofMissionControl", "theNASA", "ofWEE" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " thumping ", " trolling ", " byebye " };
+    private static String[] prefix = { "thumping", "trolling", "byebye" };
     
 }

@@ -131,13 +131,13 @@ public class MM_Ender extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " the Enderborn", " the Trickster" };
+    private static String[] suffix = { "theEnderborn", "theTrickster" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " enderborn ", " tricky " };
+    private static String[] prefix = { "enderborn", "tricky" };
     
 }

@@ -52,13 +52,13 @@ public class MM_Poisonous extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Venom", " the deadly Chalice" };
+    private static String[] suffix = { "ofVenom", "thedeadlyChalice" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " poisonous ", " stinging ", " despoiling " };
+    private static String[] prefix = { "poisonous", "stinging", "despoiling" };
     
 }

@@ -65,13 +65,13 @@ public class MM_Sticky extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Snagging", " the Quick Fingered", " of Petty Theft", " .. YOINK" };
+    private static String[] suffix = { "ofSnagging", "theQuickFingered", "ofPettyTheft", "yoink" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " thieving ", " snagging ", " quick fingered " };
+    private static String[] prefix = { "thieving", "snagging", "quickfingered" };
     
 }

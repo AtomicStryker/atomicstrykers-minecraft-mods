@@ -46,12 +46,12 @@ public class MM_1UP extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Recurrence", " the Undying", " of twin Lives" };
+    private static String[] suffix = { "ofRecurrence", "theUndying", "oftwinLives" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " recurring ", " undying ", " twinlived " };
+    private static String[] prefix = { "recurring", "undying", "twinlived" };
 }

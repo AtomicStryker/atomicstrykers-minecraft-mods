@@ -42,13 +42,13 @@ public class MM_Berserk extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Recklessness", " the Raging", " of Smashing" };
+    private static String[] suffix = { "ofRecklessness", "theRaging", "ofSmashing" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " reckless ", " raging ", " smashing " };
+    private static String[] prefix = { "reckless", "raging", "smashing" };
     
 }

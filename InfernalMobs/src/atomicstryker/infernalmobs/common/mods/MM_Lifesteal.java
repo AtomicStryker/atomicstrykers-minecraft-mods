@@ -44,13 +44,13 @@ public class MM_Lifesteal extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " the Vampire", " of Transfusion", " the Bloodsucker" };
+    private static String[] suffix = { "theVampire", "ofTransfusion", "theBloodsucker" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " vampiric ", " transfusing ", " bloodsucking " };
+    private static String[] prefix = { "vampiric", "transfusing", "bloodsucking" };
     
 }

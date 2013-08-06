@@ -34,13 +34,13 @@ public class MM_Vengeance extends MobModifier
     {
         return suffix;
     }
-    private static String[] suffix = { " of Retribution", " the Thorned", " of Striking Back" };
+    private static String[] suffix = { "ofRetribution", "theThorned", "ofStrikingBack" };
     
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
-    private static String[] prefix = { " thorned ", " thorny ", " spiky " };
+    private static String[] prefix = { "thorned", "thorny", "spiky" };
     
 }
