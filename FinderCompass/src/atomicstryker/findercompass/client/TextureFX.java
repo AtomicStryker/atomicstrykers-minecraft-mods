@@ -32,7 +32,7 @@ public abstract class TextureFX extends TextureAtlasSprite
      */
     protected int[] imageData;
     
-    protected TextureFX(String name, int width, int height)
+    protected TextureFX(String name, int width)
     {
         super(name);
         this.field_130223_c = width;

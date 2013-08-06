@@ -1,3 +1,7 @@
+1.6.2A
+fixed having to use the compass to load the texture
+fixed non-vanilla resolution support
+
 1.6.2
 finally figured out how to make it work in 1.6.2
 does not currently work on nonvanilla resolutions and i dont know why

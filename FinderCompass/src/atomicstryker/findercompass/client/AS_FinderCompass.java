@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.item.Item;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Icon;
@@ -66,7 +67,7 @@ public class AS_FinderCompass extends TextureFX
 
     public AS_FinderCompass(Minecraft var1)
     {
-        super("findercompass:compass", 16, 16);
+        super("findercompass:compass"+getTextureWidth(var1), getTextureWidth(var1));
         AS_FinderCompass.mc = var1;
 
         setupTileSizes();
@@ -100,6 +101,22 @@ public class AS_FinderCompass extends TextureFX
                 e.printStackTrace();
             }
         }
+    }
+    
+    private static int getTextureWidth(Minecraft minecraft)
+    {
+        try
+        {
+            ResourceLocation loc = new ResourceLocation("textures/items/compass.png");
+            BufferedImage image = ImageIO.read(minecraft.func_110442_L().func_110536_a(loc).func_110527_b());
+            // mc.getSelectedTexturePack().getResourceAsStream("/textures/items/compass.png"));
+            return image.getWidth();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return 16;
     }
 
     private void setupTileSizes()
@@ -135,7 +152,7 @@ public class AS_FinderCompass extends TextureFX
 
             baseTexture = new int[tileSizeSquare];
             image.getRGB(0, 0, tileSizeBase, tileSizeBase, baseTexture, 0, tileSizeBase);
-            //TextureUtil.func_110998_a(baseTexture, this.field_130223_c, this.field_130224_d, this.field_110975_c, this.field_110974_d, false, false);
+            TextureUtil.func_110998_a(baseTexture, this.field_130223_c, this.field_130224_d, this.field_110975_c, this.field_110974_d, false, false);
         }
         catch (IOException e)
         {
@@ -420,10 +437,6 @@ public class AS_FinderCompass extends TextureFX
                         currentSetting = settingList.get(settingList.size() - 1);
                         System.out.println("Created new Compass Setting of the name: " + currentSetting.getName());
                     }
-                    else if (settingList.isEmpty())
-                    {
-                        System.out.println("ERROR: Finder Compass skipping config line because no Setting has been defined yet! Did you update your config file???");
-                    }
                     else if (buffer.contentEquals("NoDefaultNeedle"))
                     {
                         currentSetting.setHasDefaultNeedle(false);
@@ -433,6 +446,10 @@ public class AS_FinderCompass extends TextureFX
                     {
                         currentSetting.setHasStrongholdNeedle(false);
                         System.out.println("Disabling Ender Eye Needle as per config file");
+                    }
+                    else if (settingList.isEmpty())
+                    {
+                        //System.out.println("ERROR: Finder Compass skipping config line because no Setting has been defined yet! Did you update your config file???");
                     }
                     else
                     {
