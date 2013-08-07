@@ -20,5 +20,6 @@ There is a global on/off button which you can find and rebind in the Options "Co
 To install:
 
 Dynamic Lights is now a FML coremod. That means drag and drop installation! Simply put the .jar found in /setup/coremods/ into your .minecraft/coremods/ folder!
+Minecraft 1.6.2 and later: Coremods now go into the /mods/ folder along with everything else! NOT the coremods folder.
 
 Out of the box support for Optifine!
