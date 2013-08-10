@@ -3,7 +3,6 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.Configuration;
 import atomicstryker.battletowers.client.ClientPacketHandler;
@@ -145,7 +144,7 @@ public class AS_BattleTowersCore
     
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
-        Packet3Chat packet = new Packet3Chat("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...");
+        //Packet3Chat packet = new Packet3Chat("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...");
         //PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100, td.player.worldObj.provider.dimensionId, packet);
         towerDestroyers.add(td);
     }
