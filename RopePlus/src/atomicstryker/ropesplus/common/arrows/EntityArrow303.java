@@ -203,7 +203,7 @@ public class EntityArrow303 extends EntityProjectileBase
         if (!worldObj.isRemote)
         {
             int prevBlockID = worldObj.getBlockId(x, y, z);
-            if (prevBlockID > 0)
+            if (prevBlockID > 0 && shooter != null)
             {
                 int prevBlockMeta = worldObj.getBlockMetadata(x, y, z);
                 Block.blocksList[prevBlockID].harvestBlock(worldObj, shooter, x, y, z, prevBlockMeta);
