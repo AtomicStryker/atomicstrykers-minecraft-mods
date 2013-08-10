@@ -28,7 +28,7 @@
 		<link>
 			<name>minecraft</name>
 			<type>2</type>
-			<location>D:/mcmodding/mcp/src/minecraft</location>
+			<location>G:/mcmodding/mcp/src/minecraft</location>
 		</link>
 		<link>
 			<name>src</name>

@@ -1,5 +1,6 @@
 1.3.4
 - added translation support
+- hotfixed crash in packet handling when entity IDs are not in sync
 
 1.3.3
 - updated for MC 1.6.2
