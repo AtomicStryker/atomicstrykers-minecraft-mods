@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,9 +30,10 @@ public class ServerPacketHandler implements IPacketHandler
             int entID = (Integer) packetReadout[0];
             
             EntityPlayer p = (EntityPlayer) player;
-            EntityLiving ent = (EntityLiving) p.worldObj.getEntityByID(entID);
-            if (ent != null)
+            Entity entity = p.worldObj.getEntityByID(entID);
+            if (entity != null && entity instanceof EntityLiving)
             {
+                EntityLiving ent = (EntityLiving) p.worldObj.getEntityByID(entID);
                 MobModifier mod = InfernalMobsCore.getMobModifiers(ent);
                 if (mod != null)
                 {
