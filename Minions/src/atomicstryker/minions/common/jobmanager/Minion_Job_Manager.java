@@ -68,7 +68,7 @@ public abstract class Minion_Job_Manager
     		
     		if (masterName == null)
     		{
-    			masterName = minions[i].masterUsername;
+    			masterName = minions[i].getMasterUserName();
     		}
     		
     		i++;

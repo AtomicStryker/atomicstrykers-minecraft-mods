@@ -46,7 +46,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     public final AStarPathPlanner pathPlanner;
     
 	public EntityPlayer master;
-	public String masterUsername;
 	private ItemStack heldItem;
 	public boolean inventoryFull;
 	public TileEntity returnChestOrInventory;
@@ -103,10 +102,11 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         despawnTime = -1l;
 	}
 	
-	public void setMaster(EntityPlayer creator)
+	public EntityMinion(World world, EntityPlayer playerEnt)
 	{
-        master = creator;
-        masterUsername = master.username;
+	    this(world);
+	    master = playerEnt;
+	    setMasterUserName(playerEnt.username);
 	}
 	
 	@Override
@@ -117,9 +117,23 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.dataWatcher.addObject(13, new Integer(0)); // x blocktask
         this.dataWatcher.addObject(14, new Integer(0));	// y blocktask
         this.dataWatcher.addObject(15, new Integer(0)); // z blocktask
+        this.dataWatcher.addObject(16, "undef"); // masterUserName
         
         MinionsChunkManager.registerChunkLoaderEntity(this);
     }
+	
+	public void setMasterUserName(String name)
+	{
+	    if (!worldObj.isRemote)
+	    {
+	        dataWatcher.updateObject(16, name);
+	    }
+	}
+	
+	public String getMasterUserName()
+	{
+	    return dataWatcher.getWatchableObjectString(16);
+	}
 	
     /**
      * Returns true if the newer Entity AI code should be run
@@ -194,7 +208,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     {
         super.writeEntityToNBT(var1);
         var1.setTag("MinionInventory", this.inventory.writeToNBT(new NBTTagList()));
-        var1.setString("masterUsername", masterUsername != null ? masterUsername : "");
+        var1.setString("masterUsername", getMasterUserName());
     }
     
 	@Override
@@ -203,8 +217,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         super.readEntityFromNBT(var1);
         NBTTagList var2 = var1.getTagList("MinionInventory");
         this.inventory.readFromNBT(var2);
-        masterUsername = var1.getString("masterUsername");
-        master = worldObj.getPlayerEntityByName(masterUsername);
+        setMasterUserName(var1.getString("masterUsername"));
+        master = worldObj.getPlayerEntityByName(getMasterUserName());
         
         MinionsCore.minionLoadRegister(this);
     }

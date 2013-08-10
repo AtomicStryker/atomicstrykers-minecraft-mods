@@ -492,7 +492,7 @@ public class InventoryMinion implements IInventory
 
     public boolean isUseableByPlayer(EntityPlayer var1)
     {
-        return (var1.username.equals(minion.masterUsername) && var1.getDistanceSqToEntity(this.minion) <= 64.0D);
+        return (var1.username.equals(minion.getMasterUserName()) && var1.getDistanceSqToEntity(this.minion) <= 64.0D);
     }
 
     public boolean hasItemStack(ItemStack var1)

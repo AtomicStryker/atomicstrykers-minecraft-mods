@@ -59,7 +59,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.6.9")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -285,15 +285,15 @@ public class MinionsCore
 
     public static void minionLoadRegister(EntityMinion ent)
     {        
-        if (ent.masterUsername == null || ent.masterUsername.equals(""))
+        if (ent.getMasterUserName().equals("undef"))
         {
             System.out.println("Loaded Minion without masterName, killing");
             ent.setDead();
             return;
         }
 
-        System.out.println("Loaded Minion from NBT, re-registering master: "+ent.masterUsername);
-        String mastername = ent.masterUsername;
+        System.out.println("Loaded Minion from NBT, re-registering master: "+ent.getMasterUserName());
+        String mastername = ent.getMasterUserName();
 
         if (!masterNames.containsKey(mastername))
         {
@@ -443,10 +443,9 @@ public class MinionsCore
                 arrayplusone[index] = minions[index];
                 index++;
             }
-            arrayplusone[prevArraySize] = new EntityMinion(playerEnt.worldObj);
+            arrayplusone[prevArraySize] = new EntityMinion(playerEnt.worldObj, playerEnt);
             arrayplusone[prevArraySize].setPosition(x, y+1, z);
             playerEnt.worldObj.spawnEntityInWorld(arrayplusone[prevArraySize]);
-            arrayplusone[prevArraySize].setMaster(playerEnt);
             MinionsCore.proxy.sendSoundToClients(arrayplusone[prevArraySize], "minions:minionspawn");
 
             masterNames.put(playerEnt.username, arrayplusone);

@@ -53,7 +53,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
                 
                 if (masterName == null)
                 {
-                    masterName = m.masterUsername;
+                    masterName = m.getMasterUserName();
                 }
                 break;
             }
