@@ -1,3 +1,6 @@
+1.6.2B
+fixed compass not updating when not being held in hand
+
 1.6.2A
 fixed having to use the compass to load the texture
 fixed non-vanilla resolution support

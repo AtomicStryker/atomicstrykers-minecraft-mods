@@ -46,13 +46,17 @@ public class CompassCustomRenderer implements IItemRenderer
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data)
-    {
+    {        
         switch (type)
         {
-        case EQUIPPED_FIRST_PERSON:
-            renderCompass((RenderBlocks) data[0], item, -0.4f, 0.8f, 0.9f, 75f);
-            break;
-        default:
+            case EQUIPPED_FIRST_PERSON:
+            {
+                renderCompass((RenderBlocks) data[0], item, -0.4f, 0.8f, 0.9f, 75f);
+                break;
+            }
+            default:
+            {
+            }
         }
     }
 
@@ -61,10 +65,6 @@ public class CompassCustomRenderer implements IItemRenderer
         GL11.glTranslatef(translateX, translateY, translateZ);
         GL11.glRotatef(rotateAngle, 0, 1.0F, 0);
         Icon icon = item.getIconIndex();
-        if (icon instanceof TextureFX)
-        {
-            ((TextureFX)icon).updateAnimation();
-        }
         ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getOriginX(), icon.getOriginY(), 0.0825F);
     }
 

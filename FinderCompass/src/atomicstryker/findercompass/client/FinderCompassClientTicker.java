@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
+import net.minecraft.util.Icon;
 import net.minecraftforge.client.MinecraftForgeClient;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -39,6 +40,12 @@ public class FinderCompassClientTicker implements ITickHandler
     @Override
     public void tickEnd(EnumSet<TickType> type, Object... tickData)
     {
+        Icon icon = FinderCompassMod.compass.getIconFromDamage(0);
+        if (icon instanceof TextureFX)
+        {
+            ((TextureFX)icon).updateAnimation();
+        }
+        
         if (!FinderCompassMod.itemEnabled
         && mc.theWorld != null
         && mc.thePlayer != null)
