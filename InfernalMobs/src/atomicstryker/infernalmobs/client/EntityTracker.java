@@ -22,6 +22,7 @@ public class EntityTracker
     private void askServerForMobMods(Entity ent)
     {
         // question: Packet ID 1, from client, { entID }
+        //System.out.println("Asking server for infernal mods for entity "+ent+", ID: "+ent.entityId);
         Object[] input = { ent.entityId };
         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_IM", 1, input));
     }

@@ -70,7 +70,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.4")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.6")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -332,7 +332,7 @@ public class InfernalMobsCore implements ITickHandler
                     {
                         proxy.getRareMobs().put(entity, mod);
                         mod.onSpawningComplete(entity);
-                        //System.out.println("InfernalMobsCore spawned Elite: "+entity+": "+mod.getModName());
+                        //System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.entityId+": "+mod.getLinkedModName());
                     }
                 }
             }
@@ -395,6 +395,7 @@ public class InfernalMobsCore implements ITickHandler
     public void setEntityHealthPastMax(EntityLivingBase entity, float amount)
     {
         entity.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(amount);
+        entity.setEntityHealth(amount);
         instance.sendHealthPacket(entity, amount);
     }
 

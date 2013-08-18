@@ -34,6 +34,7 @@ public class ClientPacketHandler implements IPacketHandler
             int entID = (Integer) packetReadout[0];
             String mods = (String) packetReadout[1];
             
+            //System.out.println("Infernal Mobs client received answer for id "+entID+": "+mods);
             InfernalMobsCore.instance().addRemoteEntityModifiers(FMLClientHandler.instance().getClient().theWorld, entID, mods);
         }
         // addVelocity player: Packet ID 2, from server, { double xVel, double yVel, double zVel }

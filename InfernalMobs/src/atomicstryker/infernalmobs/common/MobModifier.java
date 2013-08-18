@@ -65,6 +65,14 @@ public abstract class MobModifier
     }
     
     /**
+     * @return same as above, but without using the translation system
+     */
+    public String getLinkedModNameUntranslated()
+    {
+        return modName + " " + ((nextMod != null) ? nextMod.getLinkedModNameUntranslated() : "");
+    }
+    
+    /**
      * @return Display-sized (up to 5) series of Modifier Strings
      */
     public String[] getDisplayNames()
@@ -241,12 +249,18 @@ public abstract class MobModifier
     {
         if (!healthHacked && !mob.worldObj.isRemote)
         {
-            actualHealth = getActualMaxHealth(mob);
-            InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
+            increaseHealthForMob(mob, getActualMaxHealth(mob));
             healthHacked = true;
         }
         
         return actualHealth;
+    }
+    
+    private void increaseHealthForMob(EntityLivingBase mob, float baseHealth)
+    {
+        actualHealth = getActualMaxHealth(mob);
+        actualHealth = (float) (actualHealth * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
+        InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
     }
     
     /**
@@ -385,4 +399,5 @@ public abstract class MobModifier
         
         return bufferedEntityName;
     }
+    
 }
