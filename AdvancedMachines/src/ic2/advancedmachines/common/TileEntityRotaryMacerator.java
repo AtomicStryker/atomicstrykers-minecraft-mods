@@ -1,5 +1,9 @@
 package ic2.advancedmachines.common;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import ic2.api.item.Items;
 import ic2.api.recipe.Recipes;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -40,28 +44,37 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     }
 
     @Override
-    public ItemStack getResultFor(ItemStack macerated, boolean adjustOutput)
+    public List<ItemStack> getResultFor(ItemStack macerated, boolean adjustOutput)
     {
-    	ItemStack result = (ItemStack) Recipes.macerator.getOutputFor(macerated, adjustOutput);
-    	ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
-    	
-    	if(supplement != null)
-    	{
-    		if (supplementedItemsLeft > 0)
-    		{
-    			result = getSpecialResultFor(macerated, result, supplement, adjustOutput);
-    		}
-    		else
-    		{
-    			if (getSpecialResultFor(macerated, result, supplement, adjustOutput) != null)
-    			{
-    				result = getSpecialResultFor(macerated, result, supplement, adjustOutput);
-    				supplementedItemsLeft = currentResultCount;
-    			}
-    		}
-    	}
-    	
-        return result;
+        List<ItemStack> results = Recipes.macerator.getOutputFor(macerated, adjustOutput).items;
+        
+        ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
+        if(supplement != null)
+        {
+            List<ItemStack> additions = new ArrayList<ItemStack>();
+            
+            ItemStack result = null;
+            Iterator<ItemStack> iter = results.iterator();
+            while (iter.hasNext())
+            {
+                result = iter.next();
+                if (supplementedItemsLeft > 0)
+                {
+                    additions.addAll(getSpecialResultFor(macerated, result, supplement, adjustOutput));
+                    iter.remove();
+                }
+                else if (getSpecialResultFor(macerated, result, supplement, adjustOutput) != null)
+                {
+                    additions.addAll(getSpecialResultFor(macerated, result, supplement, adjustOutput));
+                    supplementedItemsLeft = currentResultCount;
+                    iter.remove();
+                }
+            }
+            
+            results.addAll(additions);
+        }
+        
+        return results.isEmpty() ? null : results; // expects null not an empty list
     }
     
     @Override
@@ -84,30 +97,39 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     	super.onFinishedProcessingItem();
     }
     
-    private ItemStack getSpecialResultFor(ItemStack original, ItemStack result, ItemStack supplement, boolean bool)
+    private List<ItemStack> getSpecialResultFor(ItemStack original, ItemStack result, ItemStack supplement, boolean bool)
     {
+        ArrayList<ItemStack> results = new ArrayList<ItemStack>();
+        
     	if(result != null && supplement != null)
     	{
-    		ItemStack supplementOutput = (ItemStack) Recipes.macerator.getOutputFor(supplement, bool);
+    		List<ItemStack> supplementOutput =  Recipes.macerator.getOutputFor(supplement, bool).items;
     		
     		if (result.itemID == this.idIronDust && supplement.itemID == Item.coal.itemID)
     		{
     			currentResultCount = 128;
-    			return new ItemStack(AdvancedMachines.refinedIronDust, result.stackSize);
+    			results.add(new ItemStack(AdvancedMachines.refinedIronDust, result.stackSize));
     		}
-    		else if (result.itemID == this.idCopperDust && supplementOutput != null && supplementOutput.itemID == idTinDust)
+    		else if (result.itemID == this.idCopperDust && supplementOutput != null)
     		{
-    			currentResultCount = 4;
-    			return new ItemStack(bronzeDust.getItem(), result.stackSize);
+    		    for (ItemStack i : supplementOutput)
+    		    {
+    		        if (i.itemID == idTinDust)
+    		        {
+    		            currentResultCount = 4;
+    	                results.add(new ItemStack(bronzeDust.getItem(), result.stackSize));
+    	                break;
+    		        }
+    		    }
     		}
     		else if (result.itemID == this.idCoalDust && supplement.itemID == this.idWaterCell)
     		{
     			currentResultCount = 8;
-    			return hydratedCoalDust;
+    			results.add(hydratedCoalDust);
     		}
     	}
     	
-		return null;
+		return results;
 	}
     
     @Override

@@ -4,6 +4,9 @@ import ic2.api.Direction;
 import ic2.api.item.IElectricItem;
 import ic2.api.network.NetworkHelper;
 import ic2.core.util.StackUtil;
+
+import java.util.List;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -107,7 +110,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         boolean isActive = getActive();
         if (this.progress >= MAX_PROGRESS)
         {
-            this.operate();
+            this.placeResultItems();
             newItemProcessing = true;
             this.progress = 0;
             isActive = false;
@@ -226,57 +229,56 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
     }
 
-    @Override
-    public int injectEnergy(Direction var1, int var2)
-    {
-        this.setOverclockRates();
-        return super.injectEnergy(var1, var2);
-    }
-
-    private void operate()
+    private void placeResultItems()
     {
         if (canOperate())
         {
-            ItemStack resultStack = getResultFor(inventory[inputs[0]], true).copy();
-            int[] stackSizeSpaceAvailableInOutput = new int[outputs.length];
-            int resultMaxStackSize = resultStack.getMaxStackSize();
-
-            int index;
-            for (index = 0; index < outputs.length; ++index)
+            List<ItemStack> resultStacks = getResultFor(inventory[inputs[0]], true);
+            if (resultStacks != null)
             {
-                if (inventory[outputs[index]] == null)
+                for (ItemStack itemstack : resultStacks)
                 {
-                    stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize;
-                }
-                else if (inventory[outputs[index]].isItemEqual(resultStack))
-                {
-                    stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize - inventory[outputs[index]].stackSize;
-                }
-            }
+                    itemstack.stackSize = Math.max(itemstack.stackSize, 1); //IC2 bugfix? TODO remove
+                    int[] stackSizeSpaceAvailableInOutput = new int[outputs.length];
+                    int resultMaxStackSize = itemstack.getMaxStackSize();
 
-            for (index = 0; index < stackSizeSpaceAvailableInOutput.length; ++index)
-            {
-                if (stackSizeSpaceAvailableInOutput[index] > 0)
-                {
-                    int stackSizeToStash = Math.min(resultStack.stackSize, stackSizeSpaceAvailableInOutput[index]);
-                    if (inventory[outputs[index]] == null)
+                    int index;
+                    for (index = 0; index < outputs.length; ++index)
                     {
-                        inventory[outputs[index]] = resultStack;
-                        break;
-                    }
-                    else
-                    {
-                        inventory[outputs[index]].stackSize += stackSizeToStash;
-                        resultStack.stackSize -= stackSizeToStash;
-                        if (resultStack.stackSize <= 0)
+                        if (inventory[outputs[index]] == null)
                         {
-                            break;
+                            stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize;
+                        }
+                        else if (inventory[outputs[index]].isItemEqual(itemstack))
+                        {
+                            stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize - inventory[outputs[index]].stackSize;
+                        }
+                    }
+
+                    for (index = 0; index < stackSizeSpaceAvailableInOutput.length; ++index)
+                    {
+                        if (stackSizeSpaceAvailableInOutput[index] > 0)
+                        {
+                            int stackSizeToStash = Math.min(itemstack.stackSize, stackSizeSpaceAvailableInOutput[index]);
+                            if (inventory[outputs[index]] == null)
+                            {
+                                inventory[outputs[index]] = itemstack;
+                                break;
+                            }
+                            else
+                            {
+                                inventory[outputs[index]].stackSize += stackSizeToStash;
+                                itemstack.stackSize -= stackSizeToStash;
+                                if (itemstack.stackSize <= 0)
+                                {
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
+                onFinishedProcessingItem();
             }
-            onFinishedProcessingItem();
-
             if (inventory[inputs[0]].stackSize <= 0)
             {
                 inventory[inputs[0]] = null;
@@ -297,30 +299,30 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         else
         {
-            ItemStack resultStack = getResultFor(inventory[inputs[0]], false);
-            if (resultStack == null)
+            List <ItemStack> resultStacks = getResultFor(inventory[inputs[0]], false);
+            if (resultStacks != null)
             {
-                return false;
-            }
-            else
-            {
-                int resultMaxStackSize = resultStack.getMaxStackSize();
-                int freeSpaceOutputSlots = 0;
-                for (int index = 0; index < outputs.length; ++index)
+                for (ItemStack resultStack : resultStacks)
                 {
-                    int curOutputSlot = outputs[index];
-                    if (inventory[curOutputSlot] == null)
+                    int resultMaxStackSize = resultStack.getMaxStackSize();
+                    int freeSpaceOutputSlots = 0;
+                    for (int index = 0; index < outputs.length; ++index)
                     {
-                        freeSpaceOutputSlots += resultMaxStackSize;
+                        int curOutputSlot = outputs[index];
+                        if (inventory[curOutputSlot] == null)
+                        {
+                            freeSpaceOutputSlots += resultMaxStackSize;
+                        }
+                        else if (inventory[curOutputSlot].isItemEqual(resultStack))
+                        {
+                            freeSpaceOutputSlots += (resultMaxStackSize - inventory[curOutputSlot].stackSize);
+                        }
                     }
-                    else if (inventory[curOutputSlot].isItemEqual(resultStack))
-                    {
-                        freeSpaceOutputSlots += (resultMaxStackSize - inventory[curOutputSlot].stackSize);
-                    }
-                }
 
-                return freeSpaceOutputSlots >= resultStack.stackSize;
+                    return freeSpaceOutputSlots >= resultStack.stackSize;
+                }
             }
+            return false;
         }
     }
 
@@ -335,10 +337,10 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
      *            input slot and destroyed, if false, the input Slots remain as
      *            they are
      * 
-     * @return ItemStack that results from processing the Input, or null if no
+     * @return ItemStack List that results from processing the Input, or null if no
      *         processing is possible
      */
-    public abstract ItemStack getResultFor(ItemStack input, boolean adjustOutput);
+    public abstract List<ItemStack> getResultFor(ItemStack input, boolean adjustOutput);
 
     public abstract Container getGuiContainer(InventoryPlayer var1);
 
@@ -379,7 +381,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         if (blockSide == 1)
         {
-            return getResultFor(itemstack, false) != null;
+            return getResultFor(itemstack, false) == null;
         }
         return isItemValidForSlot(slotSize, itemstack);
     }
@@ -459,7 +461,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
     public abstract int getUpgradeSlotsStartSlot();
 
-    public void setOverclockRates()
+    private void setOverclockRates()
     {
     	int overclockerUpgradeCount = 0;
     	int transformerUpgradeCount = 0;

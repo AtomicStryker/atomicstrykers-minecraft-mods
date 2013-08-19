@@ -1,6 +1,9 @@
 package ic2.advancedmachines.common;
 
 import ic2.api.recipe.Recipes;
+
+import java.util.List;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -19,9 +22,9 @@ public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
     }
     
     @Override
-    public ItemStack getResultFor(ItemStack input, boolean adjustOutput)
+    public List<ItemStack> getResultFor(ItemStack input, boolean adjustOutput)
     {
-        return (ItemStack) Recipes.compressor.getOutputFor(input, adjustOutput);
+        return Recipes.compressor.getOutputFor(input, adjustOutput).items;
     }
     
     @Override
@@ -41,4 +44,5 @@ public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
     {
         return AdvancedMachines.interruptSound;
     }
+    
 }

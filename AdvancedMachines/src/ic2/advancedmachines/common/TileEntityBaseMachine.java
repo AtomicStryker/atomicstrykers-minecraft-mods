@@ -1,6 +1,5 @@
 package ic2.advancedmachines.common;
 
-import ic2.api.Direction;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
@@ -10,6 +9,7 @@ import ic2.api.item.Items;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 
 public abstract class TileEntityBaseMachine extends TileEntityMachine implements IEnergySink
@@ -53,7 +53,6 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         super.updateEntity();
         if (!this.addedToEnergyNet)
         {
-            //EnergyNet.getForWorld(this.worldObj).addTileEntity(this);
             MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             this.addedToEnergyNet = true;
         }
@@ -64,27 +63,19 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     {
         if (this.addedToEnergyNet)
         {
-            //EnergyNet.getForWorld(this.worldObj).removeTileEntity(this);
             MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
-            this.addedToEnergyNet = false;
         }
         super.invalidate();
     }
-
+    
     @Override
-    public boolean isAddedToEnergyNet()
-    {
-        return this.addedToEnergyNet;
-    }
-
-    @Override
-    public int demandsEnergy()
+    public double demandedEnergyUnits()
     {
         return maxEnergy - energy;
     }
 
     @Override
-    public int injectEnergy(Direction var1, int var2)
+    public double injectEnergyUnits(ForgeDirection var1, double var2)
     {
         if (var2 > this.maxInput)
         {
@@ -116,7 +107,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     }
 
     @Override
-    public boolean acceptsEnergyFrom(TileEntity var1, Direction var2)
+    public boolean acceptsEnergyFrom(TileEntity var1, ForgeDirection var2)
     {
         return true;
     }
