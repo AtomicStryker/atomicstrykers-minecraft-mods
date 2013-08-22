@@ -92,9 +92,13 @@ public class MultiMineClient
             curBlockY = y;
             curBlockZ = z;
             Object[] toSend = {x, y, z, thePlayer.dimension};
-            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));   
+            float f = blockCompletion;
+            while (f >= 0.1f)
+            {
+                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
+                f -= 0.1f;
+            }
         }
-        
         //System.out.println("Client finished a block tenth for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion);
     }
     

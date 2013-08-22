@@ -157,7 +157,7 @@ public class MMTransformer implements IClassTransformer
                         System.out.println("Found ALOAD Node at offset -"+offset+" from IFLT Node");
                         
                         // make an exit label node
-                        LabelNode lmm1Node = new LabelNode(new Label());
+                        LabelNode elseJumpNode = new LabelNode(new Label());
                         
                         // make new instruction list
                         InsnList toInject = new InsnList();
@@ -167,17 +167,22 @@ public class MMTransformer implements IClassTransformer
                         toInject.add(new FieldInsnNode(GETFIELD, playerControllerMPJavaClassNameO, playerControllerMPcurrentBlockDamageFieldNameO, "F"));
                         toInject.add(new LdcInsnNode(0.1F));
                         toInject.add(new InsnNode(FCMPL));
-                        toInject.add(new JumpInsnNode(IFLT, lmm1Node));
+                        toInject.add(new JumpInsnNode(IFLT, elseJumpNode));
+                        
+                        /* old abort code, if one managed to reach over 50 percent blockdigging mine multi mine just bails out of the logic
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new FieldInsnNode(GETFIELD, playerControllerMPJavaClassNameO, playerControllerMPcurrentBlockDamageFieldNameO, "F"));
                         toInject.add(new LdcInsnNode(0.5F));
                         toInject.add(new InsnNode(FCMPG));
-                        toInject.add(new JumpInsnNode(IFGE, lmm1Node));
+                        toInject.add(new JumpInsnNode(IFGE, elseJumpNode));
+                        */
+                        
                         toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;"));
                         toInject.add(new VarInsnNode(ILOAD, blockIDvar));
                         toInject.add(new MethodInsnNode(INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "getIsEnabledForServerAndBlockId", "(I)Z"));
-                        toInject.add(new JumpInsnNode(IFEQ, lmm1Node));
+                        toInject.add(new JumpInsnNode(IFEQ, elseJumpNode));
                         toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;"));
+                                                
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new FieldInsnNode(GETFIELD, playerControllerMPJavaClassNameO, playerControllerMPcurrentBlockXFieldNameO, "I"));
                         toInject.add(new VarInsnNode(ALOAD, 0));
@@ -187,11 +192,12 @@ public class MMTransformer implements IClassTransformer
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new FieldInsnNode(GETFIELD, playerControllerMPJavaClassNameO, playerControllerMPcurrentBlockDamageFieldNameO, "F"));
                         toInject.add(new MethodInsnNode(INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "onClientMinedBlockTenthCompleted", "(IIIF)V"));
+                        
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new InsnNode(FCONST_0));
                         toInject.add(new FieldInsnNode(PUTFIELD, playerControllerMPJavaClassNameO, playerControllerMPcurrentBlockDamageFieldNameO, "F"));
                         toInject.add(new InsnNode(RETURN));
-                        toInject.add(lmm1Node);
+                        toInject.add(elseJumpNode);
                         
                         m.instructions.insertBefore(m.instructions.get(index-offset), toInject);
                         System.out.println("Patching Complete!");
