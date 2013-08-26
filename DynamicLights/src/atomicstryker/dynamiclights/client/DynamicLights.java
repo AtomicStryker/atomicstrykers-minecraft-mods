@@ -38,7 +38,7 @@ import cpw.mods.fml.relauncher.Side;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.4")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.5")
 public class DynamicLights
 {
     private Minecraft mcinstance;

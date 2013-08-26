@@ -9,7 +9,9 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
@@ -33,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.0", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.1", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -42,7 +44,6 @@ public class EntityLivingEquipmentLightSource
     private ArrayList<EntityLightAdapter> trackedEntities;
     private Thread thread;
     private boolean threadRunning;
-    
     private HashMap<Integer, Integer> itemsMap;
     
     @EventHandler
@@ -56,7 +57,7 @@ public class EntityLivingEquipmentLightSource
         updateInterval = updateI.getInt();
         
         itemsMap = new HashMap<Integer, Integer>();
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14,418:15");
         itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
         String[] tokens = itemsList.getString().split(",");
         for (String pair : tokens)
@@ -80,9 +81,29 @@ public class EntityLivingEquipmentLightSource
         TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
     }
     
-    private boolean hasShinyEquipment(EntityLiving ent)
-    {            
-        return getLightFromItemStack(ent.getCurrentItemOrArmor(0)) > 0 || getLightFromItemStack(ent.getCurrentItemOrArmor(4)) > 0;
+    private int getEquipmentLightLevel(EntityLiving ent)
+    {
+        if (ent instanceof EntityHorse)
+        {
+            // Horse armor texture is the only thing "visible" on client, inventory is not synced.
+            // Armor layer is at index 2 in texture layers
+            String horseArmorTexture = ((EntityHorse)ent).func_110212_cp()[2];
+            if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_gold.png"))
+            {
+                return getLightFromItemStack(new ItemStack(Item.field_111216_cf)); // horsearmorgold
+            }
+            if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_iron.png"))
+            {
+                return getLightFromItemStack(new ItemStack(Item.field_111215_ce)); // horsearmormetal
+            }
+            if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_diamond.png"))
+            {
+                return getLightFromItemStack(new ItemStack(Item.field_111213_cg)); // butt stallion
+            }
+        }
+        
+        return Math.max(getLightFromItemStack(ent.getCurrentItemOrArmor(0)),
+                getLightFromItemStack(ent.getCurrentItemOrArmor(4)));
     }
     
     private int getLightFromItemStack(ItemStack stack)
@@ -162,7 +183,7 @@ public class EntityLivingEquipmentLightSource
                 ent = (Entity) o;
                 // Loop all loaded Entities, find alive and valid EntityLiving not otherwise handled
                 if ((ent instanceof EntityLiving)
-                        && ent.isEntityAlive() && !(ent instanceof EntityPlayer) && hasShinyEquipment((EntityLiving) ent))
+                        && ent.isEntityAlive() && !(ent instanceof EntityPlayer) && getEquipmentLightLevel((EntityLiving) ent) > 0)
                 {
                     // now find them in the already tracked adapters
                     boolean found = false;
