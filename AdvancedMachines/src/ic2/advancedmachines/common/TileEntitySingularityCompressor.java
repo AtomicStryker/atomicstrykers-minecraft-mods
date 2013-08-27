@@ -1,5 +1,6 @@
 package ic2.advancedmachines.common;
 
+import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 
 import java.util.List;
@@ -24,7 +25,8 @@ public class TileEntitySingularityCompressor extends TileEntityAdvancedMachine
     @Override
     public List<ItemStack> getResultFor(ItemStack input, boolean adjustOutput)
     {
-        return Recipes.compressor.getOutputFor(input, adjustOutput).items;
+        RecipeOutput output = Recipes.compressor.getOutputFor(input, adjustOutput);
+        return output == null ? null : output.items;
     }
     
     @Override

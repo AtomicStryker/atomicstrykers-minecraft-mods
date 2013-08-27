@@ -2,6 +2,7 @@ package ic2.advancedmachines.common;
 
 import java.util.List;
 
+import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -23,7 +24,8 @@ public class TileEntityCentrifugeExtractor extends TileEntityAdvancedMachine
     @Override
     public List<ItemStack> getResultFor(ItemStack input, boolean adjustOutput)
     {
-        return Recipes.extractor.getOutputFor(input, adjustOutput).items;
+        RecipeOutput output = Recipes.extractor.getOutputFor(input, adjustOutput);
+        return output == null ? null : output.items;
     }
     
     @Override

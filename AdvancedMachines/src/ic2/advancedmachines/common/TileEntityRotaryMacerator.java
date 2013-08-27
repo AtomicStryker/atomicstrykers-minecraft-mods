@@ -1,11 +1,13 @@
 package ic2.advancedmachines.common;
 
+import ic2.api.item.Items;
+import ic2.api.recipe.RecipeOutput;
+import ic2.api.recipe.Recipes;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ic2.api.item.Items;
-import ic2.api.recipe.Recipes;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
@@ -46,7 +48,12 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     @Override
     public List<ItemStack> getResultFor(ItemStack macerated, boolean adjustOutput)
     {
-        List<ItemStack> results = Recipes.macerator.getOutputFor(macerated, adjustOutput).items;
+        RecipeOutput output = Recipes.macerator.getOutputFor(macerated, adjustOutput);
+        if (output == null)
+        {
+            return null;
+        }
+        List<ItemStack> results = output.items;
         
         ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
         if(supplement != null)

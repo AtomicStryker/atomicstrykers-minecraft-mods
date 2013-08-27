@@ -35,6 +35,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
 	<classpathentry kind="lib" path="G:/mcmodding/mcp/lib/CodeChickenCore-dev 0.9.0.3.jar"/>
 	<classpathentry kind="lib" path="G:/mcmodding/mcp/lib/NotEnoughItems-dev 1.6.1.2.jar"/>
-	<classpathentry kind="lib" path="G:/mcmodding/mcp/lib/industrialcraft-2-dev-deobf_2.0.45-experimental.jar"/>
+	<classpathentry kind="lib" path="G:/mcmodding/mcp/lib/industrialcraft-2-dev-deobf_2.0.104-experimental.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
