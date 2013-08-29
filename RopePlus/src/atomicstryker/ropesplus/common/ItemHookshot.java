@@ -107,7 +107,7 @@ public class ItemHookshot extends Item
                                 
                                 Object[] toSend = {ropeEnt.entityId, target.blockX, target.blockY, target.blockZ};
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), (Player) entityplayer);
-                                world.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+                                entityplayer.worldObj.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
                                 entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge.itemID);
                             }
                         }

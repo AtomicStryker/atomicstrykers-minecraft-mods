@@ -42,7 +42,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.4.4")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.4.5")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),

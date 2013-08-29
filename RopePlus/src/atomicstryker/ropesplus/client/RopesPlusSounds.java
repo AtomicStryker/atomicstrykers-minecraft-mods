@@ -27,8 +27,8 @@ public class RopesPlusSounds
             String s = SOUND_RESOURCE_LOCATION+soundFile;
             try
             {
-                event.manager.soundPoolSounds.addSound(soundFile);
-                System.out.println("Successfully loaded soundfile " + soundFile);
+                event.manager.soundPoolSounds.addSound(s);
+                System.out.println("Successfully loaded soundfile " + s);
             }
             
             catch (Exception e)
