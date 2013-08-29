@@ -3,7 +3,6 @@ package atomicstryker.infernalmobs.common;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -70,7 +69,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.6")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.7")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -103,7 +102,7 @@ public class InfernalMobsCore implements ITickHandler
         return "InfernalMobsMod";
     }
     
-    private HashSet<Class<? extends MobModifier>> mobMods;
+    private ArrayList<Class<? extends MobModifier>> mobMods;
     
     private int eliteRarity;
     private int ultraRarity;
@@ -157,7 +156,7 @@ public class InfernalMobsCore implements ITickHandler
      */
     private void loadMods()
     {
-        mobMods = new HashSet<Class<? extends MobModifier>>();
+        mobMods = new ArrayList<Class<? extends MobModifier>>();
         /*
         try
         {
@@ -410,7 +409,7 @@ public class InfernalMobsCore implements ITickHandler
         /* 2-5 modifications standard */
         int number = 2 + entity.worldObj.rand.nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
-        HashSet<Class<? extends MobModifier>> possibleMods = (HashSet<Class<? extends MobModifier>>) mobMods.clone();
+        ArrayList<Class<? extends MobModifier>> possibleMods = (ArrayList<Class<? extends MobModifier>>) mobMods.clone();
         
         if (entity.worldObj.rand.nextInt(ultraRarity) == 0) // ultra mobs
         {
@@ -423,8 +422,7 @@ public class InfernalMobsCore implements ITickHandler
         }
         
         MobModifier lastMod = null;
-        Iterator<Class<? extends MobModifier>> iter = possibleMods.iterator();
-        while (number > 0 && iter.hasNext()) // so long we need more and have some
+        while (number > 0 && !possibleMods.isEmpty()) // so long we need more and have some
         {
             /* random index of mod list */
             int index = entity.worldObj.rand.nextInt(possibleMods.size());
@@ -435,11 +433,11 @@ public class InfernalMobsCore implements ITickHandler
             {
                 if (lastMod == null)
                 {
-                    nextMod = (MobModifier) iter.next().getConstructor(new Class[] {EntityLivingBase.class}).newInstance(entity);
+                    nextMod = possibleMods.get(index).getConstructor(new Class[] {EntityLivingBase.class}).newInstance(entity);
                 }
                 else
                 {
-                    nextMod = (MobModifier) iter.next().getConstructor(new Class[] {EntityLivingBase.class, MobModifier.class}).newInstance(entity, lastMod);
+                    nextMod = possibleMods.get(index).getConstructor(new Class[] {EntityLivingBase.class, MobModifier.class}).newInstance(entity, lastMod);
                 }
             }
             catch (Exception e)
