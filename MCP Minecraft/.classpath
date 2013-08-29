@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="minecraft">
+	<classpathentry kind="src" path="src">
 		<attributes>
 			<attribute name="ignore_optional_problems" value="true"/>
 		</attributes>
@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="../../mcp/jars/libraries/net/minecraft/launchwrapper/1.3/launchwrapper-1.3.jar"/>
 	<classpathentry kind="lib" path="../../mcp/jars/versions/1.6.2/1.6.2.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="D:/mcmodding/mcp/jars/versions/1.6.2/1.6.2-natives"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Minecraft/../mcp/jars/versions/1.6.2/1.6.2-natives"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="../../mcp/jars/libraries/lzma/lzma/0.0.1/lzma-0.0.1.jar"/>

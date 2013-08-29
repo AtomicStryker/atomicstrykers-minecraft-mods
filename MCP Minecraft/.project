@@ -18,22 +18,17 @@
 		<link>
 			<name>jars</name>
 			<type>2</type>
-			<locationURI>MCP_LOC/jars</locationURI>
-		</link>
-		<link>
-			<name>lib</name>
-			<type>2</type>
-			<locationURI>MCP_LOC/lib</locationURI>
-		</link>
-		<link>
-			<name>minecraft</name>
-			<type>2</type>
-			<location>D:/mcmodding/mcp/src/minecraft</location>
+			<locationURI>MCP_LOC/mcp/jars</locationURI>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<locationURI>MCP_LOC/src/minecraft</locationURI>
+			<locationURI>MCP_LOC/mcp/src/minecraft</locationURI>
+		</link>
+		<link>
+			<name>lib</name>
+			<type>2</type>
+			<locationURI>MCP_LOC/mcp/lib</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
