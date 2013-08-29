@@ -18,9 +18,9 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
 	public int supplementedItemsLeft = 0;
 	private int currentResultCount;
 	
-	private int idIronDust;
-	private int idCopperDust;
-	private int idTinDust;
+	private int idIronOreCrushed;
+	private int idCopperOreCrushed;
+	private int idTinOreCrushed;
 	private int idCoalDust;
 	private int idWaterCell;
 	private ItemStack bronzeDust;
@@ -30,9 +30,9 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     {
         super("Rotary Macerator", "%5d RPM", 1, new int[] {1}, new int[] {2, 3});
         
-        idIronDust = Items.getItem("ironDust").itemID;
-        idCopperDust = Items.getItem("copperDust").itemID;
-        idTinDust = Items.getItem("tinDust").itemID;
+        idIronOreCrushed = Items.getItem("crushedIronOre").itemID;
+        idCopperOreCrushed = Items.getItem("crushedCopperOre").itemID;
+        idTinOreCrushed = Items.getItem("crushedTinOre").itemID;
         idCoalDust = Items.getItem("coalDust").itemID;
         idWaterCell = Items.getItem("waterCell").itemID;
         bronzeDust = Items.getItem("bronzeDust");
@@ -53,7 +53,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
         {
             return null;
         }
-        List<ItemStack> results = output.items;
+        List<ItemStack> results = new ArrayList<ItemStack>(output.items);
         
         ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
         if(supplement != null)
@@ -112,16 +112,16 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     	{
     		List<ItemStack> supplementOutput =  Recipes.macerator.getOutputFor(supplement, bool).items;
     		
-    		if (result.itemID == this.idIronDust && supplement.itemID == Item.coal.itemID)
+    		if (result.itemID == this.idIronOreCrushed && supplement.itemID == Item.coal.itemID)
     		{
     			currentResultCount = 128;
     			results.add(new ItemStack(AdvancedMachines.refinedIronDust, result.stackSize));
     		}
-    		else if (result.itemID == this.idCopperDust && supplementOutput != null)
+    		else if (result.itemID == this.idCopperOreCrushed && supplementOutput != null)
     		{
     		    for (ItemStack i : supplementOutput)
     		    {
-    		        if (i.itemID == idTinDust)
+    		        if (i.itemID == idTinOreCrushed)
     		        {
     		            currentResultCount = 4;
     	                results.add(new ItemStack(bronzeDust.getItem(), result.stackSize));

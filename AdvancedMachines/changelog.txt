@@ -1,5 +1,10 @@
+Version 5.1.5
+	crashfix for supplemented macerating
+	fixed supplemented macerating to work with the new crushed Iron, Copper and Tin Ores
+
 Version 5.1.4
 	bug- and crashfixes for IC2 experimental builds 104+
+	added russian translation, courtesy of comrade Adapt of IC2 forums
 
 Version 5.1.3
 	made compatible with IC2 experimental builds
