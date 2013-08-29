@@ -7,8 +7,19 @@ public class BattleTowerSounds
 {
     private static final String SOUND_RESOURCE_LOCATION = "battletowers:";
 
-    private final String[] soundFiles = { "golem.ogg", "golemawaken.ogg", "golemcharge1.ogg", "golemcharge2.ogg", "golemdeath.ogg", "golemhurt1.ogg", "golemhurt2.ogg", "golemspecial1.ogg",
-            "golemspecial2.ogg", "towerbreakstart.ogg", "towercrumble.ogg" };
+    private final String[] soundFiles = {
+            "golem.ogg",
+            "golemawaken.ogg",
+            "golemcharge1.ogg",
+            "golemcharge2.ogg",
+            "golemdeath.ogg",
+            "golemhurt1.ogg",
+            "golemhurt2.ogg",
+            "golemspecial1.ogg",
+            "golemspecial2.ogg",
+            "towerbreakstart.ogg",
+            "towercrumble.ogg"
+    };
 
     @ForgeSubscribe
     public void onSoundLoad(SoundLoadEvent event)
