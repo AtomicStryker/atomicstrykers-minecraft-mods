@@ -1,3 +1,6 @@
+1.3.8
+- fixed exponential mob health increases by repeated loading
+
 1.3.7
 - fixed Modifiers not being randomized
 - fixed Modifiers not being saved/loaded properly

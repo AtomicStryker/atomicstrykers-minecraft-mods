@@ -264,6 +264,18 @@ public abstract class MobModifier
         return actualHealth;
     }
     
+    /**
+     * Prevents exponential health increase from re-loading the same infernal mob again and again
+     */
+    public void setHealthAlreadyHacked(EntityLivingBase mob)
+    {
+        if (!mob.worldObj.isRemote)
+        {
+            healthHacked = true;
+            actualHealth = getActualMaxHealth(mob);
+        }
+    }
+    
     private void increaseHealthForMob(EntityLivingBase mob, float baseHealth)
     {
         actualHealth = getActualMaxHealth(mob);
