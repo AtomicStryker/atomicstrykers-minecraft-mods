@@ -31,7 +31,7 @@ public class ConnectionHandler implements IConnectionHandler
             		                             "- Pet Bats can be picked up by left clicking them\n"));
             pages.appendTag(new NBTTagString("", "- Pet Bats can be deployed by removing them from your inventory\n" +
                                                  "- instead of dying, Pet Bats return to your inventory and remain Items\n" +
-                                                 "- until you feed them more Pumpkin Pie to heal them\n"));
+                                                 "- until you drop them on the ground with Pumpkin Pie to fix them\n"));
             pages.appendTag(new NBTTagString("", "- Should you run into bugs or crashes, post your ForgeModLoader logfile on the Forum, along with a description on how it happened."));
             book.stackTagCompound.setTag("pages", pages);
             book.stackTagCompound.setString("title", "Pet Bat Manual");

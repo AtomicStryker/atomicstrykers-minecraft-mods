@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -25,7 +24,6 @@ import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import atomicstryker.petbat.client.ClientPacketHandler;
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.ICraftingHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -39,7 +37,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.2")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.3")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -172,15 +170,6 @@ public class PetBatMod implements IProxy
         
         itemPocketedBat = new ItemPocketedPetBat(itemIDPocketBat).setUnlocalizedName("fed Pet Bat");
         GameRegistry.registerItem(itemPocketedBat, "fed Pet Bat");
-        
-        ItemStack fedBat = new ItemStack(itemPocketedBat);
-        ItemStack tameItemStack = new ItemStack(TAME_ITEM_ID, 1, 0);
-        ItemStack damagedBat;
-        for (int dmgVal = 27; dmgVal >= 0; dmgVal--)
-        {
-            damagedBat = new ItemStack(itemPocketedBat, 1, dmgVal);
-            GameRegistry.addShapelessRecipe(fedBat, new Object[] { damagedBat, tameItemStack });
-        }
     }
     
     @EventHandler
@@ -192,8 +181,6 @@ public class PetBatMod implements IProxy
         MinecraftForge.EVENT_BUS.register(this);
         
         LanguageRegistry.addName(itemPocketedBat, "fed Pet Bat");
-        
-        GameRegistry.registerCraftingHandler(new BatHealCraftingHandler());
         
         proxy.onModLoad();
         
@@ -291,31 +278,73 @@ public class PetBatMod implements IProxy
     {
         if (!event.entity.worldObj.isRemote && event.entity instanceof EntityItem)
         {
-            EntityItem item = (EntityItem) event.entity;
-            int id = item.getEntityItem().itemID;
+            final EntityItem itemDropped = (EntityItem) event.entity;
+            EntityItem foundItem;
+            final int id = itemDropped.getEntityItem().itemID;
             if (id == itemPocketedBat.itemID)
             {
-                EntityPetBat bat = ItemPocketedPetBat.toBatEntity(item.worldObj, item.getEntityItem());
+                final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.worldObj, itemDropped.getEntityItem());
                 if (bat.func_110143_aJ() > 1)
                 {
-                    bat.setPosition(item.posX, item.posY, item.posZ);
-                    item.worldObj.spawnEntityInWorld(bat);
+                    bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
+                    itemDropped.worldObj.spawnEntityInWorld(bat);
                     event.setCanceled(true);
+                }
+                else
+                {
+                    // bat is inert. see if it was tossed onto pumpkin pie for revival
+                    @SuppressWarnings("rawtypes")
+                    final List nearEnts = itemDropped.worldObj.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.boundingBox.expand(8D, 8D, 8D));
+                    for (Object o : nearEnts)
+                    {
+                        if (o instanceof EntityItem)
+                        {
+                            foundItem = (EntityItem) o;
+                            if (foundItem.getEntityItem().itemID == TAME_ITEM_ID)
+                            {
+                                bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
+                                itemDropped.worldObj.spawnEntityInWorld(bat);
+                                bat.setEntityHealth(bat.func_110138_aP()); // set full entity health
+                                event.setCanceled(true);
+                                foundItem.getEntityItem().stackSize--;
+                                if (foundItem.getEntityItem().stackSize < 1)
+                                {
+                                    foundItem.setDead(); // destroy pie item
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             else if (id == TAME_ITEM_ID)
             {
                 @SuppressWarnings("rawtypes")
-                List nearEnts = item.worldObj.getEntitiesWithinAABBExcludingEntity(item, item.boundingBox.expand(8D, 8D, 8D));
+                final List nearEnts = itemDropped.worldObj.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.boundingBox.expand(8D, 8D, 8D));
                 for (Object o : nearEnts)
                 {
                     if (o instanceof EntityPetBat)
                     {
-                        EntityPetBat bat = (EntityPetBat) o;
+                        final EntityPetBat bat = (EntityPetBat) o;
                         if ((bat.getAttackTarget() == null || !bat.getAttackTarget().isEntityAlive())
                         && (bat.getFoodAttackTarget() == null || bat.getFoodAttackTarget().isEntityAlive()))
                         {
-                            bat.setFoodAttackTarget(item);
+                            bat.setFoodAttackTarget(itemDropped);
+                            break;
+                        }
+                    }
+                    else if (o instanceof EntityItem)
+                    {
+                        foundItem = (EntityItem) o;
+                        if (foundItem.getEntityItem().itemID == itemPocketedBat.itemID) // inert bat lying around
+                        {
+                            final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.worldObj, foundItem.getEntityItem());
+                            bat.setPosition(foundItem.posX, foundItem.posY, foundItem.posZ);
+                            foundItem.worldObj.spawnEntityInWorld(bat);
+                            bat.setEntityHealth(bat.func_110138_aP()); // set full entity health
+                            event.setCanceled(true);
+                            foundItem.setDead(); // destroy bat item
+                            break;
                         }
                     }
                 }
@@ -337,39 +366,6 @@ public class PetBatMod implements IProxy
                 }
             }
         }
-    }
-    
-    private class BatHealCraftingHandler implements ICraftingHandler
-    {
-
-        @Override
-        public void onCrafting(EntityPlayer player, ItemStack item, IInventory craftMatrix)
-        {
-            if (item.itemID == itemPocketedBat.itemID)
-            {
-                for (int i = craftMatrix.getSizeInventory()-1; i>= 0; i--)
-                {
-                    ItemStack slotStack = craftMatrix.getStackInSlot(i);
-                    if (slotStack != null
-                    && slotStack.itemID == itemPocketedBat.itemID)
-                    {
-                        String owner = slotStack.stackTagCompound != null ? slotStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : player.username;
-                        String name = slotStack.stackTagCompound != null ? slotStack.stackTagCompound.getCompoundTag("display").getString("Name") : "I was cheated";
-                        int xp = slotStack.stackTagCompound != null ? slotStack.stackTagCompound.getCompoundTag("petbatmod").getInteger("BatXP") : 40;
-                        ItemPocketedPetBat.writeCompoundStringToItemStack(item, "display", "Name", name);
-                        ItemPocketedPetBat.writeCompoundStringToItemStack(item, "petbatmod", "Owner", owner);
-                        ItemPocketedPetBat.writeCompoundIntegerToItemStack(item, "petbatmod", "BatXP", xp);
-                        break;
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onSmelting(EntityPlayer player, ItemStack item)
-        {
-        }
-        
     }
 
     @Override
