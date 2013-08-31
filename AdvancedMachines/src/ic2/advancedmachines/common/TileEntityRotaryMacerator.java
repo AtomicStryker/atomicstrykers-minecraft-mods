@@ -18,11 +18,11 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
 	public int supplementedItemsLeft = 0;
 	private int currentResultCount;
 	
-	private int idIronOreCrushed;
-	private int idCopperOreCrushed;
-	private int idTinOreCrushed;
-	private int idCoalDust;
-	private int idWaterCell;
+	private ItemStack idIronOreCrushed;
+	private ItemStack idCopperOreCrushed;
+	private ItemStack idTinOreCrushed;
+	private ItemStack idCoalDust;
+	private ItemStack idWaterCell;
 	private ItemStack bronzeDust;
 	private ItemStack hydratedCoalDust;
 	
@@ -30,11 +30,11 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     {
         super("Rotary Macerator", "%5d RPM", 1, new int[] {1}, new int[] {2, 3});
         
-        idIronOreCrushed = Items.getItem("crushedIronOre").itemID;
-        idCopperOreCrushed = Items.getItem("crushedCopperOre").itemID;
-        idTinOreCrushed = Items.getItem("crushedTinOre").itemID;
-        idCoalDust = Items.getItem("coalDust").itemID;
-        idWaterCell = Items.getItem("waterCell").itemID;
+        idIronOreCrushed = Items.getItem("crushedIronOre");
+        idCopperOreCrushed = Items.getItem("crushedCopperOre");
+        idTinOreCrushed = Items.getItem("crushedTinOre");
+        idCoalDust = Items.getItem("coalDust");
+        idWaterCell = Items.getItem("waterCell");
         bronzeDust = Items.getItem("bronzeDust");
         hydratedCoalDust = Items.getItem("hydratedCoalDust");
     }
@@ -53,12 +53,12 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
         {
             return null;
         }
-        List<ItemStack> results = new ArrayList<ItemStack>(output.items);
+        ArrayList<ItemStack> results = new ArrayList<ItemStack>(output.items);
         
         ItemStack supplement = (inventory[8] != null) ? inventory[8].copy() : null;
         if(supplement != null)
         {
-            List<ItemStack> additions = new ArrayList<ItemStack>();
+            ArrayList<ItemStack> additions = new ArrayList<ItemStack>();
             
             ItemStack result = null;
             Iterator<ItemStack> iter = results.iterator();
@@ -110,18 +110,18 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
         
     	if(result != null && supplement != null)
     	{
-    		List<ItemStack> supplementOutput =  Recipes.macerator.getOutputFor(supplement, bool).items;
+    		List<ItemStack> supplementOutput = Recipes.macerator.getOutputFor(supplement, bool).items;
     		
-    		if (result.itemID == this.idIronOreCrushed && supplement.itemID == Item.coal.itemID)
+    		if (result.isItemEqual(idIronOreCrushed) && supplement.itemID == Item.coal.itemID)
     		{
     			currentResultCount = 128;
     			results.add(new ItemStack(AdvancedMachines.refinedIronDust, result.stackSize));
     		}
-    		else if (result.itemID == this.idCopperOreCrushed && supplementOutput != null)
+    		else if (result.isItemEqual(idCopperOreCrushed) && supplementOutput != null)
     		{
     		    for (ItemStack i : supplementOutput)
     		    {
-    		        if (i.itemID == idTinOreCrushed)
+    		        if (i.isItemEqual(idTinOreCrushed))
     		        {
     		            currentResultCount = 4;
     	                results.add(new ItemStack(bronzeDust.getItem(), result.stackSize));
@@ -129,7 +129,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     		        }
     		    }
     		}
-    		else if (result.itemID == this.idCoalDust && supplement.itemID == this.idWaterCell)
+    		else if (result.isItemEqual(idCoalDust) && supplement.isItemEqual(idWaterCell))
     		{
     			currentResultCount = 8;
     			results.add(hydratedCoalDust);

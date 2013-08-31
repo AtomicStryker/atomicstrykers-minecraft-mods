@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiSingularityCompressor extends GuiContainer
 {
     public TileEntitySingularityCompressor tileentity;
-    private static ResourceLocation tex = new ResourceLocation("advancedmachines", "/textures/gui/GUISingularity.png");
+    private static ResourceLocation tex = new ResourceLocation("advancedmachines", "textures/gui/GUISingularity.png");
 
     public GuiSingularityCompressor(InventoryPlayer var1, TileEntitySingularityCompressor var2)
     {

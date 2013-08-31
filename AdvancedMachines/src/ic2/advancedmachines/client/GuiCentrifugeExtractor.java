@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiCentrifugeExtractor extends GuiContainer
 {
     public TileEntityCentrifugeExtractor tileentity;
-    private static ResourceLocation tex = new ResourceLocation("advancedmachines", "/textures/gui/GUICentrifuge.png");
+    private static ResourceLocation tex = new ResourceLocation("advancedmachines", "textures/gui/GUICentrifuge.png");
 
     public GuiCentrifugeExtractor(InventoryPlayer var1, TileEntityCentrifugeExtractor var2)
     {

@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1.5", dependencies = "required-after:IC2@2.0.104")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1.6", dependencies = "required-after:IC2@2.0.104")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {

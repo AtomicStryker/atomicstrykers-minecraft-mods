@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiRotaryMacerator extends GuiContainer
 {
     public TileEntityRotaryMacerator tileentity;
-    private static ResourceLocation tex = new ResourceLocation("advancedmachines", "/textures/gui/GUIRotary.png");
+    private static ResourceLocation tex = new ResourceLocation("advancedmachines", "textures/gui/GUIRotary.png");
 
     public GuiRotaryMacerator(InventoryPlayer var1, TileEntityRotaryMacerator var2)
     {

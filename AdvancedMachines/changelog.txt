@@ -1,3 +1,8 @@
+Version 5.1.6
+	fixed broken GUI textures
+	made supplement slot in rotary macerator clearly distinct from input slot
+	fixed supplemented macerating producing bronze from iron (alchemy anyone?)
+
 Version 5.1.5
 	crashfix for supplemented macerating
 	fixed supplemented macerating to work with the new crushed Iron, Copper and Tin Ores
