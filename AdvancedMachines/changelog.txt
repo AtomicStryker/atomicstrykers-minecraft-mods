@@ -1,3 +1,6 @@
+Version 5.1.7
+	fixed broken output after manipulating output slot
+
 Version 5.1.6
 	fixed broken GUI textures
 	made supplement slot in rotary macerator clearly distinct from input slot

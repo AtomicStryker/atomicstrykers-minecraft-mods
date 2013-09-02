@@ -239,40 +239,24 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
                 for (ItemStack itemstack : resultStacks)
                 {
                     itemstack.stackSize = Math.max(itemstack.stackSize, 1); //IC2 bugfix? TODO remove
-                    int[] stackSizeSpaceAvailableInOutput = new int[outputs.length];
-                    int resultMaxStackSize = itemstack.getMaxStackSize();
-
-                    int index;
-                    for (index = 0; index < outputs.length; ++index)
+                    
+                    for (int index = 0; index < outputs.length; ++index)
                     {
                         if (inventory[outputs[index]] == null)
                         {
-                            stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize;
+                            inventory[outputs[index]] = itemstack.copy();
+                            break;
                         }
                         else if (inventory[outputs[index]].isItemEqual(itemstack))
                         {
-                            stackSizeSpaceAvailableInOutput[index] = resultMaxStackSize - inventory[outputs[index]].stackSize;
-                        }
-                    }
-
-                    for (index = 0; index < stackSizeSpaceAvailableInOutput.length; ++index)
-                    {
-                        if (stackSizeSpaceAvailableInOutput[index] > 0)
-                        {
-                            int stackSizeToStash = Math.min(itemstack.stackSize, stackSizeSpaceAvailableInOutput[index]);
-                            if (inventory[outputs[index]] == null)
+                            int transfer = Math.min(itemstack.stackSize, inventory[outputs[index]].getMaxStackSize()-inventory[outputs[index]].stackSize);
+                            
+                            inventory[outputs[index]].stackSize += transfer;
+                            itemstack.stackSize -= transfer;
+                            
+                            if (itemstack.stackSize < 1)
                             {
-                                inventory[outputs[index]] = itemstack;
                                 break;
-                            }
-                            else
-                            {
-                                inventory[outputs[index]].stackSize += stackSizeToStash;
-                                itemstack.stackSize -= stackSizeToStash;
-                                if (itemstack.stackSize <= 0)
-                                {
-                                    break;
-                                }
                             }
                         }
                     }
