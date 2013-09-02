@@ -51,10 +51,10 @@ public class ClientPacketHandler implements IPacketHandler
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             MM_Gravity.knockBack(FMLClientHandler.instance().getClient().thePlayer, (Double)packetReadout[0], (Double)packetReadout[1]);
         }
-        // health announcement: Packet ID 4, from server, { int entityID, float health }
+        // health announcement: Packet ID 4, from server, { int entityID, float health, float maxhealth }
         else if (packetType == 4)
         {
-            Class[] decodeAs = {Integer.class, Float.class};
+            Class[] decodeAs = {Integer.class, Float.class, Float.class};
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
             Entity ent = FMLClientHandler.instance().getClient().theWorld.getEntityByID((Integer)packetReadout[0]);
             if (ent != null && ent instanceof EntityLivingBase)
@@ -63,7 +63,7 @@ public class ClientPacketHandler implements IPacketHandler
                 if (mod != null)
                 {
                     //System.out.println("Client updating health of modMob "+ent+" to: "+(Integer)packetReadout[1]);
-                    mod.setActualHealth((Float)packetReadout[1]);
+                    mod.setActualHealth((Float)packetReadout[1], (Float)packetReadout[2]);
                 }
             }
         }

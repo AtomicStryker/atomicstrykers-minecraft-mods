@@ -255,10 +255,9 @@ public abstract class MobModifier
      */
     public float getActualHealth(EntityLivingBase mob)
     {
-        if (!healthHacked && !mob.worldObj.isRemote)
+        if (!mob.worldObj.isRemote)
         {
             increaseHealthForMob(mob, getActualMaxHealth(mob));
-            healthHacked = true;
         }
         
         return actualHealth;
@@ -271,16 +270,20 @@ public abstract class MobModifier
     {
         if (!mob.worldObj.isRemote)
         {
+            actualMaxHealth = getActualMaxHealth(mob);
             healthHacked = true;
-            actualHealth = getActualMaxHealth(mob);
         }
     }
     
     private void increaseHealthForMob(EntityLivingBase mob, float baseHealth)
     {
-        actualHealth = getActualMaxHealth(mob);
-        actualHealth = (float) (actualHealth * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
-        InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
+        if (!healthHacked)
+        {
+            actualMaxHealth = getActualMaxHealth(mob);
+            actualHealth = actualMaxHealth;
+            InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
+            healthHacked = true;
+        }
     }
     
     /**
@@ -291,17 +294,19 @@ public abstract class MobModifier
     {
         if (actualMaxHealth < 0)
         {
-            actualMaxHealth = mob.func_110138_aP();
+            actualMaxHealth = (float) (InfernalMobsCore.instance().getMobClassMaxHealth(mob) * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
         }
         return actualMaxHealth;
     }
     
     /**
      * clientside receiving end of health packets sent from the InfernalMobs server instance
+     * @param packetReadout 
      */
-    public void setActualHealth(float input)
+    public void setActualHealth(float health, float maxHealth)
     {
-        actualHealth = input;
+        actualHealth = health;
+        actualMaxHealth = maxHealth;
     }
     
     protected EntityLivingBase getMobTarget()

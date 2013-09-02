@@ -69,7 +69,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.8")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.3.9")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -85,6 +85,7 @@ public class InfernalMobsCore implements ITickHandler
     private ArrayList<Integer[]> dropIdList;
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
+    private HashMap<String, Float> classesHealthMap;
     private ArrayList<String[]> failedItemStrings;
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
@@ -120,6 +121,7 @@ public class InfernalMobsCore implements ITickHandler
         nextExistCheckTime = System.currentTimeMillis();
         classesAllowedMap = new HashMap<String, Boolean>();
         classesForcedMap = new HashMap<String, Boolean>();
+        classesHealthMap = new HashMap<String, Float>();
         failedItemStrings = new ArrayList<String[]>();
         
         config = new Configuration(evt.getSuggestedConfigurationFile());
@@ -228,7 +230,7 @@ public class InfernalMobsCore implements ITickHandler
         String itemIDs = config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDs",
                 "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403",
                 "List of equally likely to drop Items seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString();
-        useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", false, "Use Entity class names instead of ingame Entity names for the config").getBoolean(false);
+        useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", true, "Use Entity class names instead of ingame Entity names for the config").getBoolean(true);
         disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false, "Disables the ingame Health and Name overlay").getBoolean(false);
         modHealthFactor = config.get(Configuration.CATEGORY_GENERAL, "mobHealthFactor", "1.0", "Multiplier applied ontop of all of the modified Mobs health").getDouble(1.0D);
         
@@ -382,6 +384,22 @@ public class InfernalMobsCore implements ITickHandler
         boolean result = config.get("entitiesalwaysinfernal", entName, false).getBoolean(false);
         config.save();
         classesForcedMap.put(entName, result);
+        
+        return result;
+    }
+    
+    public float getMobClassMaxHealth(EntityLivingBase entity)
+    {
+        String entName = useSimpleEntityClassNames ? entity.getClass().getSimpleName() : getEntityNameSafe(entity);
+        if (classesHealthMap.containsKey(entName))
+        {
+            return classesHealthMap.get(entName);
+        }
+        
+        config.load();
+        float result = (float) config.get("entitybasehealth", entName, entity.func_110138_aP()).getDouble(entity.func_110138_aP());
+        config.save();
+        classesHealthMap.put(entName, result);
         
         return result;
     }
@@ -715,10 +733,10 @@ public class InfernalMobsCore implements ITickHandler
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_IM", 3, toSend), (Player)target);
     }
     
-    // health announcement: Packet ID 4, from server, { int entityID, float health }
+    // health announcement: Packet ID 4, from server, { int entityID, float health, float maxhealth }
     public void sendHealthPacket(EntityLivingBase mob, float health)
     {
-        Object[] toSend = { mob.entityId, health };
+        Object[] toSend = { mob.entityId, health, mob.func_110138_aP() };
         PacketDispatcher.sendPacketToAllAround(mob.posX, mob.posY, mob.posZ, 32D, mob.dimension, ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
     }
     
@@ -774,4 +792,5 @@ public class InfernalMobsCore implements ITickHandler
     {
         return modHealthFactor;
     }
+
 }

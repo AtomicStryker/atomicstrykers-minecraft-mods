@@ -1,3 +1,8 @@
+1.3.9
+- useSimpleEntityClassName now defaults to true
+- base infernal health values for each mob can now be specified in the config (will be auto-created)
+- extended networking to also send the max health over, to prevent health bar corruption
+
 1.3.8
 - fixed exponential mob health increases by repeated loading
 
