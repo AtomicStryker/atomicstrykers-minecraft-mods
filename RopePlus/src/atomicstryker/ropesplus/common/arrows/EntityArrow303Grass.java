@@ -1,7 +1,9 @@
 package atomicstryker.ropesplus.common.arrows;
 
 import net.minecraft.block.Block;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -42,6 +44,31 @@ public class EntityArrow303Grass extends EntityArrow303
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
+        else if(hitBlockID == Block.grass.blockID && worldObj.getBlockId(blockX, blockY+1, blockZ) == 0)
+        {
+            int targetblock = 0;
+            switch (rand.nextInt(3))
+            {
+                case 0:
+                {
+                    targetblock = Block.plantRed.blockID;
+                    break;
+                }
+                case 1:
+                {
+                    targetblock = Block.plantYellow.blockID;
+                    break;
+                }
+                default:
+                {
+                    targetblock = Block.tallGrass.blockID;
+                    break;
+                }
+            }
+            worldObj.setBlock(blockX, blockY+1, blockZ, targetblock, 0, 3);
+            setDead();
+            return super.onHitBlock(blockX, blockY, blockZ);
+        }
         else if(hitBlockID == Block.cobblestone.blockID)
         {
             worldObj.setBlock(blockX, blockY, blockZ, Block.cobblestoneMossy.blockID, 0, 3);
@@ -71,6 +98,14 @@ public class EntityArrow303Grass extends EntityArrow303
                     this.posZ + this.motionZ * (double) i / 4.0D,
                     -this.motionX, -this.motionY + 0.2D, -this.motionZ);
         }
+    }
+    
+    @Override
+    public IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+    {
+        EntityArrow303Grass entityarrow = new EntityArrow303Grass(par1World);
+        entityarrow.setPosition(par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
+        return entityarrow;
     }
     
 }

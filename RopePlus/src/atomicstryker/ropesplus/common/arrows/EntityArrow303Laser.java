@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -101,6 +103,14 @@ public class EntityArrow303Laser extends EntityArrow303
     public boolean canTarget(Entity entity)
     {
         return !piercedMobs.contains(entity) && super.canTarget(entity);
+    }
+    
+    @Override
+    public IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+    {
+        EntityArrow303Laser entityarrow = new EntityArrow303Laser(par1World);
+        entityarrow.setPosition(par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
+        return entityarrow;
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -42,7 +43,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.4.5")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.4.6")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -134,6 +135,7 @@ public class RopesPlusCore
             {
                 i.setCreativeTab(CreativeTabs.tabCombat);
                 GameRegistry.registerItem(i, name);
+                BlockDispenser.dispenseBehaviorRegistry.putObject(i, entArrow303.getDispenserBehaviour());
             }
             EntityRegistry.registerModEntity(entArrow303.getClass(), name, index, this, 25, 5, true);
             index++;

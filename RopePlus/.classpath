@@ -33,7 +33,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/MCP Minecraft"/>
-	<classpathentry kind="lib" path="../../mcp/lib/CodeChickenCore-dev 0.9.0.3.jar"/>
-	<classpathentry kind="lib" path="../../mcp/lib/NotEnoughItems-dev 1.6.1.2.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/CodeChickenCore-dev 0.9.0.5.jar"/>
+	<classpathentry kind="lib" path="../../mcp/lib/NotEnoughItems-dev 1.6.1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

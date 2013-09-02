@@ -3,9 +3,11 @@ package atomicstryker.ropesplus.common.arrows;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -94,6 +96,14 @@ public class EntityArrow303Confusion extends EntityArrow303
                     this.posZ + this.motionZ * (double) i / 4.0D,
                     -this.motionX, -this.motionY + 0.2D, -this.motionZ);
         }
+    }
+    
+    @Override
+    public IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+    {
+        EntityArrow303Confusion entityarrow = new EntityArrow303Confusion(par1World);
+        entityarrow.setPosition(par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
+        return entityarrow;
     }
     
 }

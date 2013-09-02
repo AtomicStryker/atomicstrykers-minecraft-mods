@@ -3,10 +3,14 @@ package atomicstryker.ropesplus.common.arrows;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.dispenser.BehaviorProjectileDispense;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -212,5 +216,35 @@ public class EntityArrow303 extends EntityProjectileBase
         }
 
         return true;
+    }
+    
+    public IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+    {
+        EntityArrow entityarrow = new EntityArrow(par1World, par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
+        entityarrow.canBePickedUp = 1;
+        return entityarrow;
+    }
+    
+    public BehaviorProjectileDispense getDispenserBehaviour()
+    {
+        return new DispenserBehaviorBaseArrow(this);
+    }
+    
+    private final class DispenserBehaviorBaseArrow extends BehaviorProjectileDispense
+    {
+        private final EntityArrow303 arrow;
+        
+        public DispenserBehaviorBaseArrow(EntityArrow303 a)
+        {
+            arrow = a;
+        }
+        
+        /**
+         * Return the projectile entity spawned by this dispense behavior.
+         */
+        protected IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+        {
+            return arrow.getProjectileEntity(par1World, par2IPosition);
+        }
     }
 }

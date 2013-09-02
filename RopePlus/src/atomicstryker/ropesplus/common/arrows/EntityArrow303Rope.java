@@ -1,6 +1,8 @@
 package atomicstryker.ropesplus.common.arrows;
 
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -125,4 +127,13 @@ public class EntityArrow303Rope extends EntityArrow303
         placeCoords[2] = z;
         return true;
     }
+    
+    @Override
+    public IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+    {
+        EntityArrow303Rope entityarrow = new EntityArrow303Rope(par1World);
+        entityarrow.setPosition(par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
+        return entityarrow;
+    }
+    
 }
