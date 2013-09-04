@@ -236,10 +236,10 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             List<ItemStack> resultStacks = getResultFor(inventory[inputs[0]], true);
             if (resultStacks != null)
             {
-                for (ItemStack itemstack : resultStacks)
+                ItemStack itemstack;
+                for (ItemStack is : resultStacks)
                 {
-                    itemstack.stackSize = Math.max(itemstack.stackSize, 1); //IC2 bugfix? TODO remove
-                    
+                    itemstack = is.copy();                    
                     for (int index = 0; index < outputs.length; ++index)
                     {
                         if (inventory[outputs[index]] == null)
