@@ -92,7 +92,7 @@ public class KenshiroServer
             
             KenshiroMod.instance().debuffEntityLiving(targetEnt);
             
-            if (targetEnt.func_110143_aJ() > 7)
+            if (targetEnt.getHealth() > 7)
             {
                 targetEnt.attackEntityFrom(DamageSource.causePlayerDamage(player), 7);
             }

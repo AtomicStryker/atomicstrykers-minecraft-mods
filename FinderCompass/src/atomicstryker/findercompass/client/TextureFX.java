@@ -32,10 +32,10 @@ public abstract class TextureFX extends TextureAtlasSprite
      */
     protected int[] imageData;
     
-    protected TextureFX(String name, int width)
+    protected TextureFX(String name, int w)
     {
         super(name);
-        this.field_130223_c = width;
+        this.width = w;
     }
 
     /**
@@ -49,43 +49,43 @@ public abstract class TextureFX extends TextureAtlasSprite
     {        
         onTick(imageData);
         
-        field_110976_a.clear();
+        framesTextureData.clear();
         // add it twice, else mc does not consider it animated
-        field_110976_a.add(imageData);
-        field_110976_a.add(imageData);
+        framesTextureData.add(imageData);
+        framesTextureData.add(imageData);
         
         // this overwrites the Texture in the stitched-together atlas
-        TextureUtil.func_110998_a(imageData, getOriginX(), getOriginY(), func_130010_a(), func_110967_i(), false, false);
+        TextureUtil.uploadTextureSub(imageData, getOriginX(), getOriginY(), getOriginX(), getOriginY(), false, false);
     }
     
     @Override
     public boolean load(ResourceManager manager, ResourceLocation location) throws IOException
     {
-        func_130100_a(manager.func_110536_a(location));
+        loadSprite(manager.getResource(location));
         return true;
     }
     
     @SuppressWarnings("unchecked")
     @Override
-    public void func_130100_a(Resource par1Resource) throws IOException
+    public void loadSprite(Resource par1Resource) throws IOException
     {
-        this.func_110968_a(Lists.newArrayList());
-        this.field_110973_g = 0;
-        this.field_110983_h = 0;
+        this.setFramesTextureData(Lists.newArrayList());
+        this.frameCounter = 0;
+        this.tickCounter = 0;
         
-        InputStream inputstream = par1Resource.func_110527_b();
+        InputStream inputstream = par1Resource.getInputStream();
         BufferedImage bufferedimage = ImageIO.read(inputstream);
-        this.field_130224_d = bufferedimage.getHeight();
-        this.field_130223_c = bufferedimage.getWidth();
-        imageData = new int[this.field_130224_d * this.field_130223_c];
-        bufferedimage.getRGB(0, 0, this.field_130223_c, this.field_130224_d, imageData, 0, this.field_130223_c);
+        this.width = bufferedimage.getHeight();
+        this.height = bufferedimage.getWidth();
+        imageData = new int[this.height * this.width];
+        bufferedimage.getRGB(0, 0, this.width, this.height, imageData, 0, this.width);
         // add it twice, else mc does not consider it animated
-        field_110976_a.add(imageData);
-        field_110976_a.add(imageData);
+        framesTextureData.add(imageData);
+        framesTextureData.add(imageData);
     }
     
     @Override
-    public int[] func_110965_a(int par1)
+    public int[] getFrameTextureData(int par1)
     {
         if (par1 == 0 || par1 == 1)
         {

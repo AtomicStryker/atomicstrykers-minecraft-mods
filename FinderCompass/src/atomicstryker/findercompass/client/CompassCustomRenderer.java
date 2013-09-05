@@ -65,7 +65,7 @@ public class CompassCustomRenderer implements IItemRenderer
         GL11.glTranslatef(translateX, translateY, translateZ);
         GL11.glRotatef(rotateAngle, 0, 1.0F, 0);
         Icon icon = item.getIconIndex();
-        ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getOriginX(), icon.getOriginY(), 0.0825F);
+        ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.0825F);
     }
 
 }

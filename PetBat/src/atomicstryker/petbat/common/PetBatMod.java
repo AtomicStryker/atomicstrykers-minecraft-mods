@@ -284,7 +284,7 @@ public class PetBatMod implements IProxy
             if (id == itemPocketedBat.itemID)
             {
                 final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.worldObj, itemDropped.getEntityItem());
-                if (bat.func_110143_aJ() > 1)
+                if (bat.getHealth() > 1)
                 {
                     bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
                     itemDropped.worldObj.spawnEntityInWorld(bat);
@@ -304,7 +304,7 @@ public class PetBatMod implements IProxy
                             {
                                 bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
                                 itemDropped.worldObj.spawnEntityInWorld(bat);
-                                bat.setEntityHealth(bat.func_110138_aP()); // set full entity health
+                                bat.setHealth(bat.getMaxHealth()); // set full entity health
                                 event.setCanceled(true);
                                 foundItem.getEntityItem().stackSize--;
                                 if (foundItem.getEntityItem().stackSize < 1)
@@ -341,7 +341,7 @@ public class PetBatMod implements IProxy
                             final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.worldObj, foundItem.getEntityItem());
                             bat.setPosition(foundItem.posX, foundItem.posY, foundItem.posZ);
                             foundItem.worldObj.spawnEntityInWorld(bat);
-                            bat.setEntityHealth(bat.func_110138_aP()); // set full entity health
+                            bat.setHealth(bat.getMaxHealth()); // set full entity health
                             event.setCanceled(true);
                             foundItem.setDead(); // destroy bat item
                             break;

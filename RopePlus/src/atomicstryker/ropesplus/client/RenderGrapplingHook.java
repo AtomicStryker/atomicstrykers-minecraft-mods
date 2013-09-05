@@ -26,7 +26,7 @@ public class RenderGrapplingHook extends Render
         GL11.glTranslatef((float)d, (float)d1, (float)d2);
         GL11.glEnable(32826 /*GL_RESCALE_NORMAL_EXT*/);
         GL11.glScalef(0.5F, 0.5F, 0.5F);
-        this.func_110777_b(entitygrapplinghook);
+        this.bindEntityTexture(entitygrapplinghook);
         Tessellator tessellator = Tessellator.instance;
         float f2 = 0.0F;
         float f3 = 1.0F;
@@ -95,7 +95,7 @@ public class RenderGrapplingHook extends Render
     }
 
     @Override
-    protected ResourceLocation func_110775_a(Entity entity)
+    protected ResourceLocation getEntityTexture(Entity entity)
     {
         return tex;
     }

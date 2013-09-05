@@ -21,7 +21,7 @@ public class PetBatAIOwnerAttacks extends EntityAITarget
     {
         if (batEnt.getOwnerEntity() != null)
         {
-            theTarget = batEnt.getOwnerEntity().func_110144_aD();
+            theTarget = batEnt.getOwnerEntity().getLastAttacker();
             return this.isSuitableTarget(theTarget, false);
         }
         

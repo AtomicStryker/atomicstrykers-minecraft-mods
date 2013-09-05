@@ -56,7 +56,7 @@ public class RenderFreeFormRope extends Render
         yGuess = player.prevPosY + (player.posY - player.prevPosY) * partialTick - look.yCoord;
         zGuess = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTick - look.zCoord;
         
-        this.func_110777_b(rope);
+        this.bindEntityTexture(rope);
         GL11.glPushMatrix();
         
         double[] startCoords = rope.getCoordsAtRelativeLength(1F);
@@ -246,7 +246,7 @@ public class RenderFreeFormRope extends Render
     }
 
     @Override
-    protected ResourceLocation func_110775_a(Entity entity)
+    protected ResourceLocation getEntityTexture(Entity entity)
     {
         return tex;
     }

@@ -55,7 +55,7 @@ public class MM_Alchemist extends MobModifier
             {
                 potion.setPotionDamage(32698);
             }
-            else if (target.func_110143_aJ() >= 8 && !target.isPotionActive(Potion.poison))
+            else if (target.getHealth() >= 8 && !target.isPotionActive(Potion.poison))
             {
                 potion.setPotionDamage(32660);
             }

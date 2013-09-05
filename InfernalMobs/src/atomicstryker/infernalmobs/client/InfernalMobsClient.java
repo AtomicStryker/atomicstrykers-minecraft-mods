@@ -78,7 +78,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 askServerHealth(ent);
                 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.func_110434_K().func_110577_a(Gui.field_110324_m); // bindtexture textures/gui/icons.png
+                this.mc.getTextureManager().bindTexture(Gui.icons);
                 GL11.glDisable(GL11.GL_BLEND);
                 
                 EntityLivingBase target = (EntityLivingBase) ent;
@@ -115,7 +115,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 }
                 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.func_110434_K().func_110577_a(Gui.field_110324_m); // bindtexture textures/gui/icons.png
+                this.mc.getTextureManager().bindTexture(Gui.icons);
             }
         }
     }

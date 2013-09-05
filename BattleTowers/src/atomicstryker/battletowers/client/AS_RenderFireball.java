@@ -26,7 +26,7 @@ public class AS_RenderFireball extends Render
     public void doRenderFireball(AS_EntityGolemFireball fireBallEnt, double posX, double posY, double posZ, float par8, float par9)
     {
         GL11.glPushMatrix();
-        this.func_110777_b(fireBallEnt);
+        this.bindEntityTexture(fireBallEnt);
         GL11.glTranslatef((float)posX, (float)posY, (float)posZ);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         float f2 = this.fireBallSize;
@@ -60,9 +60,9 @@ public class AS_RenderFireball extends Render
     }
 
     @Override
-    protected ResourceLocation func_110775_a(Entity entity)
+    protected ResourceLocation getEntityTexture(Entity entity)
     {
-        return TextureMap.field_110576_c;
+        return TextureMap.locationItemsTexture;
     }
-
+    
 }

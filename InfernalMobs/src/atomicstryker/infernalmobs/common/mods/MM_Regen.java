@@ -23,13 +23,13 @@ public class MM_Regen extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (mob.func_110143_aJ() < getActualMaxHealth(mob))
+        if (mob.getHealth() < getActualMaxHealth(mob))
         {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse)
             {
                 nextAbilityUse = time+coolDown;
-                InfernalMobsCore.instance().setEntityHealthPastMax(mob, mob.func_110143_aJ()+1);
+                InfernalMobsCore.instance().setEntityHealthPastMax(mob, mob.getHealth()+1);
             }
         }
         return super.onUpdate(mob);

@@ -397,7 +397,7 @@ public class InfernalMobsCore implements ITickHandler
         }
         
         config.load();
-        float result = (float) config.get("entitybasehealth", entName, entity.func_110138_aP()).getDouble(entity.func_110138_aP());
+        float result = (float) config.get("entitybasehealth", entName, entity.getMaxHealth()).getDouble(entity.getMaxHealth());
         config.save();
         classesHealthMap.put(entName, result);
         
@@ -411,8 +411,8 @@ public class InfernalMobsCore implements ITickHandler
      */
     public void setEntityHealthPastMax(EntityLivingBase entity, float amount)
     {
-        entity.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(amount);
-        entity.setEntityHealth(amount);
+        entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(amount);
+        entity.setHealth(amount);
         instance.sendHealthPacket(entity, amount);
     }
 
@@ -736,7 +736,7 @@ public class InfernalMobsCore implements ITickHandler
     // health announcement: Packet ID 4, from server, { int entityID, float health, float maxhealth }
     public void sendHealthPacket(EntityLivingBase mob, float health)
     {
-        Object[] toSend = { mob.entityId, health, mob.func_110138_aP() };
+        Object[] toSend = { mob.entityId, health, mob.getMaxHealth() };
         PacketDispatcher.sendPacketToAllAround(mob.posX, mob.posY, mob.posZ, 32D, mob.dimension, ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
     }
     

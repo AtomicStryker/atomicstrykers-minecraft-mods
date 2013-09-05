@@ -69,7 +69,7 @@ public class ItemPocketedPetBat extends Item
         writeCompoundStringToItemStack(batstack, "display", "Name", batEnt.getDisplayName());
         writeCompoundStringToItemStack(batstack, "petbatmod", "Owner", batEnt.getOwnerName());
         writeCompoundIntegerToItemStack(batstack, "petbatmod", "BatXP", batEnt.getBatExperience());
-        batstack.setItemDamage((int) invertHealthValue(batEnt.func_110143_aJ(), batEnt.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111125_b()));
+        batstack.setItemDamage((int) invertHealthValue(batEnt.getHealth(), batEnt.getEntityAttribute(SharedMonsterAttributes.maxHealth).getBaseValue()));
         return batstack;
     }
     
@@ -82,7 +82,7 @@ public class ItemPocketedPetBat extends Item
         if (owner.equals("")) owner = player.username;
         if (name.equals("")) name = "I was cheated";
         batEnt.setNames(owner, name);
-        batEnt.setEntityHealth((float) invertHealthValue(batStack.getItemDamage(), 16 + (2*PetBatMod.instance().getLevelFromExperience(xp))));
+        batEnt.setHealth((float) invertHealthValue(batStack.getItemDamage(), 16 + (2*PetBatMod.instance().getLevelFromExperience(xp))));
         batEnt.setBatExperience(xp);
         return batEnt;
     }
@@ -96,7 +96,7 @@ public class ItemPocketedPetBat extends Item
         if (owner.equals("")) owner = ((EntityPlayer)world.playerEntities.get(0)).username;
         if (name.equals("")) name = "I was cheated";
         batEnt.setNames(owner, name);
-        batEnt.setEntityHealth((float) invertHealthValue(batStack.getItemDamage(), 16 + (2*PetBatMod.instance().getLevelFromExperience(xp))));
+        batEnt.setHealth((float) invertHealthValue(batStack.getItemDamage(), 16 + (2*PetBatMod.instance().getLevelFromExperience(xp))));
         batEnt.setBatExperience(xp);
         return batEnt;
     }

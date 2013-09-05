@@ -219,14 +219,14 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         if (target instanceof EntityLiving)
         {
             livingTarget = (EntityLiving) target;
-            prevHealth = livingTarget.func_110143_aJ();
+            prevHealth = livingTarget.getHealth();
         }
         
         boolean result = target.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
         
         if (livingTarget != null && result)
         {
-            float damageDealt = prevHealth - livingTarget.func_110143_aJ();
+            float damageDealt = prevHealth - livingTarget.getHealth();
             if (damageDealt > 0)
             {
                 addBatExperience((int) damageDealt);
@@ -287,7 +287,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         if (this.owner != null && !worldObj.isRemote)
         {
-            setEntityHealth(1);
+            setHealth(1);
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
             if (batstack != null)
             {
@@ -394,7 +394,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public int getBatLevel()
     {
         int level = PetBatMod.instance().getLevelFromExperience(getBatExperience());
-        func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(16d + 2*level);
+        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(16d + 2*level);
         return level;
     }
 

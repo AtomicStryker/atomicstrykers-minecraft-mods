@@ -125,8 +125,9 @@ public class RenderPetBat extends RenderLiving
     }
 
     @Override
-    protected ResourceLocation func_110775_a(Entity entity)
+    protected ResourceLocation getEntityTexture(Entity entity)
     {
         return ((EntityPetBat)entity).glister ? texGlis : tex;
     }
+    
 }

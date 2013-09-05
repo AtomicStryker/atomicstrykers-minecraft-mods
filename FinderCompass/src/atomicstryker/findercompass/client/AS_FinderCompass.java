@@ -108,8 +108,7 @@ public class AS_FinderCompass extends TextureFX
         try
         {
             ResourceLocation loc = new ResourceLocation("textures/items/compass.png");
-            BufferedImage image = ImageIO.read(minecraft.func_110442_L().func_110536_a(loc).func_110527_b());
-            // mc.getSelectedTexturePack().getResourceAsStream("/textures/items/compass.png"));
+            BufferedImage image = ImageIO.read(mc.getResourceManager().getResource(loc).getInputStream());
             return image.getWidth();
         }
         catch (IOException e)
@@ -125,7 +124,7 @@ public class AS_FinderCompass extends TextureFX
         {
             // load default compass to figure out texture size
             ResourceLocation loc = new ResourceLocation("textures/items/compass.png");
-            BufferedImage image = ImageIO.read(mc.func_110442_L().func_110536_a(loc).func_110527_b()); // mc.getSelectedTexturePack().getResourceAsStream("/textures/items/compass.png"));
+            BufferedImage image = ImageIO.read(mc.getResourceManager().getResource(loc).getInputStream());
 
             tileSizeBase = image.getWidth();
             tileSizeSquare = tileSizeBase * tileSizeBase;
@@ -152,7 +151,7 @@ public class AS_FinderCompass extends TextureFX
 
             baseTexture = new int[tileSizeSquare];
             image.getRGB(0, 0, tileSizeBase, tileSizeBase, baseTexture, 0, tileSizeBase);
-            TextureUtil.func_110998_a(baseTexture, this.field_130223_c, this.field_130224_d, this.field_110975_c, this.field_110974_d, false, false);
+            TextureUtil.uploadTextureSub(baseTexture, this.width, this.height, this.originX, this.originY, false, false);
         }
         catch (IOException e)
         {

@@ -99,7 +99,7 @@ public class SimplyHaxVision
 				    item = mcinstance.thePlayer.getCurrentEquippedItem();
 				    if (item != null)
 				    {
-				        System.out.println("Player swapped Item to ["+item.getItemName()+"]");
+				        System.out.println("Player swapped Item to ["+item.getUnlocalizedName()+"]");
 				    }
 				}
 			}
@@ -231,7 +231,7 @@ public class SimplyHaxVision
 	
     private static boolean isAlive(EntityLivingBase ent)
     {
-        return ent != null && ent.func_110143_aJ() > 0 && !ent.isDead;
+        return ent != null && ent.getHealth() > 0 && !ent.isDead;
     }
 	
 	private boolean IsMenuOpen()

@@ -43,9 +43,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         setLocationAndAngles(posX, posY, posZ, 0.0F, 0.0F);
         attackCounter = 0;
         
-        func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(300d); // max health
-        func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(3d); // attack damage
-        func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.3d); // movespeed
+        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(300d); // max health
+        getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(3d); // attack damage
+        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.3d); // movespeed
         
         /* cant use new AI because golem needs to keep working when the player isnt pathable to
          * 
@@ -99,8 +99,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 	{
 		drops = 5 + towerID;
 		float maxHealth = 150 + 50*towerID;
-		func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(maxHealth); // max health
-		setEntityHealth(maxHealth);
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(maxHealth); // max health
+		setHealth(maxHealth);
 	}
 
     @Override
@@ -207,7 +207,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         {		
 			if(getEntityToAttack() == null || !getEntityToAttack().isEntityAlive())
             {
-                setEntityHealth(300f);
+			    setHealth(300f);
                 rageCounter = 125;
                 explosionAttack = 0;
 
@@ -224,9 +224,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             }
 			else if((rageCounter <= -30 || onGround) && explosionAttack == 1)
             {
-                if(func_110143_aJ() <= 100) // getEntityHealth
+                if(getHealth() <= 100) // getEntityHealth
                 {
-                    setEntityHealth(func_110143_aJ() + 15);
+                    setHealth(getHealth() + 15);
                 }
 
 				if (!worldObj.isRemote && (this.posY - getEntityToAttack().posY) > 0.3D)

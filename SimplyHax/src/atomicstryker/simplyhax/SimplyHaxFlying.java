@@ -389,7 +389,7 @@ public class SimplyHaxFlying
 	
 	private boolean isAlive(EntityLivingBase ent)
 	{
-		return ent != null && ent.func_110143_aJ() > 0 && !ent.isDead;
+		return ent != null && ent.getHealth() > 0 && !ent.isDead;
 	}
 	
 	private boolean isMenuOpen()

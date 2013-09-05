@@ -59,7 +59,7 @@ public class ServerPacketHandler implements IPacketHandler
                 if (mod != null)
                 {
                     /* answer: Packet ID 4, from server, { int entityID, float health, float maxHealth } */
-                    Object[] toSend = { ent.entityId, ent.func_110143_aJ(), ent.func_110138_aP() };
+                    Object[] toSend = { ent.entityId, ent.getHealth(), ent.getMaxHealth() };
                     PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_IM", 4, toSend), player);
                 }
             }

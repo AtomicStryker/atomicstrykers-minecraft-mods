@@ -255,7 +255,7 @@ public class RenderHookKenshiro extends Render
             f6 = MathHelper.sin(MathHelper.sqrt_float(f7) * (float)Math.PI);
             GL11.glRotatef(f6 * 70.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(-f8 * 20.0F, 0.0F, 0.0F, 1.0F);
-            this.mc.func_110434_K().func_110577_a(entityclientplayermp.func_110306_p());
+            this.mc.getTextureManager().bindTexture(entityclientplayermp.getLocationSkin());
             GL11.glTranslatef(-1.0F, 3.6F, 3.5F);
             GL11.glRotatef(120.0F, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(200.0F, 1.0F, 0.0F, 0.0F);
@@ -275,7 +275,7 @@ public class RenderHookKenshiro extends Render
 	   }
 
     @Override
-    protected ResourceLocation func_110775_a(Entity entity)
+    protected ResourceLocation getEntityTexture(Entity entity)
     {
         return null;
     }

@@ -87,18 +87,18 @@ public class EntityLivingEquipmentLightSource
         {
             // Horse armor texture is the only thing "visible" on client, inventory is not synced.
             // Armor layer is at index 2 in texture layers
-            String horseArmorTexture = ((EntityHorse)ent).func_110212_cp()[2];
+            String horseArmorTexture = ((EntityHorse)ent).getVariantTexturePaths()[2];
             if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_gold.png"))
             {
-                return getLightFromItemStack(new ItemStack(Item.field_111216_cf)); // horsearmorgold
+                return getLightFromItemStack(new ItemStack(Item.horseArmorGold)); // horsearmorgold
             }
             if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_iron.png"))
             {
-                return getLightFromItemStack(new ItemStack(Item.field_111215_ce)); // horsearmormetal
+                return getLightFromItemStack(new ItemStack(Item.horseArmorIron)); // horsearmormetal
             }
             if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_diamond.png"))
             {
-                return getLightFromItemStack(new ItemStack(Item.field_111213_cg)); // butt stallion
+                return getLightFromItemStack(new ItemStack(Item.horseArmorDiamond)); // butt stallion
             }
         }
         

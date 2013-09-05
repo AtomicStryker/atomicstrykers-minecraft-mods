@@ -53,7 +53,7 @@ public class RenderChickenLightningBolt
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
-        renderer.renderEngine.func_110577_a(texO);
+        renderer.renderEngine.bindTexture(texO);
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
@@ -62,7 +62,7 @@ public class RenderChickenLightningBolt
 		}
         tessellator.draw();
         
-        renderer.renderEngine.func_110577_a(texI);
+        renderer.renderEngine.bindTexture(texI);
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)

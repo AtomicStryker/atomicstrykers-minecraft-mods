@@ -24,9 +24,9 @@ public class MM_Lifesteal extends MobModifier
     {
         EntityLivingBase mob = (EntityLivingBase) source.getEntity();
         if (entity != null
-        && mob.func_110143_aJ() < getActualMaxHealth(mob))
+        && mob.getHealth() < getActualMaxHealth(mob))
         {
-            InfernalMobsCore.instance().setEntityHealthPastMax(mob, mob.func_110143_aJ()+damage);
+            InfernalMobsCore.instance().setEntityHealthPastMax(mob, mob.getHealth()+damage);
         }
         
         return super.onAttack(entity, source, damage);
