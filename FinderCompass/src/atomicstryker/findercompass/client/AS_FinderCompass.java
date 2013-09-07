@@ -108,7 +108,7 @@ public class AS_FinderCompass extends TextureFX
         try
         {
             ResourceLocation loc = new ResourceLocation("textures/items/compass.png");
-            BufferedImage image = ImageIO.read(mc.getResourceManager().getResource(loc).getInputStream());
+            BufferedImage image = ImageIO.read(minecraft.getResourceManager().getResource(loc).getInputStream());
             return image.getWidth();
         }
         catch (IOException e)

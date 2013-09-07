@@ -55,7 +55,7 @@ public abstract class TextureFX extends TextureAtlasSprite
         framesTextureData.add(imageData);
         
         // this overwrites the Texture in the stitched-together atlas
-        TextureUtil.uploadTextureSub(imageData, getOriginX(), getOriginY(), getOriginX(), getOriginY(), false, false);
+        TextureUtil.uploadTextureSub(imageData, width, height, getOriginX(), getOriginY(), false, false);
     }
     
     @Override
