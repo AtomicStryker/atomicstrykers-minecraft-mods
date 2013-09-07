@@ -29,7 +29,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.6.2")
+@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.6.2b")
 public class SimplyHaxFlying
 {
     private long lastTime;
@@ -37,6 +37,7 @@ public class SimplyHaxFlying
 	
 	private static boolean isFlying = false;
 	private boolean isSprinting = false;
+	private boolean stopFall = false;
 	
 	private static File configfile;
 	private static String togglekey = "R";
@@ -333,6 +334,7 @@ public class SimplyHaxFlying
 	
 	private void makeFly(EntityPlayerSP entityplayer)
 	{
+	    stopFall = true;
 		entityplayer.distanceWalkedModified = distanceWalkedModified;	// fix the step sounds
 		
 		if (Keyboard.isKeyDown(iflyupkey) && !isMenuOpen())
@@ -371,8 +373,9 @@ public class SimplyHaxFlying
 	@ForgeSubscribe
 	public void onEntityLivingFall(LivingFallEvent event)
 	{
-	    if (isFlying && event.entityLiving.equals(mcinstance.thePlayer))
+	    if ((isFlying || stopFall) && event.entityLiving.equals(mcinstance.thePlayer))
 	    {
+	        stopFall = false;
 	        event.distance = 0f;
 	    }
 	}
