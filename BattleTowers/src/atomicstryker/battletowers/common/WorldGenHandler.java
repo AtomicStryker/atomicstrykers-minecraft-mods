@@ -1,5 +1,6 @@
 package atomicstryker.battletowers.common;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.world.World;
@@ -9,23 +10,57 @@ import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class WorldGenHandler implements IWorldGenerator
-{    
+{
+    
+    private HashMap<String, Boolean> biomesMap;
+    private HashMap<String, Boolean> providerMap;
+    
+    public WorldGenHandler()
+    {
+        biomesMap = new HashMap<String, Boolean>();
+        providerMap = new HashMap<String, Boolean>();
+    }
+    
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
     {
         BiomeGenBase target = world.getBiomeGenForCoords(chunkX, chunkZ);
-        if (target != BiomeGenBase.hell && getIsBiomeAllowed(target))
+        if (target != BiomeGenBase.hell
+        && getIsBiomeAllowed(target)
+        && getIsChunkProviderAllowed(chunkProvider))
         {
             generateSurface(world, random, chunkX*16, chunkZ*16);
         }
     }
     
+    private boolean getIsChunkProviderAllowed(IChunkProvider chunkProvider)
+    {
+        String name = chunkProvider.getClass().getSimpleName();
+        if (providerMap.containsKey(name))
+        {
+            return providerMap.get(name);
+        }
+        
+        Configuration config = AS_BattleTowersCore.configuration;
+        config.load();
+        boolean result = config.get("ChunkProviderAllowed", name, true).getBoolean(true);
+        config.save();
+        providerMap.put(name, result);
+        return result;
+    }
+
     private boolean getIsBiomeAllowed(BiomeGenBase target)
     {
+        if (biomesMap.containsKey(target.biomeName))
+        {
+            return biomesMap.get(target.biomeName);
+        }
+        
         Configuration config = AS_BattleTowersCore.configuration;
         config.load();
         boolean result = config.get("BiomeSpawnAllowed", target.biomeName, true).getBoolean(true);
         config.save();
+        biomesMap.put(target.biomeName, result);
         return result;
     }
 

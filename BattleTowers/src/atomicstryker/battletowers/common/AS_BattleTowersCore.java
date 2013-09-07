@@ -3,6 +3,8 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.network.packet.Packet3Chat;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.Configuration;
 import atomicstryker.battletowers.client.ClientPacketHandler;
@@ -14,12 +16,14 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.3.6")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.3.7")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),
@@ -32,6 +36,7 @@ public class AS_BattleTowersCore
 	public static int towerDestroyerEnabled;
 	public static int itemGenerateAttemptsPerFloor;
 	public static int chanceTowerIsUnderGround;
+	private int golemEntityID;
 	
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
     public static CommonProxy proxy;
@@ -55,7 +60,10 @@ public class AS_BattleTowersCore
         
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
+        EntityRegistry.registerGlobalEntityID(AS_EntityGolem.class, "Battletower Golem", golemEntityID, 0xA0A0A0, 0x808080);
         EntityRegistry.registerModEntity(AS_EntityGolem.class, "Battletower Golem", 1, this, 25, 5, true);
+        LanguageRegistry.instance().addStringLocalization("entity.Battletower Golem.name", "Battletower Golem");
+        
         EntityRegistry.registerModEntity(AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 25, 5, true);
         
         towerPositions = new HashSet<ChunkCoordinates>();
@@ -138,14 +146,16 @@ public class AS_BattleTowersCore
         // 331-0-75-5-5 redstone dust
         // 266-0-75-8-8 gold ingot
         floorItemManagers[9] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Top Floor", "368-0-50-2-2;264-0-70-2-2;331-0-75-5-5;266-0-90-8-8").getString());
-
+        
+        golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();
+        
         configuration.save();
     }
     
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
-        //Packet3Chat packet = new Packet3Chat("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...");
-        //PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100, td.player.worldObj.provider.dimensionId, packet);
+        Packet3Chat packet = new Packet3Chat(ChatMessageComponent.createFromText("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse..."), true);
+        PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100d, td.player.worldObj.provider.dimensionId, packet);
         towerDestroyers.add(td);
     }
 	

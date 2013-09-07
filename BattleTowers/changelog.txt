@@ -1,3 +1,12 @@
+1.3.7
+- added chunkprovider names to config (to exclude modded dimensions from getting towers)
+- added battletower golem global entity id (configurable) and as spawnable egg
+- fixed sleeping golems having the awake texture and vice versa
+- buffed battletower golem melee attack to 7 (from 3), now equals enderman
+- buffed battletower regeneration upon cowardism slightly (now heals 20 hp when executing frustration stomp)
+- enabled minecrafts new pathing AI for battletowers (it failed last time i tried but i forgot the reason so here goes)
+- fixed and reenabled golem death message
+
 1.3.6
 - fixed golem being attacked by non players not waking up
 - update to mc 1.6.2

@@ -4,6 +4,11 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -34,7 +39,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     public AS_EntityGolem(World world)
     {
         super(world);
-        setSize(1.6F, 3.4F);
+        this.setSize(1.1F, 4.0F);
         rotationYaw = 0.0F;
         rageCounter = 0;
         explosionAttack = 0;
@@ -43,18 +48,17 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         setLocationAndAngles(posX, posY, posZ, 0.0F, 0.0F);
         attackCounter = 0;
         
-        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(300d); // max health
-        getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(3d); // attack damage
+        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(300.0d); // max health
+        setHealth(getMaxHealth());
+        
+        getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(7.0d); // attack damage
         getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.3d); // movespeed
         
-        /* cant use new AI because golem needs to keep working when the player isnt pathable to
-         * 
         tasks.addTask(0, new EntityAISwimming(this));
-        tasks.addTask(1, new EntityAIAttackOnCollide(this, EntityPlayer.class, 0.3f, true));
+        tasks.addTask(1, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0d, true));
         tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-        targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 30.0F, 0, true));
-        */
+        targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
     }
 
     public AS_EntityGolem(World world, int i)
@@ -62,6 +66,15 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         this(world);
 		towerID = i;
 		this.updateGolemType();
+    }
+    
+    @Override
+    protected void updateAITasks()
+    {
+        if (!this.getIsDormant())
+        {
+            super.updateAITasks();
+        }
     }
     
     
@@ -74,13 +87,11 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         }
     }
     
-    /* cant use new AI because golem needs to keep working when the player isnt pathable to
     @Override
     protected boolean isAIEnabled()
     {
         return true;
     }
-    */
 
 	@Override
 	public void writeSpawnData(ByteArrayDataOutput data)
@@ -98,9 +109,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 	private void updateGolemType()
 	{
 		drops = 5 + towerID;
-		float maxHealth = 150 + 50*towerID;
-		getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(maxHealth); // max health
-		setHealth(maxHealth);
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(150f + 50f*towerID);
+		setHealth(getMaxHealth());
 	}
 
     @Override
@@ -207,7 +217,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         {		
 			if(getEntityToAttack() == null || !getEntityToAttack().isEntityAlive())
             {
-			    setHealth(300f);
+			    setHealth(getMaxHealth());
                 rageCounter = 125;
                 explosionAttack = 0;
 
@@ -224,9 +234,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             }
 			else if((rageCounter <= -30 || onGround) && explosionAttack == 1)
             {
-                if(getHealth() <= 100) // getEntityHealth
+                if(getHealth() <= getMaxHealth()/2) // getEntityHealth
                 {
-                    setHealth(getHealth() + 15);
+                    setHealth(getHealth() + 20);
                 }
 
 				if (!worldObj.isRemote && (this.posY - getEntityToAttack().posY) > 0.3D)
@@ -377,12 +387,6 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         }
         
         return super.attackEntityAsMob(entity);
-    }
-    
-    @Override
-    public String getEntityName()
-    {
-    	return "Battletower Golem";
     }
 
     @Override
