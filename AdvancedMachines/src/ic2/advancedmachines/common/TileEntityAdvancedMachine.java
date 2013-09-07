@@ -365,16 +365,22 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         }
         if (blockSide == 1)
         {
-            return getResultFor(itemstack, false) == null;
+            return getResultFor(itemstack, false) != null;
         }
-        return isItemValidForSlot(slotSize, itemstack);
+        return false;
     }
 
     @Override
     public boolean canExtractItem(int slot, ItemStack itemstack, int blockSide)
     {
-        // 'can be sucked out' boolean, itemstack is the one to be removed
-        return !(itemstack.getItem() instanceof IElectricItem) && slot < getUpgradeSlotsStartSlot();
+        for (int outputSlot : outputs)
+        {
+            if (slot == outputSlot)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String printFormattedData()
