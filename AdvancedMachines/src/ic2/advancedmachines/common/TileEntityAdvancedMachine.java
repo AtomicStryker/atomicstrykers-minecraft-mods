@@ -17,10 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory
 {
-    private static final int MAX_PROGRESS = 4000;
-    private static final int MAX_ENERGY = 5000;
-    private static final int MAX_SPEED = 7500;
-    private static final int MAX_INPUT = 32;
+    
     private String inventoryName;
     private int[] inputs;
     private int[] outputs;
@@ -31,11 +28,6 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     private static final int EventStart = 0;
     private static final int EventInterrupt = 1;
     private static final int EventStop = 2;
-
-    private int energyConsume = 2;
-    private int acceleration = 1;
-    private int maxSpeed;
-    private int ejectors;
 
     public int speed;
     public short progress;
@@ -122,7 +114,6 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
         if (energy > 0 && (bCanOperate || isRedstonePowered()))
         {
             setOverclockRates();
-
             if (speed < maxSpeed)
             {
                 speed += acceleration;
@@ -448,39 +439,5 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 
         NetworkHelper.announceBlockUpdate(worldObj, xCoord, yCoord, zCoord);
     }
-
-    public abstract int getUpgradeSlotsStartSlot();
-
-    private void setOverclockRates()
-    {
-    	int overclockerUpgradeCount = 0;
-    	int transformerUpgradeCount = 0;
-    	int energyStorageUpgradeCount = 0;
-
-    	for (int i = 0; i < 4; i++) {
-    		ItemStack itemStack = this.inventory[getUpgradeSlotsStartSlot() + i];
-
-    		if (itemStack != null)
-    		{
-    			if (itemStack.isItemEqual(AdvancedMachines.overClockerStack))
-    				overclockerUpgradeCount += itemStack.stackSize;
-    			else if (itemStack.isItemEqual(AdvancedMachines.transformerStack))
-    				transformerUpgradeCount += itemStack.stackSize;
-    			else if (itemStack.isItemEqual(AdvancedMachines.energyStorageUpgradeStack))
-    				energyStorageUpgradeCount += itemStack.stackSize;
-    			else if (itemStack.isItemEqual(AdvancedMachines.ejectorUpgradeStack))
-    			    ejectors += itemStack.stackSize;
-    		}
-    	}
-
-    	if (overclockerUpgradeCount > 16) overclockerUpgradeCount = 16;
-    	if (transformerUpgradeCount > 10) transformerUpgradeCount = 10;
-
-    	this.energyConsume = (int)(AdvancedMachines.defaultEnergyConsume * Math.pow(AdvancedMachines.overClockEnergyRatio, overclockerUpgradeCount));
-    	this.acceleration = (int)(((AdvancedMachines.defaultAcceleration) * Math.pow(AdvancedMachines.overClockAccelRatio, overclockerUpgradeCount)) /2);
-    	this.maxSpeed = (MAX_SPEED + overclockerUpgradeCount * AdvancedMachines.overClockSpeedBonus);
-    	this.maxInput = (MAX_INPUT * (int)Math.pow(AdvancedMachines.overLoadInputRatio, transformerUpgradeCount));
-    	this.maxEnergy = (MAX_ENERGY + energyStorageUpgradeCount * MAX_ENERGY + this.maxInput - 1);
-    	this.tier = 1 + transformerUpgradeCount;
-    }
+    
 }

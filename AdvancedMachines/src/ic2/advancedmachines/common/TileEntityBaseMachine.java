@@ -7,6 +7,7 @@ import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.item.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -14,13 +15,25 @@ import net.minecraftforge.common.MinecraftForge;
 
 public abstract class TileEntityBaseMachine extends TileEntityMachine implements IEnergySink
 {
+    protected static final int MAX_PROGRESS = 4000;
+    protected static final int MAX_ENERGY = 5000;
+    protected static final int MAX_SPEED = 7500;
+    protected static final int MAX_INPUT = 32;
+    
+    protected int energyConsume = 2;
+    protected int acceleration = 1;
+    protected int maxSpeed;
+    protected int ejectors;
+    
     public int energy;
     public int fuelslot;
     public int maxEnergy;
     public int maxInput;
     public int tier;
     public boolean addedToEnergyNet;
-
+    
+    private int suBatteryID;
+    
     public TileEntityBaseMachine(int inventorySize, int maxEnergy, int maxInput)
     {
         super(inventorySize);
@@ -31,6 +44,8 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         
         energy = 0;
         addedToEnergyNet = false;
+        
+        suBatteryID = Items.getItem("suBattery").itemID;
     }
 
     @Override
@@ -77,6 +92,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     @Override
     public double injectEnergyUnits(ForgeDirection var1, double var2)
     {
+        setOverclockRates();
         if (var2 > this.maxInput)
         {
         	if (!AdvancedMachines.explodeMachineAt(worldObj, xCoord, yCoord, zCoord))
@@ -150,7 +166,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
 
                 return true;
             }
-            else if (fuelID == Items.getItem("suBattery").itemID)
+            else if (fuelID == suBatteryID)
             {
                 energy += 1000;
                 --inventory[fuelslot].stackSize;
@@ -166,5 +182,41 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
                 return false;
             }
         }
+    }
+    
+    public abstract int getUpgradeSlotsStartSlot();
+    
+    protected void setOverclockRates()
+    {
+        int overclockerUpgradeCount = 0;
+        int transformerUpgradeCount = 0;
+        int energyStorageUpgradeCount = 0;
+        ejectors = 0;
+
+        for (int i = 0; i < 4; i++) {
+            ItemStack itemStack = this.inventory[getUpgradeSlotsStartSlot() + i];
+
+            if (itemStack != null)
+            {
+                if (itemStack.isItemEqual(AdvancedMachines.overClockerStack))
+                    overclockerUpgradeCount += itemStack.stackSize;
+                else if (itemStack.isItemEqual(AdvancedMachines.transformerStack))
+                    transformerUpgradeCount += itemStack.stackSize;
+                else if (itemStack.isItemEqual(AdvancedMachines.energyStorageUpgradeStack))
+                    energyStorageUpgradeCount += itemStack.stackSize;
+                else if (itemStack.isItemEqual(AdvancedMachines.ejectorUpgradeStack))
+                    ejectors += itemStack.stackSize;
+            }
+        }
+
+        if (overclockerUpgradeCount > 16) overclockerUpgradeCount = 16;
+        if (transformerUpgradeCount > 10) transformerUpgradeCount = 10;
+
+        this.energyConsume = (int)(AdvancedMachines.defaultEnergyConsume * Math.pow(AdvancedMachines.overClockEnergyRatio, overclockerUpgradeCount));
+        this.acceleration = (int)(((AdvancedMachines.defaultAcceleration) * Math.pow(AdvancedMachines.overClockAccelRatio, overclockerUpgradeCount)) /2);
+        this.maxSpeed = (MAX_SPEED + overclockerUpgradeCount * AdvancedMachines.overClockSpeedBonus);
+        this.maxInput = (MAX_INPUT * (int)Math.pow(AdvancedMachines.overLoadInputRatio, transformerUpgradeCount));
+        this.maxEnergy = (MAX_ENERGY + energyStorageUpgradeCount * MAX_ENERGY + this.maxInput - 1);
+        this.tier = 1 + transformerUpgradeCount;
     }
 }

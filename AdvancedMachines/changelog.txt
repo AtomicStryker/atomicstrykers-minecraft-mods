@@ -1,3 +1,8 @@
+Version 5.2.0
+	adapted to new Energy methods order (Transformers work once again without explosions)
+	note you need 3 Transformers now to reach the new HV level
+	you can now disable single advanced machines if you want to
+
 Version 5.1.9
 	fixed typo in ISidedInventory, preventing Hoppers from working
 

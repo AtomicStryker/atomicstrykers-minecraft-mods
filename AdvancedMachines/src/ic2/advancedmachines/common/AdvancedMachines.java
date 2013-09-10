@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.1.9", dependencies = "required-after:IC2@2.0.104")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.2.0", dependencies = "required-after:IC2@2.0.104")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -33,7 +33,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     public static ItemStack stackRotaryMacerator;
     public static ItemStack stackSingularityCompressor;
     public static ItemStack stackCentrifugeExtractor;
-    
     
     private int refIronID;
     public static Item refinedIronDust;
@@ -124,11 +123,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         prop.comment = "Exponent of Transformer input function. Determines rise of maximum power intake as you add Transformers.";
         overLoadInputRatio = Double.valueOf(prop.getString());
         
-        if (config != null)
-        {
-            config.save();
-        }
-        
         proxy.load();
 
         GameRegistry.registerTileEntity(TileEntityRotaryMacerator.class, "Rotary Macerator");
@@ -141,23 +135,35 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     @EventHandler
     public void afterModsLoaded(FMLPostInitializationEvent evt)
     {
-        GameRegistry.addRecipe(stackRotaryMacerator,
-        		new Object[] {"RRR", "RMR", "RAR",
-        	Character.valueOf('R'), Items.getItem("refinedIronIngot"),
-        	Character.valueOf('M'), Items.getItem("macerator"),
-        	Character.valueOf('A'), Items.getItem("advancedMachine")});
         
-        GameRegistry.addRecipe(stackSingularityCompressor,
-        		new Object[] {"RRR", "RMR", "RAR",
-        	Character.valueOf('R'), Block.obsidian,
-        	Character.valueOf('M'), Items.getItem("compressor"),
-        	Character.valueOf('A'), Items.getItem("advancedMachine")});
+        if (config.get(Configuration.CATEGORY_GENERAL, "Rotary Macerator Enabled", true).getBoolean(true))
+        {
+            GameRegistry.addRecipe(stackRotaryMacerator,
+                    new Object[] {"RRR", "RMR", "RAR",
+                Character.valueOf('R'), Items.getItem("refinedIronIngot"),
+                Character.valueOf('M'), Items.getItem("macerator"),
+                Character.valueOf('A'), Items.getItem("advancedMachine")});
+        }
         
-        GameRegistry.addRecipe(stackCentrifugeExtractor,
-        		new Object[] {"RRR", "RMR", "RAR",
-        	Character.valueOf('R'), Items.getItem("electrolyzedWaterCell"),
-        	Character.valueOf('M'), Items.getItem("extractor"),
-        	Character.valueOf('A'), Items.getItem("advancedMachine")});
+        if (config.get(Configuration.CATEGORY_GENERAL, "Singularity Compressor Enabled", true).getBoolean(true))
+        {
+            GameRegistry.addRecipe(stackSingularityCompressor,
+                    new Object[] {"RRR", "RMR", "RAR",
+                Character.valueOf('R'), Block.obsidian,
+                Character.valueOf('M'), Items.getItem("compressor"),
+                Character.valueOf('A'), Items.getItem("advancedMachine")});
+        }
+        
+        if (config.get(Configuration.CATEGORY_GENERAL, "Centrifuge Extractor Enabled", true).getBoolean(true))
+        {
+            GameRegistry.addRecipe(stackCentrifugeExtractor,
+                    new Object[] {"RRR", "RMR", "RAR",
+                Character.valueOf('R'), Items.getItem("electrolyzedWaterCell"),
+                Character.valueOf('M'), Items.getItem("extractor"),
+                Character.valueOf('A'), Items.getItem("advancedMachine")});
+        }
+        
+        config.save();
         
         overClockerStack = Items.getItem("overclockerUpgrade");
         transformerStack = Items.getItem("transformerUpgrade");
