@@ -1,3 +1,8 @@
+RopesPlus 1.4.7
+- bugfixes to invalid rope setups, possibly causing lag
+- fixed fall damage sometimes occurring upon landing after a zipline trip
+- (note: stops all fall damage after detaching from zipline, irregardless of heigth)
+
 RopesPlus 1.4.6
 - implemented Dispenser Behavior for all Arrows
 - Warp Arrow works like Fire Arrow when fired from a Dispenser

@@ -184,7 +184,7 @@ public class EntityFreeFormRope extends Entity
     {
         super.onUpdate();
         
-        if (!isTargetBlockValid())
+        if (!isTargetedBlockValid())
         {
             this.setDead();
             return;
@@ -295,12 +295,21 @@ public class EntityFreeFormRope extends Entity
         }
     }
     
-    private boolean isTargetBlockValid()
+    private boolean isTargetedBlockValid()
     {
-        return worldObj.isBlockOpaqueCube(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()-0.5D), MathHelper.floor_double(getEndZ()))
-        || worldObj.isBlockOpaqueCube(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()+0.5D), MathHelper.floor_double(getEndZ()))
-        || worldObj.getBlockMaterial(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()-0.5D), MathHelper.floor_double(getEndZ())) == Material.leaves
-        || worldObj.getBlockMaterial(MathHelper.floor_double(getEndX()), MathHelper.floor_double(getEndY()+0.5D), MathHelper.floor_double(getEndZ())) == Material.leaves;
+        int x = MathHelper.floor_double(getEndX());
+        int y = MathHelper.floor_double(getEndY()+0.5D);
+        int z = MathHelper.floor_double(getEndZ());
+        
+        if (!(worldObj.isBlockOpaqueCube(x, y, z)
+        || worldObj.isBlockOpaqueCube(x, y+1, z)
+        || worldObj.getBlockMaterial(x, y, z) == Material.leaves
+        || worldObj.getBlockMaterial(x, y+1, z) == Material.leaves))
+        {
+            return false;
+        };
+        
+        return true;
     }
 
     private double getEntitySpeed(Entity ent)

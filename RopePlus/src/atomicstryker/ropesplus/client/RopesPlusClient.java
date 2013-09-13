@@ -10,6 +10,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 import org.lwjgl.input.Keyboard;
 
@@ -44,6 +47,7 @@ public class RopesPlusClient implements ITickHandler
     private static float lastZipLineLength;
     private static long timeNextZipUpdate;
     private static int zipTicker;
+    private static boolean wasZiplining;
     
     public static boolean toolTipEnabled;
     
@@ -68,6 +72,8 @@ public class RopesPlusClient implements ITickHandler
         KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsForward(keyf, repeat));
         KeyBinding[] keyb = {new KeyBinding("SwapArrowsBackward", Keyboard.KEY_PERIOD)};
         KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsBackward(keyb, repeat));
+        
+        MinecraftForge.EVENT_BUS.register(this);
     }
     
     private void selectAnyArrow()
@@ -338,7 +344,18 @@ public class RopesPlusClient implements ITickHandler
                 onZipLine = (EntityFreeFormRope) ent;
                 lastZipLineLength = 0;
                 timeNextZipUpdate = System.currentTimeMillis();
+                wasZiplining = true;
             }
+        }
+    }
+    
+    @ForgeSubscribe
+    public void onEntityLivingFall(LivingFallEvent event)
+    {
+        if (wasZiplining && event.entityLiving.equals(localPlayer))
+        {
+            wasZiplining = false;
+            event.distance = 0f;      
         }
     }
     

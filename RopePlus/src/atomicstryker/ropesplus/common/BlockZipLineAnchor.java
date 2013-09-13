@@ -14,6 +14,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class BlockZipLineAnchor extends BlockContainer
 {
+    
     public BlockZipLineAnchor(int blockIndex)
     {
         super(blockIndex, Material.vine);
@@ -127,4 +128,5 @@ public class BlockZipLineAnchor extends BlockContainer
     {
         return 1;
     }
+    
 }
