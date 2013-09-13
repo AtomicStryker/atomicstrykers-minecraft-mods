@@ -2,7 +2,6 @@ package atomicstryker.petbat.common;
 
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -69,7 +68,7 @@ public class ItemPocketedPetBat extends Item
         writeCompoundStringToItemStack(batstack, "display", "Name", batEnt.getDisplayName());
         writeCompoundStringToItemStack(batstack, "petbatmod", "Owner", batEnt.getOwnerName());
         writeCompoundIntegerToItemStack(batstack, "petbatmod", "BatXP", batEnt.getBatExperience());
-        batstack.setItemDamage((int) invertHealthValue(batEnt.getHealth(), batEnt.getEntityAttribute(SharedMonsterAttributes.maxHealth).getBaseValue()));
+        batstack.setItemDamage((int) invertHealthValue(batEnt.getHealth(), batEnt.getMaxHealth()));
         return batstack;
     }
     

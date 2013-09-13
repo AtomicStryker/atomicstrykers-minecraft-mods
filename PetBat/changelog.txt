@@ -1,3 +1,6 @@
+1.2.4
+bugfixes related to bat health
+
 1.2.3
 completely scrapped "crafting" way of fixing up your beat down bat
 now to fix a bat simply drop it on the ground along with a pumpkin pie

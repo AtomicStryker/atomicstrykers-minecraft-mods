@@ -377,7 +377,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(17, Integer.valueOf(getBatExperience()+xp));
+            setBatExperience(Integer.valueOf(getBatExperience()+xp));
         }
     }
     
@@ -389,13 +389,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void setBatExperience(int value)
     {
         dataWatcher.updateObject(17, value);
+        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(16d + (2*PetBatMod.instance().getLevelFromExperience(value)));
     }
     
     public int getBatLevel()
     {
-        int level = PetBatMod.instance().getLevelFromExperience(getBatExperience());
-        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(16d + 2*level);
-        return level;
+        return PetBatMod.instance().getLevelFromExperience(getBatExperience());
     }
 
     /**
