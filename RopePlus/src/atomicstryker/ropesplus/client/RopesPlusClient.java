@@ -278,6 +278,14 @@ public class RopesPlusClient implements ITickHandler
             }
         }
         
+        if (RopesPlusCore.proxy.getShouldHookShotPull() >= 0f)
+        {
+            if (mc.gameSettings.keyBindSneak.pressed)
+            {
+                RopesPlusCore.proxy.setShouldHookShotPull(RopesPlusCore.proxy.getShouldHookShotPull()+0.33f);
+            }
+        }
+        
         if (onZipLine != null)
         {
             if (mc.gameSettings.keyBindUseItem.pressed && lastZipLineLength > 0.2)

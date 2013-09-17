@@ -15,14 +15,14 @@ import cpw.mods.fml.relauncher.Side;
 public class ClientProxy implements IProxy
 {
     private boolean letGoOfHookShot;
-    private boolean pulledByHookShot;
+    private float pulledByHookShot;
     private boolean hasRopeOut;
     private int renderIDGrapplingHook;
     
     public ClientProxy()
     {
         letGoOfHookShot = false;
-        pulledByHookShot = false;
+        pulledByHookShot = -1f;
         hasRopeOut = false;
     }
 
@@ -66,15 +66,15 @@ public class ClientProxy implements IProxy
     }
     
     @Override
-    public boolean getShouldHookShotPull()
+    public float getShouldHookShotPull()
     {
         return pulledByHookShot;
     }
 
     @Override
-    public void setShouldHookShotPull(boolean b)
+    public void setShouldHookShotPull(float f)
     {
-        pulledByHookShot = b;
+        pulledByHookShot = f;
     }
     
     @Override

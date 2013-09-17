@@ -40,13 +40,13 @@ public class CommonProxy implements IProxy
     }
     
     @Override
-    public boolean getShouldHookShotPull()
+    public float getShouldHookShotPull()
     {
-        return false;
+        return 0f;
     }
     
     @Override
-    public void setShouldHookShotPull(boolean b)
+    public void setShouldHookShotPull(float f)
     {
         // NOOP
     }

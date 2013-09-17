@@ -172,7 +172,7 @@ public class EntityFreeFormRope extends Entity
         {
             RopesPlusCore.proxy.setHasClientRopeOut(false);
             RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-            RopesPlusCore.proxy.setShouldHookShotPull(false);
+            RopesPlusCore.proxy.setShouldHookShotPull(0f);
             RopesPlusCore.instance.setPlayerRope(shooter, null);
         }
         
@@ -209,14 +209,14 @@ public class EntityFreeFormRope extends Entity
                     return;
                 }
 
-                if (RopesPlusCore.proxy.getShouldHookShotPull())
+                if (RopesPlusCore.proxy.getShouldHookShotPull() < 0f)
                 {
                     double distToEnd = shooter.getDistance(getEndX(), getEndY(), getEndZ());
                     if (distToEnd < 3D)
                     {
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-                        RopesPlusCore.proxy.setShouldHookShotPull(false);
+                        RopesPlusCore.proxy.setShouldHookShotPull(0f);
                         Object[] toSend = { entityId };
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 5, toSend));
                     }
@@ -229,7 +229,9 @@ public class EntityFreeFormRope extends Entity
                     }
                 }
                 else
-                {                    
+                {
+                    maxLength = Math.min(Settings_RopePlus.maxHookShotRopeLength, maxLength+RopesPlusCore.proxy.getShouldHookShotPull());
+                    RopesPlusCore.proxy.setShouldHookShotPull(0f); // maxLengh extended, reset state
                     if (dist > maxLength)
                     {
                         if (inertiaSpeed < 0)

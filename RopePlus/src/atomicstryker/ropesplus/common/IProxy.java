@@ -12,9 +12,15 @@ public interface IProxy
 
     public void setShouldHookShotDisconnect(boolean b);
     
-    public boolean getShouldHookShotPull();
+    /**
+     * @return -1f to zipping in, 0f for 'no action', and any value above for extending the rope length
+     */
+    public float getShouldHookShotPull();
 
-    public void setShouldHookShotPull(boolean b);
+    /**
+     * @param f -1f to zipping in, 0f for 'no action', and any value above for extending the rope length
+     */
+    public void setShouldHookShotPull(float f);
 
     public int getGrapplingHookRenderId();
 
