@@ -1,3 +1,6 @@
+1.6.3
+updated to MC 1.6.3
+
 1.6.2B
 fixed compass not updating when not being held in hand
 

@@ -1,3 +1,6 @@
+Update 1.7.1
+- updated for MC 1.6.3
+
 Update 1.7.0
 - reworked Master username handling to a datawatcher
 - changed serverside Minion spawn call to immediatly set the Master

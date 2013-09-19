@@ -1,3 +1,6 @@
+1.6.3
+-updated for MC 1.6.3
+
 1.6.2b
 -fixed Simply Hax Flying fall death in special cases
 -the first fall after flying will now ALWAYS be completely negated

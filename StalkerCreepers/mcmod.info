@@ -3,8 +3,8 @@
   "modid": "StalkerCreepers",
   "name": "Stalker Creepers",
   "description": "Creepers will stalk you. That means, not explode or announce their presence until you turn around.",
-  "version": "1.0.6",
-  "mcversion": "1.6.2",
+  "version": "1.0.7",
+  "mcversion": "1.6.3",
   "url": "http://www.minecraftforum.net/topic/1096447-",
   "updateUrl": "",
   "authors": [

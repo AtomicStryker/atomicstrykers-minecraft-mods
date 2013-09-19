@@ -1,3 +1,6 @@
+1.2.6
+- update to MC 1.6.3
+
 1.2.5
 - implemented vanilla horse armors (417,418,419) to work when specified as EntityLivingEquipmentLightSource
 - added golden horse armor(418) to default lit items

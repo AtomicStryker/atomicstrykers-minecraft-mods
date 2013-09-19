@@ -7,8 +7,8 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="../../mcp/jars/libraries/org/ow2/asm/asm-debug-all/4.1/asm-debug-all-4.1.jar" sourcepath="/mcp/jars/libraries/org/ow2/asm/asm-debug-all/4.1/asm-debug-all-4.1-sources.jar"/>
-	<classpathentry kind="lib" path="../../mcp/jars/libraries/net/minecraft/launchwrapper/1.3/launchwrapper-1.3.jar"/>
-	<classpathentry kind="lib" path="../../mcp/jars/versions/1.6.2/1.6.2.jar">
+	<classpathentry kind="lib" path="../../mcp/jars/libraries/net/minecraft/launchwrapper/1.7/launchwrapper-1.7.jar"/>
+	<classpathentry kind="lib" path="../../mcp/jars/versions/1.6.3/1.6.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="MCP Minecraft/natives"/>
 		</attributes>
