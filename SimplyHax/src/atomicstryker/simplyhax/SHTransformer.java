@@ -28,7 +28,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class SHTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.EntityPlayerSP */
-    private final String classNamePlayerObfusc = "bem";
+    private final String classNamePlayerObfusc = "bex";
     
     private final String classNamePlayer = "net.minecraft.client.entity.EntityPlayerSP";
     

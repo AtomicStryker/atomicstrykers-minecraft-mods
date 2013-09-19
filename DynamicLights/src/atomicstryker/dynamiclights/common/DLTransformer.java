@@ -30,16 +30,16 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class DLTransformer implements IClassTransformer
 {
     /* class net.minecraft.src.World */
-    private final String classNameWorldObfusc = "abv";
+    private final String classNameWorldObfusc = "abw";
     
     /* class net.minecraft.src.IBlockAccess */
-    private final String classNameBlockAccessObfusc = "ace";
+    private final String classNameBlockAccessObfusc = "acf";
     
     /* method World.computeLightValue(IIILnet/minecraft/world/EnumSkyBlock;)I aka func_98179_a*/
     private final String computeLightValueMethodNameO = "a";
     
     /* class net.minecraft.world.EnumSkyBlock */
-    private final String enumSkyBlockObfusc = "acg";
+    private final String enumSkyBlockObfusc = "ach";
     
     
     private final String classNameWorld = "net.minecraft.world.World";
