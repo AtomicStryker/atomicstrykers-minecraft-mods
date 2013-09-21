@@ -32,7 +32,7 @@ public class MinionsSounds
                     for (String soundFile : fileCandidate.list())
                     {
                         String s = SOUND_PREFIX + soundFile;
-                        event.manager.soundPoolSounds.addSound(s);
+                        event.manager.addSound(s);
                         System.out.println("loaded soundfile " + s);
                     }
                 }
@@ -54,7 +54,7 @@ public class MinionsSounds
                                 && s.length() > 0
                                 && s.startsWith(SOUND_RESOURCE_LOCATION))
                                 {
-                                    event.manager.soundPoolSounds.addSound(SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
+                                    event.manager.addSound(SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
                                     System.out.println("loaded soundfile " + SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
                                 }
                             }

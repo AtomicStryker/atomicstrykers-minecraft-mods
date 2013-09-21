@@ -234,4 +234,4 @@ a: setAccessible now true
 + added unique Floater and Underwater base templates, courtesy of Count_Chuckula
 
 10.7
-+ update to MC 1.6.3
++ update to MC 1.6.4

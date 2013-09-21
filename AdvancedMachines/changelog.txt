@@ -1,5 +1,5 @@
 Version 5.2.1
-	update to MC 1.6.3
+	update to MC 1.6.4
 
 Version 5.2.0
 	adapted to new Energy methods order (Transformers work once again without explosions)

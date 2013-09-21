@@ -1,5 +1,5 @@
 1.3.8
-- update to mc 1.6.3
+- update to mc 1.6.4
 
 1.3.7
 - added chunkprovider names to config (to exclude modded dimensions from getting towers)

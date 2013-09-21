@@ -1,5 +1,5 @@
 1.2.5
-update to mc 1.6.3
+update to mc 1.6.4
 
 1.2.4
 bugfixes related to bat health
