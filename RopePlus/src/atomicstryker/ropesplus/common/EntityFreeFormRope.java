@@ -197,6 +197,15 @@ public class EntityFreeFormRope extends Entity
 
         if (shooter != null)
         {
+            if (shooter.isDead || !shooter.inventory.hasItem(RopesPlusCore.itemHookShot.itemID))
+            {
+                setDead();
+                RopesPlusCore.proxy.setHasClientRopeOut(false);
+                RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
+                RopesPlusCore.proxy.setShouldHookShotPull(0f);
+                return;
+            }
+            
             setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
             double dist = getDistanceToEntity(shooter);
 

@@ -1,6 +1,9 @@
 RopesPlus 1.4.9
 - update to mc 1.6.3
 
+RopesPlus 1.4.8(ninja hotfix)
+- fixed ropes not disconnecting upon user death/disconnect or losing hookshot
+
 RopesPlus 1.4.8
 - you can now carefully extend a hookshot rope you are attached to by pressing SNEAK while attached to it
 - this works up until hitting the rope max length, and is irreversible.
