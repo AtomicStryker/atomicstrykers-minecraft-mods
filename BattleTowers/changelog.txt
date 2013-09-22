@@ -1,3 +1,16 @@
+1.3.9
+- fixed nether towers to have netherbrick stairs, sandstone towers to sandstone stairs
+- added configurable minimum Battletower distance from spawn
+- added config setting noGolemExplosions to disable explosive "stomp", however damage still gets dealt when hiding below angry golem
+- added autogenerating persistant Battletower Positions config file, located in World Save folder. See file content for info
+- setting minDistanceBetweenTowers <= 0 in config will now completely disable the randomized automatic generation
+- added console command /spawnbattletower, spawns a battletower with golem, arguments x,y,z,type,underground
+- added console command /deletebattletower, deletes a battletower and removes Golem if present, arguments x,z
+- added console command /regeneratebattletower, re-spawns a battletower and Golem if present, arguments x,z
+- added console command /regenerateallbattletowers, re-spawns all logged Battletowers and present Golems
+- added console command /deleteallbattletowers, de-spawns all logged Battletowers and all Golems
+- note despawning towers will not remove side effect blocks (eg fillings under the tower socket)
+
 1.3.8
 - update to mc 1.6.4
 

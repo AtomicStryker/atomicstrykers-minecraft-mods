@@ -5,7 +5,6 @@ import java.util.Set;
 
 import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.Configuration;
 import atomicstryker.battletowers.client.ClientPacketHandler;
 import cpw.mods.fml.common.Mod;
@@ -14,6 +13,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -23,19 +23,21 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.3.8")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.3.9")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),
 connectionHandler = ConnectionHandler.class)
 public class AS_BattleTowersCore
 {
-	private static Set<ChunkCoordinates> towerPositions;
+    
 	private static Set<AS_TowerDestroyer> towerDestroyers;
-	public static double minDistanceBetweenTowers;
+	public static int minDistanceFromSpawn;
+	public static int minDistanceBetweenTowers;
 	public static int towerDestroyerEnabled;
 	public static int itemGenerateAttemptsPerFloor;
 	public static int chanceTowerIsUnderGround;
+	public static boolean noGolemExplosions;
 	private int golemEntityID;
 	
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
@@ -43,6 +45,7 @@ public class AS_BattleTowersCore
     
     public static TowerStageItemManager[] floorItemManagers = new TowerStageItemManager[10];
     public static Configuration configuration;
+    
 	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -66,7 +69,6 @@ public class AS_BattleTowersCore
         
         EntityRegistry.registerModEntity(AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 25, 5, true);
         
-        towerPositions = new HashSet<ChunkCoordinates>();
         towerDestroyers = new HashSet<AS_TowerDestroyer>();
         
         GameRegistry.registerWorldGenerator(new WorldGenHandler());
@@ -78,13 +80,25 @@ public class AS_BattleTowersCore
         /* and this replaces modsLoaded(), all mods are loaded at this point, do inter-mod stuff here */
     }
     
+    @EventHandler
+    public void serverStarted(FMLServerStartingEvent evt)
+    {
+        evt.registerServerCommand(new CommandSpawnBattleTower());
+        evt.registerServerCommand(new CommandDeleteBattleTower());
+        evt.registerServerCommand(new CommandRegenerateBattleTower());
+        evt.registerServerCommand(new CommandRegenerateAllBattleTowers());
+        evt.registerServerCommand(new CommandDeleteAllBattleTowers());
+    }
+    
     public void loadForgeConfig()
     {
         configuration.load();
+        minDistanceFromSpawn = configuration.get("MainOptions", "Minimum Distance of Battletowers from Spawn", 96).getInt();
         minDistanceBetweenTowers = Integer.parseInt(configuration.get("MainOptions", "Minimum Distance between 2 BattleTowers", 196).getString());
         towerDestroyerEnabled = Integer.parseInt(configuration.get("MainOptions", "Tower Destroying Enabled", 1).getString());
         itemGenerateAttemptsPerFloor = configuration.get("BattleTowerChestItems", "Item Generations per Floot", "7").getInt();
         chanceTowerIsUnderGround = configuration.get("MainOptions", "chanceTowerIsUnderGround", 15).getInt();
+        noGolemExplosions = configuration.get("MainOptions", "noGolemExplosions", false).getBoolean(false);
         
         // 280-0-50-6-5 sticks
         // 295-0-50-3-5 seeds
@@ -158,30 +172,10 @@ public class AS_BattleTowersCore
         PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100d, td.player.worldObj.provider.dimensionId, packet);
         towerDestroyers.add(td);
     }
-	
-	public static synchronized boolean canTowerSpawnAt(int xActual, int zActual)
-	{
-        for (ChunkCoordinates temp : towerPositions)
-        {
-            int diffX = temp.posX - xActual;
-            int diffZ = temp.posZ - zActual;
-            if (Math.sqrt(diffX*diffX + diffZ*diffZ) < minDistanceBetweenTowers)
-            {
-                return false;
-            }
-        }
-        towerPositions.add(new ChunkCoordinates(xActual, 0, zActual));
-        
-        return true;
-	}
-
-    public static synchronized void setTowerSpawnFailedAt(int xActual, int zActual)
-    {
-        towerPositions.remove(new ChunkCoordinates(xActual, 0, zActual));
-    }
 
 	public static synchronized Set<AS_TowerDestroyer> getTowerDestroyers()
 	{
 		return AS_BattleTowersCore.towerDestroyers;
 	}
+	
 }

@@ -109,6 +109,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 	private void updateGolemType()
 	{
 		drops = 5 + towerID;
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(7.0f + towerID);
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(150f + 50f*towerID);
 		setHealth(getMaxHealth());
 	}
@@ -241,7 +242,14 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
 				if (!worldObj.isRemote && (this.posY - getEntityToAttack().posY) > 0.3D)
 				{
-					worldObj.createExplosion(this, posX, posY-0.3D, posZ, 4F, true);
+				    if (AS_BattleTowersCore.noGolemExplosions)
+				    {
+				        getEntityToAttack().attackEntityFrom(DamageSource.causeMobDamage(this), 3.5f);
+				    }
+				    else
+				    {
+				        worldObj.createExplosion(this, posX, posY-0.3D, posZ, 4F, true);
+				    }
 				}
                 rageCounter = 125;
                 explosionAttack = 0;
