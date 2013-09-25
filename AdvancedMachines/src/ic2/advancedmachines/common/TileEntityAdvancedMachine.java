@@ -256,7 +256,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
                 }
                 onFinishedProcessingItem();
             }
-            if (inventory[inputs[0]].stackSize <= 0)
+            if (inventory[inputs[0]] != null && inventory[inputs[0]].stackSize <= 0)
             {
                 inventory[inputs[0]] = null;
             }

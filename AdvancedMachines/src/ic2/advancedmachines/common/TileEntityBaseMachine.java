@@ -6,6 +6,7 @@ import ic2.api.energy.tile.IEnergySink;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.item.Items;
+import ic2.core.IC2;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,19 +67,20 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     public void updateEntity()
     {
         super.updateEntity();
-        if (!this.addedToEnergyNet)
+        if (IC2.platform.isSimulating() && !this.addedToEnergyNet)
         {
             MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
-            this.addedToEnergyNet = true;
+            addedToEnergyNet = true;
         }
     }
 
     @Override
     public void invalidate()
     {
-        if (this.addedToEnergyNet)
+        if (IC2.platform.isSimulating() && addedToEnergyNet)
         {
             MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
+            addedToEnergyNet = false;
         }
         super.invalidate();
     }

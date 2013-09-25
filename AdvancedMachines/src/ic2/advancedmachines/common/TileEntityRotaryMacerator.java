@@ -134,7 +134,7 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     		        }
     		    }
     		}
-    		else if (result.isItemEqual(idCoalDust) && supplement.isItemEqual(idWaterCell))
+    		else if (result.isItemEqual(idCoalDust) && isWater(supplement))
     		{
     			nextSupplementResultCount = 8;
     			results.add(hydratedCoalDust);
@@ -149,8 +149,15 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
     	    }
     	    else if (original.getItem().itemID == Block.netherrack.blockID && supplement.itemID == Item.redstone.itemID)
             {
-                nextSupplementResultCount = 1;
-                results.add(new ItemStack(Item.glowstone, 2));
+    	        if (original.stackSize > 7)
+    	        {
+    	            nextSupplementResultCount = 1;
+                    results.add(new ItemStack(Item.glowstone, 1));
+                    if (removeInputs)
+                    {
+                        original.stackSize -= 7;
+                    }
+    	        }
             }
     	    
     	    if (removeInputs)
@@ -165,12 +172,10 @@ public class TileEntityRotaryMacerator extends TileEntityAdvancedMachine
 		return results;
 	}
     
-    /*
     private boolean isWater(ItemStack item)
     {
         return item.itemID == Item.bucketWater.itemID || item.isItemEqual(idWaterCell) || item.itemID == Block.ice.blockID;
     }
-    */
 
     @Override
     public int getUpgradeSlotsStartSlot()
