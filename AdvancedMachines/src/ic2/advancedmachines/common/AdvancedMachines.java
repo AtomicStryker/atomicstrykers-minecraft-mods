@@ -4,7 +4,6 @@ import ic2.api.item.Items;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -21,7 +20,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.2.2", dependencies = "required-after:IC2@2.0.225")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.2.3", dependencies = "required-after:IC2@2.0.225")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -33,9 +32,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
     public static ItemStack stackRotaryMacerator;
     public static ItemStack stackSingularityCompressor;
     public static ItemStack stackCentrifugeExtractor;
-    
-    private int refIronID;
-    public static Item refinedIronDust;
 
     public static int guiIdRotary;
     public static int guiIdSingularity;
@@ -70,12 +66,8 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         
         blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 1188).getInt());
         blockAdvancedMachine.setCreativeTab(CreativeTabs.tabRedstone);
-        refIronID = config.getItem("IDs", "refIronID", 29775).getInt(29775);
         
         GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
-        refinedIronDust = new ItemDust(refIronID).setUnlocalizedName("advancedmachines:refinedIronDust");
-        refinedIronDust.setCreativeTab(CreativeTabs.tabMaterials);
-        GameRegistry.registerItem(refinedIronDust, "refinedIronDust");
         
         stackRotaryMacerator = new ItemStack(blockAdvancedMachine, 1, 0);
         stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 1);
@@ -176,8 +168,6 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         transformerStack = Items.getItem("transformerUpgrade");
         energyStorageUpgradeStack = Items.getItem("energyStorageUpgrade");
         ejectorUpgradeStack = Items.getItem("ejectorUpgrade");
-        
-        GameRegistry.addSmelting(refinedIronDust.itemID, Items.getItem("refinedIronIngot"), 1.0f);
     }
     
     public static boolean explodeMachineAt(World world, int x, int y, int z)

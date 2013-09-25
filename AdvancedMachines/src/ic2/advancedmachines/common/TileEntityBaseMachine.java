@@ -32,7 +32,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     public int tier;
     public boolean addedToEnergyNet;
     
-    private int suBatteryID;
+    private ItemStack suBattery;
     
     public TileEntityBaseMachine(int inventorySize, int maxEnergy, int maxInput)
     {
@@ -45,7 +45,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         energy = 0;
         addedToEnergyNet = false;
         
-        suBatteryID = Items.getItem("suBattery").itemID;
+        suBattery = Items.getItem("suBattery");
     }
 
     @Override
@@ -138,21 +138,16 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         }
         else
         {
-            int fuelID = inventory[fuelslot].itemID;
-            if (Item.itemsList[fuelID] instanceof IElectricItem)
+            if (inventory[fuelslot].getItem() instanceof IElectricItem)
             {
-                if (!((IElectricItem)Item.itemsList[fuelID]).canProvideEnergy(inventory[fuelslot]))
-                {
-                    return false;
-                }
-                else
+                if (((IElectricItem)inventory[fuelslot].getItem()).canProvideEnergy(inventory[fuelslot]))
                 {
                     int charge = ElectricItem.manager.discharge(inventory[fuelslot], maxEnergy - energy, tier, false, false);
                     energy += charge;
-                    return charge > 0;
+                    return (charge > 0);
                 }
             }
-            else if (fuelID == Item.redstone.itemID)
+            else if (inventory[fuelslot].itemID == Item.redstone.itemID)
             {
                 energy += maxEnergy;
                 --inventory[fuelslot].stackSize;
@@ -163,7 +158,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
 
                 return true;
             }
-            else if (fuelID == suBatteryID)
+            else if (inventory[fuelslot].isItemEqual(suBattery))
             {
                 energy += 1000;
                 --inventory[fuelslot].stackSize;
@@ -174,10 +169,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
 
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
     

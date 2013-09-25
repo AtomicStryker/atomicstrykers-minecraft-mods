@@ -62,7 +62,6 @@ public class IC2AudioSource
 		{
 			try
 			{
-			    
 				audioSourceinstance = audioManagercreateSource.invoke(audioManagerInstance, tEnt, soundfile);
 			}
 			catch (Exception e)

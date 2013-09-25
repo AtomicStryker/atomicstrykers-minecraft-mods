@@ -20,7 +20,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
 {
     
     private String inventoryName;
-    private int[] inputs;
+    protected int[] inputs;
     private int[] outputs;
     private String dataFormat;
     private int dataScaling;
@@ -229,10 +229,11 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
             if (resultStacks != null)
             {
                 ItemStack itemstack;
+                int index = 0;
                 for (ItemStack is : resultStacks)
                 {
                     itemstack = is.copy();                    
-                    for (int index = 0; index < outputs.length; ++index)
+                    for (index = 0; index < outputs.length; ++index)
                     {
                         if (inventory[outputs[index]] == null)
                         {

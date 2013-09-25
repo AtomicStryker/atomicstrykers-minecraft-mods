@@ -1,3 +1,8 @@
+Version 5.2.3
+	ditched refined Iron Dust since refined Iron no longer exists
+	additive macerating can still produce bronze dust and hydrated coal dust
+	added new additive recipes: 1 Nether Quartz Ore + 1 Sand = 2 Quartz; 1 Netherrack + 1 Redstone = 2 Glowstone Dust
+
 Version 5.2.2
 	updated to newest IC2 build, changed recipes with new stuff
 	bugfix for wasting power in fringe cases(?)
