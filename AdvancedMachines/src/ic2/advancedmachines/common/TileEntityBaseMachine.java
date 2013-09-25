@@ -90,10 +90,10 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     }
 
     @Override
-    public double injectEnergyUnits(ForgeDirection var1, double var2)
+    public double injectEnergyUnits(ForgeDirection dir, double amount)
     {
         setOverclockRates();
-        if (var2 > this.maxInput)
+        if (amount > this.maxInput)
         {
         	if (!AdvancedMachines.explodeMachineAt(worldObj, xCoord, yCoord, zCoord))
         	{
@@ -104,16 +104,13 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
         }
         else
         {
-            this.energy += var2;
-            int var3 = 0;
             if (this.energy > this.maxEnergy)
             {
-                var3 = this.energy - this.maxEnergy;
-                this.energy = this.maxEnergy;
+                return amount;
             }
-
-            return var3;
+            this.energy += amount;
         }
+        return 0;
     }
     
     @Override
@@ -125,7 +122,7 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     @Override
     public boolean acceptsEnergyFrom(TileEntity var1, ForgeDirection var2)
     {
-        return true;
+        return demandedEnergyUnits() > 1;
     }
 
     public boolean isRedstonePowered()

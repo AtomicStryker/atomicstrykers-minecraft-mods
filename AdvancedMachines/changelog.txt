@@ -1,3 +1,7 @@
+Version 5.2.2
+	updated to newest IC2 build, changed recipes with new stuff
+	bugfix for wasting power in fringe cases(?)
+
 Version 5.2.1
 	update to MC 1.6.4
 

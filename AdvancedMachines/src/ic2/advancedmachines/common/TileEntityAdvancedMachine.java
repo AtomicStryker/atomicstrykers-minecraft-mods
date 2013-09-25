@@ -2,6 +2,7 @@ package ic2.advancedmachines.common;
 
 import ic2.api.Direction;
 import ic2.api.item.IElectricItem;
+import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.network.NetworkHelper;
 import ic2.core.util.StackUtil;
 
@@ -15,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory
+public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine implements ISidedInventory, INetworkTileEntityEventListener
 {
     
     private String inventoryName;
@@ -403,8 +404,6 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
     @Override
     public void onNetworkEvent(int event)
     {
-        super.onNetworkEvent(event);
-
         if (worldObj.isRemote)
         {
             if ((this.audioSource == null) && (getStartSoundFile() != null))

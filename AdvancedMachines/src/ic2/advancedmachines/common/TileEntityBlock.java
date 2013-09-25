@@ -1,7 +1,6 @@
 package ic2.advancedmachines.common;
 
 import ic2.api.network.INetworkDataProvider;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.network.NetworkHelper;
 import ic2.api.tile.IWrenchable;
 
@@ -13,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public abstract class TileEntityBlock extends TileEntity implements IWrenchable, INetworkDataProvider, INetworkTileEntityEventListener
+public abstract class TileEntityBlock extends TileEntity implements IWrenchable, INetworkDataProvider
 {
     protected boolean created = false;
     public boolean active = false;
@@ -123,11 +122,6 @@ public abstract class TileEntityBlock extends TileEntity implements IWrenchable,
 	public List<String> getNetworkedFields()
 	{
 		return networkedFields;
-	}
-
-	@Override
-	public void onNetworkEvent(int event)
-	{
 	}
 
 }

@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.2.1", dependencies = "required-after:IC2@2.0.104")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "5.2.2", dependencies = "required-after:IC2@2.0.225")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class AdvancedMachines implements IGuiHandler, IProxy
 {
@@ -139,8 +139,10 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         if (config.get(Configuration.CATEGORY_GENERAL, "Rotary Macerator Enabled", true).getBoolean(true))
         {
             GameRegistry.addRecipe(stackRotaryMacerator,
-                    new Object[] {"RRR", "RMR", "RAR",
-                Character.valueOf('R'), Items.getItem("refinedIronIngot"),
+                    new Object[] {"CRC", "PMP", "PAP",
+                Character.valueOf('C'), Items.getItem("coil"),
+                Character.valueOf('R'), Items.getItem("elemotor"),
+                Character.valueOf('P'), Items.getItem("plateiron"),
                 Character.valueOf('M'), Items.getItem("macerator"),
                 Character.valueOf('A'), Items.getItem("advancedMachine")});
         }
@@ -148,8 +150,10 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         if (config.get(Configuration.CATEGORY_GENERAL, "Singularity Compressor Enabled", true).getBoolean(true))
         {
             GameRegistry.addRecipe(stackSingularityCompressor,
-                    new Object[] {"RRR", "RMR", "RAR",
+                    new Object[] {"RGR", "MMM", "PAP",
                 Character.valueOf('R'), Block.obsidian,
+                Character.valueOf('G'), Items.getItem("reinforcedGlass"),
+                Character.valueOf('P'), Items.getItem("plateiron"),
                 Character.valueOf('M'), Items.getItem("compressor"),
                 Character.valueOf('A'), Items.getItem("advancedMachine")});
         }
@@ -157,8 +161,11 @@ public class AdvancedMachines implements IGuiHandler, IProxy
         if (config.get(Configuration.CATEGORY_GENERAL, "Centrifuge Extractor Enabled", true).getBoolean(true))
         {
             GameRegistry.addRecipe(stackCentrifugeExtractor,
-                    new Object[] {"RRR", "RMR", "RAR",
+                    new Object[] {"CEC", "RMR", "PAP",
+                Character.valueOf('C'), Items.getItem("coil"),
+                Character.valueOf('E'), Items.getItem("elemotor"),
                 Character.valueOf('R'), Items.getItem("electrolyzedWaterCell"),
+                Character.valueOf('P'), Items.getItem("plateiron"),
                 Character.valueOf('M'), Items.getItem("extractor"),
                 Character.valueOf('A'), Items.getItem("advancedMachine")});
         }
