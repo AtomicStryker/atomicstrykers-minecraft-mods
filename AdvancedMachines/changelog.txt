@@ -1,3 +1,6 @@
+Version 5.2.3 (hotfix #2)
+    fixed chunkunload energynet issue
+
 Version 5.2.3 (hotfix)
     fixed different energynet issue
     changed glowstone additive recipe to 8 Netherrack + 1 Redstone = 1 Glowstone

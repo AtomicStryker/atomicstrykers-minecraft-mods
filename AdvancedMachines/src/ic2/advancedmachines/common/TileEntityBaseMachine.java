@@ -86,6 +86,17 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     }
     
     @Override
+    public void onChunkUnload()
+    {
+        if (IC2.platform.isSimulating() && addedToEnergyNet)
+        {
+            MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
+            addedToEnergyNet = false;
+        }
+        super.onChunkUnload();
+    }
+    
+    @Override
     public double demandedEnergyUnits()
     {
         return maxEnergy - energy;
