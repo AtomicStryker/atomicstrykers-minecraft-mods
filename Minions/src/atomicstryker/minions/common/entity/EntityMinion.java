@@ -46,7 +46,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     public final AStarPathPlanner pathPlanner;
     
 	public EntityPlayer master;
-	private ItemStack heldItem;
 	public boolean inventoryFull;
 	public TileEntity returnChestOrInventory;
 	public EnumMinionState currentState;
@@ -86,7 +85,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.tasks.addTask(3, new MinionAIWander(this, this.moveSpeed));
         
         inventory = new InventoryMinion(this);
-        heldItem = new ItemStack(Item.pickaxeIron, 1);
         inventoryFull = false;
         currentState = lastOrderedState = EnumMinionState.IDLE;
         nextState = null;
@@ -118,6 +116,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.dataWatcher.addObject(14, new Integer(0));	// y blocktask
         this.dataWatcher.addObject(15, new Integer(0)); // z blocktask
         this.dataWatcher.addObject(16, "undef"); // masterUserName
+        this.dataWatcher.addObject(17, new Integer(0)); // heldItem Index
         
         MinionsChunkManager.registerChunkLoaderEntity(this);
     }
@@ -132,12 +131,14 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	
 	public String getMasterUserName()
 	{
-	    return dataWatcher.getWatchableObjectString(16);
+	    String s = dataWatcher.getWatchableObjectString(16);
+	    return s.equals("") ? "undef" : s;
 	}
 	
     /**
      * Returns true if the newer Entity AI code should be run
      */
+	@Override
     public boolean isAIEnabled()
     {
         return true;
@@ -198,6 +199,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	@Override
 	public void setDead()
 	{
+	    MinionsCore.unregisterMinion(this);
 		MinionsChunkManager.unRegisterChunkLoaderEntity(this);
 		inventory.dropAllItems();
 		super.setDead();
@@ -314,7 +316,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     {
     	super.onEntityUpdate();
     	
-        if (!worldObj.isRemote && closeChestTime != 0)
+        if (closeChestTime != 0)
         {
             ((IInventory)returnChestOrInventory).closeChest();
             closeChestTime = 0;
@@ -387,7 +389,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	else if ((currentState == EnumMinionState.RETURNING_GOODS)
     	&& returnChestOrInventory != null)
     	{
-    		if (this.getDistanceToEntity(returnChestOrInventory) > 4D)
+    		if (this.getDistanceToTileEntity(returnChestOrInventory) > 4D)
     		{
     			if (!hasPath() || pathPlanner.isBusy())
     			{
@@ -410,7 +412,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     		{
     			if (this.inventory.containsItems() && checkReturnChestValidity())
     			{
-	    			// System.out.println("Dropping Items into chest!");
     			    ((IInventory)returnChestOrInventory).openChest();
     			    closeChestTime = System.currentTimeMillis() + 4000L;
 	    			this.inventory.putAllItemsToInventory((IInventory)returnChestOrInventory);
@@ -511,7 +512,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     	canPickUpItemsAgainAt = System.currentTimeMillis() + 3000L;
     }
     
-    private double getDistanceToEntity(TileEntity tileent)
+    private double getDistanceToTileEntity(TileEntity tileent)
     {
 		return AStarStatic.getDistanceBetweenCoords(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), tileent.xCoord, tileent.yCoord, tileent.zCoord);
 	}
@@ -637,22 +638,41 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 	@Override
 	public ItemStack getHeldItem()
 	{
-		return this.heldItem;
+		return HeldItem.values()[dataWatcher.getWatchableObjectInt(17)].item;
+	}
+	
+	private enum HeldItem
+	{
+	    Axe(new ItemStack(Item.axeIron, 1)),
+	    Pickaxe(new ItemStack(Item.pickaxeIron, 1)),
+	    Shovel(new ItemStack(Item.shovelIron, 1));
+	    
+	    final ItemStack item;
+	    HeldItem(ItemStack i) { item = i; }
 	}
 	
     public void setHeldItemAxe()
     {
-        heldItem = new ItemStack(Item.axeIron, 1);
+        if (!worldObj.isRemote)
+        {
+            dataWatcher.updateObject(17, HeldItem.Axe.ordinal());
+        }
     }
     
     public void setHeldItemPickaxe()
     {
-        heldItem = new ItemStack(Item.pickaxeIron, 1);
+        if (!worldObj.isRemote)
+        {
+            dataWatcher.updateObject(17, HeldItem.Pickaxe.ordinal());
+        }
     }
     
     public void setHeldItemShovel()
     {
-        heldItem = new ItemStack(Item.shovelIron, 1);
+        if (!worldObj.isRemote)
+        {
+            dataWatcher.updateObject(17, HeldItem.Shovel.ordinal());
+        }
     }
     
     public void adaptItem(Material mat)

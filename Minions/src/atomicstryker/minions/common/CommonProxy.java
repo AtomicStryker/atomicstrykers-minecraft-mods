@@ -41,12 +41,12 @@ public class CommonProxy
         catch (Exception e){}
     }
 
-    public void OnMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
+    public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
     {
         // NOOP
     }
 
-    public void OnMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
+    public void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
     {
         // NOOP
     }

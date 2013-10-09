@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -37,7 +37,8 @@ public class RenderMinion extends RenderLiving
 		this.setRenderManager(RenderManager.instance);
 	}
 
-	protected void preRenderCallback(EntityLiving var1, float var2)
+    @Override
+	protected void preRenderCallback(EntityLivingBase var1, float var2)
     {
         float var4 = 1.0F;
         GL11.glScalef(var4, var4, var4);
@@ -50,7 +51,8 @@ public class RenderMinion extends RenderLiving
         }
     }
 
-    protected void renderEquippedItems(EntityLiving var1, float var2)
+    @Override
+    protected void renderEquippedItems(EntityLivingBase var1, float var2)
     {
         ItemStack heldItem = var1.getHeldItem();
         if (heldItem != null && !this.model.carryAnimation)
@@ -92,12 +94,13 @@ public class RenderMinion extends RenderLiving
         }
     }
 
-    protected void passSpecialRender(EntityLiving var1, double var2, double var4, double var6)
+    @Override
+    protected void passSpecialRender(EntityLivingBase var1, double var2, double var4, double var6)
     {
         this.renderMinionName((EntityMinion)var1, var2, var4, var6);
     }
 
-    protected void renderMinionName(EntityMinion var1, double var2, double var4, double var6)
+    private void renderMinionName(EntityMinion var1, double var2, double var4, double var6)
     {
         if (Minecraft.isGuiEnabled() && var1 != this.renderManager.livingPlayer)
         {

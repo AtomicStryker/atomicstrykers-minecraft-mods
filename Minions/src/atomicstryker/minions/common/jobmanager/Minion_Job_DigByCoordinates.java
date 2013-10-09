@@ -2,6 +2,7 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Vector;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
@@ -48,10 +49,12 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 	private long lastTaskCompleteTime = -1L;
 	
 	
-    public Minion_Job_DigByCoordinates(EntityMinion[] minions, int ix, int iy, int iz, int ixzSize, int iySize)
+    public Minion_Job_DigByCoordinates(Vector<EntityMinion> minions, int ix, int iy, int iz, int ixzSize, int iySize)
     {
     	super(minions, ix, iy, iz);
-    	this.worldObj = minions[0].worldObj;
+    	EntityMinion m = minions.firstElement();
+    	
+    	this.worldObj = m.worldObj;
     	
     	startX = this.pointOfOrigin.posX;
     	startY = this.pointOfOrigin.posY;
@@ -59,7 +62,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	xZtoDig = ixzSize;
     	ytoDig = iySize;
     	
-    	Entity boss = minions[0].master;
+    	Entity boss = m.master;
     	int bossX = MathHelper.floor_double(boss.posX);
     	int bossZ = MathHelper.floor_double(boss.posZ);
     	

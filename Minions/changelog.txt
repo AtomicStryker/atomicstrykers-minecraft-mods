@@ -1,3 +1,8 @@
+Update 1.7.2
+- refactorization & bugfixes
+- fixed minion tools not being rendered
+- crouching while assigning a chest now doesnt interrupt the current job (such as stairwells, stripmines)
+
 Update 1.7.1
 - updated for MC 1.6.4
 

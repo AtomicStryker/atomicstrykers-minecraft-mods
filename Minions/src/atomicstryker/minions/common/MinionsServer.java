@@ -141,12 +141,13 @@ public class MinionsServer
             
             case CMDASSIGNCHEST:
             {
-                Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
+                Class<?>[] decodeAs = {String.class, Boolean.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                int x = (Integer) packetReadout[1];
-                int y = (Integer) packetReadout[2];
-                int z = (Integer) packetReadout[3];
-                MinionsCore.orderMinionsToChestBlock(player, x, y, z);
+                boolean sneaking = (Boolean) packetReadout[1];
+                int x = (Integer) packetReadout[2];
+                int y = (Integer) packetReadout[3];
+                int z = (Integer) packetReadout[4];
+                MinionsCore.orderMinionsToChestBlock(player, sneaking, x, y, z);
                 break;
             }
             

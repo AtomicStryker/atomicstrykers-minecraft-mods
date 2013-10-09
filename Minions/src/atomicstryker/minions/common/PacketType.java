@@ -40,7 +40,7 @@ public enum PacketType
      */
     CMDSTRIPMINE,
     /**
-     * Minion chest assign command from client to server: String username, int x, int y, int z
+     * Minion chest assign command from client to server: String username, bool isSneaking, int x, int y, int z
      */
     CMDASSIGNCHEST,
     /**

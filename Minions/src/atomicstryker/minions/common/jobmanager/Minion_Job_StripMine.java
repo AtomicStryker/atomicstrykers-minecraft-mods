@@ -1,5 +1,7 @@
 package atomicstryker.minions.common.jobmanager;
 
+import java.util.Collection;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ChunkCoordinates;
@@ -32,7 +34,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 	
 	private long timeForceNextSegment;
 	
-    public Minion_Job_StripMine(EntityMinion[] minions, int ix, int iy, int iz)
+    public Minion_Job_StripMine(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
         currentSegment = -1;
     	for (EntityMinion m : minions)

@@ -51,12 +51,12 @@ public class ItemMastersStaff extends Item
             if (pointStrength > 1.0F)
             {
                 // full power!
-                MinionsCore.proxy.OnMastersGloveRightClickHeld(var1, var2, var3);
+                MinionsCore.proxy.onMastersGloveRightClickHeld(var1, var2, var3);
             }
             else
             {
                 // shorter tap
-                MinionsCore.proxy.OnMastersGloveRightClick(var1, var2, var3);
+                MinionsCore.proxy.onMastersGloveRightClick(var1, var2, var3);
             }
         }
     }

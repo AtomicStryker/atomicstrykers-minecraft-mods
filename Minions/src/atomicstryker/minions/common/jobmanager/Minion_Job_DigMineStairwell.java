@@ -1,5 +1,7 @@
 package atomicstryker.minions.common.jobmanager;
 
+import java.util.Collection;
+
 import net.minecraft.block.Block;
 import atomicstryker.minions.common.entity.EntityMinion;
 
@@ -21,7 +23,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
 	private final int startY;
 	private final int startZ;
 	
-    public Minion_Job_DigMineStairwell(EntityMinion[] minions, int ix, int iy, int iz)
+    public Minion_Job_DigMineStairwell(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
     	super(minions, ix, iy, iz);
     	startX = this.pointOfOrigin.posX;

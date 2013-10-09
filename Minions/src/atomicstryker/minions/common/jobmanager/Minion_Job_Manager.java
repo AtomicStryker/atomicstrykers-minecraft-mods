@@ -9,6 +9,7 @@ package atomicstryker.minions.common.jobmanager;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import net.minecraft.util.ChunkCoordinates;
@@ -49,30 +50,27 @@ public abstract class Minion_Job_Manager
 	    masterName = null;
 	}
 	
-    public Minion_Job_Manager(EntityMinion[] minions, int ix, int iy, int iz)
+    public Minion_Job_Manager(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
         this();
         
-    	int i = 0;
-    	while (i < minions.length)
-    	{
-    		workerList.add(minions[i]);
-    		
-   			minions[i].currentState = EnumMinionState.AWAITING_JOB;
-    		minions[i].lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
-    		
-    		if (minions[i].riddenByEntity != null)
-    		{
-    			minions[i].riddenByEntity.mountEntity(null);
-    		}
-    		
-    		if (masterName == null)
-    		{
-    			masterName = minions[i].getMasterUserName();
-    		}
-    		
-    		i++;
-    	}
+        for (EntityMinion m : minions)
+        {
+            workerList.add(m);
+            
+            m.currentState = EnumMinionState.AWAITING_JOB;
+            m.lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
+            
+            if (m.riddenByEntity != null)
+            {
+                m.riddenByEntity.mountEntity(null);
+            }
+            
+            if (masterName == null)
+            {
+                masterName = m.getMasterUserName();
+            }
+        }
     	
     	this.pointOfOrigin = new ChunkCoordinates(ix, iy, iz);
     }

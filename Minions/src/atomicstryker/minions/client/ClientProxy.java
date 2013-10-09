@@ -57,15 +57,15 @@ public class ClientProxy extends CommonProxy
     }
     
     @Override
-    public void OnMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
+    public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
     {
-        MinionsClient.OnMastersGloveRightClickHeld(itemstack, world, player);
+        MinionsClient.onMastersGloveRightClickHeld(itemstack, world, player);
     }
 
     @Override
-    public void OnMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
+    public void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
     {
-        MinionsClient.OnMastersGloveRightClick(itemstack, world, player);
+        MinionsClient.onMastersGloveRightClick(itemstack, world, player);
     }
     
     @Override

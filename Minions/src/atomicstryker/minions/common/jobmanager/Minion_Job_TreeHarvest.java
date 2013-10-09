@@ -1,6 +1,7 @@
 package atomicstryker.minions.common.jobmanager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -19,10 +20,10 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
 	private World worldObj;
 	private boolean doneLookingForTrees;
 	
-    public Minion_Job_TreeHarvest(EntityMinion[] minions, int ix, int iy, int iz)
+    public Minion_Job_TreeHarvest(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
     	super(minions, ix, iy, iz);
-    	this.worldObj = minions[0].worldObj;
+    	this.worldObj = minions.iterator().next().worldObj;
     	doneLookingForTrees = false;
     }
     
