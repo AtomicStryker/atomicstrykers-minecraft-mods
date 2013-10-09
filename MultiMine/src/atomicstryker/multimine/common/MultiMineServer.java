@@ -32,9 +32,9 @@ public class MultiMineServer
 {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
-    private HashMap<Integer, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
-    private HashSet<Integer> registeredMultiMineUsers;
-    private BlockRegenQueue blockRegenQueue;
+    private final HashMap<Integer, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
+    private final HashSet<Integer> registeredMultiMineUsers;
+    private final BlockRegenQueue blockRegenQueue;
     
     /**
      * Server instance of Multi Mine Mod. Keeps track of Players having the Mod installed,
@@ -81,10 +81,8 @@ public class MultiMineServer
         
         PartiallyMinedBlock newblock = new PartiallyMinedBlock(x, y, z, dimension);
         newblock.setLastTimeMined(System.currentTimeMillis()+MultiMine.instance().getInitialBlockRegenDelay());
-        PartiallyMinedBlock iterBlock;
-        for (int i = 0; i < partiallyMinedBlocks.size(); i++)
+        for (PartiallyMinedBlock iterBlock : partiallyMinedBlocks)
         {
-            iterBlock = partiallyMinedBlocks.get(i);
             if (iterBlock.equals(newblock))
             {
                 iterBlock.advanceProgress();
