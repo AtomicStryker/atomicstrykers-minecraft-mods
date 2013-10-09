@@ -8,11 +8,11 @@ package atomicstryker.minions.client;
 
 import java.util.Iterator;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
-import net.minecraft.src.ModLoader;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -30,7 +30,7 @@ public class RenderChickenLightningBolt
     
 	private static Vector3 getRelativeViewVector(Vector3 pos)
 	{
-		Entity renderentity = ModLoader.getMinecraftInstance().renderViewEntity;
+		Entity renderentity = Minecraft.getMinecraft().renderViewEntity;
     	return new Vector3((float)renderentity.posX - pos.x, (float)renderentity.posY + renderentity.getEyeHeight() - pos.y, (float)renderentity.posZ - pos.z);
 	}
 	
@@ -39,7 +39,7 @@ public class RenderChickenLightningBolt
 	{
 	    RenderGlobal renderer = event.context;
 	    float frame = event.partialTicks;
-		Entity entity = ModLoader.getMinecraftInstance().thePlayer;
+		Entity entity = Minecraft.getMinecraft().thePlayer;
 		
 		interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)frame;
 		interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)frame;
