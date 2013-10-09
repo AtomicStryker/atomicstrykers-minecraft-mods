@@ -1,3 +1,8 @@
+1.4.0
+- fixed spawn coordinates errors by self-caused concurrent spawning
+- fixed error with spawn coordinates being forgotten
+- improved logging
+
 1.3.9
 - fixed nether towers to have netherbrick stairs, sandstone towers to sandstone stairs
 - added configurable minimum Battletower distance from spawn

@@ -12,6 +12,8 @@ import net.minecraft.world.World;
 public class AS_WorldGenTower
 {
     
+    public String failState;
+    
     private static int candidates[][] = {
         {
             4, -5
@@ -84,7 +86,7 @@ public class AS_WorldGenTower
             
             if (Math.abs(checkBlockY - centerblockY) > maxHoleDepthInBase)
             {
-                //System.err.println("Tower Gen abort: Uneven Surface, diff value: "+Math.abs(checkBlockY - centerblockY));
+                failState = "Uneven Surface, diff value: "+Math.abs(checkBlockY - centerblockY);
                 return -1;
             }
             
@@ -93,7 +95,7 @@ public class AS_WorldGenTower
                 ID = world.getBlockId(ix+pair[0], (checkBlockY+ycounter2), kz+pair[1]);
                 if (isBannedBlockID(ID))
                 {
-                    //System.err.println("Tower Gen abort: Surface banned Block of ID: "+ID+" at height: "+ycounter2);
+                    failState = "Surface banned Block of ID: "+ID+" at height: "+ycounter2;
                     return -1;
                 }
             }
@@ -104,7 +106,7 @@ public class AS_WorldGenTower
                 
                 if (ID == 0 || isBannedBlockID(ID))
                 {
-                    //System.err.println("Tower Gen abort: Depth check - Banned Block or hole, Depth: "+ycounter+" ID: "+ID);
+                    failState = "Depth check - Banned Block or hole, Depth: "+ycounter+" ID: "+ID;
                     return -1;
                 }
             }

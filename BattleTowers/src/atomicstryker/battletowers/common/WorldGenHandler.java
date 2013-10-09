@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ChunkCoordinates;
@@ -34,7 +34,7 @@ public class WorldGenHandler implements IWorldGenerator
     private final static WorldGenHandler instance = new WorldGenHandler();
     private HashMap<String, Boolean> biomesMap;
     private HashMap<String, Boolean> providerMap;
-    private static CopyOnWriteArrayList<TowerPosition> towerPositions;
+    private final static HashSet<TowerPosition> towerPositions = new HashSet<TowerPosition>();
     private static World lastWorld;
     private final AS_WorldGenTower generator;
     
@@ -42,7 +42,6 @@ public class WorldGenHandler implements IWorldGenerator
     {
         biomesMap = new HashMap<String, Boolean>();
         providerMap = new HashMap<String, Boolean>();
-        towerPositions = new CopyOnWriteArrayList<TowerPosition>();
         generator = new AS_WorldGenTower();
         
         MinecraftForge.EVENT_BUS.register(this);
@@ -113,23 +112,25 @@ public class WorldGenHandler implements IWorldGenerator
         return result;
     }
 
-    private synchronized void generateSurface(World world, Random random, int xActual, int zActual)
+    private void generateSurface(World world, Random random, int xActual, int zActual)
     {
         TowerPosition pos = canTowerSpawnAt(world, xActual, zActual);
         if (pos != null)
         {
+            towerPositions.add(pos);
             int y = getSurfaceBlockHeight(world, xActual, zActual);
             if (y > 49)
             {
                 pos.y = y;
                 if (attemptToSpawnTower(world, pos, random, xActual, y, zActual))
                 {
-                    towerPositions.add(pos);
                     //System.out.println("Battle Tower spawned at [ "+xActual+" | "+zActual+" ]");
                 }
                 else
                 {
                     // spawn failed, bugger
+                    System.out.printf("Tower Site [%d|%d] rejected: %s\n", pos.x, pos.z, generator.failState);
+                    towerPositions.remove(pos);
                 }
             }
         }
@@ -195,12 +196,9 @@ public class WorldGenHandler implements IWorldGenerator
         
         if (AS_BattleTowersCore.minDistanceBetweenTowers > 0)
         {
-            int index = 0;
             double mindist = 9999f;
-            TowerPosition temp;
-            for (; index < towerPositions.size(); index++)
+            for (TowerPosition temp : towerPositions)
             {
-                temp = towerPositions.get(index);
                 int diffX = temp.x - xActual;
                 int diffZ = temp.z - zActual;
                 double dist = Math.sqrt(diffX*diffX + diffZ*diffZ);
@@ -211,7 +209,7 @@ public class WorldGenHandler implements IWorldGenerator
                     return null;
                 }
             }
-            //System.out.printf("Logged %d towers so far, new site coords [%d,%d], mindist %f\n", towerPositions.size(), xActual, zActual, mindist);
+            System.out.printf("Logged %d towers so far, accepted new site coords [%d,%d], mindist %f\n", towerPositions.size(), xActual, zActual, mindist);
         }
         
         return new TowerPosition(xActual, 0, zActual, 0, false);
@@ -245,6 +243,23 @@ public class WorldGenHandler implements IWorldGenerator
             String[] data = s.split(" ");
             return new TowerPosition(Integer.valueOf(data[0]), Integer.valueOf(data[1]), Integer.valueOf(data[2]), Integer.valueOf(data[3]), Boolean.valueOf(data[4]));
         }
+        
+        @Override
+        public boolean equals(Object o)
+        {
+            if (o instanceof TowerPosition)
+            {
+                TowerPosition t = (TowerPosition) o;
+                return t.x == x && t.y == y && t.z == z;
+            }
+            return false;
+        }
+        
+        @Override
+        public int hashCode()
+        {
+            return (int)(x ^ (x >> 32) ^ y ^ (y >> 32) ^ z ^ (z >> 32));
+        }
     }
     
     private static void loadPosFile(File file, World world)
@@ -253,8 +268,6 @@ public class WorldGenHandler implements IWorldGenerator
         {
             return;
         }
-        
-        towerPositions.clear();
         
         try
         {
@@ -293,7 +306,7 @@ public class WorldGenHandler implements IWorldGenerator
         }
     }
 
-    private synchronized static void flushCurrentPosListToFile(World world)
+    private static void flushCurrentPosListToFile(World world)
     {
         if (towerPositions.isEmpty() || world.getWorldInfo().getWorldName().equals("MpServer"))
         {
@@ -369,26 +382,24 @@ public class WorldGenHandler implements IWorldGenerator
     {
         int index = -1;
         double lowestDist = 9999d;
-        TowerPosition tp = null;
+        TowerPosition chosen = null;
         
-        for (int i = 0; i < towerPositions.size(); i++)
+        for (TowerPosition tp : towerPositions)
         {
-            tp = towerPositions.get(i);
             double dist = Math.sqrt((tp.x - x)*(tp.x - x) + (tp.z - z)*(tp.z - z));
             if (dist < lowestDist)
             {
-                index = i;
                 lowestDist = dist;
+                chosen = tp;
             }
         }
         
-        if (index > 0)
+        if (chosen != null)
         {
-            tp = towerPositions.get(index);
-            instance.generator.generate(world, tp.x, tp.y, tp.z, TowerTypes.Null.ordinal(), tp.underground);
+            instance.generator.generate(world, chosen.x, chosen.y, chosen.z, TowerTypes.Null.ordinal(), chosen.underground);
             towerPositions.remove(index);
         }
-        return tp;
+        return chosen;
     }
 
     public static void deleteAllTowers(World world, boolean regenerate)
