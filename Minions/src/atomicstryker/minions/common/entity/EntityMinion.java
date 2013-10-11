@@ -75,6 +75,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 		
         this.moveSpeed = 1.2F;
         getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.225D); // movespeed attribute
+        getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(MinionsCore.minionFollowRange);
         
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
         
@@ -244,7 +245,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     }
     
     public void orderMinionToMoveTo(int targetX, int targetY, int targetZ, boolean allowDropping)
-    {    	
+    {
+        currentState = EnumMinionState.THINKING;
+        nextState = EnumMinionState.WALKING_TO_COORDS;
     	dataWatcher.updateObject(12, Integer.valueOf(0));
 		currentTarget = new ChunkCoordinates(targetX, targetY, targetZ);
 		pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), targetX, targetY, targetZ, allowDropping);

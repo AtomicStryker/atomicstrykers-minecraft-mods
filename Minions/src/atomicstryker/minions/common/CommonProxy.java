@@ -28,7 +28,7 @@ public class CommonProxy
     
     public boolean hasPlayerMinions(EntityPlayer player)
     {
-        return (MinionsCore.masterNames.get(player.username) != null);
+        return (MinionsCore.minionMap.get(player.username) != null);
     }
 
     public void sendSoundToClients(Entity ent, String string)

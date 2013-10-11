@@ -1,5 +1,6 @@
 package atomicstryker.minions.common.entity;
 
+import atomicstryker.minions.common.MinionsCore;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
@@ -7,14 +8,17 @@ import net.minecraft.world.World;
 
 public class MinionAIFollowMaster extends EntityAIBase
 {
-    private EntityMinion theMinion;
-    World theWorld;
-    private float followSpeed;
-    private PathNavigate petPathfinder;
-    private int updateTicker;
-    float maxDist;
-    float minDist;
+    
+    private final EntityMinion theMinion;
+    private final World theWorld;
+    private final float followSpeed;
+    private final PathNavigate petPathfinder;
+    private final float maxDist;
+    private final float minDist;
     private boolean isAvoidingWater;
+    
+    private int updateTicker;
+    private final double followRangeSq;
 
     public MinionAIFollowMaster(EntityMinion minion, float movespeed, float min, float max)
     {
@@ -25,6 +29,7 @@ public class MinionAIFollowMaster extends EntityAIBase
         this.minDist = min;
         this.maxDist = max;
         this.setMutexBits(3);
+        followRangeSq = MinionsCore.minionFollowRange*MinionsCore.minionFollowRange;
     }
 
     /**
@@ -84,11 +89,11 @@ public class MinionAIFollowMaster extends EntityAIBase
         {
             if (--this.updateTicker <= 0)
             {
-                this.updateTicker = 10;
+                this.updateTicker = 30;
 
                 if (!this.petPathfinder.tryMoveToEntityLiving(theMinion.master, this.followSpeed))
                 {
-                    if (this.theMinion.getDistanceSqToEntity(theMinion.master) >= 144.0D)
+                    if (this.theMinion.getDistanceSqToEntity(theMinion.master) >= followRangeSq)
                     {
                         int var1 = MathHelper.floor_double(theMinion.master.posX) - 2;
                         int var2 = MathHelper.floor_double(theMinion.master.posZ) - 2;

@@ -8,8 +8,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -61,7 +61,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.2")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.3")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -87,10 +87,12 @@ public class MinionsCore
     public static HashSet<Integer> configWorthlessBlocks = new HashSet<Integer>();
     public static CopyOnWriteArrayList<Minion_Job_Manager> runningJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
     public static CopyOnWriteArrayList<Minion_Job_Manager> finishedJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
-    public static HashMap<String, Vector<EntityMinion>> masterNames = new HashMap<String, Vector<EntityMinion>>();
+    public static HashMap<String, CopyOnWriteArrayList<EntityMinion>> minionMap = new HashMap<String, CopyOnWriteArrayList<EntityMinion>>();
     public static HashMap<String, Integer> masterCommits = new HashMap<String, Integer>();
     
     public static int secondsWithoutMasterDespawn;
+    
+    public static double minionFollowRange = 30d;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -109,6 +111,7 @@ public class MinionsCore
             exhaustAmountBig = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").getString());
             
             secondsWithoutMasterDespawn = cfg.get(Configuration.CATEGORY_GENERAL, "automaticDespawnDelay", 300, "Time in seconds after which a Minion without a Master ingame despawns").getInt();
+            minionFollowRange = cfg.get(Configuration.CATEGORY_GENERAL, "minionFollowRange", 30d, "Distance to be used by MC follower pathing. MC default is 12. High values may impede performance").getDouble(30d);
         }
         catch (Exception e)
         {
@@ -165,7 +168,7 @@ public class MinionsCore
         System.out.println("Minions detected World unload");
         finishedJobList.clear();
         runningJobList.clear();
-        masterNames.clear();
+        minionMap.clear();
         masterCommits.clear();
         MinionsChunkManager.onWorldUnloaded();
     }
@@ -286,23 +289,23 @@ public class MinionsCore
     }
     
     /**
-     * Gets HashSet associated with Username containing registered Minions
+     * Gets Collection associated with Username containing registered Minions
      * Creates one if none exists and returns the empty new one
      */
-    private static Vector<EntityMinion> getMinionsForMaster(String name)
+    private static CopyOnWriteArrayList<EntityMinion> getMinionsForMaster(String name)
     {
-        Vector<EntityMinion> set = masterNames.get(name);
+        CopyOnWriteArrayList<EntityMinion> set = minionMap.get(name);
         if (set == null)
         {
-            set = new Vector<EntityMinion>(minionsPerPlayer);
-            masterNames.put(name, set);
+            set = new CopyOnWriteArrayList<EntityMinion>();
+            minionMap.put(name, set);
         }
         return set;
     }
     
     public static void unregisterMinion(EntityMinion ent)
     {
-        for (Entry<String, Vector<EntityMinion>> entry : masterNames.entrySet())
+        for (Entry<String, CopyOnWriteArrayList<EntityMinion>> entry : minionMap.entrySet())
         {
             entry.getValue().remove(ent);
         }
@@ -320,7 +323,7 @@ public class MinionsCore
         System.out.println("Loaded Minion from NBT, re-registering master: "+ent.getMasterUserName());
         String mastername = ent.getMasterUserName();
 
-        Vector<EntityMinion> minions = getMinionsForMaster(mastername);
+        List<EntityMinion> minions = getMinionsForMaster(mastername);
         if (minions.size() >= minionsPerPlayer)
         {
             System.out.println("Added a new minion too many for "+mastername+", killing it NOW");
@@ -376,8 +379,9 @@ public class MinionsCore
     }
     
     public static void orderMinionToPickupEntity(EntityPlayer playerEnt, EntityLivingBase target)
-    {        
-        for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+    {
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        for (EntityMinion minion : minions)
         {
             minion.master = playerEnt;
 
@@ -416,7 +420,7 @@ public class MinionsCore
      */
     public static boolean spawnMinionsForPlayer(EntityPlayer playerEnt, int x, int y, int z)
     {   
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
         if (minions.size() < minionsPerPlayer)
         {
 
@@ -425,6 +429,7 @@ public class MinionsCore
             playerEnt.worldObj.spawnEntityInWorld(minion);
             MinionsCore.proxy.sendSoundToClients(minion, "minions:minionspawn");
             minions.add(minion);
+            minion.lastOrderedState = EnumMinionState.FOLLOWING_PLAYER;
             //System.out.println("spawned missing minion for "+var3.username);
             return true;
         }
@@ -436,7 +441,7 @@ public class MinionsCore
     
     public static void orderMinionsToChopTrees(EntityPlayer playerEnt, int x, int y, int z)
     {
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
         for (EntityMinion minion : minions)
         {
             minion.master = playerEnt;
@@ -448,13 +453,13 @@ public class MinionsCore
         if (minions.size() > 0)
         {
             runningJobList.add(new Minion_Job_TreeHarvest(minions, x, y, z));
-            proxy.sendSoundToClients(getMinionsForMaster(playerEnt.username).iterator().next(), "minions:ordertreecutting");
+            proxy.sendSoundToClients(minions.get(0), "minions:ordertreecutting");
         }
     }
     
     public static void orderMinionsToDigStairWell(EntityPlayer playerEnt, int x, int y, int z)
     {
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
         for (EntityMinion minion : minions)
         {
             minion.master = playerEnt;
@@ -467,14 +472,14 @@ public class MinionsCore
         if (minions.size() > 0)
         {
             runningJobList.add(new Minion_Job_DigMineStairwell(minions, x, y-1, z));
-            proxy.sendSoundToClients(minions.firstElement(), "minions:ordermineshaft");
+            proxy.sendSoundToClients(minions.get(0), "minions:ordermineshaft");
         }        
     }
     
     public static void orderMinionsToDigStripMineShaft(EntityPlayer playerEnt, int x, int y, int z)
     {
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
-        for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        for (EntityMinion minion : minions)
         {
             minion.master = playerEnt;
             minion.giveTask(null, true);
@@ -484,7 +489,7 @@ public class MinionsCore
         if (minions.size() > 0)
         {
             runningJobList.add(new Minion_Job_StripMine(minions, x, y-1, z));
-            proxy.sendSoundToClients(minions.firstElement(), "minions:randomorder");
+            proxy.sendSoundToClients(minions.get(0), "minions:randomorder");
         }
     }
     
@@ -499,11 +504,11 @@ public class MinionsCore
                 cancelRunningJobsForMaster(playerEnt.username);
             }
             
-            Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+            List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
             if (minions.size() > 0)
             {
-                proxy.sendSoundToClients(minions.firstElement(), "minions:randomorder");
-                for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+                proxy.sendSoundToClients(minions.get(0), "minions:randomorder");
+                for (EntityMinion minion : minions)
                 {
                     minion.master = playerEnt;
                     if (!sneaking)
@@ -519,18 +524,17 @@ public class MinionsCore
     
     public static void orderMinionsToMoveTo(EntityPlayer playerEnt, int x, int y, int z)
     {
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
         
         cancelRunningJobsForMaster(playerEnt.username);
         
         if (minions.size() > 0)
         {
-            proxy.sendSoundToClients(minions.firstElement(), "minions:randomorder");
-            for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+            proxy.sendSoundToClients(minions.get(0), "minions:randomorder");
+            for (EntityMinion minion : minions)
             {
                 minion.master = playerEnt;
                 minion.giveTask(null, true);
-                minion.currentState = EnumMinionState.IDLE;
                 minion.orderMinionToMoveTo(x, y, z, false);
             }
         }
@@ -540,13 +544,13 @@ public class MinionsCore
     {        
         if (isBlockValueable(playerEnt.worldObj.getBlockId(x, y-1, z)))
         {
-            Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+            List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
             cancelRunningJobsForMaster(playerEnt.username);
             
             if (minions.size() > 0)
             {
-                proxy.sendSoundToClients(minions.firstElement(), "minions:randomorder");
-                for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+                proxy.sendSoundToClients(minions.get(0), "minions:randomorder");
+                for (EntityMinion minion : minions)
                 {
                     if (!minion.hasTask())
                     {
@@ -562,28 +566,30 @@ public class MinionsCore
     {
         cancelRunningJobsForMaster(playerEnt.username);
         
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
         if (minions.size() > 0)
         {
-            proxy.sendSoundToClients(minions.firstElement(), "minions:orderfollowplayer");
-            for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+            proxy.sendSoundToClients(minions.get(0), "minions:orderfollowplayer");
+            for (EntityMinion minion : minions)
             {
                 minion.master = playerEnt;
                 minion.giveTask(null, true);
                 minion.currentState = EnumMinionState.FOLLOWING_PLAYER;
+                minion.lastOrderedState = EnumMinionState.FOLLOWING_PLAYER;
             }
         }
     }
     
     public static void unSummonPlayersMinions(EntityPlayer playerEnt)
     {
-        for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        for (EntityMinion minion : minions)
         {
     			minion.master = playerEnt;
     			minion.dropAllItemsToWorld();
     			minion.setDead();
     	}
-    	masterNames.remove(playerEnt.username);
+    	minionMap.remove(playerEnt.username);
     	
     	Object[] toSend = { proxy.hasPlayerMinions(playerEnt) ? 1 : 0, hasAllMinions(playerEnt) ? 1 : 0 }; // HasMinions override call from server to client
     	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend), (Player) playerEnt);
@@ -591,8 +597,8 @@ public class MinionsCore
     
     public static void orderMinionsToDigCustomSpace(EntityPlayer playerEnt, int x, int y, int z, int XZsize, int ySize)
     {
-        Vector<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
-        for (EntityMinion minion : getMinionsForMaster(playerEnt.username))
+        List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
+        for (EntityMinion minion : minions)
         {
             minion.master = playerEnt;
             minion.giveTask(null, true);

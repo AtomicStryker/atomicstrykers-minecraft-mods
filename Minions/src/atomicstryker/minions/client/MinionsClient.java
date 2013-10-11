@@ -3,7 +3,6 @@ package atomicstryker.minions.client;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.logging.Level;
 
 import net.minecraft.client.Minecraft;
@@ -369,7 +368,7 @@ public class MinionsClient
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
         targetObjectMouseOver = mcinstance.objectMouseOver; //mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
-        Vector<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.username);
+        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.username);
         // System.out.println("OnMastersGloveRightClick Master: "+playerEnt.username+", minionarray is: "+minions);
         Entity target;
 
@@ -484,7 +483,7 @@ public class MinionsClient
                 Object[] toSend = {playerEnt.username, playerEnt.isSneaking(), x, y, z};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDASSIGNCHEST.ordinal(), toSend)); // chest assign command packet
             }
-            else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && (minions.size() > 0 || hasAllMinionsSMPOverride))
+            else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && (MinionsCore.minionMap.get(playerEnt.username).size() > 0 || hasAllMinionsSMPOverride))
             {
                 // check if player targets his own feet. if so, order minion carry
                 if (MathHelper.floor_double(playerEnt.posX) == x

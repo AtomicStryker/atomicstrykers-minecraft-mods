@@ -1,3 +1,8 @@
+Update 1.7.3
+- small performance and concurrency fixes
+- added new configurable option minionFollowRange; MC will not resort to wolf-like teleporting below that distance
+- reworked "move" order so that issuing it twice should un-freeze any Minions whose logic got stuck somehow
+
 Update 1.7.2
 - refactorization & bugfixes
 - fixed minion tools not being rendered
