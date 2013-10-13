@@ -483,7 +483,7 @@ public class MinionsClient
                 Object[] toSend = {playerEnt.username, playerEnt.isSneaking(), x, y, z};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDASSIGNCHEST.ordinal(), toSend)); // chest assign command packet
             }
-            else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && (MinionsCore.minionMap.get(playerEnt.username).size() > 0 || hasAllMinionsSMPOverride))
+            else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && (hasMinionsSMPOverride || !MinionsCore.getMinionsForMaster(playerEnt.username).isEmpty()))
             {
                 // check if player targets his own feet. if so, order minion carry
                 if (MathHelper.floor_double(playerEnt.posX) == x

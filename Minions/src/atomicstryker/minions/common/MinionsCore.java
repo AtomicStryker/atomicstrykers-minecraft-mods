@@ -61,7 +61,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.3")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.4")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -87,8 +87,8 @@ public class MinionsCore
     public static HashSet<Integer> configWorthlessBlocks = new HashSet<Integer>();
     public static CopyOnWriteArrayList<Minion_Job_Manager> runningJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
     public static CopyOnWriteArrayList<Minion_Job_Manager> finishedJobList = new CopyOnWriteArrayList<Minion_Job_Manager>();
-    public static HashMap<String, CopyOnWriteArrayList<EntityMinion>> minionMap = new HashMap<String, CopyOnWriteArrayList<EntityMinion>>();
     public static HashMap<String, Integer> masterCommits = new HashMap<String, Integer>();
+    private static HashMap<String, CopyOnWriteArrayList<EntityMinion>> minionMap = new HashMap<String, CopyOnWriteArrayList<EntityMinion>>();
     
     public static int secondsWithoutMasterDespawn;
     
@@ -292,7 +292,7 @@ public class MinionsCore
      * Gets Collection associated with Username containing registered Minions
      * Creates one if none exists and returns the empty new one
      */
-    private static CopyOnWriteArrayList<EntityMinion> getMinionsForMaster(String name)
+    public static CopyOnWriteArrayList<EntityMinion> getMinionsForMaster(String name)
     {
         CopyOnWriteArrayList<EntityMinion> set = minionMap.get(name);
         if (set == null)

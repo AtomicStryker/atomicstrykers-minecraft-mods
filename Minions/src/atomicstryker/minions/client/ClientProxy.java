@@ -53,7 +53,7 @@ public class ClientProxy extends CommonProxy
     @Override
     public boolean hasPlayerMinions(EntityPlayer player)
     {
-        return MinionsClient.hasMinionsSMPOverride || (MinionsCore.minionMap.get(player.username) != null);
+        return MinionsClient.hasMinionsSMPOverride || !MinionsCore.getMinionsForMaster(player.username).isEmpty();
     }
     
     @Override
