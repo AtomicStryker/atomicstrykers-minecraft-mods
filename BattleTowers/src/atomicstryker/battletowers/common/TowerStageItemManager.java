@@ -1,5 +1,6 @@
 package atomicstryker.battletowers.common;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -14,11 +15,11 @@ public class TowerStageItemManager
 	 *  Spawns Saddle(73) Item Damage 0 with 20 percent chance, at least 1, max 1
 	 */
 	
-	private final int[] itemID;
-	private final int[] itemDamage;
-	private final int[] chanceToSpawn;
-	private final int[] minAmount;
-	private final int[] maxAmount;
+	private int[] itemID;
+	private int[] itemDamage;
+	private int[] chanceToSpawn;
+	private int[] minAmount;
+	private int[] maxAmount;
 	private int curIndex = 0;
 	
 	/**
@@ -33,6 +34,7 @@ public class TowerStageItemManager
 		minAmount = new int[elements.length];
 		maxAmount = new int[elements.length];
 		
+		ArrayList<Integer> validItemIndexes = new ArrayList<Integer>();
 		for (int i = 0; i < elements.length; i++)
 		{
 			String[] settings = elements[i].trim().split("-");
@@ -43,16 +45,76 @@ public class TowerStageItemManager
 			}
 			else
 			{
-	            itemID[i] = Integer.parseInt(settings[0]);
+	            itemID[i] = tryFindingItemID(settings[0]);
+	            if (itemID[i] != 0)
+	            {
+	                validItemIndexes.add(i);
+	            }
 	            itemDamage[i] = Integer.parseInt(settings[1]);
 	            chanceToSpawn[i] = Integer.parseInt(settings[2]);
 	            minAmount[i] = Integer.parseInt(settings[3]);
 	            maxAmount[i] = Integer.parseInt(settings[4]);
-	            System.out.println("Battletowers parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
+	            
+	            if (itemID[i] != 0)
+                {
+	                System.out.println("Battletowers parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
+                }
+	            else
+	            {
+	                System.out.println("Battletowers failed parsing or finding Item/Block "+settings[0]);
+	            }
 	            //System.out.println("Name of that Item: "+Item.itemsList[itemID[i]].getItemName());
 			}
 		}
+		
+		final int[] itemIDf = new int[validItemIndexes.size()];
+		final int[] itemDamagef = new int[validItemIndexes.size()];
+		final int[] chanceToSpawnf = new int[validItemIndexes.size()];
+		final int[] minAmountf = new int[validItemIndexes.size()];
+		final int[] maxAmountf = new int[validItemIndexes.size()];
+		int assigned;
+		for (int i = 0; i < validItemIndexes.size(); i++)
+		{
+		    assigned = validItemIndexes.get(i);
+		    itemIDf[i] = itemID[assigned];
+		    itemDamagef[i] = itemDamage[assigned];
+		    chanceToSpawnf[i] = chanceToSpawn[assigned];
+		    minAmountf[i] = minAmount[assigned];
+		    maxAmountf[i] = maxAmount[assigned];
+		}
+		
+		itemID = itemIDf;
+		itemDamage = itemDamagef;
+		chanceToSpawn = chanceToSpawnf;
+		minAmount = minAmountf;
+		maxAmount = maxAmountf;
 	}
+	
+    private int tryFindingItemID(String s)
+    {
+        try
+        {
+            return Integer.parseInt(s);
+        }
+        catch (NumberFormatException e)
+        {
+            for (Item item : Item.itemsList)
+            {
+                if (item != null && item.getUnlocalizedName().equals(s))
+                {
+                    return item.itemID;
+                }
+            }
+            for (Block block : Block.blocksList)
+            {
+                if (block != null && block.getUnlocalizedName().equals(s))
+                {
+                    return block.blockID;
+                }
+            }
+            return 0;
+        }
+    }
 	
 	/**
 	 * @param toCopy TowerStageItemManager you need an image of

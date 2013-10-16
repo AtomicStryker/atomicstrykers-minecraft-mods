@@ -8,7 +8,7 @@ Changes from Kodaichi's original, maintained a while by freakstritch
 http://www.minecraftforum.net/topic/139746-/
 
 
-- Completely rewritten Tower Spawning to properly work in most cases
+- Completely rewritten Tower Spawning
 - There is 7 Types of Towers now, also underground towers!
 - 4 spawn depending on their underground (Sand, Ice, Water, Foliage)
 - Battle Towers now have actual staircases

@@ -1,3 +1,7 @@
+1.4.1
+- now allows the use of unlocalized strings instead of item id's in config
+- improved handling of invalid items in config
+
 1.4.0
 - fixed spawn coordinates errors by self-caused concurrent spawning
 - fixed error with spawn coordinates being forgotten
