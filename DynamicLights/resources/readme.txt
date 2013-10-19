@@ -23,3 +23,45 @@ Dynamic Lights is now a FML coremod. That means drag and drop installation! Simp
 Minecraft 1.6.2 and later: Coremods now go into the /mods/ folder along with everything else! NOT the coremods folder.
 
 Out of the box support for Optifine!
+
+
+
+How the advanced config syntax works:
+[DynamicLights_thePlayer, DynamicLights_dropItems and DynamicLights_otherPlayers configs ONLY, other configs state their syntax in comments]
+
+* Possible ID setups:
+* X := simple ID X, wildcards metadata
+* X-Y := simple ID X and metadata Y
+* X-Y-Z := simple ID X, metadata range Y to Z
+* A-B-C-D := ID range A to B, meta range C to D
+
+There is a default value used as "light strength setting", you can specify one by appending "=x" to the ID part where x is the numeric minecraft light level
+Note Dynamic Lights might ignore low light settings
+
+
+Valid Entry examples:
+
+50
+Torch BlockID, 50, will use the default light value (15)
+
+35-* (equals 35)
+Wool BlockID, covers all wool metadata/colors
+
+35-2=12
+Wool BlockID, 35, magenta subtype (meta 2), will use a light value of 12
+
+35-2-5
+Wool BlockID, accepts metadata range [2..5]
+
+314-317-*-*=15
+Item ID range [314..317] covering golden armor, wildcarded meta/damage which means any value goes
+Also unnecessarily specifying the default light value of 15, you could leave =15 out aswell
+
+
+
+You can also substitute block/item IDs with their untranslated String values, useful for mod items
+tile.cloth is the same as 35, so tile.cloth-2-5=10 is valid
+item.helmetGold-item.leggingsGold-*-* is valid too
+To get untranslated String values off mods ask their creators or use a Java decompiler
+
+Values that cannot be mapped to anything will be logged and ignored 
