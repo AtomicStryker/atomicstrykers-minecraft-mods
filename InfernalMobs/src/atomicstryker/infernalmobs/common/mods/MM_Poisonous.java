@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Poisonous extends MobModifier
@@ -26,7 +27,8 @@ public class MM_Poisonous extends MobModifier
         && (source.getEntity() instanceof EntityLivingBase))
         {
             EntityLivingBase ent = (EntityLivingBase)source.getEntity();
-            if (!ent.isPotionActive(Potion.poison))
+            if (!ent.isPotionActive(Potion.poison)
+            && !(source instanceof EntityDamageSourceIndirect))
             {
                 ent.addPotionEffect(new PotionEffect(Potion.poison.id, 120, 0));
             }

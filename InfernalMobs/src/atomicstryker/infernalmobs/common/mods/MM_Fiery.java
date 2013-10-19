@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Fiery extends MobModifier
@@ -21,7 +22,8 @@ public class MM_Fiery extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityLivingBase))
+        && (source.getEntity() instanceof EntityLivingBase)
+        && !(source instanceof EntityDamageSourceIndirect))
         {
             ((EntityLivingBase)source.getEntity()).setFire(3);
         }

@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Rust extends MobModifier
@@ -22,7 +23,8 @@ public class MM_Rust extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityPlayer))
+        && (source.getEntity() instanceof EntityPlayer)
+        && !(source instanceof EntityDamageSourceIndirect))
         {
             EntityPlayer p = (EntityPlayer)source.getEntity();
             if (p.inventory.getCurrentItem() != null)

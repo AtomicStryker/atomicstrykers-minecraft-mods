@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Wither extends MobModifier
@@ -23,7 +24,8 @@ public class MM_Wither extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityLivingBase))
+        && (source.getEntity() instanceof EntityLivingBase)
+        && !(source instanceof EntityDamageSourceIndirect))
         {
             ((EntityLivingBase)source.getEntity()).addPotionEffect(new PotionEffect(Potion.wither.id, 120, 0));
         }

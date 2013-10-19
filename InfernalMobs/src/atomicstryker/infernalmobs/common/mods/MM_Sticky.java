@@ -6,6 +6,7 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Sticky extends MobModifier
@@ -36,7 +37,8 @@ public class MM_Sticky extends MobModifier
             {
                 long time = System.currentTimeMillis();
                 if (time > nextAbilityUse
-                && source.getEntity() != null)
+                && source.getEntity() != null
+                && !(source instanceof EntityDamageSourceIndirect))
                 {
                     nextAbilityUse = time+coolDown;
                     EntityItem drop = p.dropPlayerItemWithRandomChoice(p.inventory.decrStackSize(p.inventory.currentItem, 1), false);
