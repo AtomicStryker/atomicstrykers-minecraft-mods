@@ -222,20 +222,30 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         }
         
         boolean result = target.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
-        
-        if (livingTarget != null && result)
+        if (result)
         {
-            float damageDealt = prevHealth - livingTarget.getHealth();
-            if (damageDealt > 0)
+            if (livingTarget != null)
             {
-                addBatExperience((int) damageDealt);
-                
+                float damageDealt = prevHealth - livingTarget.getHealth();
+                if (damageDealt > 0)
+                {
+                    addBatExperience((int) damageDealt);
+                    if (level > 2)
+                    {
+                        this.heal(Math.max(damageDealt/3, 1));
+                    }
+                }
+            }
+            else
+            {
+                addBatExperience(damage);
                 if (level > 2)
                 {
-                    this.heal(Math.max(damageDealt/3, 1));
+                    this.heal(Math.max(damage/3, 1));
                 }
             }
         }
+
         return result;
     }
     

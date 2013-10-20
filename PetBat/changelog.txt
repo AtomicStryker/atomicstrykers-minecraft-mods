@@ -1,5 +1,6 @@
 1.2.6
 fixed xp and health considerations on EntityLivingBase instances
+added fallback xp and health calculation which ALWAYS works
 
 1.2.5
 update to mc 1.6.4
