@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -113,7 +113,7 @@ public class AStarStatic
 	 * @param entLiving Entity
 	 * @return euclidian vector length of Entity movement vector
 	 */
-	public static double getEntityLandSpeed(EntityLiving entLiving)
+	public static double getEntityLandSpeed(EntityLivingBase entLiving)
 	{
 		return Math.sqrt((entLiving.motionX * entLiving.motionX) + (entLiving.motionZ * entLiving.motionZ));
 	}

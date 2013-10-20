@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -19,12 +19,12 @@ public class SaveEventHandler
             {
                 Entity newEnt = (Entity) chunk.entityLists[i].get(j);
                 
-                if (newEnt instanceof EntityLiving)
+                if (newEnt instanceof EntityLivingBase)
                 {
                     /* an EntityLiving was just dumped to a save file and removed from the world */
-                    if (InfernalMobsCore.getIsRareEntity((EntityLiving) newEnt))
+                    if (InfernalMobsCore.getIsRareEntity((EntityLivingBase) newEnt))
                     {
-                        InfernalMobsCore.removeEntFromElites((EntityLiving) newEnt);
+                        InfernalMobsCore.removeEntFromElites((EntityLivingBase) newEnt);
                     }
                 }
             }

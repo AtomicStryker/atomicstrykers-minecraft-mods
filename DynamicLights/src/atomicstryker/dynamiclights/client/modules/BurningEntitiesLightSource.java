@@ -7,7 +7,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -130,7 +130,7 @@ public class BurningEntitiesLightSource
             {
                 ent = (Entity) o;
                 // Loop all loaded Entities, find alive and valid EntityLiving not otherwise handled
-                if ((ent instanceof EntityLiving || ent instanceof EntityFireball || ent instanceof EntityArrow)
+                if ((ent instanceof EntityLivingBase || ent instanceof EntityFireball || ent instanceof EntityArrow)
                         && ent.isEntityAlive() && ent.isBurning() && !(ent instanceof EntityItem) && !(ent instanceof EntityPlayer))
                 {
                     // now find them in the already tracked adapters

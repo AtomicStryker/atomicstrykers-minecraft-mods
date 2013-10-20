@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -40,9 +40,9 @@ public class ClientPacketHandler implements IPacketHandler
             
             Entity target = KenshiroMod.instance().getEntityByID(FMLClientHandler.instance().getClient().theWorld, (Integer)packetReadout[0]);
             if (target != null
-            && target instanceof EntityLiving)
+            && target instanceof EntityLivingBase)
             {
-                KenshiroClient.instance().onEntityPunched((EntityLiving) target);
+                KenshiroClient.instance().onEntityPunched((EntityLivingBase) target);
             }
         }
         else if (packetType == PacketType.KENSHIROSTARTED.ordinal())
@@ -56,13 +56,13 @@ public class ClientPacketHandler implements IPacketHandler
             
             Entity target = KenshiroMod.instance().getEntityByID(FMLClientHandler.instance().getClient().theWorld, (Integer)packetReadout[1]);
             if (target != null
-            && target instanceof EntityLiving)
+            && target instanceof EntityLivingBase)
             {
                 Entity kicker = KenshiroMod.instance().getEntityByID(FMLClientHandler.instance().getClient().theWorld, (Integer)packetReadout[0]);
                 if (kicker != null
                 && kicker instanceof EntityPlayer)
                 {
-                    KenshiroClient.instance().onEntityKicked((EntityPlayer)kicker, (EntityLiving) target);
+                    KenshiroClient.instance().onEntityKicked((EntityPlayer)kicker, (EntityLivingBase) target);
                 }
             }
         }

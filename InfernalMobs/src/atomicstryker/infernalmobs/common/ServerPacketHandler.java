@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -31,9 +30,9 @@ public class ServerPacketHandler implements IPacketHandler
             
             EntityPlayer p = (EntityPlayer) player;
             Entity entity = p.worldObj.getEntityByID(entID);
-            if (entity != null && entity instanceof EntityLiving)
+            if (entity != null && entity instanceof EntityLivingBase)
             {
-                EntityLiving ent = (EntityLiving) p.worldObj.getEntityByID(entID);
+                EntityLivingBase ent = (EntityLivingBase) p.worldObj.getEntityByID(entID);
                 MobModifier mod = InfernalMobsCore.getMobModifiers(ent);
                 if (mod != null)
                 {

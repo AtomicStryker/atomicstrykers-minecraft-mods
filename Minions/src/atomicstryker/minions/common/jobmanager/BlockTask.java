@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -238,7 +238,7 @@ public abstract class BlockTask
      * @param ent
      * @return true when the entity currently is within reach distance of the target Block, false otherwise
      */
-    private boolean isEntityInAccessRange(EntityLiving ent)
+    private boolean isEntityInAccessRange(EntityLivingBase ent)
     {
     	return (ent.getDistanceSq(this.posX, this.posY, this.posZ) < accessRangeSq);
     }

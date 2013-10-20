@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityCrit2FX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -171,7 +171,7 @@ public class KenshiroClient
         		{
         			Entity ent = mouseTargetObject.entityHit;
         			
-        			if (ent instanceof EntityLiving)
+        			if (ent instanceof EntityLivingBase)
         			{
 	        			if (!entitesHit.contains(ent))
 	        			{
@@ -250,7 +250,7 @@ public class KenshiroClient
         			&& !entPlayer.onGround
         			&& mouseTargetObject != null
         			&& mouseTargetObject.typeOfHit == EnumMovingObjectType.ENTITY
-        			&& mouseTargetObject.entityHit instanceof EntityLiving)
+        			&& mouseTargetObject.entityHit instanceof EntityLivingBase)
         		{
         			triggeredKick = true;
         			kickTime = currtime;
@@ -302,9 +302,9 @@ public class KenshiroClient
         }
     }
 
-    public void onEntityPunched(EntityLiving ent)
+    public void onEntityPunched(EntityLivingBase ent)
     {
-        KenshiroMod.instance().debuffEntityLiving((EntityLiving) ent);
+        KenshiroMod.instance().debuffEntityLiving((EntityLivingBase) ent);
         
         ent.worldObj.spawnParticle("explode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
         ent.worldObj.spawnParticle("largeexplode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
@@ -321,7 +321,7 @@ public class KenshiroClient
         }
     }
     
-    public void onEntityKicked(EntityPlayer kicker, EntityLiving target)
+    public void onEntityKicked(EntityPlayer kicker, EntityLivingBase target)
     {
         //System.out.println("Client onEntityKicked, kicker: "+kicker.username+", entity: "+target);
         target.attackEntityFrom(DamageSource.causePlayerDamage(kicker), 4);
@@ -332,7 +332,7 @@ public class KenshiroClient
         {
            var9 = (Math.random() - Math.random()) * 0.01D;
         }
-        //((EntityLiving) mc.objectMouseOver.entityHit).knockBack(entPlayer, 10, var9, var7);
+        //((EntityLivingBase) mc.objectMouseOver.entityHit).knockBack(entPlayer, 10, var9, var7);
         
         target.setFire(8);
         

@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -21,16 +21,16 @@ public class EntityEventHandler
     @ForgeSubscribe
     public void onEntityJoinedWorld (EntityJoinWorldEvent event)
     {
-        if (event.entity instanceof EntityLiving)
+        if (event.entity instanceof EntityLivingBase)
         {
             String savedMods = event.entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
             if (!savedMods.equals(""))
             {
-                InfernalMobsCore.instance().addEntityModifiersByString((EntityLiving) event.entity, savedMods);
+                InfernalMobsCore.instance().addEntityModifiersByString((EntityLivingBase) event.entity, savedMods);
             }
             else
             {
-                InfernalMobsCore.instance().processEntitySpawn((EntityLiving) event.entity);
+                InfernalMobsCore.instance().processEntitySpawn((EntityLivingBase) event.entity);
             }
         }
     }
@@ -84,9 +84,9 @@ public class EntityEventHandler
          */
         Entity attacker = event.source.getEntity();
         if (attacker != null
-        && attacker instanceof EntityLiving)
+        && attacker instanceof EntityLivingBase)
         {
-            mod = InfernalMobsCore.getMobModifiers((EntityLiving) attacker);
+            mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) attacker);
             if (mod != null)
             {
                 event.ammount = mod.onAttack(event.entityLiving, event.source, event.ammount);

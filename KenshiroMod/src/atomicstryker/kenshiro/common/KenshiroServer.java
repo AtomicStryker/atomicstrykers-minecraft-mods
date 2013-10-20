@@ -9,7 +9,7 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,13 +32,13 @@ public class KenshiroServer
 {
     private static KenshiroServer instance;
     private Set<EntityPlayer> hasKenshiroSet;
-    private Map<EntityPlayer, Set<EntityLiving>> punchedEntitiesMap;
+    private Map<EntityPlayer, Set<EntityLivingBase>> punchedEntitiesMap;
     
     public KenshiroServer()
     {
         instance = this;
         hasKenshiroSet = new HashSet<EntityPlayer>();
-        punchedEntitiesMap = new HashMap<EntityPlayer, Set<EntityLiving>>();
+        punchedEntitiesMap = new HashMap<EntityPlayer, Set<EntityLivingBase>>();
         MinecraftForge.EVENT_BUS.register(this);
         TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
     }
@@ -86,9 +86,9 @@ public class KenshiroServer
     {
         Entity target = KenshiroMod.instance().getEntityByID(world, entityID);
         if (target != null
-        && target instanceof EntityLiving)
+        && target instanceof EntityLivingBase)
         {
-            EntityLiving targetEnt = (EntityLiving) target;
+            EntityLivingBase targetEnt = (EntityLivingBase) target;
             
             KenshiroMod.instance().debuffEntityLiving(targetEnt);
             
@@ -100,9 +100,9 @@ public class KenshiroServer
             {
                 if (punchedEntitiesMap.get(player) == null)
                 {
-                    punchedEntitiesMap.put(player, new HashSet<EntityLiving>());
+                    punchedEntitiesMap.put(player, new HashSet<EntityLivingBase>());
                 }
-                punchedEntitiesMap.get(player).add((EntityLiving) target);
+                punchedEntitiesMap.get(player).add((EntityLivingBase) target);
             }
             
             Object[] toSend = {entityID};
@@ -120,7 +120,7 @@ public class KenshiroServer
         }
     }
 
-    public void onClientKickedEntity(EntityPlayer player, EntityLiving target)
+    public void onClientKickedEntity(EntityPlayer player, EntityLivingBase target)
     {
         player.addExhaustion(40F);
         target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
@@ -131,7 +131,7 @@ public class KenshiroServer
         {
            var9 = (Math.random() - Math.random()) * 0.01D;
         }
-        //((EntityLiving) mc.objectMouseOver.entityHit).knockBack(entPlayer, 10, var9, var7);
+        //((EntityLivingBase) mc.objectMouseOver.entityHit).knockBack(entPlayer, 10, var9, var7);
         
         float quad = MathHelper.sqrt_double(var9-var9 + var7*var7);
         target.addVelocity((var9 / (double)quad)*-1, 0.6, (var9 / (double)quad)*-1*-1);
@@ -149,18 +149,18 @@ public class KenshiroServer
         playerEnt.addExhaustion(40F);
         playerEnt.addExhaustion(40F);
         
-        punchedEntitiesMap.put(playerEnt, new HashSet<EntityLiving>());
+        punchedEntitiesMap.put(playerEnt, new HashSet<EntityLivingBase>());
     }
 
     public void onClientFinishedKenshiroVolley(EntityPlayer playerEnt)
     {
-        Set<EntityLiving> s = punchedEntitiesMap.get(playerEnt);
+        Set<EntityLivingBase> s = punchedEntitiesMap.get(playerEnt);
         if (s != null)
         {
-            Iterator<EntityLiving> iter = s.iterator();
+            Iterator<EntityLivingBase> iter = s.iterator();
             while (iter.hasNext())
             {
-                EntityLiving target = iter.next();
+                EntityLivingBase target = iter.next();
                 target.attackEntityFrom(DamageSource.causePlayerDamage(playerEnt), 21);
             }
             punchedEntitiesMap.remove(playerEnt);
@@ -168,7 +168,7 @@ public class KenshiroServer
     }
     
     @ForgeSubscribe
-    public void onEntityLivingAttacked(LivingAttackEvent event)
+    public void onEntityLivingBaseAttacked(LivingAttackEvent event)
     {
         if (event.source.getEntity() != null
         && !(event.source.getEntity() instanceof EntityPlayer))
@@ -201,7 +201,7 @@ public class KenshiroServer
         {
             for (EntityPlayer p : punchedEntitiesMap.keySet())
             {
-                for (EntityLiving e : punchedEntitiesMap.get(p))
+                for (EntityLivingBase e : punchedEntitiesMap.get(p))
                 {
                     if (e instanceof EntityCreeper)
                     {

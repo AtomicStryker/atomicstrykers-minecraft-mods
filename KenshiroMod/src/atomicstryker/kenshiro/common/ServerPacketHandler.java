@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet18Animation;
@@ -60,9 +60,9 @@ public class ServerPacketHandler implements IPacketHandler
             
             Entity target = KenshiroMod.instance().getEntityByID(FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(playerEnt.dimension), (Integer)packetReadout[1]);
             if (target != null
-            && target instanceof EntityLiving)
+            && target instanceof EntityLivingBase)
             {
-                KenshiroServer.instance().onClientKickedEntity(playerEnt, (EntityLiving) target);
+                KenshiroServer.instance().onClientKickedEntity(playerEnt, (EntityLivingBase) target);
             }
         }
         else if (packetType == PacketType.SOUNDEFFECT.ordinal())

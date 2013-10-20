@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -331,7 +331,7 @@ public class ChickenLightningBolt
 		for(int i = 0; i < entitylist.size(); i++)
 		{
 			Entity entity = entitylist.get(i);
-			if(entity instanceof EntityLiving && 
+			if(entity instanceof EntityLivingBase && 
 					(entity.boundingBox.isVecInside(start3D) || entity.boundingBox.isVecInside(end3D)))
 			{
 				if(entity instanceof EntityPlayer)

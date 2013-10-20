@@ -8,7 +8,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -81,7 +81,7 @@ public class EntityLivingEquipmentLightSource
         TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
     }
     
-    private int getEquipmentLightLevel(EntityLiving ent)
+    private int getEquipmentLightLevel(EntityLivingBase ent)
     {
         if (ent instanceof EntityHorse)
         {
@@ -182,8 +182,8 @@ public class EntityLivingEquipmentLightSource
             {
                 ent = (Entity) o;
                 // Loop all loaded Entities, find alive and valid EntityLiving not otherwise handled
-                if ((ent instanceof EntityLiving)
-                        && ent.isEntityAlive() && !(ent instanceof EntityPlayer) && getEquipmentLightLevel((EntityLiving) ent) > 0)
+                if ((ent instanceof EntityLivingBase)
+                        && ent.isEntityAlive() && !(ent instanceof EntityPlayer) && getEquipmentLightLevel((EntityLivingBase) ent) > 0)
                 {
                     // now find them in the already tracked adapters
                     boolean found = false;
@@ -205,7 +205,7 @@ public class EntityLivingEquipmentLightSource
                     if (!found) // wasnt already tracked
                     {
                         // make new, tick, put in new list
-                        adapter = new EntityLightAdapter((EntityLiving) ent);
+                        adapter = new EntityLightAdapter((EntityLivingBase) ent);
                         adapter.onTick();
                         newList.add(adapter);
                     }
@@ -226,11 +226,11 @@ public class EntityLivingEquipmentLightSource
     private class EntityLightAdapter implements IDynamicLightSource
     {
         
-        private EntityLiving entity;
+        private EntityLivingBase entity;
         private int lightLevel;
         private boolean enabled;
         
-        public EntityLightAdapter(EntityLiving e)
+        public EntityLightAdapter(EntityLivingBase e)
         {
             lightLevel = 0;
             enabled = false;
