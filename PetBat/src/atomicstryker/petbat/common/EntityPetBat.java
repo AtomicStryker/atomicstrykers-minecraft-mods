@@ -2,7 +2,6 @@ package atomicstryker.petbat.common;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -215,10 +214,10 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         int damage = 1 + level;
         
         float prevHealth = 0;
-        EntityLiving livingTarget = null;
-        if (target instanceof EntityLiving)
+        EntityLivingBase livingTarget = null;
+        if (target instanceof EntityLivingBase)
         {
-            livingTarget = (EntityLiving) target;
+            livingTarget = (EntityLivingBase) target;
             prevHealth = livingTarget.getHealth();
         }
         

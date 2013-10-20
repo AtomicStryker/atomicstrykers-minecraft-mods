@@ -1,3 +1,6 @@
+1.2.6
+fixed xp and health considerations on EntityLivingBase instances
+
 1.2.5
 update to mc 1.6.4
 

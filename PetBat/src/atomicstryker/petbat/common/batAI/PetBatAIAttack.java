@@ -1,7 +1,7 @@
 package atomicstryker.petbat.common.batAI;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ public class PetBatAIAttack extends EntityAIBase
     private Entity entityTarget;
     private int attackTick;
     
-    public PetBatAIAttack(EntityLiving bat)
+    public PetBatAIAttack(EntityLivingBase bat)
     {
         petBat = (EntityPetBat) bat;
         attackTick = 0;
