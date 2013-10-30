@@ -66,14 +66,14 @@ public abstract class TileEntityBaseMachine extends TileEntityMachine implements
     @Override
     public void updateEntity()
     {
-        super.updateEntity();
-        if (IC2.platform.isSimulating() && !this.addedToEnergyNet)
+        if (IC2.platform.isSimulating() && !addedToEnergyNet)
         {
             MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             addedToEnergyNet = true;
         }
+        super.updateEntity();
     }
-
+    
     @Override
     public void invalidate()
     {
