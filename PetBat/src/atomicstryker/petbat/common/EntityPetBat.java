@@ -189,7 +189,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             }
             
             if (source.getEntity() != null
-            && source.getEntity() == owner)
+            && source.getEntity() == owner
+            && !this.isDead)
             {
                 ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
                 if (batstack != null)

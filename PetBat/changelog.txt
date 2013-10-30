@@ -1,3 +1,6 @@
+1.2.6 hotfix (not visible in version display)
+fixed weapons that double trigger damage code duping bat items
+
 1.2.6
 fixed xp and health considerations on EntityLivingBase instances
 added fallback xp and health calculation which ALWAYS works
