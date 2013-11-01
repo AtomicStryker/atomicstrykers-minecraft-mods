@@ -3,6 +3,7 @@ package ic2.advancedmachines.common;
 import ic2.advancedmachines.client.AdvancedMachinesClient;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.item.Items;
+import ic2.core.item.tool.ItemToolWrench;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,8 +27,6 @@ import net.minecraftforge.common.MinecraftForge;
 public class BlockAdvancedMachines extends BlockContainer
 {
     
-    private final int idWrench;
-    private final int idEWrench;
     private Icon[][] iconBuffer;
 
     public BlockAdvancedMachines(int var1)
@@ -35,9 +34,6 @@ public class BlockAdvancedMachines extends BlockContainer
         super(var1, Material.iron);
         this.setHardness(2.0F);
         this.setStepSound(soundMetalFootstep);
-        
-        idWrench = Items.getItem("wrench").itemID;
-        idEWrench = Items.getItem("electricWrench").itemID;
     }
 
     @Override
@@ -260,7 +256,7 @@ public class BlockAdvancedMachines extends BlockContainer
         }
         
         if (entityPlayer.getCurrentEquippedItem() != null
-        && (entityPlayer.getCurrentEquippedItem().itemID == idWrench || entityPlayer.getCurrentEquippedItem().itemID == idEWrench))
+        && (entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemToolWrench))
         {            
             TileEntityAdvancedMachine team = (TileEntityAdvancedMachine)world.getBlockTileEntity(x, y, z);
             if (team != null)
