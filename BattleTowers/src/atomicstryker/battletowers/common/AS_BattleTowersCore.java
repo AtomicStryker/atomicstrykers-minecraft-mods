@@ -23,7 +23,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.1")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),
@@ -38,6 +38,7 @@ public class AS_BattleTowersCore
 	public static int itemGenerateAttemptsPerFloor;
 	public static int chanceTowerIsUnderGround;
 	public static boolean noGolemExplosions;
+	public static boolean towerFallDestroysMobSpawners;
 	private int golemEntityID;
 	
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
@@ -99,6 +100,7 @@ public class AS_BattleTowersCore
         itemGenerateAttemptsPerFloor = configuration.get("BattleTowerChestItems", "Item Generations per Floot", "7").getInt();
         chanceTowerIsUnderGround = configuration.get("MainOptions", "chanceTowerIsUnderGround", 15).getInt();
         noGolemExplosions = configuration.get("MainOptions", "noGolemExplosions", false).getBoolean(false);
+        towerFallDestroysMobSpawners = configuration.get("MainOptions", "towerFallDestroysMobSpawners", false, "Destroy all Mob Spawners in Tower Area upon Tower Fall?").getBoolean(false);
         golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();
         
         configuration.addCustomCategoryComment("BattleTowerChestItems", "Versions 1.4.1 and later of Battletowers allow you to specify Items by unlocalized name aswell as ID. Use this for mod added items!!");

@@ -1,5 +1,6 @@
 package atomicstryker.battletowers.common;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
@@ -8,9 +9,9 @@ import net.minecraft.world.World;
 public class AS_TowerDestroyer
 {
 	public Entity player;
-	private int x;
-	private int y;
-	private int z;
+	private int xGolem;
+	private int yGolem;
+	private int zGolem;
 	private World world;
 	private long triggerTime;
 	private long lastExplosionSoundTime;
@@ -27,19 +28,24 @@ public class AS_TowerDestroyer
     {
 		this.world = worldObj;
 		this.player = golemkiller;
-		this.x = coords.posX;
-		this.y = coords.posY;
-		this.z = coords.posZ;
+		this.xGolem = coords.posX;
+		this.yGolem = coords.posY;
+		this.zGolem = coords.posZ;
 		this.triggerTime = time;
 		this.lastExplosionSoundTime = time;
 		
-		world.playSoundEffect(x, y, z, "towerbreakstart", 4F, 1.0F);
+		world.playSoundEffect(xGolem, yGolem, zGolem, "towerbreakstart", 4F, 1.0F);
     }
 	
 	public void update()
 	{
-	    if (deleteMe || yCoord() < 70)
+	    if (deleteMe)
 	    {
+	        return;
+	    }
+	    else if (yCoord() < 70)
+	    {
+	        finishByDeletingSpawners();
 	        return;
 	    }
 	    
@@ -50,7 +56,7 @@ public class AS_TowerDestroyer
 			// kaboom baby
 			if (!world.isRemote)
 			{
-				world.createExplosion(player, x, yCoord(), z, explosionPower, true);
+				world.createExplosion(player, xGolem, yCoord(), zGolem, explosionPower, true);
 				cleanUpStragglerBlocks();
 			}
 			
@@ -60,7 +66,7 @@ public class AS_TowerDestroyer
 		{
 			if (floor < 1)
 			{
-			    deleteMe = true;
+			    finishByDeletingSpawners();
 				return;
 			}
 			triggerTime = System.currentTimeMillis();
@@ -68,7 +74,7 @@ public class AS_TowerDestroyer
 			// kaboom baby
 			if (!world.isRemote)
 			{
-				world.createExplosion(player, x, yCoord(), z, explosionPower, true);
+				world.createExplosion(player, xGolem, yCoord(), zGolem, explosionPower, true);
 				cleanUpStragglerBlocks();
 			}
 			
@@ -76,18 +82,43 @@ public class AS_TowerDestroyer
 		}
 		else
 		{
-			createSFX(randomTowerCoord(x), (int)yCoord(), randomTowerCoord(z));
+			createSFX(randomTowerCoord(xGolem), (int)yCoord(), randomTowerCoord(zGolem));
 		}
 	}
 	
-	public boolean isFinished()
+	private void finishByDeletingSpawners()
+    {
+	    deleteMe = true;
+	    
+	    if (AS_BattleTowersCore.towerFallDestroysMobSpawners)
+	    {
+	        int spawnerid = Block.mobSpawner.blockID;
+	        int minYdeletion = Math.max(yGolem - 80, 8);
+	        for(int xIterator = xGolem-8; xIterator < xGolem+8; xIterator++) // do each X
+	        {
+	            for(int zIterator = zGolem-8; zIterator < zGolem+8; zIterator++) // do each Z
+	            {
+	                for(int yIterator = yGolem; yIterator >= minYdeletion; yIterator--) // go down the tower
+	                {
+	                    if(world.getBlockId(xIterator, yIterator, zIterator) == spawnerid)
+	                    {
+	                        // destroy all present mobspawners
+	                        world.setBlock(xIterator, yIterator, zIterator, 0, 0 ,3);
+	                    }
+	                }
+	            }
+	        }
+	    }
+    }
+
+    public boolean isFinished()
 	{
 	    return deleteMe;
 	}
 	
 	private double yCoord()
 	{
-		return y - (floorDistance * Math.abs(maxfloor - floor));
+		return yGolem - (floorDistance * Math.abs(maxfloor - floor));
 	}
 	
 	private int randomTowerCoord(int i)
@@ -104,9 +135,9 @@ public class AS_TowerDestroyer
 			{
 				for(int yIterator = 1; yIterator < 9; yIterator++) // do Y 8 blocks high
 				{
-					if(world.getBlockId(x+xIterator, ytemp+yIterator, z+zIterator) != 0)
+					if(world.getBlockId(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator) != 0)
 					{
-						world.setBlock(x+xIterator, ytemp+yIterator, z+zIterator, 0, 0 ,3);
+						world.setBlock(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator, 0, 0 ,3);
 					}
 				}
 			}
