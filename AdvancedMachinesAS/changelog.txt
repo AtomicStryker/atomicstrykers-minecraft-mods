@@ -1,0 +1,5 @@
+Version 1.0.0
+	- clean rewrite extending IC2 classes
+	- compatibility with existing advanced machines worldsaves unlikely but possible
+	- configuration slimmed down and simplified. see config file
+	- should retain all AdvancedMachines functions and work with any and all IC2 compatible mods
