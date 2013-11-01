@@ -1,3 +1,6 @@
+1.2.7
+- Mob Equipment module now checks all five equipment slots
+
 1.2.6
 - update to MC 1.6.4
 

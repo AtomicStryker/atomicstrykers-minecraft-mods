@@ -35,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.2", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -102,10 +102,19 @@ public class EntityLivingEquipmentLightSource
             }
         }
         
-        return Math.max(getLightFromItemStack(ent.getCurrentItemOrArmor(0)),
-                getLightFromItemStack(ent.getCurrentItemOrArmor(4)));
+        return getMobEquipMaxLight(ent);
     }
     
+    private int getMobEquipMaxLight(EntityLivingBase ent)
+    {
+        int light = getLightFromItemStack(ent.getCurrentItemOrArmor(0));
+        for (int i = 1; i < ent.getLastActiveItems().length; i++)
+        {
+            light = Math.max(light, getLightFromItemStack(ent.getLastActiveItems()[i]));
+        }
+        return light;
+    }
+
     private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
@@ -243,7 +252,7 @@ public class EntityLivingEquipmentLightSource
          */
         public void onTick()
         {
-            lightLevel = Math.max(getLightFromItemStack(entity.getCurrentItemOrArmor(0)), getLightFromItemStack(entity.getCurrentItemOrArmor(4)));
+            lightLevel = getMobEquipMaxLight(entity);
             
             // infernal mobs yay
             if (entity.getEntityData().getString("InfernalMobsMod") != null)
