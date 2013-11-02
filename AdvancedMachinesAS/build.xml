@@ -105,9 +105,11 @@
 			<fileset dir="${mcp.dir}/reobf/minecraft" excludes=".svn/**, *.txt" />
 		</copy>
 		
-		<!-- Delete included IC2 API, only needed that for compiling -->
-		<delete dir="${build.dir}/ic2/api"/>
-
+		<!-- Delete included IC2 stubs, only needed that for compiling -->
+		<delete includeemptydirs="true">
+    		<fileset dir="${build.dir}/ic2" includes="**/*"/>
+  		</delete>
+		
 		<!-- Copy mcmod.info and changelog.txt into distributable -->
 		<copy file="./mcmod.info" todir="${build.dir}" />
 		<copy file="./changelog.txt" todir="${build.dir}" />
@@ -131,7 +133,7 @@
 
 	<target name="jarzip" description="Jar (or zip) the project's dist output">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${ant.project.name}_${version}.${filetype}" duplicate="preserve" index="true" manifestencoding="UTF-8">
+		<jar destfile="${dist.dir}/${ant.project.name}_exp_${version}.${filetype}" duplicate="preserve" index="true" manifestencoding="UTF-8">
 			<manifest>
 				<attribute name="Built-By" value="a combination of MCP and cpw ant scripts" />
 				<attribute name="Implementation-Vendor" value="${author}" />

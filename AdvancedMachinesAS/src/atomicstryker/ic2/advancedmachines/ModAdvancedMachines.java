@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.0", dependencies = "required-after:IC2@2.0.275")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.1", dependencies = "required-after:IC2@2.0.275")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class ModAdvancedMachines implements IGuiHandler, IProxy
 {
@@ -131,10 +131,10 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         {
             if (tesm instanceof TileEntityAdvancedMacerator)
             {
-                return new ContainerAdvancedMacerator(player, (TileEntityAdvancedMacerator) tesm, (IAdvancedMachine) tesm);
+                return new ContainerAdvancedMacerator(player, (TileEntityAdvancedMacerator) tesm);
             }
             
-            return new ContainerAdvancedMachine(player, tesm, (IAdvancedMachine) tesm);
+            return new ContainerAdvancedMachine(player, tesm);
         }
         return null;
     }

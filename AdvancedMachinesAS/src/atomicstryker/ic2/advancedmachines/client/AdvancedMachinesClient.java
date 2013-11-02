@@ -5,7 +5,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import atomicstryker.ic2.advancedmachines.ContainerAdvancedMacerator;
 import atomicstryker.ic2.advancedmachines.ContainerAdvancedMachine;
-import atomicstryker.ic2.advancedmachines.IAdvancedMachine;
 import atomicstryker.ic2.advancedmachines.IProxy;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedCompressor;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedExtractor;
@@ -50,15 +49,15 @@ public class AdvancedMachinesClient implements IProxy
         {
             if (te instanceof TileEntityAdvancedMacerator)
             {
-                return new GuiRotaryMacerator(new ContainerAdvancedMacerator(player, (TileEntityAdvancedMacerator) te, (IAdvancedMachine) te), (TileEntityAdvancedMacerator) te);
+                return new GuiRotaryMacerator(new ContainerAdvancedMacerator(player, (TileEntityAdvancedMacerator) te), (TileEntityAdvancedMacerator) te);
             }
             else if (te instanceof TileEntityAdvancedExtractor)
             {
-                return new GuiCentrifugeExtractor(new ContainerAdvancedMachine(player, (TileEntityAdvancedExtractor) te, (IAdvancedMachine) te), (TileEntityAdvancedExtractor) te);
+                return new GuiCentrifugeExtractor(new ContainerAdvancedMachine(player, (TileEntityAdvancedExtractor) te), (TileEntityAdvancedExtractor) te);
             }
             else if (te instanceof TileEntityAdvancedCompressor)
             {
-                return new GuiSingularityCompressor(new ContainerAdvancedMachine(player, (TileEntityAdvancedCompressor) te, (IAdvancedMachine) te), (TileEntityAdvancedCompressor) te);
+                return new GuiSingularityCompressor(new ContainerAdvancedMachine(player, (TileEntityAdvancedCompressor) te), (TileEntityAdvancedCompressor) te);
             }
         }
 

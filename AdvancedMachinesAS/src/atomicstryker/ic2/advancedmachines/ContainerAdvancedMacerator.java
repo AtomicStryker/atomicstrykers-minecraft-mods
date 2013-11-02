@@ -9,9 +9,9 @@ public class ContainerAdvancedMacerator extends ContainerAdvancedMachine
     
     private final TileEntityAdvancedMacerator advMacerator;
 
-    public ContainerAdvancedMacerator(EntityPlayer entityPlayer, TileEntityAdvancedMacerator tileEntity, IAdvancedMachine advMachine)
+    public ContainerAdvancedMacerator(EntityPlayer entityPlayer, TileEntityAdvancedMacerator tileEntity)
     {
-        super(entityPlayer, tileEntity, advMachine);
+        super(entityPlayer, tileEntity);
         advMacerator = tileEntity;
         addSlotToContainer(new Slot(tileEntity, TileEntityAdvancedMacerator.SUPPLEMENT_SLOT_INDEX, 75, 17)); // Maceration Supplement Slot
     }

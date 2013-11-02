@@ -11,22 +11,21 @@ public class ContainerAdvancedMachine extends ContainerStandardMachine
     
     private final IAdvancedMachine advM;
     private int speedNetworked;
-
-    public ContainerAdvancedMachine(EntityPlayer entityPlayer, TileEntityStandardMachine tileEntity, IAdvancedMachine advMachine)
+    
+    public ContainerAdvancedMachine(EntityPlayer entityPlayer, TileEntityStandardMachine tileEntity)
     {
         super(entityPlayer, tileEntity);
-        advM = advMachine;
+        advM = (IAdvancedMachine) tileEntity;
         speedNetworked = 0;
         
-        // moving already existing slot coords is possible, thank goodness
-        if (advMachine.getOutputSlots().size() == 2)
+        if (advM.getOutputSlots().size() == 2)
         {
-            addSlotToContainer(new SlotInvSlot(advMachine.getOutputSlots().get(1), 0, 115, 53));
+            addSlotToContainer(new SlotInvSlot(advM.getOutputSlots().get(1), 0, 115, 53));
         }
-        else if (advMachine.getOutputSlots().size() == 3)
+        else if (advM.getOutputSlots().size() == 3)
         {
-            addSlotToContainer(new SlotInvSlot(advMachine.getOutputSlots().get(1), 0, 115, 17));
-            addSlotToContainer(new SlotInvSlot(advMachine.getOutputSlots().get(2), 0, 115, 53));
+            addSlotToContainer(new SlotInvSlot(advM.getOutputSlots().get(1), 0, 115, 17));
+            addSlotToContainer(new SlotInvSlot(advM.getOutputSlots().get(2), 0, 115, 53));
         }
     }
     
