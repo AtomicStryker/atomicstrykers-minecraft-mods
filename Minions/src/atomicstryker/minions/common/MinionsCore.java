@@ -32,7 +32,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.entity.EnumMinionState;
 import atomicstryker.minions.common.jobmanager.BlockTask_MineOreVein;
 import atomicstryker.minions.common.jobmanager.Minion_Job_DigByCoordinates;
 import atomicstryker.minions.common.jobmanager.Minion_Job_DigMineStairwell;
@@ -61,7 +60,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.4")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.5")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, connectionHandler = ConnectionHandler.class)
 public class MinionsCore
 {
@@ -388,7 +387,6 @@ public class MinionsCore
             if (minion.riddenByEntity == null)
             {
                 minion.targetEntityToGrab = (EntityLivingBase) target;
-                minion.currentState = EnumMinionState.STALKING_TO_GRAB;
                 proxy.sendSoundToClients(minion, "minions:grabanimalorder");
                 break;
             }
@@ -423,13 +421,11 @@ public class MinionsCore
         List<EntityMinion> minions = getMinionsForMaster(playerEnt.username);
         if (minions.size() < minionsPerPlayer)
         {
-
             final EntityMinion minion = new EntityMinion(playerEnt.worldObj, playerEnt);
             minion.setPosition(x, y+1, z);
             playerEnt.worldObj.spawnEntityInWorld(minion);
             MinionsCore.proxy.sendSoundToClients(minion, "minions:minionspawn");
             minions.add(minion);
-            minion.lastOrderedState = EnumMinionState.FOLLOWING_PLAYER;
             //System.out.println("spawned missing minion for "+var3.username);
             return true;
         }
@@ -514,7 +510,7 @@ public class MinionsCore
                     if (!sneaking)
                     {
                         minion.giveTask(null, true);
-                        minion.currentState = EnumMinionState.RETURNING_GOODS;
+                        minion.returningGoods = true;
                     }
                     minion.returnChestOrInventory = (TileEntity) chestOrInventoryBlock;
                 }
@@ -574,8 +570,7 @@ public class MinionsCore
             {
                 minion.master = playerEnt;
                 minion.giveTask(null, true);
-                minion.currentState = EnumMinionState.FOLLOWING_PLAYER;
-                minion.lastOrderedState = EnumMinionState.FOLLOWING_PLAYER;
+                minion.followingMaster = true;
             }
         }
     }

@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 public class MinionAIFollowMaster extends EntityAIBase
 {
-    
+
     private final EntityMinion theMinion;
     private final World theWorld;
     private final float followSpeed;
@@ -16,7 +16,7 @@ public class MinionAIFollowMaster extends EntityAIBase
     private final float maxDist;
     private final float minDist;
     private boolean isAvoidingWater;
-    
+
     private int updateTicker;
     private final double followRangeSq;
 
@@ -29,7 +29,7 @@ public class MinionAIFollowMaster extends EntityAIBase
         this.minDist = min;
         this.maxDist = max;
         this.setMutexBits(3);
-        followRangeSq = MinionsCore.minionFollowRange*MinionsCore.minionFollowRange;
+        followRangeSq = MinionsCore.minionFollowRange * MinionsCore.minionFollowRange;
     }
 
     /**
@@ -37,14 +37,8 @@ public class MinionAIFollowMaster extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        if (theMinion.master != null
-        && theMinion.getDistanceSqToEntity(theMinion.master) > (double)(this.minDist * this.minDist)
-        && (theMinion.currentState == EnumMinionState.FOLLOWING_PLAYER
-        || (theMinion.currentState == EnumMinionState.RETURNING_GOODS && theMinion.returnChestOrInventory == null)))
-        {
-            return true;
-        }
-        return false;
+        return theMinion.master != null && theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.minDist * this.minDist)
+                && theMinion.followingMaster;
     }
 
     /**
@@ -52,10 +46,8 @@ public class MinionAIFollowMaster extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return !this.petPathfinder.noPath()
-                && this.theMinion.getDistanceSqToEntity(theMinion.master) > (double)(this.maxDist * this.maxDist)
-                && (theMinion.currentState == EnumMinionState.FOLLOWING_PLAYER
-                || (theMinion.currentState == EnumMinionState.RETURNING_GOODS && theMinion.returnChestOrInventory == null));
+        return !this.petPathfinder.noPath() && this.theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.maxDist * this.maxDist)
+                && theMinion.followingMaster;
     }
 
     /**
@@ -82,10 +74,9 @@ public class MinionAIFollowMaster extends EntityAIBase
      */
     public void updateTask()
     {
-        this.theMinion.getLookHelper().setLookPositionWithEntity(theMinion.master, 10.0F, (float)this.theMinion.getVerticalFaceSpeed());
+        this.theMinion.getLookHelper().setLookPositionWithEntity(theMinion.master, 10.0F, (float) this.theMinion.getVerticalFaceSpeed());
 
-        if (theMinion.currentState == EnumMinionState.FOLLOWING_PLAYER
-        || (theMinion.currentState == EnumMinionState.RETURNING_GOODS && theMinion.returnChestOrInventory == null))
+        if (theMinion.followingMaster)
         {
             if (--this.updateTicker <= 0)
             {
@@ -103,9 +94,11 @@ public class MinionAIFollowMaster extends EntityAIBase
                         {
                             for (int var5 = 0; var5 <= 4; ++var5)
                             {
-                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && this.theWorld.isBlockNormalCube(var1 + var4, var3 - 1, var2 + var5) && !this.theWorld.isBlockNormalCube(var1 + var4, var3, var2 + var5) && !this.theWorld.isBlockNormalCube(var1 + var4, var3 + 1, var2 + var5))
+                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && this.theWorld.isBlockNormalCube(var1 + var4, var3 - 1, var2 + var5)
+                                        && !this.theWorld.isBlockNormalCube(var1 + var4, var3, var2 + var5) && !this.theWorld.isBlockNormalCube(var1 + var4, var3 + 1, var2 + var5))
                                 {
-                                    this.theMinion.setLocationAndAngles((double)((float)(var1 + var4) + 0.5F), (double)var3, (double)((float)(var2 + var5) + 0.5F), this.theMinion.rotationYaw, this.theMinion.rotationPitch);
+                                    this.theMinion.setLocationAndAngles((double) ((float) (var1 + var4) + 0.5F), (double) var3, (double) ((float) (var2 + var5) + 0.5F), this.theMinion.rotationYaw,
+                                            this.theMinion.rotationPitch);
                                     this.petPathfinder.clearPathEntity();
                                     return;
                                 }

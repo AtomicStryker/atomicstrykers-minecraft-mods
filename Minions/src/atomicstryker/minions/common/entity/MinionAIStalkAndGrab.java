@@ -25,8 +25,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        if (theMinion.currentState == EnumMinionState.STALKING_TO_GRAB
-        && theMinion.targetEntityToGrab != null)
+        if (theMinion.targetEntityToGrab != null)
         {
             target = theMinion.targetEntityToGrab;
             return true;
@@ -41,7 +40,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return target != null && target.isEntityAlive() && theMinion.currentState == EnumMinionState.STALKING_TO_GRAB && this.grabDelay < maxGrabDelay;
+        return target != null && target.isEntityAlive() && this.grabDelay < maxGrabDelay;
     }
 
     /**
@@ -51,6 +50,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
     {
         this.target = null;
         this.grabDelay = 0;
+        theMinion.targetEntityToGrab = null;
     }
 
     /**

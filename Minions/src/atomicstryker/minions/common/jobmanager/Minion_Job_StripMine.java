@@ -9,7 +9,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.entity.EnumMinionState;
 
 /**
  * Minion Job class for digging a horizontal 2x1 mineshaft and mining ores of precious material in walls and ceiling (not floor)
@@ -42,12 +41,10 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
             if (!m.isStripMining)
             {
                 workerList.add(m);
+                m.returningGoods = m.followingMaster = false;
                 m.isStripMining = true;
                 
                 m.giveTask(null, true);
-                m.currentState = EnumMinionState.AWAITING_JOB;
-                m.lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
-                
                 if (m.riddenByEntity != null)
                 {
                     m.riddenByEntity.mountEntity(null);
@@ -112,7 +109,6 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     	else if (!workerList.get(0).hasTask() && !jobQueue.isEmpty())
     	{
             BlockTask job = (BlockTask) this.jobQueue.get(0);
-            workerList.get(0).currentState = EnumMinionState.THINKING;
             workerList.get(0).giveTask(job);           
             job.setWorker(workerList.get(0));
     	}
@@ -153,7 +149,6 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         jobQueue.clear();
         
         workerList.get(0).giveTask(null, true);
-        workerList.get(0).currentState = EnumMinionState.AWAITING_JOB;
         
     	timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
     	

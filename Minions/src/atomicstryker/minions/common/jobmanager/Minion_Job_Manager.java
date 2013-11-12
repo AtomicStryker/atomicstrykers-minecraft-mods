@@ -15,8 +15,6 @@ import java.util.Iterator;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.entity.EnumMinionState;
-
 
 public abstract class Minion_Job_Manager
 {
@@ -57,9 +55,7 @@ public abstract class Minion_Job_Manager
         for (EntityMinion m : minions)
         {
             workerList.add(m);
-            
-            m.currentState = EnumMinionState.AWAITING_JOB;
-            m.lastOrderedState = EnumMinionState.WALKING_TO_COORDS;
+            m.returningGoods = m.followingMaster = false;
             
             if (m.riddenByEntity != null)
             {
@@ -93,8 +89,7 @@ public abstract class Minion_Job_Manager
     	while (iter.hasNext())
     	{
     		temp = iter.next();
-    		if ((temp.currentState == EnumMinionState.AWAITING_JOB && !temp.hasTask())
-    		|| (temp.currentState == EnumMinionState.IDLE && temp.lastOrderedState == EnumMinionState.RETURNING_GOODS))
+    		if (temp.getCurrentTask() == null)
     		{
     			distTemp = temp.getDistanceSq(x, y, z);
         		if (distTemp < distance)
@@ -124,7 +119,7 @@ public abstract class Minion_Job_Manager
     	while (iter.hasNext())
     	{
     		temp = iter.next();
-    		if (temp.currentState == EnumMinionState.AWAITING_JOB && !temp.hasTask())
+    		if (temp.getCurrentTask() == null)
     		{
     			return temp;
     		}

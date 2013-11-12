@@ -27,8 +27,9 @@ public class MinionAIWander extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        if (this.entity.currentState != EnumMinionState.IDLE
+        if (entity.getCurrentTask() == null
         || entity.currentTarget == null
+        || !entity.getNavigator().noPath()
         || entity.riddenByEntity != null)
         {
             return false;
