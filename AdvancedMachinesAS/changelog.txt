@@ -1,3 +1,6 @@
+Version 1.0.2
+	- fixed small item meta issue
+
 Version 1.0.1
 	- fixed rather high level obfuscation issue by using IC2 stubs as workaround
 	- have to stub every single overridden IC2 class and their hierarchy. this sucks so hard

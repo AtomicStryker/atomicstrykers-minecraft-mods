@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.1", dependencies = "required-after:IC2@2.0.275")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.2", dependencies = "required-after:IC2@2.0.275")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class ModAdvancedMachines implements IGuiHandler, IProxy
 {
@@ -58,9 +58,9 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         
         GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
         
-        stackRotaryMacerator = new ItemStack(blockAdvancedMachine, 1, 1);
-        stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 2);
-        stackCentrifugeExtractor = new ItemStack(blockAdvancedMachine, 1, 3);
+        stackRotaryMacerator = new ItemStack(blockAdvancedMachine, 1, 0);
+        stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 1);
+        stackCentrifugeExtractor = new ItemStack(blockAdvancedMachine, 1, 2);
         
         maxMachineSpeedUpFactor = config.get(Configuration.CATEGORY_GENERAL, "maxMachineSpeedUpFactor", 10, "Advanced Machines will reach X times the speed of normal machines").getInt(10);
         maxMachineSpeedUpTicks = config.get(Configuration.CATEGORY_GENERAL, "maxMachineSpeedUpTicks", 10000, "Advanced Machines will take X ingame ticks to reach max speed").getInt(10000);
