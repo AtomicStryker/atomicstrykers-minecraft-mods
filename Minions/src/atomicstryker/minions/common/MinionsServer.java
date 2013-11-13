@@ -28,16 +28,23 @@ public class MinionsServer
         PacketType packetType = PacketType.byID(ForgePacketWrapper.readPacketID(data));
         EntityPlayer player = (EntityPlayer)p;
         
-        // System.out.println("Server received packet, ID "+packetType+", from player "+player.username);
+        //System.out.println("Server received packet, ID "+packetType+", from player "+player.username);
         
         switch (packetType)
         {
+            case HASMINIONS:
+            {
+                Object[] toSend = {MinionsCore.instance.hasPlayerMinions(player) ? 1 : 0, MinionsCore.instance.hasAllMinions(player) ? 1 : 0};
+                PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend), p);
+                break;
+            }
+        
             case EVILDEEDDONE:
             {
-                if (player != null && player.experienceLevel >= MinionsCore.evilDeedXPCost)
+                if (player != null && player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
                 {
-                    player.addExperienceLevel(-MinionsCore.evilDeedXPCost);
-                    MinionsCore.onMasterAddedEvil(player);
+                    player.addExperienceLevel(-MinionsCore.instance.evilDeedXPCost);
+                    MinionsCore.instance.onMasterAddedEvil(player);
                 }
                 break;
             }
@@ -48,10 +55,10 @@ public class MinionsServer
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 int targetID = (Integer) packetReadout[2];
                 
-                Entity target = MinionsCore.findEntityByID(player.worldObj, targetID);
+                Entity target = player.worldObj.getEntityByID(targetID);
                 if (target instanceof EntityAnimal || target instanceof EntityPlayer)
                 {
-                    MinionsCore.orderMinionToPickupEntity(player, (EntityLivingBase) target);
+                    MinionsCore.instance.orderMinionToPickupEntity(player, (EntityLivingBase) target);
                 }
                 break;
             }
@@ -62,10 +69,10 @@ public class MinionsServer
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 int targetID = (Integer) packetReadout[2];
                 
-                Entity target = MinionsCore.findEntityByID(player.worldObj, targetID);
+                Entity target = player.worldObj.getEntityByID(targetID);
                 if (target instanceof EntityMinion)
                 {
-                    MinionsCore.orderMinionToDrop(player, (EntityMinion) target);
+                    MinionsCore.instance.orderMinionToDrop(player, (EntityMinion) target);
                 }
                 break;
             }
@@ -75,18 +82,18 @@ public class MinionsServer
                 Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
-                if (MinionsCore.hasPlayerWillPower(player))
+                if (MinionsCore.instance.hasPlayerWillPower(player))
                 {
                     int x = (Integer) packetReadout[1];
                     int y = (Integer) packetReadout[2];
                     int z = (Integer) packetReadout[3];
                     
-                    if (MinionsCore.spawnMinionsForPlayer(player, x, y, z))
+                    if (MinionsCore.instance.spawnMinionsForPlayer(player, x, y, z))
                     {
-                        MinionsCore.exhaustPlayerBig(player);
+                        MinionsCore.instance.exhaustPlayerBig(player);
                     }
                     
-                    Object[] toSend = {MinionsCore.hasPlayerMinions(player) ? 1 : 0, MinionsCore.hasAllMinions(player) ? 1 : 0};
+                    Object[] toSend = {MinionsCore.instance.hasPlayerMinions(player) ? 1 : 0, MinionsCore.instance.hasAllMinions(player) ? 1 : 0};
                     PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend), p);
                 }
                 break;
@@ -96,13 +103,13 @@ public class MinionsServer
             {
                 Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                if (MinionsCore.hasPlayerWillPower(player))
+                if (MinionsCore.instance.hasPlayerWillPower(player))
                 {
                     int x = (Integer) packetReadout[1];
                     int y = (Integer) packetReadout[2];
                     int z = (Integer) packetReadout[3];
-                    MinionsCore.orderMinionsToChopTrees(player, x, y, z);
-                    MinionsCore.exhaustPlayerBig(player);
+                    MinionsCore.instance.orderMinionsToChopTrees(player, x, y, z);
+                    MinionsCore.instance.exhaustPlayerBig(player);
                 }
                 break;
             }
@@ -112,13 +119,13 @@ public class MinionsServer
                 Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
-                if (MinionsCore.hasPlayerWillPower(player))
+                if (MinionsCore.instance.hasPlayerWillPower(player))
                 {
                     int x = (Integer) packetReadout[1];
                     int y = (Integer) packetReadout[2];
                     int z = (Integer) packetReadout[3];
-                    MinionsCore.orderMinionsToDigStairWell(player, x, y, z);
-                    MinionsCore.exhaustPlayerBig(player);
+                    MinionsCore.instance.orderMinionsToDigStairWell(player, x, y, z);
+                    MinionsCore.instance.exhaustPlayerBig(player);
                 }
                 break;
             }
@@ -128,13 +135,13 @@ public class MinionsServer
                 Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
-                if (MinionsCore.hasPlayerWillPower(player))
+                if (MinionsCore.instance.hasPlayerWillPower(player))
                 {
                     int x = (Integer) packetReadout[1];
                     int y = (Integer) packetReadout[2];
                     int z = (Integer) packetReadout[3];
-                    MinionsCore.orderMinionsToDigStripMineShaft(player, x, y, z);
-                    MinionsCore.exhaustPlayerBig(player);
+                    MinionsCore.instance.orderMinionsToDigStripMineShaft(player, x, y, z);
+                    MinionsCore.instance.exhaustPlayerBig(player);
                 }
                 break;
             }
@@ -147,7 +154,7 @@ public class MinionsServer
                 int x = (Integer) packetReadout[2];
                 int y = (Integer) packetReadout[3];
                 int z = (Integer) packetReadout[4];
-                MinionsCore.orderMinionsToChestBlock(player, sneaking, x, y, z);
+                MinionsCore.instance.orderMinionsToChestBlock(player, sneaking, x, y, z);
                 break;
             }
             
@@ -158,7 +165,7 @@ public class MinionsServer
                 int x = (Integer) packetReadout[1];
                 int y = (Integer) packetReadout[2];
                 int z = (Integer) packetReadout[3];
-                MinionsCore.orderMinionsToMoveTo(player, x, y, z);
+                MinionsCore.instance.orderMinionsToMoveTo(player, x, y, z);
                 break;
             }
             
@@ -169,19 +176,19 @@ public class MinionsServer
                 int x = (Integer) packetReadout[1];
                 int y = (Integer) packetReadout[2];
                 int z = (Integer) packetReadout[3];
-                MinionsCore.orderMinionsToMineOre(player, x, y, z);
+                MinionsCore.instance.orderMinionsToMineOre(player, x, y, z);
                 break;
             }
             
             case CMDFOLLOW:
             {
-                MinionsCore.orderMinionsToFollow(player);
+                MinionsCore.instance.orderMinionsToFollow(player);
                 break;
             }
             
             case REQUESTXPSETTING:
             {
-                Object[] toSend = {MinionsCore.evilDeedXPCost};
+                Object[] toSend = {MinionsCore.instance.evilDeedXPCost};
                 //manager.addToSendQueue(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), 13, toSend));
                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.REQUESTXPSETTING.ordinal(), toSend), p);
                 break;
@@ -191,7 +198,7 @@ public class MinionsServer
             {
                 if (player != null)
                 {
-                    MinionsCore.unSummonPlayersMinions(player);
+                    MinionsCore.instance.unSummonPlayersMinions(player);
                 }
                 break;
             }
@@ -201,10 +208,10 @@ public class MinionsServer
                 Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
-                if (player != null && MinionsCore.hasPlayerWillPower(player))
+                if (player != null && MinionsCore.instance.hasPlayerWillPower(player))
                 {
-                    MinionsCore.orderMinionsToDigCustomSpace(player, (Integer)packetReadout[1], (Integer)packetReadout[2], (Integer)packetReadout[3], (Integer)packetReadout[4], (Integer)packetReadout[5]);
-                    MinionsCore.exhaustPlayerBig(player);
+                    MinionsCore.instance.orderMinionsToDigCustomSpace(player, (Integer)packetReadout[1], (Integer)packetReadout[2], (Integer)packetReadout[3], (Integer)packetReadout[4], (Integer)packetReadout[5]);
+                    MinionsCore.instance.exhaustPlayerBig(player);
                 }
                 break;
             }
@@ -219,7 +226,7 @@ public class MinionsServer
                 
                 EntityPlayer caster = (EntityPlayer) p;
                 
-                if (MinionsCore.hasPlayerWillPower(caster))
+                if (MinionsCore.instance.hasPlayerWillPower(caster))
                 {
                     long randomizer = caster.worldObj.rand.nextLong();
                     
@@ -230,7 +237,7 @@ public class MinionsServer
                     
                     spawnLightningBolt(caster.worldObj, caster, start, end, randomizer);
                     
-                    MinionsCore.exhaustPlayerSmall(caster);                
+                    MinionsCore.instance.exhaustPlayerSmall(caster);                
                 }
                 break;
             }
@@ -239,7 +246,7 @@ public class MinionsServer
             {
                 Class<?>[] decodeAs = {Integer.class, String.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-                Entity ent = MinionsCore.findEntityByID(player.worldObj, (Integer) packetReadout[0]);
+                Entity ent = player.worldObj.getEntityByID((Integer) packetReadout[0]);
                 if (ent != null)
                 {
                     MinionsCore.proxy.sendSoundToClients(ent, (String)packetReadout[1]);

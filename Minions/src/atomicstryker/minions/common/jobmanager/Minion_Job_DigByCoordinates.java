@@ -162,7 +162,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     			}
     			else
     			{
-        			worker.giveTask(job);
+        			worker.giveTask(job, true);
         			job.setWorker(worker);
         			
         			//System.out.println("worker "+workerList.indexOf(worker)+" is given job ["+job.posX+"|"+job.posY+"|"+job.posZ+"], jobs queued: "+jobQueue.size());

@@ -134,7 +134,7 @@ public abstract class Minion_Job_Manager
      */
     public void setWorkerFree(EntityMinion input)
     {
-    	input.giveTask(null);
+    	input.giveTask(null, false);
     	workerList.remove(input);
     	
     	if (workerList.isEmpty())
@@ -173,7 +173,7 @@ public abstract class Minion_Job_Manager
     		this.setWorkerFree((EntityMinion) this.workerList.get(0));
     	}
     	
-    	MinionsCore.onJobHasFinished(this);
+    	MinionsCore.instance.onJobHasFinished(this);
     }
     
     /**
@@ -187,6 +187,16 @@ public abstract class Minion_Job_Manager
     public void onTaskFinished(BlockTask task, int x, int y, int z)
     {
     	
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o instanceof Minion_Job_Manager)
+        {
+            return ((Minion_Job_Manager)o).pointOfOrigin.equals(this.pointOfOrigin);
+        }
+        return false;
     }
     
 }

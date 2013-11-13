@@ -28,7 +28,6 @@ import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarPathPlanner;
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.astarpathing.IAStarPathedEntity;
-import atomicstryker.minions.common.MinionsChunkManager;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.jobmanager.BlockTask;
 
@@ -75,7 +74,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 
         this.moveSpeed = 1.2F;
         getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.225D);
-        getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(MinionsCore.minionFollowRange);
+        getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(MinionsCore.instance.minionFollowRange);
         
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
         
@@ -116,8 +115,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         this.dataWatcher.addObject(15, new Integer(0)); // z blocktask
         this.dataWatcher.addObject(16, "undef"); // masterUserName
         this.dataWatcher.addObject(17, new Integer(0)); // heldItem Index
-
-        MinionsChunkManager.registerChunkLoaderEntity(this);
     }
     
     public void setWorking(boolean b)
@@ -160,14 +157,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         }
         else
         {
+            currentTask = input;
             returningGoods = true;
-            giveTask(input);
         }
-    }
-
-    public void giveTask(BlockTask input)
-    {
-        currentTask = input;
     }
 
     public BlockTask getCurrentTask()
@@ -201,8 +193,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     @Override
     public void setDead()
     {
-        MinionsCore.unregisterMinion(this);
-        MinionsChunkManager.unRegisterChunkLoaderEntity(this);
         inventory.dropAllItems();
         super.setDead();
     }
@@ -224,7 +214,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         setMasterUserName(var1.getString("masterUsername"));
         master = worldObj.getPlayerEntityByName(getMasterUserName());
 
-        MinionsCore.minionLoadRegister(this);
+        MinionsCore.instance.minionLoadRegister(this);
     }
 
     public void performTeleportToTarget()
@@ -272,7 +262,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         {
             if (despawnTime < 0)
             {
-                despawnTime = System.currentTimeMillis() + MinionsCore.secondsWithoutMasterDespawn * 1000l;
+                despawnTime = System.currentTimeMillis() + MinionsCore.instance.secondsWithoutMasterDespawn * 1000l;
             }
             else if (System.currentTimeMillis() > despawnTime)
             {
@@ -371,50 +361,55 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
         }
         else if (returningGoods && !followingMaster)
         {
-            if (returnChestOrInventory == null)
+            runInventoryDumpLogic();
+        }
+    }
+
+    public void runInventoryDumpLogic()
+    {
+        if (returnChestOrInventory == null)
+        {
+            if (master != null && !hasPath())
             {
-                if (master != null && !hasPath())
+                if (this.getDistanceToEntity(master) < 2F && this.inventory.containsItems())
                 {
-                    if (this.getDistanceToEntity(master) < 2F && this.inventory.containsItems())
+                    dropAllItemsToWorld();
+                    returningGoods = false;
+                    getNavigator().setPath(null, this.moveSpeed);
+                }
+            }
+        }
+        else
+        {
+            if (this.getDistanceToTileEntity(returnChestOrInventory) > 4D)
+            {
+                if (!hasPath() || pathPlanner.isBusy())
+                {
+                    if (currentPathNotFoundCooldownTick > 0)
                     {
-                        dropAllItemsToWorld();
-                        returningGoods = false;
-                        getNavigator().setPath(null, this.moveSpeed);
+                        currentPathNotFoundCooldownTick--;
+                    }
+                    else
+                    {
+                        AStarNode[] possibles = AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ), returnChestOrInventory.xCoord,
+                                returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
+                        if (possibles.length != 0)
+                        {
+                            orderMinionToMoveTo(possibles, false);
+                        }
                     }
                 }
             }
             else
             {
-                if (this.getDistanceToTileEntity(returnChestOrInventory) > 4D)
+                if (this.inventory.containsItems() && checkReturnChestValidity())
                 {
-                    if (!hasPath() || pathPlanner.isBusy())
-                    {
-                        if (currentPathNotFoundCooldownTick > 0)
-                        {
-                            currentPathNotFoundCooldownTick--;
-                        }
-                        else
-                        {
-                            AStarNode[] possibles = AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ), returnChestOrInventory.xCoord,
-                                    returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
-                            if (possibles.length != 0)
-                            {
-                                orderMinionToMoveTo(possibles, false);
-                            }
-                        }
-                    }
+                    ((IInventory) returnChestOrInventory).openChest();
+                    closeChestTime = System.currentTimeMillis() + 4000L;
+                    this.inventory.putAllItemsToInventory((IInventory) returnChestOrInventory);
                 }
-                else
-                {
-                    if (this.inventory.containsItems() && checkReturnChestValidity())
-                    {
-                        ((IInventory) returnChestOrInventory).openChest();
-                        closeChestTime = System.currentTimeMillis() + 4000L;
-                        this.inventory.putAllItemsToInventory((IInventory) returnChestOrInventory);
-                    }
-                    returningGoods = false;
-                    this.orderMinionToMoveTo(doubleToInt(posX), doubleToInt(posY) - 1, doubleToInt(posZ), false);
-                }
+                returningGoods = false;
+                getNavigator().setPath(null, this.moveSpeed);
             }
         }
     }
@@ -422,8 +417,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     private boolean checkReturnChestValidity()
     {
         TileEntity test = worldObj.getBlockTileEntity(returnChestOrInventory.xCoord, returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
-        if (test != null && test == returnChestOrInventory)
+        if (test != null)
         {
+            returnChestOrInventory = test;
             return true;
         }
 
@@ -467,18 +463,17 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
 
             if (itemEnt.getEntityItem() != null)
             {
-                if (itemEnt.ticksExisted < 200)
+                if (itemEnt.ticksExisted > 200)
                 {
-                    return;
-                }
-                if (this.inventory.addItemStackToInventory(itemEnt.getEntityItem()))
-                {
-                    collider.setDead();
-                }
-                else
-                {
-                    this.inventoryFull = true;
-                    this.worldObj.spawnEntityInWorld(new EntityItem(worldObj, this.posX, this.posY, this.posZ, itemEnt.getEntityItem()));
+                    if (this.inventory.addItemStackToInventory(itemEnt.getEntityItem()))
+                    {
+                        collider.setDead();
+                    }
+                    else
+                    {
+                        this.inventoryFull = true;
+                        this.worldObj.spawnEntityInWorld(new EntityItem(worldObj, this.posX, this.posY, this.posZ, itemEnt.getEntityItem()));
+                    }
                 }
             }
         }

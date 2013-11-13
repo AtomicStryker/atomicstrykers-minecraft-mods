@@ -26,6 +26,7 @@ import cpw.mods.fml.relauncher.Side;
 
 public class ClientProxy extends CommonProxy
 {
+    
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -53,7 +54,7 @@ public class ClientProxy extends CommonProxy
     @Override
     public boolean hasPlayerMinions(EntityPlayer player)
     {
-        return MinionsClient.hasMinionsSMPOverride || !MinionsCore.getMinionsForMaster(player.username).isEmpty();
+        return MinionsClient.hasMinionsSMPOverride;
     }
     
     @Override

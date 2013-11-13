@@ -35,15 +35,15 @@ public class GuiMinionMenu extends GuiScreen
         	
         	this.buttonList.add(new GuiButton(4, this.width / 4 *3, this.height / 4 + 40, 100, 20, "Dig..."));
         }
-		else if (MinionsCore.evilDeedXPCost == -1)
+		else if (MinionsCore.instance.evilDeedXPCost == -1)
 		{
 			this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Deeds Disabled by config!"));
 		}
-		else if (MinionsCore.evilDoings == null || MinionsCore.evilDoings.size() == 0)
+		else if (MinionsCore.instance.evilDoings == null || MinionsCore.instance.evilDoings.size() == 0)
 		{
 		    this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Missing Deed config file!"));
 		}
-        else if (mc.thePlayer.experienceLevel >= MinionsCore.evilDeedXPCost)
+        else if (mc.thePlayer.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
         {
         	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Commit to Evil"));
         }

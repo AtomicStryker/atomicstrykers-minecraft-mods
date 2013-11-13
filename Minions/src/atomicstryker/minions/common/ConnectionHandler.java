@@ -17,11 +17,12 @@ public class ConnectionHandler implements IConnectionHandler
 	@Override
 	public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
 	{
-        Object[] toSend = {MinionsCore.evilDeedXPCost};
+        Object[] toSend = {MinionsCore.instance.evilDeedXPCost};
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.REQUESTXPSETTING.ordinal(), toSend), player);
         
         EntityPlayer p = (EntityPlayer) player;
-        Object[] toSend2 = {MinionsCore.hasPlayerMinions(p) ? 1 : 0, MinionsCore.hasAllMinions(p) ? 1 : 0};
+        MinionsCore.instance.prepareMinionHolder(p.username);
+        Object[] toSend2 = {MinionsCore.instance.hasPlayerMinions(p) ? 1 : 0, MinionsCore.instance.hasAllMinions(p) ? 1 : 0};
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend2), player);
 	}
 

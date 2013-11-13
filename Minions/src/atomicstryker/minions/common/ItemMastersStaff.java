@@ -19,8 +19,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemMastersStaff extends Item
 {
-    private long lastTime;
-    private final long coolDown = 100L;
 
     public ItemMastersStaff(int var1)
     {
@@ -28,7 +26,6 @@ public class ItemMastersStaff extends Item
         this.maxStackSize = 1;
         
         this.setCreativeTab(CreativeTabs.tabCombat);
-        lastTime = System.currentTimeMillis();
     }
     
     @Override
@@ -39,25 +36,21 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack var1, World var2, EntityPlayer var3, int ticksHeld)
+    public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityPlayer player, int ticksHeld)
     {
-        int ticksLeftFromMax = this.getMaxItemUseDuration(var1) - ticksHeld;
+        int ticksLeftFromMax = this.getMaxItemUseDuration(itemstack) - ticksHeld;
         float pointStrength = (float) ticksLeftFromMax / 20.0F;
         pointStrength = (pointStrength * pointStrength + pointStrength * 2.0F) / 3.0F;
 
-        if (System.currentTimeMillis() > lastTime + coolDown)
+        if (pointStrength > 1.0F)
         {
-            lastTime = System.currentTimeMillis();
-            if (pointStrength > 1.0F)
-            {
-                // full power!
-                MinionsCore.proxy.onMastersGloveRightClickHeld(var1, var2, var3);
-            }
-            else
-            {
-                // shorter tap
-                MinionsCore.proxy.onMastersGloveRightClick(var1, var2, var3);
-            }
+            // full power!
+            MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, player);
+        }
+        else
+        {
+            // shorter tap
+            MinionsCore.proxy.onMastersGloveRightClick(itemstack, world, player);
         }
     }
 
@@ -80,10 +73,16 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3)
+    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
     {
-        var3.setItemInUse(var1, this.getMaxItemUseDuration(var1));
-        return var1;
+        player.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
+        
+        if (world.isRemote)
+        {
+            //PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), null));
+        }
+        
+        return itemStack;
     }
 
     @Override

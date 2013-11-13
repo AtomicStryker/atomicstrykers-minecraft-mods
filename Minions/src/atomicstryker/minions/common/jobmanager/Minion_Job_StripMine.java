@@ -35,6 +35,8 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 	
     public Minion_Job_StripMine(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
+        super();
+        
         currentSegment = -1;
     	for (EntityMinion m : minions)
     	{
@@ -109,7 +111,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     	else if (!workerList.get(0).hasTask() && !jobQueue.isEmpty())
     	{
             BlockTask job = (BlockTask) this.jobQueue.get(0);
-            workerList.get(0).giveTask(job);           
+            workerList.get(0).giveTask(job, true);           
             job.setWorker(workerList.get(0));
     	}
     	
@@ -171,6 +173,15 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
    			}
    		}
    		
+   		// check previous segment floor for having been dug away
+   		for (int yi = 0; yi < 4; yi++)
+   		{
+            if (worldObj.getBlockId(nextX-xDirection, startY-yi, nextZ-zDirection) == 0)
+            {
+                jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-xDirection, startY-yi, nextZ-zDirection, 3, 0));
+            }
+   		}
+   		
    		BlockTask_MineBlock nextTask = new BlockTask_MineBlock(this, null, nextX, startY, nextZ);
    		this.jobQueue.add(nextTask);
    		nextTask = new BlockTask_MineBlock(this, null, nextX, startY+1, nextZ);
@@ -202,7 +213,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     {
     	int checkBlockID = worldObj.getBlockId(x, y, z);
 
-    	if (MinionsCore.isBlockValueable(checkBlockID))
+    	if (MinionsCore.instance.isBlockValueable(checkBlockID))
     	{
     		BlockTask_MineOreVein minetask = new BlockTask_MineOreVein(this, null, x, y, z);
     		if (minetask.posY > startY)

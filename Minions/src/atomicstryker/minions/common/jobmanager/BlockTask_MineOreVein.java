@@ -74,11 +74,11 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 		{
 			check = arr[0];
 			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.posX, check.posY, check.posZ);
-			worker.giveTask(next);
+			worker.giveTask(next, true);
 		}
 		else
 		{
-	    	this.worker.giveTask(null);
+	    	this.worker.giveTask(null, false);
 		}
 	}
 
@@ -96,7 +96,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     private void checkBlockForVein(int x, int y, int z)
     {
     	int checkBlockID = worker.worldObj.getBlockId(x, y, z);
-    	if (!MinionsCore.isBlockValueable(checkBlockID))
+    	if (!MinionsCore.instance.isBlockValueable(checkBlockID))
     	{
     		return;
     	}

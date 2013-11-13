@@ -68,7 +68,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     			// job.setworker!
     			
     			BlockTask job = (BlockTask) this.jobQueue.get(0);
-    			worker.giveTask(job);
+    			worker.giveTask(job, true);
     			job.setWorker(worker);
     			
     			//System.out.println("giving job ["+job.posX+"|"+job.posY+"|"+job.posZ+"] to worker");

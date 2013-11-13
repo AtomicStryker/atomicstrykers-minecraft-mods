@@ -113,6 +113,7 @@ public abstract class BlockTask
             else
             {
                 worker.returningGoods = true;
+                worker.runInventoryDumpLogic();
                 // System.out.println("Blocktask worker is full, sending to return goods");
             }
         }

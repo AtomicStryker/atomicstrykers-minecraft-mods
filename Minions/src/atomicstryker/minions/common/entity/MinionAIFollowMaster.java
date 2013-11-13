@@ -1,16 +1,14 @@
 package atomicstryker.minions.common.entity;
 
-import atomicstryker.minions.common.MinionsCore;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
+import atomicstryker.minions.common.MinionsCore;
 
 public class MinionAIFollowMaster extends EntityAIBase
 {
 
     private final EntityMinion theMinion;
-    private final World theWorld;
     private final float followSpeed;
     private final PathNavigate petPathfinder;
     private final float maxDist;
@@ -23,46 +21,50 @@ public class MinionAIFollowMaster extends EntityAIBase
     public MinionAIFollowMaster(EntityMinion minion, float movespeed, float min, float max)
     {
         this.theMinion = minion;
-        this.theWorld = minion.worldObj;
         this.followSpeed = movespeed;
         this.petPathfinder = minion.getNavigator();
         this.minDist = min;
         this.maxDist = max;
         this.setMutexBits(3);
-        followRangeSq = MinionsCore.minionFollowRange * MinionsCore.minionFollowRange;
+        followRangeSq = MinionsCore.instance.minionFollowRange * MinionsCore.instance.minionFollowRange;
     }
 
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
+    @Override
     public boolean shouldExecute()
     {
         return theMinion.master != null && theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.minDist * this.minDist)
-                && theMinion.followingMaster;
+                && shouldFollowMaster();
     }
 
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
+    @Override
     public boolean continueExecuting()
     {
         return !this.petPathfinder.noPath() && this.theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.maxDist * this.maxDist)
-                && theMinion.followingMaster;
+                && shouldFollowMaster();
     }
 
     /**
      * Execute a one shot task or start executing a continuous task
      */
+    @Override
     public void startExecuting()
     {
         this.updateTicker = 0;
         this.isAvoidingWater = this.theMinion.getNavigator().getAvoidsWater();
         this.theMinion.getNavigator().setAvoidsWater(false);
+        theMinion.setWorking(false);
     }
 
     /**
      * Resets the task
      */
+    @Override
     public void resetTask()
     {
         this.petPathfinder.clearPathEntity();
@@ -72,11 +74,12 @@ public class MinionAIFollowMaster extends EntityAIBase
     /**
      * Updates the task
      */
+    @Override
     public void updateTask()
     {
         this.theMinion.getLookHelper().setLookPositionWithEntity(theMinion.master, 10.0F, (float) this.theMinion.getVerticalFaceSpeed());
 
-        if (theMinion.followingMaster)
+        if (shouldFollowMaster())
         {
             if (--this.updateTicker <= 0)
             {
@@ -94,8 +97,8 @@ public class MinionAIFollowMaster extends EntityAIBase
                         {
                             for (int var5 = 0; var5 <= 4; ++var5)
                             {
-                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && this.theWorld.isBlockNormalCube(var1 + var4, var3 - 1, var2 + var5)
-                                        && !this.theWorld.isBlockNormalCube(var1 + var4, var3, var2 + var5) && !this.theWorld.isBlockNormalCube(var1 + var4, var3 + 1, var2 + var5))
+                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && theMinion.worldObj.isBlockNormalCube(var1 + var4, var3 - 1, var2 + var5)
+                                        && !theMinion.worldObj.isBlockNormalCube(var1 + var4, var3, var2 + var5) && !theMinion.worldObj.isBlockNormalCube(var1 + var4, var3 + 1, var2 + var5))
                                 {
                                     this.theMinion.setLocationAndAngles((double) ((float) (var1 + var4) + 0.5F), (double) var3, (double) ((float) (var2 + var5) + 0.5F), this.theMinion.rotationYaw,
                                             this.theMinion.rotationPitch);
@@ -108,5 +111,10 @@ public class MinionAIFollowMaster extends EntityAIBase
                 }
             }
         }
+    }
+    
+    private boolean shouldFollowMaster()
+    {
+        return theMinion.followingMaster || (theMinion.returningGoods && theMinion.returnChestOrInventory == null);
     }
 }

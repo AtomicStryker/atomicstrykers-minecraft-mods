@@ -319,6 +319,7 @@ public class InventoryMinion implements IInventory
                 this.mainInventory[var1] = null;
             }
         }
+        minion.inventoryFull = false;
     }
     
 	public void putAllItemsToInventory(IInventory returnChestOrInventory)
@@ -350,6 +351,7 @@ public class InventoryMinion implements IInventory
             	}
             }
         }
+        minion.inventoryFull = false;
 	}
 	
     private boolean addItemStackToInventory(IInventory inv, ItemStack item)

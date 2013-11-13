@@ -44,7 +44,7 @@ public class GuiDeedMenu extends GuiScreen
         
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Chicken out"));
         
-    	ArrayList<EvilDeed> copy = (ArrayList<EvilDeed>) MinionsCore.evilDoings.clone();
+    	ArrayList<EvilDeed> copy = (ArrayList<EvilDeed>) MinionsCore.instance.evilDoings.clone();
     	deedButtons = new ArrayList<EvilDeed>();
     	Random rand = new Random();
     	while (deedButtons.size() < 3)

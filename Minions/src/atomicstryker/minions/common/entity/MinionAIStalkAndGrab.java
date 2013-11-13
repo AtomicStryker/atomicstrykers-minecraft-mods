@@ -23,6 +23,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
+    @Override
     public boolean shouldExecute()
     {
         if (theMinion.targetEntityToGrab != null)
@@ -38,6 +39,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
+    @Override
     public boolean continueExecuting()
     {
         return target != null && target.isEntityAlive() && this.grabDelay < maxGrabDelay;
@@ -46,6 +48,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
     /**
      * Resets the task
      */
+    @Override
     public void resetTask()
     {
         this.target = null;
@@ -56,6 +59,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
     /**
      * Updates the task
      */
+    @Override
     public void updateTask()
     {
         this.theMinion.getLookHelper().setLookPositionWithEntity(this.target, 10.0F, (float)this.theMinion.getVerticalFaceSpeed());

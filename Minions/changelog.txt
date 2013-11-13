@@ -1,3 +1,8 @@
+Update 1.7.6
+- massive rework of minion logic.. again..
+- strip mining should now ensure there is no holes in the stripmine floor afterwards
+- nerfed pathfinder thread timeout, should not lag game when facing impossible chasms
+
 Update 1.7.5
 - cleaned up minion states and pathfinding a bit
 
