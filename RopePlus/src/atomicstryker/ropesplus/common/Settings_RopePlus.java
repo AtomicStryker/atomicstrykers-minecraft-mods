@@ -23,6 +23,7 @@ public class Settings_RopePlus
 	public static int itemIdArrowSlime = 2521;
 	public static int itemIdArrowTorch = 2522;
 	public static int itemIdArrowWarp = 2523;
+	public static int itemIdArrowRedStoneTorch = 2524;
     public static int itemIdRopesPlusBow = 2510;
 	
 	public static int blockIdZipLineAnchor = 245;
@@ -33,6 +34,7 @@ public class Settings_RopePlus
     public static boolean disableBowHook = false;
 	
 	public static Configuration config;
+    
 	
 	public static void InitSettings(File suggested)
 	{		
@@ -58,6 +60,7 @@ public class Settings_RopePlus
 		itemIdArrowSlime = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowSlime", itemIdArrowSlime).getInt();
 		itemIdArrowTorch = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowTorch", itemIdArrowTorch).getInt();
 		itemIdArrowWarp = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowWarp", itemIdArrowWarp).getInt();
+		itemIdArrowRedStoneTorch = config.getItem(Configuration.CATEGORY_ITEM, "itemIdArrowRedstoneTorch", itemIdArrowWarp).getInt();
 		
 		blockIdZipLineAnchor = config.getBlock("blockIdZipLineAnchor", blockIdZipLineAnchor).getInt();
 		itemIdHookShot = config.getItem(Configuration.CATEGORY_ITEM, "itemIdHookShot", itemIdHookShot).getInt();

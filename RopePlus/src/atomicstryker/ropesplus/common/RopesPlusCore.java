@@ -23,6 +23,7 @@ import atomicstryker.ropesplus.common.arrows.EntityArrow303Fire;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303Grass;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303Ice;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303Laser;
+import atomicstryker.ropesplus.common.arrows.EntityArrow303RedStoneTorch;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303Rope;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303Slime;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303Torch;
@@ -43,7 +44,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.4.9")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 connectionHandler = ConnectionHandler.class,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_Ropes"}, packetHandler = ClientPacketHandler.class),
@@ -65,7 +66,8 @@ public class RopesPlusCore
 			EntityArrow303Torch.class, 
 			EntityArrow303Warp.class,
 			EntityArrow303Confusion.class,
-			EntityArrow303Rope.class
+			EntityArrow303Rope.class,
+			EntityArrow303RedStoneTorch.class
 	};
 	
 	public static List<EntityArrow303> arrows;
