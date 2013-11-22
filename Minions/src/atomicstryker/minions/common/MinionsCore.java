@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 
 import net.minecraft.block.Block;
@@ -326,10 +325,6 @@ public class MinionsCore
         minionMapLock = false;
     }
     
-    /**
-     * Gets Collection associated with Username containing registered Minions
-     * Creates one if none exists and returns the empty new one
-     */
     public EntityMinion[] getMinionsForMaster(EntityPlayer p)
     {
         EntityMinion[] minions = getMinionsForMasterName(p.username);
@@ -343,7 +338,12 @@ public class MinionsCore
     
     private EntityMinion[] getMinionsForMasterName(String n)
     {
-        List<EntityMinion> l = getMinionMap().get(n);
+        ArrayList<EntityMinion> l = getMinionMap().get(n);
+        if (l == null)
+        {
+            System.out.println("Minions got faulty request for username "+n+", no Minionlist prepared?!");
+            return new EntityMinion[0];
+        }
         Iterator<EntityMinion> iter = l.iterator();
         while (iter.hasNext())
         {
@@ -357,7 +357,16 @@ public class MinionsCore
     
     private void offerMinionToMap(EntityMinion m, String masterName)
     {
-        getMinionMap().get(masterName).add(m);
+        ArrayList<EntityMinion> l = getMinionMap().get(masterName);
+        if (l != null)
+        {
+            l.add(m);
+        }
+        else
+        {
+            System.out.println("Minions got faulty push for username "+masterName+", no Minionlist prepared?!");
+            m.setDead();
+        }
         minionMapLock = false;
     }
 
