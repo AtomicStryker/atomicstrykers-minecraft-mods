@@ -14,10 +14,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 
 public class RuinTemplateRule {
-    private int[] blockIDs, blockMDs;
-	private String[] blockStrings;
+    private final int[] blockIDs, blockMDs;
+	private final String[] blockStrings;
     private int chance = 100, condition = 0;
-	private RuinIBuildable owner;
+	private final RuinIBuildable owner;
 
     public RuinTemplateRule( RuinIBuildable r, String rule ) throws Exception {
 		owner = r;
@@ -125,7 +125,7 @@ public class RuinTemplateRule {
         if( random.nextInt( 100 ) < chance ) {
             // we're cleared, pass it off to the correct conditional.
             switch( condition ) {
-            case 0:
+            default:
                 doNormalBlock( world, random, x, y, z, rotate );
                 break;
             case 1:
@@ -136,6 +136,16 @@ public class RuinTemplateRule {
                 break;
 			case 3:
 				doUnderBlock( world, random, x, y, z, rotate );
+				break;
+            case 4:
+                doNotAboveBlock( world, random, x, y, z, rotate );
+                break;
+            case 5:
+                doNotAdjacentBlock( world, random, x, y, z, rotate );
+                break;
+            case 6:
+                doNotUnderBlock( world, random, x, y, z, rotate );
+                break;
             }
         }
     }
@@ -179,6 +189,27 @@ public class RuinTemplateRule {
         if( owner.isAir( world.getBlockId( x, y + 1, z ) ) ) { return; }
 		int blocknum = getBlockNum( random );
 		handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
+    }
+    
+    private void doNotAboveBlock( World world, Random random, int x, int y, int z, int rotate ) {
+        if( !owner.isAir( world.getBlockId( x, y - 1, z ) ) ) { return; }
+        int blocknum = getBlockNum( random );
+        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
+    }
+
+    private void doNotAdjacentBlock( World world, Random random, int x, int y, int z, int rotate ) {
+        if( ( !owner.isAir( world.getBlockId( x + 1, y, z ) ) ) &&
+            ( !owner.isAir( world.getBlockId( x, y, z + 1 ) ) ) &&
+            ( !owner.isAir( world.getBlockId( x, y, z - 1 ) ) ) &&
+            ( !owner.isAir( world.getBlockId( x - 1, y, z ) ) ) ) { return; }
+        int blocknum = getBlockNum( random );
+        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
+    }
+
+    private void doNotUnderBlock( World world, Random random, int x, int y, int z, int rotate ) {
+        if( !owner.isAir( world.getBlockId( x, y + 1, z ) ) ) { return; }
+        int blocknum = getBlockNum( random );
+        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
     }
     
 	private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum, int rotate, String blockString)

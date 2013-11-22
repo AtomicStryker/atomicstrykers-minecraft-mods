@@ -10,20 +10,24 @@ import java.util.Random;
 import net.minecraft.world.World;
 
 public class RuinTemplate implements RuinIBuildable {
-	private String name;
+    
+	private final String name;
     private int[] targets;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1;
 	private int leveling = 0, lbuffer = 0, cutIn = 0, cbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false, preservePlants = false,
 					unique = false;
-    private ArrayList<RuinTemplateRule> rules = new ArrayList<RuinTemplateRule>();
-    private ArrayList<RuinTemplateLayer> layers = new ArrayList<RuinTemplateLayer>();
-    private HashSet<String> biomes = new HashSet<String>();
+    private final ArrayList<RuinTemplateRule> rules;
+    private final ArrayList<RuinTemplateLayer> layers;
+    private final HashSet<String> biomes;
 
     public RuinTemplate( String filename ) throws Exception {
         // load in the given file as a template
         name = filename;
         ArrayList<String> lines = new ArrayList<String>();
+        rules = new ArrayList<RuinTemplateRule>();
+        layers = new ArrayList<RuinTemplateLayer>();
+        biomes = new HashSet<String>();
         BufferedReader br = new BufferedReader( new FileReader( filename ) );
         String read = br.readLine();
         while( read != null ) {

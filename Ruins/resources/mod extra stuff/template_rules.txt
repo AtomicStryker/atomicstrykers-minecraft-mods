@@ -167,6 +167,9 @@ preserve_plants=0
 # 1 - There must be a block below it to attempt to spawn.
 # 2 - There must be an adjacent block at the same level for a spawn attempt.
 # 3 - There must be a block above this one in order for it to attempt to spawn.
+# 4 - There must NOT be a block below it to attempt to spawn.
+# 5 - There must NOT be an adjacent block at the same level for a spawn attempt.
+# 6 - There must NOT be a block above this one in order for it to attempt to spawn.
 #
 # Adjacent in this case is not diagonal, only along the cardinal directions.
 #

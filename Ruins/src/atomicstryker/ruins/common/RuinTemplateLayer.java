@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class RuinTemplateLayer {
-    int[][] layer;
+    final int[][] layer;
 
     public RuinTemplateLayer( ArrayList<String> layerdata, int width, int length ) throws Exception {
         layer = new int[width][length];

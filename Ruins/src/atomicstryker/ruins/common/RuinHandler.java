@@ -15,9 +15,9 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class RuinHandler {
 	private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
-	private ArrayList<HashSet<RuinIBuildable>> templates = new ArrayList<HashSet<RuinIBuildable>>();
-	private ArrayList<Exclude> excluded = new ArrayList<Exclude>();
-	protected int[][] vars;
+	private final ArrayList<HashSet<RuinIBuildable>> templates = new ArrayList<HashSet<RuinIBuildable>>();
+	private final ArrayList<Exclude> excluded = new ArrayList<Exclude>();
+	protected final int[][] vars;
 	
 	protected int triesPerChunkNormal = 6, chanceToSpawnNormal = 10, chanceForSiteNormal = 15,
 				  triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15;

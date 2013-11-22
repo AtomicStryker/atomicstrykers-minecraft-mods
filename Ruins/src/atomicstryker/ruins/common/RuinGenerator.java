@@ -8,9 +8,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
 public class RuinGenerator {
-	private RuinHandler ruinsHandler;
-	private RuinStats stats;
-	private LinkedList<RuinBoundingBox> lastTen;
+	private final RuinHandler ruinsHandler;
+	private final RuinStats stats;
+	private final LinkedList<RuinBoundingBox> lastTen;
 	private int NumTries = 0, LastNumTries = 0;
 	private final int WORLD_MAX_HEIGHT = 256;
 

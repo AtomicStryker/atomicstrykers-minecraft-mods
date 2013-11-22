@@ -5,8 +5,10 @@ import java.util.Random;
 import net.minecraft.world.World;
 
 public class RuinRuleProcess {
-	private RuinTemplateRule rule;
-	private int x, y, z, rotate;
+    
+	private final RuinTemplateRule rule;
+	private final int x, y, z, rotate;
+	
 	public RuinRuleProcess( RuinTemplateRule r, int xbase, int ybase, int zbase, int rot ) {
 		rule = r;
 		x = xbase;

@@ -1,7 +1,7 @@
 package atomicstryker.ruins.common;
 
 public class RuinBoundingBox {
-	protected int xMin, xMax, zMin, zMax;
+	protected final int xMin, xMax, zMin, zMax;
 
 	public RuinBoundingBox( int xmin, int xmax, int zmin, int zmax ) {
 		xMin = xmin;
