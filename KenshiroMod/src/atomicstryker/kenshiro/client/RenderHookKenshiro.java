@@ -51,7 +51,7 @@ public class RenderHookKenshiro extends Render
             {
                 mc.entityRenderer.enableLightmap((double)renderTick);
                 
-               	UpdatePrivateValues();
+               	updatePrivateValues();
                	
                 GL11.glPushMatrix();
                 GL11.glMatrixMode(5888 /*GL_MODELVIEW0_ARB*/);
@@ -70,7 +70,7 @@ public class RenderHookKenshiro extends Render
         RenderHelper.enableStandardItemLighting();
     }
     
-    private void UpdatePrivateValues()
+    private void updatePrivateValues()
     {
         itemToRender = (ItemStack) ObfuscationReflectionHelper.getPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, 4);
         equippedProgress = (Float) ObfuscationReflectionHelper.getPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, 5);
