@@ -19,11 +19,16 @@ public class AStarPathPlanner
     private AStarNode lastStart;
     private AStarNode lastEnd;
     
+    private AStarNode[] queue;
+    private int qindex;
+    
     public AStarPathPlanner(World world, IAStarPathedEntity ent)
     {
         worldObj = world;
         pathedEntity = ent;
         isJPS = true;
+        queue = null;
+        qindex = 0;
     }
     
     public void setJPS(boolean b)
@@ -39,9 +44,9 @@ public class AStarPathPlanner
         }
         return worker.getState() != Thread.State.NEW;
     }
-
-    public void getPath(int startx, int starty, int startz, int destx, int desty, int destz, boolean allowDropping)
-    {        
+    
+    private int checkYCoordViability(int startx, int starty, int startz)
+    {
         if (!AStarStatic.isViable(worldObj, startx, starty, startz, 0))
         {
             starty--;
@@ -54,13 +59,27 @@ public class AStarPathPlanner
         {
             starty--;
         }
-        
-        AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
-        AStarNode finish = new AStarNode(destx, desty, destz, -1, null);
-        getPath(starter, finish, allowDropping);
+        return starty;
     }
 
-    public synchronized void getPath(AStarNode start, AStarNode end, boolean allowDropping)
+    public void getPath(int startx, int starty, int startz, int destx, int desty, int destz, boolean allowDropping)
+    {
+        starty = checkYCoordViability(startx, starty, startz);
+        final AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
+        final AStarNode finish = new AStarNode(destx, desty, destz, -1, null);
+        getPath(starter, finish, allowDropping);
+    }
+    
+    public void getPath(int startx, int starty, int startz, AStarNode[] possibles, boolean allowDropping)
+    {
+        starty = checkYCoordViability(startx, starty, startz);
+        queue = possibles;
+        qindex = 0;
+        final AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
+        getPath(starter, queue[qindex], allowDropping);
+    }
+
+    private synchronized void getPath(AStarNode start, AStarNode end, boolean allowDropping)
     {        
         lastStart = start;
         lastEnd = end;
@@ -84,16 +103,25 @@ public class AStarPathPlanner
 
     public void onNoPathAvailable()
     {
-        if (isJPS) // in case of JPS failure switch to old best first algorithm
+        if (queue != null && qindex+1 < queue.length)
         {
-            setJPS(false);
-            //System.out.println("JPS fail recorded for "+lastStart+" to "+lastEnd);
-            getPath(lastStart, lastEnd, false);
+            qindex++;
+            getPath(lastStart, queue[qindex], false);
         }
-        else if (pathedEntity != null)
+        else
         {
-            //System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
-            pathedEntity.onNoPathAvailable();
+            if (isJPS) // in case of JPS failure switch to old best first algorithm
+            {
+                setJPS(false);
+                //System.out.println("JPS fail recorded for "+lastStart+" to "+lastEnd);
+                getPath(lastStart, lastEnd, false);
+            }
+            else if (pathedEntity != null)
+            {
+                //System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
+                pathedEntity.onNoPathAvailable();
+            }
         }
     }
+    
 }

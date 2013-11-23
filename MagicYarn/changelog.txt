@@ -1,3 +1,6 @@
+1.0.9
+- updated with newer AStar code from Minions
+
 1.0.8
 - updated for MC 1.6.4
 

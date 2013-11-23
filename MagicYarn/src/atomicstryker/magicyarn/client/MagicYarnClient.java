@@ -36,8 +36,6 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
     {
         mcinstance = FMLClientHandler.instance().getClient();
         instance = this;
-        origin = null;
-        target = null;
           
         clientTicker = new ClientTickHandler(this, mcinstance);
         mpYarnInstance = new MPMagicYarn(mcinstance, this);
@@ -158,7 +156,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                     target = new AStarNode((int)Math.floor(player.posX), (int)player.posY-1, (int)Math.floor(player.posZ), 0, null);
                     System.out.println("Magic Yarn Target set from null to ["+target.x+"|"+target.y+"|"+target.z+"]");
 
-                    clientTicker.plannerInstance.getPath(origin, target, false);
+                    clientTicker.plannerInstance.getPath(origin.x, origin.y, origin.z, target.x, target.y, target.z, false);
                 }
                 else // continue path
                 {
@@ -198,7 +196,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                     else
                     {
                         target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
-                        clientTicker.plannerInstance.getPath(origin, target, false);
+                        clientTicker.plannerInstance.getPath(origin.x, origin.y, origin.z, target.x, target.y, target.z, false);
                     }
                 }
             }
