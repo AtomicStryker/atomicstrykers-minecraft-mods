@@ -1,3 +1,6 @@
+1.4.2
+- seperated drop lists for the the 3 mod strength classes. Using the same list for all 3 is possible of course.
+
 1.4.1
 - sticky, poison, fiery, rust and wither no longer get applied to attackers using indirect damage sources
 - depending on code implementation this may or may not work on ranged weapons, magic etc

@@ -69,7 +69,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.1")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.2")
 @NetworkMod(clientSideRequired = false, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_IM"}, packetHandler = ServerPacketHandler.class))
@@ -82,7 +82,10 @@ public class InfernalMobsCore implements ITickHandler
     /**
      * Array of two ints, first Block or Item ID, second meta value, third stacksize, fourth randomizerRange
      */
-    private ArrayList<Integer[]> dropIdList;
+    private ArrayList<Integer[]> dropIdListElite;
+    private ArrayList<Integer[]> dropIdListUltra;
+    private ArrayList<Integer[]> dropIdListInfernal;
+    
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
     private HashMap<String, Float> classesHealthMap;
@@ -117,7 +120,9 @@ public class InfernalMobsCore implements ITickHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
         instance = this;
-        dropIdList = new ArrayList<Integer[]>();
+        dropIdListElite = new ArrayList<Integer[]>();
+        dropIdListUltra = new ArrayList<Integer[]>();
+        dropIdListInfernal = new ArrayList<Integer[]>();
         nextExistCheckTime = System.currentTimeMillis();
         classesAllowedMap = new HashMap<String, Boolean>();
         classesForcedMap = new HashMap<String, Boolean>();
@@ -227,13 +232,31 @@ public class InfernalMobsCore implements ITickHandler
         eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15, "One in THIS many Mobs will become atleast rare").getString());
         ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7, "One in THIS many already rare Mobs will become atleast ultra").getString());
         infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7, "One in THIS many already ultra Mobs will become infernal").getString());
-        String itemIDs = config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDs",
-                "256,257,258,261,267,276,277,278,279,292,293,302,303,304,305,306,307,308,309,310,311,312,313,403",
-                "List of equally likely to drop Items seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString();
         useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", true, "Use Entity class names instead of ingame Entity names for the config").getBoolean(true);
         disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false, "Disables the ingame Health and Name overlay").getBoolean(false);
         modHealthFactor = config.get(Configuration.CATEGORY_GENERAL, "mobHealthFactor", "1.0", "Multiplier applied ontop of all of the modified Mobs health").getDouble(1.0D);
         
+        
+        parseItemsForList(config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDsElite",
+                "256,257,258,267,292,302,303,304,305,306,307,308,309,357-0-6",
+                "List of equally likely to drop Items for Elites, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString(),
+                instance.dropIdListElite);
+        
+        parseItemsForList(config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDsUltra",
+                "261,292,302,303,304,305,306,307,308,309,314,315,316,317,322,377-0-3,403",
+                "List of equally likely to drop Items for Ultras, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString(),
+                instance.dropIdListUltra);
+        
+        parseItemsForList(config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDsInfernal",
+                "264-0-3,276,277,278,279,293,302,303,304,305,310,311,312,313,368,403",
+                "List of equally likely to drop Items for Infernals, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString(),
+                instance.dropIdListInfernal);
+        
+        config.save();
+    }
+    
+    private void parseItemsForList(String itemIDs, ArrayList<Integer[]> list)
+    {
         itemIDs = itemIDs.trim();
         for (String s : itemIDs.split(","))
         {
@@ -248,15 +271,13 @@ public class InfernalMobsCore implements ITickHandler
                         (meta.length > 2) ? Integer.parseInt(meta[2]) : 1,
                         (meta.length > 3) ? Integer.parseInt(meta[3]) : 0
                                 };
-                instance.dropIdList.add(ints);
+                list.add(ints);
             }
             else
             {
                 failedItemStrings.add(meta);
             }
         }
-        
-        config.save();
     }
     
     /**
@@ -511,12 +532,15 @@ public class InfernalMobsCore implements ITickHandler
      */
     public void addEntityModifiersByString(EntityLivingBase entity, String savedMods)
     {
-        MobModifier mod = stringToMobModifiers(entity, savedMods);
-        if (mod != null)
+        if (!getIsRareEntity(entity))
         {
-            proxy.getRareMobs().put(entity, mod);
-            mod.onSpawningComplete(entity);
-            mod.setHealthAlreadyHacked(entity);
+            MobModifier mod = stringToMobModifiers(entity, savedMods);
+            if (mod != null)
+            {
+                proxy.getRareMobs().put(entity, mod);
+                mod.onSpawningComplete(entity);
+                mod.setHealthAlreadyHacked(entity);
+            }
         }
     }
     
@@ -639,7 +663,7 @@ public class InfernalMobsCore implements ITickHandler
                             (meta.length > 2) ? Integer.parseInt(meta[2]) : 1,
                             (meta.length > 3) ? Integer.parseInt(meta[3]) : 0
                                     };
-                    instance.dropIdList.add(ints);
+                    instance.dropIdListElite.add(ints);
                 }
             }
             failedItemStrings.clear();
@@ -651,9 +675,10 @@ public class InfernalMobsCore implements ITickHandler
     private void dropRandomEnchantedItems(EntityLivingBase mob, MobModifier mods)
     {
         int modStr = mods.getModSize();
+        int prefix = (modStr <= 5) ? 0 : (modStr <= 10) ? 1 : 2; // 0 for elite, 1 for ultra, 2 for infernal
         while (modStr > 0)
         {
-            ItemStack itemStack = getRandomItem(mob);
+            ItemStack itemStack = getRandomItem(mob, prefix);
             if (itemStack != null && itemStack.itemID > 0)
             {
                 Item item = itemStack.getItem();
@@ -701,10 +726,11 @@ public class InfernalMobsCore implements ITickHandler
             }
         }
     }
-
-    private ItemStack getRandomItem(EntityLivingBase mob)
+    
+    private ItemStack getRandomItem(EntityLivingBase mob, int prefix)
     {
-        Integer[] ints = instance.dropIdList.get(mob.worldObj.rand.nextInt(instance.dropIdList.size()));
+        ArrayList<Integer[]> list = (prefix == 0) ? instance.dropIdListElite : (prefix == 1) ? instance.dropIdListUltra : instance.dropIdListInfernal;
+        Integer[] ints = list.get(mob.worldObj.rand.nextInt(instance.dropIdListElite.size()));
         int stackSize = ints[2];
         if (ints[3] != 0) // randomizer
         {
