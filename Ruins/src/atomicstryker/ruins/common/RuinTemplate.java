@@ -21,9 +21,9 @@ public class RuinTemplate implements RuinIBuildable {
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
 
-    public RuinTemplate( String filename ) throws Exception {
+    public RuinTemplate( String filename, String simpleName ) throws Exception {
         // load in the given file as a template
-        name = filename;
+        name = simpleName;
         ArrayList<String> lines = new ArrayList<String>();
         rules = new ArrayList<RuinTemplateRule>();
         layers = new ArrayList<RuinTemplateLayer>();
@@ -212,7 +212,7 @@ public class RuinTemplate implements RuinIBuildable {
         return true;
     }
 
-	public RuinBoundingBox getBoundingBox( int x, int z, int rotate ) {
+	public RuinData getRuinData( int x, int y, int z, int rotate ) {
 		int add = ( cbuffer > lbuffer ? cbuffer : lbuffer );
 		int xMin = 0, xMax = 0, zMin = 0, zMax = 0;
 		if( ( rotate == RuinsMod.DIR_EAST ) || ( rotate == RuinsMod.DIR_WEST ) ) {
@@ -226,7 +226,7 @@ public class RuinTemplate implements RuinIBuildable {
 			zMin = z + l_off - add;
 			zMax = zMin + length + add;
 		}
-		return new RuinBoundingBox( xMin, xMax, zMin, zMax );
+		return new RuinData( xMin, xMax, y, y+height, zMin, zMax, name );
 	}
 
     public void doBuild( World world, Random random, int xBase, int y, int zBase, int rotate ) {

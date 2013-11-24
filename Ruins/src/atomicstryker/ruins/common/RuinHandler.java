@@ -309,7 +309,7 @@ public class RuinHandler {
                 try {
     				switch( checkFileType( f.getName() ) ) {
     				case RuinsMod.FILE_TEMPLATE:
-    					r = new RuinTemplate( f.getCanonicalPath() );
+    					r = new RuinTemplate( f.getCanonicalPath(), f.getName() );
     					targetList.add( r );
     					
     					String candidate;
@@ -320,6 +320,7 @@ public class RuinHandler {
     					            if (candidate.equals(biomeName)) {
     					                if (BiomeGenBase.biomeList[x].biomeID != biomeID) {
     					                    templates.get(x).add( r );
+    					                    pw.println( "template " + f.getName() + "also registered for Biome "+BiomeGenBase.biomeList[x].biomeName);
     					                }
     					                break;
     					            }

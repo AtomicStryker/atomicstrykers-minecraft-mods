@@ -24,6 +24,7 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.world.WorldEvent;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -63,6 +64,12 @@ public class RuinsMod
             nextInfoTime = System.currentTimeMillis() + 1000l;
             event.entityPlayer.addChatMessage(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getUnlocalizedName(), event.block.blockID, event.metadata));
         }
+    }
+    
+    @ForgeSubscribe
+    public void eventWorldSave(WorldEvent.Save evt)
+    {
+        getWorldHandle(evt.world).generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
     }
     
     public class RuinsWorldGenerator implements IWorldGenerator
@@ -207,7 +214,7 @@ public class RuinsMod
         {
             File worlddir = getWorldSaveDir(world);
             worldHandle.ruins = new RuinHandler(worlddir);
-            worldHandle.generator = new RuinGenerator(worldHandle.ruins);
+            worldHandle.generator = new RuinGenerator(worldHandle.ruins, world.getWorldInfo().getWorldName());
         }
         catch (Exception e)
         {

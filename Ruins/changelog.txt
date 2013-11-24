@@ -235,3 +235,6 @@ a: setAccessible now true
 
 10.7
 + update to MC 1.6.4
+
+10.8
++ added RuinPositionsFile.txt to each World save Ruins generates in. See file for details
