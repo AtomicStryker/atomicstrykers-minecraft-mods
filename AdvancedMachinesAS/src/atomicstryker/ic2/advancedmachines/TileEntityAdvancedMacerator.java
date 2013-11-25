@@ -145,11 +145,9 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         
         if(result != null && supplement != null)
         {
-            List<ItemStack> supplementOutput = Recipes.macerator.getOutputFor(supplement, removeInputs).items;
-            
-            if (result.isItemEqual(idCopperOreCrushed) && supplementOutput != null)
+            if (result.isItemEqual(idCopperOreCrushed) && Recipes.macerator.getOutputFor(supplement, removeInputs) != null)
             {
-                for (ItemStack i : supplementOutput)
+                for (ItemStack i : Recipes.macerator.getOutputFor(supplement, removeInputs).items)
                 {
                     if (i.isItemEqual(idTinOreCrushed))
                     {
