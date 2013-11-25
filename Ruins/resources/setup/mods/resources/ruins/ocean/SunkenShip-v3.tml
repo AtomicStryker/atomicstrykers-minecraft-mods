@@ -1,6 +1,7 @@
 #Based on the Cargo Ship model by Marvin0801
 #http://www.planetminecraft.com/project/cargo-vessel/
 
+biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
 weight=5
 acceptable_target_blocks=1,3,12,13,82
 embed_into_distance=0

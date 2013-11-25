@@ -1,0 +1,5 @@
+As promised, may this textfile serve as a reminder to the shining beacon of Minecraftforum User "Blue001"
+who took upon himself the arduous task of reorganizing the Ruin templates file structure, resulting in
+faster loading times for all whom it may concern.
+
+Credit also goes to MCF User "jsmith" for providing an additional set of Ruin templates for everyone.

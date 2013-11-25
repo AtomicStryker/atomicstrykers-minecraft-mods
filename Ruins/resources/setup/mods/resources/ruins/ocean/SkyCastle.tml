@@ -1,9 +1,9 @@
 # SkyCastle
 # Author: Arrrg
 # From: Minecraft Forums
-
+biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
 weight=1
-unique=1
+unique=0
 embed_into_distance=1
 acceptable_target_blocks=8,9,79
 dimensions=55,30,30

@@ -1,0 +1,1 @@
+templates in this folder will spawn in ANY biome

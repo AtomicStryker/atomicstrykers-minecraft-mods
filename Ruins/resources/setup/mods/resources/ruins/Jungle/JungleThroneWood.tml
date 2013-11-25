@@ -1,7 +1,8 @@
 # Author: AtomicStryker
 # From: Default Template
 
-weight=2
+biomesToSpawnIn=jungle,junglehills,mini jungle
+weight=1
 embed_into_distance=1
 acceptable_target_blocks=1,2,3,12,13
 dimensions=4,7,4

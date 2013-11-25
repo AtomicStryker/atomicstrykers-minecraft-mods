@@ -1,4 +1,5 @@
-weight=14
+biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
+weight=10
 embed_into_distance=1
 acceptable_target_blocks=1,12,13,24
 dimensions=4,19,11

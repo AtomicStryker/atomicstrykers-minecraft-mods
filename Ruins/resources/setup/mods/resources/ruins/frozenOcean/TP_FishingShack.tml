@@ -1,7 +1,7 @@
 #Fishing Shack
 # Author: Mosslander
 # From: Town Pack
-
+biomesToSpawnIn=frozenocean
 weight=10
 embed_into_distance=10
 acceptable_target_blocks=8,9,79

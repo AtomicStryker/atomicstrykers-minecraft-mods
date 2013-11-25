@@ -1,7 +1,8 @@
 # Author: GnomeWorks
 # From: Minecraft Forums
 
-weight=15
+biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
+weight=3
 embed_into_distance=1
 acceptable_target_blocks=1,12,24
 dimensions=10,5,5

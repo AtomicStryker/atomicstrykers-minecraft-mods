@@ -2,6 +2,7 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
+biomesToSpawnIn=sky
 weight=20
 embed_into_distance=31
 acceptable_target_blocks=121

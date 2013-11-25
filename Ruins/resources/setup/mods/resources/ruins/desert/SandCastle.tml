@@ -1,8 +1,5 @@
-# Sand Castle
-# Author: Arrrg
-# From: Minecraft Forums
-
-weight=4
+biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
+weight=8
 embed_into_distance=4
 acceptable_target_blocks=1,2,3,12,13,24,78
 dimensions=43,8,8

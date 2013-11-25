@@ -1,8 +1,9 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
-weight=1
-unique=1
+biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
+weight=2
+unique=0
 embed_into_distance=3
 acceptable_target_blocks=9
 dimensions=38,30,30
