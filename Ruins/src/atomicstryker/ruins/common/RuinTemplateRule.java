@@ -151,12 +151,12 @@ public class RuinTemplateRule {
     }
 
 	public boolean runLater() {
-		if( condition == 2 ) { return true; }
+		if( condition == 2 || condition == 5 ) { return true; }
 		return false;
 	}
 
 	public boolean runLast() {
-		if( condition == 3 ) { return true; }
+		if( condition == 3 || condition == 6 ) { return true; }
 		return false;
 	}
 

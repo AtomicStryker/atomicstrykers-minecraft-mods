@@ -34,7 +34,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.8", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.9", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -69,7 +69,11 @@ public class RuinsMod
     @ForgeSubscribe
     public void eventWorldSave(WorldEvent.Save evt)
     {
-        getWorldHandle(evt.world).generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
+        WorldHandle wh = getWorldHandle(evt.world);
+        if (wh != null)
+        {
+            wh.generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
+        }
     }
     
     public class RuinsWorldGenerator implements IWorldGenerator
@@ -115,8 +119,9 @@ public class RuinsMod
     private void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
         WorldHandle wh = getWorldHandle(world);
-        if (wh.ruins != null && wh.ruins.loaded)
+        if (wh.ruins != null)
         {
+            for (; !wh.ruins.loaded; Thread.yield()) {}
             wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
         }
     }
@@ -124,8 +129,9 @@ public class RuinsMod
     private void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
         WorldHandle wh = getWorldHandle(world);
-        if (wh.ruins != null && wh.ruins.loaded)
+        if (wh.ruins != null)
         {
+            for (; !wh.ruins.loaded; Thread.yield()) {}
             wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
         }
     }
@@ -139,15 +145,18 @@ public class RuinsMod
     private WorldHandle getWorldHandle(World world)
     {
         WorldHandle wh = null;
-        if (!generatorMap.containsKey(world.provider.dimensionId))
+        if (!world.isRemote)
         {
-            wh = new WorldHandle();
-            createHandler(wh, world);
-            generatorMap.put(world.provider.dimensionId, wh);
-        }
-        else
-        {
-            wh = generatorMap.get(world.provider.dimensionId);
+            if (!generatorMap.containsKey(world.provider.dimensionId))
+            {
+                wh = new WorldHandle();
+                createHandler(wh, world);
+                generatorMap.put(world.provider.dimensionId, wh);
+            }
+            else
+            {
+                wh = generatorMap.get(world.provider.dimensionId);
+            }   
         }
         
         return wh;
@@ -169,7 +178,7 @@ public class RuinsMod
                     {
                         f.setAccessible(true);
                         File saveLoc = (File) f.get(loader);
-                        System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
+                        //System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
                         return saveLoc;
                     }
                     catch (Exception e)

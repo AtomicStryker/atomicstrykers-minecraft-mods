@@ -238,3 +238,9 @@ a: setAccessible now true
 
 10.8
 + added RuinPositionsFile.txt to each World save Ruins generates in. See file for details
++ added NOT conditionals to block rules
+
+10.9
++ moved all file parsing and writing into seperate threads of their own
++ changed NOT conditional block run sequence to match the normal rules
++ removed some console debug logging

@@ -17,117 +17,129 @@ public class RuinHandler {
 	private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
 	private final ArrayList<HashSet<RuinIBuildable>> templates = new ArrayList<HashSet<RuinIBuildable>>();
 	private final ArrayList<Exclude> excluded = new ArrayList<Exclude>();
-	protected final int[][] vars;
+	protected int[][] vars;
 	
 	protected int triesPerChunkNormal = 6, chanceToSpawnNormal = 10, chanceForSiteNormal = 15,
 				  triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15;
-	public boolean loaded = false;
+	public boolean loaded;
 	public boolean disableLogging;
 	public File saveFolder;
 
-	public RuinHandler( File worldPath ) {
-		// create the vars array fitting to the number of Biomes present
-		int biomeAmountPlusOne = RuinsMod.BIOME_NONE+1;
-		vars = new int[3][biomeAmountPlusOne];
-		for ( int j = 0; j < vars[0].length; j++ )
-		{
-			vars[CHANCE][j] = 75;
-		}
-		
+	public RuinHandler( File worldPath ) {		
 		saveFolder = worldPath;
-		
-		// fill up the template arraylist
-		for( int fill = 0; fill < biomeAmountPlusOne; fill++ ) {
-			templates.add( new HashSet<RuinIBuildable>() );
-		}
+		loaded = false;
+		new LoaderThread().start();
+	}
+	
+	private class LoaderThread extends Thread
+	{
+	    @Override
+	    public void run()
+	    {
+	        // create the vars array fitting to the number of Biomes present
+	        int biomeAmountPlusOne = RuinsMod.BIOME_NONE+1;
+	        vars = new int[3][biomeAmountPlusOne];
+	        for ( int j = 0; j < vars[0].length; j++ )
+	        {
+	            vars[CHANCE][j] = 75;
+	        }
+	        
+	        // fill up the template arraylist
+	        for( int fill = 0; fill < biomeAmountPlusOne; fill++ ) {
+	            templates.add( new HashSet<RuinIBuildable>() );
+	        }
 
-		PrintWriter pw;
-		File basedir = null;
-		try {
-			basedir = RuinsMod.getMinecraftBaseDir();
-			basedir = new File ( basedir, "mods" );
-		} catch( Exception e ) {
-			System.err.println( "Could not access the main Minecraft mods directory; error: "+e );
-			System.err.println( "The ruins mod could not be loaded." );
-			e.printStackTrace();
-			return;
-		}
-		try {
-			File log = new File( basedir, "ruins_log.txt" );
-			if( log.exists() ) {
-				log.delete();
-				log.createNewFile();
-			}
-			pw = new PrintWriter( new BufferedWriter( new FileWriter( log ) ) );
-		} catch( Exception e ) {
-			System.err.println( "There was an error when creating the log file." );
-			System.err.println( "The ruins mod could not be loaded." );
-			e.printStackTrace();
-			return;
-		}
-
-		File templPath = new File( basedir, "resources" );
-		templPath = new File( templPath, "ruins" );
-		if( ! templPath.exists() ) {
-			System.out.println( "Could not access the resources path for the ruins templates, file doesn't exist!" );
-			System.err.println( "The ruins mod could not be loaded." );
-			pw.close();
-			return;
-		}
-
-		try {
-			// load in the generic templates
-			pw.println( "Loading the generic ruins templates..." );
-			addRuins( pw, new File(templPath, "generic"), RuinsMod.BIOME_NONE );
-			vars[COUNT][RuinsMod.BIOME_NONE] = templates.get( RuinsMod.BIOME_NONE ).size();
-			recalcBiomeWeight( RuinsMod.BIOME_NONE );
-		} catch( Exception e ) {
-			printErrorToLog( pw, e, "There was an error when loading the generic ruins templates:" );
-		}
-		
-		// dynamic Biome config loader, gets all information straight from BiomeGenBase
-		for (int x = 0; x < BiomeGenBase.biomeList.length; x++)
-		{
-		    if (BiomeGenBase.biomeList[x] != null)
-		    {
-	            try
-	            {
-	                loadSpecificTemplates( pw, templPath, BiomeGenBase.biomeList[x].biomeID, BiomeGenBase.biomeList[x].biomeName );
-	                pw.println("Loaded "+BiomeGenBase.biomeList[x].biomeName+" ruins templates, biomeID "+BiomeGenBase.biomeList[x].biomeID);
+	        PrintWriter pw;
+	        File basedir = null;
+	        try {
+	            basedir = RuinsMod.getMinecraftBaseDir();
+	            basedir = new File ( basedir, "mods" );
+	        } catch( Exception e ) {
+	            System.err.println( "Could not access the main Minecraft mods directory; error: "+e );
+	            System.err.println( "The ruins mod could not be loaded." );
+	            e.printStackTrace();
+	            loaded = true;
+	            return;
+	        }
+	        try {
+	            File log = new File( basedir, "ruins_log.txt" );
+	            if( log.exists() ) {
+	                log.delete();
+	                log.createNewFile();
 	            }
-	            catch( Exception e )
+	            pw = new PrintWriter( new BufferedWriter( new FileWriter( log ) ) );
+	        } catch( Exception e ) {
+	            System.err.println( "There was an error when creating the log file." );
+	            System.err.println( "The ruins mod could not be loaded." );
+	            e.printStackTrace();
+	            loaded = true;
+	            return;
+	        }
+
+	        File templPath = new File( basedir, "resources" );
+	        templPath = new File( templPath, "ruins" );
+	        if( ! templPath.exists() ) {
+	            System.out.println( "Could not access the resources path for the ruins templates, file doesn't exist!" );
+	            System.err.println( "The ruins mod could not be loaded." );
+	            pw.close();
+	            loaded = true;
+	            return;
+	        }
+
+	        try {
+	            // load in the generic templates
+	            pw.println( "Loading the generic ruins templates..." );
+	            addRuins( pw, new File(templPath, "generic"), RuinsMod.BIOME_NONE );
+	            vars[COUNT][RuinsMod.BIOME_NONE] = templates.get( RuinsMod.BIOME_NONE ).size();
+	            recalcBiomeWeight( RuinsMod.BIOME_NONE );
+	        } catch( Exception e ) {
+	            printErrorToLog( pw, e, "There was an error when loading the generic ruins templates:" );
+	        }
+	        
+	        // dynamic Biome config loader, gets all information straight from BiomeGenBase
+	        for (int x = 0; x < BiomeGenBase.biomeList.length; x++)
+	        {
+	            if (BiomeGenBase.biomeList[x] != null)
 	            {
-	                printErrorToLog( pw, e, "There was an error when loading the "+BiomeGenBase.biomeList[x].biomeName+" ruins templates:" );
+	                try
+	                {
+	                    loadSpecificTemplates( pw, templPath, BiomeGenBase.biomeList[x].biomeID, BiomeGenBase.biomeList[x].biomeName );
+	                    pw.println("Loaded "+BiomeGenBase.biomeList[x].biomeName+" ruins templates, biomeID "+BiomeGenBase.biomeList[x].biomeID);
+	                }
+	                catch( Exception e )
+	                {
+	                    printErrorToLog( pw, e, "There was an error when loading the "+BiomeGenBase.biomeList[x].biomeName+" ruins templates:" );
+	                }
 	            }
-		    }
-		}
-		
-		// Find and load the excluded file.  If this does not exist, no worries.
-		try {
-			pw.println();
-			pw.println( "Loading excluded list from: " + worldPath.getCanonicalPath() );
-			readExclusions( worldPath, pw );
-		} catch( Exception e ) {
-			pw.println( "No exclusions found for this world." );
-		}
+	        }
+	        
+	        // Find and load the excluded file.  If this does not exist, no worries.
+	        try {
+	            pw.println();
+	            pw.println( "Loading excluded list from: " + saveFolder.getCanonicalPath() );
+	            readExclusions( saveFolder, pw );
+	        } catch( Exception e ) {
+	            pw.println( "No exclusions found for this world." );
+	        }
 
 
-		// Now load in the main options file.  All of these will revert to defaults if
-		// the file could not be loaded.
-		try {
-			pw.println();
-			pw.println( "Loading options from: " + worldPath.getCanonicalPath() );
-			readGlobalOptions( worldPath );
-		} catch( Exception e ) {
-			printErrorToLog( pw, e, "There was an error when loading the options file.  Defaults will be used instead." );
-		}
-		
-		new CustomRotationMapping(templPath, pw);
-		
-		pw.println( "Ruins mod loaded." );
-		pw.flush();
-		pw.close();
-		loaded = true;
+	        // Now load in the main options file.  All of these will revert to defaults if
+	        // the file could not be loaded.
+	        try {
+	            pw.println();
+	            pw.println( "Loading options from: " + saveFolder.getCanonicalPath() );
+	            readGlobalOptions( saveFolder );
+	        } catch( Exception e ) {
+	            printErrorToLog( pw, e, "There was an error when loading the options file.  Defaults will be used instead." );
+	        }
+	        
+	        new CustomRotationMapping(templPath, pw);
+	        
+	        loaded = true;
+	        pw.println( "Ruins mod loaded." );
+	        pw.flush();
+	        pw.close();
+	    }
 	}
 
 	public RuinIBuildable getTemplate( Random random, int biome ) {
