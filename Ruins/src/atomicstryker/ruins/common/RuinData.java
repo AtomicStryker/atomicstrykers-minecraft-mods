@@ -1,6 +1,5 @@
 package atomicstryker.ruins.common;
 
-
 public class RuinData implements Comparable<RuinData>
 {
     private final int xMin, xMax, yMin, yMax, zMin, zMax;
@@ -16,7 +15,7 @@ public class RuinData implements Comparable<RuinData>
         zMax = zmax;
         name = n;
     }
-    
+
     public RuinData(String string)
     {
         String[] split = string.split(" ");
@@ -31,22 +30,20 @@ public class RuinData implements Comparable<RuinData>
 
     public boolean collides(RuinData check)
     {
-        if (((check.xMin >= xMin) && (check.xMin <= xMax))
-        || ((check.xMax >= xMin) && (check.xMax <= xMax))
-        || ((check.zMin >= zMin) && (check.zMin <= zMax))
-        || ((check.zMax >= zMin) && (check.zMax <= zMax)))
+        if (((check.xMin >= xMin) && (check.xMin <= xMax)) || ((check.xMax >= xMin) && (check.xMax <= xMax)) || ((check.zMin >= zMin) && (check.zMin <= zMax))
+                || ((check.zMax >= zMin) && (check.zMax <= zMax)))
         {
             return check.yMin >= yMin && check.yMax <= yMax;
         }
         return false;
     }
-    
+
     @Override
     public String toString()
     {
         return xMin + " " + yMin + " " + zMin + " " + xMax + " " + yMax + " " + zMax + " " + name;
     }
-    
+
     @Override
     public boolean equals(Object o)
     {
@@ -57,11 +54,11 @@ public class RuinData implements Comparable<RuinData>
         }
         return false;
     }
-    
+
     @Override
     public int hashCode()
     {
-        return (int)(xMin ^ (xMin >> 32) ^ yMin ^ (yMin >> 32) ^ zMin ^ (zMin >> 32));
+        return (int) (xMin ^ (xMin >> 32) ^ yMin ^ (yMin >> 32) ^ zMin ^ (zMin >> 32));
     }
 
     @Override

@@ -34,7 +34,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "10.9", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "11.0", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -53,8 +53,9 @@ public class RuinsMod
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
         MinecraftForge.EVENT_BUS.register(this);
     }
-    
+
     private long nextInfoTime;
+
     @ForgeSubscribe
     public void onBreakSpeed(BreakSpeed event)
     {
@@ -65,7 +66,7 @@ public class RuinsMod
             event.entityPlayer.addChatMessage(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getUnlocalizedName(), event.block.blockID, event.metadata));
         }
     }
-    
+
     @ForgeSubscribe
     public void eventWorldSave(WorldEvent.Save evt)
     {
@@ -75,7 +76,7 @@ public class RuinsMod
             wh.generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
         }
     }
-    
+
     public class RuinsWorldGenerator implements IWorldGenerator
     {
         @Override
@@ -85,12 +86,12 @@ public class RuinsMod
             {
                 return; // the 0,0 bug is really annoying. SLEDGEHAMMER FIX!
             }
-            
+
             if (world.isRemote)
             {
                 return;
             }
-            
+
             int[] tuple = { chunkX, chunkZ };
             if (currentlyGenerating.contains(tuple))
             {
@@ -101,15 +102,12 @@ public class RuinsMod
                 currentlyGenerating.add(tuple);
                 if (world.provider instanceof WorldProviderHell)
                 {
-                    generateNether(world, random, chunkX*16, chunkZ*16);
+                    generateNether(world, random, chunkX * 16, chunkZ * 16);
                 }
-                else if (world.provider instanceof WorldProviderEnd)
+                else
+                // normal world
                 {
-                    generateSurface(world, random, chunkX*16, chunkZ*16);
-                }
-                else // normal world
-                {
-                    generateSurface(world, random, chunkX*16, chunkZ*16);
+                    generateSurface(world, random, chunkX * 16, chunkZ * 16);
                 }
                 currentlyGenerating.remove(tuple);
             }
@@ -121,7 +119,9 @@ public class RuinsMod
         WorldHandle wh = getWorldHandle(world);
         if (wh.ruins != null)
         {
-            for (; !wh.ruins.loaded; Thread.yield()) {}
+            for (; !wh.ruins.loaded; Thread.yield())
+            {
+            }
             wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
         }
     }
@@ -131,17 +131,19 @@ public class RuinsMod
         WorldHandle wh = getWorldHandle(world);
         if (wh.ruins != null)
         {
-            for (; !wh.ruins.loaded; Thread.yield()) {}
+            for (; !wh.ruins.loaded; Thread.yield())
+            {
+            }
             wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
         }
     }
-    
+
     private class WorldHandle
-    {        
+    {
         RuinHandler ruins;
         RuinGenerator generator;
     }
-    
+
     private WorldHandle getWorldHandle(World world)
     {
         WorldHandle wh = null;
@@ -156,20 +158,20 @@ public class RuinsMod
             else
             {
                 wh = generatorMap.get(world.provider.dimensionId);
-            }   
+            }
         }
-        
+
         return wh;
     }
 
     public static File getWorldSaveDir(World world)
     {
         ISaveHandler worldsaver = world.getSaveHandler();
-        
+
         if (worldsaver.getChunkLoader(world.provider) instanceof AnvilChunkLoader)
         {
             AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.provider);
-            
+
             for (Field f : loader.getClass().getDeclaredFields())
             {
                 if (f.getType().equals(File.class))
@@ -178,7 +180,7 @@ public class RuinsMod
                     {
                         f.setAccessible(true);
                         File saveLoc = (File) f.get(loader);
-                        //System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
+                        // System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
                         return saveLoc;
                     }
                     catch (Exception e)
@@ -189,7 +191,7 @@ public class RuinsMod
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -212,7 +214,7 @@ public class RuinsMod
         {
             return FMLClientHandler.instance().getClient().mcDataDir;
         }
-            
+
         return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
     }
 

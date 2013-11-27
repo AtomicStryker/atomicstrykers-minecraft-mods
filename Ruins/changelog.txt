@@ -244,3 +244,8 @@ a: setAccessible now true
 + moved all file parsing and writing into seperate threads of their own
 + changed NOT conditional block run sequence to match the normal rules
 + removed some console debug logging
++ additional templates by jsmith added
++ template reorganziation courtesy of Blue001
+
+11.0
++ some spawning logic changes by 4HeadTiger

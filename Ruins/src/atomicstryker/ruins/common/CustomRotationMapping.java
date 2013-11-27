@@ -12,51 +12,51 @@ import java.util.TreeMap;
 import net.minecraft.block.Block;
 
 /**
- * Class to save and retrieve custom Rotational Mappings into.
- * A rotation is determined by blockID, desired direction, and current
- * metadata value. For full coverage, all possible combinations of
- * direction and current metadata need to be mapped.
+ * Class to save and retrieve custom Rotational Mappings into. A rotation is
+ * determined by blockID, desired direction, and current metadata value. For
+ * full coverage, all possible combinations of direction and current metadata
+ * need to be mapped.
  * 
  * See RuinTemplateRule.rotateMetadata for how it works.
  * 
  * @author AtomicStryker
- *
+ * 
  */
 public class CustomRotationMapping
 {
-    
+
     private static CustomRotationMapping instance;
-    
+
     /**
      * Maps a numeric blockID to another Map containing the direction Map
      */
     @SuppressWarnings("rawtypes")
-	private final TreeMap<Integer, TreeMap[]> blockIDMap;
-    
+    private final TreeMap<Integer, TreeMap[]> blockIDMap;
+
     private final ArrayList<Integer> currentBlockIDs;
-    
+
     @SuppressWarnings("rawtypes")
-	public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
+    public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
     {
         instance = this;
         blockIDMap = new TreeMap<Integer, TreeMap[]>();
         currentBlockIDs = new ArrayList<Integer>();
-        
+
         File f = new File(fRuinsResources, "rotation_mappings.txt");
         if (!f.exists())
         {
-            ruinsLogger.println("Did not find a custom mappings file "+f.getAbsolutePath());
+            ruinsLogger.println("Did not find a custom mappings file " + f.getAbsolutePath());
         }
         else
         {
-            ruinsLogger.println("Ruins is now loading the rotation mappings file "+f.getAbsolutePath());
+            ruinsLogger.println("Ruins is now loading the rotation mappings file " + f.getAbsolutePath());
             loadCustomMappings(f, ruinsLogger);
         }
     }
 
     @SuppressWarnings("unchecked")
-	public static int getMapping(int blockID, int metadata, int dir)
-    {        
+    public static int getMapping(int blockID, int metadata, int dir)
+    {
         TreeMap<Integer, Integer>[] bIdMap = instance.blockIDMap.get(blockID);
         if (bIdMap == null)
         {
@@ -67,10 +67,10 @@ public class CustomRotationMapping
         {
             return metadata;
         }
-        
+
         return i;
     }
-    
+
     private void loadCustomMappings(File mappingsFile, PrintWriter ruinsLogger)
     {
         try
@@ -98,7 +98,7 @@ public class CustomRotationMapping
                         {
                             i = Integer.parseInt(s);
                         }
-                        catch(NumberFormatException e)
+                        catch (NumberFormatException e)
                         {
                             i = tryFindingBlockOfName(s);
                             ruinsLogger.printf("Mapped Block name [%s] to ID [%d]\n", s, i);
@@ -125,11 +125,11 @@ public class CustomRotationMapping
                     {
                         dir = RuinsMod.DIR_WEST;
                     }
-                    
+
                     int metadata = Integer.parseInt(val[1]);
                     int result = Integer.parseInt(val[2]);
                     ruinsLogger.printf("Saving Mapping DIR[%d] FROM[%d] TO[%d]\n", dir, metadata, result);
-                    
+
                     for (Integer i : currentBlockIDs)
                     {
                         putMapping(i, metadata, dir, result);
@@ -144,9 +144,9 @@ public class CustomRotationMapping
             e.printStackTrace(ruinsLogger);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
-	private void putMapping(int blockID, int metadata, int dir, int result)
+    private void putMapping(int blockID, int metadata, int dir, int result)
     {
         TreeMap<Integer, Integer>[] bIdMap = blockIDMap.get(blockID);
         if (bIdMap == null)
@@ -160,7 +160,7 @@ public class CustomRotationMapping
         }
         bIdMap[dir].put(metadata, result);
     }
-    
+
     private int tryFindingBlockOfName(String blockName)
     {
         for (Block b : Block.blocksList)
@@ -170,7 +170,7 @@ public class CustomRotationMapping
                 return b.blockID;
             }
         }
-        
+
         return -1;
     }
 

@@ -14,35 +14,36 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public class RuinGenerator {
-    
-    private final static String fileName = "RuinsPositionsFile.txt";
-    
-	private final RuinHandler ruinsHandler;
-	private final RuinStats stats;
-	private int NumTries = 0, LastNumTries = 0;
-	private final int WORLD_MAX_HEIGHT = 256;
-	private final ConcurrentSkipListSet<RuinData> registeredRuins;
-	private File ruinsDataFile;
+public class RuinGenerator
+{
 
-    public RuinGenerator( RuinHandler rh, String worldName )
+    private final static String fileName = "RuinsPositionsFile.txt";
+
+    private final RuinHandler ruinsHandler;
+    private final RuinStats stats;
+    private int NumTries = 0, LastNumTries = 0;
+    private final int WORLD_MAX_HEIGHT = 256;
+    private final ConcurrentSkipListSet<RuinData> registeredRuins;
+    private File ruinsDataFile;
+
+    public RuinGenerator(RuinHandler rh, String worldName)
     {
-		ruinsHandler = rh;
-		stats = new RuinStats();
-		new LinkedList<RuinIBuildable>();
-		registeredRuins = new ConcurrentSkipListSet<RuinData>();
-		ruinsDataFile = new File(rh.saveFolder, fileName);
-		
+        ruinsHandler = rh;
+        stats = new RuinStats();
+        new LinkedList<RuinIBuildable>();
+        registeredRuins = new ConcurrentSkipListSet<RuinData>();
+        ruinsDataFile = new File(rh.saveFolder, fileName);
+
         if (ruinsDataFile.getAbsolutePath().contains(worldName))
         {
             new LoadThread().start();
         }
         else
         {
-            System.err.println("Ruins attempted to load invalid worldname "+worldName+" posfile");
+            System.err.println("Ruins attempted to load invalid worldname " + worldName + " posfile");
         }
     }
-    
+
     private class LoadThread extends Thread
     {
         @Override
@@ -51,17 +52,17 @@ public class RuinGenerator {
             loadPosFile(ruinsDataFile);
         }
     }
-    
+
     public void flushPosFile(String worldName)
     {
         if (registeredRuins.isEmpty() || worldName.equals("MpServer"))
         {
             return;
         }
-        
+
         new FlushThread().start();
     }
-    
+
     private class FlushThread extends Thread
     {
         @Override
@@ -71,7 +72,7 @@ public class RuinGenerator {
             {
                 ruinsDataFile.delete();
             }
-            
+
             try
             {
                 PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(ruinsDataFile)));
@@ -89,12 +90,12 @@ public class RuinGenerator {
                 for (RuinData r : registeredRuins)
                 {
                     pw.println(r.toString());
-                    //System.out.println("saved ruin data line ["+r.toString()+"]");
+                    // System.out.println("saved ruin data line ["+r.toString()+"]");
                 }
-                
+
                 pw.flush();
                 pw.close();
-                //System.out.println("Ruins Positions flushed, entries "+registeredRuins.size());
+                // System.out.println("Ruins Positions flushed, entries "+registeredRuins.size());
             }
             catch (IOException e)
             {
@@ -104,7 +105,7 @@ public class RuinGenerator {
     }
 
     private void loadPosFile(File file)
-    {        
+    {
         try
         {
             if (!file.exists())
@@ -125,15 +126,15 @@ public class RuinGenerator {
                     }
                     catch (Exception e)
                     {
-                        System.err.println("Ruins positions file is invalid in line "+lineNumber+", skipping...");
+                        System.err.println("Ruins positions file is invalid in line " + lineNumber + ", skipping...");
                     }
                 }
-                
+
                 lineNumber++;
                 line = br.readLine();
             }
             br.close();
-            //System.out.println("Ruins Positions reloaded. Lines "+lineNumber+", entries "+registeredRuins.size());
+            // System.out.println("Ruins Positions reloaded. Lines "+lineNumber+", entries "+registeredRuins.size());
         }
         catch (Exception e)
         {
@@ -141,36 +142,44 @@ public class RuinGenerator {
         }
     }
 
-    public boolean generateNormal( World world, Random random, int xBase, int j, int zBase ) {
-		// here we're generating 5 chunks behind normal.
-		// This should hopefully solve the "wanderer" problem with edge chunks.
+    public boolean generateNormal(World world, Random random, int xBase, int j, int zBase)
+    {
+        // here we're generating 5 chunks behind normal.
+        // This should hopefully solve the "wanderer" problem with edge chunks.
 
-    	for( int c = 0; c < ruinsHandler.triesPerChunkNormal; c++ ) {
-    		if( random.nextInt( 100 ) < ruinsHandler.chanceToSpawnNormal ) {
-    			// ditch the y coord, we'll be coming down from the top, checking
-    			// for a suitable square to start.
-    			//					int xMod = ( random.nextInt( 2 ) == 1 ? random.nextInt( 16 ) : 0 - random.nextInt( 16 ) );
-    			//					int zMod = ( random.nextInt( 2 ) == 1 ? random.nextInt( 16 ) : 0 - random.nextInt( 16 ) );
-    			int xMod = random.nextInt( 16 );
-    			int zMod = random.nextInt( 16 );
-    			int x = xBase + xMod;
-    			int z = zBase + zMod;
-    			createBuilding( world, random, x, z, 0, false );
-    		}
-    	}
+        for (int c = 0; c < ruinsHandler.triesPerChunkNormal; c++)
+        {
+            if (random.nextInt(100) < ruinsHandler.chanceToSpawnNormal)
+            {
+                /*
+                 * ditch the y coord, we'll be coming down from the top,
+                 * checking for a suitable square to start.
+                 */
+                int xMod = random.nextInt(16);
+                int zMod = random.nextInt(16);
+                int x = xBase + xMod;
+                int z = zBase + zMod;
+                createBuilding(world, random, x, z, 0, false);
+            }
+        }
         return true;
     }
 
-    public boolean generateNether( World world, Random random, int xBase, int j, int zBase ) {
-        for( int c = 0; c < ruinsHandler.triesPerChunkNether; c++ ) {
-            if( random.nextInt( 100 ) < ruinsHandler.chanceToSpawnNether ) {
-                // ditch the y coord, we'll be coming down from the top, checking
-                // for a suitable square to start.
-				int xMod = ( random.nextInt( 2 ) == 1 ? random.nextInt( 16 ) : 0 - random.nextInt( 16 ) );
-				int zMod = ( random.nextInt( 2 ) == 1 ? random.nextInt( 16 ) : 0 - random.nextInt( 16 ) );
-				int x = xBase + xMod;
-				int z = zBase + zMod;
-				createBuilding( world, random, x, z, 0, true );
+    public boolean generateNether(World world, Random random, int xBase, int j, int zBase)
+    {
+        for (int c = 0; c < ruinsHandler.triesPerChunkNether; c++)
+        {
+            if (random.nextInt(100) < ruinsHandler.chanceToSpawnNether)
+            {
+                /*
+                 * ditch the y coord, we'll be coming down from the top,
+                 * checking for a suitable square to start.
+                 */
+                int xMod = (random.nextInt(2) == 1 ? random.nextInt(16) : 0 - random.nextInt(16));
+                int zMod = (random.nextInt(2) == 1 ? random.nextInt(16) : 0 - random.nextInt(16));
+                int x = xBase + xMod;
+                int z = zBase + zMod;
+                createBuilding(world, random, x, z, 0, true);
             }
         }
         return true;
@@ -228,7 +237,7 @@ public class RuinGenerator {
                     if (willOverlap(ruinTemplate, xTemp, y, zTemp, rotate))
                     {
                         stats.BoundingBoxFails++;
-                        //System.out.println("Bounding Box fail "+stats.BoundingBoxFails);
+                        // System.out.println("Bounding Box fail "+stats.BoundingBoxFails);
                         return;
                     }
                     x = xTemp;
@@ -275,7 +284,7 @@ public class RuinGenerator {
             }
             else
             {
-                //System.out.println("Area check fail");
+                // System.out.println("Area check fail");
                 return;
             }
             if (Nether)
@@ -295,9 +304,9 @@ public class RuinGenerator {
         }
         else
         {
-            //System.out.println("y fail");
+            // System.out.println("y fail");
         }
-        
+
         if (NumTries > (LastNumTries + 1000))
         {
             LastNumTries = NumTries;
@@ -305,82 +314,114 @@ public class RuinGenerator {
         }
     }
 
-	private void printStats() {
-		if (!ruinsHandler.disableLogging) {
-			int total = stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails + stats.BoundingBoxFails;
-			System.out.println( "Current Stats:" );
-			System.out.println( "    Total Tries:                 " + total );
-			System.out.println( "    Number Created:              " + stats.NumCreated );
-			System.out.println( "    Site Tries:                  " + stats.SiteTries );
-			System.out.println( "    Within Another Bounding Box: " + stats.BoundingBoxFails );
-			System.out.println( "    Bad Blocks:                  " + stats.BadBlockFails );
-			System.out.println( "    No Leveling:                 " + stats.LevelingFails );
-			System.out.println( "    No Cut-In:                   " + stats.CutInFails );
-			
-			for (int i = 0; i < stats.biomes.length; i++)
-			{
-				if (stats.biomes[i] != 0)
-				{
-					if (i != RuinsMod.BIOME_NONE)
-						System.out.println(BiomeGenBase.biomeList[i].biomeName+": "+stats.biomes[i]+" Biome building attempts");
-					else
-						System.out.println("Any-Biome: "+stats.biomes[i]+" building attempts");
-				}
-			}
-			
-			System.out.println();
-		}
-	}
-	
-	private int getRandomAdjustment( Random random, int base, int minDistance ) {
-		return random.nextInt(8) - random.nextInt(8) + ( random.nextInt( 2 ) == 1 ? 0 - minDistance : minDistance );
-	}
+    private void printStats()
+    {
+        if (!ruinsHandler.disableLogging)
+        {
+            int total = stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails + stats.BoundingBoxFails;
+            System.out.println("Current Stats:");
+            System.out.println("    Total Tries:                 " + total);
+            System.out.println("    Number Created:              " + stats.NumCreated);
+            System.out.println("    Site Tries:                  " + stats.SiteTries);
+            System.out.println("    Within Another Bounding Box: " + stats.BoundingBoxFails);
+            System.out.println("    Bad Blocks:                  " + stats.BadBlockFails);
+            System.out.println("    No Leveling:                 " + stats.LevelingFails);
+            System.out.println("    No Cut-In:                   " + stats.CutInFails);
 
-	private boolean willOverlap( RuinIBuildable r, int x, int y, int z, int rotate )
-	{
-		RuinData current = r.getRuinData( x, y, z, rotate );
-		for (RuinData rd : registeredRuins)
-		{
-		    if (rd.collides(current))
-		    {
-		        return true;
-		    }
-		}
-		
-		return false;
-	}
+            for (int i = 0; i < stats.biomes.length; i++)
+            {
+                if (stats.biomes[i] != 0)
+                {
+                    if (i != RuinsMod.BIOME_NONE)
+                        System.out.println(BiomeGenBase.biomeList[i].biomeName + ": " + stats.biomes[i] + " Biome building attempts");
+                    else
+                        System.out.println("Any-Biome: " + stats.biomes[i] + " building attempts");
+                }
+            }
 
-    private int findSuitableY( World world, RuinIBuildable r, int x, int z, boolean Nether ) {
-		if( Nether ) {
-			// The Nether has an entirely different topography so we'll use two methods
-			// in a semi-random fashion (since we're not getting the random here)
-			if( ( x % 2 == 1 ) ^ ( z % 2 == 1 ) ) {
-				// from the top.  Find the first air block from the ceiling
-				for( int y = WORLD_MAX_HEIGHT-1; y > -1; y-- ) {
-					if( world.getBlockId( x, y, z ) == 0 ) {
-						// now find the first non-air block from here
-						for( ; y > -1; y-- ) {
-							if( ! r.isAir( world.getBlockId( x, y, z ) ) ) {
-								if( r.isAcceptable( world, x, y, z ) ) { return y; }
-							}
-						}
-					}
-				}
-			} else {
-				// from the bottom.  find the first air block from the floor
-				for( int y = 0; y < WORLD_MAX_HEIGHT; y++ ) {
-					if( ! r.isAir( world.getBlockId( x, y, z ) ) ) {
-						if( r.isAcceptable( world, x, y - 1, z ) ) { return y - 1; }
-					}
-				}
-			}
-			return -1;
-		} else {
-			for( int y = WORLD_MAX_HEIGHT-1; y > -1; y-- ) {
-				if( r.isAcceptable( world, x, y, z ) ) { return y; }
-				if( ! r.isAir( world.getBlockId( x, y, z ) ) ) { return -1; }
-			}
-		}
+            System.out.println();
+        }
+    }
+
+    private int getRandomAdjustment(Random random, int base, int minDistance)
+    {
+        return random.nextInt(8) - random.nextInt(8) + (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
+    }
+
+    private boolean willOverlap(RuinIBuildable r, int x, int y, int z, int rotate)
+    {
+        RuinData current = r.getRuinData(x, y, z, rotate);
+        for (RuinData rd : registeredRuins)
+        {
+            if (rd.collides(current))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int findSuitableY(World world, RuinIBuildable r, int x, int z, boolean Nether)
+    {
+        if (Nether)
+        {
+            /*
+             * The Nether has an entirely different topography so we'll use two
+             * methods in a semi-random fashion (since we're not getting the
+             * random here)
+             */
+            if ((x % 2 == 1) ^ (z % 2 == 1))
+            {
+                // from the top. Find the first air block from the ceiling
+                for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
+                {
+                    if (world.getBlockId(x, y, z) == 0)
+                    {
+                        // now find the first non-air block from here
+                        for (; y > -1; y--)
+                        {
+                            if (!r.isAir(world.getBlockId(x, y, z)))
+                            {
+                                if (r.isAcceptable(world, x, y, z))
+                                {
+                                    return y;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // from the bottom. find the first air block from the floor
+                for (int y = 0; y < WORLD_MAX_HEIGHT; y++)
+                {
+                    if (!r.isAir(world.getBlockId(x, y, z)))
+                    {
+                        if (r.isAcceptable(world, x, y - 1, z))
+                        {
+                            return y - 1;
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
+        else
+        {
+            for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
+            {
+                if (r.isAcceptable(world, x, y, z))
+                {
+                    return y;
+                }
+                if (!r.isAir(world.getBlockId(x, y, z)))
+                {
+                    return -1;
+                }
+            }
+        }
         return -1;
     }
 }

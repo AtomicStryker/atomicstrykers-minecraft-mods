@@ -13,23 +13,28 @@ import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 
-public class RuinTemplateRule {
+public class RuinTemplateRule
+{
     private final int[] blockIDs, blockMDs;
-	private final String[] blockStrings;
+    private final String[] blockStrings;
     private int chance = 100, condition = 0;
-	private final RuinIBuildable owner;
+    private final RuinIBuildable owner;
 
-    public RuinTemplateRule( RuinIBuildable r, String rule ) throws Exception {
-		owner = r;
-        String[] items = rule.split( "," );
+    public RuinTemplateRule(RuinIBuildable r, String rule) throws Exception
+    {
+        owner = r;
+        String[] items = rule.split(",");
         int numblocks = items.length - 2;
-        if( numblocks < 1 ) { throw new Exception( "No blockIDs specified for rule ["+rule+"] in template "+owner.getName() ); }
-        condition = Integer.parseInt( items[0] );
-        chance = Integer.parseInt( items[1] );
+        if (numblocks < 1)
+        {
+            throw new Exception("No blockIDs specified for rule [" + rule + "] in template " + owner.getName());
+        }
+        condition = Integer.parseInt(items[0]);
+        chance = Integer.parseInt(items[1]);
         blockIDs = new int[numblocks];
         blockMDs = new int[numblocks];
-		blockStrings = new String[numblocks];
-		String[] data;
+        blockStrings = new String[numblocks];
+        String[] data;
         for (int i = 0; i < numblocks; i++)
         {
             data = items[i + 2].split("-");
@@ -41,7 +46,8 @@ public class RuinTemplateRule {
                     blockMDs[i] = Integer.parseInt(data[1]);
                     blockStrings[i] = "";
                 }
-                else // planks-3
+                else
+                // planks-3
                 {
                     blockIDs[i] = tryFindingBlockOfName(data[0]);
                     blockMDs[i] = Integer.parseInt(data[1]);
@@ -54,41 +60,83 @@ public class RuinTemplateRule {
                 blockMDs[i] = 0;
                 blockStrings[i] = items[i + 2];
             }
-            else // does not have metadata specified, aka "50"
+            else
+            // does not have metadata specified, aka "50"
             {
                 blockIDs[i] = Integer.parseInt(items[i + 2]);
                 blockMDs[i] = 0;
                 blockStrings[i] = "";
             }
-            
+
             if (blockIDs[i] > 0
-            && (Block.blocksList[blockIDs[i]] == null
-               || Block.blocksList[blockIDs[i]].getUnlocalizedName() == null
-               || Block.blocksList[blockIDs[i]].getUnlocalizedName().equals("tile.ForgeFiller")))
+                    && (Block.blocksList[blockIDs[i]] == null || Block.blocksList[blockIDs[i]].getUnlocalizedName() == null || Block.blocksList[blockIDs[i]].getUnlocalizedName().equals(
+                            "tile.ForgeFiller")))
             {
-                System.err.println("Invalid blockID "+blockIDs[i]+" specified in template "+owner.getName()+", rule ["+rule+"], attempting to fallback...");
+                System.err.println("Invalid blockID " + blockIDs[i] + " specified in template " + owner.getName() + ", rule [" + rule + "], attempting to fallback...");
                 blockIDs[i] = -1;
-                switch(blockIDs[i])
+                switch (blockIDs[i])
                 {
-                    case 300: blockStrings[i] = "preserveBlock"; System.err.println("should be preserveBlock!");
-                    case 301: blockStrings[i] = "MobSpawner:Zombie"; System.err.println("should be MobSpawner:Zombie!");
-                    case 302: blockStrings[i] = "MobSpawner:Skeleton"; System.err.println("should be MobSpawner:Skeleton!");
-                    case 303: blockStrings[i] = "MobSpawner:Spider"; System.err.println("should be MobSpawner:Spider!");
-                    case 304: blockStrings[i] = "MobSpawner:Creeper"; System.err.println("should be MobSpawner:Creeper!");
-                    case 305: blockStrings[i] = "UprightMobSpawn"; System.err.println("should be UprightMobSpawn!");
-                    case 306: blockStrings[i] = "EasyMobSpawn"; System.err.println("should be EasyMobSpawn!");
-                    case 307: blockStrings[i] = "MediumMobSpawn"; System.err.println("should be MediumMobSpawn!");
-                    case 308: blockStrings[i] = "HardMobSpawn"; System.err.println("should be HardMobSpawn!");
-                    case 309: blockStrings[i] = "EasyChest"; System.err.println("should be EasyChest!");
-                    case 310: blockStrings[i] = "MediumChest"; System.err.println("should be MediumChest!");
-                    case 311: blockStrings[i] = "HardChest"; System.err.println("should be HardChest!");
-                    case 315: blockIDs[i] = 0; System.err.println("is old style Mobspawner, cannot fix, should be like MobSpawner:Villager, setting 0");
-                    default: blockIDs[i] = 0; System.err.println("no fallback found, setting to 0");
+                case 300:
+                    blockStrings[i] = "preserveBlock";
+                    System.err.println("should be preserveBlock!");
+                    break;
+                case 301:
+                    blockStrings[i] = "MobSpawner:Zombie";
+                    System.err.println("should be MobSpawner:Zombie!");
+                    break;
+                case 302:
+                    blockStrings[i] = "MobSpawner:Skeleton";
+                    System.err.println("should be MobSpawner:Skeleton!");
+                    break;
+                case 303:
+                    blockStrings[i] = "MobSpawner:Spider";
+                    System.err.println("should be MobSpawner:Spider!");
+                    break;
+                case 304:
+                    blockStrings[i] = "MobSpawner:Creeper";
+                    System.err.println("should be MobSpawner:Creeper!");
+                    break;
+                case 305:
+                    blockStrings[i] = "UprightMobSpawn";
+                    System.err.println("should be UprightMobSpawn!");
+                    break;
+                case 306:
+                    blockStrings[i] = "EasyMobSpawn";
+                    System.err.println("should be EasyMobSpawn!");
+                    break;
+                case 307:
+                    blockStrings[i] = "MediumMobSpawn";
+                    System.err.println("should be MediumMobSpawn!");
+                    break;
+                case 308:
+                    blockStrings[i] = "HardMobSpawn";
+                    System.err.println("should be HardMobSpawn!");
+                    break;
+                case 309:
+                    blockStrings[i] = "EasyChest";
+                    System.err.println("should be EasyChest!");
+                    break;
+                case 310:
+                    blockStrings[i] = "MediumChest";
+                    System.err.println("should be MediumChest!");
+                    break;
+                case 311:
+                    blockStrings[i] = "HardChest";
+                    System.err.println("should be HardChest!");
+                    break;
+                case 315:
+                    blockIDs[i] = 0;
+                    System.err.println("is old style Mobspawner, cannot fix, should be like MobSpawner:Villager, setting 0");
+                    break;
+                default:
+                    blockIDs[i] = 0;
+                    System.err.println("no fallback found, setting to 0");
+                    break;
                 }
             }
         }
     }
-    
+
     private int tryFindingBlockOfName(String blockName)
     {
         for (Block b : Block.blocksList)
@@ -98,12 +146,12 @@ public class RuinTemplateRule {
                 return b.blockID;
             }
         }
-        
+
         return -1;
     }
 
     @SuppressWarnings("unused")
-	private boolean isNumber(String s)
+    private boolean isNumber(String s)
     {
         if (s == null || s.equals(""))
         {
@@ -120,123 +168,182 @@ public class RuinTemplateRule {
         }
     }
 
-    public void doBlock( World world, Random random, int x, int y, int z, int rotate ) {
+    public void doBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
         // check to see if we can create this block
-        if( random.nextInt( 100 ) < chance ) {
+        if (random.nextInt(100) < chance)
+        {
             // we're cleared, pass it off to the correct conditional.
-            switch( condition ) {
+            switch (condition)
+            {
             default:
-                doNormalBlock( world, random, x, y, z, rotate );
+                doNormalBlock(world, random, x, y, z, rotate);
                 break;
             case 1:
-                doAboveBlock( world, random, x, y, z, rotate );
+                doAboveBlock(world, random, x, y, z, rotate);
                 break;
             case 2:
-                doAdjacentBlock( world, random, x, y, z, rotate );
+                doAdjacentBlock(world, random, x, y, z, rotate);
                 break;
-			case 3:
-				doUnderBlock( world, random, x, y, z, rotate );
-				break;
+            case 3:
+                doUnderBlock(world, random, x, y, z, rotate);
+                break;
             case 4:
-                doNotAboveBlock( world, random, x, y, z, rotate );
+                doNotAboveBlock(world, random, x, y, z, rotate);
                 break;
             case 5:
-                doNotAdjacentBlock( world, random, x, y, z, rotate );
+                doNotAdjacentBlock(world, random, x, y, z, rotate);
                 break;
             case 6:
-                doNotUnderBlock( world, random, x, y, z, rotate );
+                doNotUnderBlock(world, random, x, y, z, rotate);
                 break;
+            }
+        }
+        else
+        {
+            world.setBlock(x, y, z, 0, 0, 3);
+        }
+    }
+
+    public boolean runLater()
+    {
+        switch (condition)
+        {
+        case 1:
+            return true; // Added to twist order
+        case 2:
+            return true; // unchanged
+        case 4:
+            return true; // NOT counterparts
+        case 5:
+            return true; // NOT counterparts
+        default:
+            return false;
+        }
+    }
+
+    public boolean runLast()
+    {
+        switch (condition)
+        {
+        case 3:
+            return true; // Added to twist order
+        case 6:
+            return true; // unchanged
+        case 7:
+            return true; // NOT counterparts
+        default:
+            return false;
+        }
+    }
+
+    public boolean canReplace(int blockID, int targetBlock)
+    {
+        if (owner.preserveBlock(targetBlock) && blockID == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private void doNormalBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        if (owner.isAir(world.getBlockId(x, y - 1, z)))
+        {
+            return;
+        }
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void doAdjacentBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        if ((owner.isAir(world.getBlockId(x + 1, y, z))) && (owner.isAir(world.getBlockId(x, y, z + 1))) && (owner.isAir(world.getBlockId(x, y, z - 1)))
+                && (owner.isAir(world.getBlockId(x - 1, y, z))))
+        {
+            return;
+        }
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        if (owner.isAir(world.getBlockId(x, y + 1, z)))
+        {
+            return;
+        }
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void doNotAboveBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        if (!owner.isAir(world.getBlockId(x, y - 1, z)))
+        {
+            return;
+        }
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void doNotAdjacentBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        if ((!owner.isAir(world.getBlockId(x + 1, y, z))) || (!owner.isAir(world.getBlockId(x, y, z + 1))) || (!owner.isAir(world.getBlockId(x, y, z - 1)))
+                || (!owner.isAir(world.getBlockId(x - 1, y, z))))
+        {
+            return;
+        }
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void doNotUnderBlock(World world, Random random, int x, int y, int z, int rotate)
+    {
+        if (!owner.isAir(world.getBlockId(x, y + 1, z)))
+        {
+            return;
+        }
+        int blocknum = getBlockNum(random);
+        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
+    }
+
+    private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum, int rotate, String blockString)
+    {
+        int blockID = blockIDs[blocknum];
+        if (blockID == -1)
+        {
+            doSpecialBlock(world, random, x, y, z, blockString);
+        }
+        else
+        {
+            placeBlock(world, blocknum, x, y, z, rotate);
+        }
+    }
+
+    private void placeBlock(World world, int blocknum, int x, int y, int z, int rotate)
+    {
+        if (canReplace(blockIDs[blocknum], world.getBlockId(x, y, z)))
+        {
+            if (rotate != RuinsMod.DIR_NORTH)
+            {
+                int metadata = rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate);
+                world.setBlock(x, y, z, blockIDs[blocknum], metadata, 2);
+            }
+            else
+            {
+                world.setBlock(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 2);
             }
         }
     }
 
-	public boolean runLater() {
-		if( condition == 2 || condition == 5 ) { return true; }
-		return false;
-	}
-
-	public boolean runLast() {
-		if( condition == 3 || condition == 6 ) { return true; }
-		return false;
-	}
-
-	public boolean canReplace( int blockID, int targetBlock ) {
-		if( owner.preserveBlock( targetBlock ) && blockID == 0 ) { return false; }
-		return true;
-	}
-
-    private void doNormalBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        int blocknum = getBlockNum( random );
-        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-
-    private void doAboveBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        if( owner.isAir( world.getBlockId( x, y - 1, z ) ) ) { return; }
-        int blocknum = getBlockNum( random );
-        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-
-    private void doAdjacentBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        if( ( owner.isAir( world.getBlockId( x + 1, y, z ) ) ) &&
-            ( owner.isAir( world.getBlockId( x, y, z + 1 ) ) ) &&
-            ( owner.isAir( world.getBlockId( x, y, z - 1 ) ) ) &&
-            ( owner.isAir( world.getBlockId( x - 1, y, z ) ) ) ) { return; }
-        int blocknum = getBlockNum( random );
-        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-
-    private void doUnderBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        if( owner.isAir( world.getBlockId( x, y + 1, z ) ) ) { return; }
-		int blocknum = getBlockNum( random );
-		handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-    
-    private void doNotAboveBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        if( !owner.isAir( world.getBlockId( x, y - 1, z ) ) ) { return; }
-        int blocknum = getBlockNum( random );
-        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-
-    private void doNotAdjacentBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        if( ( !owner.isAir( world.getBlockId( x + 1, y, z ) ) ) &&
-            ( !owner.isAir( world.getBlockId( x, y, z + 1 ) ) ) &&
-            ( !owner.isAir( world.getBlockId( x, y, z - 1 ) ) ) &&
-            ( !owner.isAir( world.getBlockId( x - 1, y, z ) ) ) ) { return; }
-        int blocknum = getBlockNum( random );
-        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-
-    private void doNotUnderBlock( World world, Random random, int x, int y, int z, int rotate ) {
-        if( !owner.isAir( world.getBlockId( x, y + 1, z ) ) ) { return; }
-        int blocknum = getBlockNum( random );
-        handleBlockSpawning( world, random, x, y, z, blocknum, rotate, blockStrings[blocknum] );
-    }
-    
-	private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum, int rotate, String blockString)
-    {
-	    int blockID = blockIDs[blocknum];
-        if( blockID == -1 )
-        {
-            doSpecialBlock( world, random, x, y, z, blockString );
-        }
-        else
-        {
-            placeBlock( world, blocknum, x, y, z, rotate );
-        }
-    }
-
-    private void placeBlock( World world, int blocknum, int x, int y, int z, int rotate ) {
-		if( canReplace( blockIDs[blocknum], world.getBlockId( x, y, z ) ) ) {
-			if( rotate != RuinsMod.DIR_NORTH ) {
-				int metadata = rotateMetadata( blockIDs[blocknum], blockMDs[blocknum], rotate );
-				world.setBlock( x, y, z, blockIDs[blocknum], metadata, 2 );
-			} else {
-				world.setBlock( x, y, z, blockIDs[blocknum], blockMDs[blocknum], 2 );
-			}
-		}
-	}
-
-    public void doSpecialBlock( World world, Random random, int x, int y, int z, String dataString )
+    public void doSpecialBlock(World world, Random random, int x, int y, int z, String dataString)
     {
         if (dataString.equals("preserveBlock"))
         {
@@ -244,50 +351,50 @@ public class RuinTemplateRule {
         }
         else if (dataString.startsWith("MobSpawner:"))
         {
-            addCustomSpawner( world, x, y, z, dataString.split(":")[1] );
+            addCustomSpawner(world, x, y, z, dataString.split(":")[1]);
         }
         else if (dataString.equals("UprightMobSpawn"))
         {
-            addUprightMobSpawn( world, random, x, y, z );
+            addUprightMobSpawn(world, random, x, y, z);
         }
         else if (dataString.equals("EasyMobSpawn"))
         {
-            addEasyMobSpawn( world, random, x, y, z );
+            addEasyMobSpawn(world, random, x, y, z);
         }
         else if (dataString.equals("MediumMobSpawn"))
         {
-            addMediumMobSpawn( world, random, x, y, z );
+            addMediumMobSpawn(world, random, x, y, z);
         }
         else if (dataString.equals("HardMobSpawn"))
         {
-            addHardMobSpawn( world, random, x, y, z );
+            addHardMobSpawn(world, random, x, y, z);
         }
         else if (dataString.startsWith("EasyChest"))
         {
             int meta = 0;
             if (dataString.contains("-"))
             {
-                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-")+1));
+                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-") + 1));
             }
-            addEasyChest( world, random, x, y, z, meta, random.nextInt( 3 ) + 3 );
+            addEasyChest(world, random, x, y, z, meta, random.nextInt(3) + 3);
         }
         else if (dataString.startsWith("MediumChest"))
         {
             int meta = 0;
             if (dataString.contains("-"))
             {
-                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-")+1));
+                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-") + 1));
             }
-            addMediumChest( world, random, x, y, z, meta, random.nextInt( 4 ) + 3 );
+            addMediumChest(world, random, x, y, z, meta, random.nextInt(4) + 3);
         }
         else if (dataString.startsWith("HardChest"))
         {
             int meta = 0;
             if (dataString.contains("-"))
             {
-                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-")+1));
+                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-") + 1));
             }
-            addHardChest( world, random, x, y, z, meta, random.nextInt( 5 ) + 3 );
+            addHardChest(world, random, x, y, z, meta, random.nextInt(5) + 3);
         }
         else if (dataString.startsWith("ChestGenHook:"))
         {
@@ -295,174 +402,199 @@ public class RuinTemplateRule {
             if (dataString.contains("-"))
             {
                 int index = dataString.indexOf("-");
-                meta = Integer.valueOf(dataString.substring(index+1));
+                meta = Integer.valueOf(dataString.substring(index + 1));
                 dataString = dataString.substring(0, index);
             }
             String[] s = dataString.split(":");
-            addChestGenChest( world, random, x, y, z, s[1], Integer.valueOf(s[2]), meta );
+            addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2]), meta);
         }
         else if (dataString.equals("EnderCrystal"))
         {
-            spawnEnderCrystal( world, x, y, z );
+            spawnEnderCrystal(world, x, y, z);
         }
         else if (dataString.startsWith("CommandBlock:"))
         {
             String[] s = dataString.split(":");
-            addCommandBlock( world, x, y, z, s[1], s[2]);
+            addCommandBlock(world, x, y, z, s[1], s[2]);
         }
         else
         {
-            System.err.println("Ruins Mod could not determine what to spawn for ["+dataString+"] in Ruin template: "+owner.getName());
+            System.err.println("Ruins Mod could not determine what to spawn for [" + dataString + "] in Ruin template: " + owner.getName());
         }
     }
 
-    private int getBlockNum( Random random ) {
-		return random.nextInt( blockIDs.length );
+    private int getBlockNum(Random random)
+    {
+        return random.nextInt(blockIDs.length);
     }
-    
-    private void spawnEnderCrystal( World world, int x, int y, int z)
+
+    private void spawnEnderCrystal(World world, int x, int y, int z)
     {
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
         world.spawnEntityInWorld(entityendercrystal);
         world.setBlock(x, y, z, Block.bedrock.blockID, 0, 2);
     }
-    
-    private void addCustomSpawner( World world, int x, int y, int z, String id )
+
+    private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
-        world.setBlock( x, y, z, Block.mobSpawner.blockID, 0, 2 );
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity( x, y, z );
+        world.setBlock(x, y, z, Block.mobSpawner.blockID, 0, 2);
+        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity(x, y, z);
         if (mobspawner != null)
         {
             mobspawner.getSpawnerLogic().setMobID(id);
         }
     }
 
-    private void addEasyMobSpawn( World world, Random random, int x, int y, int z ) {
-        switch( random.nextInt( 2 ) ) {
+    private void addEasyMobSpawn(World world, Random random, int x, int y, int z)
+    {
+        switch (random.nextInt(2))
+        {
         case 0:
-            addCustomSpawner( world, x, y, z, "Skeleton" );
+            addCustomSpawner(world, x, y, z, "Skeleton");
             break;
         default:
-            addCustomSpawner( world, x, y, z, "Zombie" );
+            addCustomSpawner(world, x, y, z, "Zombie");
             break;
         }
     }
 
-    private void addMediumMobSpawn( World world, Random random, int x, int y, int z ) {
-        switch( random.nextInt( 4 ) ) {
+    private void addMediumMobSpawn(World world, Random random, int x, int y, int z)
+    {
+        switch (random.nextInt(4))
+        {
         case 0:
-            addCustomSpawner( world, x, y, z, "Spider" );
+            addCustomSpawner(world, x, y, z, "Spider");
             break;
         case 1:
-            addCustomSpawner( world, x, y, z, "Skeleton" );
+            addCustomSpawner(world, x, y, z, "Skeleton");
             break;
         case 2:
-            addCustomSpawner( world, x, y, z, "CaveSpider" );
+            addCustomSpawner(world, x, y, z, "CaveSpider");
             break;
         default:
-            addCustomSpawner( world, x, y, z, "Zombie" );
+            addCustomSpawner(world, x, y, z, "Zombie");
             break;
         }
     }
 
-    private void addHardMobSpawn( World world, Random random, int x, int y, int z ) {
-        switch( random.nextInt( 4 ) ) {
+    private void addHardMobSpawn(World world, Random random, int x, int y, int z)
+    {
+        switch (random.nextInt(4))
+        {
         case 0:
-            addCustomSpawner( world, x, y, z, "Creeper" );
+            addCustomSpawner(world, x, y, z, "Creeper");
             break;
         case 1:
-            addCustomSpawner( world, x, y, z, "CaveSpider" );
+            addCustomSpawner(world, x, y, z, "CaveSpider");
             break;
         case 2:
-            addCustomSpawner( world, x, y, z, "Skeleton" );
+            addCustomSpawner(world, x, y, z, "Skeleton");
             break;
         default:
-            addCustomSpawner( world, x, y, z, "Blaze" );
+            addCustomSpawner(world, x, y, z, "Blaze");
             break;
         }
     }
 
-    private void addUprightMobSpawn( World world, Random random, int x, int y, int z ) {
-        switch( random.nextInt( 3 ) ) {
+    private void addUprightMobSpawn(World world, Random random, int x, int y, int z)
+    {
+        switch (random.nextInt(3))
+        {
         case 0:
-            addCustomSpawner( world, x, y, z, "Creeper" );
+            addCustomSpawner(world, x, y, z, "Creeper");
             break;
         case 1:
-            addCustomSpawner( world, x, y, z, "Skeleton" );
+            addCustomSpawner(world, x, y, z, "Skeleton");
             break;
         default:
-            addCustomSpawner( world, x, y, z, "Zombie" );
+            addCustomSpawner(world, x, y, z, "Zombie");
             break;
         }
     }
 
-    private void addEasyChest( World world, Random random, int x, int y, int z, int meta, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
+    private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int items)
+    {
+        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
         if (chest != null)
         {
             ItemStack stack = null;
-            for( int i = 0; i < items; i++ ) {
-                stack = getNormalStack( random );
-                if( stack != null ) {
-                    chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+            for (int i = 0; i < items; i++)
+            {
+                stack = getNormalStack(random);
+                if (stack != null)
+                {
+                    chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
                 }
             }
         }
     }
 
-    private void addMediumChest( World world, Random random, int x, int y, int z, int meta, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
+    private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int items)
+    {
+        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
         if (chest != null)
         {
             ItemStack stack = null;
-            for( int i = 0; i < items; i++ ) {
-                if( random.nextInt( 20 ) < 19 ) {
-                    stack = getNormalStack( random );
-                } else {
-                    stack = getLootStack( random );
+            for (int i = 0; i < items; i++)
+            {
+                if (random.nextInt(20) < 19)
+                {
+                    stack = getNormalStack(random);
                 }
-                if( stack != null ) {
-                    chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+                else
+                {
+                    stack = getLootStack(random);
+                }
+                if (stack != null)
+                {
+                    chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
                 }
             }
         }
     }
 
-    private void addHardChest( World world, Random random, int x, int y, int z, int meta, int items ) {
-        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
+    private void addHardChest(World world, Random random, int x, int y, int z, int meta, int items)
+    {
+        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
         if (chest != null)
         {
             ItemStack stack = null;
-            for( int i = 0; i < items; i++ ) {
-                if( random.nextInt( 10 ) < 9 ) {
-                    stack = getNormalStack( random );
-                } else {
-                    stack = getLootStack( random );
+            for (int i = 0; i < items; i++)
+            {
+                if (random.nextInt(10) < 9)
+                {
+                    stack = getNormalStack(random);
                 }
-                if( stack != null ) {
-                    chest.setInventorySlotContents( random.nextInt( chest.getSizeInventory() ), stack );
+                else
+                {
+                    stack = getLootStack(random);
+                }
+                if (stack != null)
+                {
+                    chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
                 }
             }
         }
     }
-    
-    private void addChestGenChest( World world, Random random, int x, int y, int z, String gen, int items, int meta ) {
-        world.setBlock( x, y, z, Block.chest.blockID, meta, 2 );
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity( x, y, z );
+
+    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int items, int meta)
+    {
+        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
         if (chest != null)
         {
             ChestGenHooks info = ChestGenHooks.getInfo(gen);
             WeightedRandomChestContent.generateChestContents(random, info.getItems(random), chest, items);
         }
     }
-    
+
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender)
     {
-        world.setBlock( x, y, z, Block.commandBlock.blockID, 0, 2 );
+        world.setBlock(x, y, z, Block.commandBlock.blockID, 0, 2);
         TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getBlockTileEntity(x, y, z);
         if (tecb != null)
         {
@@ -471,372 +603,886 @@ public class RuinTemplateRule {
         }
     }
 
-    private ItemStack getNormalStack( Random random ) {
-        int rand = random.nextInt( 25 );
-        switch( rand ) {
-        case 0: case 1:
+    private ItemStack getNormalStack(Random random)
+    {
+        int rand = random.nextInt(25);
+        switch (rand)
+        {
+        case 0:
+        case 1:
             return null;
-        case 2: case 3:
-            return new ItemStack( Item.bread );
-        case 4: case 5:
-            return new ItemStack( Item.wheat, random.nextInt( 8 ) + 8 );
+        case 2:
+        case 3:
+            return new ItemStack(Item.bread);
+        case 4:
+        case 5:
+            return new ItemStack(Item.wheat, random.nextInt(8) + 8);
         case 6:
-            return new ItemStack( Item.hoeIron );
+            return new ItemStack(Item.hoeIron);
         case 7:
-            return new ItemStack( Item.shovelIron );
-        case 8: case 9:
-            return new ItemStack( Item.silk, random.nextInt( 3 ) + 1 );
-        case 10: case 11: case 12:
-            return new ItemStack( Item.seeds, random.nextInt( 8 ) + 8 );
-        case 13: case 14: case 15:
-            return new ItemStack( Item.bowlEmpty, random.nextInt( 2 ) + 1 );
+            return new ItemStack(Item.shovelIron);
+        case 8:
+        case 9:
+            return new ItemStack(Item.silk, random.nextInt(3) + 1);
+        case 10:
+        case 11:
+        case 12:
+            return new ItemStack(Item.seeds, random.nextInt(8) + 8);
+        case 13:
+        case 14:
+        case 15:
+            return new ItemStack(Item.bowlEmpty, random.nextInt(2) + 1);
         case 16:
-            return new ItemStack( Item.bucketEmpty );
+            return new ItemStack(Item.bucketEmpty);
         case 17:
-            return new ItemStack( Item.appleRed );
-        case 18: case 19:
-            return new ItemStack( Item.bone, random.nextInt( 4 ) + 1 );
-        case 20: case 21:
-            return new ItemStack( Item.egg, random.nextInt( 2 ) + 1 );
+            return new ItemStack(Item.appleRed);
+        case 18:
+        case 19:
+            return new ItemStack(Item.bone, random.nextInt(4) + 1);
+        case 20:
+        case 21:
+            return new ItemStack(Item.egg, random.nextInt(2) + 1);
         case 22:
-            return new ItemStack( Item.coal, random.nextInt( 5 ) + 3 );
+            return new ItemStack(Item.coal, random.nextInt(5) + 3);
         case 23:
-            return new ItemStack( Item.ingotIron, random.nextInt( 5 ) + 3 );
+            return new ItemStack(Item.ingotIron, random.nextInt(5) + 3);
         default:
-            return getLootStack( random );
+            return getLootStack(random);
         }
     }
 
-    private ItemStack getLootStack( Random random ) {
-        int rand = random.nextInt( 25 );
-        switch( rand ) {
-        case 0: case 1: case 2: case 3:
+    private ItemStack getLootStack(Random random)
+    {
+        int rand = random.nextInt(25);
+        switch (rand)
+        {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
             return null;
-        case 4: case 5:
-            return new ItemStack( Item.bootsLeather );
-        case 6: case 7:
-            return new ItemStack( Item.legsLeather );
-        case 8: case 9:
-            return new ItemStack( Item.flintAndSteel );
-        case 10: case 11:
-            return new ItemStack( Item.axeIron );
+        case 4:
+        case 5:
+            return new ItemStack(Item.bootsLeather);
+        case 6:
+        case 7:
+            return new ItemStack(Item.legsLeather);
+        case 8:
+        case 9:
+            return new ItemStack(Item.flintAndSteel);
+        case 10:
+        case 11:
+            return new ItemStack(Item.axeIron);
         case 12:
-            return new ItemStack( Item.swordIron );
+            return new ItemStack(Item.swordIron);
         case 13:
-            return new ItemStack( Item.pickaxeIron );
-        case 14: case 15:
-            return new ItemStack( Item.helmetIron );
+            return new ItemStack(Item.pickaxeIron);
+        case 14:
+        case 15:
+            return new ItemStack(Item.helmetIron);
         case 16:
-            return new ItemStack( Item.plateChain );
-        case 17: case 18:
-            return new ItemStack( Item.book, random.nextInt( 3 ) + 1 );
+            return new ItemStack(Item.plateChain);
+        case 17:
+        case 18:
+            return new ItemStack(Item.book, random.nextInt(3) + 1);
         case 19:
-            return new ItemStack( Item.compass );
+            return new ItemStack(Item.compass);
         case 20:
-            return new ItemStack( Item.pocketSundial );
+            return new ItemStack(Item.pocketSundial);
         case 21:
-            return new ItemStack( Item.redstone, random.nextInt( 12 ) + 12 );
+            return new ItemStack(Item.redstone, random.nextInt(12) + 12);
         case 22:
-            return new ItemStack( Item.appleGold );
+            return new ItemStack(Item.appleGold);
         case 23:
-            return new ItemStack( Item.bowlSoup, random.nextInt( 2 ) + 1 );
+            return new ItemStack(Item.bowlSoup, random.nextInt(2) + 1);
         case 24:
             return ChestGenHooks.getOneItem(ChestGenHooks.DUNGEON_CHEST, random);
         default:
-            return new ItemStack( Item.diamond, random.nextInt( 4 ) );
+            return new ItemStack(Item.diamond, random.nextInt(4));
         }
     }
 
-	private int rotateMetadata( int blockID, int metadata, int dir ) {
-		// remember that, in this mod, NORTH is the default direction.
-		// this method is unused if the direction is NORTH
-		int tempdata = 0;
-		switch( blockID ) {
-		case 27: case 28: case 66:
-			// minecart tracks
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				// flat tracks
-				if( metadata == 0 ) { return 1; }
-				if( metadata == 1 ) { return 0; }
-				// ascending tracks
-				if( metadata == 2 ) { return 5; }
-				if( metadata == 3 ) { return 4; }
-				if( metadata == 4 ) { return 2; }
-				if( metadata == 5 ) { return 3; }
-				// curves
-				if( metadata == 6 ) { return 7; }
-				if( metadata == 7 ) { return 8; }
-				if( metadata == 8 ) { return 9; }
-				if( metadata == 9 ) { return 6; }
-			case RuinsMod.DIR_SOUTH:
-				// flat tracks
-				if( metadata == 0 ) { return 0; }
-				if( metadata == 1 ) { return 1; }
-				// ascending tracks
-				if( metadata == 2 ) { return 3; }
-				if( metadata == 3 ) { return 2; }
-				if( metadata == 4 ) { return 5; }
-				if( metadata == 5 ) { return 4; }
-				// curves
-				if( metadata == 6 ) { return 8; }
-				if( metadata == 7 ) { return 9; }
-				if( metadata == 8 ) { return 6; }
-				if( metadata == 9 ) { return 7; }
-			case RuinsMod.DIR_WEST:
-				// flat tracks
-				if( metadata == 0 ) { return 1; }
-				if( metadata == 1 ) { return 0; }
-				// ascending tracks
-				if( metadata == 2 ) { return 4; }
-				if( metadata == 3 ) { return 5; }
-				if( metadata == 4 ) { return 3; }
-				if( metadata == 5 ) { return 2; }
-				// curves
-				if( metadata == 6 ) { return 9; }
-				if( metadata == 7 ) { return 6; }
-				if( metadata == 8 ) { return 7; }
-				if( metadata == 9 ) { return 8; }
-			}
-			break;
-		case 64: case 71: case 96:
-			// doors
-			if( metadata - 8 >= 0 ) {
-				// the top half of the door
-				tempdata += 8;
-				metadata -= 8;
-			}
-			if( metadata - 4 >= 0 ) {
-				// the door has swung counterclockwise around its hinge
-				tempdata += 4;
-				metadata -= 4;
-			}
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 0 ) { return 1 + tempdata; }
-				if( metadata == 1 ) { return 2 + tempdata; }
-				if( metadata == 2 ) { return 3 + tempdata; }
-				if( metadata == 3 ) { return 0 + tempdata; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 0 ) { return 2 + tempdata; }
-				if( metadata == 1 ) { return 3 + tempdata; }
-				if( metadata == 2 ) { return 0 + tempdata; }
-				if( metadata == 3 ) { return 1 + tempdata; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 0 ) { return 3 + tempdata; }
-				if( metadata == 1 ) { return 0 + tempdata; }
-				if( metadata == 2 ) { return 1 + tempdata; }
-				if( metadata == 3 ) { return 2 + tempdata; }
-			}
-			break;
-		case 50: case 69: case 75: case 76: case 77:
-			// torches, button, lever
-			// check to see if this is a switch or a button and is flagged as thrown
-			tempdata = 0;
-			if( blockID == 69 || blockID == 77 ) {
-				if( metadata - 8 > 0 ) {
-					tempdata += 8;
-					metadata -= 8;
-				}
-				// now see if it's a floor switch
-				if( blockID == 69 && ( metadata == 5 || metadata == 6 ) ) {
-					// we'll leave this as-is
-					return metadata + tempdata;
-				}
-			} else {
-				// torches on the floor.
-				if( metadata == 5 ) {
-					return metadata;
-				}
-			}
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 1 ) { return 3 + tempdata; }
-				if( metadata == 2 ) { return 4 + tempdata; }
-				if( metadata == 3 ) { return 2 + tempdata; }
-				if( metadata == 4 ) { return 1 + tempdata; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 1 ) { return 2 + tempdata; }
-				if( metadata == 2 ) { return 1 + tempdata; }
-				if( metadata == 3 ) { return 4 + tempdata; }
-				if( metadata == 4 ) { return 3 + tempdata; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 1 ) { return 4 + tempdata; }
-				if( metadata == 2 ) { return 3 + tempdata; }
-				if( metadata == 3 ) { return 1 + tempdata; }
-				if( metadata == 4 ) { return 2 + tempdata; }
-			}
-			break;
-		case 65: case 23: case 61: case 62: case 68:
-			// Ladders, Wall Signs, Furnaces and Dispensers
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 2 ) { return 5; }
-				if( metadata == 3 ) { return 4; }
-				if( metadata == 4 ) { return 2; }
-				if( metadata == 5 ) { return 3; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 2 ) { return 3; }
-				if( metadata == 3 ) { return 2; }
-				if( metadata == 4 ) { return 5; }
-				if( metadata == 5 ) { return 4; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 2 ) { return 4; }
-				if( metadata == 3 ) { return 5; }
-				if( metadata == 4 ) { return 3; }
-				if( metadata == 5 ) { return 2; }
-			}
-			break;
-		case 106:
-		/* meta readout
-		N: 8
-		E: 1
-		S: 2
-		W: 4
-		*/
-			// Vines
-			switch( dir ) {
-			case RuinsMod.DIR_EAST: // turn one right
-				if( metadata == 8 ) { return 1; }
-				if( metadata == 1 ) { return 2; }
-				if( metadata == 2 ) { return 4; }
-				if( metadata == 4 ) { return 8; }
-			case RuinsMod.DIR_SOUTH: // run 2 right
-				if( metadata == 8 ) { return 2; }
-				if( metadata == 1 ) { return 4; }
-				if( metadata == 2 ) { return 8; }
-				if( metadata == 4 ) { return 1; }
-			case RuinsMod.DIR_WEST: // turn 1 left
-				if( metadata == 8 ) { return 4; }
-				if( metadata == 1 ) { return 8; }
-				if( metadata == 2 ) { return 1; }
-				if( metadata == 4 ) { return 2; }
-			}
-			break;
-		case 86: case 91: case 93: case 94:
-			// Pumpkins and Jack-O-Lanterns, Redstone Repeaters
-			if( blockID == 93 || blockID == 94 ) {
-				// check for the delay tick for repeaters
-				if( metadata - 4 >= 0 ) {
-					if( metadata - 8 >= 0 ) {
-						if( metadata - 12 >= 0 ) {
-							// four tick delay
-							tempdata += 12;
-							metadata -= 12;
-						} else {
-							// three tick delay
-							tempdata += 8;
-							metadata -= 8;
-						}
-					} else {
-						// two tick delay
-						tempdata += 4;
-						metadata -= 4;
-					}
-				}
-			}
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 0 ) { return 1 + tempdata; }
-				if( metadata == 1 ) { return 2 + tempdata; }
-				if( metadata == 2 ) { return 3 + tempdata; }
-				if( metadata == 3 ) { return 0 + tempdata; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 0 ) { return 2 + tempdata; }
-				if( metadata == 1 ) { return 3 + tempdata; }
-				if( metadata == 2 ) { return 0 + tempdata; }
-				if( metadata == 3 ) { return 1 + tempdata; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 0 ) { return 3 + tempdata; }
-				if( metadata == 1 ) { return 0 + tempdata; }
-				if( metadata == 2 ) { return 1 + tempdata; }
-				if( metadata == 3 ) { return 2 + tempdata; }
-			}
-			break;
-		case 26:
-			// Beds
-			if( metadata - 8 >= 0 ) {
-				// this is the foot of the bed block.
-				tempdata += 8;
-				metadata -= 8;
-			}
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 0 ) { return 1 + tempdata; }
-				if( metadata == 1 ) { return 2 + tempdata; }
-				if( metadata == 2 ) { return 3 + tempdata; }
-				if( metadata == 3 ) { return 0 + tempdata; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 0 ) { return 2 + tempdata; }
-				if( metadata == 1 ) { return 3 + tempdata; }
-				if( metadata == 2 ) { return 0 + tempdata; }
-				if( metadata == 3 ) { return 1 + tempdata; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 0 ) { return 3 + tempdata; }
-				if( metadata == 1 ) { return 0 + tempdata; }
-				if( metadata == 2 ) { return 1 + tempdata; }
-				if( metadata == 3 ) { return 2 + tempdata; }
-			}
-			break;
-		case 63:
-			// sign posts
-			switch( dir ) {
-			case RuinsMod.DIR_EAST:
-				if( metadata == 0 ) { return 4; }
-				if( metadata == 1 ) { return 5; }
-				if( metadata == 2 ) { return 6; }
-				if( metadata == 3 ) { return 7; }
-				if( metadata == 4 ) { return 8; }
-				if( metadata == 5 ) { return 9; }
-				if( metadata == 6 ) { return 10; }
-				if( metadata == 7 ) { return 11; }
-				if( metadata == 8 ) { return 12; }
-				if( metadata == 9 ) { return 13; }
-				if( metadata == 10 ) { return 14; }
-				if( metadata == 11 ) { return 15; }
-				if( metadata == 12 ) { return 0; }
-				if( metadata == 13 ) { return 1; }
-				if( metadata == 14 ) { return 2; }
-				if( metadata == 15 ) { return 3; }
-			case RuinsMod.DIR_SOUTH:
-				if( metadata == 0 ) { return 8; }
-				if( metadata == 1 ) { return 9; }
-				if( metadata == 2 ) { return 10; }
-				if( metadata == 3 ) { return 11; }
-				if( metadata == 4 ) { return 12; }
-				if( metadata == 5 ) { return 13; }
-				if( metadata == 6 ) { return 14; }
-				if( metadata == 7 ) { return 15; }
-				if( metadata == 8 ) { return 0; }
-				if( metadata == 9 ) { return 1; }
-				if( metadata == 10 ) { return 2; }
-				if( metadata == 11 ) { return 3; }
-				if( metadata == 12 ) { return 4; }
-				if( metadata == 13 ) { return 5; }
-				if( metadata == 14 ) { return 6; }
-				if( metadata == 15 ) { return 7; }
-			case RuinsMod.DIR_WEST:
-				if( metadata == 0 ) { return 12; }
-				if( metadata == 1 ) { return 13; }
-				if( metadata == 2 ) { return 14; }
-				if( metadata == 3 ) { return 15; }
-				if( metadata == 4 ) { return 0; }
-				if( metadata == 5 ) { return 1; }
-				if( metadata == 6 ) { return 2; }
-				if( metadata == 7 ) { return 3; }
-				if( metadata == 8 ) { return 4; }
-				if( metadata == 9 ) { return 5; }
-				if( metadata == 10 ) { return 6; }
-				if( metadata == 11 ) { return 7; }
-				if( metadata == 12 ) { return 8; }
-				if( metadata == 13 ) { return 9; }
-				if( metadata == 14 ) { return 10; }
-				if( metadata == 15 ) { return 11; }
-			}
-			default:
-			    return CustomRotationMapping.getMapping(blockID, metadata, dir);
-		}
-		// we should never get here, but users can be silly sometimes.
-		return metadata + tempdata;
-	}
+    private int rotateMetadata(int blockID, int metadata, int dir)
+    {
+        // remember that, in this mod, NORTH is the default direction.
+        // this method is unused if the direction is NORTH
+        int tempdata = 0;
+        switch (blockID)
+        {
+        case 27:
+        case 28:
+        case 66:
+            // minecart tracks
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                // flat tracks
+                if (metadata == 0)
+                {
+                    return 1;
+                }
+                if (metadata == 1)
+                {
+                    return 0;
+                }
+                // ascending tracks
+                if (metadata == 2)
+                {
+                    return 5;
+                }
+                if (metadata == 3)
+                {
+                    return 4;
+                }
+                if (metadata == 4)
+                {
+                    return 2;
+                }
+                if (metadata == 5)
+                {
+                    return 3;
+                }
+                // curves
+                if (metadata == 6)
+                {
+                    return 7;
+                }
+                if (metadata == 7)
+                {
+                    return 8;
+                }
+                if (metadata == 8)
+                {
+                    return 9;
+                }
+                if (metadata == 9)
+                {
+                    return 6;
+                }
+            case RuinsMod.DIR_SOUTH:
+                // flat tracks
+                if (metadata == 0)
+                {
+                    return 0;
+                }
+                if (metadata == 1)
+                {
+                    return 1;
+                }
+                // ascending tracks
+                if (metadata == 2)
+                {
+                    return 3;
+                }
+                if (metadata == 3)
+                {
+                    return 2;
+                }
+                if (metadata == 4)
+                {
+                    return 5;
+                }
+                if (metadata == 5)
+                {
+                    return 4;
+                }
+                // curves
+                if (metadata == 6)
+                {
+                    return 8;
+                }
+                if (metadata == 7)
+                {
+                    return 9;
+                }
+                if (metadata == 8)
+                {
+                    return 6;
+                }
+                if (metadata == 9)
+                {
+                    return 7;
+                }
+            case RuinsMod.DIR_WEST:
+                // flat tracks
+                if (metadata == 0)
+                {
+                    return 1;
+                }
+                if (metadata == 1)
+                {
+                    return 0;
+                }
+                // ascending tracks
+                if (metadata == 2)
+                {
+                    return 4;
+                }
+                if (metadata == 3)
+                {
+                    return 5;
+                }
+                if (metadata == 4)
+                {
+                    return 3;
+                }
+                if (metadata == 5)
+                {
+                    return 2;
+                }
+                // curves
+                if (metadata == 6)
+                {
+                    return 9;
+                }
+                if (metadata == 7)
+                {
+                    return 6;
+                }
+                if (metadata == 8)
+                {
+                    return 7;
+                }
+                if (metadata == 9)
+                {
+                    return 8;
+                }
+            }
+            break;
+        case 64:
+        case 71:
+        case 96:
+            // doors
+            if (metadata - 8 >= 0)
+            {
+                // the top half of the door
+                tempdata += 8;
+                metadata -= 8;
+            }
+            if (metadata - 4 >= 0)
+            {
+                // the door has swung counterclockwise around its hinge
+                tempdata += 4;
+                metadata -= 4;
+            }
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (metadata == 0)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 0 + tempdata;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (metadata == 0)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 0 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 1 + tempdata;
+                }
+            case RuinsMod.DIR_WEST:
+                if (metadata == 0)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 0 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 2 + tempdata;
+                }
+            }
+            break;
+        case 50:
+        case 69:
+        case 75:
+        case 76:
+        case 77:
+            // torches, button, lever
+            // check to see if this is a switch or a button and is flagged as
+            // thrown
+            tempdata = 0;
+            if (blockID == 69 || blockID == 77)
+            {
+                if (metadata - 8 > 0)
+                {
+                    tempdata += 8;
+                    metadata -= 8;
+                }
+                // now see if it's a floor switch
+                if (blockID == 69 && (metadata == 5 || metadata == 6))
+                {
+                    // we'll leave this as-is
+                    return metadata + tempdata;
+                }
+            }
+            else
+            {
+                // torches on the floor.
+                if (metadata == 5)
+                {
+                    return metadata;
+                }
+            }
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (metadata == 1)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 4 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 4)
+                {
+                    return 1 + tempdata;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (metadata == 1)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 4 + tempdata;
+                }
+                if (metadata == 4)
+                {
+                    return 3 + tempdata;
+                }
+            case RuinsMod.DIR_WEST:
+                if (metadata == 1)
+                {
+                    return 4 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 4)
+                {
+                    return 2 + tempdata;
+                }
+            }
+            break;
+        case 65:
+        case 23:
+        case 61:
+        case 62:
+        case 68:
+            // Ladders, Wall Signs, Furnaces and Dispensers
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (metadata == 2)
+                {
+                    return 5;
+                }
+                if (metadata == 3)
+                {
+                    return 4;
+                }
+                if (metadata == 4)
+                {
+                    return 2;
+                }
+                if (metadata == 5)
+                {
+                    return 3;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (metadata == 2)
+                {
+                    return 3;
+                }
+                if (metadata == 3)
+                {
+                    return 2;
+                }
+                if (metadata == 4)
+                {
+                    return 5;
+                }
+                if (metadata == 5)
+                {
+                    return 4;
+                }
+            case RuinsMod.DIR_WEST:
+                if (metadata == 2)
+                {
+                    return 4;
+                }
+                if (metadata == 3)
+                {
+                    return 5;
+                }
+                if (metadata == 4)
+                {
+                    return 3;
+                }
+                if (metadata == 5)
+                {
+                    return 2;
+                }
+            }
+            break;
+        case 106:
+            /*
+             * meta readout N: 8 E: 1 S: 2 W: 4
+             */
+            // Vines
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST: // turn one right
+                if (metadata == 8)
+                {
+                    return 1;
+                }
+                if (metadata == 1)
+                {
+                    return 2;
+                }
+                if (metadata == 2)
+                {
+                    return 4;
+                }
+                if (metadata == 4)
+                {
+                    return 8;
+                }
+            case RuinsMod.DIR_SOUTH: // run 2 right
+                if (metadata == 8)
+                {
+                    return 2;
+                }
+                if (metadata == 1)
+                {
+                    return 4;
+                }
+                if (metadata == 2)
+                {
+                    return 8;
+                }
+                if (metadata == 4)
+                {
+                    return 1;
+                }
+            case RuinsMod.DIR_WEST: // turn 1 left
+                if (metadata == 8)
+                {
+                    return 4;
+                }
+                if (metadata == 1)
+                {
+                    return 8;
+                }
+                if (metadata == 2)
+                {
+                    return 1;
+                }
+                if (metadata == 4)
+                {
+                    return 2;
+                }
+            }
+            break;
+        case 86:
+        case 91:
+        case 93:
+        case 94:
+            // Pumpkins and Jack-O-Lanterns, Redstone Repeaters
+            if (blockID == 93 || blockID == 94)
+            {
+                // check for the delay tick for repeaters
+                if (metadata - 4 >= 0)
+                {
+                    if (metadata - 8 >= 0)
+                    {
+                        if (metadata - 12 >= 0)
+                        {
+                            // four tick delay
+                            tempdata += 12;
+                            metadata -= 12;
+                        }
+                        else
+                        {
+                            // three tick delay
+                            tempdata += 8;
+                            metadata -= 8;
+                        }
+                    }
+                    else
+                    {
+                        // two tick delay
+                        tempdata += 4;
+                        metadata -= 4;
+                    }
+                }
+            }
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (metadata == 0)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 0 + tempdata;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (metadata == 0)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 0 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 1 + tempdata;
+                }
+            case RuinsMod.DIR_WEST:
+                if (metadata == 0)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 0 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 2 + tempdata;
+                }
+            }
+            break;
+        case 26:
+            // Beds
+            if (metadata - 8 >= 0)
+            {
+                // this is the foot of the bed block.
+                tempdata += 8;
+                metadata -= 8;
+            }
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (metadata == 0)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 0 + tempdata;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (metadata == 0)
+                {
+                    return 2 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 0 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 1 + tempdata;
+                }
+            case RuinsMod.DIR_WEST:
+                if (metadata == 0)
+                {
+                    return 3 + tempdata;
+                }
+                if (metadata == 1)
+                {
+                    return 0 + tempdata;
+                }
+                if (metadata == 2)
+                {
+                    return 1 + tempdata;
+                }
+                if (metadata == 3)
+                {
+                    return 2 + tempdata;
+                }
+            }
+            break;
+        case 63:
+            // sign posts
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (metadata == 0)
+                {
+                    return 4;
+                }
+                if (metadata == 1)
+                {
+                    return 5;
+                }
+                if (metadata == 2)
+                {
+                    return 6;
+                }
+                if (metadata == 3)
+                {
+                    return 7;
+                }
+                if (metadata == 4)
+                {
+                    return 8;
+                }
+                if (metadata == 5)
+                {
+                    return 9;
+                }
+                if (metadata == 6)
+                {
+                    return 10;
+                }
+                if (metadata == 7)
+                {
+                    return 11;
+                }
+                if (metadata == 8)
+                {
+                    return 12;
+                }
+                if (metadata == 9)
+                {
+                    return 13;
+                }
+                if (metadata == 10)
+                {
+                    return 14;
+                }
+                if (metadata == 11)
+                {
+                    return 15;
+                }
+                if (metadata == 12)
+                {
+                    return 0;
+                }
+                if (metadata == 13)
+                {
+                    return 1;
+                }
+                if (metadata == 14)
+                {
+                    return 2;
+                }
+                if (metadata == 15)
+                {
+                    return 3;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (metadata == 0)
+                {
+                    return 8;
+                }
+                if (metadata == 1)
+                {
+                    return 9;
+                }
+                if (metadata == 2)
+                {
+                    return 10;
+                }
+                if (metadata == 3)
+                {
+                    return 11;
+                }
+                if (metadata == 4)
+                {
+                    return 12;
+                }
+                if (metadata == 5)
+                {
+                    return 13;
+                }
+                if (metadata == 6)
+                {
+                    return 14;
+                }
+                if (metadata == 7)
+                {
+                    return 15;
+                }
+                if (metadata == 8)
+                {
+                    return 0;
+                }
+                if (metadata == 9)
+                {
+                    return 1;
+                }
+                if (metadata == 10)
+                {
+                    return 2;
+                }
+                if (metadata == 11)
+                {
+                    return 3;
+                }
+                if (metadata == 12)
+                {
+                    return 4;
+                }
+                if (metadata == 13)
+                {
+                    return 5;
+                }
+                if (metadata == 14)
+                {
+                    return 6;
+                }
+                if (metadata == 15)
+                {
+                    return 7;
+                }
+            case RuinsMod.DIR_WEST:
+                if (metadata == 0)
+                {
+                    return 12;
+                }
+                if (metadata == 1)
+                {
+                    return 13;
+                }
+                if (metadata == 2)
+                {
+                    return 14;
+                }
+                if (metadata == 3)
+                {
+                    return 15;
+                }
+                if (metadata == 4)
+                {
+                    return 0;
+                }
+                if (metadata == 5)
+                {
+                    return 1;
+                }
+                if (metadata == 6)
+                {
+                    return 2;
+                }
+                if (metadata == 7)
+                {
+                    return 3;
+                }
+                if (metadata == 8)
+                {
+                    return 4;
+                }
+                if (metadata == 9)
+                {
+                    return 5;
+                }
+                if (metadata == 10)
+                {
+                    return 6;
+                }
+                if (metadata == 11)
+                {
+                    return 7;
+                }
+                if (metadata == 12)
+                {
+                    return 8;
+                }
+                if (metadata == 13)
+                {
+                    return 9;
+                }
+                if (metadata == 14)
+                {
+                    return 10;
+                }
+                if (metadata == 15)
+                {
+                    return 11;
+                }
+            }
+        default:
+            return CustomRotationMapping.getMapping(blockID, metadata, dir);
+        }
+        // we should never get here, but users can be silly sometimes.
+        return metadata + tempdata;
+    }
+
 }
