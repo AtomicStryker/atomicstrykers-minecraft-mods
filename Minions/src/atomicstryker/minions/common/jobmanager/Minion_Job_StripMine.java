@@ -174,11 +174,11 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
    		}
    		
    		// check previous segment floor for having been dug away
-   		for (int yi = 0; yi < 4; yi++)
+   		for (int len = 0; len < 4; len++)
    		{
-            if (worldObj.getBlockId(nextX-xDirection, startY-yi, nextZ-zDirection) == 0)
+            if (worldObj.getBlockId(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len)) == 0)
             {
-                jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-xDirection, startY-yi, nextZ-zDirection, 3, 0));
+                jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-(xDirection*len), startY-1, nextZ-(zDirection*len), 3, 0));
             }
    		}
    		

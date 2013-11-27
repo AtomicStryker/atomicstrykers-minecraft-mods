@@ -1,9 +1,9 @@
 package atomicstryker.minions.common;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
@@ -19,12 +19,12 @@ public class MinionsChunkManager
     private final int CHUNK_LENGTH = 16;
     private final int LOAD_CHUNKS_IN_ALL_DIRECTIONS = 2;
 
-    private ArrayList<Entity> loaderEntities;
+    private ConcurrentSkipListSet<Entity> loaderEntities;
     private Set<ChunkCoordIntPair> loadedChunks;
 
     public MinionsChunkManager()
     {
-        loaderEntities = new ArrayList<Entity>();
+        loaderEntities = new ConcurrentSkipListSet<Entity>();
         loadedChunks = new HashSet<ChunkCoordIntPair>();
     }
 
