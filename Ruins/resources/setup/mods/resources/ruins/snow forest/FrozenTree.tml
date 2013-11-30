@@ -1,7 +1,7 @@
 # Author: Arrrg
 # From: Minecraft Forums
 
-biomesToSpawnIn=alpine,alps,alps forest,alps mountainside,arctic,frost forest,frozenocean,glacier,ice montains,ice plains,ice wasteland,icy hills,snow forest,snowy coniferous forest,snowy dead forest,snowy rainforest,tundra,polar
+biomesToSpawnIn=alps forest,frost forest,snow forest,snowy coniferous forest,snowy dead forest,snowy rainforest,tundra
 weight=30
 embed_into_distance=1
 acceptable_target_blocks=1,2,3,12,13,78

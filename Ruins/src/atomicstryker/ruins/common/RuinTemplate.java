@@ -14,7 +14,7 @@ public class RuinTemplate implements RuinIBuildable
 
     private final String name;
     private int[] targets;
-    private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1;
+    private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 0, lbuffer = 0, cutIn = 0, cbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false, preservePlants = false, unique = false;
     private final ArrayList<RuinTemplateRule> rules;
@@ -385,8 +385,13 @@ public class RuinTemplate implements RuinIBuildable
         ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
         ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
         Iterator<RuinTemplateLayer> i = layers.iterator();
-        int y_off = 1 - embed;
-        int rulenum = 0;
+
+        // Offset the ruin vertically by a specified random range.
+        // int y_off = 1 - embed;
+        // If this causes problems (it's a pretty cheap hack), then just put the
+        // old line back.
+        int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
+
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
             eastwest = true;
@@ -414,6 +419,7 @@ public class RuinTemplate implements RuinIBuildable
             levelSite(world, world.getBlockId(xBase, y, zBase), xBase, y, zBase, eastwest);
         }
 
+        int rulenum;
         // the main loop
         while (i.hasNext())
         {
@@ -446,12 +452,20 @@ public class RuinTemplate implements RuinIBuildable
                     if (curRule.runLater())
                     {
                         laterun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlock(x + x1, y + y_off, z + z1, 0, 0, 3);
+                        // We can omit the if test, but it might be useful
+                        // later, or if the behavior breaks something
+                        // if ((curRule.condition <= 0 ? 0 - curRule.condition :
+                        // curRule.condition) > 3) {
+                        world.setBlock(x + x1, y + y_off, z + z1, 0, 0, 3); // }
                     }
                     else if (curRule.runLast())
                     {
                         lastrun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlock(x + x1, y + y_off, z + z1, 0, 0, 3);
+                        // We can omit the if test, but it might be useful
+                        // later, or if the behavior breaks something
+                        // if ((curRule.condition <= 0 ? 0 - curRule.condition :
+                        // curRule.condition) > 3) {
+                        world.setBlock(x + x1, y + y_off, z + z1, 0, 0, 3); // }
                     }
                     else
                     {
@@ -718,6 +732,18 @@ public class RuinTemplate implements RuinIBuildable
                     {
                         preservePlants = true;
                     }
+                }
+
+                else if (line.startsWith("random_height_offset"))
+                {
+                    /*
+                     * random_height_offset=-10,0 Moves the ruin down up to 10
+                     * blocks.
+                     */
+                    String[] check = line.split("=");
+                    String[] bounds = check[1].split(",");
+                    randomOffMin = Integer.parseInt(bounds[0]);
+                    randomOffMax = Math.max(randomOffMin, Integer.parseInt(bounds[1]));
                 }
             }
         }

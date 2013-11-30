@@ -2,7 +2,7 @@
 #http://www.planetminecraft.com/project/cargo-vessel/
 
 biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
-weight=20
+weight=5
 acceptable_target_blocks=1,2,3,12,13
 embed_into_distance=3
 dimensions=20,11,36

@@ -17,7 +17,8 @@ public class RuinTemplateRule
 {
     private final int[] blockIDs, blockMDs;
     private final String[] blockStrings;
-    private int chance = 100, condition = 0;
+    private int chance = 100;
+    private int condition = 0;
     private final RuinIBuildable owner;
 
     public RuinTemplateRule(RuinIBuildable r, String rule) throws Exception
@@ -69,10 +70,11 @@ public class RuinTemplateRule
             }
 
             if (blockIDs[i] > 0
-                    && (Block.blocksList[blockIDs[i]] == null || Block.blocksList[blockIDs[i]].getUnlocalizedName() == null || Block.blocksList[blockIDs[i]].getUnlocalizedName().equals(
-                            "tile.ForgeFiller")))
+                    && (Block.blocksList[blockIDs[i]] == null || Block.blocksList[blockIDs[i]].getUnlocalizedName() == null || Block.blocksList[blockIDs[i]]
+                            .getUnlocalizedName().equals("tile.ForgeFiller")))
             {
-                System.err.println("Invalid blockID " + blockIDs[i] + " specified in template " + owner.getName() + ", rule [" + rule + "], attempting to fallback...");
+                System.err.println("Invalid blockID " + blockIDs[i] + " specified in template " + owner.getName() + ", rule [" + rule
+                        + "], attempting to fallback...");
                 blockIDs[i] = -1;
                 switch (blockIDs[i])
                 {
@@ -176,9 +178,6 @@ public class RuinTemplateRule
             // we're cleared, pass it off to the correct conditional.
             switch (condition)
             {
-            default:
-                doNormalBlock(world, random, x, y, z, rotate);
-                break;
             case 1:
                 doAboveBlock(world, random, x, y, z, rotate);
                 break;
@@ -188,52 +187,48 @@ public class RuinTemplateRule
             case 3:
                 doUnderBlock(world, random, x, y, z, rotate);
                 break;
-            case 4:
-                doNotAboveBlock(world, random, x, y, z, rotate);
+            case -1:
+                doAboveBlock(world, random, x, y, z, rotate);
                 break;
-            case 5:
-                doNotAdjacentBlock(world, random, x, y, z, rotate);
+            case -2:
+                doAdjacentBlock(world, random, x, y, z, rotate);
                 break;
-            case 6:
-                doNotUnderBlock(world, random, x, y, z, rotate);
+            case -3:
+                doUnderBlock(world, random, x, y, z, rotate);
+                break;
+            default:
+                doNormalBlock(world, random, x, y, z, rotate);
                 break;
             }
-        }
-        else
-        {
-            world.setBlock(x, y, z, 0, 0, 3);
         }
     }
 
     public boolean runLater()
     {
-        switch (condition)
+
+        switch (condition <= 0 ? 0 - condition : condition)
         {
         case 1:
-            return true; // Added to twist order
+            return true; // Reorder
         case 2:
-            return true; // unchanged
-        case 4:
-            return true; // NOT counterparts
-        case 5:
-            return true; // NOT counterparts
+            return true; // Unchanged
         default:
             return false;
+
         }
     }
 
     public boolean runLast()
     {
-        switch (condition)
+        switch (condition <= 0 ? 0 - condition : condition)
         {
         case 3:
-            return true; // Added to twist order
-        case 6:
-            return true; // unchanged
+            return true; // Unchanged
         case 7:
-            return true; // NOT counterparts
+            return true; // 7 for ALWAYS LAST
         default:
             return false;
+
         }
     }
 
@@ -254,7 +249,7 @@ public class RuinTemplateRule
 
     private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if (owner.isAir(world.getBlockId(x, y - 1, z)))
+        if ((condition <= 0 ? true : false) ^ owner.isAir(world.getBlockId(x, y - 1, z)))
         {
             return;
         }
@@ -264,8 +259,10 @@ public class RuinTemplateRule
 
     private void doAdjacentBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((owner.isAir(world.getBlockId(x + 1, y, z))) && (owner.isAir(world.getBlockId(x, y, z + 1))) && (owner.isAir(world.getBlockId(x, y, z - 1)))
-                && (owner.isAir(world.getBlockId(x - 1, y, z))))
+        if ((condition <= 0 ? true : false) ^ (
+        // Are -all- adjacent blocks air?
+                (owner.isAir(world.getBlockId(x + 1, y, z))) && (owner.isAir(world.getBlockId(x, y, z + 1)))
+                        && (owner.isAir(world.getBlockId(x, y, z - 1))) && (owner.isAir(world.getBlockId(x - 1, y, z)))))
         {
             return;
         }
@@ -275,41 +272,11 @@ public class RuinTemplateRule
 
     private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if (owner.isAir(world.getBlockId(x, y + 1, z)))
+        if ((condition <= 0 ? true : false) ^ owner.isAir(world.getBlockId(x, y + 1, z)))
         {
             return;
         }
-        int blocknum = getBlockNum(random);
-        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
-    }
 
-    private void doNotAboveBlock(World world, Random random, int x, int y, int z, int rotate)
-    {
-        if (!owner.isAir(world.getBlockId(x, y - 1, z)))
-        {
-            return;
-        }
-        int blocknum = getBlockNum(random);
-        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
-    }
-
-    private void doNotAdjacentBlock(World world, Random random, int x, int y, int z, int rotate)
-    {
-        if ((!owner.isAir(world.getBlockId(x + 1, y, z))) || (!owner.isAir(world.getBlockId(x, y, z + 1))) || (!owner.isAir(world.getBlockId(x, y, z - 1)))
-                || (!owner.isAir(world.getBlockId(x - 1, y, z))))
-        {
-            return;
-        }
-        int blocknum = getBlockNum(random);
-        handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
-    }
-
-    private void doNotUnderBlock(World world, Random random, int x, int y, int z, int rotate)
-    {
-        if (!owner.isAir(world.getBlockId(x, y + 1, z)))
-        {
-            return;
-        }
         int blocknum = getBlockNum(random);
         handleBlockSpawning(world, random, x, y, z, blocknum, rotate, blockStrings[blocknum]);
     }

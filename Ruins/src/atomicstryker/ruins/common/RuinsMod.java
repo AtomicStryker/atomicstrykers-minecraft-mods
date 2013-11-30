@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -63,7 +62,8 @@ public class RuinsMod
         if (is != null && is.itemID == Item.stick.itemID && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
-            event.entityPlayer.addChatMessage(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getUnlocalizedName(), event.block.blockID, event.metadata));
+            event.entityPlayer.addChatMessage(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getUnlocalizedName(),
+                    event.block.blockID, event.metadata));
         }
     }
 
@@ -306,6 +306,9 @@ public class RuinsMod
         pw.println("chance_to_spawn_nether=10");
         pw.println("chance_for_site_nether=15");
         pw.println("disableRuinSpawnCoordsLogging=true");
+        pw.println();
+        pw.println("templateInstancesMinDistance=75");
+        pw.println("anyRuinsMinDistance=0");
         pw.println();
         // print all the biomes!
         for (int i = 0; i < BiomeGenBase.biomeList.length; i++)

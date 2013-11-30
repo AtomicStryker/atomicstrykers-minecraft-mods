@@ -1,5 +1,5 @@
 biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
-weight=6
+weight=1
 embed_into_distance=14
 acceptable_target_blocks=9
 dimensions=11,35,34

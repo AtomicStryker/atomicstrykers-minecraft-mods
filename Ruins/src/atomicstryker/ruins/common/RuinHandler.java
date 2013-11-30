@@ -20,10 +20,15 @@ public class RuinHandler
     private final ArrayList<Exclude> excluded = new ArrayList<Exclude>();
     protected int[][] vars;
 
-    protected int triesPerChunkNormal = 6, chanceToSpawnNormal = 10, chanceForSiteNormal = 15, triesPerChunkNether = 6, chanceToSpawnNether = 10, chanceForSiteNether = 15;
+    protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
+    protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10, chanceForSiteNormal = 15, chanceForSiteNether = 15;
+
     public boolean loaded;
     public boolean disableLogging;
     public File saveFolder;
+    
+    public float templateInstancesMinDistance = 75f;
+    public float anyRuinsMinDistance = 0f;
 
     public RuinHandler(File worldPath)
     {
@@ -309,11 +314,11 @@ public class RuinHandler
             }
             if (check[0].equals("chance_to_spawn_normal"))
             {
-                chanceToSpawnNormal = Integer.parseInt(check[1]);
+                chanceToSpawnNormal = Float.parseFloat(check[1]);
             }
             if (check[0].equals("chance_for_site_normal"))
             {
-                chanceForSiteNormal = Integer.parseInt(check[1]);
+                chanceForSiteNormal = Float.parseFloat(check[1]);
             }
             if (check[0].equals("tries_per_chunk_nether"))
             {
@@ -321,15 +326,23 @@ public class RuinHandler
             }
             if (check[0].equals("chance_to_spawn_nether"))
             {
-                chanceToSpawnNether = Integer.parseInt(check[1]);
+                chanceToSpawnNether = Float.parseFloat(check[1]);
             }
             if (check[0].equals("chance_for_site_nether"))
             {
-                chanceForSiteNether = Integer.parseInt(check[1]);
+                chanceForSiteNether = Float.parseFloat(check[1]);
             }
             if (check[0].equals("disableRuinSpawnCoordsLogging"))
             {
                 disableLogging = Boolean.parseBoolean(check[1]);
+            }
+            if (check[0].equals("templateInstancesMinDistance"))
+            {
+                templateInstancesMinDistance = Float.parseFloat(check[1]);
+            }
+            if (check[0].equals("anyRuinsMinDistance"))
+            {
+                anyRuinsMinDistance = Float.parseFloat(check[1]);
             }
 
             if (read.startsWith("specific_"))

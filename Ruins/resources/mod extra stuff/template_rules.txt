@@ -124,6 +124,11 @@
 # may not actually see cactus in your structure.
 # Defaults to 0/no
 #
+# random_height_offset=<min>,<max>
+# Specifies block range in which the Ruin will be randomly shifted up or down
+# on an established valid location before actually being built.
+# Defaults to 0,0/no random shifting
+#
 # NOTE: When using preserve_water and preserve_lava it is advised that you
 # restrict the cut_in_buffer as much as possible, preferably to 0.  If it is
 # more than 0 you may get some unexpected fluid dynamics if the structure

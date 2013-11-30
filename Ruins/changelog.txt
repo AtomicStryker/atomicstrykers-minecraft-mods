@@ -249,3 +249,5 @@ a: setAccessible now true
 
 11.0
 + some spawning logic changes by 4HeadTiger
++ overlapping check now via sweep n prune algorithm
++ added template-specific minimal distances and ruin minimum distances from each other

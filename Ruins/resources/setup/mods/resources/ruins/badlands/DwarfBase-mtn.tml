@@ -1,7 +1,7 @@
 biomesToSpawnIn=crag,badlands,dead forest,dead swamp,deadlands,ominous woods,canyon,canyon ravine,thick ominous woods,volcano,wasteland
 weight=5
 embed_into_distance=9
-acceptable_target_blocks=1,2,3,12,13
+acceptable_target_blocks=1,2,3,12,13,82
 dimensions=9,11,11
 allowable_overhang=8
 max_cut_in=0

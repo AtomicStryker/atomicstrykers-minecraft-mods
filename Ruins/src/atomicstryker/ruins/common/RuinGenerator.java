@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -24,6 +25,7 @@ public class RuinGenerator
     private int NumTries = 0, LastNumTries = 0;
     private final int WORLD_MAX_HEIGHT = 256;
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
+    private final HashSet<RuinData> sweptNPruned;
     private File ruinsDataFile;
 
     public RuinGenerator(RuinHandler rh, String worldName)
@@ -32,6 +34,7 @@ public class RuinGenerator
         stats = new RuinStats();
         new LinkedList<RuinIBuildable>();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
+        sweptNPruned = new HashSet<RuinData>();
         ruinsDataFile = new File(rh.saveFolder, fileName);
 
         if (ruinsDataFile.getAbsolutePath().contains(worldName))
@@ -149,7 +152,7 @@ public class RuinGenerator
 
         for (int c = 0; c < ruinsHandler.triesPerChunkNormal; c++)
         {
-            if (random.nextInt(100) < ruinsHandler.chanceToSpawnNormal)
+            if (random.nextFloat() * 100 < ruinsHandler.chanceToSpawnNormal)
             {
                 /*
                  * ditch the y coord, we'll be coming down from the top,
@@ -169,7 +172,7 @@ public class RuinGenerator
     {
         for (int c = 0; c < ruinsHandler.triesPerChunkNether; c++)
         {
-            if (random.nextInt(100) < ruinsHandler.chanceToSpawnNether)
+            if (random.nextFloat() * 100 < ruinsHandler.chanceToSpawnNether)
             {
                 /*
                  * ditch the y coord, we'll be coming down from the top,
@@ -250,13 +253,14 @@ public class RuinGenerator
                 }
             }
 
-            if (ruinTemplate.checkArea(world, x, y, z, rotate))
+            if (ruinTemplate.checkArea(world, x, y, z, rotate) && checkMinDistance(ruinTemplate.getRuinData(x, y, z, rotate)))
             {
                 if (!ruinsHandler.disableLogging)
                 {
                     if (minDistance != 0)
                     {
-                        System.out.printf("Creating ruin %s of Biome %s as part of a site at [%d|%d|%d]\n", ruinTemplate.getName(), biome.biomeName, x, y, z);
+                        System.out.printf("Creating ruin %s of Biome %s as part of a site at [%d|%d|%d]\n", ruinTemplate.getName(), biome.biomeName,
+                                x, y, z);
                     }
                     else
                     {
@@ -289,14 +293,14 @@ public class RuinGenerator
             }
             if (Nether)
             {
-                if (random.nextInt(100) < ruinsHandler.chanceForSiteNether)
+                if (random.nextFloat() * 100 < ruinsHandler.chanceForSiteNether)
                 {
                     createBuilding(world, random, x, z, nextMinDistance, true);
                 }
             }
             else
             {
-                if (random.nextInt(100) < ruinsHandler.chanceForSiteNormal)
+                if (random.nextFloat() * 100 < ruinsHandler.chanceForSiteNormal)
                 {
                     createBuilding(world, random, x, z, nextMinDistance, false);
                 }
@@ -318,7 +322,9 @@ public class RuinGenerator
     {
         if (!ruinsHandler.disableLogging)
         {
-            int total = stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails + stats.BoundingBoxFails;
+            int total =
+                    stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails
+                            + stats.BoundingBoxFails;
             System.out.println("Current Stats:");
             System.out.println("    Total Tries:                 " + total);
             System.out.println("    Number Created:              " + stats.NumCreated);
@@ -347,19 +353,84 @@ public class RuinGenerator
     {
         return random.nextInt(8) - random.nextInt(8) + (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
     }
+    
+    /**
+     * Executes a Sweep n Prune algorithm by only putting RuinData sets with at all possible collisions
+     * into a subset, which then is to be used instead of the full RuinData set for collision detection
+     * 
+     * @param collider RuinData instance to find possible collisions for
+     * @return reference to reused sweptNPruned HashSet
+     */
+    private HashSet<RuinData> sweptAndPrunedSetColliding(RuinData collider)
+    {
+        sweptNPruned.clear();
+        RuinData other = registeredRuins.floor(collider);
+        while (other != null && collider.collisionLowerBoundsPossible(other))
+        {
+            if (sweptNPruned.add(other))
+            {
+                other = registeredRuins.lower(other);
+            }
+            else
+            {
+                break;
+            }
+        }
+        other = registeredRuins.ceiling(collider);
+        while (other != null && collider.collisionHigherBoundsPossible(other))
+        {
+            if (sweptNPruned.add(other))
+            {
+                other = registeredRuins.higher(other);
+            }
+            else
+            {
+                break;
+            }
+        }
+        return sweptNPruned;
+    }
 
     private boolean willOverlap(RuinIBuildable r, int x, int y, int z, int rotate)
     {
         RuinData current = r.getRuinData(x, y, z, rotate);
-        for (RuinData rd : registeredRuins)
+        for (RuinData rd : sweptAndPrunedSetColliding(current))
         {
             if (rd.collides(current))
             {
                 return true;
             }
         }
-
         return false;
+    }
+    
+    private boolean checkMinDistance(RuinData ruinData)
+    {
+        // refuse Ruins spawning too close to each other
+        float minDistTemplate = ruinsHandler.templateInstancesMinDistance;
+        minDistTemplate = minDistTemplate*minDistTemplate; // square it
+        float minDistRuins = ruinsHandler.anyRuinsMinDistance;
+        minDistRuins = minDistRuins*minDistRuins; //squared
+        
+        for (RuinData r : registeredRuins)
+        {
+            if (r.name.equals(ruinData.name))
+            {
+                if (r.getDistanceSqTo(ruinData) < minDistTemplate)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (r.getDistanceSqTo(ruinData) < minDistRuins)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 
     private int findSuitableY(World world, RuinIBuildable r, int x, int z, boolean Nether)
