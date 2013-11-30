@@ -727,10 +727,15 @@ public class InfernalMobsCore implements ITickHandler
         }
     }
     
+    /**
+     * @param mob Infernal Entity
+     * @param prefix 0 for Elite rarity, 1 for Ultra and 2 for Infernal
+     * @return ItemStack instance to drop to the World
+     */
     private ItemStack getRandomItem(EntityLivingBase mob, int prefix)
     {
         ArrayList<Integer[]> list = (prefix == 0) ? instance.dropIdListElite : (prefix == 1) ? instance.dropIdListUltra : instance.dropIdListInfernal;
-        Integer[] ints = list.get(mob.worldObj.rand.nextInt(instance.dropIdListElite.size()));
+        Integer[] ints = list.get(mob.worldObj.rand.nextInt(list.size()));
         int stackSize = ints[2];
         if (ints[3] != 0) // randomizer
         {

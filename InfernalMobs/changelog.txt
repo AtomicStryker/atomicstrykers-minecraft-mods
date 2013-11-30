@@ -1,3 +1,7 @@
+(Hotfix)
+- fixed crash issue with seperate droplists at atomicstryker.infernalmobs.common.InfernalMobsCore.getRandomItem(InfernalMobsCore.java:733)
+- thanks to sparroha for pointing it out
+
 1.4.2
 - seperated drop lists for the the 3 mod strength classes. Using the same list for all 3 is possible of course.
 
