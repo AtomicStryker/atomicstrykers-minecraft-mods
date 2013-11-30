@@ -355,13 +355,16 @@ public class RuinHandler
                     if (BiomeGenBase.biomeList[i] != null && BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase(check[0]))
                     {
                         vars[CHANCE][i] = Integer.parseInt(check[1]);
-                        System.out.println("Parsed config line [" + read + "], vars[CHANCE][" + i + "] set to " + Integer.parseInt(check[1]));
+                        if (!disableLogging)
+                        {
+                            System.out.println("Parsed config line [" + read + "], vars[CHANCE][" + i + "] set to " + Integer.parseInt(check[1]));
+                        }
                         found = true;
                         break;
                     }
                 }
 
-                if (!found)
+                if (!found && !disableLogging)
                 {
                     System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
                 }
