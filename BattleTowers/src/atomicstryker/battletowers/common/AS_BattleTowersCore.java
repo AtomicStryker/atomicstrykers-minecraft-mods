@@ -104,13 +104,13 @@ public class AS_BattleTowersCore
         golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();
         
         configuration.addCustomCategoryComment("BattleTowerChestItems", "Versions 1.4.1 and later of Battletowers allow you to specify Items by unlocalized name aswell as ID. Use this for mod added items!!");
-        configuration.addCustomCategoryComment("BattleTowerChestItems", "Syntax for each Item entry is 'ID-Meta-Spawnchance-maxAmount-minAmount', entries are seperated by ';'");
+        configuration.addCustomCategoryComment("BattleTowerChestItems", "Syntax for each Item entry is 'ID-Meta-Spawnchance-minAmount-maxAmount', entries are seperated by ';'");
         
-        // 280-0-50-6-5 sticks
+        // 280-0-50-5-6 sticks
         // 295-0-50-3-5 seeds
-        // 5-0-50-6-5 planks
+        // 5-0-50-5-6 planks
         // 83-0-50-3-5 sugarcane
-        floorItemManagers[0] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 1", "280-0-75-6-5;item.seeds-0-75-3-5;5-0-75-6-5;83-0-75-3-5").getString());
+        floorItemManagers[0] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 1", "280-0-75-5-6;item.seeds-0-75-3-5;5-0-75-5-6;83-0-75-3-5").getString());
         
         // 274-0-25-1-1 stone pick
         // 275-0-25-1-1 stone axe
