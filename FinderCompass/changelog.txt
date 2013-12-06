@@ -1,3 +1,12 @@
+1.6.4X
+complete code overhaul, threw away ugly mc texture hack code
+harnessed the raw power of openGL, now drawing ONTOP of existing mc textures
++no more resolution/optifine issues, no more opengl error spam in console
++needles now independent from resolution, no more 1px sticks
++needles are now sexy non-opaque
++missing config file now autocreates omfg
++compass should start working right away without having to switch modes
+
 1.6.4
 updated to MC 1.6.4
 

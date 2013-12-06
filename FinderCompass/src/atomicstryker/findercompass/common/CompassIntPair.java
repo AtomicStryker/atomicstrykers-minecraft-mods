@@ -1,11 +1,11 @@
 package atomicstryker.findercompass.common;
 
-public class AS_FinderCompassIntPair
+public class CompassIntPair
 {
     private final int blockID;
     private final int damage;
     
-    public AS_FinderCompassIntPair(int a, int b)
+    public CompassIntPair(int a, int b)
     {
         blockID = a;
         damage = b;
@@ -24,9 +24,9 @@ public class AS_FinderCompassIntPair
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof AS_FinderCompassIntPair)
+        if (o instanceof CompassIntPair)
         {
-            AS_FinderCompassIntPair comp = (AS_FinderCompassIntPair)o;
+            CompassIntPair comp = (CompassIntPair)o;
             return comp.getBlockID() == blockID && comp.getDamage() == damage;
         }
         return false;

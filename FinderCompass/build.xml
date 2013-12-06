@@ -115,7 +115,7 @@
 
 	</target>
 
-	<target name="build" description="Perform all tasks for a build" depends="init, mergesources, recompile, reobfuscate, stage, jarzip, clean, builddownload">
+	<target name="build" description="Perform all tasks for a build" depends="init, mergesources, recompile, reobfuscate, stage, jarzip, clean">
 		<echo message="MCP Ant Build Completed!" />
 	</target>
 
@@ -130,57 +130,6 @@
 			</manifest>
 			<fileset dir="${build.dir}" />
 		</jar>
-	</target>
-
-	<!-- Directory name for the finished modfile, inside the downloadable archive -->
-	<property name="moddir" value="setup/mods" />
-
-	<!-- Directory name for anything else to copy into the downloadable archive -->
-	<property name="resources.dir" location="./resources" />
-
-	<!-- Directory for the downloadable result, relative to this file -->
-	<property name="download.dir" location="./download" />
-
-	<!-- Directory for temp-packaging, relative to this file -->
-	<property name="temp.dir" location="./temp" />
-
-	<target name="builddownload" description="Build the final download Zip archive" depends="include-updater">
-		<delete dir="${download.dir}" />
-		<mkdir dir="${temp.dir}" />
-
-		<!-- Copy source code and files into download -->
-		<mkdir dir="${temp.dir}/src" />
-		<copy todir="${temp.dir}/src">
-			<fileset dir="${common.src.dir}" />
-		</copy>
-
-		<!-- Copy any additional files into download package -->
-		<copy todir="${temp.dir}">
-			<fileset dir="${resources.dir}" />
-		</copy>
-
-		<!-- Copy mod file into appropriate place in download archive -->
-		<copy file="${dist.dir}/${ant.project.name}_${version}.${filetype}" todir="${temp.dir}/${moddir}"/>
-
-		<mkdir dir="${download.dir}" />
-		<!-- Pack up temp folder to download archive -->
-		<zip destfile="${download.dir}/${ant.project.name}_${version}.zip">
-			<fileset dir="${temp.dir}" />
-		</zip>
-
-		<delete dir="${temp.dir}" />
-	</target>
-
-	<!-- Add Update Checker mod :3 -->
-	<property name="updaterloc" location="./../UpdateCheckerMod/dist/UpdateCheckerMod_${version}.zip" />
-
-	<target name="-check-use-file" unless="file.exists">
-		<available property="file.exists" file="${updaterloc}" />
-	</target>
-
-	<target name="include-updater" depends="-check-use-file" if="${file.exists}">
-		<echo message="updater found and included from: ${updaterloc}" />
-		<copy file="${updaterloc}" todir="${temp.dir}/${moddir}" />
 	</target>
 
 </project>

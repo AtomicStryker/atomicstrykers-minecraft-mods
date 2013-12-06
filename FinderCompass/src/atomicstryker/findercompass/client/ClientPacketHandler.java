@@ -26,7 +26,7 @@ public class ClientPacketHandler implements IPacketHandler
         
         if (packetType == 0)
         {
-            AS_FinderCompass.serverHasFinderCompass = true;
+            FinderCompassLogic.serverHasFinderCompass = true;
             FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage("Server Handshake complete - Finder Compass Stronghold Needle enabled.");            
         }
         else if (packetType == 1)
@@ -34,27 +34,28 @@ public class ClientPacketHandler implements IPacketHandler
             Class[] decodeAs = {Integer.class, Integer.class, Integer.class};
             Object[] packetData = ForgePacketWrapper.readPacketData(dataIn, decodeAs);
             
-            AS_FinderCompass.strongholdCoords = new ChunkCoordinates((Integer)packetData[0], (Integer)packetData[1], (Integer)packetData[2]);
-            AS_FinderCompass.hasStronghold = true;
+            FinderCompassLogic.strongholdCoords = new ChunkCoordinates((Integer)packetData[0], (Integer)packetData[1], (Integer)packetData[2]);
+            //System.out.printf("Finder Compass server sent Stronghold coords: [%d|%d|%d]\n", (Integer)packetData[0], (Integer)packetData[1], (Integer)packetData[2]);
+            FinderCompassLogic.hasStronghold = true;
         }
         else if (packetType == 2)
         {
             try
             {
-                FinderCompassMod.itemEnabled = (dataIn.readInt() == 1);
-                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage("Finder Compass Item enabled: "+FinderCompassMod.itemEnabled);
+                FinderCompassMod.instance.itemEnabled = (dataIn.readInt() == 1);
+                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage("Finder Compass Item enabled: "+FinderCompassMod.instance.itemEnabled);
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
-            AS_FinderCompass.inputOverrideConfig(dataIn);
+            FinderCompassClientTicker.instance.inputOverrideConfig(dataIn);
         }
     }
     
     public static void onClientLoggedInToServer()
     {
-        AS_FinderCompass.serverHasFinderCompass = false;
+        FinderCompassLogic.serverHasFinderCompass = false;
         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("FindrCmps", 0, null));
     }
 }

@@ -3,48 +3,41 @@ package atomicstryker.findercompass.client;
 import java.util.HashMap;
 
 import net.minecraft.util.ChunkCoordinates;
-import atomicstryker.findercompass.common.AS_FinderCompassIntPair;
+import atomicstryker.findercompass.common.CompassIntPair;
 
 public class CompassSetting
 {
     private final String displayedName;
-    private boolean noDefaultNeedle;
     private boolean noEnderEyeNeedle;
     
     /**
      * Maps an int pair blockID/damage to a config array
      */
-    private final HashMap<AS_FinderCompassIntPair, int[]> customNeedles;
+    private final HashMap<CompassIntPair, int[]> customNeedles;
     
     /**
      * Maps an int pair blockID/damage to the last detected Block ChunkCoordinates
      */
-    private final HashMap<AS_FinderCompassIntPair, ChunkCoordinates> customNeedleTargets;
+    private final HashMap<CompassIntPair, ChunkCoordinates> customNeedleTargets;
     
     /**
      * Maps an int pair blockID/damage to a newly found ChunkCoordinate, to overwrite the last known on next tick
      */
-    private final HashMap<AS_FinderCompassIntPair, ChunkCoordinates> newFoundTargets;
+    private final HashMap<CompassIntPair, ChunkCoordinates> newFoundTargets;
     
     /**
      * Maps an int pair blockID/damage to it's AS_CompassWorker thread
      */
-    private final HashMap<AS_FinderCompassIntPair, AS_CompassWorker> compassWorkers;
+    private final HashMap<CompassIntPair, ThreadCompassWorker> compassWorkers;
     
     public CompassSetting(String name)
     {
         displayedName = name;
-        noDefaultNeedle = false;
         noEnderEyeNeedle = false;
-        customNeedles = new HashMap<AS_FinderCompassIntPair, int[]>();
-        customNeedleTargets = new HashMap<AS_FinderCompassIntPair, ChunkCoordinates>();
-        newFoundTargets = new HashMap<AS_FinderCompassIntPair, ChunkCoordinates>();
-        compassWorkers = new HashMap<AS_FinderCompassIntPair, AS_CompassWorker>();
-    }
-    
-    public void setHasDefaultNeedle(boolean input)
-    {
-        noDefaultNeedle = !input;
+        customNeedles = new HashMap<CompassIntPair, int[]>();
+        customNeedleTargets = new HashMap<CompassIntPair, ChunkCoordinates>();
+        newFoundTargets = new HashMap<CompassIntPair, ChunkCoordinates>();
+        compassWorkers = new HashMap<CompassIntPair, ThreadCompassWorker>();
     }
     
     public void setHasStrongholdNeedle(boolean input)
@@ -52,39 +45,34 @@ public class CompassSetting
         noEnderEyeNeedle = !input;
     }
     
-    public boolean getHasDefaultNeedle()
-    {
-        return !noDefaultNeedle;
-    }
-    
-    public boolean getHasStrongholdNeedle()
+    public boolean isStrongholdNeedleEnabled()
     {
         return !noEnderEyeNeedle;
     }
     
-    public HashMap<AS_FinderCompassIntPair, int[]> getCustomNeedles()
+    public HashMap<CompassIntPair, int[]> getCustomNeedles()
     {
         return customNeedles;
     }
     
-    public HashMap<AS_FinderCompassIntPair, ChunkCoordinates> getCustomNeedleTargets()
+    public HashMap<CompassIntPair, ChunkCoordinates> getCustomNeedleTargets()
     {
         return customNeedleTargets;
     }
     
-    public HashMap<AS_FinderCompassIntPair, ChunkCoordinates> getNewFoundTargets()
+    public HashMap<CompassIntPair, ChunkCoordinates> getNewFoundTargets()
     {
         return newFoundTargets;
     }
     
-    public HashMap<AS_FinderCompassIntPair, AS_CompassWorker> getCompassWorkers()
+    public HashMap<CompassIntPair, ThreadCompassWorker> getCompassWorkers()
     {
         return compassWorkers;
     }
     
     public void onDisableThisConfig()
     {
-        for (AS_CompassWorker worker : compassWorkers.values())
+        for (ThreadCompassWorker worker : compassWorkers.values())
         {
             if (worker != null && worker.isAlive())
             {
