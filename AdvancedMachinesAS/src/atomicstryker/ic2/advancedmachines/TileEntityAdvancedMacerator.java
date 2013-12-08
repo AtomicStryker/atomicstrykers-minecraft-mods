@@ -90,8 +90,9 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
             {
                 output = new RecipeOutput(new NBTTagCompound(), new ArrayList<ItemStack>());
             }
-            runSupplementLogic(output.items, false);
-            if (output.items.isEmpty())
+            ArrayList<ItemStack> outItems = new ArrayList<ItemStack>(output.items);
+            runSupplementLogic(outItems, false);
+            if (outItems.isEmpty())
             {
                 output = null;
             }
@@ -105,7 +106,6 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         if(supplement != null)
         {
             ArrayList<ItemStack> additions = new ArrayList<ItemStack>();
-            
             if (items.isEmpty())
             {
                 additions.addAll(getSpecialResultFor(inputSlot.get(), null, supplement, consumeInput));
