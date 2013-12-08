@@ -1,7 +1,6 @@
 package atomicstryker.infernalmobs.client;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.Minecraft;
@@ -37,62 +36,61 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     private World lastWorld;
     private long nextPacketTime;
     private ConcurrentHashMap<EntityLivingBase, MobModifier> rareMobsClient;
-    
+
     @Override
     public void load()
     {
         mc = FMLClientHandler.instance().getClient();
         nextPacketTime = 0;
         rareMobsClient = new ConcurrentHashMap<EntityLivingBase, MobModifier>();
-        
+
         TickRegistry.registerTickHandler(this, Side.CLIENT);
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
         MinecraftForge.EVENT_BUS.register(new EntityTracker());
     }
-    
+
     private void askServerHealth(Entity ent)
     {
         if (System.currentTimeMillis() > nextPacketTime)
         {
-            Object[] toSend = {ent.entityId};
+            Object[] toSend = { ent.entityId };
             PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
             nextPacketTime = System.currentTimeMillis() + 100l;
         }
     }
-    
+
     private void renderBossOverlay(float renderTick, Minecraft mc)
     {
         if (InfernalMobsCore.instance().getIsHealthBarDisabled())
         {
             return;
         }
-        
+
         Entity ent = getEntityCrosshairOver(renderTick, mc);
-        
-        if (ent != null
-        && ent instanceof EntityLivingBase)
+
+        if (ent != null && ent instanceof EntityLivingBase)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase)ent);
+            MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) ent);
             if (mod != null)
             {
                 askServerHealth(ent);
-                
+
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(Gui.icons);
                 GL11.glDisable(GL11.GL_BLEND);
-                
+
                 EntityLivingBase target = (EntityLivingBase) ent;
                 String buffer = mod.getEntityDisplayName(target);
-                
+
                 ScaledResolution resolution = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
                 int screenwidth = resolution.getScaledWidth();
                 FontRenderer fontR = mc.fontRenderer;
-                
+
                 GuiIngame gui = mc.ingameGUI;
                 short lifeBarLength = 182;
                 int x = screenwidth / 2 - lifeBarLength / 2;
-                
-                int lifeBarLeft = (int)((float)mod.getActualHealth(target) / (float)mod.getActualMaxHealth(target) * (float)(lifeBarLength + 1));
+
+                int lifeBarLeft = (int) ((float) mod.getActualHealth(target) / (float) mod.getActualMaxHealth(target) * (float) (lifeBarLength + 1));
                 byte y = 12;
                 gui.drawTexturedModalRect(x, y, 0, 74, lifeBarLength, 5);
                 gui.drawTexturedModalRect(x, y, 0, 74, lifeBarLength, 5);
@@ -101,10 +99,10 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 {
                     gui.drawTexturedModalRect(x, y, 0, 79, lifeBarLeft, 5);
                 }
-                
+
                 int yCoord = 10;
                 fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, yCoord, 0x2F96EB);
-                
+
                 String[] display = mod.getDisplayNames();
                 int i = 0;
                 while (i < display.length && display[i] != null)
@@ -113,7 +111,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                     fontR.drawStringWithShadow(display[i], screenwidth / 2 - fontR.getStringWidth(display[i]) / 2, yCoord, 0xffffff);
                     i++;
                 }
-                
+
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(Gui.icons);
             }
@@ -123,36 +121,40 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     private Entity getEntityCrosshairOver(float renderTick, Minecraft mc)
     {
         Entity returnedEntity = null;
-        
+
         if (mc.renderViewEntity != null)
         {
             if (mc.theWorld != null)
             {
                 double reachDistance = NAME_VISION_DISTANCE;
-                mc.objectMouseOver = mc.renderViewEntity.rayTrace(reachDistance, renderTick);
+                final MovingObjectPosition mopos = mc.renderViewEntity.rayTrace(reachDistance, renderTick);
                 double reachDist2 = reachDistance;
-                Vec3 viewEntPositionVec = mc.renderViewEntity.getPosition(renderTick);
+                final Vec3 viewEntPositionVec = mc.renderViewEntity.getPosition(renderTick);
 
-                if (mc.objectMouseOver != null)
+                if (mopos != null)
                 {
-                    reachDist2 = mc.objectMouseOver.hitVec.distanceTo(viewEntPositionVec);
+                    reachDist2 = mopos.hitVec.distanceTo(viewEntPositionVec);
                 }
 
-                Vec3 viewEntityLookVec = mc.renderViewEntity.getLook(renderTick);
-                Vec3 actualReachVector = viewEntPositionVec.addVector(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance, viewEntityLookVec.zCoord * reachDistance);
-                Entity pointedEntity = null;
+                final Vec3 viewEntityLookVec = mc.renderViewEntity.getLook(renderTick);
+                final Vec3 actualReachVector =
+                        viewEntPositionVec.addVector(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
+                                viewEntityLookVec.zCoord * reachDistance);
                 float expandBBvalue = 1.0F;
-                List<?> entsInBBList = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.renderViewEntity, mc.renderViewEntity.boundingBox.addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance, viewEntityLookVec.zCoord * reachDistance).expand((double)expandBBvalue, (double)expandBBvalue, (double)expandBBvalue));
                 double lowestDistance = reachDist2;
-
-                for (int i = 0; i < entsInBBList.size(); ++i)
+                Entity iterEnt;
+                Entity pointedEntity = null;
+                for (Object obj : mc.theWorld.getEntitiesWithinAABBExcludingEntity(
+                        mc.renderViewEntity,
+                        mc.renderViewEntity.boundingBox.addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
+                                viewEntityLookVec.zCoord * reachDistance).expand((double) expandBBvalue, (double) expandBBvalue,
+                                (double) expandBBvalue)))
                 {
-                    Entity iterEnt = (Entity)entsInBBList.get(i);
-
+                    iterEnt = (Entity) obj;
                     if (iterEnt.canBeCollidedWith())
                     {
                         float entBorderSize = iterEnt.getCollisionBorderSize();
-                        AxisAlignedBB entHitBox = iterEnt.boundingBox.expand((double)entBorderSize, (double)entBorderSize, (double)entBorderSize);
+                        AxisAlignedBB entHitBox = iterEnt.boundingBox.expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
                         MovingObjectPosition interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
 
                         if (entHitBox.isVecInside(viewEntPositionVec))
@@ -176,13 +178,13 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                     }
                 }
 
-                if (pointedEntity != null && (lowestDistance < reachDist2 || mc.objectMouseOver == null))
+                if (pointedEntity != null && (lowestDistance < reachDist2 || mopos == null))
                 {
                     returnedEntity = pointedEntity;
                 }
             }
         }
-        
+
         return returnedEntity;
     }
 
@@ -194,16 +196,17 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     @Override
     public void tickEnd(EnumSet<TickType> type, Object... tickData)
     {
-        if (mc.theWorld == null || (mc.currentScreen != null && mc.currentScreen.doesGuiPauseGame())) return;
-        
-        renderBossOverlay((Float)tickData[0], mc);
-        
+        if (mc.theWorld == null || (mc.currentScreen != null && mc.currentScreen.doesGuiPauseGame()))
+            return;
+
+        renderBossOverlay((Float) tickData[0], mc);
+
         /* client reset in case of swapping worlds */
         if (mc.theWorld != lastWorld)
         {
             boolean newGame = lastWorld == null;
             lastWorld = mc.theWorld;
-            
+
             if (!newGame)
             {
                 InfernalMobsCore.instance().checkRareListForObsoletes(lastWorld);
@@ -212,7 +215,7 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     }
 
     private EnumSet<TickType> tickTypes = EnumSet.of(TickType.RENDER);
-    
+
     @Override
     public EnumSet<TickType> ticks()
     {
@@ -230,5 +233,5 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
     {
         return rareMobsClient;
     }
-    
+
 }
