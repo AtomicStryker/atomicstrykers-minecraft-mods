@@ -85,9 +85,7 @@ public class CompassCustomRenderer implements IItemRenderer
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         
         // switch off ogl stuff that breaks our rendering needs
-        GL11.glDepthMask(false);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_BLEND);
         
