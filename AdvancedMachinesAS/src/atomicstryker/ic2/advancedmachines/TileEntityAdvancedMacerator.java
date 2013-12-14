@@ -199,14 +199,21 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         
         if (supplementedItemsLeft > 0)
         {
-            if (supplementedItemsLeft == 1)
+            if (supplementSlot.get() == null)
             {
-                if (--supplementSlot.get().stackSize == 0)
-                {
-                    supplementSlot.clear();
-                }
+                supplementedItemsLeft = 0;
             }
-            supplementedItemsLeft--;
+            else
+            {
+                if (supplementedItemsLeft == 1)
+                {
+                    if (--supplementSlot.get().stackSize == 0)
+                    {
+                        supplementSlot.clear();
+                    }
+                }
+                supplementedItemsLeft--;
+            }
         }
     }
     
