@@ -10,10 +10,13 @@ import java.util.PriorityQueue;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet14BlockDig;
 import net.minecraft.network.packet.Packet53BlockChange;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.ForgePacketWrapper;
 
 import com.google.common.collect.Lists;
@@ -66,7 +69,7 @@ public class MultiMineServer
      * @param z coordinate of Block
      * @param dimension of Block and Player
      */
-    public void onClientSentPartialBlockPacket(EntityPlayer player, int x, int y, int z, int dim)
+    public void onClientSentPartialBlockPacket(EntityPlayerMP player, int x, int y, int z, int dim)
     {
         int dimension = player.dimension;
         //System.out.println("multi mine client sent packet from dimension "+dim+", server says its actually "+dimension);
@@ -111,7 +114,11 @@ public class MultiMineServer
                             
                             if (block.canHarvestBlock(player, meta))
                             {
-                                block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                                BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
+                                if (!event.isCanceled())
+                                {
+                                    block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                                }
                             }
                         }
                     }

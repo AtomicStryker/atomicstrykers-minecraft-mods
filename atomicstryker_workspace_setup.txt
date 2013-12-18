@@ -1,21 +1,19 @@
 Folder structure this file resides in
 
 ./
-	./../        -> the folder you extracted Forge into, and ran install.cmd
-	./**/        -> contains the Eclipse Workspace with projects in it. Each project has an ant build file
+	./../forgegradle	-> contains gradlew.bat along with the new forge setup
+	./**/        		-> contains the Eclipse Workspace with projects in it. Each project has an ant build file
 
 To setup my workspace in your eclipse, simply setup Forge, then move your eclipse workspace into this folder.
 
 
-Each project/mod contains a "build.xml" in its folder, which, when run as Java Ant Project, automatically moves the sources into MCP,
-recompiles, reobfuscates, packs the resulting files into a jar/zip, then removes the sources from MCP again, and in some cases
-does additional packaging (when mods need more than drag and drop installation).
-Obviously you need to have Java Ant installed and working correctly for that to work.
+Each project/mod contains a "build.xml" in its folder, which, when run as Java Ant Project, cleans the forgegradle workspace, moves the sources into forgegradle,
+reobfuscates, packs the resulting files into a jar/zip, and in some cases does additional packaging (when mods need more than drag and drop installation).
+Obviously you need to have Java Ant installed and working correctly for that to work. Gradle is not required.
 
-THIS ASSUMES YOUR MCP AND MOD COMPILE AND MCP HAS HAD UPDATEMD5 RUN - if there are compile errors in the eclipse project, it will fail,
-and you will have to "reset" the workspace by hand! Or fix the mod and run the build again.
+THIS ASSUMES YOUR MOD COMPILES AGAINST FORGEGRADLE - if there are compile errors in the eclipse project, it will fail.
 
-In the MCP Minecraft Project - which is forge minecraft build - there is a buildAll.xml, which, when ran, will build ALL projects/mods.
+In the UpdateMod project folder there is a buildAll.xml, which, when ran, will build ALL projects/mods.
 NOTE: Some projects attempt to include the Update Checker into their packages, which means it will be built first.
 
 
@@ -23,7 +21,6 @@ Stuff that needs changing each version:
 
 - in "./properties" you find the minecraft version that is appended by the scripts to all resulting mod- and archivenames.
 - change is according to minecraft version only, so that you can keep overwriting your Dropbox/whatever link for the current MC version
-- the MCP Minecraft project likely needs its Build setup fixed, to import the new jar version atleast. You can get correct names from ./../fml/eclipse/Minecraft
 
 - each mod has a changelog, add new version
 - each mod has a mcmod.info, change to new versions (mod and mc both)
@@ -45,11 +42,15 @@ Mods with special Needs:
 -- Stalker Creepers
 - similar to Multi Mine. sourcefile is "common\atomicstryker\stalkercreepers\common\SCTransformer.java"
 
--- Finder Compass
-- Finder Compass now uses a somewhat stable Texture hack. Check for working with Optifine.
-
 -- Kenshiro Mod
 - uses some hacky stuff for rendering and manipulating punched entities. Will probably crash if broken.
 
 -- Advanced Machines and Ropes+
-- rely on external packages, namely IC2 and NEI. Put the dev packages into ./../mcp/lib/ and fix the imports in the eclipse projects.
+- rely on external packages, namely IC2 and NEI. Put the dev packages into ./../forgegradle/lib/ and fix the imports in the eclipse projects.
+- make sure the build.gradle uses the 'lib' folder at compile time, like this:
+
+apply plugin: 'forge'
+
+dependencies {
+	compile fileTree(dir: 'libs', include: '*.jar')
+}

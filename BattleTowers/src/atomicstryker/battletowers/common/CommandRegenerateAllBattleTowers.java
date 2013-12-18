@@ -1,21 +1,14 @@
 package atomicstryker.battletowers.common;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 
-public class CommandRegenerateAllBattleTowers extends CommandBase
+public class CommandRegenerateAllBattleTowers extends CommandBattleTowers
 {
 
     @Override
     public String getCommandName()
     {
         return "regenerateallbattletowers";
-    }
-    
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
     }
 
     @Override

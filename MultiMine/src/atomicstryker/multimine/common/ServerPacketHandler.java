@@ -3,7 +3,7 @@ package atomicstryker.multimine.common;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import atomicstryker.ForgePacketWrapper;
@@ -32,7 +32,7 @@ public class ServerPacketHandler implements IPacketHandler
             Class[] decodeAs = { Integer.class, Integer.class, Integer.class, Integer.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
 
-            MultiMineServer.instance().onClientSentPartialBlockPacket((EntityPlayer) player,
+            MultiMineServer.instance().onClientSentPartialBlockPacket((EntityPlayerMP) player,
                     (Integer) packetReadout[0], (Integer) packetReadout[1], (Integer) packetReadout[2], (Integer) packetReadout[3]);
         }
     }

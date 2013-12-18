@@ -7,12 +7,6 @@ public class DLFMLCorePlugin implements IFMLLoadingPlugin
 {
 
     @Override
-    public String[] getLibraryRequestClass()
-    {
-        return null;
-    }
-
-    @Override
     public String[] getASMTransformerClass()
     {
         return new String[] { "atomicstryker.dynamiclights.common.DLTransformer" };

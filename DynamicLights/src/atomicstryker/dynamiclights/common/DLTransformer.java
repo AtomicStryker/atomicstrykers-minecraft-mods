@@ -71,7 +71,6 @@ public class DLTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        @SuppressWarnings("unchecked")
         Iterator<MethodNode> methods = classNode.methods.iterator();
         while(methods.hasNext())
         {
@@ -82,7 +81,6 @@ public class DLTransformer implements IClassTransformer
                 System.out.println("In target method! Patching!");
                 
                 AbstractInsnNode targetNode = null;
-                @SuppressWarnings("unchecked")
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 boolean deleting = false;
                 boolean replacing = false;

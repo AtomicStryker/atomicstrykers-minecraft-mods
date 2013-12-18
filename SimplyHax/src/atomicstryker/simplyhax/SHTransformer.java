@@ -56,7 +56,6 @@ public class SHTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        @SuppressWarnings("unchecked")
         Iterator<MethodNode> methods = classNode.methods.iterator();
         while(methods.hasNext())
         {
@@ -66,7 +65,6 @@ public class SHTransformer implements IClassTransformer
                 System.out.println("In target method! Patching!");
                 
                 AbstractInsnNode targetNode = null;
-                @SuppressWarnings("unchecked")
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 int index = 0;
                 while (iter.hasNext())

@@ -1,25 +1,18 @@
 package atomicstryker.battletowers.common;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import atomicstryker.battletowers.common.WorldGenHandler.TowerPosition;
 
-public class CommandDeleteBattleTower extends CommandBase
+public class CommandDeleteBattleTower extends CommandBattleTowers
 {
 
     @Override
     public String getCommandName()
     {
         return "deletebattletower";
-    }
-    
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
     }
 
     @Override

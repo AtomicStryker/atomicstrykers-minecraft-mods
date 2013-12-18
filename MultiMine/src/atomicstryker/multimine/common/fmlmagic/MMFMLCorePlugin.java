@@ -10,12 +10,6 @@ public class MMFMLCorePlugin implements IFMLLoadingPlugin
 {
 
     @Override
-    public String[] getLibraryRequestClass()
-    {
-        return null;
-    }
-
-    @Override
     public String[] getASMTransformerClass()
     {
         return new String[] { "atomicstryker.multimine.common.fmlmagic.MMTransformer" };

@@ -1,22 +1,15 @@
 package atomicstryker.battletowers.common;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 
-public class CommandSpawnBattleTower extends CommandBase
+public class CommandSpawnBattleTower extends CommandBattleTowers
 {
 
     @Override
     public String getCommandName()
     {
         return "spawnbattletower";
-    }
-    
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
     }
 
     @Override

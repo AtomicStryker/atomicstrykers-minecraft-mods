@@ -1,21 +1,14 @@
 package atomicstryker.battletowers.common;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 
-public class CommandDeleteAllBattleTowers extends CommandBase
+public class CommandDeleteAllBattleTowers extends CommandBattleTowers
 {
 
     @Override
     public String getCommandName()
     {
         return "deleteallbattletowers";
-    }
-    
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
     }
 
     @Override

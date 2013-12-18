@@ -112,7 +112,6 @@ public class MMTransformer implements IClassTransformer
         return bytes;
     }
     
-    @SuppressWarnings("unchecked")
     private byte[] handlePlayerControllerMPObfuscated(byte[] bytes)
     {
         System.out.println("**************** Multi Mine transform running on PlayerControllerMP *********************** ");
@@ -212,7 +211,6 @@ public class MMTransformer implements IClassTransformer
         return writer.toByteArray();
     }
     
-    @SuppressWarnings("unchecked")
     private byte[] handleNetServerHandlerObfuscated(byte[] bytes)
     {
         System.out.println("**************** Multi Mine transform running on NetServerHandler *********************** ");
@@ -259,7 +257,6 @@ public class MMTransformer implements IClassTransformer
         return writer.toByteArray();
     }
     
-    @SuppressWarnings("unchecked")
     private byte[] handlePlayerControllerMP(byte[] bytes)
     {
         System.out.println("**************** Multi Mine transform running on PlayerControllerMP *********************** ");
@@ -353,7 +350,6 @@ public class MMTransformer implements IClassTransformer
         return writer.toByteArray();
     }
     
-    @SuppressWarnings("unchecked")
     private byte[] handleNetServerHandler(byte[] bytes)
     {
         System.out.println("**************** Multi Mine transform running on NetServerHandler *********************** ");

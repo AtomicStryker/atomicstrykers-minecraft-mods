@@ -77,7 +77,6 @@ public class SCTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        @SuppressWarnings("unchecked")
         Iterator<MethodNode> methods = classNode.methods.iterator();
         while(methods.hasNext())
         {
@@ -138,7 +137,6 @@ public class SCTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        @SuppressWarnings("unchecked")
         Iterator<MethodNode> methods = classNode.methods.iterator();
         while(methods.hasNext())
         {
