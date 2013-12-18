@@ -27,6 +27,7 @@ import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -37,7 +38,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.6")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.7")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
 clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
 serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
@@ -132,6 +133,8 @@ public class PetBatMod implements IProxy
 	private boolean manualEnabled;
     public Item itemPocketedBat;
     public Configuration config;
+    private int itemIDBatFlute;
+    public Item itemBatFlute;
     
     private boolean glisterBatEnabled;
     public long glisterBatEffectDuration;
@@ -140,6 +143,7 @@ public class PetBatMod implements IProxy
     @SidedProxy(clientSide = "atomicstryker.petbat.client.ClientProxy", serverSide = "atomicstryker.petbat.common.PetBatMod")
     public static IProxy proxy;
     
+    @Instance(value = "PetBat")
     private static PetBatMod instance;
     public static PetBatMod instance()
     {
@@ -158,6 +162,7 @@ public class PetBatMod implements IProxy
 			batInventoryTeleport = config.get(Configuration.CATEGORY_GENERAL, "teleportIntoInventory", true).getBoolean(true);
 			glisterBatEffectDuration = config.get(Configuration.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
 			glisterBatEffectDuration *= 1000; // sec to millisec
+			itemIDBatFlute = config.getItem("ItemBatFlute", 2529).getInt();
         }
         catch (Exception e)
         {
@@ -170,17 +175,19 @@ public class PetBatMod implements IProxy
         
         itemPocketedBat = new ItemPocketedPetBat(itemIDPocketBat).setUnlocalizedName("fed Pet Bat");
         GameRegistry.registerItem(itemPocketedBat, "fed Pet Bat");
+        
+        itemBatFlute = new ItemBatFlute(itemIDBatFlute).setUnlocalizedName("Bat Flute");
+        GameRegistry.registerItem(itemBatFlute, "Bat Flute");
     }
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
-        instance = this;
-        
         EntityRegistry.registerModEntity(EntityPetBat.class, "Pet Bat", 1, this, 25, 5, true);
         MinecraftForge.EVENT_BUS.register(this);
         
         LanguageRegistry.addName(itemPocketedBat, "fed Pet Bat");
+        LanguageRegistry.addName(itemBatFlute, "Bat Flute");
         
         proxy.onModLoad();
         
@@ -348,7 +355,11 @@ public class PetBatMod implements IProxy
                         }
                     }
                 }
-            }   
+            }
+            else if (id == itemBatFlute.itemID) // bat flutes cannot be dropped. ever.
+            {
+                event.setCanceled(true);
+            }
         }
     }
     

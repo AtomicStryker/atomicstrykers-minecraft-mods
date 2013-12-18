@@ -30,6 +30,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     private String petName;
     private EntityPlayer owner;
     private EntityItem foodAttackTarget;
+    private boolean fluteOut;
+    private boolean isRecalled;
     
     private int lastOwnerX;
     private int lastOwnerY;
@@ -46,6 +48,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         petName = "";
         lastOwnerX = lastOwnerY = lastOwnerZ = 0;
         hangSpot = null;
+        fluteOut = false;
+        isRecalled = false;
         
         tasks.addTask(1, new PetBatAIAttack(this));
         tasks.addTask(2, new PetBatAIFlying(this));
@@ -81,6 +85,38 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         this.ownerName = ownerName;
         this.petName = petName;
+        checkOwnerFlute();
+    }
+    
+    private void checkOwnerFlute()
+    {
+        EntityPlayer player = worldObj.getPlayerEntityByName(ownerName);
+        if (!fluteOut && player != null)
+        {
+            boolean found = false;
+            int itemID = PetBatMod.instance().itemBatFlute.itemID;
+            for (ItemStack item : player.inventory.mainInventory)
+            {
+                if (item != null && item.itemID == itemID)
+                {
+                    if (item.stackTagCompound.getString("batName").equals(petName))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found)
+            {
+                ItemStack newflute = new ItemStack(itemID, 1, 0);
+                newflute.stackTagCompound = new NBTTagCompound();
+                newflute.stackTagCompound.setString("batName", petName);
+                if (player.inventory.addItemStackToInventory(newflute))
+                {
+                    fluteOut = true;
+                }
+            }
+        }
     }
     
     public String getOwnerName()
@@ -104,6 +140,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void setOwnerEntity(EntityPlayer playerEntityByName)
     {
         owner = playerEntityByName;
+        checkOwnerFlute();
     }
     
     public void updateOwnerCoords()
@@ -162,15 +199,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
     
     /**
-     * Sets the active target the Task system uses for tracking
-     */
-    @Override
-    public void setAttackTarget(EntityLivingBase par1EntityLiving)
-    {
-        super.setAttackTarget(par1EntityLiving);
-    }
-    
-    /**
      * Called when the entity is attacked.
      */
     @Override
@@ -192,20 +220,17 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             && source.getEntity() == owner
             && !this.isDead)
             {
-                ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
-                if (batstack != null)
-                {
-                    if (owner.inventory.addItemStackToInventory(batstack))
-                    {
-                        worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
-                        setDeadWithoutRecall();
-                        return true;
-                    }
-                }
+                recallToOwner();
+                return true;
             }
         }
 
         return super.attackEntityFrom(source, amount);
+    }
+
+    public void recallToOwner()
+    {
+        isRecalled = true;
     }
 
     @Override
@@ -251,34 +276,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
     
     /**
-     * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
-     * return true when interaction is accepted, otherwise it will act as if there was no Entity you clicked.
-     */
-    @Override
-    public boolean interact(EntityPlayer par1EntityPlayer)
-    {
-        // ItemStack stack = par1EntityPlayer.inventory.getCurrentItem();
-        // TODO think up some food/healing interaction here?
-        return super.interact(par1EntityPlayer);
-    }
-    
-    @Override
-    public void handleHealthUpdate(byte par1)
-    {
-        super.handleHealthUpdate(par1);
-    }
-    
-    /**
-     * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
-     * use this to react to sunlight and start to burn.
-     */
-    @Override
-    public void onLivingUpdate()
-    {
-        super.onLivingUpdate();
-    }
-    
-    /**
      * Determines if an entity can be despawned, used on idle far away entities
      */
     @Override
@@ -310,10 +307,29 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                     worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
                     worldObj.spawnEntityInWorld(new EntityItem(worldObj, posX, posY, posZ, batstack));
                 }
+                
+                removeFluteFromPlayer(owner);
             }
         }
         
         super.setDead();
+    }
+
+    private void removeFluteFromPlayer(EntityPlayer player)
+    {
+        int itemID = PetBatMod.instance().itemBatFlute.itemID;
+        for (int i = 0; i < player.inventory.mainInventory.length; i++)
+        {
+            ItemStack item = player.inventory.mainInventory[i];
+            if (item != null && item.itemID == itemID)
+            {
+                if (item.stackTagCompound.getString("batName").equals(petName))
+                {
+                    player.inventory.setInventorySlotContents(i, null);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -432,6 +448,20 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         else
         {
             this.motionY *= 0.6D;
+        }
+        
+        if (isRecalled)
+        {
+            ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
+            if (batstack != null)
+            {
+                removeFluteFromPlayer(owner);
+                if (owner.inventory.addItemStackToInventory(batstack))
+                {
+                    worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
+                    setDeadWithoutRecall();
+                }
+            }
         }
     }
 

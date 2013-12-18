@@ -1,3 +1,8 @@
+1.2.7
+Introduces bat flute, which is placed in a player's inventory upon owning a pet bat flying in the world.
+Using the bat flute removes it and recalls the bat to the player inventory.
+The Flute disappears upon being dropped. It is only given once per bat flights. The bat recalls to the tamer, not the flute holder.
+
 1.2.6 hotfix (not visible in version display)
 fixed weapons that double trigger damage code duping bat items
 
