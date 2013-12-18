@@ -78,6 +78,12 @@
 		<copy todir="${build.dir}">
 			<zipfileset src="${tool.dir}/build/libs/modid.jar" excludes="META-INF/**, mcmod.info" />
 		</copy>
+		
+		<!-- remove reobfuscated stub files 
+		<delete includeEmptyDirs="true">
+			<fileset dir="${build.dir}/ic2" />
+		</delete>
+		-->
 
 		<!-- Copy mcmod.info and changelog.txt into distributable -->
 		<copy file="./mcmod.info" todir="${build.dir}" />
