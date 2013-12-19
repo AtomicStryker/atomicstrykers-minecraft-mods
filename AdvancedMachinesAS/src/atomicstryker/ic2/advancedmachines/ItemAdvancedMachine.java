@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 
 public class ItemAdvancedMachine extends ItemBlock
 {
@@ -25,7 +26,7 @@ public class ItemAdvancedMachine extends ItemBlock
     @Override
     public String getItemDisplayName(ItemStack itemStack)
     {
-        return "§E"+super.getItemDisplayName(itemStack);
+        return EnumChatFormatting.GOLD+super.getItemDisplayName(itemStack);
     }
 
     @Override

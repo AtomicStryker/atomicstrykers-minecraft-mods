@@ -3,6 +3,7 @@ package atomicstryker.petbat.client;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -117,16 +118,16 @@ public class GuiPetBatRename extends GuiScreen
         this.drawCenteredString(this.fontRenderer, this.screenTitle, x, 40, 0x0000AA);
         
         int y = 100;
-        drawCenteredString(fontRenderer, ("§lLevel §r"+this.level+" "+this.levelTitle), x, y, 0xFFFFFF);
+        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Level "+EnumChatFormatting.RESET+this.level+" "+this.levelTitle), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRenderer, ("§lExperience: §r"+this.xp+(xpToNext == -1 ? "" : ", missing for next level: "+xpToNext)), x, y, 0xFFFFFF);
+        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Experience: "+EnumChatFormatting.RESET+this.xp+(xpToNext == -1 ? "" : ", missing for next level: "+xpToNext)), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRenderer, ("§lHealth: §r"+this.health+" / "+this.maxHealth), x, y, 0xFFFFFF);
+        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Health: "+EnumChatFormatting.RESET+this.health+" / "+this.maxHealth), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRenderer, ("§lAttack Power: §r"+this.attackStrength), x, y, 0xFFFFFF);
+        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Attack Power: "+EnumChatFormatting.RESET+this.attackStrength), x, y, 0xFFFFFF);
         
         y += 30;
-        drawCenteredString(fontRenderer, "§o"+levelDesc, x, y, 0xC82536);
+        drawCenteredString(fontRenderer, EnumChatFormatting.ITALIC+levelDesc, x, y, 0xC82536);
         
         GL11.glPushMatrix();
         GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);

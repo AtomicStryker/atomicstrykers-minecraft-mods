@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 public class ItemMagicYarn extends Item
@@ -66,6 +67,6 @@ public class ItemMagicYarn extends Item
     @Override
     public String getItemDisplayName(ItemStack itemStack)
     {
-        return "§E"+super.getItemDisplayName(itemStack);
+        return EnumChatFormatting.GOLD+super.getItemDisplayName(itemStack);
     }
 }

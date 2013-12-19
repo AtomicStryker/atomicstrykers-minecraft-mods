@@ -5,6 +5,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.ropesplus.client.RopesPlusClient;
@@ -68,5 +69,11 @@ public class ItemGrapplingHook extends Item
             entityplayer.swingItem();
         }
         return itemstack;
+    }
+    
+    @Override
+    public String getItemDisplayName(ItemStack itemStack)
+    {
+        return EnumChatFormatting.GOLD+super.getItemDisplayName(itemStack);
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -162,6 +163,12 @@ public class ItemHookshot extends Item
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
         return EnumAction.bow;
+    }
+    
+    @Override
+    public String getItemDisplayName(ItemStack itemStack)
+    {
+        return EnumChatFormatting.GOLD+super.getItemDisplayName(itemStack);
     }
     
 }

@@ -5,6 +5,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 public class ItemBatFlute extends Item
@@ -54,7 +55,7 @@ public class ItemBatFlute extends Item
     public String getItemDisplayName(ItemStack itemStack)
     {
         String batname = itemStack.stackTagCompound != null ? itemStack.stackTagCompound.getString("batName") : "";
-        return "§EBat Flute: "+batname;
+        return EnumChatFormatting.GOLD+"Bat Flute: "+batname;
     }
     
 }
