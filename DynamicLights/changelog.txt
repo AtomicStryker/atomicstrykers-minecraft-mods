@@ -1,3 +1,6 @@
+1.2.8
+- changed arbitrary Light "enabling" value from >= 8 to >= 1. If you insist on damaging your eyesight, you now can.
+
 1.2.7
 - Mob Equipment module now checks all five equipment slots
 

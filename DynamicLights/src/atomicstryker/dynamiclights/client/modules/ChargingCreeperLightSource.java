@@ -19,7 +19,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
  * Those can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_creepers", name = "Dynamic Lights on Creepers", version = "1.0.2", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_creepers", name = "Dynamic Lights on Creepers", version = "1.0.3", dependencies = "required-after:DynamicLights")
 public class ChargingCreeperLightSource
 {
     
@@ -63,11 +63,11 @@ public class ChargingCreeperLightSource
         {
             lightLevel = entity.getCreeperState() == 1 ? 15 : 0;
             
-            if (!enabled && lightLevel > 8)
+            if (!enabled && lightLevel > 0)
             {
                 enableLight();
             }
-            else if (enabled && lightLevel < 9)
+            else if (enabled && lightLevel < 1)
             {
                 disableLight();
             }

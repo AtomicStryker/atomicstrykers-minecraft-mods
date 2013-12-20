@@ -33,7 +33,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.4", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.5", dependencies = "required-after:DynamicLights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;
@@ -221,11 +221,11 @@ public class PlayerOthersLightSource
                 }
             }
             
-            if (!enabled && lightLevel > 8)
+            if (!enabled && lightLevel > 0)
             {
                 enableLight();
             }
-            else if (enabled && lightLevel < 9)
+            else if (enabled && lightLevel < 1)
             {
                 disableLight();
             }

@@ -35,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.2", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.3", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -260,11 +260,11 @@ public class EntityLivingEquipmentLightSource
                 lightLevel = 15;
             }
             
-            if (!enabled && lightLevel > 8)
+            if (!enabled && lightLevel > 0)
             {
                 enableLight();
             }
-            else if (enabled && lightLevel < 9)
+            else if (enabled && lightLevel < 1)
             {
                 disableLight();
             }

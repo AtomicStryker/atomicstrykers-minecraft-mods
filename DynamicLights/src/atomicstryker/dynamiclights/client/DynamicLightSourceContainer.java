@@ -46,21 +46,18 @@ public class DynamicLightSourceContainer
             return true;
         }
         
-        if (lightSource.getLightLevel() >= 8)
+        if (hasEntityMoved(ent))
         {
-            if (hasEntityMoved(ent))
-            {
-                /*
-                 * This is the critical point, by this we tell Minecraft to ask for the BlockLight value
-                 * at the coordinates, which in turn triggers they Dynamic Lights response pointing to
-                 * this Light's value, which in turn has Minecraft update all surrounding Blocks :3
-                 * 
-                 * We also have to call an update for the previous coordinates, otherwise they would
-                 * stay lit up.
-                 */
-                ent.worldObj.updateLightByType(EnumSkyBlock.Block, x, y, z);
-                ent.worldObj.updateLightByType(EnumSkyBlock.Block, prevX, prevY, prevZ);
-            }
+            /*
+             * This is the critical point, by this we tell Minecraft to ask for the BlockLight value
+             * at the coordinates, which in turn triggers they Dynamic Lights response pointing to
+             * this Light's value, which in turn has Minecraft update all surrounding Blocks :3
+             * 
+             * We also have to call an update for the previous coordinates, otherwise they would
+             * stay lit up.
+             */
+            ent.worldObj.updateLightByType(EnumSkyBlock.Block, x, y, z);
+            ent.worldObj.updateLightByType(EnumSkyBlock.Block, prevX, prevY, prevZ);
         }
         
         return false;

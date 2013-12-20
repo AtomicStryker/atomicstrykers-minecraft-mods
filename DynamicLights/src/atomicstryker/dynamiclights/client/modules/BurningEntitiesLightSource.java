@@ -34,7 +34,7 @@ import cpw.mods.fml.relauncher.Side;
  * Burning Entites can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.2", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.3", dependencies = "required-after:DynamicLights")
 public class BurningEntitiesLightSource
 {
     private Minecraft mcinstance;
@@ -200,11 +200,11 @@ public class BurningEntitiesLightSource
                 lightLevel = 0;
             }
             
-            if (!enabled && lightLevel > 8)
+            if (!enabled && lightLevel > 0)
             {
                 enableLight();
             }
-            else if (enabled && lightLevel < 9)
+            else if (enabled && lightLevel < 1)
             {
                 disableLight();
             }

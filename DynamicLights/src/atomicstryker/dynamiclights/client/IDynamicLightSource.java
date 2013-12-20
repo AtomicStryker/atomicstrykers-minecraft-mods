@@ -17,7 +17,7 @@ import net.minecraft.entity.Entity;
  * DynamicLights.removeLightSource(IDynamicLightSource yourLightObjectHere)
  * 
  * 
- * You could also just return a Light Level <8, but that would leave your Light in the aggressively referenced List -
+ * You could also just return a Light Level <1, but that would leave your Light in the aggressively iterated List -
  * please do not do that.
  *
  */
@@ -32,8 +32,8 @@ public interface IDynamicLightSource
     public Entity getAttachmentEntity();
        
     /**
-     * Values above 15 will not be considered, 15 is the MC max level. Values below 8 are considered disabling,
-     * since the Light would not or hardly be visible. Value can be changed on the fly.
+     * Values above 15 will not be considered, 15 is the MC max level. Values below 1 are considered disabled.
+     * Values can be changed on the fly.
      * @return int value of Minecraft Light level at the Dynamic Light Source
      */
     public int getLightLevel();

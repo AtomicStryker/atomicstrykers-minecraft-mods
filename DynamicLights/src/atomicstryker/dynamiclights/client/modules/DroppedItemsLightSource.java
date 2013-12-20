@@ -34,7 +34,7 @@ import cpw.mods.fml.relauncher.Side;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.4", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.5", dependencies = "required-after:DynamicLights")
 public class DroppedItemsLightSource
 {
     private Minecraft mcinstance;
@@ -223,11 +223,11 @@ public class DroppedItemsLightSource
                 }
             }
             
-            if (!enabled && lightLevel > 8)
+            if (!enabled && lightLevel > 0)
             {
                 enableLight();
             }
-            else if (enabled && lightLevel < 9)
+            else if (enabled && lightLevel < 1)
             {
                 disableLight();
             }

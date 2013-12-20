@@ -31,7 +31,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.8", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.0.9", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -138,11 +138,11 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                     }
                 }
                 
-                if (!enabled && lightLevel > 8)
+                if (!enabled && lightLevel > 0)
                 {
                     enableLight();
                 }
-                else if (enabled && lightLevel < 9)
+                else if (enabled && lightLevel < 1)
                 {
                     disableLight();
                 }
