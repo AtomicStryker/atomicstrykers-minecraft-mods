@@ -3,7 +3,6 @@ package atomicstryker.multimine.common;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -21,7 +20,6 @@ import atomicstryker.ForgePacketWrapper;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
@@ -36,7 +34,6 @@ public class MultiMineServer
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<Integer, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
-    private final HashSet<Integer> registeredMultiMineUsers;
     private final BlockRegenQueue blockRegenQueue;
     
     /**
@@ -47,7 +44,6 @@ public class MultiMineServer
     public MultiMineServer()
     {
         partiallyMinedBlocksListByDimension = Maps.<Integer, List<PartiallyMinedBlock>>newHashMap();
-        registeredMultiMineUsers = Sets.<Integer>newHashSet();
         instance = this;
         blockRegenQueue = new BlockRegenQueue(30, new BlockAgeComparator());
         
@@ -190,7 +186,6 @@ public class MultiMineServer
     {
         int dimension = ((EntityPlayer)player).worldObj.provider.dimensionId;
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
-        registeredMultiMineUsers.add(((EntityPlayer)player).entityId);
         
         if (partiallyMinedBlocks != null)
         {
@@ -284,18 +279,6 @@ public class MultiMineServer
         
         return false;
         */
-    }
-
-    /**
-     * Used by the Connection Handler to delete a disconnected Player's Id from the registered users list.
-     * @param playerId entity ID of Player Entity who left
-     */
-    public void unRegisterMultiMineClient(int playerId)
-    {
-        if (registeredMultiMineUsers.contains(playerId))
-        {
-            registeredMultiMineUsers.remove(playerId);
-        }
     }
     
     /**

@@ -29,6 +29,7 @@ public class MultiMineClient
     private int curBlockX;
     private int curBlockY;
     private int curBlockZ;
+    private float lastBlockCompletion;
     
     private final long cloudTickReadingIntervalMillis = 5000L;
     private long nextTimeCloudTickReading;
@@ -48,6 +49,7 @@ public class MultiMineClient
         partiallyMinedBlocksArray = new PartiallyMinedBlock[30];
         isInstalledOnServer = false;
         arrayOverWriteIndex = 0;
+        lastBlockCompletion = 0F;
         
         nextTimeCloudTickReading = System.currentTimeMillis();
         lastCloudTickReading = 0;
@@ -76,30 +78,70 @@ public class MultiMineClient
     }
     
     /**
-     * Called by the transformed Client's PlayerController when it has finished mining a tenth of a Block and aborted internal processing.
-     * A packet about this is sent to server, who will do further processing. We also check the supplied block mining completion for being
-     * abnormally high (eg shearing) to prevent bugs from happening.
-     * @param x coordinate of Block
-     * @param y coordinate of Block
-     * @param z coordinate of Block
-     * @param blockCompletion the actual damage value inflicted on the Block
+     * Called by the transformed PlayerControllerMP, has the ability to override the internal block mine completion with another value
+     * @param x Block coordinate being mined
+     * @param y Block coordinate being mined
+     * @param z Block coordinate being mined
+     * @param blockCompletion mine completion value as currently held by the controller. Values >= 1.0f trigger block breaking
+     * @return value to override blockCompletion in PlayerControllerMP with
      */
-    public void onClientMinedBlockTenthCompleted(int x, int y, int z, float blockCompletion)
+    public float eventPlayerDamageBlock(int x, int y, int z, float blockCompletion)
     {
-        if (blockCompletion < 1.0f)
+        if (blockCompletion < 1.0f) // do not trigger on finished blocks
         {
-            curBlockX = x;
-            curBlockY = y;
-            curBlockZ = z;
-            Object[] toSend = {x, y, z, thePlayer.dimension};
-            float f = blockCompletion;
-            while (f >= 0.1f)
+            // prepare packet data for last mined block
+            Object[] toSend = {curBlockX, curBlockY, curBlockZ, thePlayer.dimension};
+            if (curBlockX != x || curBlockY != y || curBlockZ != z)
             {
-                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
-                f -= 0.1f;
+                // case block change, check one last time for partial mining
+                while (blockCompletion > lastBlockCompletion)
+                {
+                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
+                    lastBlockCompletion += 0.1f;
+                }
+                
+                // setup new block values
+                curBlockX = x;
+                curBlockY = y;
+                curBlockZ = z;
+                lastBlockCompletion = 0f;
             }
+            else if (blockCompletion > lastBlockCompletion)
+            {
+                // case same block, and mining has progressed
+                while (blockCompletion > lastBlockCompletion)
+                {
+                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
+                    lastBlockCompletion += 0.1f;
+                }
+            }
+            
+            // see if we have multimine completion cached somewhere
+            for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
+            {
+                if (partiallyMinedBlocksArray[i] != null
+                && partiallyMinedBlocksArray[i].getX() == x
+                && partiallyMinedBlocksArray[i].getY() == y
+                && partiallyMinedBlocksArray[i].getZ() == z)
+                {
+                    //System.out.println("found cached block, cached: "+partiallyMinedBlocksArray[i].getProgress() * 0.1F+", completion: "+blockCompletion);
+                    blockCompletion = Math.max(blockCompletion, partiallyMinedBlocksArray[i].getProgress() * 0.1F);
+                    break;
+                }
+            }
+            
+            if (blockCompletion == 1.0f)
+            {
+                // upon finising a block, reset the cached value here
+                lastBlockCompletion = 0F;
+            }
+            //System.out.println("Client finished a block tenth for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion+", lastCompletion: "+lastBlockCompletion);
         }
-        //System.out.println("Client finished a block tenth for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion);
+        else
+        {
+            lastBlockCompletion = 0F;
+        }
+        return blockCompletion;
     }
     
     /**

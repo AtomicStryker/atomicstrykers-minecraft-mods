@@ -1,6 +1,5 @@
 package atomicstryker.multimine.common;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
 import net.minecraft.network.packet.NetHandler;
@@ -12,10 +11,10 @@ import cpw.mods.fml.common.network.Player;
 
 public class ConnectionHandler implements IConnectionHandler
 {
+    
     @Override
     public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
     {
-        MultiMineServer.instance().unRegisterMultiMineClient(((EntityPlayer)player).entityId);
     }
 
     @Override
