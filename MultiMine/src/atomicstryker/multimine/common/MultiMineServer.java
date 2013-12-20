@@ -78,7 +78,7 @@ public class MultiMineServer
             partiallyMinedBlocksListByDimension.put(dimension, partiallyMinedBlocks);
         }
         
-        PartiallyMinedBlock newblock = new PartiallyMinedBlock(x, y, z, dimension);
+        PartiallyMinedBlock newblock = new PartiallyMinedBlock(x, y, z, dimension, 1);
         newblock.setLastTimeMined(System.currentTimeMillis()+MultiMine.instance().getInitialBlockRegenDelay());
         for (PartiallyMinedBlock iterBlock : partiallyMinedBlocks)
         {

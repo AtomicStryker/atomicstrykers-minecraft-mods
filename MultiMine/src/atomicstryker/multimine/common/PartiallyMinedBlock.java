@@ -17,15 +17,6 @@ public class PartiallyMinedBlock
         this.dimension = dimension;
         this.progress = progress;
     }
-    
-    public PartiallyMinedBlock(int x, int y, int z, int dimension)
-    {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.dimension = dimension;
-        this.progress = 1;
-    }
 
     public int getX()
     {

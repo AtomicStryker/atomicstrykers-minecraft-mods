@@ -1,3 +1,6 @@
+1.3.3(hotfix)
+- hotfixed logic derp resulting in minespeed being boosted quite a bit too much
+
 1.3.3
 - changed how the mod works on clientside fundamentally. now, will never under any circumstances
   reduce or catch a players mine progress, will merely boost it if the bock registers as previously mined.
