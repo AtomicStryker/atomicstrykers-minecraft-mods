@@ -41,6 +41,8 @@ public class ItemAdvancedMachine extends ItemBlock
                 return "item.advancedmachines:singularityCompressor";
             case 2:
                 return "item.advancedmachines:centrifugeExtractor";
+            case 3:
+                return "item.advancedmachines:combinedRecycler";
             default:
                 return null;
         }
@@ -53,5 +55,6 @@ public class ItemAdvancedMachine extends ItemBlock
         par3List.add(new ItemStack(par1, 1, 0));
         par3List.add(new ItemStack(par1, 1, 1));
         par3List.add(new ItemStack(par1, 1, 2));
+        par3List.add(new ItemStack(par1, 1, 3));
     }
 }

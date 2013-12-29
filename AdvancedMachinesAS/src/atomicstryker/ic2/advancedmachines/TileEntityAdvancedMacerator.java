@@ -18,12 +18,15 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class TileEntityAdvancedMacerator extends TileEntityMacerator implements IAdvancedMachine
 {
+    public static final int MAIN_IN_SLOT_INDEX = 0;
     public static final int SUPPLEMENT_SLOT_INDEX = 8;
+    public static final int EXTRA_OUT_SLOT_INDEX = 4;
     
     private final CommonLogicAdvancedMachines advLogic;
     
     public int supplementedItemsLeft = 0;
     private int nextSupplementResultCount;
+    private int nextSupplementResourceDrain;
     
     private final ItemStack idCopperOreCrushed;
     private final ItemStack idTinOreCrushed;
@@ -40,7 +43,7 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         super();
         advLogic = new CommonLogicAdvancedMachines("%5d RPM", 1);
         advLogic.getOutputSlots().add(outputSlot);
-        advLogic.getOutputSlots().add(new InvSlotOutput(this, "outputextra1", 4, 1));
+        advLogic.getOutputSlots().add(new InvSlotOutput(this, "outputextra1", EXTRA_OUT_SLOT_INDEX, 1));
         supplementSlot = new InvSlot(this, "supplement", SUPPLEMENT_SLOT_INDEX, InvSlot.Access.I, 1);
         
         idCopperOreCrushed = Items.getItem("crushedCopperOre");
@@ -91,16 +94,20 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                 output = new RecipeOutput(new NBTTagCompound(), new ArrayList<ItemStack>());
             }
             ArrayList<ItemStack> outItems = new ArrayList<ItemStack>(output.items);
-            runSupplementLogic(outItems, false);
+            runSupplementLogic(outItems);
             if (outItems.isEmpty())
             {
                 output = null;
+            }
+            else
+            {
+                output = new RecipeOutput(new NBTTagCompound(), outItems);
             }
         }
         return output;
     }
     
-    private void runSupplementLogic(List<ItemStack> items, boolean consumeInput)
+    private void runSupplementLogic(List<ItemStack> items)
     {
         ItemStack supplement = (supplementSlot.get() != null) ? supplementSlot.get().copy() : null;
         if(supplement != null)
@@ -108,7 +115,7 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
             ArrayList<ItemStack> additions = new ArrayList<ItemStack>();
             if (items.isEmpty())
             {
-                additions.addAll(getSpecialResultFor(inputSlot.get(), null, supplement, consumeInput));
+                additions.addAll(getSpecialResultFor(inputSlot.get(), null, supplement));
                 if (!additions.isEmpty() && supplementedItemsLeft == 0)
                 {
                     supplementedItemsLeft = nextSupplementResultCount;
@@ -123,12 +130,12 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                     result = iter.next();
                     if (supplementedItemsLeft > 0)
                     {
-                        additions.addAll(getSpecialResultFor(inputSlot.get(), result, supplement, consumeInput));
+                        additions.addAll(getSpecialResultFor(inputSlot.get(), result, supplement));
                         iter.remove();
                     }
-                    else if (getSpecialResultFor(inputSlot.get(), result, supplement, consumeInput) != null)
+                    else if (getSpecialResultFor(inputSlot.get(), result, supplement) != null)
                     {
-                        additions.addAll(getSpecialResultFor(inputSlot.get(), result, supplement, consumeInput));
+                        additions.addAll(getSpecialResultFor(inputSlot.get(), result, supplement));
                         supplementedItemsLeft = nextSupplementResultCount;
                         iter.remove();
                     }
@@ -139,15 +146,16 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         }
     }
 
-    private List<ItemStack> getSpecialResultFor(ItemStack original, ItemStack result, ItemStack supplement, boolean removeInputs)
+    private List<ItemStack> getSpecialResultFor(ItemStack original, ItemStack result, ItemStack supplement)
     {
         ArrayList<ItemStack> results = new ArrayList<ItemStack>();
         
         if(result != null && supplement != null)
         {
-            if (result.isItemEqual(idCopperOreCrushed) && Recipes.macerator.getOutputFor(supplement, removeInputs) != null)
+            RecipeOutput suppOut = Recipes.macerator.getOutputFor(supplement, false);
+            if (result.isItemEqual(idCopperOreCrushed) && suppOut != null)
             {
-                for (ItemStack i : Recipes.macerator.getOutputFor(supplement, removeInputs).items)
+                for (ItemStack i : suppOut.items)
                 {
                     if (i.isItemEqual(idTinOreCrushed))
                     {
@@ -157,15 +165,7 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                     }
                 }
             }
-            else if (result.isItemEqual(idCoalDust) && isWater(supplement))
-            {
-                nextSupplementResultCount = 8;
-                results.add(hydratedCoalDust);
-            }
-        }
-        else if (supplement != null)
-        {
-            if (original.getItem().itemID == Block.oreNetherQuartz.blockID && supplement.itemID == Block.sand.blockID)
+            else if (original.getItem().itemID == Block.oreNetherQuartz.blockID && supplement.itemID == Block.sand.blockID)
             {
                 nextSupplementResultCount = 1;
                 results.add(twoQuartz);
@@ -176,11 +176,13 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                 {
                     nextSupplementResultCount = 1;
                     results.add(new ItemStack(Item.glowstone, 1));
-                    if (removeInputs)
-                    {
-                        original.stackSize -= 7;
-                    }
+                    nextSupplementResourceDrain = 6; // to pull 6 additional netherrack for a total cost of 7
                 }
+            }
+            else if (result.isItemEqual(idCoalDust) && isWater(supplement))
+            {
+                nextSupplementResultCount = 8;
+                results.add(hydratedCoalDust);
             }
         }
         
@@ -214,6 +216,12 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                 }
                 supplementedItemsLeft--;
             }
+            
+            if (nextSupplementResourceDrain > 0)
+            {
+                inputSlot.get().stackSize -= nextSupplementResourceDrain;
+                nextSupplementResourceDrain = 0;
+            }
         }
     }
     
@@ -239,6 +247,30 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
     public ArrayList<InvSlotOutput> getOutputSlots()
     {
         return advLogic.getOutputSlots();
+    }
+    
+    @Override
+    public boolean isItemValidForSlot(int slot, ItemStack itemStack)
+    {
+        if (slot == SUPPLEMENT_SLOT_INDEX)
+        {
+            return false;
+        }
+        return super.isItemValidForSlot(slot, itemStack);
+    }
+    
+    @Override
+    public boolean canExtractItem(int slot, ItemStack itemstack, int blockSide)
+    {
+        if (slot == SUPPLEMENT_SLOT_INDEX)
+        {
+            return false;
+        }
+        else if (slot == EXTRA_OUT_SLOT_INDEX)
+        {
+            return true;
+        }
+        return super.canExtractItem(slot, itemstack, blockSide);
     }
 
 }

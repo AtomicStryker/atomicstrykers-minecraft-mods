@@ -1,3 +1,14 @@
+Version 1.0.6
+	- introduces the only advanced machine left i see being useful, the combined recycler
+	  it is made by cobbling together a rotary macerator, a centrifuge extractor,
+	  a recycler and some iron plating. It has 3 output slots and advanced speedup.
+	- fixed the Macerator not accepting Netherrack and Netherquartz; without supplement
+	  these now only pass through the machine unchanged
+	- changed the macerator's supplementary slot to never allow automated access to it
+	- fixed supplementary recipes ... again
+	- fixed upgrade slots in GUIs, moved them 2 pixels lower
+	- removed pointless gui ids from config and codebase
+
 Version 1.0.5
 	- fixed yet another crash in additive macerator slot
 

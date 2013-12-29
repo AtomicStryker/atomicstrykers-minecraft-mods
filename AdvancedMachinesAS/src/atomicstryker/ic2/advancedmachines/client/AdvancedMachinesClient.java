@@ -9,6 +9,7 @@ import atomicstryker.ic2.advancedmachines.IProxy;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedCompressor;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedExtractor;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedMacerator;
+import atomicstryker.ic2.advancedmachines.TileEntityAdvancedRecycler;
 
 public class AdvancedMachinesClient implements IProxy
 {
@@ -58,6 +59,10 @@ public class AdvancedMachinesClient implements IProxy
             else if (te instanceof TileEntityAdvancedCompressor)
             {
                 return new GuiSingularityCompressor(new ContainerAdvancedMachine(player, (TileEntityAdvancedCompressor) te), (TileEntityAdvancedCompressor) te);
+            }
+            else if (te instanceof TileEntityAdvancedRecycler)
+            {
+                return new GuiCombinedRecycler(new ContainerAdvancedMachine(player, (TileEntityAdvancedRecycler) te), (TileEntityAdvancedRecycler) te);
             }
         }
 

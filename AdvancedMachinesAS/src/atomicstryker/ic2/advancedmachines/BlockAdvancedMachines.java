@@ -41,7 +41,7 @@ public class BlockAdvancedMachines extends BlockContainer
     @Override
     public void registerIcons(IconRegister par1IconRegister)
     {
-        iconBuffer = new Icon[3][12]; // 3 machines, 6 sides each, in ON and OFF states
+        iconBuffer = new Icon[4][12]; // 4 machines, 6 sides each, in ON and OFF states
 
         // meta 0, macerator
         // first the 6 sides in OFF state
@@ -90,6 +90,22 @@ public class BlockAdvancedMachines extends BlockContainer
         iconBuffer[2][9] = par1IconRegister.registerIcon("advancedmachines:frontExtractorON"); // east
         iconBuffer[2][10] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // south
         iconBuffer[2][11] = par1IconRegister.registerIcon("advancedmachines:sideExtractorON"); // west
+        
+        // meta 3, recycler
+        // first the 6 sides in OFF state
+        iconBuffer[3][0] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[3][1] = par1IconRegister.registerIcon("advancedmachines:topMaceratorOFF"); // top
+        iconBuffer[3][2] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // north
+        iconBuffer[3][3] = par1IconRegister.registerIcon("advancedmachines:frontRecyclerOFF"); // east
+        iconBuffer[3][4] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
+        iconBuffer[3][5] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
+        // then the 6 sides in ON state
+        iconBuffer[3][6] = par1IconRegister.registerIcon("advancedmachines:bottom"); // bottom
+        iconBuffer[3][7] = par1IconRegister.registerIcon("advancedmachines:topMaceratorON"); // top
+        iconBuffer[3][8] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // north
+        iconBuffer[3][9] = par1IconRegister.registerIcon("advancedmachines:frontRecyclerON"); // east
+        iconBuffer[3][10] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
+        iconBuffer[3][11] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
     }
 
     @Override
@@ -128,6 +144,8 @@ public class BlockAdvancedMachines extends BlockContainer
             return new TileEntityAdvancedCompressor();
         case 2:
             return new TileEntityAdvancedExtractor();
+        case 3:
+            return new TileEntityAdvancedRecycler();
         default:
             return null;
         }
@@ -196,21 +214,6 @@ public class BlockAdvancedMachines extends BlockContainer
     {
         return world.getBlockMetadata(x, y, z); // advanced machine item meta
                                                 // exactly equals the block meta
-    }
-
-    public int getGui(World var1, int var2, int var3, int var4, EntityPlayer var5)
-    {
-        switch (var1.getBlockMetadata(var2, var3, var4))
-        {
-        case 0:
-            return ModAdvancedMachines.instance.guiIdRotary;
-        case 1:
-            return ModAdvancedMachines.instance.guiIdSingularity;
-        case 2:
-            return ModAdvancedMachines.instance.guiIdCentrifuge;
-        default:
-            return 0;
-        }
     }
 
     @Override
