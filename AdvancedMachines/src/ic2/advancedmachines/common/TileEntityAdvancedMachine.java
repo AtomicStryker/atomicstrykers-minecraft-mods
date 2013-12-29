@@ -198,7 +198,7 @@ public abstract class TileEntityAdvancedMachine extends TileEntityBaseMachine im
                         te = dir.applyToTileEntity(this);
                         if (te != null && te instanceof IInventory)
                         {
-                            amount = StackUtil.putInInventory((IInventory)te, StackUtil.copyWithSize(inventory[outputs[index]], amount), false);
+                            amount = StackUtil.putInInventory((IInventory)te, dir, StackUtil.copyWithSize(inventory[outputs[index]], amount), false);
                             inventory[outputs[index]].stackSize -= amount;
                             if (inventory[outputs[index]].stackSize < 1)
                             {
