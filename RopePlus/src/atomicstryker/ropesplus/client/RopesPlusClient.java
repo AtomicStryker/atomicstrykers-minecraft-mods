@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -19,6 +20,7 @@ import org.lwjgl.input.Keyboard;
 import atomicstryker.ForgePacketWrapper;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.Settings_RopePlus;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -51,6 +53,11 @@ public class RopesPlusClient implements ITickHandler
     
     public static boolean toolTipEnabled;
     
+    private final KeySwapArrowsForward keySwapForward;
+    private final KeySwapArrowsBackward keySwapBackward;
+    private int guiStringX;
+    private int guiStringY;
+    
     public RopesPlusClient()
     {
         mc = FMLClientHandler.instance().getClient();
@@ -69,11 +76,19 @@ public class RopesPlusClient implements ITickHandler
         
         boolean[] repeat = {false};
         KeyBinding[] keyf = {new KeyBinding("SwapArrowsForward", Keyboard.KEY_COMMA)};
-        KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsForward(keyf, repeat));
+        keySwapForward = new KeySwapArrowsForward(keyf, repeat);
+        KeyBindingRegistry.registerKeyBinding(keySwapForward);
         KeyBinding[] keyb = {new KeyBinding("SwapArrowsBackward", Keyboard.KEY_PERIOD)};
-        KeyBindingRegistry.registerKeyBinding(new KeySwapArrowsBackward(keyb, repeat));
+        keySwapBackward = new KeySwapArrowsBackward(keyb, repeat);
+        KeyBindingRegistry.registerKeyBinding(keySwapBackward);
         
         MinecraftForge.EVENT_BUS.register(this);
+        
+        Configuration c = Settings_RopePlus.config;
+        c.load();
+        guiStringX = c.get(Configuration.CATEGORY_GENERAL, "GUI String x coordinate, higher value means more to the right", 2).getInt();
+        guiStringY = c.get(Configuration.CATEGORY_GENERAL, "GUI String y coordinate, higher value means lower", 10).getInt();
+        c.save();
     }
     
     private void selectAnyArrow()
@@ -273,8 +288,8 @@ public class RopesPlusClient implements ITickHandler
                     }
                     s = s.concat("x"+arrowCount);
                 }
-                mc.fontRenderer.drawStringWithShadow(s, 2, 10, 0x2F96EB);
-                mc.fontRenderer.drawStringWithShadow("See control options for swap buttons", 2, 20, 0xffffff);
+                mc.fontRenderer.drawStringWithShadow(s, guiStringX, guiStringY, 0x2F96EB);
+                mc.fontRenderer.drawStringWithShadow("Swap arrows with "+keySwapForward.key+", "+keySwapBackward.key, guiStringX, guiStringY+10, 0xffffff);
             }
         }
         
@@ -370,10 +385,12 @@ public class RopesPlusClient implements ITickHandler
     private class KeySwapArrowsForward extends KeyHandler
     {
         private EnumSet<TickType> tickTypes = EnumSet.of(TickType.CLIENT);
+        private String key;
         
         public KeySwapArrowsForward(KeyBinding[] keyBindings, boolean[] repeatings)
         {
             super(keyBindings, repeatings);
+            key = Keyboard.getKeyName(keyBindings[0].keyCode);
         }
 
         @Override
@@ -406,10 +423,12 @@ public class RopesPlusClient implements ITickHandler
     private class KeySwapArrowsBackward extends KeyHandler
     {
         private EnumSet<TickType> tickTypes = EnumSet.of(TickType.CLIENT);
+        private String key;
         
         public KeySwapArrowsBackward(KeyBinding[] keyBindings, boolean[] repeatings)
         {
             super(keyBindings, repeatings);
+            key = Keyboard.getKeyName(keyBindings[0].keyCode);
         }
 
         @Override
