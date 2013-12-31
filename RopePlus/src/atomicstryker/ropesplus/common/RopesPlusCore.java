@@ -145,21 +145,21 @@ public class RopesPlusCore
             //System.out.println("registered "+name+" as Networked Entity for ALL TIME!!!");
         }
         c.save();
+        
+        GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
+        GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook", "RopesPlus");
+        GameRegistry.registerBlock(blockRopeWallPos, "blockRope");
+        GameRegistry.registerBlock(blockRopeCentralPos, "blockRopeCentral");
+        GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
+        GameRegistry.registerItem(itemHookShot, "itemHookshot", "RopesPlus");
+        GameRegistry.registerItem(itemHookShotCartridge, "HookshotCartridge", "RopesPlus");
+        GameRegistry.registerItem(bowRopesPlus, "bowRopesPlus", "RopesPlus");
+        GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
     }
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
-    {
-        GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
-        GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook");
-        GameRegistry.registerBlock(blockRopeWallPos, "blockRope");
-        GameRegistry.registerBlock(blockRopeCentralPos, "blockRopeCentral");
-        GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
-        GameRegistry.registerItem(itemHookShot, "itemHookshot");
-        GameRegistry.registerItem(itemHookShotCartridge, "HookshotCartridge");
-        GameRegistry.registerItem(bowRopesPlus, "bowRopesPlus");
-        GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
-        
+    {        
         ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 6);
         GameRegistry.addRecipe(ropeCentral, new Object[] {" # ", " # ", " # ", Character.valueOf('#'), Item.silk});
         
