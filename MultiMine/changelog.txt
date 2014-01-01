@@ -1,3 +1,6 @@
+1.3.4
+- removed obsolete serverside transformer+code, should fix MCPC compatibility
+
 1.3.3(hotfix)
 - hotfixed logic derp resulting in minespeed being boosted quite a bit too much
 

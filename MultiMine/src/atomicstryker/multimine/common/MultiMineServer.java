@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet14BlockDig;
 import net.minecraft.network.packet.Packet53BlockChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeHooks;
@@ -233,52 +232,6 @@ public class MultiMineServer
     {
         Object[] toSend = {block.getX(), block.getY(), block.getZ(), block.getProgress()};
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend), p);
-    }
-    
-    /**
-     * Called by the Transformed-in Method in NetServerHandler, decides if a Packet14BlockDig gets dropped or handled normally by the server
-     * @param playerId entityId of the sending player
-     * @param packet Packet14BlockDig with Block coordinates in question
-     * @return true when Multi Mine is handling the current Block, false otherwise
-     */
-    public boolean getShouldIgnoreBlockDigPacket(int playerId, Packet14BlockDig packet)
-    {
-        // leaving this at default false doesnt seem to introduce errors, why did i block this again
-        return false;
-        /*
-        System.out.println("server blockdig packet, status: "+packet.status);
-        
-        if (packet.status == 4) // Player dropped a single Item with Q, don't intervene
-        // || packet.status == 2) // mine finished? dont mess with it
-        {
-            return false;
-        }
-        
-        if (registeredMultiMineUsers.contains(playerId))
-        {
-            List<EntityPlayer> list = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList;
-            for (EntityPlayer player : list)
-            {
-                if (player.entityId == playerId)
-                {
-                    if (player.capabilities.isCreativeMode)
-                    {
-                        return false;
-                    }
-                    
-                    if (MultiMine.instance().getIsExcludedItem(player.getCurrentEquippedItem()))
-                    {
-                        return false;
-                    }
-                    
-                    
-                    return (!MultiMine.instance().getIsExcludedBlock(player.worldObj.getBlockId(packet.xPosition, packet.yPosition, packet.zPosition)));
-                }
-            }
-        }
-        
-        return false;
-        */
     }
     
     /**
