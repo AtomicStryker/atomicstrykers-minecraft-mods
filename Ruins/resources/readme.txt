@@ -26,7 +26,7 @@ Please see the template_rules.txt file for more information on creating template
 
 
 BIOME SPECIFIC FEATURES
-The v5 release included an advanced feature for biome-specific templates.  In the mods/resources/ruins folder you will find a folder specific to each biome.  If you place a template in one of those folders it will only be available to spawn in that biome.  If you place a template outside the biome-specific folders, in the root mods/resources/ruins folder, it will be considered a generic template that can spawn in any biome, conditions permitting.
+The v5 release included an advanced feature for biome-specific templates.  In the mods/resources/ruins folder you will find a folder specific to each biome.  If you place a template in one of those folders it will only be available to spawn in that biome.  If you place a template inside the mods/resources/ruins/generic folder, it will be considered a generic template that can spawn in any biome, other conditions (such as surface blocks) permitting.
 
 The ruins.txt file now has variables for each biome, giving the chance that a biome-specific template will be used as opposed to a generic template.  If a biome-specific template is not available when asked for, no template will spawn.
 
