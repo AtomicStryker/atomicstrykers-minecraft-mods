@@ -1,4 +1,7 @@
 *HOTFIX*
+- threw away client only config, Minion key is now configured via Minecraft key bindings
+
+*HOTFIX*
 - fixed dirty stripmines, flooring works as intended now
 - fixed crash in chunkloading
 

@@ -27,10 +27,12 @@ import cpw.mods.fml.relauncher.Side;
 public class ClientProxy extends CommonProxy
 {
     
+    private MinionsClient client;
+    
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
-        MinionsClient.preInit(event);
+        client =  new MinionsClient();
         MinecraftForge.EVENT_BUS.register(new MinionsSounds());
     }
     
@@ -66,7 +68,7 @@ public class ClientProxy extends CommonProxy
     @Override
     public void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
     {
-        MinionsClient.onMastersGloveRightClick(itemstack, world, player);
+        client.onMastersGloveRightClick(itemstack, world, player);
     }
     
     @Override
@@ -88,7 +90,7 @@ public class ClientProxy extends CommonProxy
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
-            MinionsClient.onRenderTick(tickData);
+            client.onRenderTick(tickData);
         }
         
         @Override
@@ -117,7 +119,7 @@ public class ClientProxy extends CommonProxy
         @Override
         public void tickEnd(EnumSet<TickType> type, Object... tickData)
         {
-            MinionsClient.onWorldTick(tickData);
+            client.onWorldTick(tickData);
         }
         
         @Override
@@ -138,7 +140,7 @@ public class ClientProxy extends CommonProxy
         @Override
         public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
         {
-            MinionsClient.onPacketData(manager, packet, player);
+            client.onPacketData(manager, packet, player);
         }
     }
 }

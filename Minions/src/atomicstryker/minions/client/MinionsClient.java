@@ -2,10 +2,11 @@ package atomicstryker.minions.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -19,7 +20,6 @@ import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.common.Configuration;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -33,18 +33,15 @@ import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.client.registry.KeyBindingRegistry;
+import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class MinionsClient
 {
-    private static String s_MenuKey = "M";
-    private static int i_MenuKey = Keyboard.getKeyIndex(s_MenuKey);
-
-    private static MovingObjectPosition targetObjectMouseOver;
     
     public static boolean isSelectingMineArea = false;
     public static int mineAreaShape = 0;
@@ -52,46 +49,65 @@ public class MinionsClient
     public static int customSizeY = 3;
 
     public static boolean hasMinionsSMPOverride = false;
-    public static boolean hasAllMinionsSMPOverride = false;
+    public boolean hasAllMinionsSMPOverride = false;
     
-    private static long lastStaffLightningBoltTime = System.currentTimeMillis();
+    private long lastStaffLightningBoltTime = System.currentTimeMillis();
     
-    private static long timeNextSoundAllowed = 0L;
-    private final static long timeSoundDelay = 400L;
+    private long timeNextSoundAllowed = 0L;
+    private final long timeSoundDelay = 400L;
     
-    private static World lastWorld;
+    private World lastWorld;
+    private final Minecraft mc;
     
-    public static void preInit(FMLPreInitializationEvent event)
+    public MinionsClient()
     {
-        Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
-        try
-        {
-            cfg.load();
-            s_MenuKey = cfg.get(Configuration.CATEGORY_GENERAL, "Minion_Menu_Key", "M").getString();
-            i_MenuKey = Keyboard.getKeyIndex(s_MenuKey);
-            
-        }
-        catch (Exception e)
-        {
-            FMLLog.log(Level.SEVERE, e, "Minions Client has a problem loading it's configuration!");
-        }
-        finally
-        {
-            cfg.save();
-        }
+        mc = FMLClientHandler.instance().getClient();        
+        KeyBindingRegistry.registerKeyBinding(new MinionsKey(new KeyBinding[] { new KeyBinding("Minions Menu", Keyboard.KEY_M) }, new boolean[] { false }));
     }
     
-    public static void onRenderTick(Object[] tickData)
+    private class MinionsKey extends KeyHandler
     {
-        float renderTick = (Float) tickData[0];
-        Minecraft mc = FMLClientHandler.instance().getClient();
         
-        // Menu
-        if (Keyboard.isKeyDown(i_MenuKey) && mc.currentScreen == null)
+        private final EnumSet<TickType> tickTypes;
+        
+        public MinionsKey(KeyBinding[] keyBindings, boolean[] repeatings)
         {
-            mc.displayGuiScreen(new GuiMinionMenu());
+            super(keyBindings, repeatings);
+            tickTypes = EnumSet.of(TickType.CLIENT);
         }
 
+        @Override
+        public String getLabel()
+        {
+            return "Minions Menu";
+        }
+
+        @Override
+        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
+        {
+        }
+
+        @Override
+        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
+        {
+            if (mc.currentScreen == null)
+            {
+                mc.displayGuiScreen(new GuiMinionMenu());
+            }
+        }
+
+        @Override
+        public EnumSet<TickType> ticks()
+        {
+            return tickTypes;
+        }
+        
+    }
+    
+    public void onRenderTick(Object[] tickData)
+    {
+        float renderTick = (Float) tickData[0];
+        
         if (mc.currentScreen == null && isSelectingMineArea)
         {
             if (mc.thePlayer.inventory.getCurrentItem() == null
@@ -193,7 +209,7 @@ public class MinionsClient
         }
     }
 
-    public static void onWorldTick(Object[] tickData)
+    public void onWorldTick(Object[] tickData)
     {
         World world = FMLClientHandler.instance().getClient().theWorld;
         if (world != lastWorld && world != null)
@@ -209,7 +225,7 @@ public class MinionsClient
         }
     }
 
-    public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
     {
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
@@ -320,7 +336,7 @@ public class MinionsClient
         }
     }
     
-    private static void spawnLightningBolt(World world, EntityLivingBase shooter, Vector3 startvec, Vector3 endvec, long randomizer)
+    private void spawnLightningBolt(World world, EntityLivingBase shooter, Vector3 startvec, Vector3 endvec, long randomizer)
     {
         for (int i = 3; i != 0; i--)
         {
@@ -338,7 +354,7 @@ public class MinionsClient
         }
     }
     
-    private static void playFartSound(World world, EntityPlayer player)
+    private void playFartSound(World world, EntityPlayer player)
     {
         if (timeNextSoundAllowed + timeSoundDelay*2 < System.currentTimeMillis())
         {
@@ -347,13 +363,13 @@ public class MinionsClient
         }
     }
     
-    public static void playSoundToAllPlayersOnServer(Entity source, String soundName)
+    public void playSoundToAllPlayersOnServer(Entity source, String soundName)
     {
         Object[] toSend = {source.entityId, soundName};
         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend)); // client requests sound distribution packet (entID, soundString)
     }
     
-    public static void onMastersGloveRightClick(ItemStack var1, World worldObj, EntityPlayer playerEnt)
+    public void onMastersGloveRightClick(ItemStack var1, World worldObj, EntityPlayer playerEnt)
     {
         if (System.currentTimeMillis() > timeNextSoundAllowed)
         {
@@ -367,7 +383,7 @@ public class MinionsClient
         
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
-        targetObjectMouseOver = mcinstance.objectMouseOver; //mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
+        MovingObjectPosition targetObjectMouseOver = mcinstance.objectMouseOver; //mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
         // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.username);
         // System.out.println("OnMastersGloveRightClick Master: "+playerEnt.username+", minionarray is: "+minions);
         Entity target;
