@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/forgegradle"/>
-	<classpathentry kind="lib" path="../../mcp/lib/CodeChickenCore-dev 0.9.0.6.jar"/>
-	<classpathentry kind="lib" path="../../mcp/lib/NotEnoughItems-dev 1.6.1.5.jar"/>
+	<classpathentry kind="lib" path="../../forgegradle/libs/CodeChickenCore-dev 0.9.0.6.jar"/>
+	<classpathentry kind="lib" path="../../forgegradle/libs/NotEnoughItems-dev 1.6.1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
