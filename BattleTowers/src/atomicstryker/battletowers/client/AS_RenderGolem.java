@@ -33,7 +33,7 @@ public class AS_RenderGolem extends RenderBiped
     }
     
     @Override
-    protected ResourceLocation func_110856_a(EntityLiving par1EntityLiving)
+    protected ResourceLocation getEntityTexture(EntityLiving par1EntityLiving)
     {
         boolean awake = !((AS_EntityGolem)par1EntityLiving).getIsDormant();
         return awake ? texAwake : texSleep;

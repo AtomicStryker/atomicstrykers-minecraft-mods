@@ -5,8 +5,6 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -180,31 +178,12 @@ public class AS_EntityGolemFireball extends Entity
 
     @Override
     public void readEntityFromNBT(NBTTagCompound nbttagcompound)
-    {        
-        this.posX = nbttagcompound.getShort("xTile");
-        this.posY = nbttagcompound.getShort("yTile");
-        this.posZ = nbttagcompound.getShort("zTile");
-
-        if (nbttagcompound.hasKey("direction"))
-        {
-            NBTTagList var2 = nbttagcompound.getTagList("direction");
-            this.motionX = ((NBTTagDouble)var2.tagAt(0)).data;
-            this.motionY = ((NBTTagDouble)var2.tagAt(1)).data;
-            this.motionZ = ((NBTTagDouble)var2.tagAt(2)).data;
-        }
-        else
-        {
-            this.setDead();
-        }
+    {
     }
 
     @Override
     public void writeEntityToNBT(NBTTagCompound nbttagcompound)
     {
-        nbttagcompound.setShort("xTile", (short)this.posX);
-        nbttagcompound.setShort("yTile", (short)this.posY);
-        nbttagcompound.setShort("zTile", (short)this.posZ);
-        nbttagcompound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
     }
     
 }

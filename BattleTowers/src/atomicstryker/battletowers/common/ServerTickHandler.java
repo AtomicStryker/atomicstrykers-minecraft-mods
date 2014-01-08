@@ -1,29 +1,21 @@
 package atomicstryker.battletowers.common;
 
-import java.util.EnumSet;
 import java.util.Iterator;
 
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
-public class ServerTickHandler implements ITickHandler
+public class ServerTickHandler
 {
-    private final EnumSet<TickType> tickTypes;
     private long time;
     
     public ServerTickHandler()
     {
-        tickTypes = EnumSet.of(TickType.WORLD);
         time = System.currentTimeMillis();
     }
 
-    @Override
-    public void tickStart(EnumSet<TickType> type, Object... tickData)
-    {
-    }
-
-    @Override
-    public void tickEnd(EnumSet<TickType> type, Object... tickData)
+    @SubscribeEvent
+    public void onTick(TickEvent.WorldTickEvent tick)
     {
         if (System.currentTimeMillis() > time + 1000L) // its a one second timer OMFG
         {
@@ -42,18 +34,6 @@ public class ServerTickHandler implements ITickHandler
                 }
             }
         }
-    }
-
-    @Override
-    public EnumSet<TickType> ticks()
-    {
-        return tickTypes;
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "BattleTowers";
     }
 
 }

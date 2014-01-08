@@ -3,31 +3,28 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.network.packet.Packet3Chat;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraftforge.common.Configuration;
-import atomicstryker.battletowers.client.ClientPacketHandler;
+import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.config.Configuration;
+import atomicstryker.battletowers.common.network.ChestAttackedPacket;
+import atomicstryker.battletowers.common.network.LoginPacket;
+import atomicstryker.battletowers.common.network.NetworkHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.2")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true,
-clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ClientPacketHandler.class),
-serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_BT"}, packetHandler = ServerPacketHandler.class),
-connectionHandler = ConnectionHandler.class)
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.3")
 public class AS_BattleTowersCore
 {
     
@@ -41,12 +38,16 @@ public class AS_BattleTowersCore
 	public static boolean towerFallDestroysMobSpawners;
 	private int golemEntityID;
 	
+    @Instance(value = "BattleTowers")
+    public static AS_BattleTowersCore instance;
+	
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
     public static CommonProxy proxy;
     
     public static TowerStageItemManager[] floorItemManagers = new TowerStageItemManager[10];
     public static Configuration configuration;
     
+    public NetworkHelper networkHelper;
 	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -55,14 +56,24 @@ public class AS_BattleTowersCore
         loadForgeConfig();
         
         proxy.preInit();
+        
+        FMLCommonHandler.instance().bus().register(this);
+        FMLCommonHandler.instance().bus().register(new ServerTickHandler());
+        
+        networkHelper = new NetworkHelper("AS_BT", LoginPacket.class, ChestAttackedPacket.class);
+    }
+    
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerLoggedInEvent event)
+    {
+        System.out.println("BTSERVER registered ServerConnectionFromClientEvent, sending packet");
+        networkHelper.sendPacketToPlayer(new LoginPacket(), event.player);
     }
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
         proxy.load();
-        
-        TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
         
         EntityRegistry.registerGlobalEntityID(AS_EntityGolem.class, "Battletower Golem", golemEntityID, 0xA0A0A0, 0x808080);
         EntityRegistry.registerModEntity(AS_EntityGolem.class, "Battletower Golem", 1, this, 25, 5, true);
@@ -72,7 +83,7 @@ public class AS_BattleTowersCore
         
         towerDestroyers = new HashSet<AS_TowerDestroyer>();
         
-        GameRegistry.registerWorldGenerator(new WorldGenHandler());
+        GameRegistry.registerWorldGenerator(new WorldGenHandler(), 0);
     }
     
     @EventHandler
@@ -103,77 +114,75 @@ public class AS_BattleTowersCore
         towerFallDestroysMobSpawners = configuration.get("MainOptions", "towerFallDestroysMobSpawners", false, "Destroy all Mob Spawners in Tower Area upon Tower Fall?").getBoolean(false);
         golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();
         
-        configuration.addCustomCategoryComment("BattleTowerChestItems", "Versions 1.4.1 and later of Battletowers allow you to specify Items by unlocalized name aswell as ID. Use this for mod added items!!");
-        configuration.addCustomCategoryComment("BattleTowerChestItems", "Syntax for each Item entry is 'ID-Meta-Spawnchance-minAmount-maxAmount', entries are seperated by ';'");
+        configuration.addCustomCategoryComment("BattleTowerChestItems", "Syntax for each Item entry is 'Name-Meta-Spawnchance-minAmount-maxAmount', entries are seperated by ';'");
         
-        // 280-0-50-5-6 sticks
-        // 295-0-50-3-5 seeds
-        // 5-0-50-5-6 planks
-        // 83-0-50-3-5 sugarcane
-        floorItemManagers[0] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 1", "280-0-75-5-6;item.seeds-0-75-3-5;5-0-75-5-6;83-0-75-3-5").getString());
+        // stick-0-50-5-6 sticks
+        // wheat_seeds-0-50-3-5 seeds
+        // planks-0-50-5-6 planks
+        // reeds-0-50-3-5 sugarcane
+        floorItemManagers[0] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 1", "stick-0-75-5-6;wheat_seeds-0-75-3-5;planks-0-75-5-6;reeds-0-75-3-5").getString());
         
-        // 274-0-25-1-1 stone pick
-        // 275-0-25-1-1 stone axe
-        // 50-0-75-3-3 torches
-        // 77-0-50-2-2 stone button
-        floorItemManagers[1] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 2", "item.pickaxeStone-0-50-1-1;275-0-50-1-1;50-0-80-3-3;77-0-50-2-2").getString());
+        // stone_pickaxe-0-25-1-1 stone pick
+        // stone_axe-0-25-1-1 stone axe
+        // torch-0-75-3-3 torches
+        // stone_button-0-50-2-2 stone button
+        floorItemManagers[1] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 2", "stone_pickaxe-0-50-1-1;stone_axe-0-50-1-1;torch-0-80-3-3;stone_button-0-50-2-2").getString());
         
-        // 281-0-50-2-4 wooden bowl
-        // 263-0-75-4-4 coal
-        // 287-0-50-5-5 string
-        // 35-0-25-2-2 wool
-        floorItemManagers[2] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 3", "281-0-75-2-4;263-0-90-4-4;287-0-80-5-5;tile.cloth-0-75-2-2").getString());
+        // bowl-0-50-2-4 wooden bowl
+        // coal-0-75-4-4 coal
+        // string-0-50-5-5 string
+        // wool-0-25-2-2 wool
+        floorItemManagers[2] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 3", "bowl-0-75-2-4;coal-0-90-4-4;string-0-80-5-5;wool-0-75-2-2").getString());
         
-        // 20-0-50-3-3 glass
-        // 288-0-25-4-4 feather
-        // 297-0-50-2-2 bread
-        // 260-0-75-2-2 apple
-        floorItemManagers[3] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 4", "20-0-75-3-3;288-0-75-4-4;297-0-75-2-2;item.apple-0-75-2-2").getString());
+        // glass-0-50-3-3 glass
+        // feather-0-25-4-4 feather
+        // bread-0-50-2-2 bread
+        // apple-0-75-2-2 apple
+        floorItemManagers[3] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 4", "glass-0-75-3-3;feather-0-75-4-4;bread-0-75-2-2;apple-0-75-2-2").getString());
         
-        // 39-0-50-2-2 brown mushroom
-        // 40-0-50-2-2 red mushroom
-        // 6-0-75-3-3 saplings
-        // 296-0-25-4-4 wheat
-        floorItemManagers[4] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 5", "39-0-75-2-2;40-0-75-2-2;6-0-90-3-3;item.wheat-0-75-4-4").getString());
+        // brown_mushroom-0-50-2-2 brown mushroom
+        // red_mushroom-0-50-2-2 red mushroom
+        // sapling-0-75-3-3 saplings
+        // wheat-0-25-4-4 wheat
+        floorItemManagers[4] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 5", "brown_mushroom-0-75-2-2;red_mushroom-0-75-2-2;sapling-0-90-3-3;wheat-0-75-4-4").getString());
         
-        // 323-0-50-1-2 sign
-        // 346-0-75-1-1 fishing rod
-        // 361-0-25-2-2 pumpkin seeds
-        // 362-0-25-3-3 Melon Seeds
-        floorItemManagers[5] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 6", "323-0-50-1-2;346-0-75-1-1;361-0-60-2-2;item.seeds_melon-0-60-3-3").getString());
+        // standing_sign-0-50-1-2 sign
+        // fishing_rod-0-75-1-1 fishing rod
+        // pumpkin_seeds-0-25-2-2 pumpkin seeds
+        // melon_seeds-0-25-3-3 Melon Seeds
+        floorItemManagers[5] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 6", "standing_sign-0-50-1-2;fishing_rod-0-75-1-1;pumpkin_seeds-0-60-2-2;melon_seeds-0-60-3-3").getString());
         
-        // 267-0-25-1-1 iron sword
-        // 289-0-25-3-3 gunpowder
-        // 334-0-50-4-4 leather
-        // 349-0-75-3-3 raw fish
-        // 351-0-50-1-2 dye
-        floorItemManagers[6] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 7", "267-0-60-1-1;289-0-75-3-3;334-0-75-4-4;item.fishRaw-0-75-3-3;351-0-60-1-2").getString());
+        // iron_sword-0-25-1-1 iron sword
+        // gunpowder-0-25-3-3 gunpowder
+        // leather-0-50-4-4 leather
+        // fish-0-75-3-3 raw fish
+        // dye-0-50-1-2 dye
+        floorItemManagers[6] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 7", "iron_sword-0-60-1-1;gunpowder-0-75-3-3;leather-0-75-4-4;fish-0-75-3-3;dye-0-60-1-2").getString());
         
-        // 302-0-25-1-1 chain helmet
-        // 303-0-25-1-1 chain chestplate
-        // 304-0-25-1-1 chain leggings
-        // 305-0-25-1-1 chain boots
-        floorItemManagers[7] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 8", "item.helmetChain-0-40-1-1;303-0-40-1-1;304-0-40-1-1;305-0-40-1-1").getString());
+        // chainmail_helmet-0-25-1-1 chain helmet
+        // chainmail_chestplate-0-25-1-1 chain chestplate
+        // chainmail_leggings-0-25-1-1 chain leggings
+        // chainmail_boots-0-25-1-1 chain boots
+        floorItemManagers[7] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 8", "chainmail_helmet-0-40-1-1;chainmail_chestplate-0-40-1-1;chainmail_leggings-0-40-1-1;chainmail_boots-0-40-1-1").getString());
         
-        // 57-0-50-1-3 bookshelf
-        // 123-0-25-2-2 redstone lamp
-        // 111-0-75-3-3 Lily Plants
-        // 379-0-25-1-1 brewing stand
-        floorItemManagers[8] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 9", "tile.bookshelf-0-70-1-3;123-0-60-2-2;379-0-75-3-3;379-0-50-1-1").getString());
+        // bookshelf-0-50-1-3 bookshelf
+        // redstone_lamp-0-25-2-2 redstone lamp
+        // waterlily-0-75-3-3 Lily Plants
+        // brewing_stand-0-25-1-1 brewing stand
+        floorItemManagers[8] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 9", "bookshelf-0-70-1-3;redstone_lamp-0-60-2-2;waterlily-0-75-3-3;brewing_stand-0-50-1-1").getString());
         
-        // 368-0-50-2-2 ender pearl
-        // 264-0-50-2-2 diamond
-        // 331-0-75-5-5 redstone dust
-        // 266-0-75-8-8 gold ingot
-        floorItemManagers[9] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Top Floor", "368-0-50-2-2;264-0-70-2-2;331-0-75-5-5;item.ingotGold-0-90-8-8").getString());
+        // ender_pearl-0-50-2-2 ender pearl
+        // diamond-0-50-2-2 diamond
+        // redstone-0-75-5-5 redstone dust
+        // gold_ingot-0-75-8-8 gold ingot
+        floorItemManagers[9] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Top Floor", "ender_pearl-0-50-2-2;diamond-0-70-2-2;redstone-0-75-5-5;gold_ingot-0-90-8-8").getString());
         
         configuration.save();
     }
     
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
-        Packet3Chat packet = new Packet3Chat(ChatMessageComponent.createFromText("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse..."), true);
-        PacketDispatcher.sendPacketToAllAround(td.player.posX, td.player.posY, td.player.posZ, 100d, td.player.worldObj.provider.dimensionId, packet);
+        MinecraftServer.getServer().getConfigurationManager().func_148540_a(new C01PacketChatMessage("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse..."));
         towerDestroyers.add(td);
     }
 

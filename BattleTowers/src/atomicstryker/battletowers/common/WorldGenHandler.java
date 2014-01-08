@@ -13,15 +13,16 @@ import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.battletowers.common.AS_WorldGenTower.TowerTypes;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -47,14 +48,14 @@ public class WorldGenHandler implements IWorldGenerator
         MinecraftForge.EVENT_BUS.register(this);
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void eventWorldLoad(WorldEvent.Load evt)
     {
         loadPosFile(new File(getWorldSaveDir(evt.world), fileName), evt.world);
         lastWorld = evt.world;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt)
     {
         flushCurrentPosListToFile(evt.world);
@@ -165,7 +166,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             h++;
         }
-        while (world.getBlockId(x, h, z) != 0);
+        while (world.func_147439_a(x, h, z) != Blocks.air);
         
         return h-1;
     }

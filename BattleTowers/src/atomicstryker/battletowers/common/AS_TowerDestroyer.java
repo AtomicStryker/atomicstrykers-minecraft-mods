@@ -2,6 +2,7 @@ package atomicstryker.battletowers.common;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -92,7 +93,7 @@ public class AS_TowerDestroyer
 	    
 	    if (AS_BattleTowersCore.towerFallDestroysMobSpawners)
 	    {
-	        int spawnerid = Block.mobSpawner.blockID;
+	        Block spawnerid = Blocks.mob_spawner;
 	        int minYdeletion = Math.max(yGolem - 80, 8);
 	        for(int xIterator = xGolem-8; xIterator < xGolem+8; xIterator++) // do each X
 	        {
@@ -100,10 +101,10 @@ public class AS_TowerDestroyer
 	            {
 	                for(int yIterator = yGolem; yIterator >= minYdeletion; yIterator--) // go down the tower
 	                {
-	                    if(world.getBlockId(xIterator, yIterator, zIterator) == spawnerid)
+	                    if(world.func_147439_a(xIterator, yIterator, zIterator) == spawnerid)
 	                    {
 	                        // destroy all present mobspawners
-	                        world.setBlock(xIterator, yIterator, zIterator, 0, 0 ,3);
+	                        world.func_147465_d(xIterator, yIterator, zIterator, Blocks.air, 0, 3);
 	                    }
 	                }
 	            }
@@ -135,9 +136,9 @@ public class AS_TowerDestroyer
 			{
 				for(int yIterator = 1; yIterator < 9; yIterator++) // do Y 8 blocks high
 				{
-					if(world.getBlockId(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator) != 0)
+					if(world.func_147439_a(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator) != Blocks.air)
 					{
-						world.setBlock(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator, 0, 0 ,3);
+						world.func_147465_d(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator, Blocks.air, 0 ,3);
 					}
 				}
 			}

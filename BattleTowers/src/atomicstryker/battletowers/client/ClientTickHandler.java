@@ -1,42 +1,30 @@
 package atomicstryker.battletowers.client;
 
-import java.util.EnumSet;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import atomicstryker.battletowers.common.AS_BattleTowersCore;
 import atomicstryker.battletowers.common.AS_EntityGolem;
-import atomicstryker.battletowers.common.ForgePacketWrapper;
+import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
-public class ClientTickHandler implements ITickHandler
+public class ClientTickHandler
 {
-    private final EnumSet<TickType> tickTypes;
     
     private MovingObjectPosition playerTarget;
     private boolean hackFailed;
-    
-    public ClientTickHandler()
-    {
-        tickTypes = EnumSet.of(TickType.RENDER);
-    }
 
-    @Override
-    public void tickStart(EnumSet<TickType> type, Object... tickData)
-    {
-    }
-
-    @Override
-    public void tickEnd(EnumSet<TickType> type, Object... tickData)
+    @SubscribeEvent
+    public void onTick(TickEvent.RenderTickEvent tick)
     {
         Minecraft mc = FMLClientHandler.instance().getClient();
         
@@ -51,11 +39,9 @@ public class ClientTickHandler implements ITickHandler
                     if (ents.get(i) instanceof AS_EntityGolem)
                     {
                         AS_EntityGolem golem = (AS_EntityGolem) ents.get(i);
-                        
-                        Object[] objArray = { golem.entityId };
-                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_BT", 2, objArray));
-                        
-                        mc.displayGuiScreen(null);
+                        ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.func_146103_bH().getName(), golem.func_145782_y());
+                        AS_BattleTowersCore.instance.networkHelper.sendPacketToServer(packet);
+                        mc.func_147108_a(null);
                         break;
                     }
                 }
@@ -65,7 +51,7 @@ public class ClientTickHandler implements ITickHandler
         if (!hackFailed
         && mc.theWorld != null
         && mc.objectMouseOver != null
-        && mc.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE
+        && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK
         && mc.objectMouseOver != playerTarget)
         {
             playerTarget = mc.objectMouseOver;
@@ -74,7 +60,7 @@ public class ClientTickHandler implements ITickHandler
             int y = playerTarget.blockY;
             int z = playerTarget.blockZ;
 
-            if (mc.theWorld.getBlockId(x, y, z) == Block.chest.blockID)
+            if (mc.theWorld.func_147439_a(x, y, z) == Blocks.chest)
             {
                 List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
                 if (!ents.isEmpty())
@@ -104,8 +90,8 @@ public class ClientTickHandler implements ITickHandler
                             {
                                 if (multiplayer)
                                 {
-                                    Object[] objArray = { golem.entityId };
-                                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_BT", 2, objArray));
+                                    ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.func_146103_bH().getName(), golem.func_145782_y());
+                                    AS_BattleTowersCore.instance.networkHelper.sendPacketToServer(packet);
                                 }
                                 else
                                 {
@@ -120,18 +106,6 @@ public class ClientTickHandler implements ITickHandler
                 }
             }
         }
-    }
-
-    @Override
-    public EnumSet<TickType> ticks()
-    {
-        return tickTypes;
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "BattleTowers";
     }
 
 }

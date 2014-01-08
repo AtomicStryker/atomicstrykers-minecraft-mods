@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import cpw.mods.fml.common.registry.GameData;
 
 public class TowerStageItemManager
 {
-	/*
-	 *  Example setting string: 75-0-50-1-4;73-20-1-1
-	 *  Spawns Redstone(75) Item Damage 0 with 50 percent chance, at least 1, max 4
-	 *  Spawns Saddle(73) Item Damage 0 with 20 percent chance, at least 1, max 1
-	 */
 	
-	private int[] itemID;
+	private Object[] itemID;
 	private int[] itemDamage;
 	private int[] chanceToSpawn;
 	private int[] minAmount;
@@ -28,7 +25,7 @@ public class TowerStageItemManager
 	public TowerStageItemManager(String configString)
 	{
 		String[] elements = configString.split(";");
-		itemID = new int[elements.length];
+		itemID = new Object[elements.length];
 		itemDamage = new int[elements.length];
 		chanceToSpawn = new int[elements.length];
 		minAmount = new int[elements.length];
@@ -45,8 +42,8 @@ public class TowerStageItemManager
 			}
 			else
 			{
-	            itemID[i] = tryFindingItemID(settings[0]);
-	            if (itemID[i] != 0)
+	            itemID[i] = tryFindingObject(settings[0]);
+	            if (itemID[i] != null)
 	            {
 	                validItemIndexes.add(i);
 	            }
@@ -55,9 +52,9 @@ public class TowerStageItemManager
 	            minAmount[i] = Integer.parseInt(settings[3]);
 	            maxAmount[i] = Integer.parseInt(settings[4]);
 	            
-	            if (itemID[i] != 0)
+	            if (itemID[i] != null)
                 {
-	                System.out.println("Battletowers parsed Item/Block of ID "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
+	                System.out.println("Battletowers parsed Item/Block "+itemID[i]+", damageValue: "+itemDamage[i]+" spawnChance: "+chanceToSpawn[i]+", min: "+minAmount[i]+", max: "+maxAmount[i]);
                 }
 	            else
 	            {
@@ -67,7 +64,7 @@ public class TowerStageItemManager
 			}
 		}
 		
-		final int[] itemIDf = new int[validItemIndexes.size()];
+		final Object[] itemIDf = new Object[validItemIndexes.size()];
 		final int[] itemDamagef = new int[validItemIndexes.size()];
 		final int[] chanceToSpawnf = new int[validItemIndexes.size()];
 		final int[] minAmountf = new int[validItemIndexes.size()];
@@ -90,30 +87,20 @@ public class TowerStageItemManager
 		maxAmount = maxAmountf;
 	}
 	
-    private int tryFindingItemID(String s)
+    private Object tryFindingObject(String s)
     {
-        try
+        Item item = GameData.itemRegistry.getObject(s);
+        if (item != null)
         {
-            return Integer.parseInt(s);
+            return item;
         }
-        catch (NumberFormatException e)
+        
+        Block block = GameData.blockRegistry.getObject(s);
+        if (block != Blocks.air)
         {
-            for (Item item : Item.itemsList)
-            {
-                if (item != null && item.getUnlocalizedName().equals(s))
-                {
-                    return item.itemID;
-                }
-            }
-            for (Block block : Block.blocksList)
-            {
-                if (block != null && block.getUnlocalizedName().equals(s))
-                {
-                    return block.blockID;
-                }
-            }
-            return 0;
+            return block;
         }
+        return null;
     }
 	
 	/**
@@ -147,19 +134,20 @@ public class TowerStageItemManager
 		if (floorHasItemsLeft()
 		&& rand.nextInt(100) < chanceToSpawn[curIndex])
 		{
-		    Block block = itemID[curIndex] < Block.blocksList.length ? Block.blocksList[itemID[curIndex]] : null;
-		    Item item = itemID[curIndex] < Item.itemsList.length ? Item.itemsList[itemID[curIndex]] : null;
-            if (item != null && item.getUnlocalizedName() != null)
-            {
-                //System.out.println("Stashed item "+item.getUnlocalizedName()+" of id "+itemID[curIndex]);
-                result = new ItemStack(item, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-                //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
-            }
-            else if (block != null && block.getUnlocalizedName() != null && !block.getUnlocalizedName().equals("tile.ForgeFiller"))
+		    if (itemID[curIndex] != null)
 		    {
-		        //System.out.println("Stashed block "+block.getUnlocalizedName()+" of id "+itemID[curIndex]);
-		        result = new ItemStack(block, minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-		        //System.out.println("Stashed new damaged Block Stack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
+	            if (itemID[curIndex] instanceof Item)
+	            {
+	                //System.out.println("Stashed item "+item.getUnlocalizedName()+" of id "+itemID[curIndex]);
+	                result = new ItemStack((Item)itemID[curIndex], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
+	                //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
+	            }
+                if (itemID[curIndex] instanceof Block)
+                {
+	                //System.out.println("Stashed block "+block.func_149732_F()+" of id "+itemID[curIndex]);
+	                result = new ItemStack((Block)itemID[curIndex], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
+	                //System.out.println("Stashed new damaged Block Stack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
+	            }
 		    }
 		}
 

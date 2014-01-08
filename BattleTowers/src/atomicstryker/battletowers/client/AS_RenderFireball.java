@@ -4,8 +4,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
-import net.minecraft.util.Icon;
+import net.minecraft.init.Items;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -31,7 +31,7 @@ public class AS_RenderFireball extends Render
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         float f2 = this.fireBallSize;
         GL11.glScalef(f2 / 1.0F, f2 / 1.0F, f2 / 1.0F);
-        Icon icon = Item.fireballCharge.getIconFromDamage(0);
+        IIcon icon = Items.fire_charge.getIconFromDamage(0);
         Tessellator tessellator = Tessellator.instance;
         float f3 = icon.getMinU();
         float f4 = icon.getMaxU();

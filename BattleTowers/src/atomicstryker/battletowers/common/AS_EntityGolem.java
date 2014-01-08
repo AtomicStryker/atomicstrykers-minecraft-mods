@@ -1,6 +1,6 @@
 package atomicstryker.battletowers.common;
 
-import net.minecraft.block.Block;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -11,17 +11,16 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnData
@@ -94,13 +93,13 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     }
 
 	@Override
-	public void writeSpawnData(ByteArrayDataOutput data)
+	public void writeSpawnData(ByteBuf data)
 	{
 		data.writeInt(this.towerID);
 	}
 
 	@Override
-	public void readSpawnData(ByteArrayDataInput data)
+	public void readSpawnData(ByteBuf data)
 	{
 		towerID = data.readInt();
 		this.updateGolemType();
@@ -181,14 +180,14 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             int i = drops;
             for(int j = 0; j < i; j++)
             {
-                dropItem(Item.diamond.itemID, 1);
-				dropItem(Item.redstone.itemID, 1);
+                entityDropItem(new ItemStack(Items.diamond, 1), 0f);
+				entityDropItem(new ItemStack(Items.redstone, 1), 0f);
             }
 
             i = rand.nextInt(4) + 8;
             for(int k = 0; k < i; k++)
             {
-                dropItem(Block.blockClay.blockID, 1);
+                entityDropItem(new ItemStack(Blocks.clay, 1), 0f);
             }
 			if(getEntityToAttack() != null && (AS_BattleTowersCore.towerDestroyerEnabled != 0))
 			{
@@ -423,9 +422,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     }
 
     @Override
-    protected int getDropItemId()
+    protected Item func_146068_u()
     {
-        return Item.paper.itemID;
+        return Items.paper;
     }
 
 }
