@@ -5,13 +5,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class FlameEnchantedArrowLightSource
         MinecraftForge.EVENT_BUS.register(this);
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event)
     {
         if (event.entity instanceof EntityArrow)

@@ -1,6 +1,7 @@
 package atomicstryker.dynamiclights.common;
 
 import java.util.Map;
+
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class DLFMLCorePlugin implements IFMLLoadingPlugin
@@ -9,7 +10,7 @@ public class DLFMLCorePlugin implements IFMLLoadingPlugin
     @Override
     public String[] getASMTransformerClass()
     {
-        return new String[] { "atomicstryker.dynamiclights.common.DLTransformer" };
+        return new String[] {"atomicstryker.dynamiclights.common.DLTransformer"};
     }
 
     @Override
@@ -27,6 +28,12 @@ public class DLFMLCorePlugin implements IFMLLoadingPlugin
     @Override
     public void injectData(Map<String, Object> data)
     {
+    }
+
+    @Override
+    public String getAccessTransformerClass()
+    {
+        return null;
     }
 
 }

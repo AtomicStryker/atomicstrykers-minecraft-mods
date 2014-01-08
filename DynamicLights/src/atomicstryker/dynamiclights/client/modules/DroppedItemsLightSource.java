@@ -1,7 +1,6 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,20 +10,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
  * 
@@ -34,7 +32,7 @@ import cpw.mods.fml.relauncher.Side;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.5", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.6", dependencies = "required-after:DynamicLights")
 public class DroppedItemsLightSource
 {
     private Minecraft mcinstance;
@@ -53,7 +51,7 @@ public class DroppedItemsLightSource
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50,89=12,348=10,91,327,76=10,331=10,314=14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
         itemsList.comment = "Item IDs that shine light when dropped in the World.";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
@@ -61,11 +59,13 @@ public class DroppedItemsLightSource
         updateI.comment = "Update Interval time for all Item entities in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "50,327");
+        Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "torch,lava_bucket");
         notWaterProofList.comment = "Item IDs that do not shine light when dropped and in water, have to be present in LightItems.";
         notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
         
         config.save();
+        
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     @EventHandler
@@ -75,50 +75,23 @@ public class DroppedItemsLightSource
         nextUpdate = System.currentTimeMillis();
         trackedItems = new ArrayList<EntityItemAdapter>();
         threadRunning = false;
-        TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
     }
     
-    private class TickHandler implements ITickHandler
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent tick)
     {
-        private final EnumSet<TickType> ticks;
-        public TickHandler()
+        if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
         {
-            ticks = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
+            nextUpdate = System.currentTimeMillis() + updateInterval;
+            
+            if (!threadRunning)
             {
-                nextUpdate = System.currentTimeMillis() + updateInterval;
-                
-                if (!threadRunning)
-                {
-                    thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
-                    thread.setPriority(Thread.MIN_PRIORITY);
-                    thread.start();
-                    threadRunning = true;
-                }
+                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.start();
+                threadRunning = true;
             }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return ticks;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "DynamicLights_dropItems";
         }
     }
     
@@ -126,7 +99,7 @@ public class DroppedItemsLightSource
     {
         if (stack != null)
         {
-            int r = itemsMap.retrieveValue(stack.itemID, stack.getItemDamage());
+            int r = itemsMap.retrieveValue(DynamicLights.getShortItemName(stack), stack.getItemDamage());
             return r < 0 ? 0 : r;
         }
         return 0;
@@ -199,7 +172,7 @@ public class DroppedItemsLightSource
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.retrieveValue(eI.getEntityItem().itemID, eI.getEntityItem().getItemDamage()) == 1;
+            notWaterProof = notWaterProofItems.retrieveValue(DynamicLights.getShortItemName(eI.getEntityItem()), eI.getEntityItem().getItemDamage()) == 1;
         }
         
         /**
@@ -217,7 +190,7 @@ public class DroppedItemsLightSource
                 lightLevel = getLightFromItemStack(entity.getEntityItem());
                 
                 if (notWaterProof
-                && entity.worldObj.getBlockMaterial(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)) == Material.water)
+                && entity.worldObj.func_147439_a(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).func_149688_o() == Material.field_151586_h)
                 {
                     lightLevel = 0;
                 }

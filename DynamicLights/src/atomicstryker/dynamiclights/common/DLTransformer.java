@@ -29,41 +29,32 @@ import org.objectweb.asm.tree.VarInsnNode;
  */
 public class DLTransformer implements IClassTransformer
 {
-    /* class net.minecraft.src.World */
-    private final String classNameWorldObfusc = "abw";
     
-    /* class net.minecraft.src.IBlockAccess */
-    private final String classNameBlockAccessObfusc = "acf";
-    
-    /* method World.computeLightValue(IIILnet/minecraft/world/EnumSkyBlock;)I aka func_98179_a*/
-    private final String computeLightValueMethodNameO = "a";
-    
-    /* class net.minecraft.world.EnumSkyBlock */
-    private final String enumSkyBlockObfusc = "ach";
-    
-    
-    private final String classNameWorld = "net.minecraft.world.World";
-    private final String blockAccessJava = "net/minecraft/world/IBlockAccess";
-    private final String computeLightValueMethodName = "computeLightValue";
-    
+    private String classNameWorld = "afn";
+    private String blockAccessJava = "afx";
+    private String computeLightValueMethodName = "a";
+    private String targetMethodDesc = "(IIILafz;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
     {
         //System.out.println("transforming: "+name);
-        if (name.equals(classNameWorldObfusc))
+        if (name.equals(classNameWorld))
         {
-            return handleWorldTransform(bytes, true);
+            return handleWorldTransform(bytes);
         }
-        else if (name.equals(classNameWorld))
+        else if (name.equals("net.minecraft.world.World")) // MCP testing
         {
-            return handleWorldTransform(bytes, false);
+            blockAccessJava = "net/minecraft/world/IBlockAccess";
+            computeLightValueMethodName = "computeLightValue";
+            targetMethodDesc = "(IIILnet/minecraft/world/EnumSkyBlock;)I";
+            return handleWorldTransform(bytes);
         }
         
         return bytes;
     }
     
-    private byte[] handleWorldTransform(byte[] bytes, boolean obfuscated)
+    private byte[] handleWorldTransform(byte[] bytes)
     {
         System.out.println("**************** Dynamic Lights transform running on World *********************** ");
         ClassNode classNode = new ClassNode();
@@ -75,8 +66,8 @@ public class DLTransformer implements IClassTransformer
         while(methods.hasNext())
         {
             MethodNode m = methods.next();
-            if (m.name.equals( obfuscated ? computeLightValueMethodNameO : computeLightValueMethodName)
-            && m.desc.equals( obfuscated ? "(IIIL"+enumSkyBlockObfusc+";)I" : "(IIILnet/minecraft/world/EnumSkyBlock;)I"))
+            if (m.name.equals(computeLightValueMethodName)
+            && m.desc.equals(targetMethodDesc))
             {
                 System.out.println("In target method! Patching!");
                 
@@ -124,13 +115,13 @@ public class DLTransformer implements IClassTransformer
                 // make new instruction list
                 InsnList toInject = new InsnList();
                 
-                // argument mapping! 0 is World, 5 is blockID, 123 are xyz
+                // argument mapping! 0 is World, 5 is block, 123 are xyz
                 toInject.add(new VarInsnNode(ALOAD, 0));
-                toInject.add(new VarInsnNode(ILOAD, 5));
+                toInject.add(new VarInsnNode(ALOAD, 5));
                 toInject.add(new VarInsnNode(ILOAD, 1));
                 toInject.add(new VarInsnNode(ILOAD, 2));
                 toInject.add(new VarInsnNode(ILOAD, 3));
-                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+(obfuscated ? classNameBlockAccessObfusc : blockAccessJava)+";IIII)I"));
+                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";Lnet/minecraft/block/Block;III)I"));
                 if (replacing)
                 {
                     toInject.add(new VarInsnNode(ISTORE, 6));

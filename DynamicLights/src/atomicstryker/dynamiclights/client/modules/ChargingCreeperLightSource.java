@@ -3,13 +3,13 @@ package atomicstryker.dynamiclights.client.modules;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * 
@@ -29,7 +29,7 @@ public class ChargingCreeperLightSource
         MinecraftForge.EVENT_BUS.register(this);
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onPlaySoundAtEntity(PlaySoundAtEntityEvent event)
     {
         if (event.name != null

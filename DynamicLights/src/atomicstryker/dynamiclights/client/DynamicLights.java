@@ -1,6 +1,5 @@
 package atomicstryker.dynamiclights.client;
 
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -8,6 +7,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -16,16 +17,16 @@ import net.minecraft.world.WorldServer;
 import org.lwjgl.input.Keyboard;
 
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
-import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -38,7 +39,7 @@ import cpw.mods.fml.relauncher.Side;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.8")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.2.9")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -62,6 +63,11 @@ public class DynamicLights
      */
     private boolean globalLightsOff;
     
+    /**
+     * The Keybinding instance to monitor
+     */
+    private KeyBinding toggleButton;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -69,65 +75,57 @@ public class DynamicLights
         globalLightsOff = false;
         mcinstance = FMLClientHandler.instance().getClient();
         worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
-        TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
-        
-        KeyBinding[] key = {new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L)};
-        boolean[] repeat = {false};
-        KeyBindingRegistry.registerKeyBinding(new LightsOnOffKey(key, repeat));
+        toggleButton = new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L, "key.categories.gameplay");
+        ClientRegistry.registerKeyBinding(toggleButton);
     }
     
-    private class TickHandler implements ITickHandler
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent tick)
     {
-        private final EnumSet<TickType> ticks;
-        public TickHandler()
+        if (tick.phase == Phase.END && mcinstance.theWorld != null)
         {
-            ticks = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            if (mcinstance.theWorld != null)
+            ConcurrentLinkedQueue<?> worldLights = worldLightsMap.get(mcinstance.theWorld);
+            
+            if (worldLights != null)
             {
-                ConcurrentLinkedQueue<?> worldLights = worldLightsMap.get(mcinstance.theWorld);
-                
-                if (worldLights != null)
+                Iterator<?> iter = worldLights.iterator();
+                while (iter.hasNext())
                 {
-                    Iterator<?> iter = worldLights.iterator();
-                    while (iter.hasNext())
+                    DynamicLightSourceContainer tickedLightContainer = (DynamicLightSourceContainer) iter.next();
+                    if (tickedLightContainer != null && tickedLightContainer.onUpdate())
                     {
-                        DynamicLightSourceContainer tickedLightContainer = (DynamicLightSourceContainer) iter.next();
-                        if (tickedLightContainer != null && tickedLightContainer.onUpdate())
+                        iter.remove();
+                        mcinstance.theWorld.func_147463_c(EnumSkyBlock.Block, tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ());
+                        //System.out.println("Dynamic Lights killing off LightSource on dead Entity "+tickedLightContainer.getLightSource().getAttachmentEntity());
+                    }
+                }
+            }
+            
+            if (mcinstance.currentScreen == null && toggleButton.func_151470_d())
+            {
+                globalLightsOff = !globalLightsOff;
+                mcinstance.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
+                
+                World world = mcinstance.theWorld;
+                if (world != null)
+                {
+                    if (worldLights != null)
+                    {
+                        Iterator<?> iter = worldLights.iterator();
+                        while (iter.hasNext())
                         {
-                            iter.remove();
-                            mcinstance.theWorld.updateLightByType(EnumSkyBlock.Block, tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ());
-                            //System.out.println("Dynamic Lights killing off LightSource on dead Entity "+tickedLightContainer.getLightSource().getAttachmentEntity());
+                            DynamicLightSourceContainer c = (DynamicLightSourceContainer) iter.next();
+                            world.func_147463_c(EnumSkyBlock.Block, c.getX(), c.getY(), c.getZ());
                         }
                     }
                 }
             }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return ticks;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "DynamicLights";
         }
     }
     
@@ -140,75 +138,21 @@ public class DynamicLights
         return instance.globalLightsOff;
     }
     
-    private class LightsOnOffKey extends KeyHandler
-    {
-
-        private EnumSet<TickType> tickTypes = EnumSet.of(TickType.CLIENT);
-        
-        public LightsOnOffKey(KeyBinding[] keyBindings, boolean[] repeatings)
-        {
-            super(keyBindings, repeatings);
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "DynamicLightsKey";
-        }
-
-        @Override
-        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
-        {
-        }
-
-        @Override
-        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
-        {
-            if (tickEnd && mcinstance.currentScreen == null)
-            {
-                globalLightsOff = !globalLightsOff;
-                mcinstance.ingameGUI.getChatGUI().printChatMessage("Dynamic Lights globally "+(globalLightsOff?"off":"on"));
-                
-                World world = mcinstance.theWorld;
-                if (world != null)
-                {
-                    ConcurrentLinkedQueue<?> worldLights = worldLightsMap.get(world);
-                    if (worldLights != null)
-                    {
-                        Iterator<?> iter = worldLights.iterator();
-                        while (iter.hasNext())
-                        {
-                            DynamicLightSourceContainer c = (DynamicLightSourceContainer) iter.next();
-                            world.updateLightByType(EnumSkyBlock.Block, c.getX(), c.getY(), c.getZ());
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-    }
-    
     /**
      * Exposed method which is called by the transformed World.computeBlockLightValue method instead of
      * Block.blocksList[blockID].getLightValue. Loops active Dynamic Light Sources and if it finds
      * one for the exact coordinates asked, returns the Light value from that source if higher.
      * 
      * @param world World queried
-     * @param blockID of the Coordinate Block
+     * @param block Block instance of target coords
      * @param x coordinate queried
      * @param y coordinate queried
      * @param z coordinate queried
      * @return Block.blocksList[blockID].getLightValue or Dynamic Light value, whichever is higher
      */
-    public static int getLightValue(IBlockAccess world, int blockID, int x, int y, int z)
+    public static int getLightValue(IBlockAccess world, Block block, int x, int y, int z)
     {
-        int vanillaValue = Block.blocksList[blockID] != null ? Block.blocksList[blockID].getLightValue(world, x, y, z) : 0;
+        int vanillaValue = block.getLightValue(world, x, y, z);
         
         if (instance == null || instance.globalLightsOff || world instanceof WorldServer)
         {
@@ -221,6 +165,7 @@ public class DynamicLights
             instance.lastList = instance.worldLightsMap.get(world);
         }
         
+        int dynamicValue = 0;
         if (instance.lastList != null && !instance.lastList.isEmpty())
         {
             for (DynamicLightSourceContainer light : instance.lastList)
@@ -231,18 +176,13 @@ public class DynamicLights
                     {
                         if (light.getZ() == z)
                         {
-                            int dynamicValue = light.getLightSource().getLightLevel();
-                            if (dynamicValue > vanillaValue)
-                            {
-                                return dynamicValue;
-                            }
+                            dynamicValue = Math.max(dynamicValue, light.getLightSource().getLightLevel());
                         }
                     }
                 }
             }
         }
-        
-        return vanillaValue;
+        return Math.max(vanillaValue, dynamicValue);
     }
     
     /**
@@ -318,10 +258,25 @@ public class DynamicLights
                     
                     if (iterContainer != null)
                     {
-                        world.updateLightByType(EnumSkyBlock.Block, iterContainer.getX(), iterContainer.getY(), iterContainer.getZ());
+                        world.func_147463_c(EnumSkyBlock.Block, iterContainer.getX(), iterContainer.getY(), iterContainer.getZ());
                     }
                 }
             }
         }
+    }
+    
+    /**
+     * Convenience Method because Trolljang
+     * Strips away any minecraft: or mod prefixes GameData applies to items
+     */
+    public static String getShortItemName(ItemStack item)
+    {
+        String s = GameData.itemRegistry.func_148750_c(item.getItem());
+        if (s != null)
+        {
+            String[] split = s.split(":");
+            return split[split.length-1];
+        }
+        return "error";
     }
 }

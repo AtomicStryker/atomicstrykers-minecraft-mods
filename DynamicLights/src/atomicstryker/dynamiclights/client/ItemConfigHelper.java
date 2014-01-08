@@ -3,7 +3,9 @@ package atomicstryker.dynamiclights.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 
 public class ItemConfigHelper
@@ -22,7 +24,7 @@ public class ItemConfigHelper
             {
                 String[] duo = s.split("=");
                 ItemData item = fromString(duo[0]);
-                if (item.startID != 0)
+                if (item != null)
                 {
                     dataMap.put(item, duo.length > 1 ? Integer.parseInt(duo[1]) : defaultValue);
                 }
@@ -39,11 +41,11 @@ public class ItemConfigHelper
         }
     }
     
-    public int retrieveValue(int id, int meta)
+    public int retrieveValue(String name, int meta)
     {
         for (ItemData item : dataMap.keySet())
         {
-            if (item.matches(id, meta))
+            if (item.matches(name, meta))
             {
                 return dataMap.get(item);
             }
@@ -56,7 +58,6 @@ public class ItemConfigHelper
      * X := simple ID X, wildcards metadata
      * X-Y := simple ID X and metadata Y
      * X-Y-Z := simple ID X, metadata range Y to Z
-     * A-B-C-D := ID range A to B, meta range C to D
      * @param s trimmed String input, matching one of the setups
      * @return ItemData instance
      */
@@ -64,37 +65,30 @@ public class ItemConfigHelper
     {
         String[] strings = s.split("-");
         int len = strings.length;
-        int sid = tryFindingItemID(strings[0]);
-        int eid = len > 3 ? tryFindingItemID(strings[1]) : sid;
-        int sm = len > 1 ? catchWildcard(strings[len > 3 ? 2 : 1]) : WILDCARD;
-        int em = len > 2 ? catchWildcard(strings[len > 3 ? 3 : 2]) : sm;
-        return new ItemData(sid, eid, sm, em);
+        
+        if (tryFindingObject(strings[0]) != null)
+        {
+            int sm = len > 1 ? catchWildcard(strings[len > 3 ? 2 : 1]) : WILDCARD;
+            int em = len > 2 ? catchWildcard(strings[len > 3 ? 3 : 2]) : sm;
+            return new ItemData(strings[0], sm, em);
+        }
+        return null;
     }
     
-    private int tryFindingItemID(String s)
+    private Object tryFindingObject(String s)
     {
-        try
+        Item item = GameData.itemRegistry.getObject(s);
+        if (item != null)
         {
-            return catchWildcard(s);
+            return item;
         }
-        catch (NumberFormatException e)
+        
+        Block block = GameData.blockRegistry.getObject(s);
+        if (block != Blocks.air)
         {
-            for (Item item : Item.itemsList)
-            {
-                if (item != null && item.getUnlocalizedName().equals(s))
-                {
-                    return item.itemID;
-                }
-            }
-            for (Block block : Block.blocksList)
-            {
-                if (block != null && block.getUnlocalizedName().equals(s))
-                {
-                    return block.blockID;
-                }
-            }
-            return 0;
+            return block;
         }
+        return null;
     }
     
     private int catchWildcard(String s)
@@ -106,17 +100,15 @@ public class ItemConfigHelper
         return Integer.parseInt(s);
     }
     
-    private class ItemData implements Comparable<ItemData>
+    private class ItemData
     {
-        final int startID;
-        final int endID;
+        private String nameOf;
         final int startMeta;
         final int endMeta;
         
-        public ItemData(int sid, int eid, int sm, int em)
+        public ItemData(String name, int sm, int em)
         {
-            startID = sid;
-            endID = eid;
+            nameOf = name;
             startMeta = sm;
             endMeta = em;
         }
@@ -124,12 +116,12 @@ public class ItemConfigHelper
         @Override
         public String toString()
         {
-            return String.format("%d-%d-%d-%d", startID, endID, startMeta, endMeta);
+            return nameOf+"-"+startMeta+"-"+endMeta;
         }
         
-        public boolean matches(int id, int meta)
+        public boolean matches(String name, int meta)
         {
-            return isContained(startID, endID, id) && isContained(startMeta, endMeta, meta);
+            return name.equals(nameOf) && isContained(startMeta, endMeta, meta);
         }
         
         private boolean isContained(int s, int e, int i)
@@ -138,26 +130,14 @@ public class ItemConfigHelper
         }
         
         @Override
-        public int compareTo(ItemData i)
-        {
-            return startID < i.startID ? -1 : startID > i.startID ? 1 : 0;
-        }
-        
-        @Override
         public boolean equals(Object o)
         {
             if (o instanceof ItemData)
             {
                 ItemData i = (ItemData) o;
-                return i.startID == startID && i.endID == endID && i.startMeta == startMeta && i.endMeta == endMeta;
+                return i.nameOf.equals(nameOf) && i.startMeta == startMeta && i.endMeta == endMeta;
             }
             return false;
-        }
-        
-        @Override
-        public int hashCode()
-        {
-            return startID+endID+startMeta+endMeta;
         }
     }
     

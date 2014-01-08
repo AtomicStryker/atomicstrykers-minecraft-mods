@@ -1,7 +1,6 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,21 +10,20 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
  * 
@@ -35,7 +33,7 @@ import cpw.mods.fml.relauncher.Side;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.4", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -44,7 +42,7 @@ public class EntityLivingEquipmentLightSource
     private ArrayList<EntityLightAdapter> trackedEntities;
     private Thread thread;
     private boolean threadRunning;
-    private HashMap<Integer, Integer> itemsMap;
+    private HashMap<String, Integer> itemsMap;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
@@ -56,19 +54,19 @@ public class EntityLivingEquipmentLightSource
         updateI.comment = "Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        itemsMap = new HashMap<Integer, Integer>();
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50:15,89:12,348:10,91:15,327:15,76:10,331:10,314:14,418:15");
+        itemsMap = new HashMap<String, Integer>();
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch:15,lit_pumpkin:12,glowstone_dust:10,lit_pumpkin:15,lava_bucket:15,redstone_torch:10,redstone:10,golden_helmet:14");
         itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
         String[] tokens = itemsList.getString().split(",");
         for (String pair : tokens)
         {
             String[] values = pair.split(":");
-            int id = Integer.valueOf(values[0]);
-            int value = Integer.valueOf(values[1]);
-            itemsMap.put(id, value);
+            itemsMap.put(values[0], Integer.valueOf(values[1]));
         }
         
         config.save();
+        
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     @EventHandler
@@ -78,7 +76,24 @@ public class EntityLivingEquipmentLightSource
         nextUpdate = System.currentTimeMillis();
         trackedEntities = new ArrayList<EntityLightAdapter>();
         threadRunning = false;
-        TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent tick)
+    {
+        if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
+        {
+            nextUpdate = System.currentTimeMillis() + updateInterval;
+            
+            if (!threadRunning)
+            {
+                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.start();
+                threadRunning = true;
+            }
+        }
     }
     
     private int getEquipmentLightLevel(EntityLivingBase ent)
@@ -90,15 +105,15 @@ public class EntityLivingEquipmentLightSource
             String horseArmorTexture = ((EntityHorse)ent).getVariantTexturePaths()[2];
             if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_gold.png"))
             {
-                return getLightFromItemStack(new ItemStack(Item.horseArmorGold)); // horsearmorgold
+                return getLightFromItemStack(new ItemStack(Items.golden_horse_armor)); // horsearmorgold
             }
             if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_iron.png"))
             {
-                return getLightFromItemStack(new ItemStack(Item.horseArmorIron)); // horsearmormetal
+                return getLightFromItemStack(new ItemStack(Items.iron_horse_armor)); // horsearmormetal
             }
             if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_diamond.png"))
             {
-                return getLightFromItemStack(new ItemStack(Item.horseArmorDiamond)); // butt stallion
+                return getLightFromItemStack(new ItemStack(Items.diamond_horse_armor)); // butt stallion
             }
         }
         
@@ -119,57 +134,13 @@ public class EntityLivingEquipmentLightSource
     {
         if (stack != null)
         {
-            Integer i = itemsMap.get(stack.itemID);
+            Integer i = itemsMap.get(DynamicLights.getShortItemName(stack));
             if (i != null)
             {
                 return i;
             }
         }
         return 0;
-    }
-    
-    private class TickHandler implements ITickHandler
-    {
-        private final EnumSet<TickType> ticks;
-        public TickHandler()
-        {
-            ticks = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
-            {
-                nextUpdate = System.currentTimeMillis() + updateInterval;
-                
-                if (!threadRunning)
-                {
-                    thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
-                    thread.setPriority(Thread.MIN_PRIORITY);
-                    thread.start();
-                    threadRunning = true;
-                }
-            }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return ticks;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "DynamicLights_onFire";
-        }
     }
     
     private class EntityListChecker extends Thread

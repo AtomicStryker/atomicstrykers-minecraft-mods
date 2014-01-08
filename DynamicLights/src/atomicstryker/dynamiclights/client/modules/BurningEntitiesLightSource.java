@@ -1,7 +1,6 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,19 +11,18 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
  * 
@@ -34,7 +32,7 @@ import cpw.mods.fml.relauncher.Side;
  * Burning Entites can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.4", dependencies = "required-after:DynamicLights")
 public class BurningEntitiesLightSource
 {
     private Minecraft mcinstance;
@@ -55,6 +53,8 @@ public class BurningEntitiesLightSource
         updateInterval = updateI.getInt();
         
         config.save();
+        
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     @EventHandler
@@ -64,50 +64,23 @@ public class BurningEntitiesLightSource
         nextUpdate = System.currentTimeMillis();
         trackedEntities = new ArrayList<EntityLightAdapter>();
         threadRunning = false;
-        TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
     }
     
-    private class TickHandler implements ITickHandler
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent tick)
     {
-        private final EnumSet<TickType> ticks;
-        public TickHandler()
+        if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
         {
-            ticks = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
+            nextUpdate = System.currentTimeMillis() + updateInterval;
+            
+            if (!threadRunning)
             {
-                nextUpdate = System.currentTimeMillis() + updateInterval;
-                
-                if (!threadRunning)
-                {
-                    thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
-                    thread.setPriority(Thread.MIN_PRIORITY);
-                    thread.start();
-                    threadRunning = true;
-                }
+                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.start();
+                threadRunning = true;
             }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return ticks;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "DynamicLights_onFire";
         }
     }
     

@@ -1,7 +1,6 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,20 +9,19 @@ import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
  * 
@@ -33,7 +31,7 @@ import cpw.mods.fml.relauncher.Side;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.5", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.6", dependencies = "required-after:DynamicLights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;
@@ -51,7 +49,7 @@ public class PlayerOthersLightSource
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "50,89=12,348=10,91,327,76=10,331=10,314=14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
         itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON OTHERS] Syntax: ItemID[-MetaValue]:LightValue, seperated by commas";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
@@ -60,6 +58,8 @@ public class PlayerOthersLightSource
         updateInterval = updateI.getInt();
         
         config.save();
+        
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     @EventHandler
@@ -69,58 +69,31 @@ public class PlayerOthersLightSource
         nextUpdate = System.currentTimeMillis();
         trackedPlayers = new ArrayList<OtherPlayerAdapter>();
         threadRunning = false;
-        TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
     }
     
-    private class TickHandler implements ITickHandler
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent tick)
     {
-        private final EnumSet<TickType> ticks;
-        public TickHandler()
+        if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
         {
-            ticks = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
+            nextUpdate = System.currentTimeMillis() + updateInterval;
+            
+            if (!threadRunning)
             {
-                nextUpdate = System.currentTimeMillis() + updateInterval;
-                
-                if (!threadRunning)
-                {
-                    thread = new OtherPlayerChecker(mcinstance.theWorld.loadedEntityList);
-                    thread.setPriority(Thread.MIN_PRIORITY);
-                    thread.start();
-                    threadRunning = true;
-                }
+                thread = new OtherPlayerChecker(mcinstance.theWorld.loadedEntityList);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.start();
+                threadRunning = true;
             }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return ticks;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "DynamicLights_otherPlayers";
-        }
+        }   
     }
     
     private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
         {
-            int r = itemsMap.retrieveValue(stack.itemID, stack.getItemDamage());
+            int r = itemsMap.retrieveValue(DynamicLights.getShortItemName(stack), stack.getItemDamage());
             return r < 0 ? 0 : r;
         }
         return 0;

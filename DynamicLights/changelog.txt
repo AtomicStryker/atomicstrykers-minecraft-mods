@@ -1,3 +1,7 @@
+1.2.9
+- update to MC 1.7.2
+- delete your config files, numeric IDs are no longer allowed
+
 1.2.8
 - changed arbitrary Light "enabling" value from >= 8 to >= 1. If you insist on damaging your eyesight, you now can.
 
