@@ -3,23 +3,20 @@ package atomicstryker.updatecheck.common;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.EnumSet;
 import java.util.Map;
 
 import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
-@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.1")
+@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.2")
 public class UpdateCheckMod
 {
     private final String updateURL = "http://atomicstryker.net/updatemanager/modversions.txt";
@@ -35,39 +32,17 @@ public class UpdateCheckMod
     public void load(FMLInitializationEvent evt)
     {
         lastWorld = null;
-        TickRegistry.registerTickHandler(new TickHandler(), Side.SERVER);
+        FMLCommonHandler.instance().bus().register(this);
     }
     
-    private class TickHandler implements ITickHandler
+    @SubscribeEvent
+    public void onTick(TickEvent.WorldTickEvent tick)
     {
-        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.WORLD);
-
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
+        if (lastWorld != FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0))
         {
-        }
-
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            if (lastWorld != FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0))
-            {
-                lastWorld = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0);
-                thread = new UpdateCheckThread();
-                thread.start();
-            }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "AS_UpdateCheck";
+            lastWorld = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0);
+            thread = new UpdateCheckThread();
+            thread.start();
         }
     }
     
