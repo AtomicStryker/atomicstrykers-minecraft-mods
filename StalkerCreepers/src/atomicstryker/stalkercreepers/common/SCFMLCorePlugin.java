@@ -1,6 +1,7 @@
 package atomicstryker.stalkercreepers.common;
 
 import java.util.Map;
+
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class SCFMLCorePlugin implements IFMLLoadingPlugin
@@ -27,6 +28,12 @@ public class SCFMLCorePlugin implements IFMLLoadingPlugin
     @Override
     public void injectData(Map<String, Object> data)
     {
+    }
+
+    @Override
+    public String getAccessTransformerClass()
+    {
+        return null;
     }
 
 }

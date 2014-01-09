@@ -33,12 +33,12 @@ public class SCTransformer implements IClassTransformer
     /* Obfuscated Names for EntityAICreeperSwell Transformation */
     
     /* class net.minecraft.src.EntityAICreeperSwell */
-    private final String entityAICreeperSwellClassNameO = "qs";
-    private final String entityAICreeperSwellJavaClassNameO = "qs";
+    private final String entityAICreeperSwellClassNameO = "tu";
+    private final String entityAICreeperSwellJavaClassNameO = "tu";
     /* class net.minecraft.src.EntityLiving */
-    private final String entityLivingJavaClassNameO = "og";
+    private final String entityLivingJavaClassNameO = "ri";
     /* class net.minecraft.src.EntityCreeper */
-    private final String entityCreeperJavaClassNameO = "tf";
+    private final String entityCreeperJavaClassNameO = "wl";
     /*shouldExecute() / func_75250_a */
     private final String shouldExecuteMethodNameO = "a";
     /*swellingCreeper / field_75269_a */
