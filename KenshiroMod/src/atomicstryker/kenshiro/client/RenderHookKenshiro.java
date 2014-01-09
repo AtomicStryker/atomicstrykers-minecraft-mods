@@ -9,12 +9,9 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
 import org.lwjgl.opengl.GL11;
@@ -23,20 +20,14 @@ import org.lwjgl.opengl.GL12;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 
-public class RenderHookKenshiro extends Render
+public class RenderHookKenshiro
 {
 	private Minecraft mc;
 	private ItemStack itemToRender = null;
 	private float equippedProgress = 0.0F;
 	private float prevEquippedProgress = 0.0F;
-    
-    @Override
-    public void doRender(Entity dontcare0, double dontcare1, double dontcare2, double dontcare3, float dontcare4, float renderTick)
-	{
-        render(renderTick);
-    }
 	
-    private void render(float renderTick)
+    public void render(float renderTick)
 	{
         RenderHelper.disableStandardItemLighting();
         mc = FMLClientHandler.instance().getClient();
@@ -106,7 +97,7 @@ public class RenderHookKenshiro extends Render
 
         if (itemstack != null)
         {
-            i = Item.itemsList[itemstack.itemID].getColorFromItemStack(itemstack, 0);
+            i = itemstack.getItem().getColorFromItemStack(itemstack, 0);
             f7 = (float)(i >> 16 & 255) / 255.0F;
             f8 = (float)(i >> 8 & 255) / 255.0F;
             f6 = (float)(i & 255) / 255.0F;
@@ -224,7 +215,7 @@ public class RenderHookKenshiro extends Render
                 mc.entityRenderer.itemRenderer.renderItem(entityclientplayermp, itemstack, 0, ItemRenderType.EQUIPPED_FIRST_PERSON);
                 for (int x = 1; x < itemstack.getItem().getRenderPasses(itemstack.getItemDamage()); x++)
                 {
-                    int i1 = Item.itemsList[itemstack.itemID].getColorFromItemStack(itemstack, x);
+                    int i1 = itemstack.getItem().getColorFromItemStack(itemstack, x);
                     f11 = (float)(i1 >> 16 & 255) / 255.0F;
                     f13 = (float)(i1 >> 8 & 255) / 255.0F;
                     f14 = (float)(i1 & 255) / 255.0F;
@@ -273,10 +264,4 @@ public class RenderHookKenshiro extends Render
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.disableStandardItemLighting();
 	   }
-
-    @Override
-    protected ResourceLocation getEntityTexture(Entity entity)
-    {
-        return null;
-    }
 }

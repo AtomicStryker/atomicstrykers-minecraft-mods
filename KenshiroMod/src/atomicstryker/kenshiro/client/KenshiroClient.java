@@ -1,34 +1,36 @@
 package atomicstryker.kenshiro.client;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityCrit2FX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 
 import org.lwjgl.input.Mouse;
 
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.kenshiro.common.KenshiroMod;
-import atomicstryker.kenshiro.common.PacketType;
+import atomicstryker.kenshiro.common.network.AnimationPacket;
+import atomicstryker.kenshiro.common.network.BlockPunchedPacket;
+import atomicstryker.kenshiro.common.network.EntityKickedPacket;
+import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
+import atomicstryker.kenshiro.common.network.KenshiroStatePacket;
+import atomicstryker.kenshiro.common.network.SoundPacket;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class KenshiroClient
 {
@@ -38,7 +40,6 @@ public class KenshiroClient
 	private EntityPlayer entPlayer;
     private MovingObjectPosition mouseTargetObject;
     
-    private RenderEntityLahwran renderEnt;
     private boolean hasServerKenshiroInstalled;
 	
 	private boolean canKenshiro = false;
@@ -55,15 +56,15 @@ public class KenshiroClient
 	
 	private static KenshiroClient instance;
 	
+	private final RenderHookKenshiro renderHook;
+	
 	public KenshiroClient()
 	{
 	    instance = this;
 	    entitesHit = new HashSet<Entity>();
 	    hasServerKenshiroInstalled = false;
 	    minecraft = FMLClientHandler.instance().getClient();
-	    
-	    RenderingRegistry.registerEntityRenderingHandler(RenderEntityLahwran.class, new RenderHookKenshiro());
-	    TickRegistry.registerTickHandler(new ClientTickHandler(), Side.CLIENT);
+	    renderHook = new RenderHookKenshiro();
 	}
 	
 	public static KenshiroClient instance()
@@ -71,53 +72,17 @@ public class KenshiroClient
 	    return instance;
 	}
     
-    private void spawnRenderEntity(Minecraft mc)
-	{
-    	renderEnt = new RenderEntityLahwran(mc, mc.theWorld);
-        mc.theWorld.addWeatherEffect(renderEnt);
-        renderEnt.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
-    }
-    
-    private class ClientTickHandler implements ITickHandler
+    @SubscribeEvent
+    public void onTick(TickEvent.RenderTickEvent tick)
     {
-        private final EnumSet<TickType> tickTypes;
-        public ClientTickHandler()
-        {
-            tickTypes = EnumSet.of(TickType.RENDER);
-        }
+        entPlayer = minecraft.thePlayer;
         
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-        
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            onTick();
-        }
-        
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-        
-        @Override
-        public String getLabel()
-        {
-            return "KenshiroMod";
-        }
-    }
-
-    private void onTick()
-    {
-		entPlayer = minecraft.thePlayer;
-	
         if (!hasServerKenshiroInstalled || entPlayer == null)
         {
             return;
         }
+        
+        renderHook.render(tick.renderTickTime);
         
         canKenshiro = false;
         
@@ -129,176 +94,176 @@ public class KenshiroClient
         {
             if (minecraft.currentScreen != null)
             {
-                minecraft.displayGuiScreen(null);
+                minecraft.func_147108_a((GuiScreen)null);
             }
             
-        	entPlayer.isSwingInProgress = true;
-        	
-        	if (currtime > fxTime+300L)
-        	{
-        	    fxTime = currtime;
+            entPlayer.isSwingInProgress = true;
+            
+            if (currtime > fxTime+300L)
+            {
+                fxTime = currtime;
                 sendAnimationPacketToServer(ANIMATION_SWING);
                 sendAnimationPacketToServer(ANIMATION_CRITMAGIC_FX);
-        	}
-        	
-        	if (mouseTargetObject != null)
-        	{
-        		if(mouseTargetObject.typeOfHit == EnumMovingObjectType.TILE)
-        		{
-        			int x = mouseTargetObject.blockX;
-        			int y = mouseTargetObject.blockY;
-        			int z = mouseTargetObject.blockZ;
-        			
-        			int blockID = minecraft.theWorld.getBlockId(x, y, z);
-        			int metadata = minecraft.theWorld.getBlockMetadata(x, y, z);
-        			float hardness = 0F;
-					if (Block.blocksList[blockID] != null)
-					{
-						hardness = Block.blocksList[blockID].getBlockHardness(minecraft.theWorld, x, y, z);
-					}
-        			
-        			if (((hardness <= 3.0F && hardness >= 0F) || blockID == Block.wood.blockID || blockID == Block.web.blockID)
-        			&& currtime > smashTime+250L)
-        			{
-        			    sendPacketToServerHasDestroyedBlock(x, y, z);
-        			    
-        				smashTime = currtime;
-        				minecraft.playerController.onPlayerDestroyBlock(x, y, z, metadata);
-        				Block.blocksList[blockID].harvestBlock(minecraft.theWorld, minecraft.thePlayer, x, y, z, metadata);
-        			}
-        		}
-        		else if(mouseTargetObject.typeOfHit == EnumMovingObjectType.ENTITY)
-        		{
-        			Entity ent = mouseTargetObject.entityHit;
-        			
-        			if (ent instanceof EntityLivingBase)
-        			{
-	        			if (!entitesHit.contains(ent))
-	        			{
-	        			    sendPacketToServerHasPunchedEntity(ent);
-	        			    entitesHit.add(ent);
-	        			}
-	        			else if (currtime > smashTime+350L)
-	        			{
+            }
+            
+            if (mouseTargetObject != null)
+            {
+                if(mouseTargetObject.typeOfHit == MovingObjectType.BLOCK)
+                {
+                    int x = mouseTargetObject.blockX;
+                    int y = mouseTargetObject.blockY;
+                    int z = mouseTargetObject.blockZ;
+                    
+                    Block blockID = minecraft.theWorld.func_147439_a(x, y, z);
+                    int metadata = minecraft.theWorld.getBlockMetadata(x, y, z);
+                    float hardness = 0F;
+                    if (blockID != Blocks.air)
+                    {
+                        hardness = blockID.func_149712_f(minecraft.theWorld, x, y, z);
+                    }
+                    
+                    if (((hardness <= 3.0F && hardness >= 0F) || blockID == Blocks.log || blockID == Blocks.log2 || blockID == Blocks.web)
+                    && currtime > smashTime+250L)
+                    {
+                        sendPacketToServerHasDestroyedBlock(x, y, z);
+                        
+                        smashTime = currtime;
+                        minecraft.playerController.onPlayerDestroyBlock(x, y, z, metadata);
+                        blockID.func_149636_a(minecraft.theWorld, minecraft.thePlayer, x, y, z, metadata);
+                    }
+                }
+                else if(mouseTargetObject.typeOfHit == MovingObjectType.ENTITY)
+                {
+                    Entity ent = mouseTargetObject.entityHit;
+                    
+                    if (ent instanceof EntityLivingBase)
+                    {
+                        if (!entitesHit.contains(ent))
+                        {
                             sendPacketToServerHasPunchedEntity(ent);
-	        				smashTime = currtime;
-	        			}
-        			}
-        		}
-        	}
-        	
-        	if (entPlayer.inventory.mainInventory[entPlayer.inventory.currentItem] != null)
-        	{
-        		entPlayer.inventory.currentItem = 9;
-        	}
-        	
-        	if (currtime > triggerTime+3700L)
-        	{
-        		triggeredKenshiro = false;
-        		triggerTime = 0L;
-        		chargingSound = false;
-        		
-        		DebugPrint("Kenshiro ended!");
-        		
-        		if (!entitesHit.isEmpty())
-        		{
-        			shindeiruTime = currtime;
-        			if (entPlayer.getRNG().nextInt(3) == 0)
-        			{
-        			    sendSoundPacketToServer("kenshiroshindeiru", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
-        				minecraft.ingameGUI.getChatGUI().printChatMessage("[You are already dead.]");
-        			}
-        			else
-        			{
-        			    sendSoundPacketToServer("kenshiroheartbeat", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
-        			}
-        		}
-        	}
+                            entitesHit.add(ent);
+                        }
+                        else if (currtime > smashTime+350L)
+                        {
+                            sendPacketToServerHasPunchedEntity(ent);
+                            smashTime = currtime;
+                        }
+                    }
+                }
+            }
+            
+            if (entPlayer.inventory.mainInventory[entPlayer.inventory.currentItem] != null)
+            {
+                entPlayer.inventory.currentItem = 9;
+            }
+            
+            if (currtime > triggerTime+3700L)
+            {
+                triggeredKenshiro = false;
+                triggerTime = 0L;
+                chargingSound = false;
+                
+                DebugPrint("Kenshiro ended!");
+                
+                if (!entitesHit.isEmpty())
+                {
+                    shindeiruTime = currtime;
+                    if (entPlayer.getRNG().nextInt(3) == 0)
+                    {
+                        sendSoundPacketToServer("kenshiroshindeiru", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
+                        minecraft.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("[You are already dead.]"));
+                    }
+                    else
+                    {
+                        sendSoundPacketToServer("kenshiroheartbeat", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
+                    }
+                }
+            }
         }
         
         if (shindeiruTime != 0L && currtime > shindeiruTime + 3500L)
         {
             sendPacketToServerHasFinishedKenshiro();
-        	shindeiruTime = 0L;        	
-        	entitesHit.clear();
+            shindeiruTime = 0L;         
+            entitesHit.clear();
         }
         
         if (kickTime != 0L
         && currtime > kickTime + 1000L)
         {
-        	kickTime = 0L;
-        	triggeredKick = false;
+            kickTime = 0L;
+            triggeredKick = false;
         }
         
         if (!triggeredKenshiro
         && !triggeredKick
         && entPlayer != null
         && entPlayer.getFoodStats().getFoodLevel() >= 10
-		&& entPlayer.inventory.currentItem < entPlayer.inventory.mainInventory.length // Battlegears fix
+        && entPlayer.inventory.currentItem < entPlayer.inventory.mainInventory.length // Battlegears fix
         && entPlayer.inventory.mainInventory[entPlayer.inventory.currentItem] == null // bare hands
         && entPlayer.inventory.armorInventory[2] == null // bare chest
         && minecraft.currentScreen == null) 
         {
-        	canKenshiro = true;
+            canKenshiro = true;
         }
         
         if (canKenshiro)
         {
-        	if (Mouse.isButtonDown(1))
-        	{
-        		if (!triggeredKick
-        			&& !entPlayer.onGround
-        			&& mouseTargetObject != null
-        			&& mouseTargetObject.typeOfHit == EnumMovingObjectType.ENTITY
-        			&& mouseTargetObject.entityHit instanceof EntityLivingBase)
-        		{
-        			triggeredKick = true;
-        			kickTime = currtime;
+            if (Mouse.isButtonDown(1))
+            {
+                if (!triggeredKick
+                    && !entPlayer.onGround
+                    && mouseTargetObject != null
+                    && mouseTargetObject.typeOfHit == MovingObjectType.ENTITY
+                    && mouseTargetObject.entityHit instanceof EntityLivingBase)
+                {
+                    triggeredKick = true;
+                    kickTime = currtime;
 
-        			sendSoundPacketToServer("kenshirosmash", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
-        			sendPacketToServerHasKickedEntity(entPlayer, mouseTargetObject.entityHit);
-        		}
-        		else
-        		{
-		        	if (triggerTime == 0L)
-		        	{
-		        		triggerTime = currtime;
-		        	}
-		        	else if (currtime > triggerTime+750L)
-		        	{
-		        		if (currtime > triggerTime+2250L)
-		        		{
-			        		triggerTime = currtime;
-			        		triggeredKenshiro = true;
-			        		// play sound ATATATATA
-			        		sendSoundPacketToServer("kenshirostyle", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
-			        		DebugPrint("Rage unleashed!");
-			        		
-			        		sendPacketToServerHasUnleashedKenshiro();
-		        		}
-		        		else if (!chargingSound)
-		        		{
-			        		// play sound "charging rage"
-		        			chargingSound = true;
-		        			sendSoundPacketToServer("kenshirocharge", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
-			        		DebugPrint("Charge starting!");
-		        		}
-		        	}
-        		}
-        	}
-        	else
-        	{
-        		if (triggerTime != 0L)
-        		{
-        			chargingSound = false;
-        			DebugPrint("Charge aborted!");
-        		}
-        		triggerTime = 0L;
-        	}
+                    sendSoundPacketToServer("kenshirosmash", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
+                    sendPacketToServerHasKickedEntity(entPlayer, mouseTargetObject.entityHit);
+                }
+                else
+                {
+                    if (triggerTime == 0L)
+                    {
+                        triggerTime = currtime;
+                    }
+                    else if (currtime > triggerTime+750L)
+                    {
+                        if (currtime > triggerTime+2250L)
+                        {
+                            triggerTime = currtime;
+                            triggeredKenshiro = true;
+                            // play sound ATATATATA
+                            sendSoundPacketToServer("kenshirostyle", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
+                            DebugPrint("Rage unleashed!");
+                            
+                            sendPacketToServerHasUnleashedKenshiro();
+                        }
+                        else if (!chargingSound)
+                        {
+                            // play sound "charging rage"
+                            chargingSound = true;
+                            sendSoundPacketToServer("kenshirocharge", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
+                            DebugPrint("Charge starting!");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (triggerTime != 0L)
+                {
+                    chargingSound = false;
+                    DebugPrint("Charge aborted!");
+                }
+                triggerTime = 0L;
+            }
         }
         else if (!triggeredKenshiro)
         {
-        	triggerTime = 0L;
+            triggerTime = 0L;
         }
     }
 
@@ -342,44 +307,39 @@ public class KenshiroClient
 
     private void sendPacketToServerHasDestroyedBlock(int x, int y, int z)
     {
-        Object[] toSend = {x, y, z};
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.BLOCKPUNCHED.ordinal(), toSend));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new BlockPunchedPacket(minecraft.thePlayer.func_146103_bH().getName(), x, y, z));
     }
     
     private void sendPacketToServerHasPunchedEntity(Entity ent)
     {
-        Object[] toSend = {ent.entityId};
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.ENTITYPUNCHED.ordinal(), toSend));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new EntityPunchedPacket(minecraft.thePlayer.func_146103_bH().getName(), ent.func_145782_y()));
     }
     
     private void sendPacketToServerHasKickedEntity(EntityPlayer player, Entity ent)
     {
-        Object[] toSend = {player.entityId, ent.entityId};
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.ENTITYKICKED.ordinal(), toSend));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new EntityKickedPacket(player.dimension, player.func_145782_y(), ent.func_145782_y()));
     }
     
     private void sendPacketToServerHasUnleashedKenshiro()
     {
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.KENSHIROSTARTED.ordinal(), null));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new KenshiroStatePacket(minecraft.thePlayer.func_146103_bH().getName(), true));
     }
     
     private void sendPacketToServerHasFinishedKenshiro()
     {
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.KENSHIROENDED.ordinal(), null));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new KenshiroStatePacket(minecraft.thePlayer.func_146103_bH().getName(), false));
     }
     
     private void sendSoundPacketToServer(String sound, int x, int y, int z)
     {
-        Object[] toSend = {sound, x, y, z};
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.SOUNDEFFECT.ordinal(), toSend));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new SoundPacket(sound, minecraft.thePlayer.dimension, x, y, z));
     }
     
     private final int ANIMATION_SWING = 1;
     private final int ANIMATION_CRITMAGIC_FX = 7;
     private void sendAnimationPacketToServer(int animation)
     {
-        Object[] toSend = { animation };
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_KSM", PacketType.ANIMATION.ordinal(), toSend));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new AnimationPacket(minecraft.thePlayer.func_146103_bH().getName(), animation));
     }
 
     public boolean getKenshiroMode()
@@ -396,7 +356,7 @@ public class KenshiroClient
 	{
 		if(DEBUGMODE)
 		{
-			minecraft.ingameGUI.getChatGUI().printChatMessage(s);
+			minecraft.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText(s));
 		}
 		else
 		{
@@ -410,8 +370,7 @@ public class KenshiroClient
         
         if (value)
         {
-            minecraft.ingameGUI.getChatGUI().printChatMessage("Server handshake complete! KenshiroMod enabled!");
-            spawnRenderEntity(minecraft);
+            minecraft.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Kenshiromod active on this server, Mod now active!"));
         }
     }
 }

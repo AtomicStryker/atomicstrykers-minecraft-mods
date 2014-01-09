@@ -1,6 +1,6 @@
 package atomicstryker.kenshiro.common;
 
-import java.util.EnumSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,34 +13,35 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.network.packet.Packet53BlockChange;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S23PacketBlockChange;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.event.world.BlockEvent;
+import atomicstryker.kenshiro.common.network.EntityKickedPacket;
+import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
+import atomicstryker.kenshiro.common.network.HandshakePacket;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class KenshiroServer
 {
     private static KenshiroServer instance;
-    private Set<EntityPlayer> hasKenshiroSet;
     private Map<EntityPlayer, Set<EntityLivingBase>> punchedEntitiesMap;
     
     public KenshiroServer()
     {
         instance = this;
-        hasKenshiroSet = new HashSet<EntityPlayer>();
         punchedEntitiesMap = new HashMap<EntityPlayer, Set<EntityLivingBase>>();
         MinecraftForge.EVENT_BUS.register(this);
-        TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
     }
     
     public static KenshiroServer instance()
@@ -48,43 +49,42 @@ public class KenshiroServer
         return instance;
     }
     
-    public boolean getHasClientKenshiroInstalled(EntityPlayer player)
+    @SubscribeEvent
+    public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-    	return hasKenshiroSet.contains(player);
+        if (event.entity instanceof EntityPlayer)
+        {
+            KenshiroMod.instance().networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayer) event.entity);
+        }
     }
 
-	public void setClientHasKenshiroInstalled(EntityPlayer player, boolean value)
-	{
-		if (!value)
-		{
-			hasKenshiroSet.remove(player);
-		}
-		else
-		{
-			hasKenshiroSet.add(player);
-		}
-	}
-
-    public void onClientPunchedBlock(EntityPlayer player, int x, int y, int z)
+    @SuppressWarnings("unchecked")
+    public void onClientPunchedBlock(EntityPlayerMP player, int x, int y, int z)
     {
-        int blockID = player.worldObj.getBlockId(x, y, z);
-        Block block = Block.blocksList[blockID];
-        PacketDispatcher.sendPacketToAllAround(x, y, z, 30D, player.worldObj.provider.dimensionId, new Packet53BlockChange(x, y, z, player.worldObj));
-        
+        Block block = player.worldObj.func_147439_a(x, y, z);
         if (block != null)
         {
-            int meta = player.worldObj.getBlockMetadata(x, y, z);
-            if (block.removeBlockByPlayer(player.worldObj, player, x, y, z))
+            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
+            if (!event.isCanceled())
             {
-                block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
-                block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                int meta = player.worldObj.getBlockMetadata(x, y, z);
+                if (block.removedByPlayer(player.worldObj, player, x, y, z))
+                {
+                    block.func_149664_b(player.worldObj, x, y, z, meta);
+                    block.func_149636_a(player.worldObj, player, x, y, z, meta);
+                }
+                
+                for (EntityPlayerMP p : (ArrayList<EntityPlayerMP>)MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+                {
+                    p.playerNetServerHandler.func_147359_a(new S23PacketBlockChange(x, y, z, player.worldObj));
+                }
             }
         }
     }
 
     public void onClientPunchedEntity(EntityPlayer player, World world, int entityID)
     {
-        Entity target = KenshiroMod.instance().getEntityByID(world, entityID);
+        Entity target = world.getEntityByID(entityID);
         if (target != null
         && target instanceof EntityLivingBase)
         {
@@ -105,9 +105,8 @@ public class KenshiroServer
                 punchedEntitiesMap.get(player).add((EntityLivingBase) target);
             }
             
-            Object[] toSend = {entityID};
-            Packet250CustomPayload packetNew = ForgePacketWrapper.createPacket("AS_KSM", PacketType.ENTITYPUNCHED.ordinal(), toSend);
-            PacketDispatcher.sendPacketToAllAround(target.posX, target.posY, target.posZ, 30D, world.provider.dimensionId, packetNew);
+            KenshiroMod.instance().networkHelper.sendPacketToAllAroundPoint(new EntityPunchedPacket(entityID), 
+                    new TargetPoint(world.provider.dimensionId, target.posX, target.posY, target.posZ, 30D));
         }
         
         if (target instanceof EntityCreeper)
@@ -138,9 +137,8 @@ public class KenshiroServer
         
         target.setFire(8);
         
-        Object[] toSend = {player.entityId, target.entityId};
-        Packet250CustomPayload packetNew = ForgePacketWrapper.createPacket("AS_KSM", PacketType.ENTITYKICKED.ordinal(), toSend);
-        PacketDispatcher.sendPacketToAllAround(target.posX, target.posY, target.posZ, 30D, player.worldObj.provider.dimensionId, packetNew);
+        KenshiroMod.instance().networkHelper.sendPacketToAllAroundPoint(new EntityKickedPacket(player.dimension, player.func_145782_y(), target.func_145782_y()), 
+                new TargetPoint(player.worldObj.provider.dimensionId, target.posX, target.posY, target.posZ, 30D));
     }
 
     public void onClientUnleashedKenshiroVolley(EntityPlayer playerEnt)
@@ -167,7 +165,7 @@ public class KenshiroServer
         }
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingBaseAttacked(LivingAttackEvent event)
     {
         if (event.source.getEntity() != null
@@ -183,21 +181,10 @@ public class KenshiroServer
         }
     }
     
-    private class ServerTickHandler implements ITickHandler
+    @SubscribeEvent
+    public void onTick(TickEvent.WorldTickEvent tick)
     {
-        private final EnumSet<TickType> tickTypes;
-        public ServerTickHandler()
-        {
-            tickTypes = EnumSet.of(TickType.WORLD);
-        }
-        
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-        
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
+        if (tick.phase == Phase.END)
         {
             for (EntityPlayer p : punchedEntitiesMap.keySet())
             {
@@ -209,18 +196,6 @@ public class KenshiroServer
                     }
                 }
             }
-        }
-        
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-        
-        @Override
-        public String getLabel()
-        {
-            return "KenshiroMod";
         }
     }
 }
