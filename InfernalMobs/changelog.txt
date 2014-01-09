@@ -1,3 +1,7 @@
+1.4.4
+- updated for MC 1.7.2
+- remember to delete old config files
+
 1.4.3
 - fixed Infernal Mobs overwriting the vanilla mc objectMouseOver
 

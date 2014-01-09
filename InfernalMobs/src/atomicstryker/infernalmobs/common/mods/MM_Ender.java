@@ -65,16 +65,15 @@ public class MM_Ender extends MobModifier
         int x = MathHelper.floor_double(mob.posX);
         int y = MathHelper.floor_double(mob.posY);
         int z = MathHelper.floor_double(mob.posZ);
-        int blockID;
+        Block blockID;
 
         if (mob.worldObj.blockExists(x, y, z))
         {
             boolean hitGround = false;
             while (!hitGround && y < 96)
             {
-                blockID = mob.worldObj.getBlockId(x, y - 1, z);
-
-                if (blockID != 0 && Block.blocksList[blockID].blockMaterial.blocksMovement())
+                blockID = mob.worldObj.func_147439_a(x, y - 1, z);
+                if (blockID.func_149688_o().blocksMovement())
                 {
                     hitGround = true;
                 }

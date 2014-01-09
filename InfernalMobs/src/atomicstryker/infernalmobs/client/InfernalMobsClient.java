@@ -1,6 +1,5 @@
 package atomicstryker.infernalmobs.client;
 
-import java.util.EnumSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.Minecraft;
@@ -10,32 +9,39 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.infernalmobs.common.ISidedProxy;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
-public class InfernalMobsClient implements ISidedProxy, ITickHandler
+public class InfernalMobsClient implements ISidedProxy
 {
     private final double NAME_VISION_DISTANCE = 32D;
     private Minecraft mc;
     private World lastWorld;
     private long nextPacketTime;
     private ConcurrentHashMap<EntityLivingBase, MobModifier> rareMobsClient;
+    
+    @Override
+    public void preInit()
+    {
+        FMLCommonHandler.instance().bus().register(this);
+    }
 
     @Override
     public void load()
@@ -43,18 +49,25 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
         mc = FMLClientHandler.instance().getClient();
         nextPacketTime = 0;
         rareMobsClient = new ConcurrentHashMap<EntityLivingBase, MobModifier>();
-
-        TickRegistry.registerTickHandler(this, Side.CLIENT);
+        
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
-        MinecraftForge.EVENT_BUS.register(new EntityTracker());
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+    
+    @SubscribeEvent
+    public void onEntityJoinedWorld(EntityJoinWorldEvent event)
+    {
+        if (mc.thePlayer != null && event.entity instanceof EntityMob)
+        {
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.func_146103_bH().getName(), event.entity.func_145782_y()));
+        }
     }
 
     private void askServerHealth(Entity ent)
     {
         if (System.currentTimeMillis() > nextPacketTime)
         {
-            Object[] toSend = { ent.entityId };
-            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_IM", 4, toSend));
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.thePlayer.func_146103_bH().getName(),ent.func_145782_y(), 0f, 0f));
             nextPacketTime = System.currentTimeMillis() + 100l;
         }
     }
@@ -187,19 +200,14 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
 
         return returnedEntity;
     }
-
-    @Override
-    public void tickStart(EnumSet<TickType> type, Object... tickData)
-    {
-    }
-
-    @Override
-    public void tickEnd(EnumSet<TickType> type, Object... tickData)
+    
+    @SubscribeEvent
+    public void onTick(TickEvent.RenderTickEvent tick)
     {
         if (mc.theWorld == null || (mc.currentScreen != null && mc.currentScreen.doesGuiPauseGame()))
             return;
 
-        renderBossOverlay((Float) tickData[0], mc);
+        renderBossOverlay(tick.renderTickTime, mc);
 
         /* client reset in case of swapping worlds */
         if (mc.theWorld != lastWorld)
@@ -212,20 +220,6 @@ public class InfernalMobsClient implements ISidedProxy, ITickHandler
                 InfernalMobsCore.instance().checkRareListForObsoletes(lastWorld);
             }
         }
-    }
-
-    private EnumSet<TickType> tickTypes = EnumSet.of(TickType.RENDER);
-
-    @Override
-    public EnumSet<TickType> ticks()
-    {
-        return tickTypes;
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "InfernalMobs";
     }
 
     @Override

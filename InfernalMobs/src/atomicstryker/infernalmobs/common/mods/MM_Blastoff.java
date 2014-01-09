@@ -65,7 +65,7 @@ public class MM_Blastoff extends MobModifier
             }
             else
             {
-                InfernalMobsCore.instance().sendVelocityPacket((EntityPlayer)target, 0D, 1.1D, 0D);
+                InfernalMobsCore.instance().sendVelocityPacket((EntityPlayer)target, 0f, 1.1f, 0f);
             }
         }
     }

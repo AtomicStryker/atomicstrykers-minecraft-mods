@@ -1,8 +1,8 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.MobModifier;
@@ -62,11 +62,11 @@ public class MM_Webber extends MobModifier
         if (time > lastAbilityUse+coolDown)
         {
             int offset;
-            if (target.worldObj.getBlockId(x, y-1, z) == 0)
+            if (target.worldObj.func_147439_a(x, y-1, z) == Blocks.air)
             {
                 offset = -1;
             }
-            else if (target.worldObj.getBlockId(x, y, z) == 0)
+            else if (target.worldObj.func_147439_a(x, y, z) == Blocks.air)
             {
                 offset = 0;
             }
@@ -76,7 +76,7 @@ public class MM_Webber extends MobModifier
             }
             
             lastAbilityUse = time;
-            target.worldObj.setBlock(x, y+offset, z, Block.web.blockID, 0, 3);
+            target.worldObj.func_147465_d(x, y+offset, z, Blocks.web, 0, 3);
             mob.worldObj.playSoundAtEntity(mob, "mob.spider", 1.0F, (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
         }
     }

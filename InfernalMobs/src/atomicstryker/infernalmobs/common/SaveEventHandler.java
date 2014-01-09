@@ -3,13 +3,13 @@ package atomicstryker.infernalmobs.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.event.ForgeSubscribe;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 
 public class SaveEventHandler
 {
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event)
     {
         Chunk chunk = event.getChunk();
@@ -34,7 +34,7 @@ public class SaveEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load event)
     {
         Chunk chunk = event.getChunk();

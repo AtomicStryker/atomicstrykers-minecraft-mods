@@ -5,26 +5,27 @@ import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.ForgeSubscribe;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 
 public class RendererBossGlow
 {
     private static long lastRender = 0L;
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event)
     {
         if (System.currentTimeMillis() > lastRender+10L)
         {
             lastRender = System.currentTimeMillis();
             
-            renderBossGlow(event.partialTicks, event.context.mc);
+            renderBossGlow(event.partialTicks);
         }
     }
     
-    private void renderBossGlow(float renderTick, Minecraft mc)
+    private void renderBossGlow(float renderTick)
     {
+        Minecraft mc = Minecraft.getMinecraft();
         EntityLivingBase viewEnt = mc.renderViewEntity;
         Vec3 curPos = viewEnt.getPosition(renderTick);
         
@@ -36,7 +37,7 @@ public class RendererBossGlow
         
         for (EntityLivingBase ent : InfernalMobsCore.proxy.getRareMobs().keySet())
         {
-            if (ent.isInRangeToRenderVec3D(curPos)
+            if (ent.isInRangeToRenderDist(curPos.distanceTo(ent.getPosition(1.0f)))
             && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.boundingBox))
             && ent.isEntityAlive())
             {

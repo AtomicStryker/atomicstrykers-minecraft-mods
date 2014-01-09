@@ -13,6 +13,12 @@ public class InfernalMobsServer implements ISidedProxy
     {
         rareMobsServer = new ConcurrentHashMap<EntityLivingBase, MobModifier>();
     }
+    
+    @Override
+    public void preInit()
+    {
+        // NOOP
+    }
 
     @Override
     public void load()

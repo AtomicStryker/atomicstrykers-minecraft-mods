@@ -2,7 +2,7 @@ package atomicstryker.infernalmobs.common;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.event.ForgeSubscribe;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -18,7 +18,7 @@ public class EntityEventHandler
      * Links the Forge Event Handler to the registered Entity MobModifier Events (if present)
      */
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityJoinedWorld (EntityJoinWorldEvent event)
     {
         if (event.entity instanceof EntityLivingBase)
@@ -35,7 +35,7 @@ public class EntityEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingDeath(LivingDeathEvent event)
     {
         if (!event.entity.worldObj.isRemote)
@@ -51,7 +51,7 @@ public class EntityEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingSetAttackTarget(LivingSetAttackTargetEvent event)
     {
         if (!event.entity.worldObj.isRemote)
@@ -64,13 +64,13 @@ public class EntityEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingAttacked(LivingAttackEvent event)
     {
         /* fires both client and server before hurt, but we dont need this */
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingHurt(LivingHurtEvent event)
     {
         MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
@@ -94,7 +94,7 @@ public class EntityEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingFall(LivingFallEvent event)
     {
         if (!event.entity.worldObj.isRemote)
@@ -107,7 +107,7 @@ public class EntityEventHandler
         }
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event)
     {
         if (!event.entity.worldObj.isRemote)
@@ -120,7 +120,7 @@ public class EntityEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingUpdate(LivingEvent.LivingUpdateEvent event)
     {
         if (!event.entityLiving.worldObj.isRemote)
@@ -133,7 +133,7 @@ public class EntityEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingDrops(LivingDropsEvent event)
     {
         if (!event.entity.worldObj.isRemote)

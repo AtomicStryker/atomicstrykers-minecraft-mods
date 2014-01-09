@@ -82,7 +82,7 @@ public class MM_Gravity extends MobModifier
             }
             else
             {
-                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayer) target, diffX, diffZ);
+                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayer) target, (float)diffX, (float)diffZ);
             }
         }
     }
