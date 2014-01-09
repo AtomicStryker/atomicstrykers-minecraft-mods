@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.network;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.mods.MM_Gravity;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 
@@ -20,14 +21,14 @@ public class KnockBackPacket implements IPacket
     }
 
     @Override
-    public void writeBytes(ByteBuf bytes)
+    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         bytes.writeFloat(xv);
         bytes.writeFloat(zv);
     }
 
     @Override
-    public void readBytes(ByteBuf bytes)
+    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         xv = bytes.readFloat();
         zv = bytes.readFloat();

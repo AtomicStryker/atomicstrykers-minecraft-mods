@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
@@ -30,7 +31,7 @@ public class HealthPacket implements IPacket
     }
 
     @Override
-    public void writeBytes(ByteBuf bytes)
+    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         bytes.writeShort(stringData.length());
         for (char c : stringData.toCharArray()) bytes.writeChar(c);
@@ -40,7 +41,7 @@ public class HealthPacket implements IPacket
     }
 
     @Override
-    public void readBytes(ByteBuf bytes)
+    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         short len = bytes.readShort();
         char[] chars = new char[len];
