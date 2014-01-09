@@ -67,7 +67,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
 @Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.4")
@@ -270,7 +270,7 @@ public class InfernalMobsCore
             {
                 int imeta = (meta.length > 1) ? Integer.parseInt(meta[1]) : 0;
                 int stackSize = (meta.length > 2) ? Integer.parseInt(meta[2]) : 1;
-                int randomizer = (meta.length > 3) ? Integer.parseInt(meta[3])+1 : 1;
+                int randomizer = (meta.length > 3) ? Integer.parseInt(meta[3]) + 1 : 1;
                 if (randomizer < 1)
                 {
                     randomizer = 1;
@@ -745,8 +745,8 @@ public class InfernalMobsCore
 
     public void sendHealthPacket(EntityLivingBase mob, float health)
     {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.func_145782_y(), mob.getHealth(), mob.getMaxHealth()),
-                NetworkRegistry.INSTANCE.new TargetPoint(mob.dimension, mob.posX, mob.posY, mob.posZ, 32d));
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.func_145782_y(), mob.getHealth(), mob.getMaxHealth()), new TargetPoint(
+                mob.dimension, mob.posX, mob.posY, mob.posZ, 32d));
     }
 
     public void sendHealthRequestPacket(EntityLivingBase mob)
