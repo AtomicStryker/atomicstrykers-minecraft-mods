@@ -57,7 +57,7 @@ public class FinderCompassClientTicker
     public void onWorldLoad(WorldEvent.Load event)
     {
         FinderCompassLogic.serverHasFinderCompass = false;
-        FinderCompassMod.instance.networkHelper.sendPacketToServer(new HandshakePacket(mc.thePlayer.func_146103_bH().getName()));
+        FinderCompassMod.instance.networkHelper.sendPacketToServer(new HandshakePacket());
     }
 
     @SubscribeEvent

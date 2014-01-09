@@ -1,14 +1,13 @@
 package atomicstryker.findercompass.common.network;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
@@ -18,27 +17,12 @@ import cpw.mods.fml.common.FMLCommonHandler;
 public class HandshakePacket implements IPacket
 {
 
-    private String userName;
     private byte[] configByteArray;
 
-    public HandshakePacket()
-    {
-    }
-    
-    public HandshakePacket(String n)
-    {
-        userName = n;
-    }
-
     @Override
-    public void writeBytes(ByteBuf bytes)
+    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            bytes.writeShort(userName.length());
-            for (char c : userName.toCharArray()) bytes.writeChar(c);
-        }
-        else
+        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
         {
             File config = FinderCompassMod.instance.compassConfig;
             configByteArray = new byte[(int)config.length()];
@@ -58,7 +42,7 @@ public class HandshakePacket implements IPacket
     }
 
     @Override
-    public void readBytes(ByteBuf bytes)
+    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
@@ -70,16 +54,10 @@ public class HandshakePacket implements IPacket
         }
         else
         {
-            short len = bytes.readShort();
-            char[] chars = new char[len];
-            for (int i = 0; i < len; i++) chars[i] = bytes.readChar();
-            userName = String.valueOf(chars);
-
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(userName);
             File config = FinderCompassMod.instance.compassConfig;
-            if (p != null && config != null && config.exists())
+            if (config != null && config.exists())
             {
-                FinderCompassMod.instance.networkHelper.sendPacketToPlayer(this, p);
+                ctx.channel().writeAndFlush(this);
             }
         }
     }

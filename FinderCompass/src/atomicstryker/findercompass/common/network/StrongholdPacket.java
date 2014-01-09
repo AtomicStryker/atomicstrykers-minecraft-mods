@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.ChunkPosition;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
@@ -31,7 +32,7 @@ public class StrongholdPacket implements IPacket
     }
 
     @Override
-    public void writeBytes(ByteBuf bytes)
+    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isServer()) // server answering coords query
         {
@@ -49,7 +50,7 @@ public class StrongholdPacket implements IPacket
     }
 
     @Override
-    public void readBytes(ByteBuf bytes)
+    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) // client received stronghold answer
         {
