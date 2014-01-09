@@ -4,7 +4,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -21,7 +21,7 @@ public class SimplyHaxEntityDump
     }
     
     @SuppressWarnings("unchecked")
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onWorldStart(WorldEvent.Load event)
     {
         System.out.println("Simply Hax Entity Dump following, these are the exact Mobspawner names");

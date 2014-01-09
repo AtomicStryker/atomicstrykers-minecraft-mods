@@ -9,7 +9,6 @@ import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.EnumSet;
 import java.util.Properties;
 
 import net.minecraft.client.Minecraft;
@@ -21,16 +20,15 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.6.4")
+@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.7.2")
 public class SimplyHaxVision
 {
 	private final static String modname = "Vision";
@@ -51,72 +49,44 @@ public class SimplyHaxVision
     public void preInit(FMLPreInitializationEvent evt)
     {
         configfile = evt.getSuggestedConfigurationFile();
+        FMLCommonHandler.instance().bus().register(this);
     }
-	
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
+    
+    @SubscribeEvent
+    public void onTick(TickEvent.RenderTickEvent tick)
     {
-    	TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
-	}
-	
-	private class TickHandler implements ITickHandler
-	{
-		private final EnumSet<TickType> ticks;
-		public TickHandler()
-		{
-			ticks = EnumSet.of(TickType.RENDER);
-		}
-
-		@Override
-		public void tickStart(EnumSet<TickType> type, Object... tickData)
-		{
-		}
-
-		@Override
-		public void tickEnd(EnumSet<TickType> type, Object... tickData)
-		{
-			if (mcinstance != FMLClientHandler.instance().getClient())
-			{
-				InitSettings();
-				mcinstance = FMLClientHandler.instance().getClient();
-				setupRenderer();
-			}
-		
-			if (mcinstance.theWorld != null && mcinstance.thePlayer != null)
-			{
-				visionActive = (Keyboard.isKeyDown(ivisionkey));
-				if (IsMenuOpen()) visionActive = false;
-				
-				if (rendererReplaced != visionActive)
-				{
-					rendererReplaced = visionActive;
-					copyAllClassFields(RenderGlobal.class, rendererReplaced ? original : replacement, rendererReplaced ? replacement : original);
-					mcinstance.renderGlobal = rendererReplaced ? replacement : original;
-				}
-				
-				if (mcinstance.thePlayer.getCurrentEquippedItem() != item)
-				{
-				    item = mcinstance.thePlayer.getCurrentEquippedItem();
-				    if (item != null)
-				    {
-				        System.out.println("Player swapped Item to ["+item.getUnlocalizedName()+"]");
-				    }
-				}
-			}
-		}
-
-		@Override
-		public EnumSet<TickType> ticks()
-		{
-			return ticks;
-		}
-
-		@Override
-		public String getLabel()
-		{
-			return "SimplyHaxV";
-		}
-	}
+        if (tick.phase == Phase.END)
+        {
+            if (mcinstance != FMLClientHandler.instance().getClient())
+            {
+                InitSettings();
+                mcinstance = FMLClientHandler.instance().getClient();
+                setupRenderer();
+            }
+        
+            if (mcinstance.theWorld != null && mcinstance.thePlayer != null)
+            {
+                visionActive = (Keyboard.isKeyDown(ivisionkey));
+                if (IsMenuOpen()) visionActive = false;
+                
+                if (rendererReplaced != visionActive)
+                {
+                    rendererReplaced = visionActive;
+                    copyAllClassFields(RenderGlobal.class, rendererReplaced ? original : replacement, rendererReplaced ? replacement : original);
+                    mcinstance.renderGlobal = rendererReplaced ? replacement : original;
+                }
+                
+                if (mcinstance.thePlayer.getCurrentEquippedItem() != item)
+                {
+                    item = mcinstance.thePlayer.getCurrentEquippedItem();
+                    if (item != null)
+                    {
+                        System.out.println("Player swapped Item to ["+item.getUnlocalizedName()+"]");
+                    }
+                }
+            }
+        }
+    }
 	
 	public static void preRender()
 	{

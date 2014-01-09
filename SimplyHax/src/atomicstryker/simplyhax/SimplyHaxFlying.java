@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.EnumSet;
 import java.util.Properties;
 
 import net.minecraft.client.Minecraft;
@@ -14,22 +13,21 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 import org.lwjgl.input.Keyboard;
 
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.6.4")
+@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.7.2")
 public class SimplyHaxFlying
 {
     private long lastTime;
@@ -63,6 +61,7 @@ public class SimplyHaxFlying
 	{
 	    configfile = evt.getSuggestedConfigurationFile();
 	    MinecraftForge.EVENT_BUS.register(this);
+	    FMLCommonHandler.instance().bus().register(this);
 	}
 	
     @EventHandler
@@ -70,7 +69,6 @@ public class SimplyHaxFlying
     {
         mcinstance = FMLClientHandler.instance().getClient();
         lastTime = System.currentTimeMillis();
-        TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
         InitSettings();
     }
 	
@@ -99,9 +97,9 @@ public class SimplyHaxFlying
 			fovModifier = Float.parseFloat(properties.getProperty("fovModifier", "20.0"));
 			
 			flyupkey = properties.getProperty("keyupwards", "JUMP");
-			iflyupkey = flyupkey.equals("JUMP") ? mcinstance.gameSettings.keyBindJump.keyCode : Keyboard.getKeyIndex(flyupkey);
+			iflyupkey = flyupkey.equals("JUMP") ? mcinstance.gameSettings.keyBindJump.func_151463_i() : Keyboard.getKeyIndex(flyupkey);
 			flydownkey = properties.getProperty("keydownwards", "SNEAK");
-			iflydownkey = flydownkey.equals("SNEAK") ? mcinstance.gameSettings.keyBindSneak.keyCode : Keyboard.getKeyIndex(flydownkey);
+			iflydownkey = flydownkey.equals("SNEAK") ? mcinstance.gameSettings.keyBindSneak.func_151463_i() : Keyboard.getKeyIndex(flydownkey);
 		}
 		else
 		{
@@ -136,105 +134,81 @@ public class SimplyHaxFlying
 		}
 	}
 	
-	private class TickHandler implements ITickHandler
-	{
-		private final EnumSet<TickType> ticks;
-		public TickHandler()
-		{
-			ticks = EnumSet.of(TickType.RENDER);
-		}
-
-		@Override
-		public void tickStart(EnumSet<TickType> type, Object... tickData)
-		{
-		}
-
-		@Override
-		public void tickEnd(EnumSet<TickType> type, Object... tickData)
-		{		
-			if (mcinstance.theWorld != null && mcinstance.thePlayer != null)
-			{			
-				long l = System.currentTimeMillis();
-				if(l > lastTime + 200L)
-				{
-					// do time relevant stuff	
-					buttonCD = false;
-				}
-				
-				// do every tick stuff
-				
-				isSprinting = (Keyboard.isKeyDown(isprintkey) && !isMenuOpen());
-				
-				if (!buttonCD
-				&& Keyboard.getEventKeyState()
-				&& Keyboard.getEventKey() == itogglekey
-				&& !isMenuOpen())
-				{
-					lastTime = l;
-					buttonCD = true;
-					
-					isFlying = !isFlying;
-					
-					if (isFlying)
-					{
-					    mcinstance.thePlayer.capabilities.allowFlying = true;
-						modposY = mcinstance.thePlayer.posY;
-						distanceWalkedModified = mcinstance.thePlayer.distanceWalkedModified;
-					}
-				}
-				
-				if (isAlive(mcinstance.thePlayer))
-				{
-					if (isSprinting)
-					{
-						makeHaste(mcinstance.thePlayer);
-						
-						float fov = getFOV();
-						if (getAbsSpeed(mcinstance.thePlayer) > 0.1D)
-						{
-							if (fov < fovModifier)
-							{
-								setFOV(fov + (fovModifier*0.25F));
-							}
-						}
-						else if (fov > 0F)
-						{
-							setFOV(fov - (fovModifier*0.25F));
-						}
-					}
-					else
-					{
-						modMotionX = mcinstance.thePlayer.motionX;
-						modMotionZ = mcinstance.thePlayer.motionZ;
-						
-						float fov = getFOV();
-						if (fov > 0F)
-						{
-							setFOV(fov - (fovModifier*0.25F));
-						}
-					}
-					
-					if (isFlying)
-					{
-						makeFly(mcinstance.thePlayer);
-					}
-				}
-			}
-		}
-
-		@Override
-		public EnumSet<TickType> ticks()
-		{
-			return ticks;
-		}
-
-		@Override
-		public String getLabel()
-		{
-			return "SimplyHaxF";
-		}
-		
-	}
+    @SubscribeEvent
+    public void onTick(TickEvent.RenderTickEvent tick)
+    {
+        if (tick.phase == Phase.END)
+        {
+            if (mcinstance.theWorld != null && mcinstance.thePlayer != null)
+            {       
+                long l = System.currentTimeMillis();
+                if(l > lastTime + 200L)
+                {
+                    // do time relevant stuff   
+                    buttonCD = false;
+                }
+                
+                // do every tick stuff
+                
+                isSprinting = (Keyboard.isKeyDown(isprintkey) && !isMenuOpen());
+                
+                if (!buttonCD
+                && Keyboard.getEventKeyState()
+                && Keyboard.getEventKey() == itogglekey
+                && !isMenuOpen())
+                {
+                    lastTime = l;
+                    buttonCD = true;
+                    
+                    isFlying = !isFlying;
+                    
+                    if (isFlying)
+                    {
+                        mcinstance.thePlayer.capabilities.allowFlying = true;
+                        modposY = mcinstance.thePlayer.posY;
+                        distanceWalkedModified = mcinstance.thePlayer.distanceWalkedModified;
+                    }
+                }
+                
+                if (isAlive(mcinstance.thePlayer))
+                {
+                    if (isSprinting)
+                    {
+                        makeHaste(mcinstance.thePlayer);
+                        
+                        float fov = getFOV();
+                        if (getAbsSpeed(mcinstance.thePlayer) > 0.1D)
+                        {
+                            if (fov < fovModifier)
+                            {
+                                setFOV(fov + (fovModifier*0.25F));
+                            }
+                        }
+                        else if (fov > 0F)
+                        {
+                            setFOV(fov - (fovModifier*0.25F));
+                        }
+                    }
+                    else
+                    {
+                        modMotionX = mcinstance.thePlayer.motionX;
+                        modMotionZ = mcinstance.thePlayer.motionZ;
+                        
+                        float fov = getFOV();
+                        if (fov > 0F)
+                        {
+                            setFOV(fov - (fovModifier*0.25F));
+                        }
+                    }
+                    
+                    if (isFlying)
+                    {
+                        makeFly(mcinstance.thePlayer);
+                    }
+                }
+            }
+        }
+    }
 	
 	private void setFOV(float setting)
 	{
@@ -370,7 +344,7 @@ public class SimplyHaxFlying
         }
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onEntityLivingFall(LivingFallEvent event)
 	{
 	    if ((isFlying || stopFall) && event.entityLiving.equals(mcinstance.thePlayer))

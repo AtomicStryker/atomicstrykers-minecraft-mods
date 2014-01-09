@@ -1,6 +1,7 @@
 package atomicstryker.simplyhax;
 
 import java.util.Map;
+
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class SHFMLCorePlugin implements IFMLLoadingPlugin
@@ -27,6 +28,12 @@ public class SHFMLCorePlugin implements IFMLLoadingPlugin
     @Override
     public void injectData(Map<String, Object> data)
     {
+    }
+
+    @Override
+    public String getAccessTransformerClass()
+    {
+        return null;
     }
 
 }
