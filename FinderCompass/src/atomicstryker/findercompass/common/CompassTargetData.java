@@ -1,17 +1,19 @@
 package atomicstryker.findercompass.common;
 
-public class CompassIntPair
+import net.minecraft.block.Block;
+
+public class CompassTargetData
 {
-    private final int blockID;
+    private final Block blockID;
     private final int damage;
     
-    public CompassIntPair(int a, int b)
+    public CompassTargetData(Block a, int b)
     {
         blockID = a;
         damage = b;
     }
     
-    public int getBlockID()
+    public Block getBlockID()
     {
         return blockID;
     }
@@ -24,9 +26,9 @@ public class CompassIntPair
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof CompassIntPair)
+        if (o instanceof CompassTargetData)
         {
-            CompassIntPair comp = (CompassIntPair)o;
+            CompassTargetData comp = (CompassTargetData)o;
             return comp.getBlockID() == blockID && comp.getDamage() == damage;
         }
         return false;
@@ -35,6 +37,6 @@ public class CompassIntPair
     @Override
     public int hashCode()
     {
-        return blockID + damage << 8;
+        return blockID.func_149739_a().hashCode();
     }
 }

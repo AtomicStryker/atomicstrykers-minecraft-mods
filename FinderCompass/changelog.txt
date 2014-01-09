@@ -1,3 +1,7 @@
+1.7.2
+updated for mc 1.7.2
+remember to delete the config for the new block names
+
 1.6.4X
 complete code overhaul, threw away ugly mc texture hack code
 harnessed the raw power of openGL, now drawing ONTOP of existing mc textures

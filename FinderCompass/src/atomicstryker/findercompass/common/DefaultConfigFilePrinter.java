@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import atomicstryker.findercompass.client.CompassSetting;
+import cpw.mods.fml.common.registry.GameData;
 
 public class DefaultConfigFilePrinter
 {
@@ -28,7 +31,7 @@ public class DefaultConfigFilePrinter
             pw.println("// Inside a Setting:");
             pw.println("// Lines may be added in the form BlockID:R:G:B:ScanrangeHor:ScanrangeVer:MinBlockY:MaxBlockY:boolDelayed[:damageDropped]");
             pw.println("//");
-            pw.println("// BlockID - the Block ID the compass should look for");
+            pw.println("// BlockID - the Block Name the compass should look for. Google Minecraft Data for correct values");
             pw.println("// R:G:B - the color values the needle should use");
             pw.println("// ScanrangeHor - scanrange -x,-z to +x,+z");
             pw.println("// ScanrangeVer - scanrange depth, '1' is visible blocks from a 1x2 tunnel");
@@ -50,24 +53,24 @@ public class DefaultConfigFilePrinter
             pw.println("NoEnderEyeNeedle");
             pw.println("//");
             pw.println("// - gold");
-            pw.println("14:245:245:0:15:1:1:100:0");
+            pw.println("gold_ore:245:245:0:15:1:1:100:0");
             pw.println("//");
             pw.println("// - iron");
-            pw.println("15:179:179:179:15:1:1:100:0");
+            pw.println("iron_ore:179:179:179:15:1:1:100:0");
             pw.println("//");
             pw.println("// - coal");
-            pw.println("16:51:26:0:15:1:1:100:0");
+            pw.println("coal_ore:51:26:0:15:1:1:100:0");
             pw.println("//");
             pw.println("//");
             pw.println("Setting:Adventuring");
             pw.println("//");
             pw.println("// NoEnderEyeNeedle");
             pw.println("//");
-            pw.println("// this is Mob Spawners = block id 52, with a needle color of {26,255,26}, 60 width and 60 depth, from 1-100 height, big scan every 15 seconds");
-            pw.println("52:26:255:26:60:60:1:100:1");
+            pw.println("// this is Mob Spawners with a needle color of {26,255,26}, 60 width and 60 depth, from 1-100 height, big scan every 15 seconds");
+            pw.println("mob_spawner:26:255:26:60:60:1:100:1");
             pw.println("//");
             pw.println("// this is Chest (for Adventuring) = block id 54, with a needle color of {184,138,0}, 60 width and 60 depth, from 1-100 height, big scan every 15 seconds");
-            pw.println("54:184:138:0:60:60:1:100:1");
+            pw.println("chest:184:138:0:60:60:1:100:1");
             pw.println("//");
             pw.println("//");
             pw.println("Setting:Shiny Stones");
@@ -75,16 +78,16 @@ public class DefaultConfigFilePrinter
             pw.println("NoEnderEyeNeedle");
             pw.println("//");
             pw.println("// this is Diamond = block id 56, with a needle color of {51,255,204}, it scans 15 blocks horizontally, 1 vertically, from 1-16 height, every second");
-            pw.println("56:51:255:204:15:1:1:16:0");
+            pw.println("diamond_ore:51:255:204:15:1:1:16:0");
             pw.println("//");
             pw.println("// - lapis lazuli");
-            pw.println("21:55:70:220:15:1:1:100:0");
+            pw.println("lapis_ore:55:70:220:15:1:1:100:0");
             pw.println("//");
             pw.println("// - redstone");
-            pw.println("73:255:125:155:15:1:1:100:0");
+            pw.println("redstone_ore:255:125:155:15:1:1:100:0");
             pw.println("//");
             pw.println("// - emerald ore");
-            pw.println("129:26:255:26:7:1:4:31:0 ");
+            pw.println("emerald_ore:26:255:26:7:1:4:31:0 ");
 
             pw.flush();
             pw.close();
@@ -131,7 +134,7 @@ public class DefaultConfigFilePrinter
                     else
                     {
                         String[] splitString = buffer.split(":");
-                        int blockID = Integer.parseInt(splitString[0]);
+                        String blockID = splitString[0];
                         int[] configInts = new int[9];
                         configInts[0] = Integer.parseInt(splitString[1]);
                         configInts[1] = Integer.parseInt(splitString[2]);
@@ -152,8 +155,17 @@ public class DefaultConfigFilePrinter
                         }
                         System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                 + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
-                        CompassIntPair key = new CompassIntPair(blockID, configInts[8]);
-                        currentSetting.getCustomNeedles().put(key, configInts);
+                        
+                        Block block = GameData.blockRegistry.getObject(blockID);
+                        if (block != Blocks.air)
+                        {
+                            CompassTargetData key = new CompassTargetData(block, configInts[8]);
+                            currentSetting.getCustomNeedles().put(key, configInts);
+                        }
+                        else
+                        {
+                            System.err.println("Finder Compass could not find a Block "+blockID+", skipping that entry...");
+                        }
                     }
                 }
             }

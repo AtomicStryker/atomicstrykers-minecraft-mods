@@ -6,49 +6,44 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.Configuration;
-import atomicstryker.findercompass.client.ClientPacketHandler;
+import net.minecraftforge.common.config.Configuration;
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
+import atomicstryker.findercompass.common.network.HandshakePacket;
+import atomicstryker.findercompass.common.network.NetworkHelper;
+import atomicstryker.findercompass.common.network.StrongholdPacket;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.6.4X")
-@NetworkMod(
-clientPacketHandlerSpec = @SidedPacketHandler(channels = { "FindrCmps" }, packetHandler = ClientPacketHandler.class),
-serverPacketHandlerSpec = @SidedPacketHandler(channels = { "FindrCmps" }, packetHandler = ServerPacketHandler.class),
-connectionHandler = ConnectionHandler.class
-)
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2")
 public class FinderCompassMod
 {
 
     @Instance(value = "FinderCompass")
     public static FinderCompassMod instance;
-
-    private int itemID;
+    
     public ArrayList<CompassSetting> settingList;
     
     public ItemFinderCompass compass;
     public boolean itemEnabled;
 
     public File compassConfig;
+    
+    public NetworkHelper networkHelper;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-
         settingList = new ArrayList<CompassSetting>();
 
         compassConfig = evt.getSuggestedConfigurationFile();
@@ -71,26 +66,38 @@ public class FinderCompassMod
 
         Configuration itemConfig = new Configuration(new File(target.replace("FinderCompass", "FinderCompassItemConfig")));
         itemConfig.load();
-        itemID = itemConfig.getItem("finderCompassID", 4356).getInt();
-        itemEnabled = itemConfig.get(Configuration.CATEGORY_ITEM, "isFinderCompassNewItem", false).getBoolean(false);
+        itemEnabled = itemConfig.get(Configuration.CATEGORY_GENERAL, "isFinderCompassNewItem", false).getBoolean(false);
         itemConfig.save();
-
-        compass = (ItemFinderCompass) new ItemFinderCompass(itemID).setUnlocalizedName("Finder Compass");
+        
+        if (itemEnabled)
+        {
+            compass = (ItemFinderCompass) new ItemFinderCompass().setUnlocalizedName("Finder Compass");
+            GameRegistry.registerItem(compass, "Finder Compass");
+            LanguageRegistry.addName(compass, "Finder Compass");
+        }
+        
+        FMLCommonHandler.instance().bus().register(this);
+        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        {
+            FMLCommonHandler.instance().bus().register(new FinderCompassClientTicker());
+        }
+        
+        networkHelper = new NetworkHelper("AS_FC", HandshakePacket.class, StrongholdPacket.class);
+    }
+    
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerLoggedInEvent event)
+    {
+        networkHelper.sendPacketToPlayer(new HandshakePacket(), event.player);
     }
 
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
-        LanguageRegistry.addName(compass, "Finder Compass");
         if (itemEnabled)
         {
             GameRegistry.addRecipe(new ItemStack(compass),
-                    new Object[] { " # ", "#X#", " # ", Character.valueOf('#'), Item.diamond, Character.valueOf('X'), Item.compass });
-        }
-
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            TickRegistry.registerTickHandler(new FinderCompassClientTicker(), Side.CLIENT);
+                    new Object[] { " # ", "#X#", " # ", Character.valueOf('#'), Items.diamond, Character.valueOf('X'), Items.compass });
         }
     }
     

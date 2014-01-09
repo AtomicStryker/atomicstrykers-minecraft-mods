@@ -1,6 +1,6 @@
 package atomicstryker.findercompass.common;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -14,15 +14,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemFinderCompass extends Item
 {
 
-    public ItemFinderCompass(int par1)
+    public ItemFinderCompass()
     {
-        super(par1);
+        super();
         setCreativeTab(CreativeTabs.tabTools);
     }
     
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister iconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
         itemIcon = iconRegister.registerIcon("findercompass:compass");
     }
@@ -39,9 +39,9 @@ public class ItemFinderCompass extends Item
     }
     
     @Override
-    public String getItemDisplayName(ItemStack itemStack)
+    public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return EnumChatFormatting.GOLD+super.getItemDisplayName(itemStack);
+        return EnumChatFormatting.GOLD+super.getItemStackDisplayName(itemStack);
     }
 
 }

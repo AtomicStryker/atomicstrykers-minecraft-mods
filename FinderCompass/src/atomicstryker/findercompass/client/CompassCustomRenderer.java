@@ -11,12 +11,12 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import atomicstryker.findercompass.common.CompassIntPair;
+import atomicstryker.findercompass.common.CompassTargetData;
 
 public class CompassCustomRenderer implements IItemRenderer
 {
@@ -78,7 +78,7 @@ public class CompassCustomRenderer implements IItemRenderer
     private void renderCompassInventory(RenderBlocks renderBlocks, ItemStack item)
     {
         // vanilla render first
-        Icon icon = item.getIconIndex();
+        IIcon icon = item.getIconIndex();
         renderItem.renderIcon(0, 0, icon, 16, 16);
         
         // save current ogl state for later
@@ -94,7 +94,7 @@ public class CompassCustomRenderer implements IItemRenderer
         
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
         
-        for (Entry<CompassIntPair, ChunkCoordinates> entryTarget : css.getCustomNeedleTargets().entrySet())
+        for (Entry<CompassTargetData, ChunkCoordinates> entryTarget : css.getCustomNeedleTargets().entrySet())
         {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
             drawInventoryNeedle((float)configInts[0]/255f, (float)configInts[1]/255f, (float)configInts[2]/255f, computeNeedleHeading(entryTarget.getValue()));
@@ -133,8 +133,9 @@ public class CompassCustomRenderer implements IItemRenderer
         // translate, rotate and render vanilla like
         GL11.glTranslatef(translateX, translateY, translateZ);
         GL11.glRotatef(rotateAngle, 0, 1.0F, 0);
-        Icon icon = item.getIconIndex();
-        ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.0825F);
+        IIcon icon = item.getIconIndex();
+        Tessellator t = Tessellator.instance;
+        ItemRenderer.renderItemIn2D(t, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.0825F);
         
         // save current ogl state for later
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
@@ -148,28 +149,40 @@ public class CompassCustomRenderer implements IItemRenderer
         
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
         
-        for (Entry<CompassIntPair, ChunkCoordinates> entryTarget : css.getCustomNeedleTargets().entrySet())
+        for (Entry<CompassTargetData, ChunkCoordinates> entryTarget : css.getCustomNeedleTargets().entrySet())
         {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawFirstPersonNeedle((float)configInts[0]/255f, (float)configInts[1]/255f, (float)configInts[2]/255f, computeNeedleHeading(entryTarget.getValue()));
+            drawFirstPersonNeedle(t, (float)configInts[0]/255f, (float)configInts[1]/255f, (float)configInts[2]/255f, computeNeedleHeading(entryTarget.getValue()));
         }
         
         if (css.isStrongholdNeedleEnabled() && FinderCompassLogic.hasStronghold)
         {
-            drawFirstPersonNeedle(strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.strongholdCoords));
+            drawFirstPersonNeedle(t, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.strongholdCoords));
         }
         
         // restore ogl state
         GL11.glPopAttrib();
     }
     
-    private void drawFirstPersonNeedle(float r, float g, float b, float angle)
+    private void drawFirstPersonNeedle(Tessellator t, float r, float g, float b, float angle)
     {
         GL11.glRotatef(angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
-        
+
+        // lets use mc code
+        t.startDrawingQuads();
+        t.setColorRGBA_F(r, g, b, 0.75f);
+
+        t.addVertex(-0.03D, -0.04D, 0.0D); // lower left
+        t.addVertex(0.03D, -0.04D, 0.0D); // lower right
+        t.addVertex(0.03D, 0.2D, 0.0D); // upper right
+        t.addVertex(-0.03D, 0.2D, 0.0D); // upper left
+
+        t.draw();
+
+        /* alternative native ogl code
         GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
         GL11.glColor4f(r, g, b, 0.75F); // set color
-        
+
         // now draw each glorious needle as single quad
         GL11.glVertex3d(-0.03D, -0.04D, 0.0D); // lower left
         GL11.glVertex3d(0.03D, -0.04D, 0.0D); // lower right
@@ -177,6 +190,7 @@ public class CompassCustomRenderer implements IItemRenderer
         GL11.glVertex3d(-0.03D, 0.2D, 0.0D); // upper left
         
         GL11.glEnd(); // let ogl draw it
+        */
         
         GL11.glRotatef(-angle, 0, 0, 1f); // revert rotation for next needle
         GL11.glTranslatef(0, 0, -0.01f); // translate slightly up
