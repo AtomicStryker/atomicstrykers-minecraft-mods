@@ -58,15 +58,17 @@ public class NetworkHelper
         /**
          * Executed upon sending a Packet away. Put your arbitrary data into the ByteBuffer,
          * and retrieve it on the receiving side when readBytes is executed.
-         * @param bytes
+         * @param ctx channel context
+         * @param bytes data being sent
          */
-        public void writeBytes(ByteBuf bytes);
+        public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes);
         
         /**
          * Executed upon arrival of a Packet at a recipient. Byte order matches writeBytes exactly.
-         * @param bytes
+         * @param ctx channel context, you can send answers through here directly
+         * @param bytes data being received
          */
-        public void readBytes(ByteBuf bytes);
+        public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes);
     }
     
     /**
@@ -158,13 +160,13 @@ public class NetworkHelper
         @Override
         public void encodeInto(ChannelHandlerContext ctx, IPacket msg, ByteBuf bytes) throws Exception
         {
-            msg.writeBytes(bytes);
+            msg.writeBytes(ctx, bytes);
         }
 
         @Override
         public void decodeInto(ChannelHandlerContext ctx, ByteBuf bytes, IPacket msg)
         {
-            msg.readBytes(bytes);
+            msg.readBytes(ctx, bytes);
         }
         
     }

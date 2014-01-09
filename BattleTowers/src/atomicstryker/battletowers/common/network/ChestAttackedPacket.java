@@ -3,6 +3,7 @@ package atomicstryker.battletowers.common.network;
 import atomicstryker.battletowers.common.AS_EntityGolem;
 import atomicstryker.battletowers.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -25,9 +26,17 @@ public class ChestAttackedPacket implements IPacket
         playerName = player;
         golemEntityID = id;
     }
+    
+    @Override
+    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
+    {
+        bytes.writeShort(playerName.length());
+        for (char c : playerName.toCharArray()) bytes.writeChar(c);
+        bytes.writeInt(golemEntityID);
+    }
 
     @Override
-    public void readBytes(ByteBuf bytes)
+    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         short len = bytes.readShort();
         char[] chars = new char[len];
@@ -46,14 +55,6 @@ public class ChestAttackedPacket implements IPacket
                 golem.setTarget(p);
             }
         }
-    }
-
-    @Override
-    public void writeBytes(ByteBuf bytes)
-    {
-        bytes.writeShort(playerName.length());
-        for (char c : playerName.toCharArray()) bytes.writeChar(c);
-        bytes.writeInt(golemEntityID);
     }
     
 }
