@@ -4,7 +4,8 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityCommandBlock;
@@ -12,10 +13,12 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
+import cpw.mods.fml.common.registry.GameData;
 
 public class RuinTemplateRule
 {
-    private final int[] blockIDs, blockMDs;
+    private final Block[] blockIDs;
+    private final int[] blockMDs;
     private final String[] blockStrings;
     private int chance = 100;
     private int condition = 0;
@@ -32,7 +35,7 @@ public class RuinTemplateRule
         }
         condition = Integer.parseInt(items[0]);
         chance = Integer.parseInt(items[1]);
-        blockIDs = new int[numblocks];
+        blockIDs = new Block[numblocks];
         blockMDs = new int[numblocks];
         blockStrings = new String[numblocks];
         String[] data;
@@ -43,7 +46,8 @@ public class RuinTemplateRule
             {
                 if (isNumber(data[0])) // 50-5
                 {
-                    blockIDs[i] = Integer.parseInt(data[0]);
+                    System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                    blockIDs[i] = Blocks.air;
                     blockMDs[i] = Integer.parseInt(data[1]);
                     blockStrings[i] = "";
                 }
@@ -57,99 +61,31 @@ public class RuinTemplateRule
             }
             else if (!isNumber(data[0])) // MobSpawners and the like
             {
-                blockIDs[i] = tryFindingBlockOfName(data[0]);
+                blockIDs[i] = null;
                 blockMDs[i] = 0;
                 blockStrings[i] = items[i + 2];
             }
             else
             // does not have metadata specified, aka "50"
             {
-                blockIDs[i] = Integer.parseInt(items[i + 2]);
+                if (isNumber(items[i + 2]))
+                {
+                    System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                    blockIDs[i] = Blocks.air;
+                }
+                else
+                {
+                    tryFindingBlockOfName(items[i + 2]);
+                }
                 blockMDs[i] = 0;
                 blockStrings[i] = "";
-            }
-
-            if (blockIDs[i] > 0
-                    && (Block.blocksList[blockIDs[i]] == null || Block.blocksList[blockIDs[i]].getUnlocalizedName() == null || Block.blocksList[blockIDs[i]]
-                            .getUnlocalizedName().equals("tile.ForgeFiller")))
-            {
-                System.err.println("Invalid blockID " + blockIDs[i] + " specified in template " + owner.getName() + ", rule [" + rule
-                        + "], attempting to fallback...");
-                blockIDs[i] = -1;
-                switch (blockIDs[i])
-                {
-                case 300:
-                    blockStrings[i] = "preserveBlock";
-                    System.err.println("should be preserveBlock!");
-                    break;
-                case 301:
-                    blockStrings[i] = "MobSpawner:Zombie";
-                    System.err.println("should be MobSpawner:Zombie!");
-                    break;
-                case 302:
-                    blockStrings[i] = "MobSpawner:Skeleton";
-                    System.err.println("should be MobSpawner:Skeleton!");
-                    break;
-                case 303:
-                    blockStrings[i] = "MobSpawner:Spider";
-                    System.err.println("should be MobSpawner:Spider!");
-                    break;
-                case 304:
-                    blockStrings[i] = "MobSpawner:Creeper";
-                    System.err.println("should be MobSpawner:Creeper!");
-                    break;
-                case 305:
-                    blockStrings[i] = "UprightMobSpawn";
-                    System.err.println("should be UprightMobSpawn!");
-                    break;
-                case 306:
-                    blockStrings[i] = "EasyMobSpawn";
-                    System.err.println("should be EasyMobSpawn!");
-                    break;
-                case 307:
-                    blockStrings[i] = "MediumMobSpawn";
-                    System.err.println("should be MediumMobSpawn!");
-                    break;
-                case 308:
-                    blockStrings[i] = "HardMobSpawn";
-                    System.err.println("should be HardMobSpawn!");
-                    break;
-                case 309:
-                    blockStrings[i] = "EasyChest";
-                    System.err.println("should be EasyChest!");
-                    break;
-                case 310:
-                    blockStrings[i] = "MediumChest";
-                    System.err.println("should be MediumChest!");
-                    break;
-                case 311:
-                    blockStrings[i] = "HardChest";
-                    System.err.println("should be HardChest!");
-                    break;
-                case 315:
-                    blockIDs[i] = 0;
-                    System.err.println("is old style Mobspawner, cannot fix, should be like MobSpawner:Villager, setting 0");
-                    break;
-                default:
-                    blockIDs[i] = 0;
-                    System.err.println("no fallback found, setting to 0");
-                    break;
-                }
             }
         }
     }
 
-    private int tryFindingBlockOfName(String blockName)
+    private Block tryFindingBlockOfName(String blockName)
     {
-        for (Block b : Block.blocksList)
-        {
-            if (b != null && b.getUnlocalizedName() != null && b.getUnlocalizedName().equals(blockName))
-            {
-                return b.blockID;
-            }
-        }
-
-        return -1;
+        return GameData.blockRegistry.getObject(blockName);
     }
 
     @SuppressWarnings("unused")
@@ -232,9 +168,9 @@ public class RuinTemplateRule
         }
     }
 
-    public boolean canReplace(int blockID, int targetBlock)
+    public boolean canReplace(Block blockID, Block targetBlock)
     {
-        if (owner.preserveBlock(targetBlock) && blockID == 0)
+        if (owner.preserveBlock(targetBlock) && blockID == Blocks.air)
         {
             return false;
         }
@@ -249,7 +185,7 @@ public class RuinTemplateRule
 
     private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isAir(world.getBlockId(x, y - 1, z)))
+        if ((condition <= 0 ? true : false) ^ owner.isAir(world.func_147439_a(x, y - 1, z)))
         {
             return;
         }
@@ -261,8 +197,8 @@ public class RuinTemplateRule
     {
         if ((condition <= 0 ? true : false) ^ (
         // Are -all- adjacent blocks air?
-                (owner.isAir(world.getBlockId(x + 1, y, z))) && (owner.isAir(world.getBlockId(x, y, z + 1)))
-                        && (owner.isAir(world.getBlockId(x, y, z - 1))) && (owner.isAir(world.getBlockId(x - 1, y, z)))))
+                (owner.isAir(world.func_147439_a(x + 1, y, z))) && (owner.isAir(world.func_147439_a(x, y, z + 1)))
+                        && (owner.isAir(world.func_147439_a(x, y, z - 1))) && (owner.isAir(world.func_147439_a(x - 1, y, z)))))
         {
             return;
         }
@@ -272,7 +208,7 @@ public class RuinTemplateRule
 
     private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isAir(world.getBlockId(x, y + 1, z)))
+        if ((condition <= 0 ? true : false) ^ owner.isAir(world.func_147439_a(x, y + 1, z)))
         {
             return;
         }
@@ -283,8 +219,8 @@ public class RuinTemplateRule
 
     private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum, int rotate, String blockString)
     {
-        int blockID = blockIDs[blocknum];
-        if (blockID == -1)
+        Block blockID = blockIDs[blocknum];
+        if (blockID == null)
         {
             doSpecialBlock(world, random, x, y, z, blockString);
         }
@@ -296,16 +232,16 @@ public class RuinTemplateRule
 
     private void placeBlock(World world, int blocknum, int x, int y, int z, int rotate)
     {
-        if (canReplace(blockIDs[blocknum], world.getBlockId(x, y, z)))
+        if (canReplace(blockIDs[blocknum], world.func_147439_a(x, y, z)))
         {
             if (rotate != RuinsMod.DIR_NORTH)
             {
                 int metadata = rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate);
-                world.setBlock(x, y, z, blockIDs[blocknum], metadata, 2);
+                world.func_147465_d(x, y, z, blockIDs[blocknum], metadata, 2);
             }
             else
             {
-                world.setBlock(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 2);
+                world.func_147465_d(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 2);
             }
         }
     }
@@ -400,16 +336,16 @@ public class RuinTemplateRule
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
         world.spawnEntityInWorld(entityendercrystal);
-        world.setBlock(x, y, z, Block.bedrock.blockID, 0, 2);
+        world.func_147465_d(x, y, z, Blocks.bedrock, 0, 2);
     }
 
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
-        world.setBlock(x, y, z, Block.mobSpawner.blockID, 0, 2);
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getBlockTileEntity(x, y, z);
+        world.func_147465_d(x, y, z, Blocks.mob_spawner, 0, 2);
+        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.func_147438_o(x, y, z);
         if (mobspawner != null)
         {
-            mobspawner.getSpawnerLogic().setMobID(id);
+            mobspawner.func_145881_a().setMobID(id);
         }
     }
 
@@ -482,8 +418,8 @@ public class RuinTemplateRule
 
     private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
             ItemStack stack = null;
@@ -500,8 +436,8 @@ public class RuinTemplateRule
 
     private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
             ItemStack stack = null;
@@ -525,8 +461,8 @@ public class RuinTemplateRule
 
     private void addHardChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
             ItemStack stack = null;
@@ -550,8 +486,8 @@ public class RuinTemplateRule
 
     private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int items, int meta)
     {
-        world.setBlock(x, y, z, Block.chest.blockID, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getBlockTileEntity(x, y, z);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
             ChestGenHooks info = ChestGenHooks.getInfo(gen);
@@ -561,12 +497,12 @@ public class RuinTemplateRule
 
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender)
     {
-        world.setBlock(x, y, z, Block.commandBlock.blockID, 0, 2);
-        TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getBlockTileEntity(x, y, z);
+        world.func_147465_d(x, y, z, Blocks.command_block, 0, 2);
+        TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.func_147438_o(x, y, z);
         if (tecb != null)
         {
-            tecb.setCommand(command);
-            tecb.setCommandSenderName(sender);
+            tecb.func_145993_a().func_145752_a(command);
+            tecb.func_145993_a().func_145754_b(sender);
         }
     }
 
@@ -580,39 +516,39 @@ public class RuinTemplateRule
             return null;
         case 2:
         case 3:
-            return new ItemStack(Item.bread);
+            return new ItemStack(Items.bread);
         case 4:
         case 5:
-            return new ItemStack(Item.wheat, random.nextInt(8) + 8);
+            return new ItemStack(Items.wheat, random.nextInt(8) + 8);
         case 6:
-            return new ItemStack(Item.hoeIron);
+            return new ItemStack(Items.iron_hoe);
         case 7:
-            return new ItemStack(Item.shovelIron);
+            return new ItemStack(Items.iron_shovel);
         case 8:
         case 9:
-            return new ItemStack(Item.silk, random.nextInt(3) + 1);
+            return new ItemStack(Items.string, random.nextInt(3) + 1);
         case 10:
         case 11:
         case 12:
-            return new ItemStack(Item.seeds, random.nextInt(8) + 8);
+            return new ItemStack(Items.wheat_seeds, random.nextInt(8) + 8);
         case 13:
         case 14:
         case 15:
-            return new ItemStack(Item.bowlEmpty, random.nextInt(2) + 1);
+            return new ItemStack(Items.bowl, random.nextInt(2) + 1);
         case 16:
-            return new ItemStack(Item.bucketEmpty);
+            return new ItemStack(Items.bucket);
         case 17:
-            return new ItemStack(Item.appleRed);
+            return new ItemStack(Items.apple);
         case 18:
         case 19:
-            return new ItemStack(Item.bone, random.nextInt(4) + 1);
+            return new ItemStack(Items.bone, random.nextInt(4) + 1);
         case 20:
         case 21:
-            return new ItemStack(Item.egg, random.nextInt(2) + 1);
+            return new ItemStack(Items.egg, random.nextInt(2) + 1);
         case 22:
-            return new ItemStack(Item.coal, random.nextInt(5) + 3);
+            return new ItemStack(Items.coal, random.nextInt(5) + 3);
         case 23:
-            return new ItemStack(Item.ingotIron, random.nextInt(5) + 3);
+            return new ItemStack(Items.iron_ingot, random.nextInt(5) + 3);
         default:
             return getLootStack(random);
         }
@@ -630,55 +566,53 @@ public class RuinTemplateRule
             return null;
         case 4:
         case 5:
-            return new ItemStack(Item.bootsLeather);
+            return new ItemStack(Items.leather_boots);
         case 6:
         case 7:
-            return new ItemStack(Item.legsLeather);
+            return new ItemStack(Items.leather_leggings);
         case 8:
         case 9:
-            return new ItemStack(Item.flintAndSteel);
+            return new ItemStack(Items.flint_and_steel);
         case 10:
         case 11:
-            return new ItemStack(Item.axeIron);
+            return new ItemStack(Items.iron_axe);
         case 12:
-            return new ItemStack(Item.swordIron);
+            return new ItemStack(Items.iron_sword);
         case 13:
-            return new ItemStack(Item.pickaxeIron);
+            return new ItemStack(Items.iron_pickaxe);
         case 14:
         case 15:
-            return new ItemStack(Item.helmetIron);
+            return new ItemStack(Items.iron_helmet);
         case 16:
-            return new ItemStack(Item.plateChain);
+            return new ItemStack(Items.iron_chestplate);
         case 17:
         case 18:
-            return new ItemStack(Item.book, random.nextInt(3) + 1);
+            return new ItemStack(Items.book, random.nextInt(3) + 1);
         case 19:
-            return new ItemStack(Item.compass);
+            return new ItemStack(Items.compass);
         case 20:
-            return new ItemStack(Item.pocketSundial);
+            return new ItemStack(Items.clock);
         case 21:
-            return new ItemStack(Item.redstone, random.nextInt(12) + 12);
+            return new ItemStack(Items.redstone, random.nextInt(12) + 12);
         case 22:
-            return new ItemStack(Item.appleGold);
+            return new ItemStack(Items.golden_apple);
         case 23:
-            return new ItemStack(Item.bowlSoup, random.nextInt(2) + 1);
+            return new ItemStack(Items.mushroom_stew, random.nextInt(2) + 1);
         case 24:
             return ChestGenHooks.getOneItem(ChestGenHooks.DUNGEON_CHEST, random);
         default:
-            return new ItemStack(Item.diamond, random.nextInt(4));
+            return new ItemStack(Items.diamond, random.nextInt(4));
         }
     }
 
-    private int rotateMetadata(int blockID, int metadata, int dir)
+    private int rotateMetadata(Block blockID, int metadata, int dir)
     {
         // remember that, in this mod, NORTH is the default direction.
         // this method is unused if the direction is NORTH
         int tempdata = 0;
-        switch (blockID)
+        
+        if (blockID == Blocks.rail || blockID == Blocks.golden_rail || blockID == Blocks.detector_rail)
         {
-        case 27:
-        case 28:
-        case 66:
             // minecart tracks
             switch (dir)
             {
@@ -815,10 +749,9 @@ public class RuinTemplateRule
                     return 8;
                 }
             }
-            break;
-        case 64:
-        case 71:
-        case 96:
+        }
+        else if (blockID == Blocks.wooden_door || blockID == Blocks.iron_door || blockID == Blocks.trapdoor)
+        {
             // doors
             if (metadata - 8 >= 0)
             {
@@ -886,17 +819,11 @@ public class RuinTemplateRule
                     return 2 + tempdata;
                 }
             }
-            break;
-        case 50:
-        case 69:
-        case 75:
-        case 76:
-        case 77:
-            // torches, button, lever
-            // check to see if this is a switch or a button and is flagged as
-            // thrown
+        }
+        else if (blockID == Blocks.torch || blockID == Blocks.stone_button || blockID == Blocks.lever || blockID == Blocks.unlit_redstone_torch || blockID == Blocks.redstone_torch)
+        {
             tempdata = 0;
-            if (blockID == 69 || blockID == 77)
+            if (blockID == Blocks.lever || blockID == Blocks.stone_button)
             {
                 if (metadata - 8 > 0)
                 {
@@ -904,7 +831,7 @@ public class RuinTemplateRule
                     metadata -= 8;
                 }
                 // now see if it's a floor switch
-                if (blockID == 69 && (metadata == 5 || metadata == 6))
+                if (blockID == Blocks.lever && (metadata == 5 || metadata == 6))
                 {
                     // we'll leave this as-is
                     return metadata + tempdata;
@@ -972,13 +899,9 @@ public class RuinTemplateRule
                     return 2 + tempdata;
                 }
             }
-            break;
-        case 65:
-        case 23:
-        case 61:
-        case 62:
-        case 68:
-            // Ladders, Wall Signs, Furnaces and Dispensers
+        }
+        else if (blockID == Blocks.ladder || blockID == Blocks.dispenser || blockID == Blocks.furnace || blockID == Blocks.lit_furnace || blockID == Blocks.wall_sign)
+        {
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -1033,8 +956,9 @@ public class RuinTemplateRule
                     return 2;
                 }
             }
-            break;
-        case 106:
+        }
+        else if (blockID == Blocks.vine)
+        {
             /*
              * meta readout N: 8 E: 1 S: 2 W: 4
              */
@@ -1093,13 +1017,10 @@ public class RuinTemplateRule
                     return 2;
                 }
             }
-            break;
-        case 86:
-        case 91:
-        case 93:
-        case 94:
-            // Pumpkins and Jack-O-Lanterns, Redstone Repeaters
-            if (blockID == 93 || blockID == 94)
+        }
+        else if (blockID == Blocks.pumpkin || blockID == Blocks.lit_pumpkin || blockID == Blocks.unpowered_repeater || blockID == Blocks.powered_repeater)
+        {
+            if (blockID == Blocks.unpowered_repeater || blockID == Blocks.powered_repeater)
             {
                 // check for the delay tick for repeaters
                 if (metadata - 4 >= 0)
@@ -1181,9 +1102,9 @@ public class RuinTemplateRule
                     return 2 + tempdata;
                 }
             }
-            break;
-        case 26:
-            // Beds
+        }
+        else if (blockID == Blocks.bed)
+        {
             if (metadata - 8 >= 0)
             {
                 // this is the foot of the bed block.
@@ -1244,9 +1165,9 @@ public class RuinTemplateRule
                     return 2 + tempdata;
                 }
             }
-            break;
-        case 63:
-            // sign posts
+        }
+        else if (blockID == Blocks.standing_sign)
+        {
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -1445,11 +1366,8 @@ public class RuinTemplateRule
                     return 11;
                 }
             }
-        default:
-            return CustomRotationMapping.getMapping(blockID, metadata, dir);
         }
-        // we should never get here, but users can be silly sometimes.
-        return metadata + tempdata;
+        return CustomRotationMapping.getMapping(blockID, metadata, dir);
     }
 
 }

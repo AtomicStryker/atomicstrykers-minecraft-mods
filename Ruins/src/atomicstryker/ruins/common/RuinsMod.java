@@ -12,8 +12,9 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -21,7 +22,6 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.WorldEvent;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -30,10 +30,11 @@ import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "11.0", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "11.1", dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
@@ -49,25 +50,25 @@ public class RuinsMod
     {
         generatorMap = new ConcurrentHashMap<Integer, WorldHandle>();
         currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
-        GameRegistry.registerWorldGenerator(new RuinsWorldGenerator());
+        GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     private long nextInfoTime;
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
         ItemStack is = event.entityPlayer.getCurrentEquippedItem();
-        if (is != null && is.itemID == Item.stick.itemID && System.currentTimeMillis() > nextInfoTime)
+        if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
-            event.entityPlayer.addChatMessage(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.getUnlocalizedName(),
-                    event.block.blockID, event.metadata));
+            event.entityPlayer.func_146105_b(new ChatComponentText(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.func_149732_F(),
+                    event.block, event.metadata)));
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt)
     {
         WorldHandle wh = getWorldHandle(evt.world);
@@ -197,11 +198,11 @@ public class RuinsMod
 
     public static int getBiomeFromName(String name)
     {
-        for (int i = 0; i < BiomeGenBase.biomeList.length; i++)
+        for (int i = 0; i < BiomeGenBase.func_150565_n().length; i++)
         {
-            if (BiomeGenBase.biomeList[i] != null && BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase(name))
+            if (BiomeGenBase.func_150565_n()[i] != null && BiomeGenBase.func_150565_n()[i].biomeName.equalsIgnoreCase(name))
             {
-                return BiomeGenBase.biomeList[i].biomeID;
+                return BiomeGenBase.func_150565_n()[i].biomeID;
             }
         }
 
@@ -311,11 +312,11 @@ public class RuinsMod
         pw.println("anyRuinsMinDistance=0");
         pw.println();
         // print all the biomes!
-        for (int i = 0; i < BiomeGenBase.biomeList.length; i++)
+        for (int i = 0; i < BiomeGenBase.func_150565_n().length; i++)
         {
-            if (BiomeGenBase.biomeList[i] != null)
+            if (BiomeGenBase.func_150565_n()[i] != null)
             {
-                pw.println("specific_" + BiomeGenBase.biomeList[i].biomeName + "=75");
+                pw.println("specific_" + BiomeGenBase.func_150565_n()[i].biomeName + "=75");
             }
         }
         pw.flush();

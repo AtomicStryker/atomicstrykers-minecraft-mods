@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
+import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
 
 /**
@@ -28,19 +29,19 @@ public class CustomRotationMapping
     private static CustomRotationMapping instance;
 
     /**
-     * Maps a numeric blockID to another Map containing the direction Map
+     * Maps a blockID to another Map containing the direction Map
      */
     @SuppressWarnings("rawtypes")
-    private final TreeMap<Integer, TreeMap[]> blockIDMap;
+    private final TreeMap<Block, TreeMap[]> blockIDMap;
 
-    private final ArrayList<Integer> currentBlockIDs;
+    private final ArrayList<Block> currentBlockIDs;
 
     @SuppressWarnings("rawtypes")
     public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
     {
         instance = this;
-        blockIDMap = new TreeMap<Integer, TreeMap[]>();
-        currentBlockIDs = new ArrayList<Integer>();
+        blockIDMap = new TreeMap<Block, TreeMap[]>();
+        currentBlockIDs = new ArrayList<Block>();
 
         File f = new File(fRuinsResources, "rotation_mappings.txt");
         if (!f.exists())
@@ -55,7 +56,7 @@ public class CustomRotationMapping
     }
 
     @SuppressWarnings("unchecked")
-    public static int getMapping(int blockID, int metadata, int dir)
+    public static int getMapping(Block blockID, int metadata, int dir)
     {
         TreeMap<Integer, Integer>[] bIdMap = instance.blockIDMap.get(blockID);
         if (bIdMap == null)
@@ -93,20 +94,7 @@ public class CustomRotationMapping
                     String[] ids = data.split(";");
                     for (String s : ids)
                     {
-                        int i = 0;
-                        try
-                        {
-                            i = Integer.parseInt(s);
-                        }
-                        catch (NumberFormatException e)
-                        {
-                            i = tryFindingBlockOfName(s);
-                            ruinsLogger.printf("Mapped Block name [%s] to ID [%d]\n", s, i);
-                        }
-                        if (i > 0)
-                        {
-                            currentBlockIDs.add(i);
-                        }
+                        currentBlockIDs.add(tryFindingBlockOfName(s));
                     }
                 }
                 else
@@ -130,7 +118,7 @@ public class CustomRotationMapping
                     int result = Integer.parseInt(val[2]);
                     ruinsLogger.printf("Saving Mapping DIR[%d] FROM[%d] TO[%d]\n", dir, metadata, result);
 
-                    for (Integer i : currentBlockIDs)
+                    for (Block i : currentBlockIDs)
                     {
                         putMapping(i, metadata, dir, result);
                     }
@@ -146,7 +134,7 @@ public class CustomRotationMapping
     }
 
     @SuppressWarnings("unchecked")
-    private void putMapping(int blockID, int metadata, int dir, int result)
+    private void putMapping(Block blockID, int metadata, int dir, int result)
     {
         TreeMap<Integer, Integer>[] bIdMap = blockIDMap.get(blockID);
         if (bIdMap == null)
@@ -161,17 +149,10 @@ public class CustomRotationMapping
         bIdMap[dir].put(metadata, result);
     }
 
-    private int tryFindingBlockOfName(String blockName)
+    private Block tryFindingBlockOfName(String blockName)
     {
-        for (Block b : Block.blocksList)
-        {
-            if (b != null && b.getUnlocalizedName() != null && b.getUnlocalizedName().equals(blockName))
-            {
-                return b.blockID;
-            }
-        }
-
-        return -1;
+        // it returns Blocks.air when nothing is found, ok
+        return GameData.blockRegistry.getObject(blockName);
     }
 
 }

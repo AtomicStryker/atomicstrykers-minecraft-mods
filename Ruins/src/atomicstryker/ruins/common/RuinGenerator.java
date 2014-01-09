@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -339,7 +340,7 @@ public class RuinGenerator
                 if (stats.biomes[i] != 0)
                 {
                     if (i != RuinsMod.BIOME_NONE)
-                        System.out.println(BiomeGenBase.biomeList[i].biomeName + ": " + stats.biomes[i] + " Biome building attempts");
+                        System.out.println(BiomeGenBase.func_150565_n()[i].biomeName + ": " + stats.biomes[i] + " Biome building attempts");
                     else
                         System.out.println("Any-Biome: " + stats.biomes[i] + " building attempts");
                 }
@@ -447,12 +448,12 @@ public class RuinGenerator
                 // from the top. Find the first air block from the ceiling
                 for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
                 {
-                    if (world.getBlockId(x, y, z) == 0)
+                    if (world.func_147439_a(x, y, z) == Blocks.air)
                     {
                         // now find the first non-air block from here
                         for (; y > -1; y--)
                         {
-                            if (!r.isAir(world.getBlockId(x, y, z)))
+                            if (!r.isAir(world.func_147439_a(x, y, z)))
                             {
                                 if (r.isAcceptable(world, x, y, z))
                                 {
@@ -468,7 +469,7 @@ public class RuinGenerator
                 // from the bottom. find the first air block from the floor
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++)
                 {
-                    if (!r.isAir(world.getBlockId(x, y, z)))
+                    if (!r.isAir(world.func_147439_a(x, y, z)))
                     {
                         if (r.isAcceptable(world, x, y - 1, z))
                         {
@@ -487,7 +488,7 @@ public class RuinGenerator
                 {
                     return y;
                 }
-                if (!r.isAir(world.getBlockId(x, y, z)))
+                if (!r.isAir(world.func_147439_a(x, y, z)))
                 {
                     return -1;
                 }

@@ -118,18 +118,20 @@ public class RuinHandler
              * dynamic Biome config loader, gets all information straight from
              * BiomeGenBase
              */
-            for (int x = 0; x < BiomeGenBase.biomeList.length; x++)
+            BiomeGenBase bgb;
+            for (int x = 0; x < BiomeGenBase.func_150565_n().length; x++)
             {
-                if (BiomeGenBase.biomeList[x] != null)
+                bgb = BiomeGenBase.func_150565_n()[x];
+                if (bgb != null)
                 {
                     try
                     {
-                        loadSpecificTemplates(pw, templPath, BiomeGenBase.biomeList[x].biomeID, BiomeGenBase.biomeList[x].biomeName);
-                        pw.println("Loaded " + BiomeGenBase.biomeList[x].biomeName + " ruins templates, biomeID " + BiomeGenBase.biomeList[x].biomeID);
+                        loadSpecificTemplates(pw, templPath, bgb.biomeID, bgb.biomeName);
+                        pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
                     }
                     catch (Exception e)
                     {
-                        printErrorToLog(pw, e, "There was an error when loading the " + BiomeGenBase.biomeList[x].biomeName + " ruins templates:");
+                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.biomeName + " ruins templates:");
                     }
                 }
             }
@@ -350,9 +352,9 @@ public class RuinHandler
                 read = read.split("_")[1];
                 check = read.split("=");
                 boolean found = false;
-                for (int i = 0; i < BiomeGenBase.biomeList.length; i++)
+                for (int i = 0; i < BiomeGenBase.func_150565_n().length; i++)
                 {
-                    if (BiomeGenBase.biomeList[i] != null && BiomeGenBase.biomeList[i].biomeName.equalsIgnoreCase(check[0]))
+                    if (BiomeGenBase.func_150565_n()[i] != null && BiomeGenBase.func_150565_n()[i].biomeName.equalsIgnoreCase(check[0]))
                     {
                         vars[CHANCE][i] = Integer.parseInt(check[1]);
                         if (!disableLogging)
@@ -389,7 +391,7 @@ public class RuinHandler
                 check = check[1].split(";");
                 int biome = Integer.parseInt(check[0]);
                 removeTemplate(check[1], biome);
-                pw.println("Excluded from biome " + BiomeGenBase.biomeList[biome].biomeName + ": " + check[1]);
+                pw.println("Excluded from biome " + BiomeGenBase.func_150565_n()[biome].biomeName + ": " + check[1]);
             }
             read = br.readLine();
         }
@@ -413,19 +415,21 @@ public class RuinHandler
                         targetList.add(r);
 
                         String candidate;
+                        BiomeGenBase bgb;
                         for (String biomeName : ((RuinTemplate) r).getBiomesToSpawnIn())
                         {
-                            for (int x = 0; x < BiomeGenBase.biomeList.length; x++)
+                            for (int x = 0; x < BiomeGenBase.func_150565_n().length; x++)
                             {
-                                if (BiomeGenBase.biomeList[x] != null)
+                                bgb = BiomeGenBase.func_150565_n()[x];
+                                if (bgb != null)
                                 {
-                                    candidate = BiomeGenBase.biomeList[x].biomeName.toLowerCase();
+                                    candidate = bgb.biomeName.toLowerCase();
                                     if (candidate.equals(biomeName))
                                     {
-                                        if (BiomeGenBase.biomeList[x].biomeID != biomeID)
+                                        if (bgb.biomeID != biomeID)
                                         {
                                             templates.get(x).add(r);
-                                            pw.println("template " + f.getName() + "also registered for Biome " + BiomeGenBase.biomeList[x].biomeName);
+                                            pw.println("template " + f.getName() + "also registered for Biome " + bgb.biomeName);
                                         }
                                         break;
                                     }

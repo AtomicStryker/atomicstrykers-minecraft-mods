@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
 public interface RuinIBuildable
@@ -14,9 +15,9 @@ public interface RuinIBuildable
 
     public boolean isUnique();
 
-    public boolean isAir(int blockID);
+    public boolean isAir(Block blockID);
 
-    public boolean preserveBlock(int blockID);
+    public boolean preserveBlock(Block blockID);
 
     public boolean isAcceptable(World world, int x, int y, int z);
 

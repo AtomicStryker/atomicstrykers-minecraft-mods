@@ -7,13 +7,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import cpw.mods.fml.common.registry.GameData;
 
 public class RuinTemplate implements RuinIBuildable
 {
 
     private final String name;
-    private int[] targets;
+    private Block[] targets;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 0, lbuffer = 0, cutIn = 0, cbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false, preservePlants = false, unique = false;
@@ -81,132 +84,101 @@ public class RuinTemplate implements RuinIBuildable
         return unique;
     }
 
-    public boolean isAir(int blockID)
+    public boolean isAir(Block blockID)
     {
-        if (blockID == 0)
+        if (blockID == Blocks.air)
         {
             return true;
         }
         // treat snow and most plants as air too
-        if (blockID == 30)
+        if (blockID == Blocks.web)
         {
             return true;
         }
-        if (blockID == 31)
+        if (isPlant(blockID))
         {
             return true;
         }
-        if (blockID == 32)
-        {
-            return true;
-        }
-        if (blockID == 37)
-        {
-            return true;
-        }
-        if (blockID == 38)
-        {
-            return true;
-        }
-        if (blockID == 39)
-        {
-            return true;
-        }
-        if (blockID == 40)
-        {
-            return true;
-        }
-        if (blockID == 59)
-        {
-            return true;
-        }
-        if (blockID == 78)
-        {
-            return true;
-        }
-        if (blockID == 106)
-        {
-            return true;
-        }
-        if (blockID == 111)
-        {
-            return true;
-        }
+
         return preserveBlock(blockID);
     }
+    
+    private boolean isPlant(Block blockID)
+    {
+        if (blockID == Blocks.deadbush)
+        {
+            return true;
+        }
+        if (blockID == Blocks.tallgrass)
+        {
+            return true;
+        }
+        if (blockID == Blocks.yellow_flower)
+        {
+            return true;
+        }
+        if (blockID == Blocks.red_flower)
+        {
+            return true;
+        }
+        if (blockID == Blocks.brown_mushroom)
+        {
+            return true;
+        }
+        if (blockID == Blocks.red_mushroom)
+        {
+            return true;
+        }
+        if (blockID == Blocks.wheat)
+        {
+            return true;
+        }
+        if (blockID == Blocks.snow_layer)
+        {
+            return true;
+        }
+        if (blockID == Blocks.vine)
+        {
+            return true;
+        }
+        if (blockID == Blocks.waterlily)
+        {
+            return true;
+        }
+        return false;
+    }
 
-    public boolean preserveBlock(int blockID)
+    public boolean preserveBlock(Block blockID)
     {
         if (preserveWater)
         {
-            if (blockID == 8)
+            if (blockID == Blocks.flowing_water)
             {
                 return true;
             }
-            if (blockID == 9)
+            if (blockID == Blocks.water)
             {
                 return true;
             }
-            if (blockID == 79)
+            if (blockID == Blocks.ice)
             {
                 return true;
             }
         }
         if (preserveLava)
         {
-            if (blockID == 10)
+            if (blockID == Blocks.flowing_lava)
             {
                 return true;
             }
-            if (blockID == 11)
+            if (blockID == Blocks.lava)
             {
                 return true;
             }
         }
         if (preservePlants)
         {
-            if (blockID == 17)
-            {
-                return true;
-            }
-            if (blockID == 18)
-            {
-                return true;
-            }
-            if (blockID == 81)
-            {
-                return true;
-            }
-            if (blockID == 83)
-            {
-                return true;
-            }
-            if (blockID == 86)
-            {
-                return true;
-            }
-            if (blockID == 100)
-            {
-                return true;
-            }
-            // if( blockID == 103 ) { return true; }
-            if (blockID == 99)
-            {
-                return true;
-            }
-            if (blockID == 104)
-            {
-                return true;
-            }
-            if (blockID == 105)
-            {
-                return true;
-            }
-            if (blockID == 106)
-            {
-                return true;
-            }
-            if (blockID == 111)
+            if (isPlant(blockID))
             {
                 return true;
             }
@@ -217,7 +189,7 @@ public class RuinTemplate implements RuinIBuildable
     public boolean isAcceptable(World world, int x, int y, int z)
     {
         // checks if the square is acceptable for a ruin to be built upon
-        int id = world.getBlockId(x, y, z);
+        Block id = world.func_147439_a(x, y, z);
         for (int i = 0; i < targets.length; i++)
         {
             if (id == targets[i])
@@ -251,7 +223,7 @@ public class RuinTemplate implements RuinIBuildable
         {
             for (int z1 = 0; z1 < zDim; z1++)
             {
-                if (!(isAir(world.getBlockId(x + x1, y, z + z1)) || isAcceptable(world, x + x1, y, z + z1)))
+                if (!(isAir(world.func_147439_a(x + x1, y, z + z1)) || isAcceptable(world, x + x1, y, z + z1)))
                 {
                     // stats.BadBlockFails++;
                     return false;
@@ -272,7 +244,7 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = (0 - lbuffer); z1 < (zDim + lbuffer * 2); z1++)
                 {
-                    if (isAir(world.getBlockId(x + x1, y - (leveling + 1), z + z1)))
+                    if (isAir(world.func_147439_a(x + x1, y - (leveling + 1), z + z1)))
                     {
                         // stats.LevelingFails++;
                         return false;
@@ -291,7 +263,7 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = 0; z1 < zDim; z1++)
                 {
-                    if (world.getBlockId(x + x1, y - 1, z + z1) == 0)
+                    if (world.func_147439_a(x + x1, y - 1, z + z1) == Blocks.air)
                     {
                         aircount++;
                     }
@@ -317,7 +289,7 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = (0 - cbuffer); z1 < (zDim + 2 * cbuffer); z1++)
                 {
-                    if (!isAir(world.getBlockId(x + x1, y + cutHeight, z + z1)))
+                    if (!isAir(world.func_147439_a(x + x1, y + cutHeight, z + z1)))
                     {
                         // stats.CutInFails++;
                         return false;
@@ -335,7 +307,7 @@ public class RuinTemplate implements RuinIBuildable
                 {
                     for (int z1 = 0; z1 < zDim; z1++)
                     {
-                        if (!isAir(world.getBlockId(x + x1, y + y1, z + z1)))
+                        if (!isAir(world.func_147439_a(x + x1, y + y1, z + z1)))
                         {
                             // stats.NoAirAboveFails++;
                             return false;
@@ -416,7 +388,7 @@ public class RuinTemplate implements RuinIBuildable
         }
         if (leveling > 0)
         {
-            levelSite(world, world.getBlockId(xBase, y, zBase), xBase, y, zBase, eastwest);
+            levelSite(world, world.func_147439_a(xBase, y, zBase), xBase, y, zBase, eastwest);
         }
 
         int rulenum;
@@ -456,7 +428,7 @@ public class RuinTemplate implements RuinIBuildable
                         // later, or if the behavior breaks something
                         // if ((curRule.condition <= 0 ? 0 - curRule.condition :
                         // curRule.condition) > 3) {
-                        world.setBlock(x + x1, y + y_off, z + z1, 0, 0, 3); // }
+                        world.func_147465_d(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
                     }
                     else if (curRule.runLast())
                     {
@@ -465,7 +437,7 @@ public class RuinTemplate implements RuinIBuildable
                         // later, or if the behavior breaks something
                         // if ((curRule.condition <= 0 ? 0 - curRule.condition :
                         // curRule.condition) > 3) {
-                        world.setBlock(x + x1, y + y_off, z + z1, 0, 0, 3); // }
+                        world.func_147465_d(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
                     }
                     else
                     {
@@ -480,7 +452,9 @@ public class RuinTemplate implements RuinIBuildable
 
         // get the late runs and finish up
         doLateRuns(world, random, laterun, lastrun);
-        world.markBlockRangeForRenderUpdate(xBase, y + 1 - embed, zBase, xBase + xDim, y + (1 - embed) + height, zBase + zDim);
+        
+        // TODO see if this needs to be added back in, i dont think so
+        //world.markBlockRangeForRenderUpdate(xBase, y + 1 - embed, zBase, xBase + xDim, y + (1 - embed) + height, zBase + zDim);
     }
 
     private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun)
@@ -532,16 +506,16 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = 0; z1 < zDim; z1++)
                 {
-                    if (!preserveBlock(world.getBlockId(x + x1, y + y1, z + z1)))
+                    if (!preserveBlock(world.func_147439_a(x + x1, y + y1, z + z1)))
                     {
-                        world.setBlock(x + x1, y + y1, z + z1, 0, 0, 3);
+                        world.func_147465_d(x + x1, y + y1, z + z1, Blocks.air, 0, 3);
                     }
                 }
             }
         }
     }
 
-    private void levelSite(World world, int fillBlockID, int xBase, int y, int zBase, boolean eastwest)
+    private void levelSite(World world, Block fillBlockID, int xBase, int y, int zBase, boolean eastwest)
     {
         /*
          * Add blocks around the build site to level it in as needed. setup some
@@ -570,9 +544,9 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = 0; z1 < zDim; z1++)
                 {
-                    if (isAir(world.getBlockId(x + x1, y + y1, z + z1)))
+                    if (isAir(world.func_147439_a(x + x1, y + y1, z + z1)))
                     {
-                        world.setBlock(x + x1, y + y1, z + z1, fillBlockID, 0, 3);
+                        world.func_147465_d(x + x1, y + y1, z + z1, fillBlockID, 0, 3);
                     }
                 }
             }
@@ -637,10 +611,10 @@ public class RuinTemplate implements RuinIBuildable
                     {
                         throw new Exception("No targets specified!");
                     }
-                    targets = new int[check.length];
+                    targets = new Block[check.length];
                     for (int x = 0; x < check.length; x++)
                     {
-                        targets[x] = Integer.parseInt(check[x]);
+                        targets[x] = GameData.blockRegistry.getObject(check[x]);
                     }
                 }
                 if (line.startsWith("dimensions"))
