@@ -1,24 +1,22 @@
 package atomicstryker.magicyarn.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
-import atomicstryker.PacketWrapper;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
+import atomicstryker.magicyarn.common.network.PacketDispatcher;
+import atomicstryker.magicyarn.common.network.PacketDispatcher.WrappedPacket;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class MagicYarnClient implements IProxy, IAStarPathedEntity
 {
@@ -39,15 +37,8 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
           
         clientTicker = new ClientTickHandler(this, mcinstance);
         mpYarnInstance = new MPMagicYarn(mcinstance, this);
-        
-        TickRegistry.registerTickHandler(clientTicker, Side.CLIENT);
-    }
-    
-    @Override
-    public void onConnectedToNewServer()
-    {
-        PacketDispatcher.sendPacketToServer(PacketWrapper.createPacket("MagicYarn", 1, null));
-        mpYarnInstance.onCheckingHasServerMod();
+        FMLCommonHandler.instance().bus().register(mpYarnInstance);        
+        FMLCommonHandler.instance().bus().register(clientTicker);
     }
     
     public void onServerAnsweredChallenge()
@@ -84,7 +75,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             
             mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.levelup", 1.0F, 1.0F, false);
             
-            sendPathToServer(mcinstance.thePlayer.username, clientTicker.path);
+            sendPathToServer(mcinstance.thePlayer.func_146103_bH().getName(), clientTicker.path);
         }
         else if (!noSound)
         {
@@ -220,80 +211,57 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             return;
         }
         
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        DataOutputStream data = new DataOutputStream(bytes);
-        
         /*
          * Packet spec: It starts with the int id 2, followed by the path owner's username String,
          * followed by an int depicting the count of AStarNodes being transferred,
          * followed by the path AStarNodes as triplets of ints x,y,z. Parents can be reconstructed
          * as the previous AStarNode in the series, the list is sorted.
          */
-        try
+        
+        ByteBuf data = Unpooled.buffer();
+        ByteBufUtils.writeUTF8String(data, username);
+        data.writeLong(path.size());
+        for (AStarNode n : path)
         {
-            data.write(2);
-            data.writeUTF(username);
-            data.writeLong(path.size());
-            for (AStarNode n : path)
-            {
-                data.writeInt(n.x);
-                data.writeInt(n.y);
-                data.writeInt(n.z);
-            }
+            data.writeInt(n.x);
+            data.writeInt(n.y);
+            data.writeInt(n.z);
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        Packet250CustomPayload packet = new Packet250CustomPayload();
-        packet.channel = "MagicYarn";
-        packet.data = bytes.toByteArray();
-        packet.length = packet.data.length;
-        PacketDispatcher.sendPacketToServer(packet);
+        
+        PacketDispatcher.sendPacketToServer(new WrappedPacket(2, data));
     }
     
-    public void onReceivedPathPacket(DataInputStream data)
+    public void onReceivedPathPacket(ByteBuf data)
     {
-        try
+        short len = data.readShort();
+        char[] chars = new char[len];
+        for (int i = 0; i < len; i++)
+            chars[i] = data.readChar();
+        String username = String.valueOf(chars);
+        
+        if (username.equals(mcinstance.thePlayer.func_146103_bH().getName()))
         {
-            String username = data.readUTF();
-            if (username.equals(mcinstance.thePlayer.username))
-            {
-                return;
-            }
-            int nodes = data.readInt();
-            AStarNode[] out = new AStarNode[nodes];
-            int i = 0;
-            AStarNode read;
-            AStarNode prevN = null;
-            while (nodes > 0)
-            {
-                read = new AStarNode(data.readInt(), data.readInt(), data.readInt(), 0, prevN);
-                out[i] = read;
-                prevN = read;
-                i++;
-                nodes--;
-            }
-            clientTicker.addOtherPath(username, out);
+            return;
         }
-        catch (IOException e)
+        int nodes = data.readInt();
+        AStarNode[] out = new AStarNode[nodes];
+        int i = 0;
+        AStarNode read;
+        AStarNode prevN = null;
+        while (nodes > 0)
         {
-            e.printStackTrace();
+            read = new AStarNode(data.readInt(), data.readInt(), data.readInt(), 0, prevN);
+            out[i] = read;
+            prevN = read;
+            i++;
+            nodes--;
         }
+        clientTicker.addOtherPath(username, out);
     }
 
-    public void onReceivedPathDeletionPacket(DataInputStream data)
+    public void onReceivedPathDeletionPacket(ByteBuf data)
     {
-        try
-        {
-            String username = data.readUTF();
-            clientTicker.removeOtherPath(username);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        clientTicker.removeOtherPath(ByteBufUtils.readUTF8String(data));
     }
     
 }

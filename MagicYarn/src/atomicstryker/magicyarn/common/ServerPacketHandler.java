@@ -1,25 +1,18 @@
 package atomicstryker.magicyarn.common;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import atomicstryker.PacketWrapper;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import atomicstryker.magicyarn.common.network.PacketDispatcher;
+import atomicstryker.magicyarn.common.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.magicyarn.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.magicyarn.common.network.PacketWrapper;
 
 public class ServerPacketHandler implements IPacketHandler
 {
-
+    
     @Override
-    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
     {
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-        int packetType = PacketWrapper.readPacketID(data);
-        
         if (packetType == 1)
         {
             PacketDispatcher.sendPacketToPlayer(PacketWrapper.createPacket("MagicYarn", 1, null), player);

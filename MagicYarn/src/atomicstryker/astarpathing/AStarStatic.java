@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -40,9 +41,9 @@ public class AStarStatic
 	 */
 	public static boolean isViable(World worldObj, int x, int y, int z, int yoffset)
 	{
-	    int id = worldObj.getBlockId(x, y, z);
+	    Block id = worldObj.func_147439_a(x, y, z);
 
-	    if (id == Block.ladder.blockID && isPassableBlock(worldObj, x, y+1, z))
+	    if (id == Blocks.ladder && isPassableBlock(worldObj, x, y+1, z))
 	    {
 	        return true;
 	    }
@@ -55,9 +56,8 @@ public class AStarStatic
 	    
 	    if (isPassableBlock(worldObj, x, y-1, z))
 	    {
-	        if (id > 0
-	        && Block.blocksList[id] != null
-	        && !Block.blocksList[id].getBlocksMovement(worldObj, x, y-1, z))
+	        if (id != Blocks.air
+	        && !id.func_149655_b(worldObj, x, y-1, z))
 	        {
 	            // is a traversable fluid, allow navigating
 	        }
@@ -94,13 +94,7 @@ public class AStarStatic
 	 */
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
-		int id = worldObj.getBlockId(ix, iy, iz);
-		if (id != 0)
-		{
-			return !Block.blocksList[id].blockMaterial.isSolid();
-		}
-
-		return true;
+		return worldObj.func_147439_a(ix, iy, iz).func_149688_o().isSolid();
 	}
 	
 	public static int getIntCoordFromDoubleCoord(double input)
@@ -205,14 +199,9 @@ public class AStarStatic
 		}
 	};
 	
-	public static boolean isLadder(World world, int blockID, int x, int y, int z)
+	public static boolean isLadder(World world, Block blockID, int x, int y, int z)
 	{
-	    Block b = Block.blocksList[blockID];
-	    if (b != null)
-	    {
-	        return b.isLadder(world, x, y, z, null);
-	    }
-	    return false;
+	    return blockID.isLadder(world, x, y, z, null);
 	}
 	
 	/**

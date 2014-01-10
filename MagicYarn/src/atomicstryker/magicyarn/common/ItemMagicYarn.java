@@ -1,6 +1,6 @@
 package atomicstryker.magicyarn.common;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -10,15 +10,15 @@ import net.minecraft.world.World;
 
 public class ItemMagicYarn extends Item
 {
-	public ItemMagicYarn(int var1)
+	public ItemMagicYarn()
 	{
-		super(var1);
+		super();
 		this.setMaxDamage(64);
 		this.setMaxStackSize(1);
 	}
 	
 	@Override
-    public void registerIcons(IconRegister iconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
         itemIcon = iconRegister.registerIcon("magicyarn:magicYarn");
     }
@@ -65,8 +65,8 @@ public class ItemMagicYarn extends Item
 	}
 	
     @Override
-    public String getItemDisplayName(ItemStack itemStack)
+    public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return EnumChatFormatting.GOLD+super.getItemDisplayName(itemStack);
+        return EnumChatFormatting.GOLD+super.getItemStackDisplayName(itemStack);
     }
 }

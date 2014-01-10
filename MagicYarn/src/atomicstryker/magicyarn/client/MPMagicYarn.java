@@ -1,17 +1,17 @@
 package atomicstryker.magicyarn.client;
 
-import java.util.EnumSet;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 
 import org.lwjgl.input.Keyboard;
 
 import atomicstryker.magicyarn.common.MagicYarn;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
-import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class MPMagicYarn
 {
@@ -20,42 +20,30 @@ public class MPMagicYarn
     private long timeStartedHoldingButton;
     private boolean serverDoesNotHaveMod;
     private boolean messageShown;
+    
+    private KeyBinding clientKey;
+    private KeyBinding playerKey;
 
     public MPMagicYarn(Minecraft mc, MagicYarnClient client)
     {
         mcinstance = mc;
         timeStartedHoldingButton = 0;
-        serverDoesNotHaveMod = false;
+        serverDoesNotHaveMod = true;
         messageShown = false;
-
-        KeyBinding[] ckey = { new KeyBinding("MagicYarn Clientkey", Keyboard.KEY_J) };
-        KeyBinding[] pkey = { new KeyBinding("MagicYarn Playerkey", Keyboard.KEY_K) };
-        boolean[] repeat = {false};
-        KeyBindingRegistry.registerKeyBinding(new TriggerKey(ckey, repeat));
-        KeyBindingRegistry.registerKeyBinding(new PlayerKey(pkey, repeat));
-
+        
+        clientKey = new KeyBinding("MagicYarn Clientkey", Keyboard.KEY_J, "key.categories.misc");
+        playerKey = new KeyBinding("MagicYarn Playerkey", Keyboard.KEY_K, "key.categories.misc");
+        
+        ClientRegistry.registerKeyBinding(clientKey);
+        ClientRegistry.registerKeyBinding(playerKey);
     }
-
-    private class TriggerKey extends KeyHandler
+    
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent tick)
     {
-        private final EnumSet<TickType> tickTypes;
-
-        public TriggerKey(KeyBinding[] keyBindings, boolean[] repeatings)
+        if (tick.phase == Phase.END)
         {
-            super(keyBindings, repeatings);
-            tickTypes = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "MagicYarn Clientkey";
-        }
-
-        @Override
-        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
-        {
-            if (tickEnd)
+            if (clientKey.func_151470_d())
             {
                 if (serverDoesNotHaveMod)
                 {
@@ -71,93 +59,45 @@ public class MPMagicYarn
                 else if (mcinstance.currentScreen == null && !messageShown)
                 {
                     messageShown = true;
-                    mcinstance.thePlayer.addChatMessage("This server has Magic Yarn installed. Craft the Item!");
+                    mcinstance.thePlayer.func_145747_a(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
                 }
             }
-        }
-
-        @Override
-        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
-        {
-            if (timeStartedHoldingButton != 0)
+            else
             {
-                MagicYarn.proxy.onPlayerUsedYarn(mcinstance.theWorld, mcinstance.thePlayer, (float)((System.currentTimeMillis()-timeStartedHoldingButton)/1000));
-                timeStartedHoldingButton = 0L;
+                if (timeStartedHoldingButton != 0)
+                {
+                    MagicYarn.proxy.onPlayerUsedYarn(mcinstance.theWorld, mcinstance.thePlayer, (float)((System.currentTimeMillis()-timeStartedHoldingButton)/1000));
+                    timeStartedHoldingButton = 0L;
+                }
             }
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-    }
-
-    private class PlayerKey extends KeyHandler
-    {
-        private final EnumSet<TickType> tickTypes;
-
-        public PlayerKey(KeyBinding[] keyBindings, boolean[] repeatings)
-        {
-            super(keyBindings, repeatings);
-            tickTypes = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "MagicYarn Playerkey";
-        }
-
-        @Override
-        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
-        {
-        }
-
-        @Override
-        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
-        {
-            if (mcinstance.currentScreen == null && tickEnd)
+            
+            if (mcinstance.currentScreen == null && playerKey.func_151470_d())
             {
                 if (!serverDoesNotHaveMod)
                 {
                     ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
-                    if (curItem != null && curItem.itemID == MagicYarn.magicYarn.itemID)
+                    if (curItem != null && curItem.getItem() == MagicYarn.magicYarn)
                     {
-                        mcinstance.displayGuiScreen(new GuiNavigateToPlayer()); 
+                        mcinstance.func_147108_a(new GuiNavigateToPlayer()); 
                     }
                     else if (!messageShown)
                     {
                         messageShown = true;
-                        mcinstance.thePlayer.addChatMessage("This server has Magic Yarn installed. Craft the Item!");
+                        mcinstance.thePlayer.func_145747_a(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
                     }
                 }
                 else if (mcinstance.currentScreen == null)
                 {
-                    mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
+                    mcinstance.func_147108_a(new GuiNavigateToPlayer());
                 }
             }
         }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-    }
-    
-    public void onCheckingHasServerMod()
-    {
-        serverDoesNotHaveMod = true;
-        messageShown = false;
     }
 
     public void onServerHasMod()
     {
         serverDoesNotHaveMod = false;
-        mcinstance.thePlayer.addChatMessage("Magic Yarn found on server.");
+        mcinstance.thePlayer.func_145747_a(new ChatComponentText("Magic Yarn found on server."));
     }
     
     public boolean getHasServerMod()
