@@ -329,7 +329,7 @@ public class InfernalMobsCore
                     {
                         proxy.getRareMobs().put(entity, mod);
                         mod.onSpawningComplete(entity);
-                        // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.entityId+": "+mod.getLinkedModName());
+                        // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.func_145782_y()+": "+mod.getLinkedModName());
                     }
                 }
             }
@@ -766,7 +766,7 @@ public class InfernalMobsCore
             {
                 if (!mob.worldObj.loadedEntityList.contains(mob))
                 {
-                    // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.entityId+" from rareMobs");
+                    // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.func_145782_y()+" from rareMobs");
                     removeEntFromElites((EntityLivingBase) mob);
                 }
             }
