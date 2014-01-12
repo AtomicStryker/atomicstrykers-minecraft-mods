@@ -8,10 +8,10 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import atomicstryker.petbat.common.network.ForgePacketWrapper;
+import atomicstryker.petbat.common.network.PacketDispatcher;
 
 public class GuiPetBatRename extends GuiScreen
 {
@@ -50,20 +50,20 @@ public class GuiPetBatRename extends GuiScreen
     {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        textfield = new GuiTextField(fontRenderer, this.width / 2 - 75, 60, 150, 20);
-        textfield.setTextColor(-1);
-        textfield.setMaxStringLength(30);
-        textfield.setFocused(true);
-        textfield.setText(ItemPocketedPetBat.getBatNameFromItemStack(petBatItemStack));
+        textfield = new GuiTextField(field_146289_q, this.field_146294_l / 2 - 75, 60, 150, 20);
+        textfield.func_146193_g(-1);
+        textfield.func_146203_f(30);
+        textfield.func_146195_b(true);
+        textfield.func_146180_a(ItemPocketedPetBat.getBatNameFromItemStack(petBatItemStack));
     }
     
     /**
      * Called when the screen is unloaded. Used to disable keyboard repeat events
      */
     @Override
-    public void onGuiClosed()
+    public void func_146281_b()
     {
-        super.onGuiClosed();
+        super.func_146281_b();
         Keyboard.enableRepeatEvents(false);
     }
     
@@ -73,11 +73,11 @@ public class GuiPetBatRename extends GuiScreen
     @Override
     protected void keyTyped(char par1, int par2)
     {
-        if (textfield.textboxKeyTyped(par1, par2))
+        if (textfield.func_146201_a(par1, par2))
         {
-            if (!textfield.getText().equals(""))
+            if (!textfield.func_146179_b().equals(""))
             {
-                Object[] toSend = {textfield.getText()};
+                Object[] toSend = {textfield.func_146179_b()};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("PetBat", 1, toSend));   
             }
         }
@@ -94,7 +94,7 @@ public class GuiPetBatRename extends GuiScreen
     protected void mouseClicked(int par1, int par2, int par3)
     {
         super.mouseClicked(par1, par2, par3);
-        this.textfield.mouseClicked(par1, par2, par3);
+        this.textfield.func_146192_a(par1, par2, par3);
     }
     
     /**
@@ -103,7 +103,7 @@ public class GuiPetBatRename extends GuiScreen
     @Override
     public void updateScreen()
     {
-        textfield.updateCursorCounter();
+        textfield.func_146178_a();
     }
 
     /**
@@ -112,30 +112,30 @@ public class GuiPetBatRename extends GuiScreen
     @Override
     public void drawScreen(int par1, int par2, float par3)
     {
-        this.drawDefaultBackground();
+        this.func_146276_q_();
         
-        int x = this.width / 2;        
-        this.drawCenteredString(this.fontRenderer, this.screenTitle, x, 40, 0x0000AA);
+        int x = this.field_146294_l / 2;        
+        this.drawCenteredString(this.field_146289_q, this.screenTitle, x, 40, 0x0000AA);
         
         int y = 100;
-        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Level "+EnumChatFormatting.RESET+this.level+" "+this.levelTitle), x, y, 0xFFFFFF);
+        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD+"Level "+EnumChatFormatting.RESET+this.level+" "+this.levelTitle), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Experience: "+EnumChatFormatting.RESET+this.xp+(xpToNext == -1 ? "" : ", missing for next level: "+xpToNext)), x, y, 0xFFFFFF);
+        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD+"Experience: "+EnumChatFormatting.RESET+this.xp+(xpToNext == -1 ? "" : ", missing for next level: "+xpToNext)), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Health: "+EnumChatFormatting.RESET+this.health+" / "+this.maxHealth), x, y, 0xFFFFFF);
+        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD+"Health: "+EnumChatFormatting.RESET+this.health+" / "+this.maxHealth), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRenderer, (EnumChatFormatting.BOLD+"Attack Power: "+EnumChatFormatting.RESET+this.attackStrength), x, y, 0xFFFFFF);
+        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD+"Attack Power: "+EnumChatFormatting.RESET+this.attackStrength), x, y, 0xFFFFFF);
         
         y += 30;
-        drawCenteredString(fontRenderer, EnumChatFormatting.ITALIC+levelDesc, x, y, 0xC82536);
+        drawCenteredString(field_146289_q, EnumChatFormatting.ITALIC+levelDesc, x, y, 0xC82536);
         
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);
+        GL11.glTranslatef((float)(this.field_146294_l / 2), 0.0F, 50.0F);
         float var4 = 93.75F;
         GL11.glScalef(-var4, -var4, -var4);
         GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
         GL11.glPopMatrix();
-        textfield.drawTextBox();
+        textfield.func_146194_f();
         super.drawScreen(par1, par2, par3);
     }
     

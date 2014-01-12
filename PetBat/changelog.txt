@@ -1,3 +1,6 @@
+1.2.8
+update to mc 1.7.2
+
 1.2.7
 Introduces bat flute, which is placed in a player's inventory upon owning a pet bat flying in the world.
 Using the bat flute removes it and recalls the bat to the player inventory.

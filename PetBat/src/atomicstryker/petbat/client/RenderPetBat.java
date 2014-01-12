@@ -50,7 +50,7 @@ public class RenderPetBat extends RenderLiving
         String name = ((EntityPetBat)par1EntityLivingBase).getDisplayName();
         if (!name.equals(""))
         {
-            renderLivingLabel(par1EntityLivingBase, name, par2, par4-1D, par6, 64);
+            func_147906_a(par1EntityLivingBase, name, par2, par4-1D, par6, 64);
         }
         super.passSpecialRender(par1EntityLivingBase, par2, par4, par6);
     }
@@ -77,7 +77,7 @@ public class RenderPetBat extends RenderLiving
     }
 
     @Override
-    public void doRenderLiving(EntityLivingBase par1EntityLivingBase, double par2, double par4, double par6, float par8, float par9)
+    public void doRender(EntityLivingBase par1EntityLivingBase, double par2, double par4, double par6, float par8, float par9)
     {
         this.renderBat((EntityPetBat)par1EntityLivingBase, par2, par4, par6, par8, par9);
     }
@@ -96,7 +96,7 @@ public class RenderPetBat extends RenderLiving
 
     private void renderBat(EntityPetBat par1EntityPetBat, double par2, double par4, double par6, float par8, float par9)
     {
-        super.doRenderLiving(par1EntityPetBat, par2, par4, par6, par8, par9);
+        super.func_110827_b(par1EntityPetBat, par2, par4, par6, par8, par9);
     }
 
     private void scaleBat(EntityPetBat par1EntityPetBat, float par2)

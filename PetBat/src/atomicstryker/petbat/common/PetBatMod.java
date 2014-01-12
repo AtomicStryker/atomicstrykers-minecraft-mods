@@ -3,27 +3,26 @@ package atomicstryker.petbat.common;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Property;
-import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import atomicstryker.petbat.client.ClientPacketHandler;
-import cpw.mods.fml.common.FMLLog;
+import atomicstryker.petbat.common.network.PacketDispatcher;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -32,21 +31,16 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.7")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false,
-clientPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ClientPacketHandler.class),
-serverPacketHandlerSpec = @SidedPacketHandler(channels = {"PetBat"}, packetHandler = ServerPacketHandler.class),
-connectionHandler = ConnectionHandler.class)
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.8")
 public class PetBatMod implements IProxy
 {
-    public final int TAME_ITEM_ID = 400; // pumpkin pie
-    public final int GLISTER_ITEM_ID = 348; // glowstone dust
+    public final Item TAME_ITEM_ID = Items.pumpkin_pie;
+    public final Item GLISTER_ITEM_ID = Items.glowstone_dust;
     
     private final String[] batLevels = {
             "Pet Bat",
@@ -129,11 +123,9 @@ public class PetBatMod implements IProxy
     }
     
     private Field entityBatFlightCoords;
-    private int itemIDPocketBat;
 	private boolean manualEnabled;
     public Item itemPocketedBat;
     public Configuration config;
-    private int itemIDBatFlute;
     public Item itemBatFlute;
     
     private boolean glisterBatEnabled;
@@ -157,27 +149,27 @@ public class PetBatMod implements IProxy
         try
         {
             config.load();
-            itemIDPocketBat = config.getItem("ItemPocketedPetBat", 2528).getInt();
 			manualEnabled = config.get(Configuration.CATEGORY_GENERAL, "manualEnabled", false).getBoolean(false);
 			batInventoryTeleport = config.get(Configuration.CATEGORY_GENERAL, "teleportIntoInventory", true).getBoolean(true);
 			glisterBatEffectDuration = config.get(Configuration.CATEGORY_GENERAL, "glisterBatEffectDuration (s)", 300).getInt();
 			glisterBatEffectDuration *= 1000; // sec to millisec
-			itemIDBatFlute = config.getItem("ItemBatFlute", 2529).getInt();
         }
         catch (Exception e)
         {
-            FMLLog.log(Level.SEVERE, e, "PetBat has a problem loading it's configuration!");
+            System.err.println("PetBat has a problem loading it's configuration!");
         }
         finally
         {
             config.save();
         }
         
-        itemPocketedBat = new ItemPocketedPetBat(itemIDPocketBat).setUnlocalizedName("fed Pet Bat");
+        itemPocketedBat = new ItemPocketedPetBat().setUnlocalizedName("fed Pet Bat");
         GameRegistry.registerItem(itemPocketedBat, "fed Pet Bat");
         
-        itemBatFlute = new ItemBatFlute(itemIDBatFlute).setUnlocalizedName("Bat Flute");
+        itemBatFlute = new ItemBatFlute().setUnlocalizedName("Bat Flute");
         GameRegistry.registerItem(itemBatFlute, "Bat Flute");
+        
+        PacketDispatcher.init("AS_PB", new ClientPacketHandler(), new ServerPacketHandler());
     }
     
     @EventHandler
@@ -211,12 +203,12 @@ public class PetBatMod implements IProxy
 	    return batInventoryTeleport;
 	}
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onPlayerLeftClick(BreakSpeed event)
     {
         EntityPlayer p = event.entityPlayer;
         ItemStack item = p.inventory.getCurrentItem();
-        if (item != null && item.itemID == TAME_ITEM_ID)
+        if (item != null && item.getItem() == TAME_ITEM_ID)
         {
             @SuppressWarnings("unchecked")
             List<Entity> entityList = p.worldObj.getEntitiesWithinAABBExcludingEntity(p, p.boundingBox.expand(10D, 10D, 10D));
@@ -238,7 +230,7 @@ public class PetBatMod implements IProxy
         }
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityInteract(EntityInteractEvent event)
     {
         if (event.target instanceof EntityBat)
@@ -247,15 +239,15 @@ public class PetBatMod implements IProxy
             if (!p.worldObj.isRemote)
             {
                 ItemStack item = p.inventory.getCurrentItem();
-                if (item != null && item.itemID == TAME_ITEM_ID)
+                if (item != null && item.getItem() == TAME_ITEM_ID)
                 {
                     event.setCanceled(true);
-                    p.inventory.consumeInventoryItem(TAME_ITEM_ID);
+                    p.inventory.func_146026_a(TAME_ITEM_ID);
                     
                     EntityBat b = (EntityBat) event.target;
                     EntityPetBat newPet = new EntityPetBat(p.worldObj);
                     newPet.setLocationAndAngles(b.posX, b.posY, b.posZ, b.rotationYaw, b.rotationPitch);
-                    newPet.setNames(p.username, getRandomBatName());
+                    newPet.setNames(p.func_146103_bH().getName(), getRandomBatName());
                     
                     p.worldObj.spawnEntityInWorld(newPet);
                     b.setDead();
@@ -267,10 +259,10 @@ public class PetBatMod implements IProxy
         {
             EntityPlayer p = event.entityPlayer;
             ItemStack item = p.inventory.getCurrentItem();
-            if (item != null && item.itemID == GLISTER_ITEM_ID)
+            if (item != null && item.getItem() == GLISTER_ITEM_ID)
             {
                 new GlisterBatAdapter((EntityPetBat) event.target);
-                p.inventory.consumeInventoryItem(GLISTER_ITEM_ID);
+                p.inventory.func_146026_a(GLISTER_ITEM_ID);
             }
         }
     }
@@ -280,15 +272,15 @@ public class PetBatMod implements IProxy
         return batNames[new Random().nextInt(batNames.length)];
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
         if (!event.entity.worldObj.isRemote && event.entity instanceof EntityItem)
         {
             final EntityItem itemDropped = (EntityItem) event.entity;
             EntityItem foundItem;
-            final int id = itemDropped.getEntityItem().itemID;
-            if (id == itemPocketedBat.itemID)
+            final Item id = itemDropped.getEntityItem().getItem();
+            if (id == itemPocketedBat)
             {
                 final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.worldObj, itemDropped.getEntityItem());
                 if (bat.getHealth() > 1)
@@ -307,7 +299,7 @@ public class PetBatMod implements IProxy
                         if (o instanceof EntityItem)
                         {
                             foundItem = (EntityItem) o;
-                            if (foundItem.getEntityItem().itemID == TAME_ITEM_ID)
+                            if (foundItem.getEntityItem().getItem() == TAME_ITEM_ID)
                             {
                                 bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
                                 itemDropped.worldObj.spawnEntityInWorld(bat);
@@ -343,7 +335,7 @@ public class PetBatMod implements IProxy
                     else if (o instanceof EntityItem)
                     {
                         foundItem = (EntityItem) o;
-                        if (foundItem.getEntityItem().itemID == itemPocketedBat.itemID) // inert bat lying around
+                        if (foundItem.getEntityItem().getItem() == itemPocketedBat) // inert bat lying around
                         {
                             final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.worldObj, foundItem.getEntityItem());
                             bat.setPosition(foundItem.posX, foundItem.posY, foundItem.posZ);
@@ -356,14 +348,14 @@ public class PetBatMod implements IProxy
                     }
                 }
             }
-            else if (id == itemBatFlute.itemID) // bat flutes cannot be dropped. ever.
+            else if (id == itemBatFlute) // bat flutes cannot be dropped. ever.
             {
                 event.setCanceled(true);
             }
         }
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onEntityLivingUpdate(LivingUpdateEvent event)
     {
         if (event.entityLiving instanceof EntityPlayer)

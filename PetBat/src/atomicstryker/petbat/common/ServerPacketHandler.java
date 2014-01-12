@@ -1,25 +1,19 @@
 package atomicstryker.petbat.common;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
+import atomicstryker.petbat.common.network.ForgePacketWrapper;
+import atomicstryker.petbat.common.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.petbat.common.network.PacketDispatcher.WrappedPacket;
 
 public class ServerPacketHandler implements IPacketHandler
 {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
     {
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-        int packetType = ForgePacketWrapper.readPacketID(data);
-        
+        ByteBuf data = packet.data;
         if (packetType == 1)
         {
             Class[] decodeAs = {String.class};
@@ -29,7 +23,7 @@ public class ServerPacketHandler implements IPacketHandler
             EntityPlayer p = (EntityPlayer) player;
             
             if (p.getCurrentEquippedItem() != null
-            && p.getCurrentEquippedItem().itemID == PetBatMod.instance().itemPocketedBat.itemID)
+            && p.getCurrentEquippedItem().getItem() == PetBatMod.instance().itemPocketedBat)
             {
                 ItemPocketedPetBat.writeBatNameToItemStack(p.getCurrentEquippedItem(), batName);
             }

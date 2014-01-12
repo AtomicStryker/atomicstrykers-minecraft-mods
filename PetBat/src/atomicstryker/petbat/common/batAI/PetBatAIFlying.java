@@ -117,7 +117,7 @@ public class PetBatAIFlying extends EntityAIBase
             sittingSpotAbortTime = -1L;
             
             // target invalid or no free block
-            if (currentFlightTarget != null && (!petBat.worldObj.isAirBlock(currentFlightTarget.posX, currentFlightTarget.posY, currentFlightTarget.posZ) || currentFlightTarget.posY < 1))
+            if (currentFlightTarget != null && (!petBat.worldObj.func_147437_c(currentFlightTarget.posX, currentFlightTarget.posY, currentFlightTarget.posZ) || currentFlightTarget.posY < 1))
             {
                 currentFlightTarget = null;
             }
@@ -217,7 +217,7 @@ public class PetBatAIFlying extends EntityAIBase
             
             orig = petBat.worldObj.getWorldVec3Pool().getVecFromPool(petBat.posX, petBat.posY, petBat.posZ);
             dest = petBat.worldObj.getWorldVec3Pool().getVecFromPool(x+0.5D, y+0.5D, z+0.5D);
-            movingobjectposition = petBat.worldObj.rayTraceBlocks_do_do(orig, dest, false, true);
+            movingobjectposition = petBat.worldObj.func_147447_a(orig, dest, false, true, false);
             if (movingobjectposition == null) // no collision detected, path is free
             {
                 break;
@@ -249,7 +249,7 @@ public class PetBatAIFlying extends EntityAIBase
         }
         
         // block it was hanging from is no more
-        if (!petBat.worldObj.isBlockNormalCube(MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ)))
+        if (!petBat.worldObj.func_147439_a(MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ)).func_149721_r())
         {
             takeOff();
         }

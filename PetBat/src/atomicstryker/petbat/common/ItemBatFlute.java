@@ -1,6 +1,6 @@
 package atomicstryker.petbat.common;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -11,16 +11,16 @@ import net.minecraft.world.World;
 public class ItemBatFlute extends Item
 {
 
-    protected ItemBatFlute(int par1)
+    protected ItemBatFlute()
     {
-        super(par1);
+        super();
         maxStackSize = 1;
         setMaxDamage(0);
         setCreativeTab(CreativeTabs.tabCombat);
     }
     
     @Override
-    public void registerIcons(IconRegister iconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
         itemIcon = iconRegister.registerIcon("petbat:batflute");
     }
@@ -52,7 +52,7 @@ public class ItemBatFlute extends Item
     }
     
     @Override
-    public String getItemDisplayName(ItemStack itemStack)
+    public String getItemStackDisplayName(ItemStack itemStack)
     {
         String batname = itemStack.stackTagCompound != null ? itemStack.stackTagCompound.getString("batName") : "";
         return EnumChatFormatting.GOLD+"Bat Flute: "+batname;

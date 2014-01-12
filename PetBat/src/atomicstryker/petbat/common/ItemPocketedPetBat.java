@@ -1,26 +1,27 @@
 package atomicstryker.petbat.common;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 public class ItemPocketedPetBat extends Item
 {
 
-    protected ItemPocketedPetBat(int par1)
+    protected ItemPocketedPetBat()
     {
-        super(par1);
+        super();
         maxStackSize = 1;
         setMaxDamage(28);
         setCreativeTab(CreativeTabs.tabCombat);
     }
     
     @Override
-    public void registerIcons(IconRegister iconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
         itemIcon = iconRegister.registerIcon("petbat:pocketbat");
     }
@@ -75,10 +76,10 @@ public class ItemPocketedPetBat extends Item
     public static EntityPetBat toBatEntity(World world, ItemStack batStack)
     {
         EntityPetBat batEnt = new EntityPetBat(world);
-        String owner = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : ((EntityPlayer)world.playerEntities.get(0)).username;
+        String owner = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : ((EntityPlayer)world.playerEntities.get(0)).getCommandSenderName();
         String name = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("display").getString("Name") : "I was cheated";
         int xp = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getInteger("BatXP") : 0;
-        if (owner.equals("")) owner = ((EntityPlayer)world.playerEntities.get(0)).username;
+        if (owner.equals("")) owner = ((EntityPlayer)world.playerEntities.get(0)).getCommandSenderName();
         if (name.equals("")) name = "I was cheated";
         batEnt.setNames(owner, name);
         batEnt.setHealth((float) invertHealthValue(batStack.getItemDamage(), 16 + (2*PetBatMod.instance().getLevelFromExperience(xp))));
@@ -127,8 +128,14 @@ public class ItemPocketedPetBat extends Item
 
         if (!stack.stackTagCompound.hasKey(tag))
         {
-            stack.stackTagCompound.setCompoundTag(tag, new NBTTagCompound());
+            stack.stackTagCompound.setTag(tag, new NBTTagCompound());
         }
+    }
+    
+    @Override
+    public String getItemStackDisplayName(ItemStack itemStack)
+    {
+        return EnumChatFormatting.DARK_PURPLE+super.getItemStackDisplayName(itemStack);
     }
     
 }

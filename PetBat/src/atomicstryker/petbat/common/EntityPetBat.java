@@ -1,5 +1,6 @@
 package atomicstryker.petbat.common;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -7,6 +8,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
@@ -18,10 +20,7 @@ import atomicstryker.petbat.common.batAI.PetBatAIFindSittingSpot;
 import atomicstryker.petbat.common.batAI.PetBatAIFlying;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
-
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpawnData
@@ -60,17 +59,17 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
     
     @Override
-    public void writeSpawnData(ByteArrayDataOutput data)
+    public void writeSpawnData(ByteBuf data)
     {
-        data.writeUTF(ownerName);
-        data.writeUTF(petName);
+        ByteBufUtils.writeUTF8String(data, ownerName);
+        ByteBufUtils.writeUTF8String(data, petName);
     }
 
     @Override
-    public void readSpawnData(ByteArrayDataInput data)
+    public void readSpawnData(ByteBuf data)
     {
-        ownerName = data.readUTF();
-        petName = data.readUTF();
+        ownerName = ByteBufUtils.readUTF8String(data);
+        petName = ByteBufUtils.readUTF8String(data);
     }
 
     @Override
@@ -94,10 +93,10 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         if (!fluteOut && player != null)
         {
             boolean found = false;
-            int itemID = PetBatMod.instance().itemBatFlute.itemID;
+            Item itemID = PetBatMod.instance().itemBatFlute;
             for (ItemStack item : player.inventory.mainInventory)
             {
-                if (item != null && item.itemID == itemID)
+                if (item != null && item.getItem() == itemID)
                 {
                     if (item.stackTagCompound.getString("batName").equals(petName))
                     {
@@ -317,11 +316,11 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     private void removeFluteFromPlayer(EntityPlayer player)
     {
-        int itemID = PetBatMod.instance().itemBatFlute.itemID;
+        Item itemID = PetBatMod.instance().itemBatFlute;
         for (int i = 0; i < player.inventory.mainInventory.length; i++)
         {
             ItemStack item = player.inventory.mainInventory[i];
-            if (item != null && item.itemID == itemID)
+            if (item != null && item.getItem() == itemID)
             {
                 if (item.stackTagCompound.getString("batName").equals(petName))
                 {
@@ -498,7 +497,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     protected void updateFallState(double par1, boolean par3) {}
 
     @Override
-    public boolean doesEntityNotTriggerPressurePlate()
+    public boolean func_145773_az()
     {
         return true;
     }
@@ -545,9 +544,9 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
     
     @Override
-    public String getEntityName()
+    public String getCommandSenderName()
     {
-        return "Pet Bat";
+        return petName;
     }
     
     public boolean glister;
