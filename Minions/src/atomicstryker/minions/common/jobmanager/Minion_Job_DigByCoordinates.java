@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.astarpathing.AStarStatic;
@@ -151,7 +152,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     		if (hasJobs)
     		{    			
     			BlockTask job = this.jobQueue.get(0);
-    			if (worldObj.getBlockId(job.posX, job.posY, job.posZ) == 0
+    			if (worldObj.func_147439_a(job.posX, job.posY, job.posZ) == Blocks.air
     			&& job instanceof BlockTask_MineBlock
     			&& ((BlockTask_MineBlock)job).disableDangerCheck)
     			{
@@ -223,7 +224,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 
 			i--;
 			//System.out.println("Now checking: ["+x+"|"+y+"|"+z+"]");
-			if (worldObj.getBlockId(x, y, z) != 0)
+			if (worldObj.func_147439_a(x, y, z) != Blocks.air)
 			{
 				BlockTask_MineBlock mineTask = new BlockTask_MineBlock(this, null, x, y, z);
 				if (!blocksToMine.contains(mineTask))
@@ -451,7 +452,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
             			&& zFin <= maxZ
             			&& yFin <= maxY)
             			{
-            				if (worldObj.getBlockId(xFin, yFin, zFin) != 0)
+            				if (worldObj.func_147439_a(xFin, yFin, zFin) != Blocks.air)
             				{
                 				mineTask = new BlockTask_MineBlock(this, null, xFin, yFin, zFin, true);
                         		if (blocksToMine.contains(mineTask) && !jobQueue.contains(mineTask))

@@ -9,10 +9,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import atomicstryker.minions.common.entity.EntityMinion;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class MinionsChunkManager
 {
@@ -76,7 +76,7 @@ public class MinionsChunkManager
         loadedChunks.add(world.getChunkFromBlockCoords(x, z).getChunkCoordIntPair());
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void canUnloadChunk(ChunkEvent.Load event)
     {
         if (loadedChunks.contains(event.getChunk().getChunkCoordIntPair()) && event.isCancelable())
@@ -85,7 +85,7 @@ public class MinionsChunkManager
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void canUpdateEntity(EntityEvent.CanUpdate event)
     {
         event.canUpdate = event.entity instanceof EntityMinion;

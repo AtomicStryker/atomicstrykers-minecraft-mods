@@ -3,6 +3,7 @@ package atomicstryker.minions.common.jobmanager;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import atomicstryker.minions.common.entity.EntityMinion;
 
@@ -15,8 +16,7 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class BlockTask_MineBlock extends BlockTask
 {
-    public Block targetBlock;
-    public int blockID;
+    public Block blockID;
     public int blockmetadata;
     public boolean disableDangerCheck;
 	
@@ -58,17 +58,16 @@ public class BlockTask_MineBlock extends BlockTask
     {
     	super.onReachedTaskBlock();
     	
-    	this.blockID = worker.worldObj.getBlockId(posX, posY, posZ);
+    	this.blockID = worker.worldObj.func_147439_a(posX, posY, posZ);
     	//if (blockID > 13) System.out.println("Reached Block["+blockID+"], name "+Block.blocksList[blockID].getBlockName());
     	
-    	if (blockID == 0)
+    	if (blockID == Blocks.air)
     	{
     		this.onFinishedTask();
     	}
     	else
     	{
         	this.blockmetadata = worker.worldObj.getBlockMetadata(posX, posY, posZ);
-        	this.targetBlock = Block.blocksList[blockID];
     	}
     }
     
@@ -85,11 +84,11 @@ public class BlockTask_MineBlock extends BlockTask
     	
     	checkDangers();
     	
-    	this.blockID = worker.worldObj.getBlockId(posX, posY, posZ); // check against interference mining
-    	if (blockID != 0 && Block.blocksList[blockID].getBlockHardness(worker.worldObj, posX, posY, posZ) >= 0F)
+    	this.blockID = worker.worldObj.func_147439_a(posX, posY, posZ); // check against interference mining
+    	if (blockID != Blocks.air && blockID.func_149712_f(worker.worldObj, posX, posY, posZ) >= 0F)
     	{
     	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-    		if (worker.worldObj.setBlock(posX, posY, posZ, 0, 0, 3))
+    		if (worker.worldObj.func_147465_d(posX, posY, posZ, Blocks.air, 0, 3))
     		{
     			putBlockHarvestInWorkerInventory(stackList);
     		}
@@ -114,18 +113,14 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForCaveIn(int x, int y, int z)
     {
-    	int checkBlockID = worker.worldObj.getBlockId(x, y, z);
-    	
-    	if (checkBlockID > 0)
-    	{
-    		if (checkBlockID == Block.sand.blockID || checkBlockID == Block.gravel.blockID)
-    		{
-    			putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
-    			
-            	this.worker.inventory.consumeInventoryItem(Block.dirt.blockID);
-            	this.worker.worldObj.setBlock(x, y, z, Block.dirt.blockID, 0, 3);
-    		}
-    	}
+    	Block checkBlockID = worker.worldObj.func_147439_a(x, y, z);
+        if (checkBlockID == Blocks.sand || checkBlockID == Blocks.gravel)
+        {
+            putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
+            
+            this.worker.inventory.consumeInventoryItem(Blocks.dirt);
+            this.worker.worldObj.func_147465_d(x, y, z, Blocks.dirt, 0, 3);
+        }
 	}
     
     private void checkBlockForDanger(int x, int y, int z)
@@ -135,17 +130,17 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForDanger(int x, int y, int z, boolean putFloor)
     {
-    	int checkBlockID = worker.worldObj.getBlockId(x, y, z);
+    	Block checkBlockID = worker.worldObj.func_147439_a(x, y, z);
     	boolean replaceBlock = false;
     	
-    	if (checkBlockID == 0)
+    	if (checkBlockID == Blocks.air)
     	{
     		if (putFloor)
     		{
     			replaceBlock = true;
     		}
     	}
-    	else if (!Block.blocksList[checkBlockID].blockMaterial.isSolid() && checkBlockID != Block.torchWood.blockID)
+    	else if (!checkBlockID.func_149688_o().isSolid() && checkBlockID != Blocks.torch)
     	{
     		worker.worldObj.getBlockMetadata(x, y, z);
     		replaceBlock = true;
@@ -153,17 +148,17 @@ public class BlockTask_MineBlock extends BlockTask
     	
     	if (replaceBlock)
     	{    		
-        	if (checkBlockID != 0)
+        	if (checkBlockID != Blocks.air)
         	{
         	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-        		if (this.worker.worldObj.setBlock(x, y, z, 0, 0, 3))
+        		if (this.worker.worldObj.func_147465_d(x, y, z, Blocks.air, 0, 3))
         		{
         			putBlockHarvestInWorkerInventory(stackList);
         		}
         	}
         	
-        	this.worker.inventory.consumeInventoryItem(Block.dirt.blockID);
-        	this.worker.worldObj.setBlock(x, y, z, Block.dirt.blockID, 0, 3);
+        	this.worker.inventory.consumeInventoryItem(Blocks.dirt);
+        	this.worker.worldObj.func_147465_d(x, y, z, Blocks.dirt, 0, 3);
     	}
     }
 }

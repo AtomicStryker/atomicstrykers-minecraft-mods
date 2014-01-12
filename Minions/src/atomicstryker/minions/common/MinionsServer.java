@@ -1,34 +1,28 @@
 package atomicstryker.minions.common;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import atomicstryker.minions.common.network.ForgePacketWrapper;
+import atomicstryker.minions.common.network.PacketDispatcher;
+import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
 
 public class MinionsServer
 {
 
-    public static void onPacketData(INetworkManager mgr, Packet250CustomPayload packet, Player p)
+    public static void onPacketData(int pt, WrappedPacket packet, EntityPlayer p)
     {
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-        PacketType packetType = PacketType.byID(ForgePacketWrapper.readPacketID(data));
+        PacketType packetType = PacketType.byID(pt);
         EntityPlayer player = (EntityPlayer)p;
+        ByteBuf data = packet.data;
         
-        //System.out.println("Server received packet, ID "+packetType+", from player "+player.username);
+        //System.out.println("Server received packet, ID "+packetType+", from player "+player.func_146103_bH().getName());
         
         switch (packetType)
         {
@@ -232,8 +226,8 @@ public class MinionsServer
                     
                     // (startx, starty, startz, endx, endy, endz, randomlong)
                     Object[] toSend = { start.x, start.y, start.z, end.x, end.y, end.z, randomizer };
-                    Packet pcket = ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.LIGHTNINGBOLT.ordinal(), toSend);
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendToAllNear(caster.posX, caster.posY, caster.posZ, 50D, caster.worldObj.provider.dimensionId, pcket);
+                    WrappedPacket pcket = ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.LIGHTNINGBOLT.ordinal(), toSend);
+                    PacketDispatcher.sendToAllNear(caster.posX, caster.posY, caster.posZ, 50D, caster.worldObj.provider.dimensionId, pcket);
                     
                     spawnLightningBolt(caster.worldObj, caster, start, end, randomizer);
                     

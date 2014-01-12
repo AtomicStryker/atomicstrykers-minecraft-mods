@@ -16,21 +16,21 @@ public class BlockCoord extends ChunkPosition implements Comparable<BlockCoord>
 		super(x, y, z);
 	}
 	
-	public BlockCoord(TileEntity tile)
+	public BlockCoord(TileEntity e)
 	{
-		super(tile.xCoord, tile.yCoord, tile.zCoord);
+		super(e.field_145851_c, e.field_145848_d, e.field_145849_e);
 	}
 
 	public int compareTo(BlockCoord o)
 	{
-		if(x != o.x)return x < o.x ? 1 : -1;
-		if(y != o.y)return y < o.y ? 1 : -1;
-		if(z != o.z)return z < o.z ? 1 : -1;
+		if(field_151329_a != o.field_151329_a)return field_151329_a < o.field_151329_a ? 1 : -1;
+		if(field_151327_b != o.field_151327_b)return field_151327_b < o.field_151327_b ? 1 : -1;
+		if(field_151328_c != o.field_151328_c)return field_151328_c < o.field_151328_c ? 1 : -1;
 		return 0;
 	}
 
 	public Vector3 toVector3Centered()
 	{
-		return new Vector3(x+0.5, y+0.5, z+0.5);
+		return new Vector3(field_151329_a+0.5, field_151327_b+0.5, field_151328_c+0.5);
 	}
 }

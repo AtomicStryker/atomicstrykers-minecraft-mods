@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -61,7 +61,7 @@ public class RenderMinion extends RenderLiving
             this.model.bipedRightArm.postRender(0.0625F);
             GL11.glTranslatef(0.0F, 0.1F, 0.0F);
             float scale;
-            if (heldItem.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[heldItem.itemID].getRenderType()))
+            if (heldItem.getItem() instanceof ItemBlock && RenderBlocks.func_147739_a(Block.func_149634_a(heldItem.getItem()).func_149645_b()))
             {
                 scale = 0.5F;
                 GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
@@ -70,7 +70,7 @@ public class RenderMinion extends RenderLiving
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glScalef(scale, -scale, scale);
             }
-            else if (Item.itemsList[heldItem.itemID].isFull3D())
+            else if (heldItem.getItem().isFull3D())
             {
                 scale = 0.4F;
                 GL11.glTranslatef(0.0F, 0.35F, 0.0F);
@@ -111,7 +111,7 @@ public class RenderMinion extends RenderLiving
                 String var12 = var1.getDisplayName();
                 if (var12 != null)
                 {
-                    this.renderLivingLabel(var1, var12, var2, var4 - 0.825D, var6, 64);
+                    this.func_147906_a(var1, var12, var2, var4 - 0.825D, var6, 64);
                 }
             }
         }

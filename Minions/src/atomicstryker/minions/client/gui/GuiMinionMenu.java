@@ -2,11 +2,11 @@ package atomicstryker.minions.client.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.PacketType;
-import cpw.mods.fml.client.FMLClientHandler;
+import atomicstryker.minions.common.network.ForgePacketWrapper;
+import atomicstryker.minions.common.network.PacketDispatcher;
 
 /**
  * Minion Menu, provides access to evil deeds and later minion commands
@@ -23,36 +23,30 @@ public class GuiMinionMenu extends GuiScreen
 	@Override
     public void initGui()
     {
-        this.buttonList.clear();
+        this.field_146292_n.clear();
         
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
+        this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 120, "Nevermind"));
         
         if (MinionsClient.hasMinionsSMPOverride)
         {
-        	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Unsummon Minions"));
-        	this.buttonList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 40, "Dig Mineshaft"));
-        	this.buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 80, "Strip Mine"));
+        	this.field_146292_n.add(new GuiButton(1, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 0, "Unsummon Minions"));
+        	this.field_146292_n.add(new GuiButton(2, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 40, "Dig Mineshaft"));
+        	this.field_146292_n.add(new GuiButton(3, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 80, "Strip Mine"));
         	
-        	this.buttonList.add(new GuiButton(4, this.width / 4 *3, this.height / 4 + 40, 100, 20, "Dig..."));
+        	this.field_146292_n.add(new GuiButton(4, this.field_146294_l / 4 *3, this.field_146295_m / 4 + 40, 100, 20, "Dig..."));
         }
 		else if (MinionsCore.instance.evilDeedXPCost == -1)
 		{
-			this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Deeds Disabled by config!"));
+			this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 0, "Deeds Disabled by config!"));
 		}
 		else if (MinionsCore.instance.evilDoings == null || MinionsCore.instance.evilDoings.size() == 0)
 		{
-		    this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Missing Deed config file!"));
+		    this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 0, "Missing Deed config file!"));
 		}
-        else if (mc.thePlayer.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
+        else if (field_146297_k.thePlayer.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
         {
-        	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Commit to Evil"));
+        	this.field_146292_n.add(new GuiButton(1, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 0, "Commit to Evil"));
         }
-    }
-
-    @Override
-    public void onGuiClosed()
-    {
-
     }
 
     @Override
@@ -61,44 +55,44 @@ public class GuiMinionMenu extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton var1)
+    protected void func_146284_a(GuiButton var1)
     {
-        if (var1.enabled)
+        if (var1.field_146124_l)
         {
-        	int ID = var1.id;
+            int ID = var1.field_146127_k;
         	
         	if (ID == 0)
         	{
-        		this.mc.displayGuiScreen(null);
+        		this.field_146297_k.func_147108_a(null);
         	}
         	else if (ID == 1)
         	{
         		if (MinionsClient.hasMinionsSMPOverride)
         		{
-        			Object[] toSend = {mc.thePlayer.username};
-        			FMLClientHandler.instance().sendPacket(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDUNSUMMON.ordinal(), toSend)); // minion unsummon command to server
-        			this.mc.displayGuiScreen((GuiScreen)null);
+        			Object[] toSend = {field_146297_k.thePlayer.func_146103_bH().getName()};
+        			PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDUNSUMMON.ordinal(), toSend)); // minion unsummon command to server
+        			this.field_146297_k.func_147108_a((GuiScreen)null);
         		}
         		else
         		{
-        			this.mc.displayGuiScreen(new GuiDeedMenu());
+        			this.field_146297_k.func_147108_a(new GuiDeedMenu());
         		}
         	}
         	else if (ID == 2)
         	{
             	MinionsClient.isSelectingMineArea = !MinionsClient.isSelectingMineArea;
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.field_146297_k.func_147108_a((GuiScreen)null);
                 MinionsClient.mineAreaShape = 0;
         	}
         	else if (ID == 3)
         	{
         	    MinionsClient.isSelectingMineArea = !MinionsClient.isSelectingMineArea;
         	    MinionsClient.mineAreaShape = 1;
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.field_146297_k.func_147108_a((GuiScreen)null);
         	}
         	else if (ID == 4)
         	{
-                this.mc.displayGuiScreen(new GuiCustomDigMenu());
+                this.field_146297_k.func_147108_a(new GuiCustomDigMenu());
         	}
         }
     }
@@ -117,19 +111,19 @@ public class GuiMinionMenu extends GuiScreen
     	if (var1 == 'i' && cheatCount == 6) cheatCount++;
     	if (var1 == 'l' && cheatCount == 7)
         {
-            FMLClientHandler.instance().sendPacket(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HAX.ordinal(), null)); // cheater!!!!
-            this.mc.displayGuiScreen((GuiScreen) null);
+            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HAX.ordinal(), null)); // cheater!!!!
+            this.field_146297_k.func_147108_a((GuiScreen) null);
         }
     }
 
     @Override
     public void drawScreen(int var1, int var2, float var3)
     {
-    	this.drawDefaultBackground();
-    	this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 16777215);
+    	this.func_146276_q_();
+    	this.drawCenteredString(this.field_146289_q, this.screenTitle, this.field_146294_l / 2, 40, 16777215);
     	/*
     	GL11.glPushMatrix();
-    	GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);
+    	GL11.glTranslatef((float)(this.field_146294_l / 2), 0.0F, 50.0F);
     	float var4 = 93.75F;
     	GL11.glScalef(-var4, -var4, -var4);
     	GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);

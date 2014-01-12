@@ -10,21 +10,21 @@ import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.ForgeSubscribe;
 
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt.Segment;
 import atomicstryker.minions.common.codechicken.Vector3;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class RenderChickenLightningBolt
 {
+    
     private ResourceLocation texI = new ResourceLocation("minions", "textures/lightning_inner.png");
     private ResourceLocation texO = new ResourceLocation("minions", "textures/lightning_outer.png");
     
@@ -34,10 +34,9 @@ public class RenderChickenLightningBolt
     	return new Vector3((float)renderentity.posX - pos.x, (float)renderentity.posY + renderentity.getEyeHeight() - pos.y, (float)renderentity.posZ - pos.z);
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onRenderWorldLast(RenderWorldLastEvent event)
 	{
-	    RenderGlobal renderer = event.context;
 	    float frame = event.partialTicks;
 		Entity entity = Minecraft.getMinecraft().thePlayer;
 		
@@ -53,7 +52,7 @@ public class RenderChickenLightningBolt
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
-        renderer.renderEngine.bindTexture(texO);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texO);
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
@@ -62,7 +61,7 @@ public class RenderChickenLightningBolt
 		}
         tessellator.draw();
         
-        renderer.renderEngine.bindTexture(texI);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texI);
 		tessellator.startDrawingQuads();
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)

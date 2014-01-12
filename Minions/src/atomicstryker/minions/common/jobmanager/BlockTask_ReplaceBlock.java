@@ -1,5 +1,6 @@
 package atomicstryker.minions.common.jobmanager;
 
+import net.minecraft.block.Block;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -11,10 +12,10 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
 {
-	public final int blockToPlace;
+	public final Block blockToPlace;
 	public final int metaToPlace;
 	
-    public BlockTask_ReplaceBlock(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, int blockOrdered, int metaOrdered)
+    public BlockTask_ReplaceBlock(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, Block blockOrdered, int metaOrdered)
     {
     	super(boss, input, ix, iy, iz);
     	blockToPlace = blockOrdered;
@@ -25,6 +26,6 @@ public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
     {
     	super.onFinishedTask();
     	
-    	this.worker.worldObj.setBlock(posX, posY, posZ, blockToPlace, metaToPlace, 3);
+    	this.worker.worldObj.func_147465_d(posX, posY, posZ, blockToPlace, metaToPlace, 3);
     }
 }

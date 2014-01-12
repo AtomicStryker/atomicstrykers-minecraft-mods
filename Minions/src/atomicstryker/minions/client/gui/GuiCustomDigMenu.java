@@ -28,45 +28,39 @@ public class GuiCustomDigMenu extends GuiScreen
     	xzSize = MinionsClient.customSizeXZ;
     	ySize = MinionsClient.customSizeY;
     	
-        this.buttonList.clear();
+        this.field_146292_n.clear();
         
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
-        this.buttonList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 10, "Reset Dimensions"));
+        this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 120, "Nevermind"));
+        this.field_146292_n.add(new GuiButton(2, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 10, "Reset Dimensions"));
         
-        this.buttonList.add(new GuiButton(3, this.width / 10 * 6, this.height / 4 + 35, 50, 20, "+2"));
-        this.buttonList.add(new GuiButton(4, this.width / 10 * 3, this.height / 4 + 35, 50, 20, "-2"));
+        this.field_146292_n.add(new GuiButton(3, this.field_146294_l / 10 * 6, this.field_146295_m / 4 + 35, 50, 20, "+2"));
+        this.field_146292_n.add(new GuiButton(4, this.field_146294_l / 10 * 3, this.field_146295_m / 4 + 35, 50, 20, "-2"));
         
-        this.buttonList.add(new GuiButton(5, this.width / 10 * 8, this.height / 4 + 35, 50, 20, "+10"));
-        this.buttonList.add(new GuiButton(6, this.width / 10 * 1, this.height / 4 + 35, 50, 20, "-10"));
+        this.field_146292_n.add(new GuiButton(5, this.field_146294_l / 10 * 8, this.field_146295_m / 4 + 35, 50, 20, "+10"));
+        this.field_146292_n.add(new GuiButton(6, this.field_146294_l / 10 * 1, this.field_146295_m / 4 + 35, 50, 20, "-10"));
         
-        this.buttonList.add(new GuiButton(7, this.width / 10 * 6, this.height / 4 + 75, 50, 20, "+1"));
-        this.buttonList.add(new GuiButton(8, this.width / 10 * 3, this.height / 4 + 75, 50, 20, "-1"));
+        this.field_146292_n.add(new GuiButton(7, this.field_146294_l / 10 * 6, this.field_146295_m / 4 + 75, 50, 20, "+1"));
+        this.field_146292_n.add(new GuiButton(8, this.field_146294_l / 10 * 3, this.field_146295_m / 4 + 75, 50, 20, "-1"));
         
-        this.buttonList.add(new GuiButton(9, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "+5"));
-        this.buttonList.add(new GuiButton(10, this.width / 10 * 1, this.height / 4 + 75, 50, 20, "-5"));
+        this.field_146292_n.add(new GuiButton(9, this.field_146294_l / 10 * 8, this.field_146295_m / 4 + 75, 50, 20, "+5"));
+        this.field_146292_n.add(new GuiButton(10, this.field_146294_l / 10 * 1, this.field_146295_m / 4 + 75, 50, 20, "-5"));
         
-        //this.buttonList.add(new GuiButton(4, this.width / 4 - 100, this.height / 4 + 80, "Strip Mine"));
+        //this.field_146292_n.add(new GuiButton(4, this.field_146294_l / 4 - 100, this.field_146295_m / 4 + 80, "Strip Mine"));
 
-        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 -20, "Make it so!"));
+        this.field_146292_n.add(new GuiButton(1, this.field_146294_l / 2 - 100, this.field_146295_m / 4 -20, "Make it so!"));
 
     }
 
     @Override
-    public void onGuiClosed()
+    protected void func_146284_a(GuiButton var1)
     {
-    	
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton var1)
-    {
-        if (var1.enabled)
+        if (var1.field_146124_l)
         {
-        	int ID = var1.id;
+        	int ID = var1.field_146127_k;
         	
         	if (ID == 0)
         	{
-        		this.mc.displayGuiScreen((GuiScreen)null);
+        		this.field_146297_k.func_147108_a((GuiScreen)null);
         	}
         	else if (ID == 1)
         	{
@@ -74,7 +68,7 @@ public class GuiCustomDigMenu extends GuiScreen
         	    MinionsClient.customSizeXZ = this.xzSize;
         	    MinionsClient.customSizeY = this.ySize;
         	    MinionsClient.mineAreaShape = 2;
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.field_146297_k.func_147108_a((GuiScreen)null);
         	}
         	else if (ID == 2)
         	{
@@ -128,14 +122,14 @@ public class GuiCustomDigMenu extends GuiScreen
     @Override
     public void drawScreen(int var1, int var2, float var3)
     {
-    	this.drawDefaultBackground();
-    	this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 16777215);
+    	this.func_146276_q_();
+    	this.drawCenteredString(this.field_146289_q, this.screenTitle, this.field_146294_l / 2, 40, 16777215);
     	
-    	this.drawCenteredString(this.fontRenderer, "Width: "+this.xzSize, this.width / 2, this.height / 4 + 40, 16777215);
-    	this.drawCenteredString(this.fontRenderer, "Height: "+this.ySize, this.width / 2, this.height / 4 + 80, 16777215);
+    	this.drawCenteredString(this.field_146289_q, "Width: "+this.xzSize, this.field_146294_l / 2, this.field_146295_m / 4 + 40, 16777215);
+    	this.drawCenteredString(this.field_146289_q, "Height: "+this.ySize, this.field_146294_l / 2, this.field_146295_m / 4 + 80, 16777215);
     	
     	GL11.glPushMatrix();
-    	GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);
+    	GL11.glTranslatef((float)(this.field_146294_l / 2), 0.0F, 50.0F);
     	float var4 = 93.75F;
     	GL11.glScalef(-var4, -var4, -var4);
     	GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);

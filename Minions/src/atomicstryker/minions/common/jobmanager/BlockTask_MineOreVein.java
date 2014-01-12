@@ -2,6 +2,7 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
@@ -95,7 +96,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     
     private void checkBlockForVein(int x, int y, int z)
     {
-    	int checkBlockID = worker.worldObj.getBlockId(x, y, z);
+    	Block checkBlockID = worker.worldObj.func_147439_a(x, y, z);
     	if (!MinionsCore.instance.isBlockValueable(checkBlockID))
     	{
     		return;

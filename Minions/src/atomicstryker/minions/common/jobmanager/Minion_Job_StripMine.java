@@ -2,8 +2,8 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.Collection;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -169,16 +169,16 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
    		{
    			if (worldObj.getLightBrightness(nextX, startY, nextZ) < 10F)
    			{
-   				worldObj.setBlock(nextX-2*xDirection, startY, nextZ-2*zDirection, Block.torchWood.blockID, 0, 3);
+   				worldObj.func_147465_d(nextX-2*xDirection, startY, nextZ-2*zDirection, Blocks.torch, 0, 3);
    			}
    		}
    		
    		// check previous segment floor for having been dug away
    		for (int len = 0; len < 4; len++)
    		{
-            if (worldObj.getBlockId(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len)) == 0)
+            if (worldObj.func_147439_a(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len)) == Blocks.air)
             {
-                jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-(xDirection*len), startY-1, nextZ-(zDirection*len), 3, 0));
+                jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-(xDirection*len), startY-1, nextZ-(zDirection*len), Blocks.dirt, 0));
             }
    		}
    		
@@ -211,9 +211,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     
     private void checkBlockValuables(int x, int y, int z)
     {
-    	int checkBlockID = worldObj.getBlockId(x, y, z);
-
-    	if (MinionsCore.instance.isBlockValueable(checkBlockID))
+    	if (MinionsCore.instance.isBlockValueable(worldObj.func_147439_a(x, y, z)))
     	{
     		BlockTask_MineOreVein minetask = new BlockTask_MineOreVein(this, null, x, y, z);
     		if (minetask.posY > startY)

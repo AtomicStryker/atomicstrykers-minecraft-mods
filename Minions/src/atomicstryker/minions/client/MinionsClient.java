@@ -1,10 +1,10 @@
 package atomicstryker.minions.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.util.EnumSet;
+import io.netty.buffer.ByteBuf;
+
 import java.util.Iterator;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -13,18 +13,16 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.client.gui.GuiMinionMenu;
 import atomicstryker.minions.common.MinionsCore;
@@ -32,13 +30,15 @@ import atomicstryker.minions.common.PacketType;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
+import atomicstryker.minions.common.network.ForgePacketWrapper;
+import atomicstryker.minions.common.network.PacketDispatcher;
+import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
-import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class MinionsClient
 {
@@ -59,64 +59,39 @@ public class MinionsClient
     private World lastWorld;
     private final Minecraft mc;
     
+    private KeyBinding menuKey;
+    
     public MinionsClient()
     {
         mc = FMLClientHandler.instance().getClient();        
-        KeyBindingRegistry.registerKeyBinding(new MinionsKey(new KeyBinding[] { new KeyBinding("Minions Menu", Keyboard.KEY_M) }, new boolean[] { false }));
+        menuKey = new KeyBinding("Minions Menu", Keyboard.KEY_M, "key.categories.gameplay");
+        ClientRegistry.registerKeyBinding(menuKey);
     }
     
-    private class MinionsKey extends KeyHandler
+    @SubscribeEvent
+    public void onRenderTick(TickEvent.ClientTickEvent tick)
     {
-        
-        private final EnumSet<TickType> tickTypes;
-        
-        public MinionsKey(KeyBinding[] keyBindings, boolean[] repeatings)
-        {
-            super(keyBindings, repeatings);
-            tickTypes = EnumSet.of(TickType.CLIENT);
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "Minions Menu";
-        }
-
-        @Override
-        public void keyDown(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd, boolean isRepeat)
-        {
-        }
-
-        @Override
-        public void keyUp(EnumSet<TickType> types, KeyBinding kb, boolean tickEnd)
+        if (tick.phase == Phase.END && menuKey.func_151470_d())
         {
             if (mc.currentScreen == null)
             {
-                mc.displayGuiScreen(new GuiMinionMenu());
+                mc.func_147108_a(new GuiMinionMenu());
             }
         }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-        
     }
     
-    public void onRenderTick(Object[] tickData)
+    public void onRenderTick(float renderTick)
     {
-        float renderTick = (Float) tickData[0];
         
         if (mc.currentScreen == null && isSelectingMineArea)
         {
             if (mc.thePlayer.inventory.getCurrentItem() == null
-            || mc.thePlayer.inventory.getCurrentItem().itemID != MinionsCore.instance.itemMastersStaff.itemID)
+            || mc.thePlayer.inventory.getCurrentItem().getItem() != MinionsCore.instance.itemMastersStaff)
             {
                 isSelectingMineArea = false;
                 MinionsRenderHook.deleteSelection();
             }
-            else if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE)
+            else if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK)
             {
                 int x = mc.objectMouseOver.blockX;
                 int y = mc.objectMouseOver.blockY;
@@ -179,7 +154,7 @@ public class MinionsClient
         {
             if (Mouse.isButtonDown(0)
             && mc.thePlayer.inventory.getCurrentItem() != null
-            && mc.thePlayer.inventory.getCurrentItem().itemID == MinionsCore.instance.itemMastersStaff.itemID
+            && mc.thePlayer.inventory.getCurrentItem().getItem() == MinionsCore.instance.itemMastersStaff
             && mc.objectMouseOver == null
             && lastStaffLightningBoltTime + 100L < System.currentTimeMillis())
             {
@@ -209,9 +184,8 @@ public class MinionsClient
         }
     }
 
-    public void onWorldTick(Object[] tickData)
+    public void onWorldTick(World world)
     {
-        World world = FMLClientHandler.instance().getClient().theWorld;
         if (world != lastWorld && world != null)
         {
             MinionsRenderHook.renderHookEnt = new RenderEntLahwran_Minions(FMLClientHandler.instance().getClient(), world);
@@ -225,12 +199,11 @@ public class MinionsClient
         }
     }
 
-    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(int packetid, WrappedPacket packet, EntityPlayer player)
     {
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
-        
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-        PacketType packetType = PacketType.byID(ForgePacketWrapper.readPacketID(data));
+        ByteBuf data = packet.data;
+        PacketType packetType = PacketType.byID(packetid);
 
         //System.out.println("Client received packet, ID "+packetType);
 
@@ -264,7 +237,7 @@ public class MinionsClient
                 while (iter.hasNext())
                 {
                     temp = iter.next();
-                    if (temp.entityId == entID)
+                    if (temp.func_145782_y() == entID)
                     {
                         found = true;
                         break;
@@ -293,11 +266,11 @@ public class MinionsClient
 
                         if (MinionsCore.instance.evilDeedXPCost != -1)
                         {
-                            mcinstance.ingameGUI.getChatGUI().printChatMessage("Server says you don't have enough XP for Evil Deeds");
+                            mcinstance.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Server says you don't have enough XP for Evil Deeds"));
                         }
                         else
                         {
-                            mcinstance.ingameGUI.getChatGUI().printChatMessage("Server says Minions are unobtainable through Evil Deeds here");
+                            mcinstance.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Server says Minions are unobtainable through Evil Deeds here"));
                         }
                     }
                 }
@@ -365,7 +338,7 @@ public class MinionsClient
     
     public void playSoundToAllPlayersOnServer(Entity source, String soundName)
     {
-        Object[] toSend = {source.entityId, soundName};
+        Object[] toSend = {source.func_145782_y(), soundName};
         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend)); // client requests sound distribution packet (entID, soundString)
     }
     
@@ -384,8 +357,8 @@ public class MinionsClient
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
         MovingObjectPosition targetObjectMouseOver = mcinstance.objectMouseOver; //mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
-        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.username);
-        // System.out.println("OnMastersGloveRightClick Master: "+playerEnt.username+", minionarray is: "+minions);
+        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.func_146103_bH().getName());
+        // System.out.println("OnMastersGloveRightClick Master: "+playerEnt.func_146103_bH().getName()+", minionarray is: "+minions);
         Entity target;
 
         if (targetObjectMouseOver == null)
@@ -401,16 +374,16 @@ public class MinionsClient
         {
             if (target instanceof EntityAnimal || target instanceof EntityPlayer)
             {
-                Object[] toSend = {playerEnt.username, playerEnt.entityId, target.entityId};
+                Object[] toSend = {playerEnt.func_146103_bH().getName(), playerEnt.func_145782_y(), target.func_145782_y()};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDPICKUPENT.ordinal(), toSend)); // pickup entity command packet
             }
             else if (target instanceof EntityMinion)
             {
-                Object[] toSend = {playerEnt.username, playerEnt.entityId, target.entityId};
+                Object[] toSend = {playerEnt.func_146103_bH().getName(), playerEnt.func_145782_y(), target.func_145782_y()};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDDROPALL.ordinal(), toSend)); // minion drop items command packet
             }
         }
-        else if (targetObjectMouseOver.typeOfHit == EnumMovingObjectType.TILE)
+        else if (targetObjectMouseOver.typeOfHit == MovingObjectType.BLOCK)
         {
             int x = targetObjectMouseOver.blockX;
             int y = targetObjectMouseOver.blockY +1;
@@ -426,21 +399,21 @@ public class MinionsClient
             // System.out("OnMastersGloveRightClick hasAllMinionsSMPOverride: "+hasAllMinionsSMPOverride);
             if (!hasAllMinionsSMPOverride)
             {
-                Object[] toSend = {playerEnt.username, x, y, z};
+                Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z};
                 // System.out("Client sending CMDMINIONSPAWN, ["+x+"|"+y+"|"+z+"]");
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDMINIONSPAWN.ordinal(), toSend)); // minion spawn command packet
                 playerEnt.worldObj.spawnParticle("hugeexplosion", x, y, z, 0.0D, 0.0D, 0.0D);
                 return;
             }
 
-            int ID = worldObj.getBlockId(x, y, z);
+            Block ID = worldObj.func_147439_a(x, y, z);
             TileEntity chestOrInventoryBlock;
 
             if (MinionsCore.instance.foundTreeBlocks.contains(ID))
             {
                 if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                 {
-                    Object[] toSend = {playerEnt.username, x, y, z};
+                    Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z};
                     PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDCHOPTREES.ordinal(), toSend)); // treechop job command packet
                 }
                 else
@@ -456,7 +429,7 @@ public class MinionsClient
                 {
                     if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                     {
-                        Object[] toSend = {playerEnt.username, x, y, z};
+                        Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z};
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDSTAIRWELL.ordinal(), toSend)); // stairwell job command packet
                     }
                     else
@@ -469,7 +442,7 @@ public class MinionsClient
                 {
                     if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                     {
-                        Object[] toSend = {playerEnt.username, x, y, z};
+                        Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z};
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDSTRIPMINE.ordinal(), toSend)); // stripmine job command packet
                     }
                     else
@@ -482,7 +455,7 @@ public class MinionsClient
                 {
                     if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                     {
-                        Object[] toSend = {playerEnt.username, x, y, z, customSizeXZ, customSizeY};
+                        Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z, customSizeXZ, customSizeY};
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDCUSTOMDIG.ordinal(), toSend)); // custom dig job command packet
                     }
                     else
@@ -492,11 +465,11 @@ public class MinionsClient
                     }
                 }
             }
-            else if ((chestOrInventoryBlock = worldObj.getBlockTileEntity(x, y-1, z)) != null
+            else if ((chestOrInventoryBlock = worldObj.func_147438_o(x, y-1, z)) != null
                     && chestOrInventoryBlock instanceof IInventory
                     && ((IInventory)chestOrInventoryBlock).getSizeInventory() >= 24)
             {
-                Object[] toSend = {playerEnt.username, playerEnt.isSneaking(), x, y, z};
+                Object[] toSend = {playerEnt.func_146103_bH().getName(), playerEnt.isSneaking(), x, y, z};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDASSIGNCHEST.ordinal(), toSend)); // chest assign command packet
             }
             else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && hasMinionsSMPOverride)
@@ -506,19 +479,19 @@ public class MinionsClient
                         && MathHelper.floor_double(playerEnt.posZ) == z
                         && Math.abs(MathHelper.floor_double(playerEnt.posY) - y) < 3)
                 {
-                    Object[] toSend = {playerEnt.username, playerEnt.entityId, playerEnt.entityId};
+                    Object[] toSend = {playerEnt.func_146103_bH().getName(), playerEnt.func_145782_y(), playerEnt.func_145782_y()};
                     PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDPICKUPENT.ordinal(), toSend)); // pickup entity command packet
                 }
                 else
                 {
-                    Object[] toSend = {playerEnt.username, x, y, z};
+                    Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z};
                     PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDMOVETO.ordinal(), toSend)); // moveto command packet
                 }
             }
-            else if (MinionsCore.instance.isBlockValueable(worldObj.getBlockId(x, y-1, z)))
+            else if (MinionsCore.instance.isBlockValueable(worldObj.func_147439_a(x, y-1, z)))
             {
 
-                Object[] toSend = {playerEnt.username, x, y, z};
+                Object[] toSend = {playerEnt.func_146103_bH().getName(), x, y, z};
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDMINEOREVEIN.ordinal(), toSend)); // mine ore vein command
             }
         }
@@ -526,7 +499,7 @@ public class MinionsClient
     
     public static void onMastersGloveRightClickHeld(ItemStack var1, World var2, EntityPlayer var3)
     {
-        Object[] toSend = {var3.username};
+        Object[] toSend = {var3.func_146103_bH().getName()};
         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDFOLLOW.ordinal(), toSend));
     }
     

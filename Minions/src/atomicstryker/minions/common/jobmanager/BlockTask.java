@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -177,7 +178,7 @@ public abstract class BlockTask
         this.worker.setWorking(true);
         this.worker.setPathToEntity(null);
 
-        worker.adaptItem(worker.worldObj.getBlockMaterial(posX, posY, posZ));
+        worker.adaptItem(worker.worldObj.func_147439_a(posX, posY, posZ).func_149688_o());
     }
 
     /**
@@ -261,13 +262,15 @@ public abstract class BlockTask
      */
     protected ArrayList<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
     {
-        Block block = Block.blocksList[world.getBlockId(i, j, k)];
-        if (block == null || block.blockMaterial == Material.water || block.blockMaterial == Material.lava || block.blockMaterial == Material.leaves || block.blockMaterial == Material.plants)
+        Block block = world.func_147439_a(i, j, k);
+        Material m = block.func_149688_o();
+        
+        if (block == Blocks.air || m == Material.field_151586_h || m == Material.field_151587_i || m == Material.field_151584_j || m == Material.field_151585_k)
         {
             return new ArrayList<ItemStack>();
         }
-
-        return block.getBlockDropped(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
+        
+        return block.getDrops(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
     }
 
     protected void putBlockHarvestInWorkerInventory(ArrayList<ItemStack> stackList)

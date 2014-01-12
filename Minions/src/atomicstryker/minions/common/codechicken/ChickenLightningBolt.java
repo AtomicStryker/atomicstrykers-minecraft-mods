@@ -19,11 +19,12 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -306,16 +307,16 @@ public class ChickenLightningBolt
 			return prevresistance;
 		}
 		
-		if(mop.typeOfHit == EnumMovingObjectType.TILE)
+		if(mop.typeOfHit == MovingObjectType.BLOCK)
 		{
-			int blockID = world.getBlockId(mop.blockX, mop.blockY, mop.blockZ);
+			Block blockID = world.func_147439_a(mop.blockX, mop.blockY, mop.blockZ);
 			
-			if(blockID == 0)
+			if(blockID == Blocks.air)
 			{
 				return prevresistance;
 			}
 			
-			return prevresistance + (Block.blocksList[blockID].getExplosionResistance(source) + 0.3F);
+			return prevresistance + (blockID.getExplosionResistance(source, world, mop.blockX, mop.blockY, mop.blockZ, mop.blockX+0.5d, mop.blockY+0.5d, mop.blockZ+0.5d) + 0.3F);
 		}
 		else
 		{

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.minions.common.entity.EntityMinion;
@@ -64,7 +65,7 @@ public class BlockTask_TreeChop extends BlockTask
                 if (!output.inventory.addItemStackToInventory(stack))
                 {
                     EntityItem item = new EntityItem(output.worldObj, output.posX, output.posY - 0.30000001192092896D + (double)output.getEyeHeight(), output.posZ, stack);
-                    item.delayBeforeCanPickup = 40;
+                    item.field_145804_b = 40;
                     output.worldObj.spawnEntityInWorld(item);
                 }
             }
@@ -77,21 +78,20 @@ public class BlockTask_TreeChop extends BlockTask
     	for (int i = treeBlockList.size()-1; i >= 0; i--)
     	{
     		tempCoords = treeBlockList.get(i);
-    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, 0, 0, 3);
+    		worker.worldObj.func_147465_d(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
     	}
     	
     	if (leaveBlockList.size() > 0)
     	{
     		tempCoords = leaveBlockList.get(0);
-    		int id = worker.worldObj.getBlockId(tempCoords.posX, tempCoords.posY, tempCoords.posZ);
-    		if (id > 0)
+    		Block id = worker.worldObj.func_147439_a(tempCoords.posX, tempCoords.posY, tempCoords.posZ);
+    		if (id != Blocks.air)
     		{
-    			Block leave = Block.blocksList[id];
     	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
     	    	{
     	    		tempCoords = leaveBlockList.get(i);
-    	    		leave.dropBlockAsItem(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
-    	    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, 0, 0, 3);
+    	    		id.func_149697_b(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
+    	    		worker.worldObj.func_147465_d(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
     	    	}
     		}
     	}

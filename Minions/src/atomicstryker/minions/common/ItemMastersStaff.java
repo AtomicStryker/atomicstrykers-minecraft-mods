@@ -1,6 +1,6 @@
 package atomicstryker.minions.common;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -21,9 +21,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemMastersStaff extends Item
 {
 
-    public ItemMastersStaff(int var1)
+    public ItemMastersStaff()
     {
-        super(var1);
+        super();
         this.maxStackSize = 1;
         
         this.setCreativeTab(CreativeTabs.tabCombat);
@@ -31,7 +31,7 @@ public class ItemMastersStaff extends Item
     
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
         this.itemIcon = par1IconRegister.registerIcon("minions:masterstaff");
     }
@@ -87,7 +87,7 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public String getItemDisplayName(ItemStack itemStack)
+    public String getItemStackDisplayName(ItemStack itemStack)
     {
         return EnumChatFormatting.RED + "Master's Stuff";
     }

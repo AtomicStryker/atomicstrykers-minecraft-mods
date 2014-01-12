@@ -4,8 +4,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.FMLCommonHandler;
+import atomicstryker.minions.common.network.ForgePacketWrapper;
+import atomicstryker.minions.common.network.PacketDispatcher;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
@@ -33,12 +33,8 @@ public class CommonProxy
 
     public void sendSoundToClients(Entity ent, String string)
     {
-        Object[] toSend = {ent.entityId, string};
-        try
-        {
-            FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 15, ent.worldObj.provider.dimensionId, ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend));
-        }
-        catch (Exception e){}
+        Object[] toSend = {ent.func_145782_y(), string};
+        PacketDispatcher.sendToAllNear(ent.posX, ent.posY, ent.posZ, 15, ent.worldObj.provider.dimensionId, ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend));
     }
 
     public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)

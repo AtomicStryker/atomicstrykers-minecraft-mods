@@ -1,49 +1,60 @@
 package atomicstryker.minions.client;
 
-import java.util.EnumSet;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.minions.common.CommonProxy;
-import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
+import atomicstryker.minions.common.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ClientProxy extends CommonProxy
 {
     
-    private MinionsClient client;
+    private static MinionsClient client;
     
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
         client =  new MinionsClient();
         MinecraftForge.EVENT_BUS.register(new MinionsSounds());
+        FMLCommonHandler.instance().bus().register(this);
+        FMLCommonHandler.instance().bus().register(client);
+        MinecraftForge.EVENT_BUS.register(new RenderChickenLightningBolt());
     }
     
     @Override
     public void load(FMLInitializationEvent evt)
     {
-        TickRegistry.registerTickHandler(new ClientRenderTickHandler(), Side.CLIENT);
-        TickRegistry.registerTickHandler(new ClientWorldTickHandler(), Side.CLIENT);
-        NetworkRegistry.instance().registerChannel(new ClientPacketHandler(), MinionsCore.getPacketChannel(), Side.CLIENT);
         
-        MinecraftForge.EVENT_BUS.register(new RenderChickenLightningBolt());
+    }
+    
+    @SubscribeEvent
+    public void onRenderTick(TickEvent.RenderTickEvent tick)
+    {
+        if (tick.phase == Phase.END)
+        {
+            client.onRenderTick(tick.renderTickTime);
+        }
+    }
+    
+    @SubscribeEvent
+    public void onWorldTick(TickEvent.WorldTickEvent tick)
+    {
+        if (tick.phase == Phase.END)
+        {
+            client.onWorldTick(tick.world);
+        }
     }
     
     @Override
@@ -77,70 +88,12 @@ public class ClientProxy extends CommonProxy
 		FMLClientHandler.instance().getClient().theWorld.playSound(ent.posX, ent.posY, ent.posZ, sound, volume, pitch, false);
 	}
     
-    public class ClientRenderTickHandler implements ITickHandler
-    {
-        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.RENDER);
-        
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-            // NOOP
-        }
-
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            client.onRenderTick(tickData);
-        }
-        
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "MinionsTickRender";
-        }
-    }
-    
-    public class ClientWorldTickHandler implements ITickHandler
-    {
-        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.CLIENT);
-        
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-            // NOOP
-        }
-
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
-        {
-            client.onWorldTick(tickData);
-        }
-        
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "MinionsTickClient";
-        }
-    }
-    
-    public class ClientPacketHandler implements IPacketHandler
+    public static class ClientPacketHandler implements IPacketHandler
     {
         @Override
-        public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+        public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
         {
-            client.onPacketData(manager, packet, player);
+            client.onPacketData(packetType, packet, player);
         }
     }
 }

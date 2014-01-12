@@ -5,17 +5,19 @@ import java.io.FileInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
-import net.minecraftforge.event.ForgeSubscribe;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class MinionsSounds
 {
-    private static final String SOUND_RESOURCE_LOCATION = "assets/minions/sound";
-    private static final String SOUND_PREFIX = "minions:";
+    private static final String SOUND_RESOURCE_LOCATION = "assets/minions/sounds";
+    private static final String SOUND_PREFIX = "minions";
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void onSoundLoad(SoundLoadEvent event)
     {
         System.out.println("SoundLoadEvent Minions, trying to load sounds");
@@ -31,9 +33,8 @@ public class MinionsSounds
                     System.out.println("Directory detected! Iterating...");
                     for (String soundFile : fileCandidate.list())
                     {
-                        String s = SOUND_PREFIX + soundFile;
-                        event.manager.addSound(s);
-                        System.out.println("loaded soundfile " + s);
+                        event.manager.func_148599_a(new PositionedSoundRecord(new ResourceLocation(SOUND_PREFIX, soundFile), 1.0f, 0, 0, 0, 0), 0);
+                        System.out.println("loaded soundfile " + soundFile);
                     }
                 }
                 else if (mco.getSource().isFile() && mco.getSource().getName().endsWith(".zip"))
@@ -54,8 +55,8 @@ public class MinionsSounds
                                 && s.length() > 0
                                 && s.startsWith(SOUND_RESOURCE_LOCATION))
                                 {
-                                    event.manager.addSound(SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
-                                    System.out.println("loaded soundfile " + SOUND_PREFIX+s.substring(s.lastIndexOf("/")+1));
+                                    event.manager.func_148599_a(new PositionedSoundRecord(new ResourceLocation(SOUND_PREFIX, s.substring(s.lastIndexOf("/")+1)), 1.0f, 0, 0, 0, 0), 0);
+                                    System.out.println("loaded soundfile " + s.substring(s.lastIndexOf("/")+1));
                                 }
                             }
                             zis.closeEntry();
