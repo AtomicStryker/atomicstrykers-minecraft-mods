@@ -288,7 +288,7 @@ public class KenshiroClient
     
     public void onEntityKicked(EntityPlayer kicker, EntityLivingBase target)
     {
-        //System.out.println("Client onEntityKicked, kicker: "+kicker.username+", entity: "+target);
+        //System.out.println("Client onEntityKicked, kicker: "+kicker.func_146103_bH().getName()+", entity: "+target);
         target.attackEntityFrom(DamageSource.causePlayerDamage(kicker), 4);
         
         double var9 = entPlayer.posX - target.posX;
