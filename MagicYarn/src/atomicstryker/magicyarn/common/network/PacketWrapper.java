@@ -5,8 +5,8 @@ import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
 import atomicstryker.magicyarn.common.network.PacketDispatcher.WrappedPacket;
+import cpw.mods.fml.common.network.ByteBufUtils;
 
 /**
  * @author AtomicStryker

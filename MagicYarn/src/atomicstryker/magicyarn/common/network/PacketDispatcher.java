@@ -4,13 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.INetHandler;
-import net.minecraft.network.NetHandlerPlayServer;
 import atomicstryker.magicyarn.common.network.NetworkHelper.IPacket;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class PacketDispatcher
 {
@@ -55,6 +52,15 @@ public class PacketDispatcher
         {
             bytes.writeInt(packetID);
             
+            if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+            {
+                writeStringToBuf(FMLClientHandler.instance().getClientPlayerEntity().getCommandSenderName(), bytes);
+            }
+            else
+            {
+                writeStringToBuf("toServer", bytes);
+            }
+            
             if (data != null)
             {
                 bytes.writeBytes(data);
@@ -86,7 +92,7 @@ public class PacketDispatcher
             }
             else if (objClass.equals(String.class))
             {
-                ByteBufUtils.writeUTF8String(data, (String) obj);
+                writeStringToBuf((String) obj, data);
             }
             else if (objClass.equals(Double.class))
             {
@@ -105,23 +111,38 @@ public class PacketDispatcher
                 data.writeShort((Short) obj);
             }
         }
+        
+        private void writeStringToBuf(String s, ByteBuf buf)
+        {
+            buf.writeShort(s.length());
+            for (char c : s.toCharArray())
+            {
+                buf.writeChar(c);
+            }
+        }
 
         @Override
         public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
         {
+            int pid = bytes.readInt();
+            
+            // read out the chars even if the client doesnt need em
+            short len = bytes.readShort();
+            char[] chars = new char[len];
+            for (int i = 0; i < len; i++)
+            {
+                chars[i] = bytes.readChar();
+            }
+            
             if (FMLCommonHandler.instance().getEffectiveSide().isClient())
             {
-                int pid = bytes.readInt();
                 clientPacketHandler.onPacketData(pid, new WrappedPacket(pid, bytes), FMLClientHandler.instance().getClientPlayerEntity());
             }
             else
             {
-                INetHandler handler = ctx.attr(NetworkRegistry.NET_HANDLER).get();
-                if(handler instanceof NetHandlerPlayServer)
+                EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getPlayerForUsername(String.valueOf(chars));
+                if(player != null)
                 {
-                    NetHandlerPlayServer serverHandler = (NetHandlerPlayServer)handler;
-                    EntityPlayerMP player = serverHandler.field_147369_b;
-                    int pid = bytes.readInt();
                     serverPacketHandler.onPacketData(pid, new WrappedPacket(pid, bytes), player);
                 }
             }
@@ -151,6 +172,11 @@ public class PacketDispatcher
     public static void sendPacketToAllPlayers(WrappedPacket packet)
     {
         networkHelper.sendPacketToAllPlayers(packet);
+    }
+
+    public static void sendToAllNear(double posX, double posY, double posZ, double distance, int dimension, WrappedPacket packet)
+    {
+        networkHelper.sendPacketToAllAroundPoint(packet, new TargetPoint(dimension, posX, posY, posZ, distance));
     }
 
 }
