@@ -2,27 +2,25 @@ package atomicstryker.multimine.common;
 
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
 import atomicstryker.multimine.client.ClientPacketHandler;
+import atomicstryker.multimine.common.network.PacketDispatcher;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
+import cpw.mods.fml.common.registry.GameData;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.4")
-@NetworkMod(clientSideRequired = false, serverSideRequired = false,
-clientPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ClientPacketHandler.class),
-serverPacketHandlerSpec = @SidedPacketHandler(channels = {"AS_MM"}, packetHandler = ServerPacketHandler.class),
-connectionHandler = ConnectionHandler.class)
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.5")
 public class MultiMine
 {
     private static MultiMine instance;
@@ -30,9 +28,9 @@ public class MultiMine
     private long initialBlockRegenDelay;
     private long blockRegenInterval;
     private String excludedBlocksString;
-    private HashSet<Integer> excludedBlockSet;
+    private HashSet<Block> excludedBlockSet;
     private String excludedItemsString;
-    private HashSet<Integer> excludedItemSet;
+    private HashSet<Item> excludedItemSet;
     
     @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
     public static CommonProxy proxy;
@@ -41,6 +39,7 @@ public class MultiMine
     public void preInit(FMLPreInitializationEvent evt)
     {
         instance = this;
+        PacketDispatcher.init("AS_MM", new ClientPacketHandler(), new ServerPacketHandler());
         
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
@@ -49,26 +48,22 @@ public class MultiMine
         initialBlockRegenDelay = config.get("general", "Initial Block Regen Delay in ms", 5000).getInt();
         blockRegenInterval = config.get("general", "Block 10 percent Regen Interval in ms", 1000).getInt();
         
-        excludedBlocksString = config.get("general", "Excluded Block IDs", "6,31,37,38,39,40,50,51,55,59,64,69,75,76,83,93,94,96,104,105,111,131,132,141,142").getString();
-        excludedItemsString = config.get("general", "Excluded Item IDs", "290,291,292,293,294,359").getString();
+        excludedBlocksString = config.get("general", "Excluded Block IDs", "sapling,tallgrass,yellow_flower,red_flower,brown_mushroom,red_mushroom,torch,fire,redstone_wire,wheat,wooden_door,lever,unlit_redstone_torch,redstone_torch,reeds,unpowered_repeater,powered_repeater,trapdoor,pumpkin_stem,melon_stem,waterlily,tripwire_hook,tripwire,carrots,potatoes").getString();
+        excludedItemsString = config.get("general", "Excluded Item IDs", "wooden_hoe,stone_hoe,iron_hoe,diamond_hoe,golden_hoe,shears").getString();
         
         config.save();
         
-        excludedBlockSet = new HashSet<Integer>();
-        excludedItemSet = new HashSet<Integer>();
+        excludedBlockSet = new HashSet<Block>();
+        excludedItemSet = new HashSet<Item>();
         setExcludedBlocksString(excludedBlocksString);
+        
+        proxy.onPreInit();
     }
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
         proxy.onLoad();
-    }
-    
-    @EventHandler
-    public void serverStarted(FMLServerStartedEvent event)
-    {
-        new MultiMineServer();
     }
     
     public static MultiMine instance()
@@ -111,7 +106,11 @@ public class MultiMine
         String[] numbers = excludedBlocksString.split(",");
         for (String s : numbers)
         {
-            excludedBlockSet.add(Integer.parseInt(s));
+            Block b = GameData.blockRegistry.getObject(s);
+            if (b != Blocks.air)
+            {
+                excludedBlockSet.add(b);
+            }
         }
     }
     
@@ -134,7 +133,11 @@ public class MultiMine
         String[] numbers = excludedItemsString.split(",");
         for (String s : numbers)
         {
-            excludedItemSet.add(Integer.parseInt(s));
+            Item it = GameData.itemRegistry.getObject(s);
+            if (it != null)
+            {
+                excludedItemSet.add(it);
+            }
         }
     }
     
@@ -144,6 +147,6 @@ public class MultiMine
      */
     public boolean getIsExcludedItem(ItemStack itemStack)
     {
-        return itemStack != null && excludedItemSet.contains(itemStack.itemID);
+        return itemStack != null && excludedItemSet.contains(itemStack.getItem());
     }
 }

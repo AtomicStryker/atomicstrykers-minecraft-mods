@@ -1,31 +1,23 @@
 package atomicstryker.multimine.common;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import atomicstryker.multimine.common.network.ForgePacketWrapper;
+import atomicstryker.multimine.common.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.multimine.common.network.PacketDispatcher.WrappedPacket;
 
 public class ServerPacketHandler implements IPacketHandler
 {
     @SuppressWarnings("rawtypes")
     @Override
-    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
     {
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-        int packetType = ForgePacketWrapper.readPacketID(data);
+        ByteBuf data = packet.data;
 
         if (packetType == 0) // client informs server he has multi mine installed!
         {
-            // answer in kind, to enable clientside functionality
-            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_MM", 0, null), player);
             
-            MultiMineServer.instance().onPlayerLoggedIn(player);
         }
         else if (packetType == 1) // partial block packet! argument ints: x,y,z,dimension
         {

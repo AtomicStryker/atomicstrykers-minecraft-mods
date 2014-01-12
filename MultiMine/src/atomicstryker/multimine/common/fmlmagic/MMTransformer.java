@@ -2,9 +2,7 @@ package atomicstryker.multimine.common.fmlmagic;
 
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.GETFIELD;
-import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFLT;
-import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.ISTORE;
@@ -21,7 +19,6 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -32,8 +29,8 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for PlayerControllerMP Transformation */
 
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bdc";
-    private final String playerControllerMPJavaClassNameO = "bdc";
+    private final String playerControllerMPClassNameO = "biy";
+    private final String playerControllerMPJavaClassNameO = "biy";
     /* onPlayerDamageBlock / func_78759_c */
     private final String playerControllerMPtargetMethodNameO = "c";
     /* currentBlockX / field_78775_c */
@@ -123,10 +120,7 @@ public class MMTransformer implements IClassTransformer
                         InsnList toInject = new InsnList();
 
                         // construct instruction nodes for list
-                        toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;"));
-                        toInject.add(new VarInsnNode(ILOAD, blockIDvar));
-                        toInject.add(new MethodInsnNode(INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "getIsEnabledForServerAndBlockId", "(I)Z"));
-                        toInject.add(new JumpInsnNode(IFEQ, lmm1Node));
+                        
                         // stash an object ref for the final putfield on the stack
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;"));

@@ -1,7 +1,6 @@
 package atomicstryker.multimine.common;
 
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,23 +9,23 @@ import java.util.PriorityQueue;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet53BlockChange;
+import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import atomicstryker.ForgePacketWrapper;
+import atomicstryker.multimine.common.network.ForgePacketWrapper;
+import atomicstryker.multimine.common.network.PacketDispatcher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class MultiMineServer
 {
@@ -46,8 +45,7 @@ public class MultiMineServer
         instance = this;
         blockRegenQueue = new BlockRegenQueue(30, new BlockAgeComparator());
         
-        serverInstance = FMLCommonHandler.instance().getMinecraftServerInstance();
-        TickRegistry.registerTickHandler(new ServerTickHandler(), Side.SERVER);
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     public static MultiMineServer instance()
@@ -66,6 +64,7 @@ public class MultiMineServer
      */
     public void onClientSentPartialBlockPacket(EntityPlayerMP player, int x, int y, int z, int dim)
     {
+        serverInstance = FMLCommonHandler.instance().getMinecraftServerInstance();
         int dimension = player.dimension;
         //System.out.println("multi mine client sent packet from dimension "+dim+", server says its actually "+dimension);
         
@@ -85,7 +84,7 @@ public class MultiMineServer
             {
                 iterBlock.advanceProgress();
                 iterBlock.setLastTimeMined(System.currentTimeMillis()+MultiMine.instance().getInitialBlockRegenDelay());
-                //System.out.println("Server advancing partial block at: ["+x+"|"+y+"|"+z+"], progress now: "+iterBlock.getProgress());
+                // System.out.println("Server advancing partial block at: ["+x+"|"+y+"|"+z+"], progress now: "+iterBlock.getProgress());
 
                 // send the newly advanced partialblock to all relevant players
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock);
@@ -94,25 +93,26 @@ public class MultiMineServer
                 {
                     //System.out.println("Server finishing partial block at: ["+x+"|"+y+"|"+z+"]");
                     // and if its done, destroy the world block
-                    player.worldObj.destroyBlockInWorldPartially(player.entityId, x, y, z, -1);
-                    int blockID = player.worldObj.getBlockId(x, y, z);
-                    PacketDispatcher.sendPacketToAllAround(x, y, z, 30D, dimension, new Packet53BlockChange(x, y, z, player.worldObj));
+                    player.worldObj.func_147443_d(player.func_145782_y(), x, y, z, -1);
+                    Block block = player.worldObj.func_147439_a(x, y, z);
                     
-                    Block block = Block.blocksList[blockID];
-                    if (block != null)
+                    S23PacketBlockChange packet = new S23PacketBlockChange(x, y, z, player.worldObj);
+                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_148537_a(packet, player.dimension);
+                    
+                    if (block != Blocks.air)
                     {
                         int meta = player.worldObj.getBlockMetadata(x, y, z);
-                        if (block.removeBlockByPlayer(player.worldObj, player, x, y, z))
+                        if (block.removedByPlayer(player.worldObj, player, x, y, z))
                         {
-                            block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
-                            onBlockMineFinishedDamagePlayerItem(player, blockID, x, y, z);
                             
-                            if (block.canHarvestBlock(player, meta))
+                            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
+                            if (!event.isCanceled())
                             {
-                                BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
-                                if (!event.isCanceled())
+                                block.func_149664_b(player.worldObj, x, y, z, meta);
+                                onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
+                                if (block.canHarvestBlock(player, meta))
                                 {
-                                    block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                                    block.func_149636_a(player.worldObj, player, x, y, z, meta);
                                 }
                             }
                         }
@@ -128,7 +128,7 @@ public class MultiMineServer
         }
         
         // else send the new partialblock to all relevant players
-        //System.out.println("Server creating new partial block at: ["+x+"|"+y+"|"+z+"]");
+        // System.out.println("Server creating new partial block at: ["+x+"|"+y+"|"+z+"]");
         
         if (partiallyMinedBlocks.size() > 29)
         {
@@ -151,12 +151,12 @@ public class MultiMineServer
      * @param y Coordinates of the Block
      * @param z Coordinates of the Block
      */
-    private void onBlockMineFinishedDamagePlayerItem(EntityPlayer player, int blockID, int x, int y, int z)
+    private void onBlockMineFinishedDamagePlayerItem(EntityPlayer player, Block blockID, int x, int y, int z)
     {
         ItemStack itemStack = player.getCurrentEquippedItem();
         if (itemStack != null)
         {
-            itemStack.onBlockDestroyed(player.worldObj, blockID, x, y, z, player);
+            itemStack.func_150999_a(player.worldObj, blockID, x, y, z, player);
 
             if (itemStack.stackSize == 0)
             {
@@ -173,17 +173,14 @@ public class MultiMineServer
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block)
     {
         Object[] toSend = {block.getX(), block.getY(), block.getZ(), block.getProgress()};
-        PacketDispatcher.sendPacketToAllAround(block.getX(), block.getY(), block.getZ(), 30D, block.getDimension(), ForgePacketWrapper.createPacket("AS_MM", 2, toSend));
+        PacketDispatcher.sendToAllNear(block.getX(), block.getY(), block.getZ(), 30D, block.getDimension(), ForgePacketWrapper.createPacket("AS_MM", 2, toSend));
     }
 
-    /**
-     * Called when a Player logged in and sent a Handshake Packet announcing his installed Multi Mine client.
-     * Fetch a List of all relevant partial Blocks and send it to him.
-     * @param player who logged in
-     */
-    public void onPlayerLoggedIn(Player player)
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        int dimension = ((EntityPlayer)player).worldObj.provider.dimensionId;
+        EntityPlayer player = event.player;
+        int dimension = player.worldObj.provider.dimensionId;
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
         
         if (partiallyMinedBlocks != null)
@@ -220,7 +217,7 @@ public class MultiMineServer
     {
         Object[] toSend = {block.getX(), block.getY(), block.getZ(), block.getProgress()};
         //System.out.println("Server sending partial Block Update ["+block.getX()+"|"+block.getY()+"|"+block.getZ()+"] in dimension "+block.getDimension());
-        PacketDispatcher.sendPacketToAllAround(block.getX(), block.getY(), block.getZ(), 30D, block.getDimension(), ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
+        PacketDispatcher.sendToAllNear(block.getX(), block.getY(), block.getZ(), 30D, block.getDimension(), ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
     }
     
     /**
@@ -228,27 +225,20 @@ public class MultiMineServer
      * @param p Player targeted
      * @param block PartiallyMinedBlock instance
      */
-    private void sendPartiallyMinedBlockToPlayer(Player p, PartiallyMinedBlock block)
+    private void sendPartiallyMinedBlockToPlayer(EntityPlayer p, PartiallyMinedBlock block)
     {
         Object[] toSend = {block.getX(), block.getY(), block.getZ(), block.getProgress()};
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend), p);
     }
     
     /**
-     * Tick Handler Class to achieve Block Regeneration. We keep track of our Block age
+     * Tick Handler to achieve Block Regeneration. We keep track of our Block age
      * using a PriorityQueue and start repairing Blocks if they get too old.
      */
-    private class ServerTickHandler implements ITickHandler
+    @SubscribeEvent
+    public void onTick(TickEvent.WorldTickEvent tick)
     {
-        private final EnumSet<TickType> tickTypes = EnumSet.of(TickType.WORLD);
-        
-        @Override
-        public void tickStart(EnumSet<TickType> type, Object... tickData)
-        {
-        }
-
-        @Override
-        public void tickEnd(EnumSet<TickType> type, Object... tickData)
+        if (tick.phase == Phase.END)
         {
             if (blockRegenQueue.isEmpty())
             {
@@ -258,7 +248,7 @@ public class MultiMineServer
             PartiallyMinedBlock block = null;
             for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext();)
             {
-            	block = iter.next();
+                block = iter.next();
                 if (isBlockGone(block))
                 {
                     sendPartiallyMinedBlockDeleteCommandToAllPlayers(block);
@@ -293,28 +283,16 @@ public class MultiMineServer
                 }
             }
         }
-        
-        /**
-         * Helper method to determine if a Block was removed by other means (Explosion, Sand/Gravel falling, Pistons...)
-         * @param block PartiallyMinedBlock to check
-         * @return true if the PartiallyMinedBlock Block coordinates return 0 in a getBlockId check, false otherwise
-         */
-        private boolean isBlockGone(PartiallyMinedBlock block)
-        {
-        	return serverInstance.worldServerForDimension(block.getDimension()).getBlockId(block.getX(), block.getY(), block.getZ()) == 0;
-        }
-
-        @Override
-        public EnumSet<TickType> ticks()
-        {
-            return tickTypes;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return "MultiMine";
-        }
+    }
+    
+    /**
+     * Helper method to determine if a Block was removed by other means (Explosion, Sand/Gravel falling, Pistons...)
+     * @param block PartiallyMinedBlock to check
+     * @return true if the PartiallyMinedBlock Block coordinates return 0 in a getBlockId check, false otherwise
+     */
+    private boolean isBlockGone(PartiallyMinedBlock block)
+    {
+        return serverInstance.worldServerForDimension(block.getDimension()).func_147439_a(block.getX(), block.getY(), block.getZ()) == Blocks.air;
     }
     
     /**

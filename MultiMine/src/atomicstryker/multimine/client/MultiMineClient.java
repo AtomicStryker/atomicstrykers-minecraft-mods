@@ -5,17 +5,19 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.renderer.DestroyBlockProgress;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import atomicstryker.ForgePacketWrapper;
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
+import atomicstryker.multimine.common.network.ForgePacketWrapper;
+import atomicstryker.multimine.common.network.PacketDispatcher;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class MultiMineClient
 {
@@ -23,16 +25,12 @@ public class MultiMineClient
     private static Minecraft mc;
     private static EntityPlayer thePlayer;
     private PartiallyMinedBlock[] partiallyMinedBlocksArray;
-    private boolean isInstalledOnServer;
     private Map<Integer, DestroyBlockProgress> vanillaDestroyBlockProgressMap;
     private int arrayOverWriteIndex;
     private int curBlockX;
     private int curBlockY;
     private int curBlockZ;
     private float lastBlockCompletion;
-    
-    private final long cloudTickReadingIntervalMillis = 5000L;
-    private long nextTimeCloudTickReading;
     private int lastCloudTickReading;
     
     /**
@@ -47,13 +45,11 @@ public class MultiMineClient
         mc = FMLClientHandler.instance().getClient();
         curBlockX = curBlockY = curBlockZ = 0;
         partiallyMinedBlocksArray = new PartiallyMinedBlock[30];
-        isInstalledOnServer = false;
         arrayOverWriteIndex = 0;
         lastBlockCompletion = 0F;
-        
-        nextTimeCloudTickReading = System.currentTimeMillis();
         lastCloudTickReading = 0;
         
+        System.out.println("Multi Mine about to hack vanilla RenderMap");
         for (Field f : RenderGlobal.class.getDeclaredFields())
         {
             if (f.getType().equals(Map.class))
@@ -61,8 +57,9 @@ public class MultiMineClient
                 f.setAccessible(true);
                 try
                 {
-                    vanillaDestroyBlockProgressMap = (Map) f.get(FMLClientHandler.instance().getClient().renderGlobal);
-                    System.out.println("Multi Mine vanilla RenderMap invasion successful!");
+                    vanillaDestroyBlockProgressMap = (Map) f.get(mc.renderGlobal);
+                    System.out.println("Multi Mine vanilla RenderMap invasion successful, field: "+f.getName());
+                    break;
                 }
                 catch (Exception e)
                 {
@@ -87,6 +84,7 @@ public class MultiMineClient
      */
     public float eventPlayerDamageBlock(int x, int y, int z, float blockCompletion)
     {
+        thePlayer = FMLClientHandler.instance().getClient().thePlayer;
         if (blockCompletion < 1.0f) // do not trigger on finished blocks
         {
             boolean override = false;
@@ -99,7 +97,7 @@ public class MultiMineClient
                 && partiallyMinedBlocksArray[i].getZ() == z)
                 {
                     float savedProgress = partiallyMinedBlocksArray[i].getProgress() * 0.1F;
-                    //System.out.println("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
+                    // System.out.println("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
                     if (savedProgress > blockCompletion)
                     {
                         blockCompletion = savedProgress;
@@ -140,7 +138,7 @@ public class MultiMineClient
                     while (blockCompletion >= lastBlockCompletion+0.1f)
                     {
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
-                        //System.out.println("Sent one 10% block progress packet to server...");
+                        // System.out.println("Sent one 10% block progress packet to server...");
                         lastBlockCompletion += 0.1f;
                     }
                 }
@@ -168,34 +166,16 @@ public class MultiMineClient
     public void renderBlockDigParticles(int x, int y, int z)
     {
         World world = thePlayer.worldObj;
-        int blockID = world.getBlockId(x, y, z);
-        if (blockID != 0)
+        Block block = world.func_147439_a(x, y, z);
+        if (block != Blocks.air)
         {
             int blockMeta = world.getBlockMetadata(x, y, z);
-            Block block = Block.blocksList[blockID];
-            mc.sndManager.playSound(block.stepSound.getStepSound(), (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
-            mc.effectRenderer.addBlockDestroyEffects(x, y, z, blockID, blockMeta);
+            mc.func_147118_V().func_147682_a(
+                    new PositionedSoundRecord(
+                            new ResourceLocation(block.field_149762_H.func_150495_a()), 
+                            (block.field_149762_H.func_150497_c() + 1.0F) / 2.0F, block.field_149762_H.func_150494_d() * 0.8F, x+0.5f, y+0.5f, z+0.5f));
+            mc.effectRenderer.func_147215_a(x, y, z, block, blockMeta);
         }
-    }
-
-    /**
-     * Called by Server Login Event clientside, Client sends a packet to server only understood by MultiMine servers
-     */
-    public void onClientLoggedIn()
-    {
-        System.out.println("MM sending client login packet to server...");
-        isInstalledOnServer = false;
-        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 0, null));
-    }
-
-    /**
-     * Called by Packet Handler clientside, when a server answered the challenge correctly and full functionality shall be enabled
-     */
-    public void setEnabledOnServer()
-    {
-        isInstalledOnServer = true;
-        thePlayer = FMLClientHandler.instance().getClient().thePlayer;
-        FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage("Server handshake complete! Multi Mine enabled!");
     }
     
     /**
@@ -205,8 +185,7 @@ public class MultiMineClient
      */
     public boolean getIsEnabledForServerAndBlockId(int blockId)
     {
-        return isInstalledOnServer
-                && !thePlayer.capabilities.isCreativeMode
+        return !thePlayer.capabilities.isCreativeMode
                 && !MultiMine.instance().getIsExcludedItem(thePlayer.getCurrentEquippedItem())
                 && !MultiMine.instance().getIsExcludedBlock(blockId);
     }
@@ -259,23 +238,23 @@ public class MultiMineClient
                 {
                     EntityPlayer player = thePlayer;
                     World w = player.worldObj;
-                    w.destroyBlockInWorldPartially(player.entityId, x, y, z, -1);
+                    w.func_147443_d(player.func_145782_y(), x, y, z, -1);
                     
-                    int blockID = w.getBlockId(x, y, z);
-                    Block block = Block.blocksList[blockID];
-                    if (block != null)
+                    Block block = w.func_147439_a(x, y, z);
+                    if (block != Blocks.air)
                     {
                         int meta = w.getBlockMetadata(x, y, z);
-                        if (block.removeBlockByPlayer(w, player, x, y, z))
+                        if (block.removedByPlayer(w, player, x, y, z))
                         {
-                            block.onBlockDestroyedByPlayer(w, x, y, z, meta);
-                            block.harvestBlock(w, player, x, y, z, meta);
+                            block.func_149664_b(w, x, y, z, meta);
+                            block.func_149636_a(w, player, x, y, z, meta);
                         }
 						
                         //w.playAuxSFX(2001, x, y, z, blockID + meta << 12);
-						w.playSound(x+0.5D, y+0.5D, z+0.5D, block.stepSound.getBreakSound(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F, false);
+						w.playSound(x+0.5D, y+0.5D, z+0.5D, block.field_149762_H.func_150495_a(), 
+						        (block.field_149762_H.func_150497_c() + 1.0F) / 2.0F, block.field_149762_H.func_150494_d() * 0.8F, false);
                     }
-                    onBlockMineFinishedDamagePlayerItem(player, blockID, x, y, z);
+                    onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
 
                     vanillaDestroyBlockProgressMap.remove(i);
                     partiallyMinedBlocksArray[i] = null;
@@ -306,7 +285,7 @@ public class MultiMineClient
      * @param y Coordinates of the Block
      * @param z Coordinates of the Block
      */
-    private void onBlockMineFinishedDamagePlayerItem(EntityPlayer player, int blockID, int x, int y, int z)
+    private void onBlockMineFinishedDamagePlayerItem(EntityPlayer player, Block blockID, int x, int y, int z)
     {
         if (x != this.curBlockX
         || y != curBlockY
@@ -316,12 +295,9 @@ public class MultiMineClient
         }
         
         ItemStack itemStack = player.getCurrentEquippedItem();
-        if (itemStack != null
-        && Item.itemsList[itemStack.itemID] != null
-        && Block.blocksList[blockID] != null)
+        if (itemStack != null)
         {
-            itemStack.onBlockDestroyed(player.worldObj, blockID, x, y, z, player);
-
+            itemStack.func_150999_a(player.worldObj, blockID, x, y, z, player);
             if (itemStack.stackSize == 0)
             {
                 player.destroyCurrentEquippedItem();
@@ -372,23 +348,23 @@ public class MultiMineClient
     
     private void updateCloudTickReading()
     {
-        if (System.currentTimeMillis() > nextTimeCloudTickReading && !vanillaDestroyBlockProgressMap.isEmpty())
+        // cache previous object
+        DestroyBlockProgress dbp = vanillaDestroyBlockProgressMap.get(0);
+        
+        // execute code which gets the object assigned the private cloud tick value we want
+        mc.renderGlobal.func_147587_b(0, (int)thePlayer.posX, (int)thePlayer.posY, (int)thePlayer.posZ, 1);
+        
+        // read the needed value
+        lastCloudTickReading = vanillaDestroyBlockProgressMap.get(0).getCreationCloudUpdateTick();
+        
+        // execute code which destroys the helper object
+        mc.renderGlobal.func_147587_b(0, (int)thePlayer.posX, (int)thePlayer.posY, (int)thePlayer.posZ, 10);
+        
+        // if necessary restore previous object
+        if (dbp != null)
         {
-            nextTimeCloudTickReading = System.currentTimeMillis() + cloudTickReadingIntervalMillis;
-            
-            DestroyBlockProgress dbp = vanillaDestroyBlockProgressMap.get(0);
-            mc.renderGlobal.destroyBlockPartially(0, 1, 2, 3, 4);
-            lastCloudTickReading = vanillaDestroyBlockProgressMap.get(0).getCreationCloudUpdateTick();
-            lastCloudTickReading += 400;
-            if (dbp != null)
-            {
-                vanillaDestroyBlockProgressMap.put(0, dbp);
-            }
-            else
-            {
-                vanillaDestroyBlockProgressMap.remove(0);
-            }
-            //System.out.println("lastCloudTickReading is now "+lastCloudTickReading);
+            vanillaDestroyBlockProgressMap.put(0, dbp);
         }
+        // System.out.println("lastCloudTickReading is now "+lastCloudTickReading);
     }
 }

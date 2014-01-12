@@ -32,4 +32,10 @@ public class MMFMLCorePlugin implements IFMLLoadingPlugin
     {
     }
 
+    @Override
+    public String getAccessTransformerClass()
+    {
+        return null;
+    }
+
 }

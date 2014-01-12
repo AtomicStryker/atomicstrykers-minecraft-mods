@@ -1,26 +1,22 @@
 package atomicstryker.multimine.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import atomicstryker.ForgePacketWrapper;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import atomicstryker.multimine.common.network.ForgePacketWrapper;
+import atomicstryker.multimine.common.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.multimine.common.network.PacketDispatcher.WrappedPacket;
 
 public class ClientPacketHandler implements IPacketHandler
 {
     @SuppressWarnings("rawtypes")
     @Override
-    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
     {
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-        int packetType = ForgePacketWrapper.readPacketID(data);
+        ByteBuf data = packet.data;
         
         if (packetType == 0) // answering packet from server, be assured it has Multi Mine installed aswell
         {
-            MultiMineClient.instance().setEnabledOnServer();
+            
         }
         else if (packetType == 1) // partial block packet! argument ints: x,y,z,progress
         {
