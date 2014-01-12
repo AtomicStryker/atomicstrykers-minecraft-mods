@@ -1,5 +1,6 @@
 package atomicstryker.battletowers.common.network;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.battletowers.common.AS_BattleTowersCore;
@@ -17,6 +18,7 @@ public class LoginPacket implements IPacket
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
+        System.out.println("LoginPacket read, side "+FMLCommonHandler.instance().getEffectiveSide());
         AS_BattleTowersCore.towerDestroyerEnabled = bytes.readByte();   
     }
     

@@ -20,6 +20,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -57,10 +58,17 @@ public class AS_BattleTowersCore
         
         proxy.preInit();
         
+        networkHelper = new NetworkHelper("AS_BT", LoginPacket.class, ChestAttackedPacket.class);
+        
         FMLCommonHandler.instance().bus().register(this);
         FMLCommonHandler.instance().bus().register(new ServerTickHandler());
-        
-        networkHelper = new NetworkHelper("AS_BT", LoginPacket.class, ChestAttackedPacket.class);
+    }
+    
+    @SubscribeEvent
+    public void onClientConnected(ClientConnectedToServerEvent event)
+    {
+        System.out.println(FMLCommonHandler.instance().getEffectiveSide()+" registered ClientConnectedToServerEvent, sending packet to server");
+        networkHelper.sendPacketToServer(new LoginPacket());
     }
     
     @SubscribeEvent

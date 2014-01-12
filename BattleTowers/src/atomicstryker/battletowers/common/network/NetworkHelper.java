@@ -77,11 +77,8 @@ public class NetworkHelper
      */
     public void sendPacketToServer(IPacket packet)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            clientOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
-            clientOutboundChannel.writeOutbound(packet);
-        }
+        clientOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
+        clientOutboundChannel.writeOutbound(packet);
     }
     
     /**
