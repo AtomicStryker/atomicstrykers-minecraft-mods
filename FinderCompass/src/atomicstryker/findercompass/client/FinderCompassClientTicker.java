@@ -85,8 +85,8 @@ public class FinderCompassClientTicker
                     }
                 }
             }
+            compassLogic.onTick();
         }
-        compassLogic.onTick();
     }
 
     public CompassSetting getCurrentSetting()
