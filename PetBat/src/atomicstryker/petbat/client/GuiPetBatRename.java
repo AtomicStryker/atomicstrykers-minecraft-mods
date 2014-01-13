@@ -36,7 +36,7 @@ public class GuiPetBatRename extends GuiScreen
         xpToNext = PetBatMod.instance().getMissingExperienceToNextLevel(xp);
         level = PetBatMod.instance().getLevelFromExperience(xp);
         maxHealth = 16 + (level * 2);
-        health = ItemPocketedPetBat.invertHealthValue(stack.getItemDamage(), maxHealth);
+        health = stack.stackTagCompound.getCompoundTag("petbatmod").getFloat("health");
         attackStrength = 1 + level;
         levelTitle = PetBatMod.instance().getLevelTitle(level);
         levelDesc = PetBatMod.instance().getLevelDescription(level);

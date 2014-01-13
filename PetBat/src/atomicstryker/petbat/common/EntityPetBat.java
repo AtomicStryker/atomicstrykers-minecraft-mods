@@ -297,6 +297,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
             if (batstack != null)
             {
+                PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
                 {
                     worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
@@ -304,31 +305,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 else
                 {
                     worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
-                    worldObj.spawnEntityInWorld(new EntityItem(worldObj, posX, posY, posZ, batstack));
+                    worldObj.spawnEntityInWorld(new EntityItem(worldObj, owner.posX, owner.posY, owner.posZ, batstack));
                 }
-                
-                removeFluteFromPlayer(owner);
             }
         }
         
         super.setDead();
-    }
-
-    private void removeFluteFromPlayer(EntityPlayer player)
-    {
-        Item itemID = PetBatMod.instance().itemBatFlute;
-        for (int i = 0; i < player.inventory.mainInventory.length; i++)
-        {
-            ItemStack item = player.inventory.mainInventory[i];
-            if (item != null && item.getItem() == itemID)
-            {
-                if (item.stackTagCompound.getString("batName").equals(petName))
-                {
-                    player.inventory.setInventorySlotContents(i, null);
-                    break;
-                }
-            }
-        }
     }
 
     /**
@@ -454,11 +436,15 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
             if (batstack != null)
             {
-                removeFluteFromPlayer(owner);
+                ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
                 {
                     worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
                     setDeadWithoutRecall();
+                }
+                else
+                {
+                    owner.inventory.addItemStackToInventory(flute);
                 }
             }
         }

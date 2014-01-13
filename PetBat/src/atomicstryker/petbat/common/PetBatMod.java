@@ -16,7 +16,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
@@ -36,7 +35,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.8")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.9")
 public class PetBatMod implements IProxy
 {
     public final Item TAME_ITEM_ID = Items.pumpkin_pie;
@@ -383,13 +382,20 @@ public class PetBatMod implements IProxy
         // NOOP, Proxy only relevant on client
     }
     
-    public boolean hasPlayerGotManual()
+    public ItemStack removeFluteFromPlayer(EntityPlayer player, String petName)
     {
-        config.load();
-        Property prop = config.get(Configuration.CATEGORY_GENERAL, "playerHadManual", false);
-        boolean result = prop.getBoolean(false);
-        prop.set("true");
-        config.save();
-        return result;
+        for (int i = 0; i < player.inventory.mainInventory.length; i++)
+        {
+            ItemStack item = player.inventory.mainInventory[i];
+            if (item != null && item.getItem() == itemBatFlute)
+            {
+                if (item.stackTagCompound.getString("batName").equals(petName))
+                {
+                    player.inventory.setInventorySlotContents(i, null);
+                    return item;
+                }
+            }
+        }
+        return null;
     }
 }

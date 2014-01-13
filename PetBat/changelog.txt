@@ -1,5 +1,12 @@
-1.2.8
+1.2.9
 update to mc 1.7.2
+
+1.2.8
+fixed Flute not being removed PRIOR to the bat returning (full inventory case)
+fixed Flute not being removed at all on automatic distance recalls
+if for some reason a Bat fails to return, the Flute is re-placed in the inventory instead
+a dying bat now lands at a players feet when his inventory is full
+bat health is now saved in the bat item directly, to avoid conversion bugs
 
 1.2.7
 Introduces bat flute, which is placed in a player's inventory upon owning a pet bat flying in the world.
