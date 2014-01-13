@@ -57,7 +57,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.6")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.7")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
