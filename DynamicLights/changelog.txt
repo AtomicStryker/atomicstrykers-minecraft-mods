@@ -1,3 +1,6 @@
+1.3.0
+- fixed crash related to water and armor items
+
 1.2.9
 - update to MC 1.7.2
 - delete your config files, numeric IDs are no longer allowed

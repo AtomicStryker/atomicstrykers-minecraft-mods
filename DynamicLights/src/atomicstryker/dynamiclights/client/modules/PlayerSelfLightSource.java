@@ -19,7 +19,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -29,7 +28,7 @@ import cpw.mods.fml.common.registry.GameData;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.0", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.1", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -114,7 +113,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                         
                         for (ItemStack armor : thePlayer.inventory.armorInventory)
                         {
-                            if (armor != null && notWaterProofItems.retrieveValue(GameData.itemRegistry.func_148750_c(armor), item.getItemDamage()) == 0)
+                            if (armor != null && notWaterProofItems.retrieveValue(DynamicLights.getShortItemName(armor), item.getItemDamage()) == 0)
                             {
                                 lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
                             }

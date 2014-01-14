@@ -43,11 +43,14 @@ public class ItemConfigHelper
     
     public int retrieveValue(String name, int meta)
     {
-        for (ItemData item : dataMap.keySet())
+        if (name != null)
         {
-            if (item.matches(name, meta))
+            for (ItemData item : dataMap.keySet())
             {
-                return dataMap.get(item);
+                if (item.matches(name, meta))
+                {
+                    return dataMap.get(item);
+                }
             }
         }
         return -1;
