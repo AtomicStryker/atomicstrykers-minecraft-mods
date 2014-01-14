@@ -57,7 +57,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.7")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.8")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -349,7 +349,8 @@ public class MinionsCore
         if (l == null)
         {
             System.out.println("Minions got faulty request for username "+n+", no Minionlist prepared?!");
-            return new EntityMinion[0];
+            prepareMinionHolder(n);
+            return (EntityMinion[]) getMinionMap().get(n).toArray();
         }
         Iterator<EntityMinion> iter = l.iterator();
         while (iter.hasNext())
@@ -365,15 +366,13 @@ public class MinionsCore
     private void offerMinionToMap(EntityMinion m, String masterName)
     {
         ArrayList<EntityMinion> l = getMinionMap().get(masterName);
-        if (l != null)
-        {
-            l.add(m);
-        }
-        else
+        if (l == null)
         {
             System.out.println("Minions got faulty push for username "+masterName+", no Minionlist prepared?!");
-            m.setDead();
+            prepareMinionHolder(masterName);
+            l = getMinionMap().get(masterName);
         }
+        l.add(m);
         minionMapLock = false;
     }
 
