@@ -25,7 +25,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2a")
 public class FinderCompassMod
 {
 

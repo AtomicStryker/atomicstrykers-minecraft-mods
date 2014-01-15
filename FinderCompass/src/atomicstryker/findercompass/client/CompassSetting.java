@@ -1,6 +1,7 @@
 package atomicstryker.findercompass.client;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.findercompass.common.CompassTargetData;
@@ -18,7 +19,7 @@ public class CompassSetting
     /**
      * Maps an int pair blockID/damage to the last detected Block ChunkCoordinates
      */
-    private final HashMap<CompassTargetData, ChunkCoordinates> customNeedleTargets;
+    private final ConcurrentHashMap<CompassTargetData, ChunkCoordinates> customNeedleTargets;
     
     /**
      * Maps an int pair blockID/damage to a newly found ChunkCoordinate, to overwrite the last known on next tick
@@ -35,7 +36,7 @@ public class CompassSetting
         displayedName = name;
         noEnderEyeNeedle = false;
         customNeedles = new HashMap<CompassTargetData, int[]>();
-        customNeedleTargets = new HashMap<CompassTargetData, ChunkCoordinates>();
+        customNeedleTargets = new ConcurrentHashMap<CompassTargetData, ChunkCoordinates>();
         newFoundTargets = new HashMap<CompassTargetData, ChunkCoordinates>();
         compassWorkers = new HashMap<CompassTargetData, ThreadCompassWorker>();
     }
@@ -55,7 +56,7 @@ public class CompassSetting
         return customNeedles;
     }
     
-    public HashMap<CompassTargetData, ChunkCoordinates> getCustomNeedleTargets()
+    public ConcurrentHashMap<CompassTargetData, ChunkCoordinates> getCustomNeedleTargets()
     {
         return customNeedleTargets;
     }

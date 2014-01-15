@@ -1,3 +1,6 @@
+1.7.2a
+fixed ConcurrentModificationException crash
+
 1.7.2
 updated for mc 1.7.2
 remember to delete the config for the new block names
