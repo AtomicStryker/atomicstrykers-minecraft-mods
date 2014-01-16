@@ -10,3 +10,4 @@ Testing/*
 bearded-octo-nemesis-master/*
 ironchests/*
 Testprog/*
+**/.gradle/
