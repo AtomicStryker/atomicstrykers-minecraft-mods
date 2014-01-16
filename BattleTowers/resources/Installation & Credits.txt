@@ -38,4 +38,4 @@ Make sure you followed the Forge installation instructions. Make sure META-INF i
 Best testlaunch minecraft once before installing this.
 
 Then...
-Put everything in their respective folders in ./minecraft as the folder names inside /setup/ instruct you.
+Put everything in their respective folders in ./minecraft as the folder names inside the archive instruct you. mods to mods, config to config.
