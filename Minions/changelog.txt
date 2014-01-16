@@ -1,5 +1,9 @@
-Update 1.7.8
+Update 1.7.9
 - updated for MC 1.7.2
+
+Update 1.7.8
+- workaround for ChickenChunks causing invalid World Unload events
+- fixed typo 'Masters Stuff'
 
 Update 1.7.7
 - workaround for what appears to be an issue in ConnectionHandler, fixing faulty Minionlist issues

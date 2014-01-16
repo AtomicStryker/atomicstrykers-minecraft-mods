@@ -195,6 +195,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     public void setDead()
     {
         inventory.dropAllItems();
+        MinionsCore.instance.onMinionUnloaded(this);
         super.setDead();
     }
 

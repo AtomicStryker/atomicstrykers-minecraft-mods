@@ -161,6 +161,21 @@ public abstract class Minion_Job_Manager
     	    onJobStarted();
     	    isWorking = true;
     	}
+        
+        boolean abort = false;
+        for (EntityMinion m : workerList)
+        {
+            if (m.isDead)
+            {
+                abort = true;
+                break;
+            }
+        }
+        
+        if (abort)
+        {
+            onJobFinished();
+        }
     }
     
     /**

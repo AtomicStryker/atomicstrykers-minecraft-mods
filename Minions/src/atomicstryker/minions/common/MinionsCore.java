@@ -23,7 +23,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.minions.client.ClientProxy.ClientPacketHandler;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
@@ -57,7 +56,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.8")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.9")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -185,16 +184,28 @@ public class MinionsCore
         getViableTreeBlocks();
     }
     
-    @SubscribeEvent
-    public void onWorldUnLoad(WorldEvent.Unload event)
+    public void onMinionUnloaded(EntityMinion entityMinion)
     {
-        System.out.println("Minions detected World unload");
-        finishedJobList.clear();
-        runningJobList.clear();
-        getMinionMap().clear();
+        Iterator<ArrayList<EntityMinion>> iterLists = getMinionMap().values().iterator();
+        while (iterLists.hasNext())
+        {
+            ArrayList<EntityMinion> list = iterLists.next();
+            Iterator<EntityMinion> iterMinions = list.iterator();
+            while (iterMinions.hasNext())
+            {
+                if (iterMinions.next() == entityMinion)
+                {
+                    iterMinions.remove();
+                    if (list.isEmpty())
+                    {
+                        iterLists.remove();
+                    }
+                    minionMapLock = false;
+                    return;
+                }
+            }
+        }
         minionMapLock = false;
-        masterCommits.clear();
-        chunkLoader.onWorldUnloaded();
     }
 	
     public void onTick(World world)
@@ -323,18 +334,14 @@ public class MinionsCore
     
     public void prepareMinionHolder(String username)
     {
-        if (getMinionMap().get(username) == null)
-        {
-            minionMapLock = false;
-            System.out.println("New Minionlist prepared for user "+username);
-            getMinionMap().put(username, new ArrayList<EntityMinion>());
-        }
+        System.out.println("New Minionlist prepared for user "+username);
+        getMinionMap().put(username, new ArrayList<EntityMinion>());
         minionMapLock = false;
     }
     
     public EntityMinion[] getMinionsForMaster(EntityPlayer p)
     {
-        EntityMinion[] minions = getMinionsForMasterName(p.func_146103_bH().getName());
+        EntityMinion[] minions = getMinionsForMasterName(p.getCommandSenderName());
         minionMapLock = false;
         for (EntityMinion m : minions)
         {
