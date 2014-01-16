@@ -3,7 +3,7 @@ Mod Name: Ruins
 Authors:
 Creator: Justin Bengtson (d00dv4d3r) 
 - updated to 1.1 by kolt666
-- updated and overhauled since 1.2.3 by AtomicStryker
+- kept and developed since 1.2.3 by AtomicStryker
 
 Version: see changelog in mod file
 License: none/public domain
@@ -43,7 +43,7 @@ All percentages are approximate and all of this will become moot once custom tre
 
 HOW TO INSTALL:
 1. Install Forge
-2. Copy everything found in /setup/ folder into your .minecraft/ folder
+2. Copy everything found in this archive into your corresponding .minecraft/ folders
 3a. Enjoy.
 3b. Edit /mods/ruins.txt, and any template files for weight, to fine-tune your experience.
 
