@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
@@ -16,7 +17,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
-@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.2")
+@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.3")
 public class UpdateCheckMod
 {
     private final String updateURL = "http://atomicstryker.net/updatemanager/modversions.txt";
@@ -70,7 +71,7 @@ public class UpdateCheckMod
                     {
                         if (!isLocalVersionUpToDate(curMod.getVersion(), tokens[1].trim()))
                         {
-                            proxy.announce("A newer version of "+curMod.getName()+" is available: "+tokens[1].trim()+", visit atomicstryker.net to get it.");
+                            proxy.announce("A newer version of "+EnumChatFormatting.RED+curMod.getName()+EnumChatFormatting.RESET+" is available: "+tokens[1].trim()+", visit "+EnumChatFormatting.GOLD+"atomicstryker.net"+EnumChatFormatting.RESET+" to get it.");
                         }
                         else
                         {
