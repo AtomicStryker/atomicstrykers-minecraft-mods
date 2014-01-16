@@ -7,14 +7,13 @@ Folder structure this file resides in
 To setup my workspace in your eclipse, simply setup Forge, then move your eclipse workspace into this folder.
 
 
-Each project/mod contains a "build.xml" in its folder, which, when run as Java Ant Project, cleans the forgegradle workspace, moves the sources into forgegradle,
-reobfuscates, packs the resulting files into a jar/zip, and in some cases does additional packaging (when mods need more than drag and drop installation).
-Obviously you need to have Java Ant installed and working correctly for that to work. Gradle is not required.
+Each project/mod contains a Gradle build file which creates download files in their respective /build/libs (or /build/distributions) folders.
+Gradle is required, however one could also use the gradlew wrapper found in forgegradle to do this.
 
 THIS ASSUMES YOUR MOD COMPILES AGAINST FORGEGRADLE - if there are compile errors in the eclipse project, it will fail.
 
-In the UpdateMod project folder there is a buildAll.xml, which, when ran, will build ALL projects/mods.
-NOTE: Some projects attempt to include the Update Checker into their packages, which means it will be built first.
+
+NOTE: Some projects attempt to include the Update Checker into their packages, which means it should be built first.
 
 
 Stuff that needs changing each version:
@@ -46,11 +45,4 @@ Mods with special Needs:
 - uses some hacky stuff for rendering and manipulating punched entities. Will probably crash if broken.
 
 -- Advanced Machines and Ropes+
-- rely on external packages, namely IC2 and NEI. Put the dev packages into ./../forgegradle/lib/ and fix the imports in the eclipse projects.
-- make sure the build.gradle uses the 'lib' folder at compile time, like this:
-
-apply plugin: 'forge'
-
-dependencies {
-	compile fileTree(dir: 'libs', include: '*.jar')
-}
+- rely on external packages, namely IC2 and NEI

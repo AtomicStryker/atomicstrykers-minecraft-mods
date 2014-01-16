@@ -1,14 +1,42 @@
-The modifications distributed here are (unless otherwise stated) the intellectual property of AtomicStryker.
-They may not be reproduced under any circumstances. The compiled mods may not be placed on any web site
-or otherwise distributed publicly without advance written permission by AtomicStryker.
-Distribution of these mods by anyone but me on any other website is strictly prohibited, and a violation of copyright.
+Legal stuff:
 
-You are allowed to read and use the provided Sourcecodes in order to make interacting mods so long
-the resulting mod still requires my original to function. You are allowed to integrate ideas
-from my Sourcecode into your Mods, however you may not just 1:1 copypaste my code and claim my work
-for your own.
+The modifications distributed here are (unless otherwise stated) the intellectual property of AtomicStryker. 
+They may not be reproduced under any circumstances. The compiled mods may not be placed on any web site or 
+otherwise distributed publicly without advance written permission by AtomicStryker. Distribution of these 
+mods by anyone but me on any other website is strictly prohibited, and a violation of copyright. 
+You are allowed to read and use the provided Sourcecodes in order to make interacting mods so long the 
+resulting mod does still require my original to function. You are allowed to integrate ideas from my 
+Sourcecode into your Mods, however you may not just 1:1 copypaste my code. Mods and Sourcecode assumed 
+from other authors fall under their respective licenses and copyright statements, a link should always be provided.
 
+All my mods are open source. You can check out the source here: http://code.google.com/p/atomicstrykers-minecraft-mods/source/
 
-Mods and Sourcecode assumed from other authors fall under their respective licenses and copyright statements, a link should always be provided.
+ 
 
-Note parts of the code or media may be the property, or very close to it, of MOJANG. Buy Minecraft!
+New license as of 2014, yay
+
+Regarding public Mod Packs:
+
+Here are the terms you need to meet if you want me to allow you to redistribute any of my mods in a public modpack.
+
+1. at least one mod of the modpack needs to be of your own making. This is to stop the stream of modpack kiddies 
+just cobbling random mods together, having no idea what they are doing. This can be substituted by an extra nice PM, 
+a well-written PM, any sort of contribution by yourself to the MC community at large, or really anything else i deem sufficient.
+
+2. there must be credit and a link to the mod's thread on minecraftforums or this website
+
+3. the modpack may not be used to directly generate revenue of any kind (eg adfly). 
+I do however consider monetized "Let's Play" type youtube videos which feature my mods within fair use.
+
+4. since i do not hand out "general" permissions for all my mods, make sure to specify which mods you want permission for
+
+If you do meet those conditions or hope to get past #1 in a creative fashion you may write me a PM on minecraftforums, 
+asking for permission. I have not turned down anyone yet who asked nicely.
+
+ 
+
+Regarding private Mod Packs:
+
+It is my personal belief private (as in, NOT PUBLICALLY ACCESSIBLE) modpacks should not require author's permit. 
+If you do not plan on redistributing my stuff somewhere just anyone can get to, you have my permission to use my mods by default. 
+Note non-profit rule #3 above still applies, do not try and make money off my works.
