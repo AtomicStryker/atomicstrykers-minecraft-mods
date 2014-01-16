@@ -28,7 +28,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_entityClasses", name = "Dynamic Lights on specified Entities", version = "1.0.0", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_entityClasses", name = "Dynamic Lights on specified Entities", version = "1.0.1", dependencies = "required-after:DynamicLights")
 public class EntityClassLightSource
 {
     private Minecraft mcinstance;
@@ -110,7 +110,11 @@ public class EntityClassLightSource
         
         public EntityListChecker(List<Entity> input)
         {
-            list = (Entity[]) input.toArray();
+            list = new Entity[input.size()];
+            for (int i = 0; i < list.length; i++)
+            {
+                list[i] = input.get(i);
+            }
         }
         
         @Override

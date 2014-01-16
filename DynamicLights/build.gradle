@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'forge'
+
+def zipfile = new File( 'makezip' )
+if( zipfile.exists() ) {
+	defaultTasks 'clean', 'makezip'
+}
+else {
+	defaultTasks 'clean', 'build'
+}
+
+def projname = projectDir.getName()
+
+version = "1.7.2"
+group= "atomicstryker."+projname
+archivesBaseName = projname
+
+minecraft {
+    version = "1.7.2-10.12.0.998"
+}
+
+processResources
+{
+    // copy assets into artifact
+    from(sourceSets.main.resources.srcDirs)
+	from('src/main/java') {into('src')}
+}
+
+// check for provided manifest, use it if so
+def manifestfile = new File( 'MANIFEST.MF' )
+if( manifestfile.exists() ) {
+    jar.manifest.from("MANIFEST.MF")
+}
+
+task makezip(type: Zip, dependsOn: 'build') {
+	from('build/libs') {into('mods')}
+	from('resources')
+	from('../UpdateCheckerMod/build/libs') {into('mods')}
+}
