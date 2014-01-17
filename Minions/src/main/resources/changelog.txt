@@ -1,5 +1,10 @@
-Update 1.7.9
+Update 1.8.0
 - updated for MC 1.7.2
+
+Update 1.7.9
+- now turning off Minion chunkloading when chickenchunks is active, also as option in config
+- added translation file for Minion entity name displays
+- fixed a whole bunch of problems with the serverside minion map and clientside minion cache
 
 Update 1.7.8
 - workaround for ChickenChunks causing invalid World Unload events

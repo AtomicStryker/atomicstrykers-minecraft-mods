@@ -39,7 +39,7 @@ import atomicstryker.minions.common.jobmanager.BlockTask;
  * @author AtomicStryker
  */
 
-public class EntityMinion extends EntityCreature implements IAStarPathedEntity
+public class EntityMinion extends EntityCreature implements IAStarPathedEntity, Comparable<EntityMinion>
 {
     private final int pathingCooldownTicks = 10;
     public final InventoryMinion inventory;
@@ -195,7 +195,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     public void setDead()
     {
         inventory.dropAllItems();
-        MinionsCore.instance.onMinionUnloaded(this);
         super.setDead();
     }
 
@@ -701,6 +700,20 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity
     public int doubleToInt(double input)
     {
         return AStarStatic.getIntCoordFromDoubleCoord(input);
+    }
+
+    @Override
+    public int compareTo(EntityMinion mother)
+    {
+        if (mother.func_145782_y() == this.func_145782_y())
+        {
+            return 0;
+        }
+        if (mother.func_145782_y() > this.func_145782_y())
+        {
+            return -1;
+        }
+        return 1;
     }
 
 }

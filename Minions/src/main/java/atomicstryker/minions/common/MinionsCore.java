@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,9 +41,11 @@ import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -56,7 +59,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.7.9")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.0")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -124,6 +127,8 @@ public class MinionsCore
             
             secondsWithoutMasterDespawn = cfg.get(Configuration.CATEGORY_GENERAL, "automaticDespawnDelay", 300, "Time in seconds after which a Minion without a Master ingame despawns").getInt();
             minionFollowRange = cfg.get(Configuration.CATEGORY_GENERAL, "minionFollowRange", 30d, "Distance to be used by MC follower pathing. MC default is 12. High values may impede performance").getDouble(30d);
+            
+            chunkLoader.enabled = cfg.get(Configuration.CATEGORY_GENERAL, "minionsLoadChunks", true, "Do Minions act as Chunk Loaders? Best disable if using other Chunkloaders").getBoolean(true);
         }
         catch (Exception e)
         {
@@ -182,30 +187,16 @@ public class MinionsCore
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
         getViableTreeBlocks();
-    }
-    
-    public void onMinionUnloaded(EntityMinion entityMinion)
-    {
-        Iterator<ArrayList<EntityMinion>> iterLists = getMinionMap().values().iterator();
-        while (iterLists.hasNext())
+        
+        for (ModContainer mod : Loader.instance().getActiveModList())
         {
-            ArrayList<EntityMinion> list = iterLists.next();
-            Iterator<EntityMinion> iterMinions = list.iterator();
-            while (iterMinions.hasNext())
+            if (mod.getModId().equals("ChickenChunks"))
             {
-                if (iterMinions.next() == entityMinion)
-                {
-                    iterMinions.remove();
-                    if (list.isEmpty())
-                    {
-                        iterLists.remove();
-                    }
-                    minionMapLock = false;
-                    return;
-                }
+                System.out.println("Minions detected loaded ChickenChunks, disabling Minion Chunkloading");
+                chunkLoader.enabled = false;
+                break;
             }
         }
-        minionMapLock = false;
     }
 	
     public void onTick(World world)
@@ -327,16 +318,31 @@ public class MinionsCore
     
     private HashMap<String, ArrayList<EntityMinion>> getMinionMap()
     {
-        while (minionMapLock) {}
+        long wait = System.currentTimeMillis()+1000l;
+        while (minionMapLock)
+        {
+            if (System.currentTimeMillis() > wait)
+            {
+                throw new ConcurrentModificationException("Minions: minionMapLock is hanging");
+            }
+            Thread.yield();
+        }        
         minionMapLock = true;
         return minionMap;
     }
     
-    public void prepareMinionHolder(String username)
+    public ArrayList<EntityMinion> prepareMinionHolder(String username)
     {
-        System.out.println("New Minionlist prepared for user "+username);
-        getMinionMap().put(username, new ArrayList<EntityMinion>());
+        HashMap<String, ArrayList<EntityMinion>> map = getMinionMap();
+        ArrayList<EntityMinion> list = map.get(username);
+        if (list == null)
+        {
+            System.out.println("New Minionlist prepared for user "+username);
+            list = new ArrayList<EntityMinion>();
+            map.put(username, list);
+        }
         minionMapLock = false;
+        return list;
     }
     
     public EntityMinion[] getMinionsForMaster(EntityPlayer p)
@@ -352,12 +358,13 @@ public class MinionsCore
     
     private EntityMinion[] getMinionsForMasterName(String n)
     {
-        ArrayList<EntityMinion> l = getMinionMap().get(n);
+        HashMap<String, ArrayList<EntityMinion>> map = getMinionMap();
+        ArrayList<EntityMinion> l = map.get(n);
         if (l == null)
         {
             System.out.println("Minions got faulty request for username "+n+", no Minionlist prepared?!");
-            prepareMinionHolder(n);
-            return (EntityMinion[]) getMinionMap().get(n).toArray();
+            minionMapLock = false;
+            return (EntityMinion[]) prepareMinionHolder(n).toArray();
         }
         Iterator<EntityMinion> iter = l.iterator();
         while (iter.hasNext())
@@ -376,8 +383,8 @@ public class MinionsCore
         if (l == null)
         {
             System.out.println("Minions got faulty push for username "+masterName+", no Minionlist prepared?!");
-            prepareMinionHolder(masterName);
-            l = getMinionMap().get(masterName);
+            minionMapLock = false;
+            l = prepareMinionHolder(masterName);
         }
         l.add(m);
         minionMapLock = false;
@@ -640,12 +647,14 @@ public class MinionsCore
     
     public void unSummonPlayersMinions(EntityPlayer playerEnt)
     {
+        System.out.println("Minions: unSummonPlayersMinions called by "+playerEnt);
         for (EntityMinion minion : getMinionsForMaster(playerEnt))
         {
-    			minion.setDead();
-    	}
+            System.out.println("Minions: Killing "+minion);
+            minion.setDead();
+        }
     	
-    	Object[] toSend = { proxy.hasPlayerMinions(playerEnt) ? 1 : 0, hasAllMinions(playerEnt) ? 1 : 0 }; // HasMinions override call from server to client
+        Object[] toSend = { Integer.valueOf(0), Integer.valueOf(0) };
     	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend), playerEnt);
     }
     

@@ -21,11 +21,13 @@ public class MinionsChunkManager
 
     private ConcurrentSkipListSet<Entity> loaderEntities;
     private Set<ChunkCoordIntPair> loadedChunks;
+    public boolean enabled;
 
     public MinionsChunkManager()
     {
         loaderEntities = new ConcurrentSkipListSet<Entity>();
         loadedChunks = new HashSet<ChunkCoordIntPair>();
+        enabled = true;
     }
 
     public void registerChunkLoaderEntity(Entity ent)
@@ -36,17 +38,21 @@ public class MinionsChunkManager
     public void updateLoadedChunks()
     {
         loadedChunks.clear();
-        Iterator<Entity> iter = loaderEntities.iterator();
-        while (iter.hasNext())
+        
+        if (enabled)
         {
-            Entity ent = iter.next();
-            if (ent.isDead)
+            Iterator<Entity> iter = loaderEntities.iterator();
+            while (iter.hasNext())
             {
-                iter.remove();
-            }
-            else
-            {
-                loadChunksAroundCoords(ent.worldObj, MathHelper.floor_double(ent.posX), MathHelper.floor_double(ent.posZ));
+                Entity ent = iter.next();
+                if (ent.isDead)
+                {
+                    iter.remove();
+                }
+                else
+                {
+                    loadChunksAroundCoords(ent.worldObj, MathHelper.floor_double(ent.posX), MathHelper.floor_double(ent.posZ));
+                }
             }
         }
     }
@@ -77,9 +83,9 @@ public class MinionsChunkManager
     }
 
     @SubscribeEvent
-    public void canUnloadChunk(ChunkEvent.Load event)
+    public void canUnloadChunk(ChunkEvent.Unload event)
     {
-        if (loadedChunks.contains(event.getChunk().getChunkCoordIntPair()) && event.isCancelable())
+        if (enabled && loadedChunks.contains(event.getChunk().getChunkCoordIntPair()))
         {
             event.setCanceled(true);
         }
@@ -88,6 +94,9 @@ public class MinionsChunkManager
     @SubscribeEvent
     public void canUpdateEntity(EntityEvent.CanUpdate event)
     {
-        event.canUpdate = event.entity instanceof EntityMinion;
+        if (enabled)
+        {
+            event.canUpdate = event.entity instanceof EntityMinion;
+        }
     }
 }
