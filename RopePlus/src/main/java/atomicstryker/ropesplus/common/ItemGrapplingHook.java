@@ -1,0 +1,78 @@
+package atomicstryker.ropesplus.common;
+
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+import atomicstryker.ropesplus.client.RopesPlusClient;
+import atomicstryker.ropesplus.common.network.ForgePacketWrapper;
+import atomicstryker.ropesplus.common.network.PacketDispatcher;
+
+public class ItemGrapplingHook extends Item
+{
+
+    public ItemGrapplingHook()
+    {
+        super();
+        maxStackSize = 1;
+        setCreativeTab(CreativeTabs.tabTools);
+    }
+    
+    @Override
+    public void registerIcons(IIconRegister iconRegister)
+    {
+        itemIcon = iconRegister.registerIcon("ropesplus:itemGrapplingHook");
+    }
+
+    @Override
+    public boolean isFull3D()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean shouldRotateAroundWhenRendering()
+    {
+        return true;
+    }
+
+    @Override
+    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer)
+    {
+        if(world.isRemote && RopesPlusClient.grapplingHookOut)
+        {
+        	//System.out.println("client swings, has hook out!");
+            entityplayer.swingItem();
+        }
+        if (!world.isRemote && RopesPlusCore.getGrapplingHookMap().get(entityplayer) != null)
+        {
+        	//System.out.println("recalling serverside hook!");
+        	RopesPlusCore.getGrapplingHookMap().get(entityplayer).recallHook(entityplayer);
+        	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 3, null), entityplayer);
+        	RopesPlusCore.getGrapplingHookMap().remove(entityplayer);
+        }
+		else
+        {
+            world.playSoundAtEntity(entityplayer, "random.hurt", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+            if(!world.isRemote)
+            {
+            	//System.out.println("spawning serverside hook!");
+            	EntityGrapplingHook newhook = new EntityGrapplingHook(world, entityplayer);
+                world.spawnEntityInWorld(newhook);
+                RopesPlusCore.getGrapplingHookMap().put(entityplayer, newhook);
+                PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 2, null), entityplayer);
+            }
+            entityplayer.swingItem();
+        }
+        return itemstack;
+    }
+    
+    @Override
+    public String getItemStackDisplayName(ItemStack itemStack)
+    {
+        return EnumChatFormatting.GOLD+super.getItemStackDisplayName(itemStack);
+    }
+}
