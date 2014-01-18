@@ -6,45 +6,35 @@ import java.net.URL;
 import java.util.Map;
 
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 
-@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.3")
+@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.4")
 public class UpdateCheckMod
 {
     private final String updateURL = "http://atomicstryker.net/updatemanager/modversions.txt";
     private final long worldLoadDelay = 10000L;
-    private World lastWorld;
-    
-    private UpdateCheckThread thread;
     
     @SidedProxy(clientSide = "atomicstryker.updatecheck.client.UpdateCheckClient", serverSide = "atomicstryker.updatecheck.common.UpdateCheckServer")
     public static IProxy proxy;
     
     @EventHandler
-    public void load(FMLInitializationEvent evt)
+    public void preInit(FMLPreInitializationEvent evt)
     {
-        lastWorld = null;
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
     
     @SubscribeEvent
-    public void onTick(TickEvent.WorldTickEvent tick)
+    public void onWorldLoad(WorldEvent.Load event)
     {
-        if (lastWorld != FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0))
-        {
-            lastWorld = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0);
-            thread = new UpdateCheckThread();
-            thread.start();
-        }
+        new UpdateCheckThread().start();
     }
     
     private class UpdateCheckThread extends Thread
@@ -62,12 +52,26 @@ public class UpdateCheckMod
                 URL versionDataFile = new URL(updateURL);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(versionDataFile.openStream()));
                 String curLine;
+                boolean inCorrectMCVersionArea = false;
                 while ((curLine = reader.readLine()) != null)
                 {
                     //System.out.println("Retrieved line from version file: "+curLine);
                     String[] tokens = curLine.split("=");
                     //System.out.println("Now checking mod: "+tokens[0].trim());
-                    if ((curMod = modMap.get(tokens[0].trim())) != null)
+                    if (tokens[0].trim().equals("mcversion"))
+                    {
+                        if (!Loader.instance().getMCVersionString().equals(tokens[1].trim()))
+                        {
+                            System.out.println("Now reading data segment for mismatching mcversion: "+tokens[1].trim());
+                            inCorrectMCVersionArea = false;
+                        }
+                        else
+                        {
+                            System.out.println("Your mcversion is: "+tokens[1].trim()+" and matches the next Update Checker data segment");
+                            inCorrectMCVersionArea = true;
+                        }
+                    }
+                    else if (inCorrectMCVersionArea && (curMod = modMap.get(tokens[0].trim())) != null)
                     {
                         if (!isLocalVersionUpToDate(curMod.getVersion(), tokens[1].trim()))
                         {
@@ -75,20 +79,7 @@ public class UpdateCheckMod
                         }
                         else
                         {
-                            System.out.println(curMod.getName()+" was found up to date by UpdateCheckThread");
-                        }
-                    }
-                    else if (tokens[0].trim().equals("mcversion"))
-                    {
-                        if (!Loader.instance().getMCVersionString().equals(tokens[1].trim()))
-                        {
-                            System.out.println("According to website, current mcversion is: "+tokens[1].trim());
-                            System.out.println("Since yours doesnt match that, Update Checker is aborting now.");
-                            break;
-                        }
-                        else
-                        {
-                            System.out.println("Your mcversion is: "+tokens[1].trim()+" and current!");
+                            System.out.println(curMod.getName()+" was found up to date by Update Checker");
                         }
                     }
                 }
