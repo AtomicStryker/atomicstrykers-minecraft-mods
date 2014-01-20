@@ -62,12 +62,8 @@ public class PetBatAIFlying extends EntityAIBase
     @Override
     public void updateTask()
     {
-        // map reload or owner disconnected - search owner entity every couple seconds
-        if (petBat.getOwnerEntity() == null)
-        {
-            lookForOwnerEntity();
-        }
-
+        lookForOwnerEntity();
+        
         if (petBat.getIsBatHanging())
         {
             checkTakeOffConditions();

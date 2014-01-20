@@ -84,38 +84,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         this.ownerName = ownerName;
         this.petName = petName;
-        checkOwnerFlute();
-    }
-    
-    private void checkOwnerFlute()
-    {
-        EntityPlayer player = worldObj.getPlayerEntityByName(ownerName);
-        if (!fluteOut && player != null)
-        {
-            boolean found = false;
-            Item itemID = PetBatMod.instance().itemBatFlute;
-            for (ItemStack item : player.inventory.mainInventory)
-            {
-                if (item != null && item.getItem() == itemID)
-                {
-                    if (item.stackTagCompound.getString("batName").equals(petName))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-            {
-                ItemStack newflute = new ItemStack(itemID, 1, 0);
-                newflute.stackTagCompound = new NBTTagCompound();
-                newflute.stackTagCompound.setString("batName", petName);
-                if (player.inventory.addItemStackToInventory(newflute))
-                {
-                    fluteOut = true;
-                }
-            }
-        }
     }
     
     public String getOwnerName()
@@ -135,11 +103,10 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         return owner;
     }
-    
+
     public void setOwnerEntity(EntityPlayer playerEntityByName)
     {
         owner = playerEntityByName;
-        checkOwnerFlute();
     }
     
     public void updateOwnerCoords()
@@ -197,9 +164,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         return false;
     }
     
-    /**
-     * Called when the entity is attacked.
-     */
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
@@ -274,9 +238,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         return result;
     }
     
-    /**
-     * Determines if an entity can be despawned, used on idle far away entities
-     */
     @Override
     protected boolean canDespawn()
     {
@@ -312,37 +273,25 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         
         super.setDead();
     }
-
-    /**
-     * Returns the volume for the sounds this mob makes.
-     */
+    
     @Override
     protected float getSoundVolume()
     {
         return 0.1F;
     }
-
-    /**
-     * Returns the sound this mob makes while it's alive.
-     */
+    
     @Override
     protected String getLivingSound()
     {
         return "mob.bat.idle";
     }
-
-    /**
-     * Returns the sound this mob makes when it is hurt.
-     */
+    
     @Override
     protected String getHurtSound()
     {
         return "mob.bat.hurt";
     }
-
-    /**
-     * Returns the sound this mob makes on death.
-     */
+    
     @Override
     protected String getDeathSound()
     {
@@ -420,6 +369,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void onUpdate()
     {
         super.onUpdate();
+        
+        checkOwnerFlute();
 
         if (this.getIsBatHanging())
         {
@@ -449,36 +400,52 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             }
         }
     }
-
-    /**
-     * CLIENTSIDE ONLY AI
-     */
+    
+    private void checkOwnerFlute()
+    {
+        if (!fluteOut && owner != null && !worldObj.isRemote)
+        {
+            boolean found = false;
+            Item itemID = PetBatMod.instance().itemBatFlute;
+            for (ItemStack item : owner.inventory.mainInventory)
+            {
+                if (item != null && item.getItem() == itemID && item.stackTagCompound != null)
+                {
+                    if (item.stackTagCompound.getString("batName").equals(petName))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found)
+            {
+                ItemStack newflute = new ItemStack(itemID, 1, 0);
+                newflute.stackTagCompound = new NBTTagCompound();
+                newflute.stackTagCompound.setString("batName", petName);
+                if (owner.inventory.addItemStackToInventory(newflute))
+                {
+                    fluteOut = true;
+                }
+            }
+        }
+    }
+    
     @Override
     protected void updateAITasks()
     {
         super.updateAITasks();
     }
-
-    /**
-     * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for spiders and wolves to
-     * prevent them from trampling crops
-     */
+    
     @Override
     protected boolean canTriggerWalking()
     {
         return false;
     }
-
-    /**
-     * Called when the mob is falling. Calculates and applies fall damage.
-     */
+    
     @Override
     protected void fall(float par1) {}
-
-    /**
-     * Takes in the distance the entity has fallen this tick and whether its on the ground to update the fall distance
-     * and deal fall damage if landing on the ground.  Args: distanceFallenThisTick, onGround
-     */
+    
     @Override
     protected void updateFallState(double par1, boolean par3) {}
 
@@ -487,10 +454,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         return true;
     }
-
-    /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
-     */
+    
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
@@ -503,10 +467,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         lastOwnerY = nbt.getInteger("lastOwnerY");
         lastOwnerZ = nbt.getInteger("lastOwnerZ");
     }
-
-    /**
-     * (abstract) Protected helper method to write subclass entity data to NBT.
-     */
+    
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
@@ -519,10 +480,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         nbt.setInteger("lastOwnerY", lastOwnerY);
         nbt.setInteger("lastOwnerZ", lastOwnerZ);
     }
-
-    /**
-     * Checks if the entity's current position is a valid location to spawn this entity.
-     */
+    
     @Override
     public boolean getCanSpawnHere()
     {

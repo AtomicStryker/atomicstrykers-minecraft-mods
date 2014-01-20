@@ -1,5 +1,8 @@
 1.2.9
 update to mc 1.7.2
+now makes use of the lang file translation system for everything
+rewrote some background logic related to bat<->item conversion
+note cheated pet bats now 'start' with 0 health and need to be fed first
 
 1.2.8
 fixed Flute not being removed PRIOR to the bat returning (full inventory case)

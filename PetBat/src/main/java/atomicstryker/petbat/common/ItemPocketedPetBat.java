@@ -43,9 +43,6 @@ public class ItemPocketedPetBat extends Item
         return false;
     }
     
-    /**
-     * If this function returns true (or the item is damageable), the ItemStack's NBT tag will be sent to the client.
-     */
     @Override
     public boolean getShareTag()
     {
@@ -75,15 +72,16 @@ public class ItemPocketedPetBat extends Item
         return batstack;
     }
     
-    public static EntityPetBat toBatEntity(World world, ItemStack batStack)
+    public static EntityPetBat toBatEntity(World world, ItemStack batStack, EntityPlayer player)
     {
         EntityPetBat batEnt = new EntityPetBat(world);
-        String owner = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : ((EntityPlayer)world.playerEntities.get(0)).getCommandSenderName();
-        String name = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("display").getString("Name") : "I was cheated";
+        String owner = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getString("Owner") : player.getCommandSenderName();
+        String name = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("display").getString("Name") : "Battus Genericus";
         int xp = batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getInteger("BatXP") : 0;
-        if (owner.equals("")) owner = ((EntityPlayer)world.playerEntities.get(0)).getCommandSenderName();
-        if (name.equals("")) name = "I was cheated";
+        if (owner.equals("")) owner = player.getCommandSenderName();
+        if (name.equals("")) name = "Battus Genericus";
         batEnt.setNames(owner, name);
+        batEnt.setOwnerEntity(player);
         batEnt.setHealth(batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getFloat("health") : batEnt.getMaxHealth());
         batEnt.setBatExperience(xp);
         return batEnt;
@@ -91,12 +89,12 @@ public class ItemPocketedPetBat extends Item
     
     public static void writeBatNameToItemStack(ItemStack stack, String name)
     {
-        writeCompoundStringToItemStack(stack, "display", "Name", name);
+        writeCompoundStringToItemStack(stack, "display", "Name", EnumChatFormatting.DARK_PURPLE + name);
     }
     
     public static String getBatNameFromItemStack(ItemStack stack)
     {
-        return stack.stackTagCompound != null ? stack.stackTagCompound.getCompoundTag("display").getString("Name") : "I was cheated";
+        return (stack.stackTagCompound != null ? stack.stackTagCompound.getCompoundTag("display").getString("Name") : "Battus Genericus");
     }
     
     /**

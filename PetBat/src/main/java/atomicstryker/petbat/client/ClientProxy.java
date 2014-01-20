@@ -10,7 +10,7 @@ public class ClientProxy implements IProxy
 {
     
     @Override
-    public void onModLoad()
+    public void onModPreInitLoad()
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityPetBat.class, new RenderPetBat());
     }

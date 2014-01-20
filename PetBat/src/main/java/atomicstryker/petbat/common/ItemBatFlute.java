@@ -54,8 +54,8 @@ public class ItemBatFlute extends Item
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        String batname = itemStack.stackTagCompound != null ? itemStack.stackTagCompound.getString("batName") : "";
-        return EnumChatFormatting.GOLD+"Bat Flute: "+batname;
+        String batname = itemStack.stackTagCompound != null ? (": " + itemStack.stackTagCompound.getString("batName")) : ": unassigned";
+        return EnumChatFormatting.GOLD + super.getItemStackDisplayName(itemStack) + batname;
     }
     
 }
