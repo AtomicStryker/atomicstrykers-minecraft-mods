@@ -89,6 +89,6 @@ public class ItemMastersStaff extends Item
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return EnumChatFormatting.RED + "Master's Stuff";
+        return EnumChatFormatting.RED + super.getItemStackDisplayName(itemStack);
     }
 }

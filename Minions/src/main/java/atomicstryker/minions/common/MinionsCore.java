@@ -56,7 +56,6 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 
 @Mod(modid = "AS_Minions", name = "Minions", version = "1.8.0")
@@ -162,8 +161,6 @@ public class MinionsCore
     public void load(FMLInitializationEvent evt)
     {
         proxy.load(evt);
-        
-        LanguageRegistry.instance().addStringLocalization("item.masterstaff.name", "en_US", "Master's Staff");
         
         proxy.registerRenderInformation();
     }

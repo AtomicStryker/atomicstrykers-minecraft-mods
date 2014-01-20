@@ -64,6 +64,7 @@ public class AStarPathPlanner
 
     public void getPath(int startx, int starty, int startz, int destx, int desty, int destz, boolean allowDropping)
     {
+        // System.out.printf("getPath from [%d|%d|%d] to [%d|%d|%d]\n", startx, starty, startz, destx, desty, destz);
         starty = checkYCoordViability(startx, starty, startz);
         final AStarNode starter = new AStarNode(startx, starty, startz, 0, null);
         final AStarNode finish = new AStarNode(destx, desty, destz, -1, null);
@@ -91,6 +92,7 @@ public class AStarPathPlanner
 
     public void onFoundPath(AStarWorker aStarWorker, ArrayList<AStarNode> result)
     {
+        // System.out.println("onFoundPath from "+aStarWorker+", result "+result+", cached worker: "+worker);
         if (aStarWorker.equals(worker)) // disregard solutions from abandoned workers
         {
             setJPS(true);
@@ -113,12 +115,12 @@ public class AStarPathPlanner
             if (isJPS) // in case of JPS failure switch to old best first algorithm
             {
                 setJPS(false);
-                //System.out.println("JPS fail recorded for "+lastStart+" to "+lastEnd);
+                // System.out.println("JPS fail recorded for "+lastStart+" to "+lastEnd);
                 getPath(lastStart, lastEnd, false);
             }
             else if (pathedEntity != null)
             {
-                //System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
+                // System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
                 pathedEntity.onNoPathAvailable();
             }
         }
