@@ -23,7 +23,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 @Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2a")
 public class FinderCompassMod
@@ -71,9 +70,8 @@ public class FinderCompassMod
         
         if (itemEnabled)
         {
-            compass = (ItemFinderCompass) new ItemFinderCompass().setUnlocalizedName("Finder Compass");
-            GameRegistry.registerItem(compass, "Finder Compass");
-            LanguageRegistry.addName(compass, "Finder Compass");
+            compass = (ItemFinderCompass) new ItemFinderCompass().setUnlocalizedName("finder_compass");
+            GameRegistry.registerItem(compass, "finder_compass");
         }
         
         FMLCommonHandler.instance().bus().register(this);
