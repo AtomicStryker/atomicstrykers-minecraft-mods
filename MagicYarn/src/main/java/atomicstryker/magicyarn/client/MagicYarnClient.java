@@ -233,16 +233,12 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
     
     public void onReceivedPathPacket(ByteBuf data)
     {
-        short len = data.readShort();
-        char[] chars = new char[len];
-        for (int i = 0; i < len; i++)
-            chars[i] = data.readChar();
-        String username = String.valueOf(chars);
-        
-        if (username.equals(mcinstance.thePlayer.func_146103_bH().getName()))
+        String username = ByteBufUtils.readUTF8String(data);
+        if (username.equals(mcinstance.thePlayer.getCommandSenderName()))
         {
             return;
         }
+        
         int nodes = data.readInt();
         AStarNode[] out = new AStarNode[nodes];
         int i = 0;

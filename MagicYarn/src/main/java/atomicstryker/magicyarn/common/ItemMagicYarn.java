@@ -1,6 +1,7 @@
 package atomicstryker.magicyarn.common;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -13,8 +14,8 @@ public class ItemMagicYarn extends Item
 	public ItemMagicYarn()
 	{
 		super();
-		this.setMaxDamage(64);
-		this.setMaxStackSize(1);
+		setMaxStackSize(1);
+		setCreativeTab(CreativeTabs.tabTools);
 	}
 	
 	@Override

@@ -94,7 +94,7 @@ public class AStarStatic
 	 */
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
-		return worldObj.func_147439_a(ix, iy, iz).func_149688_o().isSolid();
+		return !worldObj.func_147439_a(ix, iy, iz).func_149688_o().isSolid();
 	}
 	
 	public static int getIntCoordFromDoubleCoord(double input)
