@@ -23,7 +23,6 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 @Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.3")
 public class AS_BattleTowersCore
@@ -85,7 +84,6 @@ public class AS_BattleTowersCore
         
         EntityRegistry.registerGlobalEntityID(AS_EntityGolem.class, "Battletower Golem", golemEntityID, 0xA0A0A0, 0x808080);
         EntityRegistry.registerModEntity(AS_EntityGolem.class, "Battletower Golem", 1, this, 25, 5, true);
-        LanguageRegistry.instance().addStringLocalization("entity.Battletower Golem.name", "Battletower Golem");
         
         EntityRegistry.registerModEntity(AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 25, 5, true);
         
