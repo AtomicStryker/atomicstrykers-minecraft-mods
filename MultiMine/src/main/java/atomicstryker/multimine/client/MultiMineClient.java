@@ -87,7 +87,7 @@ public class MultiMineClient
         thePlayer = FMLClientHandler.instance().getClient().thePlayer;
         if (blockCompletion < 1.0f) // do not trigger on finished blocks
         {
-            boolean override = false;
+            boolean partiallyMined = false;
             // see if we have multimine completion cached somewhere
             for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
             {
@@ -102,14 +102,15 @@ public class MultiMineClient
                     {
                         blockCompletion = savedProgress;
                         lastBlockCompletion = savedProgress;
-                        override = true;
+                        partiallyMined = true;
                     }
                     break;
                 }
             }
             
-            if (!override)
+            if (!partiallyMined)
             {
+                // edge state optimization
                 if (blockCompletion > 0.99f)
                 {
                     blockCompletion = 1.0f;
