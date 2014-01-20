@@ -4,7 +4,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
 weight=1
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13
+acceptable_target_blocks=stone,grass,dirt,sand,gravel
 dimensions=7,11,13
 allowable_overhang=0
 max_cut_in=2
@@ -16,12 +16,12 @@ preserve_lava=0
 preserve_plants=0
 
 
-rule1=0,100,24
-rule2=0,100,24-2
+rule1=0,100,sandstone
+rule2=0,100,sandstone-2
 rule3=0,100,EasyChest
-rule4=0,100,64-1
-rule5=0,100,102
-rule6=0,100,64-9
+rule4=0,100,wooden_door-1
+rule5=0,100,glass_pane
+rule6=0,100,wooden_door-9
 
 
 layer

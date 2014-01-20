@@ -1,7 +1,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
 weight=15
 embed_into_distance=1
-acceptable_target_blocks=2,3,12,24
+acceptable_target_blocks=grass,dirt,sand,sandstone
 dimensions=8,15,15
 allowable_overhang=0
 max_cut_in=2
@@ -14,8 +14,8 @@ preserve_plants=0
 
 
 
-rule1=0,100,24
-rule2=1,60,12
+rule1=0,100,sandstone
+rule2=1,60,sand
 rule3=0,100,MobSpawner:Skeleton
 rule4=0,100,HardMobSpawn
 

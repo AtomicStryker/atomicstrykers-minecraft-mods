@@ -5,7 +5,7 @@ biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
 weight=4
 unique=0
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13,78
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,snow_layer
 dimensions=23,12,12
 allowable_overhang=150
 max_cut_in=0
@@ -17,19 +17,19 @@ preserve_lava=1
 preserve_plants=1
 
 rule1=0,100,preserveBlock
-rule2=0,100,2
-rule3=0,100,24
-rule4=0,100,79
-rule5=0,100,5
-rule6=0,50,79
-rule7=0,100,18
-rule8=0,100,85
-rule9=0,100,35-0
-rule10=0,100,35-3
-rule11=0,100,35-9
-rule12=0,100,35-10
-rule13=2,100,50
-rule14=2,100,66
+rule2=0,100,grass
+rule3=0,100,sandstone
+rule4=0,100,ice
+rule5=0,100,planks
+rule6=0,50,ice
+rule7=0,100,leaves
+rule8=0,100,fence
+rule9=0,100,wool-0
+rule10=0,100,wool-3
+rule11=0,100,wool-9
+rule12=0,100,wool-10
+rule13=2,100,torch
+rule14=2,100,rail
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1

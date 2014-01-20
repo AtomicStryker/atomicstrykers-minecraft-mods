@@ -138,7 +138,7 @@
 weight=5
 unique=0
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,clay
 dimensions=4,7,5
 allowable_overhang=0
 max_cut_in=2
@@ -195,50 +195,24 @@ preserve_plants=0
 # so you can skew the odds of a certain blockID appearing by adding it multiple
 # times.  You can specify block metadata by adding a "-<metadata>" after the
 # blockID.  For instance, to place a cobblestone stairs block ascending to the
-# east, use 67-3.  To place a wood half-block (slab), use 44-2.
+# east, use stone_stairs-3.  To place a wood half-block (slab), use stone_slab-2.
 #
-# You can find a list of blockIDs and commonly-used metadata at the Minepedia
-# website (Google it).
-#
-#        /*
-#         * Conversion table from old Ruins 8.5 template style to new 8.6+ style
-#         * 
-#         * Just handling the part where you used to specify 'special' blocks
-#         * Full Example: "rule1=0,25,310" turns into "rule1=0,25,MediumChest"
-#         * 
-#         * 300 -> preserveBlock
-#         * 301 -> MobSpawner:Zombie
-#         * 302 -> MobSpawner:Skeleton
-#         * 303 -> MobSpawner:Spider
-#         * 304 -> MobSpawner:Creeper
-#         * 305 -> UprightMobSpawn
-#         * 306 -> EasyMobSpawn
-#         * 307 -> MediumMobSpawn
-#         * 308 -> HardMobSpawn
-#         * 309 -> EasyChest
-#         * 310 -> MediumChest
-#         * 311 -> HardChest
-#         * 315-0'Villager -> MobSpawner:Villager
-#         * 
-#         */
-#
-# As of 8.6, you can also specify a Block Name instead of it's numeric ID! This should be
-# very useful to use Ruins with other Mods and changible Block IDs. Make sure to use the
-# absolute Blockname, not the translation! Example: "44-2" can also be written as "stoneSlab-2"
+# You can find a list of blockIDs and commonly-used metadata via Google.
+# There is also one included, idmappings.txt
 #
 #
-# Example 1: rule1=0,100,0,4,48
+# Example 1: rule1=0,100,0,cobblestone,mossy_cobblestone
 # This spawns either air, cobblestone, or a mossy cobblestone 100% of the time.
 #
-# Example 2: rule1=1,50,48
+# Example 2: rule1=1,50,mossy_cobblestone
 # This spawns a mossy cobblestone 50% of the time but only if another block
 # is underneath it.
 #
-# Example 3: rule1=2,100,44-2,5
-# This spawns either a wood slab or a plank block, but only if there is an
+# Example 3: rule1=2,100,stone_slab-2,planks
+# This spawns either a stone slab or a plank block, but only if there is an
 # adjacent block on the same level.
 #
-# Example 4: rule1=0,100,50-5
+# Example 4: rule1=0,100,torch-5
 # This spawns a torch standing on the ground.
 #
 # Example 5: rule1=0,25,MediumChest
@@ -268,9 +242,9 @@ preserve_plants=0
 # command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
 
 
-rule1=0,100,0,43,44
-rule2=0,100,4,48
-rule3=1,50,45
+rule1=0,100,preserveBlock
+rule2=0,80,brick_block,brick_block,dirt,stone,gravel
+rule3=0,100,brick_block
 
 
 # LAYERS

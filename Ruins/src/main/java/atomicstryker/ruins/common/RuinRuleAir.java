@@ -1,5 +1,6 @@
 package atomicstryker.ruins.common;
 
+import java.io.PrintWriter;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
@@ -8,9 +9,9 @@ import net.minecraft.world.World;
 public class RuinRuleAir extends RuinTemplateRule
 {
 
-    public RuinRuleAir(RuinTemplate r, String rule) throws Exception
+    public RuinRuleAir(PrintWriter pw, RuinTemplate r, String rule) throws Exception
     {
-        super(r, "0,100,0");
+        super(pw, r, "0,100,air");
     }
 
     @Override

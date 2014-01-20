@@ -5,7 +5,7 @@
 biomesToSpawnIn=beach,shore,overgrown beach
 weight=2
 embed_into_distance=16
-acceptable_target_blocks=9,79
+acceptable_target_blocks=water,ice
 dimensions=49,11,11
 allowable_overhang=66
 unique=0
@@ -18,19 +18,19 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,12
-rule3=0,100,24
-rule4=0,100,13
-rule5=0,100,82
-rule6=0,100,20
-rule7=0,100,78
-rule8=0,100,89
-rule9=0,100,44
-rule10=0,100,10
-rule11=0,100,65-5
-rule12=0,100,65-4
-rule13=0,100,65-3
-rule14=0,100,65-2
+rule2=0,100,sand
+rule3=0,100,sandstone
+rule4=0,100,gravel
+rule5=0,100,clay
+rule6=0,100,glass
+rule7=0,100,snow_layer
+rule8=0,100,glowstone
+rule9=0,100,stone_slab
+rule10=0,100,flowing_lava
+rule11=0,100,ladder-5
+rule12=0,100,ladder-4
+rule13=0,100,ladder-3
+rule14=0,100,ladder-2
 
 layer
 1,1,1,1,1,1,1,1,1,1,1

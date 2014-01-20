@@ -4,7 +4,7 @@
 biomesToSpawnIn=hell,boneyard,phantasmagoric inferno,corrupted sands,bloody heap,nether,sludgepit,undergarden
 weight=2
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13,78
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,snow_layer
 dimensions=5,7,8
 allowable_overhang=2
 max_cut_in=2
@@ -15,12 +15,12 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,87,87,88
-rule2=0,100,49
-rule3=1,75,89
-rule4=1,50,87
-rule5=2,75,89
-rule6=1,20,51-0
+rule1=0,100,netherrack,netherrack,soul_sand
+rule2=0,100,obsidian
+rule3=1,75,glowstone
+rule4=1,50,netherrack
+rule5=2,75,glowstone
+rule6=1,20,fire-0
 
 layer
 5,1,1,1,1,1,1,5

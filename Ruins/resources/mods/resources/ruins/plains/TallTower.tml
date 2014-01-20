@@ -5,7 +5,7 @@ biomesToSpawnIn=autumn hills,autumn woods,bamboo forest,birch forest,bog,boneyar
 weight=8
 unique=0
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13
+acceptable_target_blocks=stone,grass,dirt,sand,gravel
 dimensions=9,7,7
 allowable_overhang=2
 max_cut_in=2
@@ -16,11 +16,11 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,0,4,48,44-3
-rule2=0,100,4,48
-rule3=1,80,4,48
-rule4=1,50,4,48
-rule5=2,50,4,48
+rule1=0,100,air,cobblestone,mossy_cobblestone,stone_slab-3
+rule2=0,100,cobblestone,mossy_cobblestone
+rule3=1,80,cobblestone,mossy_cobblestone
+rule4=1,50,cobblestone,mossy_cobblestone
+rule5=2,50,cobblestone,mossy_cobblestone
 rule6=0,100,preserveBlock
 
 layer

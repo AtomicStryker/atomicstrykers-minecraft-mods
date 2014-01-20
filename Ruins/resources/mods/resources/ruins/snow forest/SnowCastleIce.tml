@@ -4,7 +4,7 @@
 biomesToSpawnIn=alpine,alps,alps forest,alps mountainside,arctic,frost forest,frozenocean,glacier,ice montains,ice plains,ice wasteland,icy hills,snow forest,snowy coniferous forest,snowy dead forest,snowy rainforest,tundra,polar
 weight=1
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13
+acceptable_target_blocks=stone,grass,dirt,sand,gravel
 dimensions=44,19,18
 allowable_overhang=0
 max_cut_in=2
@@ -16,10 +16,10 @@ preserve_lava=0
 preserve_plants=0
 
 
-rule1=0,100,80
-rule2=0,100,78
+rule1=0,100,snow
+rule2=0,100,snow_layer
 rule3=0,100,MediumMobSpawn
-rule4=0,100,79
+rule4=0,100,ice
 rule5=0,100,HardChest
 
 

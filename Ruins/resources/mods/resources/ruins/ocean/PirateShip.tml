@@ -5,7 +5,7 @@ biomesToSpawnIn=kelp forest,ocean,ocean oil field,oceanic abyss,coral reef
 weight=1
 unique=0
 embed_into_distance=3
-acceptable_target_blocks=9
+acceptable_target_blocks=water
 dimensions=38,30,30
 allowable_overhang=9000
 max_cut_in=0
@@ -17,23 +17,23 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,1
-rule3=0,100,17-0
-rule4=0,100,85
-rule5=0,100,5
+rule2=0,100,stone
+rule3=0,100,log-0
+rule4=0,100,fence
+rule5=0,100,planks
 rule6=0,100,MobSpawner:Skeleton
-rule7=0,100,20
-rule8=0,100,85
-rule9=0,100,65-5
-rule10=0,100,65-4
-rule11=0,100,65-2
-rule12=0,100,65-3
+rule7=0,100,glass
+rule8=0,100,fence
+rule9=0,100,ladder-5
+rule10=0,100,ladder-4
+rule11=0,100,ladder-2
+rule12=0,100,ladder-3
 rule13=0,100,HardMobSpawn
-rule14=0,100,8
+rule14=0,100,flowing_water
 rule15=0,100,MobSpawner:Zombie
-rule16=0,100,35-15
-rule17=0,100,35-0
-rule18=0,100,13
+rule16=0,100,wool-15
+rule17=0,100,wool-0
+rule18=0,100,gravel
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

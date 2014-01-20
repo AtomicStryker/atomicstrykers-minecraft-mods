@@ -7,10 +7,12 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.TreeMap;
 
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 
 /**
  * Class to save and retrieve custom Rotational Mappings into. A rotation is
@@ -40,7 +42,7 @@ public class CustomRotationMapping
     public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
     {
         instance = this;
-        blockIDMap = new TreeMap<Block, TreeMap[]>();
+        blockIDMap = new TreeMap<Block, TreeMap[]>(new BlockComparator());
         currentBlockIDs = new ArrayList<Block>();
 
         File f = new File(fRuinsResources, "rotation_mappings.txt");
@@ -52,6 +54,15 @@ public class CustomRotationMapping
         {
             ruinsLogger.println("Ruins is now loading the rotation mappings file " + f.getAbsolutePath());
             loadCustomMappings(f, ruinsLogger);
+        }
+    }
+    
+    private class BlockComparator implements Comparator<Block>
+    {
+        @Override
+        public int compare(Block b1, Block b2)
+        {
+            return b1.func_149739_a().compareTo(b2.func_149739_a());
         }
     }
 
@@ -92,9 +103,18 @@ public class CustomRotationMapping
                     String data = strLine.split("=")[1];
                     ruinsLogger.printf("Now reading mappings for [%s]\n", data);
                     String[] ids = data.split(";");
+                    Block b;
                     for (String s : ids)
                     {
-                        currentBlockIDs.add(tryFindingBlockOfName(s));
+                        b = tryFindingBlockOfName(s);
+                        if (b != Blocks.air)
+                        {
+                            currentBlockIDs.add(b);
+                        }
+                        else
+                        {
+                            ruinsLogger.printf("[%s] was determined to be an invalid blockRegistry key?! FIX THIS\n", s);
+                        }
                     }
                 }
                 else

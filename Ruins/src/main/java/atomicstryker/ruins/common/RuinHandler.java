@@ -411,7 +411,7 @@ public class RuinHandler
                     switch (checkFileType(f.getName()))
                     {
                     case RuinsMod.FILE_TEMPLATE:
-                        r = new RuinTemplate(f.getCanonicalPath(), f.getName());
+                        r = new RuinTemplate(pw, f.getCanonicalPath(), f.getName());
                         targetList.add(r);
 
                         String candidate;

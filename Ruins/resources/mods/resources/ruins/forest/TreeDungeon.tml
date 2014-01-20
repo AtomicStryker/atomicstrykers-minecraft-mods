@@ -3,7 +3,7 @@
 biomesToSpawnIn=biomesToSpawnIn=autumn woods,birch forest,boreal forest,cherry blossom grove,coniferous forest,deciduous forest,forest,forested field,forested hills,forested island,foresthills,fungi forest,lush redwoods,magical forest,maplewoods,orchard,pine forest,rainforest,redwood forest,sacred springs,seasonal forest,seasonal spruce forest,spruce woods,thinned timber,timber,wonderous woods,woodland,woodlands
 weight=5
 embed_into_distance=1
-acceptable_target_blocks=2,3
+acceptable_target_blocks=grass,dirt
 dimensions=14,14,14
 allowable_overhang=0
 max_cut_in=2
@@ -15,10 +15,10 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,17
-rule3=0,100,18
-rule4=0,100,18,17
-rule5=0,100,18
+rule2=0,100,log
+rule3=0,100,leaves
+rule4=0,100,leaves,log
+rule5=0,100,leaves
 rule6=0,25,HardMobSpawn,MediumChest
 rule7=0,100,MobSpawner:Spider
 

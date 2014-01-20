@@ -4,7 +4,7 @@
 biomesToSpawnIn=crag,badlands,dead forest,dead swamp,deadlands,ominous woods,canyon,canyon ravine,thick ominous woods,volcano,wasteland
 weight=3
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13,24,82
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,sandstone,clay
 dimensions=19,17,17
 allowable_overhang=1
 max_cut_in=2
@@ -16,10 +16,10 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,4,48
-rule3=0,100,44
-rule4=0,100,87
-rule5=0,100,51
+rule2=0,100,cobblestone,mossy_cobblestone
+rule3=0,100,stone_slab
+rule4=0,100,netherrack
+rule5=0,100,fire
 rule6=0,100,MediumMobSpawn
 rule7=0,100,HardMobSpawn,MediumChest,HardChest
 

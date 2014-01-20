@@ -1,7 +1,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert,crag,badlands,dead forest,dead swamp,deadlands,ominous woods,canyon,canyon ravine,thick ominous woods,volcano,wasteland
 weight=2
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,13
+acceptable_target_blocks=stone,grass,dirt,gravel
 dimensions=4,9,9
 max_leveling=2
 cut_in_buffer=0
@@ -13,18 +13,18 @@ preserve_plants=0
 max_cut_in=10
 
 rule1=0,100,preserveBlock
-rule2=0,100,98-1,98-1,98-2,98-2,98,preserveBlock,preserveBlock,preserveBlock
-rule3=0,100,13
-rule4=0,100,98-1,98-1,98-2,98-2,98
-rule5=0,100,109-2,109-2,109-2,109-2,98-1,98-2
-rule6=0,50,44-5
-rule7=0,100,9,9,9,9,9,9,9,9,9,9,9,9,9,13
-rule8=0,100,109-1,109-1,109-1,109-1,98-1,98-2
-rule9=0,100,109,109,109,109,98-1,98-2
-rule10=0,100,109-3,109-3,109-3,109-3,98-1,98-2
-rule11=0,15,111
-rule12=0,75,98-1,98-1,98-2,98-2,98
-rule13=1,40,8
+rule2=0,100,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick,preserveBlock,preserveBlock,preserveBlock
+rule3=0,100,gravel
+rule4=0,100,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
+rule5=0,100,stone_brick_stairs-2,stone_brick_stairs-2,stone_brick_stairs-2,stone_brick_stairs-2,stonebrick-1,stonebrick-2
+rule6=0,50,stone_slab-5
+rule7=0,100,water,water,water,water,water,water,water,water,water,water,water,water,water,gravel
+rule8=0,100,stone_brick_stairs-1,stone_brick_stairs-1,stone_brick_stairs-1,stone_brick_stairs-1,stonebrick-1,stonebrick-2
+rule9=0,100,stone_brick_stairs,stone_brick_stairs,stone_brick_stairs,stone_brick_stairs,stonebrick-1,stonebrick-2
+rule10=0,100,stone_brick_stairs-3,stone_brick_stairs-3,stone_brick_stairs-3,stone_brick_stairs-3,stonebrick-1,stonebrick-2
+rule11=0,15,waterlily
+rule12=0,75,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
+rule13=1,40,flowing_water
 
 
 layer

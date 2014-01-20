@@ -4,7 +4,7 @@
 biomesToSpawnIn=alpine,alps,alps forest,alps mountainside,arctic,frost forest,frozenocean,glacier,ice montains,ice plains,ice wasteland,icy hills,snow forest,snowy coniferous forest,snowy dead forest,snowy rainforest,tundra,polar
 weight=30
 embed_into_distance=9
-acceptable_target_blocks=1,2,3,12,13,78
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,snow_layer
 dimensions=19,5,5
 allowable_overhang=0
 unique=0
@@ -17,19 +17,19 @@ preserve_lava=1
 preserve_plants=1
 
 rule1=0,100,preserveBlock
-rule2=0,100,2
-rule3=0,100,17-2
-rule4=0,100,79
-rule5=0,100,39,40,0
-rule6=0,50,79
-rule7=0,100,18
-rule8=0,100,78
-rule9=2,100,0
-rule10=2,100,0
-rule11=2,100,0
-rule12=2,100,0
-rule13=0,100,13
-rule14=0,100,89
+rule2=0,100,grass
+rule3=0,100,log-2
+rule4=0,100,ice
+rule5=0,100,brown_mushroom,red_mushroom,air
+rule6=0,50,ice
+rule7=0,100,leaves
+rule8=0,100,snow_layer
+rule9=2,100,air
+rule10=2,100,air
+rule11=2,100,air
+rule12=2,100,air
+rule13=0,100,gravel
+rule14=0,100,glowstone
 
 layer
 1,1,1,1,1

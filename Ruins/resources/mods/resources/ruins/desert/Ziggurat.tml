@@ -3,7 +3,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
 weight=2
 embed_into_distance=11
-acceptable_target_blocks=12,24
+acceptable_target_blocks=sand,sandstone
 dimensions=19,10,10
 allowable_overhang=2
 max_cut_in=2
@@ -14,21 +14,21 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=1,90,12,24,24
-rule2=1,90,44-1
+rule1=1,90,sand,sandstone,sandstone
+rule2=1,90,stone_slab-1
 rule3=0,100,preserveBlock
-rule4=1,100,MediumChest,HardMobSpawn,MediumChest,HardMobSpawn,HardChest,0,0,0,0
-rule5=0,75,46
-rule6=0,100,0,70
-rule7=0,100,12,24,24
-rule8=0,100,24
-rule9=2,80,44-1
-rule10=2,75,50-1
-rule11=2,75,50-2
-rule12=2,75,50-4
-rule13=2,75,50-3
-rule14=0,100,72
-rule15=0,100,12,24
+rule4=1,100,MediumChest,HardMobSpawn,MediumChest,HardMobSpawn,HardChest,air,air,air,air
+rule5=0,75,tnt
+rule6=0,100,air,stone_pressure_plate
+rule7=0,100,sand,sandstone,sandstone
+rule8=0,100,sandstone
+rule9=2,80,stone_slab-1
+rule10=2,75,torch-1
+rule11=2,75,torch-2
+rule12=2,75,torch-4
+rule13=2,75,torch-3
+rule14=0,100,wooden_pressure_plate
+rule15=0,100,sand,sandstone
 
 layer
 3,3,3,3,3,3,3,3,3,3

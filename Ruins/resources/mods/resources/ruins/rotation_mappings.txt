@@ -9,14 +9,11 @@
 #
 #
 # Mappings are to follow this standard:
-# First, the block ID must be given by either providing it or (with mods you want this:) the absolute BlockName
+# First, the block ID must be given by the GameData.blockRegistry key
 #
-# BlockID=106
-# OR
-# BlockID=tile.vine
 #
 # If a multitude of Blocks share the same rotation logic, you can provide them all at once, seperated by semicoli.
-# BlockID=108;109;110
+# see stairs below
 #
 # Any mappings below such a line are considered part of that BlockID until another BlockID is introduced.
 #
@@ -40,7 +37,7 @@
 # mc vanilla Stair Blocks
 # normal NESW: 0 2 1 3
 # inverted NESW: 4 6 5 7
-BlockID=53;67;108;109;114;128;134;135;136
+BlockID=oak_stairs;stone_stairs;brick_stairs;stone_brick_stairs;nether_brick_stairs;sandstone_stairs;spruce_stairs;birch_stairs;jungle_stairs
 
 EAST-0-2
 EAST-1-3
@@ -70,7 +67,7 @@ WEST-6-4
 WEST-7-5
 
 # tripwire!
-BlockID=tile.tripWireSource
+BlockID=tripwire_hook
 # NESW: 1 2 3 0
 
 EAST-1-2
@@ -89,7 +86,7 @@ WEST-3-2
 WEST-1-0
 
 # Sticky Piston
-BlockID=29;34
+BlockID=sticky_piston;piston_head
 # DUNESW: 0 1 4 2 5 3
 # DUNESW: 8 9 12 10 13 11 (Extended)
 
@@ -138,7 +135,7 @@ WEST-11-13
 # Mushroom blocks, courtesy of Arrrg
 # They can point in all 8 directions and have center, inside, and stem parts.
 # inside Nw N Ne W center E Sw S Se stem: 0 1 2 3 4 5 6 7 8 9 10
-BlockID=99;100
+BlockID=brown_mushroom_block;red_mushroom_block
 
 EAST-0-0
 EAST-1-3

@@ -5,7 +5,7 @@ biomesToSpawnIn=crag,badlands,dead forest,dead swamp,deadlands,ominous woods,can
 weight=1
 unique=1
 embed_into_distance=15
-acceptable_target_blocks=1,2,3,12,13,82
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,clay
 dimensions=32,23,23
 allowable_overhang=5
 max_cut_in=2
@@ -16,19 +16,19 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,7
+rule1=0,100,bedrock
 rule2=0,100,preserveBlock
-rule3=0,100,48,48,48,48,48,48,4
-rule4=0,100,2
-rule5=0,100,3
-rule6=0,100,87
-rule7=0,100,88
-rule8=0,100,11
-rule9=0,100,51
-rule10=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,UprightMobSpawn,0
-rule11=0,100,HardMobSpawn,HardMobSpawn,HardMobSpawn,MediumChest,0,HardMobSpawn,HardMobSpawn,HardMobSpawn,MediumChest,0
-rule12=0,100,HardChest,HardChest,MediumChest,0,0,0,0
-rule13=0,100,HardMobSpawn,0,0,0,0
+rule3=0,100,mossy_cobblestone,mossy_cobblestone,mossy_cobblestone,mossy_cobblestone,mossy_cobblestone,mossy_cobblestone,cobblestone
+rule4=0,100,grass
+rule5=0,100,dirt
+rule6=0,100,netherrack
+rule7=0,100,soul_sand
+rule8=0,100,lava
+rule9=0,100,fire
+rule10=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,UprightMobSpawn,air
+rule11=0,100,HardMobSpawn,HardMobSpawn,HardMobSpawn,MediumChest,air,HardMobSpawn,HardMobSpawn,HardMobSpawn,MediumChest,air
+rule12=0,100,HardChest,HardChest,MediumChest,air,air,air,air
+rule13=0,100,HardMobSpawn,air,air,air,air
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

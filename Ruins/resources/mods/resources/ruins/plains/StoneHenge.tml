@@ -5,7 +5,7 @@
 biomesToSpawnIn=autumn hills,autumn woods,bamboo forest,birch forest,bog,boneyard,boreal forest,brushland,chaparral,cherry blossom grove,coniferous forest,deciduous forest,extreme hills,extreme hills edge,fen,field,forest,forested field,forested hills,forested island,foresthills,fungi forest,garden,grassland,green hills,green swamplands,grove,heathland,hell,highland,hot springs,jade cliffs,jungle,junglehills,lavender fields,lush redwoods,lush swamp,magical forest,majestic meadow,mangrove,maplewoods,marsh,meadow,meadow forest,mesa,mini jungle,mountain, mountain ridge,mountain taiga,mystic grove,orchard,outback,overgrown beach,overgrown greens,pasture,pasture meadow,pine forest,plains,prarie,quagmire,rainforest,redwood forest,sacred springs,savanna,savanna plateau,scrubland,seasonal forest,seasonal spruce forest,shield,spruce woods,steppe,sublime shrubland,swampland,taiga,taigahills,temperate rainforest,thick shrubland,thicket,thinned mystic grove,thinned pasture,thinned timber,timber,tropical rainforest,tropics mountain,tundra,wonderous woods,woodland,woodlands,wyvern biome,wetland
 weight=1
 embed_into_distance=17
-acceptable_target_blocks=1,2,3,12,13,24,78
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,sandstone,snow_layer
 dimensions=24,17,17
 allowable_overhang=1200
 unique=0
@@ -18,22 +18,22 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,2
-rule3=0,100,3
-rule4=0,100,1
-rule5=0,100,5
-rule6=0,100,39,40
-rule7=0,100,48
-rule8=0,100,8
-rule9=0,100,9
+rule2=0,100,grass
+rule3=0,100,dirt
+rule4=0,100,stone
+rule5=0,100,planks
+rule6=0,100,brown_mushroom,red_mushroom
+rule7=0,100,mossy_cobblestone
+rule8=0,100,flowing_water
+rule9=0,100,water
 rule10=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,HardMobSpawn,MediumChest,HardChest
-rule11=0,100,89
-rule12=0,100,89
-rule13=0,100,13
-rule14=0,100,65-5
-rule15=0,100,65-4
-rule16=0,100,65-3
-rule17=0,100,65-2
+rule11=0,100,glowstone
+rule12=0,100,glowstone
+rule13=0,100,gravel
+rule14=0,100,ladder-5
+rule15=0,100,ladder-4
+rule16=0,100,ladder-3
+rule17=0,100,ladder-2
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

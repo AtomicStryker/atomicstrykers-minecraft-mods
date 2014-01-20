@@ -1,7 +1,7 @@
 biomesToSpawnIn=hell,boneyard,phantasmagoric inferno,corrupted sands,bloody heap,nether,sludgepit,undergarden
 weight=1
 embed_into_distance=96
-acceptable_target_blocks=13,87,88
+acceptable_target_blocks=gravel,netherrack,soul_sand
 dimensions=96,12,12
 allowable_overhang=0
 max_cut_in=96
@@ -13,10 +13,10 @@ preserve_lava=1
 preserve_plants=0
 
 
-rule1=0,100,112,112,112,112,112,112,112,112,112,0
-rule2=0,0,35-14
-rule3=0,100,112,112,112,0
-rule4=2,100,113,113,113,0
+rule1=0,100,nether_brick,nether_brick,nether_brick,nether_brick,nether_brick,nether_brick,nether_brick,nether_brick,nether_brick,air
+rule2=0,0,wool-14
+rule3=0,100,nether_brick,nether_brick,nether_brick,air
+rule4=2,100,nether_brick_fence,nether_brick_fence,nether_brick_fence,air
 
 
 layer

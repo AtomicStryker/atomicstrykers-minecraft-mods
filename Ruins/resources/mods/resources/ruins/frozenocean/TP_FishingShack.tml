@@ -4,7 +4,7 @@
 biomesToSpawnIn=frozenocean
 weight=10
 embed_into_distance=10
-acceptable_target_blocks=8,9,79
+acceptable_target_blocks=flowing_water,water,ice
 dimensions=14,6,7
 allowable_overhang=7
 max_cut_in=9
@@ -15,18 +15,18 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,5
-rule2=0,100,60
-rule3=0,100,20
-rule4=0,100,44
-rule5=0,100,50
-rule6=0,100,54
-rule7=0,100,58
-rule8=0,100,17
-rule9=0,100,17-1
+rule1=0,100,planks
+rule2=0,100,farmland
+rule3=0,100,glass
+rule4=0,100,stone_slab
+rule5=0,100,torch
+rule6=0,100,chest
+rule7=0,100,crafting_table
+rule8=0,100,log
+rule9=0,100,log-1
 rule10=0,100,preserveBlock
-rule11=0,100,53-3
-rule12=0,100,53-2
+rule11=0,100,oak_stairs-3
+rule12=0,100,oak_stairs-2
 
 layer
 10,10,10,10,10,10,10

@@ -5,7 +5,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert,crag,badlands,dead forest,dead swamp,deadlands,ominous woods,canyon,canyon ravine,thick ominous woods,volcano,wasteland
 weight=1
 embed_into_distance=58
-acceptable_target_blocks=1,2,3,12,13,78
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,snow_layer
 dimensions=75,5,7
 allowable_overhang=300
 unique=0
@@ -18,17 +18,17 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,21,preserveBlock,preserveBlock,preserveBlock
-rule3=0,100,56,preserveBlock,preserveBlock,preserveBlock
-rule4=0,100,14,preserveBlock,preserveBlock
-rule5=0,100,15,preserveBlock
-rule6=0,100,16,preserveBlock,preserveBlock,preserveBlock
-rule7=0,100,49
-rule8=0,100,8
-rule9=1,100,9
-rule10=1,100,10
-rule11=0,100,11
-rule12=0,100,12
+rule2=0,100,lapis_ore,preserveBlock,preserveBlock,preserveBlock
+rule3=0,100,diamond_ore,preserveBlock,preserveBlock,preserveBlock
+rule4=0,100,gold_ore,preserveBlock,preserveBlock
+rule5=0,100,iron_ore,preserveBlock
+rule6=0,100,coal_ore,preserveBlock,preserveBlock,preserveBlock
+rule7=0,100,obsidian
+rule8=0,100,flowing_water
+rule9=1,100,water
+rule10=1,100,flowing_lava
+rule11=0,100,lava
+rule12=0,100,sand
 
 
 layer

@@ -5,7 +5,7 @@
 biomesToSpawnIn=autumn hills,autumn woods,bamboo forest,birch forest,bog,boneyard,boreal forest,brushland,chaparral,cherry blossom grove,coniferous forest,deciduous forest,extreme hills,extreme hills edge,fen,field,forest,forested field,forested hills,forested island,foresthills,fungi forest,garden,grassland,green hills,green swamplands,grove,heathland,hell,highland,hot springs,jade cliffs,jungle,junglehills,lavender fields,lush redwoods,lush swamp,magical forest,majestic meadow,mangrove,maplewoods,marsh,meadow,meadow forest,mesa,mini jungle,mountain, mountain ridge,mountain taiga,mystic grove,orchard,outback,overgrown beach,overgrown greens,pasture,pasture meadow,pine forest,plains,prarie,quagmire,rainforest,redwood forest,sacred springs,savanna,savanna plateau,scrubland,seasonal forest,seasonal spruce forest,shield,spruce woods,steppe,sublime shrubland,swampland,taiga,taigahills,temperate rainforest,thick shrubland,thicket,thinned mystic grove,thinned pasture,thinned timber,timber,tropical rainforest,tropics mountain,tundra,wonderous woods,woodland,woodlands,wyvern biome,wetland
 weight=4
 embed_into_distance=57
-acceptable_target_blocks=1,2,3,12,13,24,78
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,sandstone,snow_layer
 dimensions=68,12,12
 allowable_overhang=300
 unique=0
@@ -18,18 +18,18 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,44-0
-rule3=0,100,65-2
-rule4=0,100,48
-rule5=0,100,50-1
-rule6=0,100,10
-rule7=0,100,49
-rule8=0,100,8
-rule9=0,100,0
-rule10=1,100,0
-rule11=0,100,20
-rule12=0,100,12
-rule13=0,100,65-5
+rule2=0,100,stone_slab-0
+rule3=0,100,ladder-2
+rule4=0,100,mossy_cobblestone
+rule5=0,100,torch-1
+rule6=0,100,flowing_lava
+rule7=0,100,obsidian
+rule8=0,100,flowing_water
+rule9=0,100,air
+rule10=1,100,air
+rule11=0,100,glass
+rule12=0,100,sand
+rule13=0,100,ladder-5
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1

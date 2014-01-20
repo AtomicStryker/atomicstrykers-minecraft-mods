@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,11 +24,13 @@ public class RuinTemplate implements RuinIBuildable
     private final ArrayList<RuinTemplateRule> rules;
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
+    private final PrintWriter debugPrinter;
 
-    public RuinTemplate(String filename, String simpleName) throws Exception
+    public RuinTemplate(PrintWriter pw, String filename, String simpleName) throws Exception
     {
         // load in the given file as a template
         name = simpleName;
+        debugPrinter = pw;
         ArrayList<String> lines = new ArrayList<String>();
         rules = new ArrayList<RuinTemplateRule>();
         layers = new ArrayList<RuinTemplateLayer>();
@@ -560,7 +563,7 @@ public class RuinTemplate implements RuinIBuildable
 
         // the first rule added will always be the air block rule.
         // rules.add( new RuinTemplateRule( "0,100,0" ) );
-        rules.add(new RuinRuleAir(this, ""));
+        rules.add(new RuinRuleAir(debugPrinter, this, ""));
 
         // now get the rest of the data
         Iterator<String> i = lines.iterator();
@@ -588,7 +591,7 @@ public class RuinTemplate implements RuinIBuildable
                 else if (line.startsWith("rule"))
                 {
                     String[] parts = line.split("=");
-                    rules.add(new RuinTemplateRule(this, parts[1]));
+                    rules.add(new RuinTemplateRule(debugPrinter, this, parts[1]));
                 }
             }
         }
@@ -605,17 +608,26 @@ public class RuinTemplate implements RuinIBuildable
             {
                 if (line.startsWith("acceptable_target_blocks"))
                 {
+                    HashSet<Block> acceptables = new HashSet<Block>();
                     String[] check = line.split("=");
                     check = check[1].split(",");
                     if (check.length < 1)
                     {
                         throw new Exception("No targets specified!");
                     }
-                    targets = new Block[check.length];
+                    
+                    Block b;
                     for (int x = 0; x < check.length; x++)
                     {
-                        targets[x] = GameData.blockRegistry.getObject(check[x]);
+                        b = GameData.blockRegistry.getObject(check[x]);
+                        if (b != Blocks.air)
+                        {
+                            acceptables.add(b);
+                        }
                     }
+                    
+                    targets = new Block[acceptables.size()];
+                    targets = acceptables.toArray(targets);
                 }
                 if (line.startsWith("dimensions"))
                 {

@@ -2,7 +2,7 @@ biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainou
 weight=2
 unique=1
 embed_into_distance=1
-acceptable_target_blocks=12,24
+acceptable_target_blocks=sand,sandstone
 dimensions=33,13,13
 allowable_overhang=0
 max_cut_in=0
@@ -14,21 +14,21 @@ preserve_lava=0
 preserve_plants=1
 
 
-rule1=0,0,35-5
-rule2=0,100,MediumChest,10,24-1,24-1,24-1,24-2,24-2,24-2,12,12,12,12,12,12,12,12,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24
-rule3=0,75,24
-rule4=1,75,24,24,24,12
-rule5=1,75,24,24,24,12
-rule6=0,100,24,24,24,12
-rule7=1,75,24,24,24,12
-rule8=0,100,24,24,24,12
-rule9=1,75,24,24,24,12
-rule10=0,100,24,24,24,12
-rule11=1,75,24,24,24,12
-rule12=0,100,24,24,24,12
-rule13=1,75,24,24,24,12
-rule14=0,100,24,24,24,12
-rule15=1,100,24,24,24,12
+rule1=0,0,wool-5
+rule2=0,100,MediumChest,flowing_lava,sandstone-1,sandstone-1,sandstone-1,sandstone-2,sandstone-2,sandstone-2,sand,sand,sand,sand,sand,sand,sand,sand,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone,sandstone
+rule3=0,75,sandstone
+rule4=1,75,sandstone,sandstone,sandstone,sand
+rule5=1,75,sandstone,sandstone,sandstone,sand
+rule6=0,100,sandstone,sandstone,sandstone,sand
+rule7=1,75,sandstone,sandstone,sandstone,sand
+rule8=0,100,sandstone,sandstone,sandstone,sand
+rule9=1,75,sandstone,sandstone,sandstone,sand
+rule10=0,100,sandstone,sandstone,sandstone,sand
+rule11=1,75,sandstone,sandstone,sandstone,sand
+rule12=0,100,sandstone,sandstone,sandstone,sand
+rule13=1,75,sandstone,sandstone,sandstone,sand
+rule14=0,100,sandstone,sandstone,sandstone,sand
+rule15=1,100,sandstone,sandstone,sandstone,sand
 
 
 layer

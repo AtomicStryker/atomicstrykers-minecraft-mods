@@ -4,7 +4,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
 weight=4
 embed_into_distance=62
-acceptable_target_blocks=2,3
+acceptable_target_blocks=grass,dirt
 dimensions=69,5,5
 allowable_overhang=10
 unique=0
@@ -17,19 +17,19 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=1,75,44-2
-rule3=2,100,50
-rule4=0,100,4,48,48
-rule5=0,90,5
-rule6=2,90,53-0
-rule7=2,90,53-1
-rule8=0,100,8
-rule9=0,100,20
-rule10=0,100,44-3
-rule11=2,100,65-2
-rule12=2,100,65-3
-rule13=0,100,13
-rule14=0,100,56
+rule2=1,75,stone_slab-2
+rule3=2,100,torch
+rule4=0,100,cobblestone,mossy_cobblestone,mossy_cobblestone
+rule5=0,90,planks
+rule6=2,90,oak_stairs-0
+rule7=2,90,oak_stairs-1
+rule8=0,100,flowing_water
+rule9=0,100,glass
+rule10=0,100,stone_slab-3
+rule11=2,100,ladder-2
+rule12=2,100,ladder-3
+rule13=0,100,gravel
+rule14=0,100,diamond_ore
 
 layer
 1,1,1,1,1

@@ -1,7 +1,7 @@
 biomesToSpawnIn=autumn hills,autumn woods,bamboo forest,birch forest,bog,boneyard,boreal forest,brushland,chaparral,cherry blossom grove,coniferous forest,deciduous forest,extreme hills,extreme hills edge,fen,field,forest,forested field,forested hills,forested island,foresthills,fungi forest,garden,grassland,green hills,green swamplands,grove,heathland,hell,highland,hot springs,jade cliffs,jungle,junglehills,lavender fields,lush redwoods,lush swamp,magical forest,majestic meadow,mangrove,maplewoods,marsh,meadow,meadow forest,mesa,mini jungle,mountain, mountain ridge,mountain taiga,mystic grove,orchard,outback,overgrown beach,overgrown greens,pasture,pasture meadow,pine forest,plains,prarie,quagmire,rainforest,redwood forest,sacred springs,savanna,savanna plateau,scrubland,seasonal forest,seasonal spruce forest,shield,spruce woods,steppe,sublime shrubland,swampland,taiga,taigahills,temperate rainforest,thick shrubland,thicket,thinned mystic grove,thinned pasture,thinned timber,timber,tropical rainforest,tropics mountain,tundra,wonderous woods,woodland,woodlands,wyvern biome,wetland
 weight=1
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,13
+acceptable_target_blocks=stone,grass,dirt,gravel
 dimensions=5,17,9
 cut_in_buffer=0
 max_leveling=2
@@ -12,19 +12,19 @@ preserve_plants=0
 max_cut_in=10
 
 
-rule1=0,100,98-1,98-1,98-2,98-2,98,preserveBlock,preserveBlock,preserveBlock
-rule2=0,100,13
-rule3=0,50,44-5,44-5,44-5,44-5,98-1,98-1,98-2,98-2
-rule4=0,100,109-2,109-2,109-2,109-2,98-1,98-2
-rule5=0,100,98-1,98-1,98-2,98-2,98
-rule6=0,100,109,109,109,109,98-1,98-2
-rule7=0,100,9,9,9,9,9,9,9,9,9,9,9,9,9,13,2
-rule8=0,100,109-1,109-1,109-1,109-1,98-1,98-2
-rule9=0,100,109-3,109-3,109-3,109-3,98-1,98-2
-rule10=0,20,111
-rule11=0,75,98-1,98-1,98-2,98-2,98
-rule12=1,75,98-1,98-1,98-2,98-2,98
-rule13=1,40,8
+rule1=0,100,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick,preserveBlock,preserveBlock,preserveBlock
+rule2=0,100,gravel
+rule3=0,50,stone_slab-5,stone_slab-5,stone_slab-5,stone_slab-5,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2
+rule4=0,100,stone_brick_stairs-2,stone_brick_stairs-2,stone_brick_stairs-2,stone_brick_stairs-2,stonebrick-1,stonebrick-2
+rule5=0,100,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
+rule6=0,100,stone_brick_stairs,stone_brick_stairs,stone_brick_stairs,stone_brick_stairs,stonebrick-1,stonebrick-2
+rule7=0,100,water,water,water,water,water,water,water,water,water,water,water,water,water,gravel,grass
+rule8=0,100,stone_brick_stairs-1,stone_brick_stairs-1,stone_brick_stairs-1,stone_brick_stairs-1,stonebrick-1,stonebrick-2
+rule9=0,100,stone_brick_stairs-3,stone_brick_stairs-3,stone_brick_stairs-3,stone_brick_stairs-3,stonebrick-1,stonebrick-2
+rule10=0,20,waterlily
+rule11=0,75,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
+rule12=1,75,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
+rule13=1,40,flowing_water
 
 
 layer

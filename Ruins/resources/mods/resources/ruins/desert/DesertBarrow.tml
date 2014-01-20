@@ -1,7 +1,7 @@
 biomesToSpawnIn=desert,desert oil field,deserthills,dunes,lush desert,mountainous desert
 weight=5
 embed_into_distance=0
-acceptable_target_blocks=1,12,13,24
+acceptable_target_blocks=stone,sand,gravel,sandstone
 dimensions=7,42,19
 max_leveling=2
 cut_in_buffer=0
@@ -13,13 +13,13 @@ max_cut_in=10
 
 
 
-rule1=0,100,12
-rule2=0,100,24
-rule3=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,24
-rule4=0,100,MediumChest,MediumChest,24,24
-rule5=0,100,24-2
-rule6=0,100,44-1
-rule7=0,100,24-1
+rule1=0,100,sand
+rule2=0,100,sandstone
+rule3=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,sandstone
+rule4=0,100,MediumChest,MediumChest,sandstone,sandstone
+rule5=0,100,sandstone-2
+rule6=0,100,stone_slab-1
+rule7=0,100,sandstone-1
 
 
 layer

@@ -1,5 +1,6 @@
 package atomicstryker.ruins.common;
 
+import java.io.PrintWriter;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -23,9 +24,11 @@ public class RuinTemplateRule
     private int chance = 100;
     private int condition = 0;
     private final RuinIBuildable owner;
+    private final PrintWriter debugPrinter;
 
-    public RuinTemplateRule(RuinIBuildable r, String rule) throws Exception
+    public RuinTemplateRule(PrintWriter pw, RuinIBuildable r, final String rule) throws Exception
     {
+        debugPrinter = pw;
         owner = r;
         String[] items = rule.split(",");
         int numblocks = items.length - 2;
@@ -42,9 +45,9 @@ public class RuinTemplateRule
         for (int i = 0; i < numblocks; i++)
         {
             data = items[i + 2].split("-");
-            if (data.length > 1) // has '-' in it, like "50-5" or "planks-3"
+            if (data.length > 1) // has '-' in it, like "torch-5" or "planks-3"
             {
-                if (isNumber(data[0])) // 50-5
+                if (isNumber(data[0])) // torch-5
                 {
                     System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
                     blockIDs[i] = Blocks.air;
@@ -52,18 +55,17 @@ public class RuinTemplateRule
                     blockStrings[i] = "";
                 }
                 else
-                // planks-3
+                // planks-3 or ChestGenHook:strongholdLibrary:5-2
                 {
                     blockIDs[i] = tryFindingBlockOfName(data[0]);
+                    if (blockIDs[i] == Blocks.air)
+                    {
+                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
+                        blockIDs[i] = null;
+                    }
                     blockMDs[i] = Integer.parseInt(data[1]);
-                    blockStrings[i] = items[i + 2];
+                    blockStrings[i] = data[0];
                 }
-            }
-            else if (!isNumber(data[0])) // MobSpawners and the like
-            {
-                blockIDs[i] = null;
-                blockMDs[i] = 0;
-                blockStrings[i] = items[i + 2];
             }
             else
             // does not have metadata specified, aka "50"
@@ -75,17 +77,25 @@ public class RuinTemplateRule
                 }
                 else
                 {
-                    tryFindingBlockOfName(items[i + 2]);
+                    blockIDs[i] = tryFindingBlockOfName(items[i + 2]);
+                    if (blockIDs[i] == Blocks.air)
+                    {
+                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
+                        blockIDs[i] = null;
+                    }
                 }
                 blockMDs[i] = 0;
-                blockStrings[i] = "";
+                blockStrings[i] = items[i + 2];
             }
         }
     }
 
+    private Block cachedBlock;
     private Block tryFindingBlockOfName(String blockName)
     {
-        return GameData.blockRegistry.getObject(blockName);
+        cachedBlock = GameData.blockRegistry.getObject(blockName);
+        debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
+        return cachedBlock;
     }
 
     @SuppressWarnings("unused")
@@ -246,9 +256,9 @@ public class RuinTemplateRule
         }
     }
 
-    public void doSpecialBlock(World world, Random random, int x, int y, int z, String dataString)
+    public void doSpecialBlock(World world, Random random, int x, int y, int z, final String dataString)
     {
-        if (dataString.equals("preserveBlock"))
+        if (dataString.equals("preserveBlock") || dataString.equals("air"))
         {
             // NOOP
         }
@@ -302,13 +312,14 @@ public class RuinTemplateRule
         else if (dataString.startsWith("ChestGenHook:"))
         {
             int meta = 0;
+            String datasubString = dataString.substring(0);
             if (dataString.contains("-"))
             {
                 int index = dataString.indexOf("-");
                 meta = Integer.valueOf(dataString.substring(index + 1));
-                dataString = dataString.substring(0, index);
+                datasubString = dataString.substring(0, index);
             }
-            String[] s = dataString.split(":");
+            String[] s = datasubString.split(":");
             addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2]), meta);
         }
         else if (dataString.equals("EnderCrystal"))

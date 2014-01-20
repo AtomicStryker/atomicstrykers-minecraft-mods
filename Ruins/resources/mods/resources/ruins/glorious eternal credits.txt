@@ -3,3 +3,6 @@ who took upon himself the arduous task of reorganizing the Ruin templates file s
 faster loading times for all whom it may concern.
 
 Credit also goes to MCF User "jsmith" for providing an additional set of Ruin templates for everyone.
+
+Finally, much gratefullness and wows go to Saeldur of the Minecraftforge IRC channel, who used his regex
+and python prowess for justice and converting the 1.6 template block IDs to the new 1.7 name based format.

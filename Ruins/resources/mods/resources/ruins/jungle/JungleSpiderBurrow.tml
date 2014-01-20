@@ -4,7 +4,7 @@
 biomesToSpawnIn=jungle,junglehills,mini jungle
 weight=34
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13
+acceptable_target_blocks=stone,grass,dirt,sand,gravel
 dimensions=5,5,5
 allowable_overhang=2
 max_cut_in=2
@@ -16,12 +16,12 @@ preserve_lava=0
 preserve_plants=0
 
 
-rule1=0,100,3
-rule2=0,50,106-1
-rule3=0,50,106-8
-rule4=0,100,48
-rule5=0,100,52
-rule6=0,50,106-2
+rule1=0,100,dirt
+rule2=0,50,vine-1
+rule3=0,50,vine-8
+rule4=0,100,mossy_cobblestone
+rule5=0,100,mob_spawner
+rule6=0,50,vine-2
 
 
 layer

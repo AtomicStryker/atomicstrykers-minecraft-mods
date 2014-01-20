@@ -4,7 +4,7 @@
 biomesToSpawnIn=jungle,junglehills,mini jungle
 weight=15
 embed_into_distance=0
-acceptable_target_blocks=2,3,12
+acceptable_target_blocks=grass,dirt,sand
 dimensions=20,11,12
 allowable_overhang=4
 max_cut_in=0
@@ -16,16 +16,16 @@ preserve_lava=0
 preserve_plants=1
 
 
-rule1=0,100,106-1
-rule2=0,100,17-3
-rule3=0,100,106-2
-rule4=0,100,106-4
-rule5=0,100,106-8
-rule6=0,100,5
-rule7=0,100,85
-rule8=0,100,18-3
-rule9=0,100,18-11
-rule10=0,100,53-1
+rule1=0,100,vine-1
+rule2=0,100,log-3
+rule3=0,100,vine-2
+rule4=0,100,vine-4
+rule5=0,100,vine-8
+rule6=0,100,planks
+rule7=0,100,fence
+rule8=0,100,leaves-3
+rule9=0,100,leaves-11
+rule10=0,100,oak_stairs-1
 
 
 layer

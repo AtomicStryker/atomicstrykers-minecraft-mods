@@ -1,7 +1,7 @@
 biomesToSpawnIn=autumn hills,autumn woods,bamboo forest,birch forest,bog,boneyard,boreal forest,brushland,chaparral,cherry blossom grove,coniferous forest,deciduous forest,extreme hills,extreme hills edge,fen,field,forest,forested field,forested hills,forested island,foresthills,fungi forest,garden,grassland,green hills,green swamplands,grove,heathland,hell,highland,hot springs,jade cliffs,jungle,junglehills,lavender fields,lush redwoods,lush swamp,magical forest,majestic meadow,mangrove,maplewoods,marsh,meadow,meadow forest,mesa,mini jungle,mountain, mountain ridge,mountain taiga,mystic grove,orchard,outback,overgrown beach,overgrown greens,pasture,pasture meadow,pine forest,plains,prarie,quagmire,rainforest,redwood forest,sacred springs,savanna,savanna plateau,scrubland,seasonal forest,seasonal spruce forest,shield,spruce woods,steppe,sublime shrubland,swampland,taiga,taigahills,temperate rainforest,thick shrubland,thicket,thinned mystic grove,thinned pasture,thinned timber,timber,tropical rainforest,tropics mountain,tundra,wonderous woods,woodland,woodlands,wyvern biome,wetland
 weight=2
 embed_into_distance=1
-acceptable_target_blocks=1,2,3,12,13,24
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,sandstone
 dimensions=7,12,9
 cut_in_buffer=1
 max_leveling=2
@@ -11,18 +11,18 @@ preserve_lava=0
 preserve_plants=0
 max_cut_in=10
 
-rule1=0,90,4,4,4,48,97-1,97-1
+rule1=0,90,cobblestone,cobblestone,cobblestone,mossy_cobblestone,monster_egg-1,monster_egg-1
 rule2=0,100,preserveBlock
-rule3=0,100,4,4,4,48,3,97-1,97-1
-rule4=0,20,5,5,5,4,3,97-1
-rule5=0,90,17
-rule6=0,10,102
-rule7=0,75,5
-rule8=0,50,53-1
-rule9=0,50,53-3
-rule10=0,65,5
-rule11=0,50,53
-rule12=0,50,53-2
+rule3=0,100,cobblestone,cobblestone,cobblestone,mossy_cobblestone,dirt,monster_egg-1,monster_egg-1
+rule4=0,20,planks,planks,planks,cobblestone,dirt,monster_egg-1
+rule5=0,90,log
+rule6=0,10,glass_pane
+rule7=0,75,planks
+rule8=0,50,oak_stairs-1
+rule9=0,50,oak_stairs-3
+rule10=0,65,planks
+rule11=0,50,oak_stairs
+rule12=0,50,oak_stairs-2
 
 
 layer
