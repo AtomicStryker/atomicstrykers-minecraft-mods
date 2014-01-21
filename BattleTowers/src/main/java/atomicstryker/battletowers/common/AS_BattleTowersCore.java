@@ -3,8 +3,9 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.config.Configuration;
 import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 import atomicstryker.battletowers.common.network.LoginPacket;
@@ -24,7 +25,7 @@ import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.3")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.4")
 public class AS_BattleTowersCore
 {
     
@@ -188,7 +189,7 @@ public class AS_BattleTowersCore
     
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
-        MinecraftServer.getServer().getConfigurationManager().func_148540_a(new C01PacketChatMessage("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse..."));
+        MinecraftServer.getServer().getConfigurationManager().func_148540_a(new S02PacketChat(new ChatComponentText("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...")));
         towerDestroyers.add(td);
     }
 
