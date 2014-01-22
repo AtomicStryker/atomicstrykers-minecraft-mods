@@ -1,1 +1,1 @@
-gradle --refresh-dependencies
+gradle
