@@ -73,23 +73,27 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingHurt(LivingHurtEvent event)
     {
-        MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
-        if (mod != null)
+        // dont allow masochism
+        if (event.source.getEntity() != event.entityLiving)
         {
-            event.ammount = mod.onHurt(event.entityLiving, event.source, event.ammount);
-        }
-
-        /*
-         * We use the Hook two-sided, both with the Mob as possible target and attacker
-         */
-        Entity attacker = event.source.getEntity();
-        if (attacker != null
-        && attacker instanceof EntityLivingBase)
-        {
-            mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) attacker);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
             if (mod != null)
             {
-                event.ammount = mod.onAttack(event.entityLiving, event.source, event.ammount);
+                event.ammount = mod.onHurt(event.entityLiving, event.source, event.ammount);
+            }
+
+            /*
+             * We use the Hook two-sided, both with the Mob as possible target and attacker
+             */
+            Entity attacker = event.source.getEntity();
+            if (attacker != null
+            && attacker instanceof EntityLivingBase)
+            {
+                mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) attacker);
+                if (mod != null)
+                {
+                    event.ammount = mod.onAttack(event.entityLiving, event.source, event.ammount);
+                }
             }
         }
     }

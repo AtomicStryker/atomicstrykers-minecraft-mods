@@ -1,3 +1,6 @@
+1.4.5
+- fixed problem where derpy entities attacked themselves causing an infinite loop with vengeance
+
 1.4.4
 - updated for MC 1.7.2
 - remember to delete old config files
