@@ -13,12 +13,14 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class RenderHookKenshiro
 {
@@ -27,8 +29,11 @@ public class RenderHookKenshiro
 	private float equippedProgress = 0.0F;
 	private float prevEquippedProgress = 0.0F;
 	
-    public void render(float renderTick)
-	{
+	
+    @SubscribeEvent
+    public void onDrawSelectionBow(DrawBlockHighlightEvent event)
+    {
+        float renderTick = event.partialTicks;
         RenderHelper.disableStandardItemLighting();
         mc = FMLClientHandler.instance().getClient();
         

@@ -10,6 +10,7 @@ public class ClientProxy extends CommonProxy
     public void preInit()
     {
         FMLCommonHandler.instance().bus().register(new KenshiroClient());
+        MinecraftForge.EVENT_BUS.register(new RenderHookKenshiro());
     }
     
     @Override

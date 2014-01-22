@@ -56,15 +56,12 @@ public class KenshiroClient
 	
 	private static KenshiroClient instance;
 	
-	private final RenderHookKenshiro renderHook;
-	
 	public KenshiroClient()
 	{
 	    instance = this;
 	    entitesHit = new HashSet<Entity>();
 	    hasServerKenshiroInstalled = false;
 	    minecraft = FMLClientHandler.instance().getClient();
-	    renderHook = new RenderHookKenshiro();
 	}
 	
 	public static KenshiroClient instance()
@@ -81,8 +78,6 @@ public class KenshiroClient
         {
             return;
         }
-        
-        renderHook.render(tick.renderTickTime);
         
         canKenshiro = false;
         
