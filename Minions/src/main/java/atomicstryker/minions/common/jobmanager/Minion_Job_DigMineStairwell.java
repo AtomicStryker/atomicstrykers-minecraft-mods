@@ -32,12 +32,6 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     }
     
     @Override
-    public void onJobStarted()
-    {
-    	super.onJobStarted();
-    }
-    
-    @Override
     public void onJobUpdateTick()
     {
     	super.onJobUpdateTick();
@@ -71,8 +65,6 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     			worker.giveTask(job, true);
     			job.setWorker(worker);
     			
-    			//System.out.println("giving job ["+job.posX+"|"+job.posY+"|"+job.posZ+"] to worker");
-    			
     			this.jobQueue.remove(0);
     		}
     		else
@@ -80,12 +72,6 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     			this.setWorkerFree(worker);
     		}
     	}
-    }
-    
-    @Override
-    public void onJobFinished()
-    {
-    	super.onJobFinished();
     }
     
     private boolean canAddNextLayer()

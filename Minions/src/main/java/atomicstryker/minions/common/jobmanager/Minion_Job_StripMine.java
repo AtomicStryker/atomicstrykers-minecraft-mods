@@ -93,13 +93,6 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     }
     
     @Override
-    public void onJobStarted()
-    {
-    	super.onJobStarted();
-    	//System.out.println("Strip Mine onJobStarted()");
-    }
-    
-    @Override
     public void onJobUpdateTick()
     {
     	super.onJobUpdateTick();
@@ -125,6 +118,8 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     @Override
     public void onTaskFinished(BlockTask task, int x, int y, int z)
     {
+        super.onTaskFinished(task, x, y, z);
+        
         timeForceNextSegment = System.currentTimeMillis() + SEGMENT_MAX_DELAY;
         jobQueue.remove(task);
         

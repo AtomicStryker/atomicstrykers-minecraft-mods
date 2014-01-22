@@ -1,5 +1,6 @@
 Update 1.8.0
 - updated for MC 1.7.2
+- added debug logging config option. only enable if you intend to send AtomicStryker a log of something happening!
 
 Update 1.7.9
 - now turning off Minion chunkloading when chickenchunks is active, also as option in config

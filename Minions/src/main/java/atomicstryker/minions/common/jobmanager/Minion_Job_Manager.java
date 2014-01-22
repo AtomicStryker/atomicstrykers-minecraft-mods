@@ -42,6 +42,7 @@ public abstract class Minion_Job_Manager
 	
 	public Minion_Job_Manager()
 	{
+	    MinionsCore.instance.debugPrint("Created Minion_Job_Manager "+this);
 	    workerList = new ArrayList<EntityMinion>();
 	    jobQueue = new ArrayList<BlockTask>();
 	    isWorking = false;
@@ -148,7 +149,7 @@ public abstract class Minion_Job_Manager
      */
     public void onJobStarted()
     {
-    	
+        MinionsCore.instance.debugPrint("onJobStarted() "+this);
     }
     
     /**

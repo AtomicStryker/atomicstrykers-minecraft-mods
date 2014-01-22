@@ -178,11 +178,6 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	}
     }
     
-    public void onJobFinished()
-    {
-    	super.onJobFinished();
-    }
-    
     private void progressIndexing()
     {
 		if (blocksToMine == null)

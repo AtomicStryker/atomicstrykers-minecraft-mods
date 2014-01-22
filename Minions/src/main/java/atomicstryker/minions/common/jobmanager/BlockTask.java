@@ -12,6 +12,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarStatic;
+import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -76,6 +77,7 @@ public abstract class BlockTask
      */
     public void setWorker(EntityMinion input)
     {
+        MinionsCore.instance.debugPrint("task "+this+" at ["+posX+"|"+posY+"|"+posZ+"] assigned to worker "+worker);
         this.worker = input;
     }
 
@@ -115,7 +117,7 @@ public abstract class BlockTask
             {
                 worker.returningGoods = true;
                 worker.runInventoryDumpLogic();
-                // System.out.println("Blocktask worker is full, sending to return goods");
+                MinionsCore.instance.debugPrint("Blocktask "+this+" worker "+worker+" is full, sending to return goods");
             }
         }
         else if (!workerReachedBlock && System.currentTimeMillis() - taskTimeStarted > 1000L)
@@ -187,10 +189,10 @@ public abstract class BlockTask
      */
     public void onStartedTask()
     {
-        // System.out.println("onStartedTask ["+this.posX+"|"+this.posY+"|"+this.posZ+"]");
         if (startedTask)
             return;
         startedTask = true;
+        MinionsCore.instance.debugPrint("onStartedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], worker "+worker);
 
         taskTimeStarted = System.currentTimeMillis();
         startMinionX = worker.posX;
@@ -199,12 +201,11 @@ public abstract class BlockTask
         AStarNode[] possibleAccessNodes = getAccessNodesSorted(MathHelper.floor_double(worker.posX), MathHelper.floor_double(worker.posY) - 1, MathHelper.floor_double(worker.posZ));
         if (possibleAccessNodes.length != 0)
         {
-            // System.out.println("Ordering Minion to move to possible path no.: "+currentAccessNode);
             this.worker.orderMinionToMoveTo(possibleAccessNodes, false);
         }
         else
         {
-            // System.out.println("Teleporting Minion to impathable task "+this);
+            MinionsCore.instance.debugPrint("Teleporting Minion to impathable task "+this);
             worker.performTeleportToTarget();
         }
     }
@@ -215,9 +216,9 @@ public abstract class BlockTask
      */
     public void onFinishedTask()
     {
-        // System.out.println("onFinishedTask ["+this.posX+"|"+this.posY+"|"+this.posZ+"], resetting minion");
+        MinionsCore.instance.debugPrint("onFinishedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], resetting minion "+worker);
         this.worker.giveTask(null, true);
-
+        
         if (boss != null)
         {
             boss.onTaskFinished(this, posX, posY, posZ);

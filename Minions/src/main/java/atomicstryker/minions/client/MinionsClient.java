@@ -2,10 +2,12 @@ package atomicstryker.minions.client;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,12 +21,17 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.client.gui.GuiMinionMenu;
+import atomicstryker.minions.client.render.LineColor;
+import atomicstryker.minions.client.render.points.PointCube;
+import atomicstryker.minions.client.render.region.CuboidRegion;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.PacketType;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
@@ -37,8 +44,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class MinionsClient
 {
@@ -61,6 +66,9 @@ public class MinionsClient
     
     private KeyBinding menuKey;
     
+    private static CuboidRegion selection = new CuboidRegion();
+    private static ArrayList<PointCube> additionalCubes = new ArrayList<PointCube>();
+    
     public MinionsClient()
     {
         mc = FMLClientHandler.instance().getClient();        
@@ -69,27 +77,80 @@ public class MinionsClient
     }
     
     @SubscribeEvent
-    public void onRenderTick(TickEvent.ClientTickEvent tick)
+    public void onDrawSelectionBow(DrawBlockHighlightEvent event)
     {
-        if (tick.phase == Phase.END && menuKey.func_151470_d())
+        if (mc.currentScreen == null && isSelectingMineArea)
         {
-            if (mc.currentScreen == null)
-            {
-                mc.func_147108_a(new GuiMinionMenu());
-            }
+            renderSelections(event.partialTicks);
         }
+    }
+    
+    private void renderSelections(float renderTick)
+    {
+        RenderHelper.disableStandardItemLighting();  
+        
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDepthMask(false);
+        GL11.glPushMatrix();
+        
+        EntityPlayer player = mc.thePlayer;
+        double xGuess = player.prevPosX + (player.posX - player.prevPosX) * renderTick;
+        double yGuess = player.prevPosY + (player.posY - player.prevPosY) * renderTick;
+        double zGuess = player.prevPosZ + (player.posZ - player.prevPosZ) * renderTick;
+        GL11.glTranslated(-xGuess, -yGuess, -zGuess);
+        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+        
+        selection.render();
+        
+        Iterator<PointCube> iter = additionalCubes.iterator();
+        while (iter.hasNext())
+        {
+            ((PointCube)iter.next()).render();
+        }
+        
+        GL11.glDepthFunc(GL11.GL_LEQUAL);
+        GL11.glPopMatrix();
+        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+        
+        RenderHelper.enableStandardItemLighting();
+    }
+    
+    private void setSelectionPoint(int id, int x, int y, int z)
+    {
+        selection.setCuboidPoint(id, x, y, z);
+    }
+    
+    private void addAdditionalCube(int x, int y, int z)
+    {
+        PointCube newcube = new PointCube(x, y, z);
+        newcube.setColor(LineColor.CUBOIDBOX);
+        additionalCubes.add(newcube);
+    }
+    
+    private void deleteAdditionalCubes()
+    {
+        additionalCubes.clear();
+    }
+    
+    private void deleteSelection()
+    {
+        selection.wipePointCubes();
+        additionalCubes.clear();
     }
     
     public void onRenderTick(float renderTick)
     {
-        
         if (mc.currentScreen == null && isSelectingMineArea)
         {
             if (mc.thePlayer.inventory.getCurrentItem() == null
             || mc.thePlayer.inventory.getCurrentItem().getItem() != MinionsCore.instance.itemMastersStaff)
             {
                 isSelectingMineArea = false;
-                MinionsRenderHook.deleteSelection();
+                deleteSelection();
             }
             else if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK)
             {
@@ -115,18 +176,18 @@ public class MinionsClient
 
                 if (mineAreaShape == 0) // mineshaft
                 {
-                    MinionsRenderHook.setSelectionPoint(0, x, y, z);
-                    MinionsRenderHook.setSelectionPoint(1, x+4, y, z+4);
+                    setSelectionPoint(0, x, y, z);
+                    setSelectionPoint(1, x+4, y, z+4);
 
-                    MinionsRenderHook.deleteAdditionalCubes();
-                    MinionsRenderHook.addAdditionalCube(x+1, y-1, z);
-                    MinionsRenderHook.addAdditionalCube(x+2, y-2, z);
-                    MinionsRenderHook.addAdditionalCube(x+3, y-3, z);
+                    deleteAdditionalCubes();
+                    addAdditionalCube(x+1, y-1, z);
+                    addAdditionalCube(x+2, y-2, z);
+                    addAdditionalCube(x+3, y-3, z);
                 }
                 else if (mineAreaShape == 1) // stripmine
                 {
-                    MinionsRenderHook.setSelectionPoint(0, x, y, z);
-                    MinionsRenderHook.setSelectionPoint(1, x+xDirection*2, y+1, z+zDirection*2);
+                    setSelectionPoint(0, x, y, z);
+                    setSelectionPoint(1, x+xDirection*2, y+1, z+zDirection*2);
                 }
                 else if (mineAreaShape == 2) // custom size
                 {
@@ -134,20 +195,20 @@ public class MinionsClient
                     
                     if (xDirection != 0) // advancing in Xdir, start at x and z-half to x+size and z+half
                     {
-                        MinionsRenderHook.setSelectionPoint(0, x, y, z - half);
-                        MinionsRenderHook.setSelectionPoint(1, x + (customSizeXZ*xDirection), y + customSizeY-1, z + half);
+                        setSelectionPoint(0, x, y, z - half);
+                        setSelectionPoint(1, x + (customSizeXZ*xDirection), y + customSizeY-1, z + half);
                     }
                     else if (zDirection != 0) // advancing in Zdir, start at z and x-half to z+size and x+half
                     {
-                        MinionsRenderHook.setSelectionPoint(0, x - half, y, z);
-                        MinionsRenderHook.setSelectionPoint(1, x + half, y + customSizeY-1, z + (customSizeXZ*zDirection));
+                        setSelectionPoint(0, x - half, y, z);
+                        setSelectionPoint(1, x + half, y + customSizeY-1, z + (customSizeXZ*zDirection));
                     }
                 }
             }
         }
         else
         {
-            MinionsRenderHook.deleteSelection();
+            deleteSelection();
         }
         
         if (mc.currentScreen == null)
@@ -155,7 +216,6 @@ public class MinionsClient
             if (Mouse.isButtonDown(0)
             && mc.thePlayer.inventory.getCurrentItem() != null
             && mc.thePlayer.inventory.getCurrentItem().getItem() == MinionsCore.instance.itemMastersStaff
-            && mc.objectMouseOver == null
             && lastStaffLightningBoltTime + 100L < System.currentTimeMillis())
             {
                 if (MinionsCore.instance.hasPlayerWillPower(mc.thePlayer))
@@ -181,6 +241,11 @@ public class MinionsClient
                     playFartSound(mc.theWorld, mc.thePlayer);
                 }
             }
+            
+            if (menuKey.func_151470_d())
+            {
+                mc.func_147108_a(new GuiMinionMenu());
+            }
         }
     }
 
@@ -188,8 +253,6 @@ public class MinionsClient
     {
         if (world != lastWorld && world != null)
         {
-            MinionsRenderHook.renderHookEnt = new RenderEntLahwran_Minions(FMLClientHandler.instance().getClient(), world);
-            world.addWeatherEffect(MinionsRenderHook.renderHookEnt);
             lastWorld = world;
         }
         
@@ -204,9 +267,9 @@ public class MinionsClient
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         ByteBuf data = packet.data;
         PacketType packetType = PacketType.byID(packetid);
-
-        //System.out.println("Client received packet, ID "+packetType);
-
+        
+        MinionsCore.instance.debugPrint("Client received packet, ID "+packetType);
+        
         switch (packetType)
         {
             case HASMINIONS:
@@ -215,7 +278,7 @@ public class MinionsClient
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 hasMinionsSMPOverride = ((Integer)packetReadout[0] == 1);
                 hasAllMinionsSMPOverride = ((Integer)packetReadout[1] == 1);
-                //System.out.println("Client got status packet, now: hasMinionsSMPOverride = "+hasMinionsSMPOverride+", hasAllMinionsSMPOverride: "+hasAllMinionsSMPOverride);
+                MinionsCore.instance.debugPrint("Client got status packet, now: hasMinionsSMPOverride = "+hasMinionsSMPOverride+", hasAllMinionsSMPOverride: "+hasAllMinionsSMPOverride);
                 break;
             }
             
@@ -356,15 +419,10 @@ public class MinionsClient
         
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
-        MovingObjectPosition targetObjectMouseOver = mcinstance.objectMouseOver; //mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
+        MovingObjectPosition targetObjectMouseOver = mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
         // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.func_146103_bH().getName());
-        // System.out.println("OnMastersGloveRightClick Master: "+playerEnt.func_146103_bH().getName()+", minionarray is: "+minions);
+        MinionsCore.instance.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getCommandSenderName());
         Entity target;
-
-        if (targetObjectMouseOver == null)
-        {
-            targetObjectMouseOver = mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
-        }
 
         if (targetObjectMouseOver == null)
         {
@@ -389,7 +447,7 @@ public class MinionsClient
             int y = targetObjectMouseOver.blockY +1;
             int z = targetObjectMouseOver.blockZ;
             
-            // System.out.println("OnMastersGloveRightClick coordinate mode, ["+x+"|"+y+"|"+z+"]");
+            MinionsCore.instance.debugPrint("OnMastersGloveRightClick coordinate mode, ["+x+"|"+y+"|"+z+"]");
 
             if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y-1, z))
             {

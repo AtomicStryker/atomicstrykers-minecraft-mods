@@ -22,7 +22,7 @@ public class MinionsServer
         EntityPlayer player = (EntityPlayer)p;
         ByteBuf data = packet.data;
         
-        //System.out.println("Server received packet, ID "+packetType+", from player "+player.func_146103_bH().getName());
+        MinionsCore.instance.debugPrint("Server received packet, ID "+packetType+", from player "+player.getCommandSenderName());
         
         switch (packetType)
         {

@@ -94,6 +94,8 @@ public class MinionsCore
     
     private final MinionsChunkManager chunkLoader;
     
+    private boolean debugMode;
+    
     public MinionsCore()
     {
         evilDoings = new ArrayList<EvilDeed>();
@@ -128,6 +130,8 @@ public class MinionsCore
             minionFollowRange = cfg.get(Configuration.CATEGORY_GENERAL, "minionFollowRange", 30d, "Distance to be used by MC follower pathing. MC default is 12. High values may impede performance").getDouble(30d);
             
             chunkLoader.enabled = cfg.get(Configuration.CATEGORY_GENERAL, "minionsLoadChunks", true, "Do Minions act as Chunk Loaders? Best disable if using other Chunkloaders").getBoolean(true);
+            
+            debugMode = cfg.get(Configuration.CATEGORY_GENERAL, "debugMode", false, "Enables debug printing. LOTS OF IT.").getBoolean(false);
         }
         catch (Exception e)
         {
@@ -151,10 +155,7 @@ public class MinionsCore
         
         proxy.preInit(event);
         
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-        {
-            FMLCommonHandler.instance().bus().register(this);
-        }
+        FMLCommonHandler.instance().bus().register(this);
     }
     
     @EventHandler
@@ -168,7 +169,7 @@ public class MinionsCore
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (event.entity instanceof EntityPlayer)
+        if (!event.world.isRemote && event.entity instanceof EntityPlayer)
         {
             EntityPlayer p = (EntityPlayer) event.entity;
             Object[] toSend = {MinionsCore.instance.evilDeedXPCost};
@@ -211,12 +212,13 @@ public class MinionsCore
             
             chunkLoader.updateLoadedChunks();
         }
-
+        
         Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
         while (iter.hasNext())
         {
             if (finishedJobList.contains(iter))
             {
+                debugPrint("Now removing finished Job: "+iter);
                 finishedJobList.remove(iter);
                 runningJobList.remove(iter);
             }
@@ -260,6 +262,7 @@ public class MinionsCore
             Block iter = GameData.blockRegistry.getObject(s);
             if (iter instanceof BlockLog || iter.func_149732_F().contains("log"))
             {
+                debugPrint("Minions found viable TreeBlock: "+iter);
                 foundTreeBlocks.add(iter);
             }
         }
@@ -683,20 +686,18 @@ public class MinionsCore
                     if (!lineString.startsWith("//"))
                     {
                         lineString = lineString.trim();
-                        if (lineString.startsWith("registerBlockIDasTreeBlock"))
+                        if (lineString.startsWith("registerBlockIDasTreeBlock:"))
                         {
-                            String[] stringArray = lineString.split(":");
-                            Block id = GameData.blockRegistry.getObject(stringArray[1]);
+                            Block id = GameData.blockRegistry.getObject(lineString.substring(lineString.indexOf(":")+1));
                             if (id != Blocks.air)
                             {
                                 foundTreeBlocks.add(id);
                                 System.out.println("Config: registered additional tree block ID "+id);
                             }
                         }
-                        else if (lineString.startsWith("registerBlockIDasWorthlessBlock"))
+                        else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
                         {
-                            String[] stringArray = lineString.split(":");
-                            Block id = GameData.blockRegistry.getObject(stringArray[1]);
+                            Block id = GameData.blockRegistry.getObject(lineString.substring(lineString.indexOf(":")+1));
                             if (id != Blocks.air)
                             {
                                 configWorthlessBlocks.add(id);
@@ -731,7 +732,7 @@ public class MinionsCore
     @SubscribeEvent
     public void onTick(TickEvent.WorldTickEvent tick)
     {
-        if (tick.phase == Phase.END)
+        if (!tick.world.isRemote && tick.phase == Phase.END)
         {
             onTick(tick.world);
         }
@@ -749,6 +750,14 @@ public class MinionsCore
     public final static String getPacketChannel()
     {
         return "AS_Minions";
+    }
+    
+    public void debugPrint(String s)
+    {
+        if (debugMode)
+        {
+            System.out.println(s);
+        }
     }
     
 }

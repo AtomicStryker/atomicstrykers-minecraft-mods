@@ -29,8 +29,8 @@ public class ClientProxy extends CommonProxy
         client =  new MinionsClient();
         MinecraftForge.EVENT_BUS.register(new MinionsSounds());
         FMLCommonHandler.instance().bus().register(this);
-        FMLCommonHandler.instance().bus().register(client);
         MinecraftForge.EVENT_BUS.register(new RenderChickenLightningBolt());
+        MinecraftForge.EVENT_BUS.register(client);
     }
     
     @Override
@@ -61,7 +61,6 @@ public class ClientProxy extends CommonProxy
     public void registerRenderInformation()
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityMinion.class, new RenderMinion(new ModelMinion(), 0.25F));
-        RenderingRegistry.registerEntityRenderingHandler(RenderEntLahwran_Minions.class, new MinionsRenderHook(FMLClientHandler.instance().getClient()));
     }
     
     @Override

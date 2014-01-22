@@ -2,6 +2,7 @@ package atomicstryker.astarpathing;
 
 import java.util.ArrayList;
 
+import atomicstryker.minions.common.MinionsCore;
 import net.minecraft.world.World;
 
 /**
@@ -120,7 +121,7 @@ public class AStarPathPlanner
             }
             else if (pathedEntity != null)
             {
-                // System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
+                MinionsCore.instance.debugPrint("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
                 pathedEntity.onNoPathAvailable();
             }
         }
