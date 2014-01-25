@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.minions.common.MinionsCore;
@@ -35,7 +34,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 	
     public Minion_Job_StripMine(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
-        super();
+        super(ix, iy, iz);
         
         currentSegment = -1;
     	for (EntityMinion m : minions)
@@ -67,8 +66,6 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     	}
     	else
     	{
-            this.pointOfOrigin = new ChunkCoordinates(ix, iy, iz);
-
             worldObj = workerList.get(0).worldObj;
 
             startX = this.pointOfOrigin.posX;

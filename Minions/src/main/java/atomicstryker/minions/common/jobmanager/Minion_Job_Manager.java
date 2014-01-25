@@ -26,7 +26,7 @@ public abstract class Minion_Job_Manager
 	/**
 	 * XYZ coordinates of where the player 'placed' the job
 	 */
-	public ChunkCoordinates pointOfOrigin;
+	public final ChunkCoordinates pointOfOrigin;
 	
 	/**
 	 * Contains all Blocktasks the Job needs done in ascending order. Once all are finished, the job is done.
@@ -40,19 +40,20 @@ public abstract class Minion_Job_Manager
 	
 	private boolean isWorking;
 	
-	public Minion_Job_Manager()
+	private Minion_Job_Manager()
 	{
-	    MinionsCore.instance.debugPrint("Created Minion_Job_Manager "+this);
-	    workerList = new ArrayList<EntityMinion>();
-	    jobQueue = new ArrayList<BlockTask>();
-	    isWorking = false;
-	    masterName = null;
+        MinionsCore.instance.debugPrint("Created Minion_Job_Manager "+this);
+        workerList = new ArrayList<EntityMinion>();
+        jobQueue = new ArrayList<BlockTask>();
+        isWorking = false;
+        masterName = null;
+        pointOfOrigin = new ChunkCoordinates();
 	}
 	
-    public Minion_Job_Manager(Collection<EntityMinion> minions, int ix, int iy, int iz)
-    {
-        this();
-        
+	private Minion_Job_Manager(Collection<EntityMinion> minions)
+	{
+	    this();
+	    
         for (EntityMinion m : minions)
         {
             workerList.add(m);
@@ -68,8 +69,18 @@ public abstract class Minion_Job_Manager
                 masterName = m.getMasterUserName();
             }
         }
-    	
-    	this.pointOfOrigin = new ChunkCoordinates(ix, iy, iz);
+	}
+	
+    public Minion_Job_Manager(int ix, int iy, int iz)
+    {
+        this();
+        pointOfOrigin.set(ix, iy, iz);
+    }
+	
+    public Minion_Job_Manager(Collection<EntityMinion> minions, int ix, int iy, int iz)
+    {
+        this(minions);
+    	pointOfOrigin.set(ix, iy, iz);
     }
     
     /**
