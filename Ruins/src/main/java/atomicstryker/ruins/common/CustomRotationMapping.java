@@ -39,7 +39,7 @@ public class CustomRotationMapping
     private final ArrayList<Block> currentBlockIDs;
 
     @SuppressWarnings("rawtypes")
-    public CustomRotationMapping(File fRuinsResources, PrintWriter ruinsLogger)
+    public CustomRotationMapping(File fRuinsResources)
     {
         instance = this;
         blockIDMap = new TreeMap<Block, TreeMap[]>(new BlockComparator());
@@ -48,12 +48,11 @@ public class CustomRotationMapping
         File f = new File(fRuinsResources, "rotation_mappings.txt");
         if (!f.exists())
         {
-            ruinsLogger.println("Did not find a custom mappings file " + f.getAbsolutePath());
+            System.err.println("Did not find a custom mappings file " + f.getAbsolutePath());
         }
         else
         {
-            ruinsLogger.println("Ruins is now loading the rotation mappings file " + f.getAbsolutePath());
-            loadCustomMappings(f, ruinsLogger);
+            loadCustomMappings(f, new PrintWriter(System.out, true));
         }
     }
     

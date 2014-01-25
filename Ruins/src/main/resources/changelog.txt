@@ -259,3 +259,21 @@ a: setAccessible now true
 + i've subsequently dumped the schematic converter
 + the included templates have been updated to the new values, see credits file
 + many thanks to Saeldur for doing this
+
+12.1
++ added Ruins support for signs with text on them
++ added Ruins support for skulls/heads
++ fixed mappings: trapdoor, tripwire, repeater, comparator, furnace, chest,
++   dropper, wodden button, activator rail, quartz stairs, piston, dispenser,
++   cocoa, anvil, fence gate, end portal frame, all log types, quartz pillars
++ glorious rebirth of the template converter, now ingame admin command "/parseruin"
++   does not require the client to have Ruins installed
++   upon execution, saves the result template on the server(!) in the "templateparser" biome folder
++   converter supports custom mob spawners and command blocks, also custom signs
++   does not support chest content (is replaced by dungeon chestgenhook, 5 items)
++   converter has basic support for any block, even mod blocks, and their meta values
++   note for full support of mod block rotations you might have to add rotation mappings for them
++ also adds testing command "/testruin" which can be used to spawn any ruin template
++   any template is specified by "biomefolder/filename" (SERVERS FOLDER!)
++   or just "filename" when the template is located in the "templateparser" biome folder
++   you may also append an optional rotation digit [NESW = 0123] to test template rotation

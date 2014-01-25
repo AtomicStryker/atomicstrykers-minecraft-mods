@@ -240,7 +240,11 @@ preserve_plants=0
 # Ruins 10.3 adds Command Block Support. Usage:
 # Example 8: rule1=0,100,CommandBlock:command:sender
 # command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
-
+#
+# Ruins 12.1 adds Standing Signs. Usage:
+# Example 9: rule1=0,100,StandingSign:a|b|c|d-4
+# a,b,c,d are the 4 Strings/lines you can write on a sign. The metadata/rotation of the sign is affixed as usual.
+#
 
 rule1=0,100,preserveBlock
 rule2=0,80,brick_block,brick_block,dirt,stone,gravel

@@ -22,7 +22,9 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -30,17 +32,21 @@ import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = "12.0", dependencies = "after:ExtraBiomes")
+@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
     public final static String TEMPLATE_EXT = "tml", COMPLEX_EXT = "cml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
+    
+    public static final String modversion = "12.1";
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
     private ConcurrentLinkedQueue<int[]> currentlyGenerating;
@@ -52,6 +58,15 @@ public class RuinsMod
         currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
+
+        new CustomRotationMapping(new File(getMinecraftBaseDir(), "mods/resources/ruins"));
+    }
+
+    @EventHandler
+    public void serverStarted(FMLServerStartingEvent evt)
+    {
+        evt.registerServerCommand(new CommandParseTemplate());
+        evt.registerServerCommand(new CommandTestTemplate());
     }
 
     private long nextInfoTime;
@@ -63,8 +78,25 @@ public class RuinsMod
         if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
-            event.entityPlayer.func_146105_b(new ChatComponentText(String.format("BlockName [%s], blockID [%d], metadata [%d]", event.block.func_149732_F(),
-                    event.block, event.metadata)));
+            event.entityPlayer.func_146105_b(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
+                    event.block.func_149732_F(), GameData.blockRegistry.func_148750_c(event.block), event.metadata)));
+        }
+    }
+
+    @SubscribeEvent
+    public void onBreak(BreakEvent event)
+    {
+        if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
+        {
+            ItemStack is = event.getPlayer().getCurrentEquippedItem();
+            if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
+            {
+                nextInfoTime = System.currentTimeMillis() + 1000l;
+                event.getPlayer().func_146105_b(
+                        new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.block.func_149732_F(),
+                                GameData.blockRegistry.func_148750_c(event.block), event.blockMetadata)));
+                event.setCanceled(true);
+            }
         }
     }
 

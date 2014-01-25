@@ -11,10 +11,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class RuinTemplateRule
 {
@@ -25,11 +28,13 @@ public class RuinTemplateRule
     private int condition = 0;
     private final RuinIBuildable owner;
     private final PrintWriter debugPrinter;
-
-    public RuinTemplateRule(PrintWriter pw, RuinIBuildable r, final String rule) throws Exception
+    private final boolean excessiveDebugging;
+    
+    public RuinTemplateRule(PrintWriter dpw, RuinIBuildable r, final String rule, boolean debug) throws Exception
     {
-        debugPrinter = pw;
+        debugPrinter = dpw;
         owner = r;
+        excessiveDebugging = debug;
         String[] items = rule.split(",");
         int numblocks = items.length - 2;
         if (numblocks < 1)
@@ -64,7 +69,7 @@ public class RuinTemplateRule
                         blockIDs[i] = null;
                     }
                     blockMDs[i] = Integer.parseInt(data[1]);
-                    blockStrings[i] = data[0];
+                    blockStrings[i] = items[i + 2];
                 }
             }
             else
@@ -87,7 +92,19 @@ public class RuinTemplateRule
                 blockMDs[i] = 0;
                 blockStrings[i] = items[i + 2];
             }
+            
+            if (excessiveDebugging)
+            {
+                dpw.println("blockIDs["+i+"]: "+blockIDs[i]);
+                dpw.println("blockMDs["+i+"]: "+blockMDs[i]);
+                dpw.println("blockStrings["+i+"]: "+blockStrings[i]);
+            }
         }
+    }
+    
+    public RuinTemplateRule(PrintWriter dpw, RuinIBuildable r, final String rule) throws Exception
+    {
+        this(dpw, r, rule, false);
     }
 
     private Block cachedBlock;
@@ -230,9 +247,13 @@ public class RuinTemplateRule
     private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum, int rotate, String blockString)
     {
         Block blockID = blockIDs[blocknum];
+        if (excessiveDebugging)
+        {
+            debugPrinter.println("About to place blockID "+blockID+", rotation "+rotate+", string: "+blockString);
+        }
         if (blockID == null)
         {
-            doSpecialBlock(world, random, x, y, z, blockString);
+            doSpecialBlock(world, random, x, y, z, blocknum, rotate, blockString);
         }
         else
         {
@@ -256,7 +277,7 @@ public class RuinTemplateRule
         }
     }
 
-    public void doSpecialBlock(World world, Random random, int x, int y, int z, final String dataString)
+    public void doSpecialBlock(World world, Random random, int x, int y, int z, int blocknum, int rotate, final String dataString)
     {
         if (dataString.equals("preserveBlock") || dataString.equals("air"))
         {
@@ -284,43 +305,20 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("EasyChest"))
         {
-            int meta = 0;
-            if (dataString.contains("-"))
-            {
-                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-") + 1));
-            }
-            addEasyChest(world, random, x, y, z, meta, random.nextInt(3) + 3);
+            addEasyChest(world, random, x, y, z, rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate), random.nextInt(3) + 3);
         }
         else if (dataString.startsWith("MediumChest"))
         {
-            int meta = 0;
-            if (dataString.contains("-"))
-            {
-                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-") + 1));
-            }
-            addMediumChest(world, random, x, y, z, meta, random.nextInt(4) + 3);
+            addMediumChest(world, random, x, y, z, rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate), random.nextInt(4) + 3);
         }
         else if (dataString.startsWith("HardChest"))
         {
-            int meta = 0;
-            if (dataString.contains("-"))
-            {
-                meta = Integer.valueOf(dataString.substring(dataString.indexOf("-") + 1));
-            }
-            addHardChest(world, random, x, y, z, meta, random.nextInt(5) + 3);
+            addHardChest(world, random, x, y, z, rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate), random.nextInt(5) + 3);
         }
         else if (dataString.startsWith("ChestGenHook:"))
         {
-            int meta = 0;
-            String datasubString = dataString.substring(0);
-            if (dataString.contains("-"))
-            {
-                int index = dataString.indexOf("-");
-                meta = Integer.valueOf(dataString.substring(index + 1));
-                datasubString = dataString.substring(0, index);
-            }
-            String[] s = datasubString.split(":");
-            addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2]), meta);
+            String[] s = dataString.split(":");
+            addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2].split("-")[0]), rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate));
         }
         else if (dataString.equals("EnderCrystal"))
         {
@@ -331,10 +329,62 @@ public class RuinTemplateRule
             String[] s = dataString.split(":");
             addCommandBlock(world, x, y, z, s[1], s[2]);
         }
+        else if (dataString.startsWith("StandingSign:"))
+        {
+            String[] splits = dataString.split(":");
+            int meta = blockMDs[blocknum];
+            if (rotate != RuinsMod.DIR_NORTH)
+            {
+                meta = rotateMetadata(Blocks.standing_sign, blockMDs[blocknum], rotate);
+            }
+            world.func_147465_d(x, y, z, Blocks.standing_sign, meta, 2);
+            TileEntitySign tes = (TileEntitySign) world.func_147438_o(x, y, z);
+            for (int i = 0; i < tes.field_145915_a.length && i+1 < splits.length; i++)
+            {
+                tes.field_145915_a[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+            }
+        }
+        else if (dataString.startsWith("WallSign:"))
+        {
+            String[] splits = dataString.split(":");
+            int meta = blockMDs[blocknum];
+            if (rotate != RuinsMod.DIR_NORTH)
+            {
+                meta = rotateMetadata(Blocks.wall_sign, blockMDs[blocknum], rotate);
+            }
+            world.func_147465_d(x, y, z, Blocks.wall_sign, meta, 3);
+            TileEntitySign tes = (TileEntitySign) world.func_147438_o(x, y, z);
+            for (int i = 0; i < tes.field_145915_a.length && i+1 < splits.length; i++)
+            {
+                tes.field_145915_a[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+            }
+        }
+        else if (dataString.startsWith("Skull:"))
+        {
+            world.func_147465_d(x, y, z, Blocks.skull, rotateFloorSkull(blockMDs[blocknum], rotate), 2);
+            String[] splits = dataString.split(":");
+            TileEntitySkull tes = (TileEntitySkull) world.func_147438_o(x, y, z);
+            ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
+            int prevrot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
+            ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.standing_sign, prevrot, rotate), 1);
+            if (splits.length > 3 && !splits[3].startsWith("-"))
+            {
+                ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, splits[3], 2);
+            }
+        }
         else
         {
             System.err.println("Ruins Mod could not determine what to spawn for [" + dataString + "] in Ruin template: " + owner.getName());
         }
+    }
+    
+    private int rotateFloorSkull(int meta, int rot)
+    {
+        if (meta == 1)
+        {
+            return 1;
+        }
+        return CustomRotationMapping.getMapping(Blocks.skull, meta, rot);
     }
 
     private int getBlockNum(Random random)
@@ -429,7 +479,8 @@ public class RuinTemplateRule
 
     private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 3);
+        world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
@@ -447,7 +498,8 @@ public class RuinTemplateRule
 
     private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 3);
+        world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
@@ -472,7 +524,8 @@ public class RuinTemplateRule
 
     private void addHardChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 3);
+        world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
@@ -497,7 +550,8 @@ public class RuinTemplateRule
 
     private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int items, int meta)
     {
-        world.func_147465_d(x, y, z, Blocks.chest, meta, 2);
+        world.func_147465_d(x, y, z, Blocks.chest, meta, 3);
+        world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.func_147438_o(x, y, z);
         if (chest != null)
         {
@@ -615,14 +669,24 @@ public class RuinTemplateRule
             return new ItemStack(Items.diamond, random.nextInt(4));
         }
     }
-
+    
     private int rotateMetadata(Block blockID, int metadata, int dir)
+    {
+        int result = rotateMetadata(blockID, metadata, dir, true);
+        if (excessiveDebugging)
+        {
+            debugPrinter.println("Rotated blockID " + blockID + ", meta " + metadata + ", dir: " + dir + " result: " + result);
+        }
+        return result;
+    }
+
+    private int rotateMetadata(Block blockID, int metadata, int dir, boolean debugme)
     {
         // remember that, in this mod, NORTH is the default direction.
         // this method is unused if the direction is NORTH
         int tempdata = 0;
         
-        if (blockID == Blocks.rail || blockID == Blocks.golden_rail || blockID == Blocks.detector_rail)
+        if (blockID == Blocks.rail || blockID == Blocks.golden_rail || blockID == Blocks.detector_rail || blockID == Blocks.activator_rail)
         {
             // minecart tracks
             switch (dir)
@@ -761,7 +825,7 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.wooden_door || blockID == Blocks.iron_door || blockID == Blocks.trapdoor)
+        else if (blockID == Blocks.wooden_door || blockID == Blocks.iron_door)
         {
             // doors
             if (metadata - 8 >= 0)
@@ -831,10 +895,10 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.torch || blockID == Blocks.stone_button || blockID == Blocks.lever || blockID == Blocks.unlit_redstone_torch || blockID == Blocks.redstone_torch)
+        else if (blockID == Blocks.torch || blockID == Blocks.stone_button || blockID == Blocks.wooden_button || blockID == Blocks.lever || blockID == Blocks.unlit_redstone_torch || blockID == Blocks.redstone_torch)
         {
             tempdata = 0;
-            if (blockID == Blocks.lever || blockID == Blocks.stone_button)
+            if (blockID == Blocks.lever || blockID == Blocks.stone_button || blockID == Blocks.wooden_button)
             {
                 if (metadata - 8 > 0)
                 {
@@ -911,63 +975,6 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.ladder || blockID == Blocks.dispenser || blockID == Blocks.furnace || blockID == Blocks.lit_furnace || blockID == Blocks.wall_sign)
-        {
-            switch (dir)
-            {
-            case RuinsMod.DIR_EAST:
-                if (metadata == 2)
-                {
-                    return 5;
-                }
-                if (metadata == 3)
-                {
-                    return 4;
-                }
-                if (metadata == 4)
-                {
-                    return 2;
-                }
-                if (metadata == 5)
-                {
-                    return 3;
-                }
-            case RuinsMod.DIR_SOUTH:
-                if (metadata == 2)
-                {
-                    return 3;
-                }
-                if (metadata == 3)
-                {
-                    return 2;
-                }
-                if (metadata == 4)
-                {
-                    return 5;
-                }
-                if (metadata == 5)
-                {
-                    return 4;
-                }
-            case RuinsMod.DIR_WEST:
-                if (metadata == 2)
-                {
-                    return 4;
-                }
-                if (metadata == 3)
-                {
-                    return 5;
-                }
-                if (metadata == 4)
-                {
-                    return 3;
-                }
-                if (metadata == 5)
-                {
-                    return 2;
-                }
-            }
-        }
         else if (blockID == Blocks.vine)
         {
             /*
@@ -1029,36 +1036,11 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.pumpkin || blockID == Blocks.lit_pumpkin || blockID == Blocks.unpowered_repeater || blockID == Blocks.powered_repeater)
+        /*
+         * pumpkins NESW - 2 3 0 1
+         */
+        else if (blockID == Blocks.pumpkin || blockID == Blocks.lit_pumpkin)
         {
-            if (blockID == Blocks.unpowered_repeater || blockID == Blocks.powered_repeater)
-            {
-                // check for the delay tick for repeaters
-                if (metadata - 4 >= 0)
-                {
-                    if (metadata - 8 >= 0)
-                    {
-                        if (metadata - 12 >= 0)
-                        {
-                            // four tick delay
-                            tempdata += 12;
-                            metadata -= 12;
-                        }
-                        else
-                        {
-                            // three tick delay
-                            tempdata += 8;
-                            metadata -= 8;
-                        }
-                    }
-                    else
-                    {
-                        // two tick delay
-                        tempdata += 4;
-                        metadata -= 4;
-                    }
-                }
-            }
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -1378,6 +1360,311 @@ public class RuinTemplateRule
                 }
             }
         }
+        /*
+         * Base NESW = 0 1 2 3 in 2 least significant bits
+         * Additonal data unrelated to rotation in higher bits
+         */
+        else if (blockID == Blocks.unpowered_repeater || blockID == Blocks.unpowered_comparator || blockID == Blocks.powered_repeater || blockID == Blocks.powered_comparator)
+        {
+            int rotbits = metadata & 0x03;
+            int databits = metadata & 0xFC;
+            
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (rotbits == 0)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 0 | databits;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (rotbits == 0)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 1 | databits;
+                }
+            case RuinsMod.DIR_WEST:
+                if (rotbits == 0)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 2 | databits;
+                }
+            }
+        }
+        /*
+         * Least significant 2 bits cover rotation, rest is data
+         * (connected to:) N E S W -> 1 2 0 3
+         */
+        if (blockID == Blocks.trapdoor)
+        {
+            int rotbits = metadata & 0x03;
+            int databits = metadata & 0xFC;
+            
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (rotbits == 1)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 0)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 1 | databits;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (rotbits == 1)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 0)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 2 | databits;
+                }
+            case RuinsMod.DIR_WEST:
+                if (rotbits == 1)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 0)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 0 | databits;
+                }
+            }
+        }
+        /*
+         * Least significant 2 bits cover rotation, rest is data
+         * (connected to:) N E S W -> 2 3 0 1
+         */
+        if (blockID == Blocks.tripwire_hook || blockID == Blocks.fence_gate || blockID == Blocks.end_portal_frame)
+        {
+            int rotbits = metadata & 0x03;
+            int databits = metadata & 0xFC;
+            
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (rotbits == 2)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 0)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 2 | databits;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (rotbits == 2)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 0)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 3 | databits;
+                }
+            case RuinsMod.DIR_WEST:
+                if (rotbits == 2)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 0)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 0 | databits;
+                }
+            }
+        }
+        /*
+         * Least significant 2 bits cover rotation, rest is data
+         * (connected to:) N E S W -> 0 1 2 3
+         */
+        if (blockID == Blocks.cocoa)
+        {
+            int rotbits = metadata & 0x03;
+            int databits = metadata & 0xFC;
+            
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                if (rotbits == 0)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 0 | databits;
+                }
+            case RuinsMod.DIR_SOUTH:
+                if (rotbits == 0)
+                {
+                    return 2 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 1 | databits;
+                }
+            case RuinsMod.DIR_WEST:
+                if (rotbits == 0)
+                {
+                    return 3 | databits;
+                }
+                if (rotbits == 1)
+                {
+                    return 0 | databits;
+                }
+                if (rotbits == 2)
+                {
+                    return 1 | databits;
+                }
+                if (rotbits == 3)
+                {
+                    return 2 | databits;
+                }
+            }
+        }
+        /*
+         * Least significant bit covers rotation NS or EW, rest is data
+         */
+        if (blockID == Blocks.anvil)
+        {
+            int rotbits = metadata & 0x01;
+            int databits = metadata & 0xFE;
+            
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+            case RuinsMod.DIR_WEST:
+                if (rotbits == 0)
+                {
+                    return 1 | databits;
+                }
+                return 0 | databits;
+            }
+            return metadata;
+        }
+        /*
+         * 3 Orientations: UP/DOWN, N/S, E/W
+         * various wood types: 0-3, 4-7, 8-11 and 'only bark' variants 12-15
+         * can be simplified to 0 1 2 3
+         */
+        if (blockID == Blocks.log || blockID == Blocks.log2)
+        {
+            int offset = metadata % 4; // for wood type
+            int rot = metadata / 4; // simplify to meta-meta
+            if (rot == 0 || rot > 2) // up/down or just bark, no rotation
+            {
+                return metadata;
+            }
+            
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+            case RuinsMod.DIR_WEST:
+                if (rot == 1)
+                {
+                    // go from N/S to E/W
+                    return 8 + offset;
+                }
+                // go from E/W to N/S
+                return 4 + offset;
+            }
+            return metadata;
+        }
+        
         return CustomRotationMapping.getMapping(blockID, metadata, dir);
     }
 

@@ -25,12 +25,14 @@ public class RuinTemplate implements RuinIBuildable
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
     private final PrintWriter debugPrinter;
-
-    public RuinTemplate(PrintWriter pw, String filename, String simpleName) throws Exception
+    private final boolean debugging;
+    
+    public RuinTemplate(PrintWriter out, String filename, String simpleName, boolean debug) throws Exception
     {
         // load in the given file as a template
         name = simpleName;
-        debugPrinter = pw;
+        debugPrinter = out;
+        debugging = debug;
         ArrayList<String> lines = new ArrayList<String>();
         rules = new ArrayList<RuinTemplateRule>();
         layers = new ArrayList<RuinTemplateLayer>();
@@ -44,6 +46,11 @@ public class RuinTemplate implements RuinIBuildable
         }
         parseFile(lines);
         br.close();
+    }
+
+    public RuinTemplate(PrintWriter out, String filename, String simpleName) throws Exception
+    {
+        this(out, filename, simpleName, false);
     }
 
     @Override
@@ -455,9 +462,6 @@ public class RuinTemplate implements RuinIBuildable
 
         // get the late runs and finish up
         doLateRuns(world, random, laterun, lastrun);
-        
-        // TODO see if this needs to be added back in, i dont think so
-        //world.markBlockRangeForRenderUpdate(xBase, y + 1 - embed, zBase, xBase + xDim, y + (1 - embed) + height, zBase + zDim);
     }
 
     private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun)
@@ -591,7 +595,7 @@ public class RuinTemplate implements RuinIBuildable
                 else if (line.startsWith("rule"))
                 {
                     String[] parts = line.split("=");
-                    rules.add(new RuinTemplateRule(debugPrinter, this, parts[1]));
+                    rules.add(new RuinTemplateRule(debugPrinter, this, parts[1], debugging));
                 }
             }
         }

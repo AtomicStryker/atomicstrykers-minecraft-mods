@@ -9,9 +9,9 @@ import net.minecraft.world.World;
 public class RuinRuleAir extends RuinTemplateRule
 {
 
-    public RuinRuleAir(PrintWriter pw, RuinTemplate r, String rule) throws Exception
+    public RuinRuleAir(PrintWriter debugPrinter, RuinTemplate r, String rule) throws Exception
     {
-        super(pw, r, "0,100,air");
+        super(debugPrinter, r, "0,100,air");
     }
 
     @Override
