@@ -3,7 +3,7 @@
   "modid": "FinderCompass",
   "name": "Finder Compass",
   "description": "Make the vanilla Compass point on new and exciting Things! Diamonds! Strongholds! Any Block!",
-  "mcversion": "1.7.2",
+  "mcversion": "${mcversion}",
   "url": "http://www.minecraftforum.net/topic/189739-",
   "authors": [
     "AtomicStryker"

@@ -3,7 +3,7 @@
   "modid": "DynamicLights",
   "name": "Dynamic Lights",
   "description": "Moving Lights aren't possible? OH RLY?",
-  "mcversion": "1.7.2",
+  "mcversion": "${mcversion}",
   "url": "http://www.minecraftforum.net/topic/184426-",
   "authors": [
     "AtomicStryker"

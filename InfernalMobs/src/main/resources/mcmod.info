@@ -3,7 +3,7 @@
   "modid": "InfernalMobs",
   "name": "Infernal Mobs",
   "description": "Diablo Style random Enchantments on Entities! Harder fights! More XP and enchanted loot!",
-  "mcversion": "1.7.2",
+  "mcversion": "${mcversion}",
   "url": "http://www.minecraftforum.net/topic/991952-",
   "authors": [
     "AtomicStryker"

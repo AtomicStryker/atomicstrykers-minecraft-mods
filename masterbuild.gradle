@@ -43,7 +43,11 @@ if( dfile.exists() ) {
 processResources
 {
     // copy assets into artifact
-    from(sourceSets.main.resources.srcDirs)
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        // put mcversion in
+        expand 'mcversion':project.minecraft.version
+    }
 	from(sourceSets.main.java.srcDirs) {into('src')}
 }
 

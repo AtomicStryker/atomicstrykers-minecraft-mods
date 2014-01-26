@@ -3,7 +3,7 @@
   "modid": "MagicYarn",
   "name": "Magic Yarn",
   "description": "Trace your path like heroes of ancient times! Never get lost again!",
-  "mcversion": "1.7.2",
+  "mcversion": "${mcversion}",
   "url": "http://www.atomicstryker.net/",
   "authors": [
     "AtomicStryker"

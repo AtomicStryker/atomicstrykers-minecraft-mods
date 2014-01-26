@@ -3,7 +3,7 @@
   "modid": "AS_Minions",
   "name": "Minions",
   "description": "semi-intelligent Minions in Minecraft that do your Bidding! Evil Deeds! Wrongdoings! Lightning Bolts!",
-  "mcversion": "1.7.2",
+  "mcversion": "${mcversion}",
   "url": "http://www.minecraftforum.net/topic/991952-",
   "authors": [
     "AtomicStryker"

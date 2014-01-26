@@ -2,37 +2,37 @@ Folder structure this file resides in
 
 ./
 	./../forgegradle	-> contains gradlew.bat along with the new forge setup
-	./**/        		-> contains the Eclipse Workspace with projects in it. Each project has an ant build file
+	./**/        		-> contains the Eclipse Workspace with projects in it. There is a master gradle build file each project accesses
 
 To setup my workspace in your eclipse, simply setup Forge, then move your eclipse workspace into this folder.
 
 
-Each project/mod contains a Gradle build file which creates download files in their respective /build/libs (or /build/distributions) folders.
+Each project/mod refers to the master gradle build file which creates download files in their respective /build/libs (or /build/distributions) folders.
 Gradle is required, however one could also use the gradlew wrapper found in forgegradle to do this.
+The build file reacts to certain conditions like a "META-INF.mf" being present, "makezip" being present...
 
 THIS ASSUMES YOUR MOD COMPILES AGAINST FORGEGRADLE - if there are compile errors in the eclipse project, it will fail.
 
 
 NOTE: Some projects attempt to include the Update Checker into their packages, which means it should be built first.
+NOTE #2: Pet Bat relies on Dynamic Lights to have been compiled first.
 
+Stuff that needs changing each mc version:
 
-Stuff that needs changing each version:
+- in "./properties.xml" you find the minecraft and forge versions which are used by the build scripts for building and all resulting mod- and archivenames.
+(artifacts are named by mc version only, so that filehoster linked files can be overwritten without breaking links)
 
-- in "./properties" you find the minecraft version that is appended by the scripts to all resulting mod- and archivenames.
-- change is according to minecraft version only, so that you can keep overwriting your Dropbox/whatever link for the current MC version
-
-- each mod has a changelog, add new version
-- each mod has a mcmod.info, change to new versions (mod and mc both)
-- each mod has a @Mod sourcefile, generally in the common side, in which you need to change the "version =" property
+- each mod has a changelog, add new versions in here
+- each mod has a @Mod sourcefile, generally in the common package, in which you need to bump "version =" property accordingly
 
 
 Mods with special Needs:
 
 -- Multi Mine
-- Multi Mine needs it's dummy jar (containing only the Manifest.MF) in /mcp/jars/mods/ if you want it to work through MCP
+- Multi Mine needs it's dummy jar (containing only the Manifest.MF) in the runtime /mods/ folder if you want it to work during debugging
 - Multi Mine uses hardcoded obfuscated names in it's sourcefile "common\atomicstryker\multimine\common\fmlmagic\MMTransformer.java"
-- those need to be fixed each time minecraft obfuscation changes.
-- a good place to get working obfuscated names from is /mcp/conf/: joined.srg, methods.csv and fields.csv
+- those need to be fixed to the current Searge names each time minecraft obfuscation changes
+- a good place to get current obfuscated names from is joined.srg, methods.csv and fields.csv somewhere in the forgegradle folders
 - another good place is MCPBot in the MCP IRC channels, assuming it runs the version you need
 
 -- Dynamic Lights

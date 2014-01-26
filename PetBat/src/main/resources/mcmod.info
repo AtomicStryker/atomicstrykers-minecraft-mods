@@ -3,7 +3,7 @@
   "modid": "PetBat",
   "name": "Pet Bat",
   "description": "Amazing Pet Bats!",
-  "mcversion": "1.7.2",
+  "mcversion": "${mcversion}",
   "url": "http://www.atomicstryker.net/",
   "authors": [
     "AtomicStryker"
