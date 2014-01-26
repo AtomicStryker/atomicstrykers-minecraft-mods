@@ -3,7 +3,6 @@
   "modid": "AdvancedMachines",
   "name": "IC2 Advanced Machines Addon",
   "description": "Some additional Machines for the electrical Connoisseur",
-  "version": "1.0.6",
   "mcversion": "1.6.4",
   "url": "http://forum.industrial-craft.net/index.php?page=Thread&threadID=4907",
   "updateUrl": "http://atomicstryker.net",
@@ -11,7 +10,7 @@
     "AtomicStryker"
   ],
   "credits": "IC2 Team",
-  "logoFile": "",
+  "logoFile": "assets/advancedmachines/textures/gui/logo.png",
   "screenshots": [
   ],
   "parent":"",

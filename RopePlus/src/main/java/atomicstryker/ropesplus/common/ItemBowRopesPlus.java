@@ -39,65 +39,68 @@ public class ItemBowRopesPlus extends ItemBow
         // get vanilla bow
         ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
 	    
+        ItemStack[] mainInv = player.inventory.mainInventory;
     	int arrowSlot = RopesPlusCore.selectedSlot(player);
-    	ItemStack[] mainInv = player.inventory.mainInventory;
-        if (mainInv[arrowSlot] != null && player.inventory.hasItemStack(mainInv[arrowSlot]))
-        {            
-            int ticksLeftToCharge = this.getMaxItemUseDuration(usedItemStack) - heldTicks;
-            float bowChargeRatio = (float)ticksLeftToCharge / 20.0F;
-            bowChargeRatio = (bowChargeRatio * bowChargeRatio + bowChargeRatio * 2.0F) / 3.0F;
+    	if (arrowSlot != -1)
+    	{
+            if (mainInv[arrowSlot] != null && player.inventory.hasItemStack(mainInv[arrowSlot]))
+            {            
+                int ticksLeftToCharge = this.getMaxItemUseDuration(usedItemStack) - heldTicks;
+                float bowChargeRatio = (float)ticksLeftToCharge / 20.0F;
+                bowChargeRatio = (bowChargeRatio * bowChargeRatio + bowChargeRatio * 2.0F) / 3.0F;
 
-            if ((double)bowChargeRatio < 0.1D)
-            {
-				mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
-                return;
+                if ((double)bowChargeRatio < 0.1D)
+                {
+                    mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
+                    return;
+                }
+
+                if (bowChargeRatio > 1.0F)
+                {
+                    bowChargeRatio = 1.0F;
+                }
+                
+                EntityArrow303 entityarrow303 = null;
+                Item arrowCandidate = player.inventory.getStackInSlot(arrowSlot).getItem();
+                if (arrowCandidate != null && arrowCandidate instanceof ItemArrow303)
+                {
+                    entityarrow303 = ((ItemArrow303)arrowCandidate).arrow;
+                }
+                if(entityarrow303 == null)
+                {
+                    mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
+                    return;
+                }
+                
+                EntityArrow303 newArrow = entityarrow303.newArrow(world, player, bowChargeRatio*2);
+
+                if (bowChargeRatio == 1.0F)
+                {
+                    newArrow.setIsCritical(true);
+                }
+
+                int damageEnchantPower = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, vanillaBow);
+                if (damageEnchantPower > 0)
+                {
+                    newArrow.dmg = (int) Math.rint(newArrow.dmg + (double)damageEnchantPower * 0.5D + 0.5D);
+                }
+                
+                if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, vanillaBow) > 0)
+                {
+                    newArrow.setFire(100);
+                }
+
+                world.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + bowChargeRatio * 0.5F);
+
+                player.inventory.func_146026_a(mainInv[arrowSlot].getItem());
+                player.inventory.inventoryChanged = true;
+
+                if (!world.isRemote)
+                {
+                    world.spawnEntityInWorld(newArrow);
+                }
             }
-
-            if (bowChargeRatio > 1.0F)
-            {
-                bowChargeRatio = 1.0F;
-            }
-            
-    		EntityArrow303 entityarrow303 = null;
-    		Item arrowCandidate = player.inventory.getStackInSlot(arrowSlot).getItem();
-    		if (arrowCandidate != null && arrowCandidate instanceof ItemArrow303)
-    		{
-    			entityarrow303 = ((ItemArrow303)arrowCandidate).arrow;
-    		}
-    		if(entityarrow303 == null)
-    		{
-    			mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
-    			return;
-    		}
-            
-    		EntityArrow303 newArrow = entityarrow303.newArrow(world, player, bowChargeRatio*2);
-
-            if (bowChargeRatio == 1.0F)
-            {
-                newArrow.setIsCritical(true);
-            }
-
-            int damageEnchantPower = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, vanillaBow);
-            if (damageEnchantPower > 0)
-            {
-                newArrow.dmg = (int) Math.rint(newArrow.dmg + (double)damageEnchantPower * 0.5D + 0.5D);
-            }
-            
-            if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, vanillaBow) > 0)
-            {
-                newArrow.setFire(100);
-            }
-
-            world.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + bowChargeRatio * 0.5F);
-
-            player.inventory.func_146026_a(mainInv[arrowSlot].getItem());
-            player.inventory.inventoryChanged = true;
-
-            if (!world.isRemote)
-            {
-                world.spawnEntityInWorld(newArrow);
-            }
-        }
+    	}
         
         // put vanilla bow back in hands, do damage etc
         mainInv[player.inventory.currentItem] = vanillaBow;

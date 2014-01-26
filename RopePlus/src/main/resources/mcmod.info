@@ -3,19 +3,15 @@
   "modid": "AS_Ropes",
   "name": "Ropes+",
   "description": "Ropes! Grappling Hook! Various new Arrows to shoot about! Rope Arrows!",
-  "version": "1.5.1",
-  "mcversion": "1.6.4",
+  "mcversion": "1.7.2",
   "url": "http://www.minecraftforum.net/topic/461879-",
-  "updateUrl": "",
   "authors": [
     "AtomicStryker"
   ],
   "credits": "See CREDITS file for contributors",
-  "logoFile": "",
-  "screenshots": [
-  ],
-  "parent":"",
+  "logoFile": "assets/ropesplus/textures/gui/logo.png",
   "dependencies": [
+	"Forge"
   ]
 }
 ]

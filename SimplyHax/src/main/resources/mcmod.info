@@ -1,21 +1,39 @@
 [
 {
-  "modid": "AS_SH",
-  "name": "Simply Hax",
-  "description": "Sprinting, Flying, seeing through Walls, it's SIMPLY HAX.",
+  "modid": "SimplyHaxEntityDump",
+  "name": "Simply Hax Entity Dumper",
+  "description": "Prints out Entity Mappings in console on game launch.",
   "version": "1.7.2",
   "mcversion": "1.7.2",
   "url": "http://www.minecraftforum.net/topic/1113099-",
-  "updateUrl": "",
   "authors": [
     "AtomicStryker"
   ],
   "credits": "See thread",
-  "logoFile": "",
-  "screenshots": [
+  "logoFile": "assets/simplyhax/textures/gui/logo.png"
+},{
+  "modid": "SimplyHaxFlying",
+  "name": "Simply Hax Flying",
+  "description": "Sprinting, Flying, it's SIMPLY HAX.",
+  "version": "1.7.2",
+  "mcversion": "1.7.2",
+  "url": "http://www.minecraftforum.net/topic/1113099-",
+  "authors": [
+    "AtomicStryker"
   ],
-  "parent":"",
-  "dependencies": [
-  ]
+  "credits": "See thread",
+  "logoFile": "assets/simplyhax/textures/gui/logo.png"
+},{
+  "modid": "SimplyHaxVision",
+  "name": "Simply Hax Vision",
+  "description": "Gaze through solid walls, it's SIMPLY HAX.",
+  "version": "1.7.2",
+  "mcversion": "1.7.2",
+  "url": "http://www.minecraftforum.net/topic/1113099-",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "credits": "See thread",
+  "logoFile": "assets/simplyhax/textures/gui/logo.png"
 }
 ]

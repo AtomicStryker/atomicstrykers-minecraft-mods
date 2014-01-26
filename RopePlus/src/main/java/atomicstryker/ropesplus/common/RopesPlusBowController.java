@@ -3,7 +3,7 @@ package atomicstryker.ropesplus.common;
 import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
@@ -17,18 +17,22 @@ public class RopesPlusBowController
     public void onArrowNock(ArrowNockEvent event)
     {
         if (!Settings_RopePlus.disableBowHook
-        && event.entityPlayer.getCurrentEquippedItem().getItem().itemID != RopesPlusCore.bowRopesPlus.itemID)
+        && event.entityPlayer.getCurrentEquippedItem().getItem() != RopesPlusCore.bowRopesPlus)
         {
-            ItemStack selected = event.entityPlayer.inventory.mainInventory[RopesPlusCore.selectedSlot(event.entityPlayer)];
-            if (selected != null
-            && selected.getItem() instanceof ItemArrow303
-            && ((ItemArrow303)selected.getItem()).arrow.tip != Item.flint)
+            int slot = RopesPlusCore.selectedSlot(event.entityPlayer);
+            if (slot != -1)
             {
-                vanillaBows.put(event.entityPlayer, event.entityPlayer.getCurrentEquippedItem());
-                ItemStack replacementBow = new ItemStack(RopesPlusCore.bowRopesPlus);
-                event.result = replacementBow;
-                event.entityPlayer.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
-                event.setCanceled(true);
+                ItemStack selected = event.entityPlayer.inventory.mainInventory[slot];
+                if (selected != null
+                && selected.getItem() instanceof ItemArrow303
+                && ((ItemArrow303)selected.getItem()).arrow.tip != Items.flint)
+                {
+                    vanillaBows.put(event.entityPlayer, event.entityPlayer.getCurrentEquippedItem());
+                    ItemStack replacementBow = new ItemStack(RopesPlusCore.bowRopesPlus);
+                    event.result = replacementBow;
+                    event.entityPlayer.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
+                    event.setCanceled(true);
+                }
             }
         }
     }

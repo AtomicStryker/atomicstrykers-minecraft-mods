@@ -45,9 +45,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.1")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.4")
 public class RopesPlusCore
 {
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
@@ -181,19 +180,8 @@ public class RopesPlusCore
         ItemStack stackCartridge = new ItemStack(itemHookShotCartridge, 4);
         GameRegistry.addRecipe(stackCartridge, new Object[] {" # ", "#X#", " # ", Character.valueOf('#'), Items.paper, Character.valueOf('X'), Items.gunpowder});
         
-		LanguageRegistry.addName(blockRopeCentralPos, "Rope");
-		LanguageRegistry.addName(blockRopeWallPos, "GrHk Rope");
-		LanguageRegistry.addName(blockGrapplingHook, "Grappling Hook");
-		LanguageRegistry.addName(stackHookShot, "Hookshot");
-		LanguageRegistry.addName(itemGrapplingHook, "Grappling Hook");
-		LanguageRegistry.addName(blockZipLineAnchor, "Zipline Anchor");
-		LanguageRegistry.addName(stackZipAnchor, "Zipline Anchor");
-		LanguageRegistry.addName(itemHookShotCartridge, "Hookshot Cartridge");
-        
         EntityRegistry.registerModEntity(EntityGrapplingHook.class, "GrapplingHook", 1, this, 25, 5, true);
         EntityRegistry.registerModEntity(EntityFreeFormRope.class, "FreeFormRope", 2, this, 75, 5, false);
-        
-		LanguageRegistry.addName(bowRopesPlus, "RopesPlusBow");
         
         proxy.load();
     }
@@ -239,8 +227,6 @@ public class RopesPlusCore
 			});
 
 			arrowItems.add(item);
-			LanguageRegistry.instance();
-			LanguageRegistry.addName(item, entityarrow303.name);
 		}
 		return item;
 	}
@@ -326,7 +312,7 @@ public class RopesPlusCore
     {
         if (selectedSlotMap.get(p) == null)
         {
-            return 0;
+            return -1;
         }
         
         return selectedSlotMap.get(p);

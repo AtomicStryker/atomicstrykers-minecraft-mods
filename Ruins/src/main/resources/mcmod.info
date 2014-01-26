@@ -3,10 +3,8 @@
   "modid": "AS_Ruins",
   "name": "Ruins Spawning System",
   "description": "Allows highly customizable Structure Templates to randomly generate in your Worlds",
-  "version": "12.1",
   "mcversion": "1.7.2",
   "url": "http://www.minecraftforum.net/topic/1113099-",
-  "updateUrl": "",
   "authors": [
     "AtomicStryker",
 	"d00dv4d3r",
@@ -17,11 +15,9 @@
 	"Saeldur"
   ],
   "credits": "See eternal glorious credits file",
-  "logoFile": "",
-  "screenshots": [
-  ],
-  "parent":"",
+  "logoFile": "assets/ruins/textures/gui/logo.png",
   "dependencies": [
+	"Forge"
   ]
 }
 ]
