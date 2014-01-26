@@ -49,7 +49,10 @@ public class MPMagicYarn
                 {
                     if (mcinstance.currentScreen == null)
                     {
-                        timeStartedHoldingButton = System.currentTimeMillis();
+                        if (timeStartedHoldingButton == 0)
+                        {
+                            timeStartedHoldingButton = System.currentTimeMillis();
+                        }
                     }
                     else
                     {

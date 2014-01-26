@@ -1,3 +1,7 @@
+1.1.1
+- fixed MP key not keeping track of pressed time correctly
+- added logo file
+
 1.1.0
 - updated for MC 1.7.2
 
