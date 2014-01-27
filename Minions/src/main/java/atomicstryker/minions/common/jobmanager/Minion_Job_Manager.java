@@ -101,7 +101,7 @@ public abstract class Minion_Job_Manager
     	while (iter.hasNext())
     	{
     		temp = iter.next();
-    		if (temp.getCurrentTask() == null)
+    		if (temp.getCurrentTask() == null && !temp.isStripMining)
     		{
     			distTemp = temp.getDistanceSq(x, y, z);
         		if (distTemp < distance)
@@ -131,7 +131,7 @@ public abstract class Minion_Job_Manager
     	while (iter.hasNext())
     	{
     		temp = iter.next();
-    		if (temp.getCurrentTask() == null)
+    		if (temp.getCurrentTask() == null && !temp.isStripMining)
     		{
     			return temp;
     		}

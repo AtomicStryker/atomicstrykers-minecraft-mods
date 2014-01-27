@@ -58,7 +58,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.0")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.1")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -551,14 +551,17 @@ public class MinionsCore
         EntityMinion[] minions = getMinionsForMaster(playerEnt);
         for (EntityMinion minion : minions)
         {
-            minion.giveTask(null, true);
-        }
-        
-        // strip mine job
-        if (minions.length > 0)
-        {
-            runningJobList.add(new Minion_Job_StripMine(Lists.newArrayList(minions), x, y-1, z));
-            proxy.sendSoundToClients(minions[0], "minions:randomorder");
+            if (!minion.isStripMining)
+            {
+                for (Minion_Job_Manager mgr : runningJobList)
+                {
+                    mgr.setWorkerFree(minion);
+                }
+                
+                runningJobList.add(new Minion_Job_StripMine(minion, x, y-1, z));
+                proxy.sendSoundToClients(minions[0], "minions:randomorder");
+                break;
+            }
         }
     }
     

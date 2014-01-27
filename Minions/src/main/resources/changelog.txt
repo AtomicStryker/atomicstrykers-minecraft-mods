@@ -1,3 +1,8 @@
+Update 1.8.1
+- improved stripmining logic, should only create job when there is a free worker
+- you can now assign singular already tasked minions to stripmine instead
+-     note when you assign all minions away from a task, the task will exit
+
 Update 1.8.0
 - updated for MC 1.7.2
 - added debug logging config option. only enable if you intend to send AtomicStryker a log of something happening!

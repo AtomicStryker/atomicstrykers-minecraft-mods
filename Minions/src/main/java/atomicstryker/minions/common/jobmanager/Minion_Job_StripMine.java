@@ -1,7 +1,5 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.Collection;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
@@ -32,62 +30,49 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 	
 	private long timeForceNextSegment;
 	
-    public Minion_Job_StripMine(Collection<EntityMinion> minions, int ix, int iy, int iz)
-    {
-        super(ix, iy, iz);
-        
-        currentSegment = -1;
-    	for (EntityMinion m : minions)
-    	{
-            if (!m.isStripMining)
-            {
-                workerList.add(m);
-                m.returningGoods = m.followingMaster = false;
-                m.isStripMining = true;
-                
-                m.giveTask(null, true);
-                if (m.riddenByEntity != null)
-                {
-                    m.riddenByEntity.mountEntity(null);
-                }
-                
-                if (masterName == null)
-                {
-                    masterName = m.getMasterUserName();
-                }
-                break;
-            }
-    	}
-    	
-    	if (workerList.isEmpty())
-    	{
-    		System.out.println("Attempted to create Strip Mine Job, but all Minions are already stripmining!");
-    		zDirection = xDirection = startX = startY = startZ = 0;
-    	}
-    	else
-    	{
-            worldObj = workerList.get(0).worldObj;
+	public Minion_Job_StripMine(EntityMinion m, int ix, int iy, int iz)
+	{
+	    super(ix, iy, iz);
 
-            startX = this.pointOfOrigin.posX;
-            startY = this.pointOfOrigin.posY;
-            startZ = this.pointOfOrigin.posZ;
+	    currentSegment = -1;
 
-            Entity boss = workerList.get(0).master;
-            int bossX = MathHelper.floor_double(boss.posX);
-            int bossZ = MathHelper.floor_double(boss.posZ);
-            
-            if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
-            {
-                xDirection = (startX - bossX > 0) ? 1 : -1;
-                zDirection = 0;
-            }
-            else
-            {
-                xDirection = 0;
-                zDirection = (startZ - bossZ > 0) ? 1 : -1;
-            }
-    	}
-    }
+	    workerList.add(m);
+	    m.returningGoods = m.followingMaster = false;
+	    m.isStripMining = true;
+
+	    m.giveTask(null, true);
+	    if (m.riddenByEntity != null)
+	    {
+	        m.riddenByEntity.mountEntity(null);
+	    }
+
+	    if (masterName == null)
+	    {
+	        masterName = m.getMasterUserName();
+	    }
+
+	    worldObj = m.worldObj;
+
+	    startX = this.pointOfOrigin.posX;
+	    startY = this.pointOfOrigin.posY;
+	    startZ = this.pointOfOrigin.posZ;
+
+	    Entity boss = m.master;
+	    int bossX = MathHelper.floor_double(boss.posX);
+	    int bossZ = MathHelper.floor_double(boss.posZ);
+
+	    if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
+	    {
+	        xDirection = (startX - bossX > 0) ? 1 : -1;
+	        zDirection = 0;
+	    }
+	    else
+	    {
+	        xDirection = 0;
+	        zDirection = (startZ - bossZ > 0) ? 1 : -1;
+	    }
+
+	}
     
     @Override
     public void onJobUpdateTick()
