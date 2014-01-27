@@ -310,7 +310,9 @@ public class RopesPlusClient
                     {
                         lastSelectedSlot = selectedSlot;
                         selectedSlot = -1;
+                        toggleEnabled = true;
                         sendPacketToUpdateArrowChoice();
+                        toggleEnabled = false;
                     }
                     else
                     {
