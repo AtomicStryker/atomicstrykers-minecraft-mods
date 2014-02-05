@@ -3,30 +3,34 @@ package atomicstryker.ropesplus.common;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 
-public class BlockRopeCenter extends Block
+public class BlockRope extends Block
 {
-    public BlockRopeCenter()
+    public BlockRope()
     {
         super(Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
+        this.setCreativeTab(CreativeTabs.tabBlock);
     }
     
     @Override
-    public void registerIcons(IIconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
         this.blockIcon = par1IconRegister.registerIcon("ropesplus:rope");
     }
     
     @Override
-    public boolean isLadder(World world, int x, int y, int z, EntityLivingBase entity) 
+    public boolean isLadder(IBlockAccess world, int x, int y, int z, EntityLivingBase entity)
     {
         return true;
     }
@@ -61,28 +65,28 @@ public class BlockRopeCenter extends Block
         {
             for(int length = 1; length <= 32; length++)
             {
-                if((ropeending == 0) & world.isBlockOpaqueCube(i + xoffset, j - length, k + zoffset))
+                if((ropeending == 0) & world.getBlock(i + xoffset, j - length, k + zoffset).isOpaqueCube())
                 {
                     ropeending = 2;
                 }
-                if((ropeending == 0) & (world.getBlock(i + xoffset, j - length, k + zoffset) == 0))
+                if((ropeending == 0) & (world.getBlock(i + xoffset, j - length, k + zoffset) == Blocks.air))
                 {
                     ropeending = 1;
-                    world.setBlock(i, j, k, 0, 0, 3);
+                    world.setBlock(i, j, k, Blocks.air, 0, 3);
                     world.setBlock(i + xoffset, j - length, k + zoffset, this, 0, 3);
                 }
             }
 
         }
-        if((ropeending == 0 || ropeending == 2) & (world.getBlock(i, j + 1, k) != this) && !world.isBlockOpaqueCube(i, j + 1, k))
+        if((ropeending == 0 || ropeending == 2) & (world.getBlock(i, j + 1, k) != this) && !world.getBlock(i, j + 1, k).isOpaqueCube())
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, Blocks.air, 0, 3);
         }
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int i, int j, int k, int l)
+    public void onNeighborBlockChange(World world, int i, int j, int k, Block l)
     {
         super.onNeighborBlockChange(world, i, j, k, l);
         boolean blockstays = false;
@@ -102,7 +106,7 @@ public class BlockRopeCenter extends Block
         {
             blockstays = true;
         }
-        if(world.isBlockOpaqueCube(i, j + 1, k))
+        if(world.getBlock(i, j + 1, k).isOpaqueCube())
         {
             blockstays = true;
         }
@@ -113,7 +117,7 @@ public class BlockRopeCenter extends Block
         if(!blockstays)
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, Blocks.air, 0, 3);
         }
     }
 
@@ -136,7 +140,7 @@ public class BlockRopeCenter extends Block
         {
             return true;
         }
-        if(world.isBlockOpaqueCube(i, j + 1, k))
+        if(world.getBlock(i, j + 1, k).isOpaqueCube())
         {
             return true;
         }
@@ -148,7 +152,7 @@ public class BlockRopeCenter extends Block
     {
         System.out.println("Player destroyed Rope block at "+a+","+b+","+c);	
     	
-		int[] coords = RopesPlusCore.areCoordsArrowRope(a, b, c);
+		int[] coords = RopesPlusCore.instance.areCoordsArrowRope(a, b, c);
 		if (coords == null)
 		{
 			System.out.println("Player destroyed Rope is not Arrow Rope, going on");
@@ -160,7 +164,7 @@ public class BlockRopeCenter extends Block
 		
 		if (world.getBlock(a, b, c) == this)
 		{
-			world.setBlock(a, b, c, 0, 0, 3);
+			world.setBlock(a, b, c, Blocks.air, 0, 3);
 		}
 		
 		for(int x = 1;; x++)
@@ -188,13 +192,13 @@ public class BlockRopeCenter extends Block
 		
 		for(int x = 0; x <= ropelenght; x++)
 		{
-			coords = RopesPlusCore.areCoordsArrowRope(a, rope_min_y+x, c);
+			coords = RopesPlusCore.instance.areCoordsArrowRope(a, rope_min_y+x, c);
 			
-			world.setBlock(a, rope_min_y+x, c, 0, 0, 3);
+			world.setBlock(a, rope_min_y+x, c, Blocks.air, 0, 3);
 			
 			if (coords != null)
 			{
-				RopesPlusCore.removeCoordsFromRopeArray(coords);
+				RopesPlusCore.instance.removeCoordsFromRopeArray(coords);
 			}
 		}
 		
@@ -202,11 +206,11 @@ public class BlockRopeCenter extends Block
 		
 		if(!world.isRemote)
         {
-			EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(Item.stick));
+			EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(Items.stick));
 			entityitem.delayBeforeCanPickup = 5;
 			world.spawnEntityInWorld(entityitem);
 			
-			entityitem = new EntityItem(world, a, b, c, new ItemStack(Item.feather));
+			entityitem = new EntityItem(world, a, b, c, new ItemStack(Items.feather));
 			entityitem.delayBeforeCanPickup = 5;
 			world.spawnEntityInWorld(entityitem);
 		}

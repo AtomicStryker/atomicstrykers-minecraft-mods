@@ -198,7 +198,7 @@ public class EntityFreeFormRope extends Entity
 
         if (shooter != null)
         {
-            if (shooter.isDead || !shooter.inventory.hasItem(RopesPlusCore.itemHookShot))
+            if (shooter.isDead || !shooter.inventory.hasItem(RopesPlusCore.instance.itemHookShot))
             {
                 setDead();
                 RopesPlusCore.proxy.setHasClientRopeOut(false);

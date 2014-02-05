@@ -16,6 +16,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.EntityProjectileBase;
 
@@ -38,48 +40,18 @@ public class EntityArrow303 extends EntityProjectileBase
     public EntityArrow303(World world)
     {
         super(world);
-        isArrowHoming = false;
-    }
-
-    public EntityArrow303(World world, EntityLivingBase entityLivingBase, float power)
-    {
-        super(world, entityLivingBase, power);
-        isArrowHoming = false;
+        init();
     }
     
-    public EntityArrow303 newArrow(World world, EntityLivingBase entityLivingBase, float power)
+    public EntityArrow303(World world, EntityLivingBase ent, float power)
     {
-        try
-        {
-            return (EntityArrow303) getClass().getConstructor(new Class[] { World.class, EntityLivingBase.class, float.class }).newInstance(new Object[] { world, entityLivingBase, power });
-        }
-        catch (Throwable throwable)
-        {
-            throw new RuntimeException("Could not construct arrow instance", throwable);
-        }
-    }
-
-    public EntityArrow303 newArrow(World world)
-    {
-        try
-        {
-            return (EntityArrow303) getClass().getConstructor(new Class[] { World.class }).newInstance(new Object[] { world });
-        }
-        catch (Throwable throwable)
-        {
-            throw new RuntimeException("Could not construct arrow instance", throwable);
-        }
+        super(world, ent, power);
+        init();
     }
     
-    public String getIcon()
+    private void init()
     {
-        return icon;
-    }
-
-    @Override
-    public void entityInit()
-    {
-        super.entityInit();
+        isArrowHoming = false;
         name = "Arrow";
         itemId = Items.arrow;
         tip = Items.flint;
@@ -91,11 +63,17 @@ public class EntityArrow303 extends EntityProjectileBase
         yOffset = 0.0F;
         setSize(0.5F, 0.5F);
     }
-
-    public boolean isInSight(Entity entity)
+    
+    public String getIcon()
     {
-        return worldObj.clip(worldObj.getWorldVec3Pool().getVecFromPool(posX, posY + (double) getEyeHeight(), posZ),
-                worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ)) == null;
+        return icon;
+    }
+
+    private boolean isInSight(Entity entity)
+    {
+        MovingObjectPosition mop = worldObj.rayTraceBlocks(worldObj.getWorldVec3Pool().getVecFromPool(posX, posY, posZ),
+                worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ));
+        return  mop == null || (mop.typeOfHit == MovingObjectType.BLOCK && worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ).getLightOpacity() == 255);
     }
     
     @Override
@@ -166,12 +144,12 @@ public class EntityArrow303 extends EntityProjectileBase
         return entity;
     }
 
-    public boolean canTarget(Entity entity)
+    protected boolean canTarget(Entity entity)
     {
         return (entity instanceof EntityLivingBase) && entity != shooter && isInSight(entity);
     }
 
-    public boolean tryToPlaceBlock(EntityPlayer shooter, Block blockID)
+    protected boolean tryToPlaceBlock(EntityPlayer shooter, Block blockID)
     {
         int x = MathHelper.floor_double(posX);
         int y = MathHelper.floor_double(posY);
@@ -185,7 +163,7 @@ public class EntityArrow303 extends EntityProjectileBase
             int ix = candidateCoords[0];
             int iy = candidateCoords[1];
             int iz = candidateCoords[2];
-            if (worldObj.func_147472_a(blockID, x + ix, y + iy, z + iz, true, 1, null, item))
+            if (worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, 1, null, item))
             {
                 x += ix;
                 y += iy;
@@ -241,9 +219,7 @@ public class EntityArrow303 extends EntityProjectileBase
             arrow = a;
         }
         
-        /**
-         * Return the projectile entity spawned by this dispense behavior.
-         */
+        @Override
         protected IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
         {
             return arrow.getProjectileEntity(par1World, par2IPosition);

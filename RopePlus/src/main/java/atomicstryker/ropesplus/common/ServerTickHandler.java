@@ -11,21 +11,21 @@ public class ServerTickHandler
     {
         if (tick.phase == Phase.END)
         {
-            for(int x = 0; x < RopesPlusCore.ropeEntArray.size(); x++)
+            for(int x = 0; x < RopesPlusCore.instance.ropeEntArray.size(); x++)
             {
-                Object temp = RopesPlusCore.ropeEntArray.get(x);
+                Object temp = RopesPlusCore.instance.ropeEntArray.get(x);
                 if (temp instanceof BlockRopePseudoEnt)
                 {
                     if (((BlockRopePseudoEnt) temp).OnUpdate())
                     {
-                        RopesPlusCore.ropeEntArray.remove(x);
+                        RopesPlusCore.instance.ropeEntArray.remove(x);
                     }
                 }
                 else if (temp instanceof TileEntityRope)
                 {
                     if (((TileEntityRope) temp).OnUpdate())
                     {
-                        RopesPlusCore.ropeEntArray.remove(x);
+                        RopesPlusCore.instance.ropeEntArray.remove(x);
                     }
                 }
             }

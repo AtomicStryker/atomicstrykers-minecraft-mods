@@ -65,6 +65,18 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         motionY = -MathHelper.sin((rotationPitch / 180F) * 3.141593F);
         setThrowableHeading(motionX, motionY, motionZ, speed*power, precision);
     }
+    
+    public EntityProjectileBase newArrow(World world, EntityLivingBase entityLivingBase, float power)
+    {
+        try
+        {
+            return getClass().getConstructor(new Class[] { World.class, EntityLivingBase.class, float.class }).newInstance(new Object[] { world, entityLivingBase, power });
+        }
+        catch (Throwable throwable)
+        {
+            throw new RuntimeException("Could not construct arrow instance", throwable);
+        }
+    }
 
     @Override
     protected void entityInit()
@@ -157,6 +169,17 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
             this.ticksInGround = 0;
         }
     }
+    
+    protected float calculateArrowDamage()
+    {
+        float damage = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+        damage *= dmg;
+        if (getIsCritical())
+        {
+            damage *= 2;
+        }
+        return damage;
+    }
 
     @Override
     public void onUpdate()
@@ -246,16 +269,14 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
             
             if (onHitTarget(entityHit))
             {
-                float damageMulti = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);;
-                int relDamage = MathHelper.ceiling_double_int((double)damageMulti * this.dmg);
-
+                float damage = calculateArrowDamage();
                 if (shooter != null)
                 {
-                    entityHit.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), getIsCritical() ? relDamage * 2 : relDamage);
+                    entityHit.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), damage);
                 }
                 else
                 {
-                    entityHit.attackEntityFrom((new EntityDamageSourceIndirect("arrow", this, this)).setProjectile(), relDamage);
+                    entityHit.attackEntityFrom((new EntityDamageSourceIndirect("arrow", this, this)).setProjectile(), damage);
                 }
 
                 setDead();
@@ -285,7 +306,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
                 
                 if (inTileBlockID != Blocks.air)
                 {
-                    inTileBlockID.func_149670_a(this.worldObj, this.xTile, this.yTile, this.zTile, this);
+                    inTileBlockID.onEntityCollidedWithBlock(this.worldObj, this.xTile, this.yTile, this.zTile, this);
                 }
             }
             else

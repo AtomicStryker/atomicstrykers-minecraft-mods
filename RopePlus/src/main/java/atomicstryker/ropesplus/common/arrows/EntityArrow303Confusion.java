@@ -19,18 +19,18 @@ public class EntityArrow303Confusion extends EntityArrow303
     public EntityArrow303Confusion(World world)
     {
         super(world);
+        init();
     }
-
-    public EntityArrow303Confusion(World world, EntityLivingBase entityLivingBase, float power)
+    
+    public EntityArrow303Confusion(World world, EntityLivingBase ent, float power)
     {
-        super(world, entityLivingBase, power);
+        super(world, ent, power);
+        init();
     }
-
-    @Override
-    public void entityInit()
+    
+    private void init()
     {
-        super.entityInit();
-        name = "Confusing Arrow";
+        name = "ConfusingArrow";
         craftingResults = 4;
         tip = Blocks.sand;
         item = new ItemStack(itemId, 1, 0);

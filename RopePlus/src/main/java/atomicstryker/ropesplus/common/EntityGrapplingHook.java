@@ -158,7 +158,7 @@ public class EntityGrapplingHook extends Entity
             ItemStack itemstack = owner.getCurrentEquippedItem();
             if(owner.isDead
 			|| itemstack == null
-			|| itemstack.getItem() != RopesPlusCore.itemGrapplingHook
+			|| itemstack.getItem() != RopesPlusCore.instance.itemGrapplingHook
 			|| getDistanceSqToEntity(owner) > 1024D)
             {
                 setDead();
@@ -204,7 +204,7 @@ public class EntityGrapplingHook extends Entity
         }
         Vec3 vec3 = Vec3.createVectorHelper(posX, posY, posZ);
         Vec3 vec31 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
-        MovingObjectPosition movingobjectposition = worldObj.clip(vec3, vec31);
+        MovingObjectPosition movingobjectposition = worldObj.rayTraceBlocks(vec3, vec31);
         vec3 = Vec3.createVectorHelper(posX, posY, posZ);
         vec31 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
         if(movingobjectposition != null)
@@ -321,18 +321,18 @@ public class EntityGrapplingHook extends Entity
                     		yRope--;
                     	}
                     	
-                        worldObj.setBlock(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook, metaData, 3);
-                        worldObj.setBlock(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos, metaData, 3);
+                        worldObj.setBlock(xTile, yTile + 1, zTile, RopesPlusCore.instance.blockGrapplingHook, metaData, 3);
+                        worldObj.setBlock(xRope, yRope, zRope, RopesPlusCore.instance.blockRopeWall, metaData, 3);
                         
                         TileEntityRope newent = new TileEntityRope(worldObj, xRope, yRope, zRope, 32);
-                        RopesPlusCore.addRopeToArray(newent);
+                        RopesPlusCore.instance.addRopeToArray(newent);
                         
                         if(owner != null)
                         {
                             owner.destroyCurrentEquippedItem();
                             if (!worldObj.isRemote)
                             {
-                            	RopesPlusCore.getGrapplingHookMap().remove(owner);
+                            	RopesPlusCore.instance.getGrapplingHookMap().remove(owner);
                             }
                         }
                         setDead();

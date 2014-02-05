@@ -14,18 +14,18 @@ public class EntityArrow303RedStoneTorch extends EntityArrow303
     public EntityArrow303RedStoneTorch(World world)
     {
         super(world);
+        init();
     }
-
-    public EntityArrow303RedStoneTorch(World world, EntityLivingBase entityLivingBase, float power)
+    
+    public EntityArrow303RedStoneTorch(World world, EntityLivingBase ent, float power)
     {
-        super(world, entityLivingBase, power);
+        super(world, ent, power);
+        init();
     }
-
-    @Override
-    public void entityInit()
+    
+    private void init()
     {
-        super.entityInit();
-        name = "Redstonetorch Arrow";
+        name = "RedstonetorchArrow";
         craftingResults = 1;
         tip = Blocks.redstone_torch;
         item = new ItemStack(itemId, 1, 0);

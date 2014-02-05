@@ -59,7 +59,7 @@ public class BlockRenderHandler implements ISimpleBlockRenderingHandler
         if(block.shouldSideBeRendered(iblockaccess, i, j + 1, k, 1))
         {
             float f8 = block.getMixedBrightnessForBlock(iblockaccess, i, j + 1, k);
-            if(block.getBlockBoundsMaxY() != 1.0D && !block.blockMaterial.isLiquid())
+            if(block.getBlockBoundsMaxY() != 1.0D && !block.getMaterial().isLiquid())
             {
                 f8 = f7;
             }

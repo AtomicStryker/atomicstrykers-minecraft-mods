@@ -19,22 +19,20 @@ public class EntityArrow303Ex extends EntityArrow303
     public EntityArrow303Ex(World world)
     {
         super(world);
-        isCharged = false;
-        entStuckIn = null;
-    }
-
-    public EntityArrow303Ex(World world, EntityLivingBase entityLivingBase, float power)
-    {
-        super(world, entityLivingBase, power);
-        isCharged = false;
-        entStuckIn = null;
+        init();
     }
     
-    @Override
-    public void entityInit()
+    public EntityArrow303Ex(World world, EntityLivingBase ent, float power)
     {
-        super.entityInit();
-        name = "Exploding Arrow";
+        super(world, ent, power);
+        init();
+    }
+    
+    private void init()
+    {
+        isCharged = false;
+        entStuckIn = null;
+        name = "ExplodingArrow";
         craftingResults = 1;
         tip = Items.gunpowder;
         item = new ItemStack(itemId, 1, 0);

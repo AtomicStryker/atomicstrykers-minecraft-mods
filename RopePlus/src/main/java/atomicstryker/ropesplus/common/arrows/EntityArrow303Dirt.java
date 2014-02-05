@@ -14,18 +14,18 @@ public class EntityArrow303Dirt extends EntityArrow303
     public EntityArrow303Dirt(World world)
     {
         super(world);
-    }
-
-    public EntityArrow303Dirt(World world, EntityLivingBase entityLivingBase, float power)
-    {
-        super(world, entityLivingBase, power);
+        init();
     }
     
-    @Override
-    public void entityInit()
+    public EntityArrow303Dirt(World world, EntityLivingBase ent, float power)
     {
-        super.entityInit();
-        name = "Dirt Arrow";
+        super(world, ent, power);
+        init();
+    }
+    
+    private void init()
+    {
+        name = "DirtArrow";
         craftingResults = 8;
         tip = Blocks.dirt;
         item = new ItemStack(itemId, 1, 0);

@@ -11,8 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 
 public class EntityArrow303Laser extends EntityArrow303
@@ -26,18 +24,18 @@ public class EntityArrow303Laser extends EntityArrow303
     public EntityArrow303Laser(World world)
     {
         super(world);
-    }
-
-    public EntityArrow303Laser(World world, EntityLivingBase entityLivingBase, float power)
-    {
-        super(world, entityLivingBase, power);
+        init();
     }
     
-    @Override
-    public void entityInit()
+    public EntityArrow303Laser(World world, EntityLivingBase ent, float power)
     {
-        super.entityInit();
-        name = "Penetrating Arrow";
+        super(world, ent, power);
+        init();
+    }
+    
+    private void init()
+    {
+        name = "PenetratingArrow";
         craftingResults = 4;
         tip = Items.redstone;
         curvature = 0.0F;
@@ -53,7 +51,7 @@ public class EntityArrow303Laser extends EntityArrow303
     @Override
     public boolean onHitTarget(Entity entity)
     {
-        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 8);
+        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), calculateArrowDamage());
         pierced = true;
         piercedMobs.add(entity);
         target = null;
@@ -62,22 +60,9 @@ public class EntityArrow303Laser extends EntityArrow303
     }
 
     @Override
-    public boolean isInSight(Entity entity)
-    {
-        return canSee(this, entity) && canSee(entity, this);
-    }
-
-    private boolean canSee(Entity entity, Entity ent)
-    {
-        MovingObjectPosition mop = worldObj.clip(worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ),
-                worldObj.getWorldVec3Pool().getVecFromPool(ent.posX, ent.posY + (double) ent.getEyeHeight(), ent.posZ));
-        return mop == null || mop.typeOfHit == MovingObjectType.BLOCK && (worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ).func_149717_k() == 255);
-    }
-
-    @Override
     public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        if (inTileBlockID.func_149717_k() == 255) // isTransparent
+        if (inTileBlockID.getLightOpacity() == 255) // isTransparent
         {
             if (pierced)
             {

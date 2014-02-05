@@ -20,7 +20,7 @@ public class ServerPacketHandler implements IPacketHandler
         {
             Class[] decodeAs = { Integer.class };
             Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
-            RopesPlusCore.setselectedSlot((EntityPlayer) player, (Integer) packetReadout[0]);
+            RopesPlusCore.instance.setselectedSlot((EntityPlayer) player, (Integer) packetReadout[0]);
         }
         else if (packetID == 5) // client has reached hookshot max pull, kill the rope ent { int entID }
         {

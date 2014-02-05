@@ -5,6 +5,8 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -18,9 +20,9 @@ public class BlockGrapplingHook extends Block
     }
     
     @Override
-    public void registerIcons(IIconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
-        this.field_149761_L = par1IconRegister.registerIcon("ropesplus:blockGrapplingHook");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:blockGrapplingHook");
     }
 
     @Override
@@ -44,31 +46,31 @@ public class BlockGrapplingHook extends Block
     @Override
     public boolean canPlaceBlockAt(World world, int i, int j, int k)
     {
-        int l = world.getBlock(i, j - 1, k);
-        if(l == 0 || !Block.blocksList[l].isOpaqueCube())
+        Block l = world.getBlock(i, j - 1, k);
+        if(!l.isOpaqueCube())
         {
             return false;
         } else
         {
-            return world.getBlockMaterial(i, j - 1, k).isSolid();
+            return l.getMaterial().isSolid();
         }
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int i, int j, int k, int l)
+    public void onNeighborBlockChange(World world, int i, int j, int k, Block l)
     {
         if(!canPlaceBlockAt(world, i, j, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, Blocks.air, 0, 3);
             onBlockDestroyed(world, i, j, k);
         }
     }
 
     @Override
-    public int idDropped(int var1, Random var2, int var3)
+    public Item getItemDropped(int var1, Random var2, int var3)
     {
-        return RopesPlusCore.itemGrapplingHook.itemID;
+        return RopesPlusCore.instance.itemGrapplingHook;
     }
 
     @Override
@@ -106,16 +108,16 @@ public class BlockGrapplingHook extends Block
         };
         for(int l = 0; l < candidates.length; l++)
         {
-            if(world.getBlock(candidates[l][0], candidates[l][1], candidates[l][2]) != RopesPlusCore.blockRopeWallPos)
+            if(world.getBlock(candidates[l][0], candidates[l][1], candidates[l][2]) != RopesPlusCore.instance.blockRopeWall)
             {
                 continue;
             }
             
             System.out.println("Rope found at ["+candidates[l][0]+","+candidates[l][1]+","+candidates[l][2]+"]");
             
-            for(int m = candidates[l][1]; world.getBlock(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.blockRopeWallPos; m--)
+            for(int m = candidates[l][1]; world.getBlock(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.instance.blockRopeWall; m--)
             {
-                world.setBlock(candidates[l][0], m, candidates[l][2], 0, 0, 3);
+                world.setBlock(candidates[l][0], m, candidates[l][2], Blocks.air, 0, 3);
             }
         }
     }

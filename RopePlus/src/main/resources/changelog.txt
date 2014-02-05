@@ -1,3 +1,20 @@
+RopesPlus 1.5.4
+- updated to mc 1.7.2
+- added language file
+- fixed some blocks/items not showing in creative
+- colored item descriptions
+- fixed issue with slimes only spawning from player shot arrows
+- fixed damage calculation being off
+- fixed stuff (arrows, ammo, hookshots) being consumed in creative mode
+
+RopesPlus 1.5.3
+- fixed possible issue with toggle and ropes+ arrows being in inventory slot 0
+- the last used arrow is now saved when toggling OFF and back ON
+- added chat messages to toggling
+
+RopesPlus 1.5.2
+- added toggle key for the ropes+ bow and gui hooks
+
 RopesPlus 1.5.1
 - added keybindings back to GUI string, made GUI string screen position configurable
 

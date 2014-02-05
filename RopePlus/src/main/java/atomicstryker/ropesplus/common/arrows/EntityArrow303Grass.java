@@ -15,18 +15,18 @@ public class EntityArrow303Grass extends EntityArrow303
     public EntityArrow303Grass(World world)
     {
         super(world);
-    }
-
-    public EntityArrow303Grass(World world, EntityLivingBase entityLivingBase, float power)
-    {
-        super(world, entityLivingBase, power);
+        init();
     }
     
-    @Override
-    public void entityInit()
+    public EntityArrow303Grass(World world, EntityLivingBase ent, float power)
     {
-        super.entityInit();
-        name = "Seed Arrow";
+        super(world, ent, power);
+        init();
+    }
+    
+    private void init()
+    {
+        name = "SeedArrow";
         craftingResults = 4;
         tip = Items.wheat_seeds;
         item = new ItemStack(itemId, 1, 0);

@@ -90,7 +90,7 @@ public class TileEntityZipLineAnchor extends TileEntity
     {
         if (targetY > 0)
         {
-            if (worldObj.isBlockOpaqueCube(targetX, targetY, targetZ))
+            if (worldObj.getBlock(targetX, targetY, targetZ).isOpaqueCube())
             {                
                 ropeEnt = new EntityFreeFormRope(worldObj);
                 ropeEnt.setStartCoordinates(xCoord+0.5D, yCoord, zCoord+0.5D);

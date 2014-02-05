@@ -13,18 +13,18 @@ public class EntityArrow303Warp extends EntityArrow303
     public EntityArrow303Warp(World world)
     {
         super(world);
+        init();
     }
-
-    public EntityArrow303Warp(World world, EntityLivingBase entityLivingBase, float power)
+    
+    public EntityArrow303Warp(World world, EntityLivingBase ent, float power)
     {
-        super(world, entityLivingBase, power);
+        super(world, ent, power);
+        init();
     }
-
-    @Override
-    public void entityInit()
+    
+    private void init()
     {
-        super.entityInit();
-        name = "Warp Arrow";
+        name = "WarpArrow";
         craftingResults = 4;
         tip = Blocks.obsidian;
         item = new ItemStack(itemId, 1, 0);

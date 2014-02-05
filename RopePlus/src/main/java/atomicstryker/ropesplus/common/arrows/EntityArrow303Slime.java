@@ -5,33 +5,28 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class EntityArrow303Slime extends EntityArrow303
 {
- 
-    private boolean spawns;
     
     public EntityArrow303Slime(World world)
     {
         super(world);
-        spawns = false;
+        init();
     }
-
-    public EntityArrow303Slime(World world, EntityLivingBase entityLivingBase, float power)
+    
+    public EntityArrow303Slime(World world, EntityLivingBase ent, float power)
     {
-        super(world, entityLivingBase, power);
-        spawns = worldObj.rand.nextInt(4) == 0;
+        super(world, ent, power);
+        init();
     }
-
-    @Override
-    public void entityInit()
+    
+    private void init()
     {
-        super.entityInit();
-        name = "Slime Arrow";
+        name = "SlimeArrow";
         craftingResults = 1;
         tip = Items.slime_ball;
         item = new ItemStack(itemId, 1, 0);
@@ -48,7 +43,7 @@ public class EntityArrow303Slime extends EntityArrow303
     @Override
     public boolean onHitBlock(int x, int y, int z)
     {
-        if (spawns)
+        if (!worldObj.isRemote)
         {
             EntityLivingBase entityLivingBase = makeMob();
             entityLivingBase.setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
@@ -56,7 +51,7 @@ public class EntityArrow303Slime extends EntityArrow303
             {
                 ((EntitySlime)entityLivingBase).spawnExplosionParticle();
                 setDead();
-            }
+            }   
         }
         return super.onHitBlock(x, y, z);
     }
@@ -64,18 +59,11 @@ public class EntityArrow303Slime extends EntityArrow303
     @Override
     public boolean onHitTarget(Entity entity)
     {
-        if (spawns)
+        EntityLivingBase entityLivingBase = makeMob();
+        entityLivingBase.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+        if(worldObj.spawnEntityInWorld(entityLivingBase))
         {
-            EntityLivingBase entityLivingBase = makeMob();
-            entityLivingBase.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
-            if(worldObj.spawnEntityInWorld(entityLivingBase))
-            {
-                ((EntitySlime)entityLivingBase).spawnExplosionParticle();
-                if(!(entity instanceof EntityPlayer))
-                {
-                    entity.setDead();
-                }
-            }
+            ((EntitySlime)entityLivingBase).spawnExplosionParticle();
         }
         return super.onHitTarget(entity);
     }

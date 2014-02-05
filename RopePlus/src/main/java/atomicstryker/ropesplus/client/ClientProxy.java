@@ -2,7 +2,6 @@ package atomicstryker.ropesplus.client;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
@@ -23,13 +22,12 @@ public class ClientProxy implements IProxy
         letGoOfHookShot = false;
         pulledByHookShot = -1f;
         hasRopeOut = false;
-        FMLCommonHandler.instance().bus().register(new RopesPlusClient());
     }
 
     @Override
     public void loadConfig(Configuration config)
-    {        
-        MinecraftForge.EVENT_BUS.register(new RopesPlusSounds());
+    {
+        FMLCommonHandler.instance().bus().register(new RopesPlusClient());
         RopesPlusClient.toolTipEnabled = config.get(Configuration.CATEGORY_GENERAL, "Equipped Bow Tool Tip", true).getBoolean(true);
     }
     

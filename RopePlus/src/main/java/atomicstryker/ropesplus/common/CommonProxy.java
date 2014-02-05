@@ -1,11 +1,6 @@
 package atomicstryker.ropesplus.common;
 
-import java.util.Iterator;
-
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.init.Items;
 import net.minecraftforge.common.config.Configuration;
-import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 
 public class CommonProxy implements IProxy
 {
@@ -19,12 +14,7 @@ public class CommonProxy implements IProxy
     @Override
     public void load()
     {
-        for(Iterator<EntityArrow303> iterator = RopesPlusCore.arrows.iterator(); iterator.hasNext();)
-        {
-            EntityArrow303 arrow = iterator.next();
-            Object arrowBehaviour = BlockDispenser.field_149943_a.getObject(Items.arrow);
-            BlockDispenser.field_149943_a.putObject(arrow.item, arrowBehaviour);
-        }
+        // NOOP
     }
     
     @Override

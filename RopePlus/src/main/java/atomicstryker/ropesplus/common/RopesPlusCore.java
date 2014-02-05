@@ -68,27 +68,26 @@ public class RopesPlusCore
 			EntityArrow303RedStoneTorch.class
 	};
 	
-	public static List<EntityArrow303> arrows;
-	public static Item bowRopesPlus;
-	public static List<ItemArrow303> arrowItems;
+	private List<EntityArrow303> arrows;
+	public Item bowRopesPlus;
+	public List<ItemArrow303> arrowItems;
 	public static RopesPlusCore instance;
 	
-    public static Block blockRopeCentralPos;
-    public static List<Object> ropeEntArray;
-    private static List<int[]> ropePosArray;
+    public Block blockRope;
+    public List<Object> ropeEntArray;
+    private List<int[]> ropePosArray;
     
-    public static Block blockRopeWallPos;
-    public static Block blockGrapplingHook;
-    public static Item itemGrapplingHook;
-    private static HashMap<EntityPlayer, EntityGrapplingHook> grapplingHookMap;
+    public Block blockRopeWall;
+    public Block blockGrapplingHook;
+    public Item itemGrapplingHook;
     
-    /* Arrow Selection Maps */
-    private static HashMap<EntityPlayer, Integer> selectedSlotMap;
-    public static Item itemHookShot;
-    public static Block blockZipLineAnchor;
-    public static Item itemHookShotCartridge;
+    public Item itemHookShot;
+    public Block blockZipLineAnchor;
+    public Item itemHookShotCartridge;
     
+    private HashMap<EntityPlayer, EntityGrapplingHook> grapplingHookMap;
     private HashMap<EntityPlayer, EntityFreeFormRope> playerRopeMap;
+    private HashMap<EntityPlayer, Integer> selectedSlotMap;
 	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -98,45 +97,46 @@ public class RopesPlusCore
     	arrowItems = new ArrayList<ItemArrow303>();
     	ropeEntArray = new ArrayList<Object>();
     	ropePosArray = new ArrayList<int[]>();
-    	grapplingHookMap = new HashMap<EntityPlayer, EntityGrapplingHook>();
-    	selectedSlotMap = new HashMap<EntityPlayer, Integer>();
     	new HashMap<EntityPlayer, Boolean>();
+    	grapplingHookMap = new HashMap<EntityPlayer, EntityGrapplingHook>();
     	playerRopeMap = new HashMap<EntityPlayer, EntityFreeFormRope>();
+    	selectedSlotMap = new HashMap<EntityPlayer, Integer>();
     	
         Settings_RopePlus.InitSettings(event.getSuggestedConfigurationFile());
         proxy.loadConfig(Settings_RopePlus.config);
         
-        blockRopeCentralPos = (new BlockRopeCenter().func_149711_c(0.3F).func_149663_c("blockRopeCentral"));
+        blockRope = (new BlockRope().setHardness(0.3F).setBlockName("blockRopeCenter"));
         itemGrapplingHook = new ItemGrapplingHook().setUnlocalizedName("itemGrapplingHook");
-        blockRopeWallPos = (new BlockRopeWall().func_149711_c(0.5F).func_149672_a(Block.field_149775_l).func_149663_c("blockRope"));
-        blockGrapplingHook = (new BlockGrapplingHook()).func_149711_c(0.0F).func_149672_a(Block.field_149788_p).func_149663_c("blockGrHk");
-        blockZipLineAnchor = new BlockZipLineAnchor().func_149711_c(0.3F).func_149663_c("blockZiplineAnchor");
+        blockRopeWall = (new BlockRopeWall().setHardness(0.5F).setStepSound(Block.soundTypeCloth).setBlockName("blockRopeWall"));
+        blockGrapplingHook = (new BlockGrapplingHook()).setHardness(0.0F).setStepSound(Block.soundTypeMetal).setBlockName("blockGrHk");
+        blockZipLineAnchor = new BlockZipLineAnchor().setHardness(0.3F).setBlockName("blockZiplineAnchor");
         itemHookShot = new ItemHookshot().setUnlocalizedName("itemHookshot");
         itemHookShotCartridge = new ItemHookShotCartridge().setUnlocalizedName("HookshotCartridge");
         bowRopesPlus = new ItemBowRopesPlus().setUnlocalizedName("bowRopesPlus");
         
+        EntityArrow303 baseArrow = new EntityArrow303(null);
         for(Class<?> c : coreArrowClasses)
         {
-            addArrowToRegister(constructArrowInstance(c));
+            arrows.add(constructArrowInstance(c));
         }
-        arrows.add(new EntityArrow303(null));
+        arrows.add(baseArrow);
         
         int index = 3;
         EntityArrow303 entArrow303 = null;
         Configuration c = Settings_RopePlus.config;
         c.load();
         Item i;
-        for(Iterator<EntityArrow303> iter = RopesPlusCore.arrows.iterator(); iter.hasNext();)
+        for(Iterator<EntityArrow303> iter = arrows.iterator(); iter.hasNext();)
         {
             entArrow303 = (EntityArrow303)iter.next();
-            String name = (new StringBuilder()).append(entArrow303.name).append("303").toString();
-            i = makeItem(entArrow303, c);
+            String name = entArrow303.name;
+            i = makeItem(entArrow303, c, baseArrow);
             if (i != null)
             {
                 i.setCreativeTab(CreativeTabs.tabCombat);
                 GameRegistry.registerItem(i, name);
                 entArrow303.itemId = i;
-                BlockDispenser.field_149943_a.putObject(i, entArrow303.getDispenserBehaviour());
+                BlockDispenser.dispenseBehaviorRegistry.putObject(i, entArrow303.getDispenserBehaviour());
             }
             EntityRegistry.registerModEntity(entArrow303.getClass(), name, index, this, 25, 5, true);
             index++;
@@ -147,8 +147,8 @@ public class RopesPlusCore
         
         GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
         GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook", "RopesPlus");
-        GameRegistry.registerBlock(blockRopeWallPos, "blockRope");
-        GameRegistry.registerBlock(blockRopeCentralPos, "blockRopeCentral");
+        GameRegistry.registerBlock(blockRopeWall, "blockRope");
+        GameRegistry.registerBlock(blockRope, "blockRopeCentral");
         GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
         GameRegistry.registerItem(itemHookShot, "itemHookshot", "RopesPlus");
         GameRegistry.registerItem(itemHookShotCartridge, "HookshotCartridge", "RopesPlus");
@@ -165,17 +165,17 @@ public class RopesPlusCore
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {        
-        ItemStack ropeCentral = new ItemStack(blockRopeCentralPos, 6);
+        ItemStack ropeCentral = new ItemStack(blockRope, 6);
         GameRegistry.addRecipe(ropeCentral, new Object[] {" # ", " # ", " # ", Character.valueOf('#'), Items.string});
         
         ItemStack stackGrHk = new ItemStack(itemGrapplingHook, 1);
-        GameRegistry.addRecipe(stackGrHk, new Object[] {" X ", " # ", " # ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Items.iron_ingot});
+        GameRegistry.addRecipe(stackGrHk, new Object[] {" X ", " # ", " # ", Character.valueOf('#'), blockRope, Character.valueOf('X'), Items.iron_ingot});
         
         ItemStack stackHookShot = new ItemStack(itemHookShot, 1);
-        GameRegistry.addRecipe(stackHookShot, new Object[] {"AXA", "A#A", "AYA", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), itemGrapplingHook, Character.valueOf('Y'), Blocks.piston,  Character.valueOf('A'), Items.iron_ingot});
+        GameRegistry.addRecipe(stackHookShot, new Object[] {"AXA", "A#A", "AYA", Character.valueOf('#'), blockRope, Character.valueOf('X'), itemGrapplingHook, Character.valueOf('Y'), Blocks.piston,  Character.valueOf('A'), Items.iron_ingot});
         
         ItemStack stackZipAnchor = new ItemStack(blockZipLineAnchor, 1);
-        GameRegistry.addRecipe(stackZipAnchor, new Object[] {" # ", " # ", " X ", Character.valueOf('#'), blockRopeCentralPos, Character.valueOf('X'), Items.iron_ingot});
+        GameRegistry.addRecipe(stackZipAnchor, new Object[] {" # ", " # ", " X ", Character.valueOf('#'), blockRope, Character.valueOf('X'), Items.iron_ingot});
         
         ItemStack stackCartridge = new ItemStack(itemHookShotCartridge, 4);
         GameRegistry.addRecipe(stackCartridge, new Object[] {" # ", "#X#", " # ", Character.valueOf('#'), Items.paper, Character.valueOf('X'), Items.gunpowder});
@@ -205,16 +205,16 @@ public class RopesPlusCore
         PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("RopesPlus", 8, input), event.player);
     }
 
-	private Item makeItem(EntityArrow303 entityarrow303, Configuration config)
+	private Item makeItem(EntityArrow303 entityarrow303, Configuration config, EntityArrow303 baseArrow)
 	{
 	    ItemArrow303 item = null;
-		if(entityarrow303.itemId == Items.arrow)
+		if(entityarrow303 == baseArrow )
 		{
 		    /*
 		     * dont replace vanilla arrow thank you
 			 */
 		}
-		else if (Items.arrow != null && config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))
+		else if (config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))
 		{
             entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage "+entityarrow303.name, "4").getInt();
             entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize "+entityarrow303.name, "4").getInt();
@@ -231,7 +231,7 @@ public class RopesPlusCore
 		return item;
 	}
 
-	public static EntityArrow303 constructArrowInstance(Class<?> class1)
+	private EntityArrow303 constructArrowInstance(Class<?> class1)
 	{
 		try
 		{
@@ -242,13 +242,8 @@ public class RopesPlusCore
 			throw new RuntimeException(throwable);
 		}
 	}
-
-	public static void addArrowToRegister(EntityArrow303 entityarrow303)
-	{
-		arrows.add(entityarrow303);
-	}
 	
-	public static Item getArrowItemByTip(Object desiredtip)
+	public Item getArrowItemByTip(Object desiredtip)
 	{
 		for(Iterator<ItemArrow303> iterator = arrowItems.iterator(); iterator.hasNext();)
 		{
@@ -262,7 +257,7 @@ public class RopesPlusCore
 		return null;
 	}
 	
-	public static void onRopeArrowHit(World world, int x, int y, int z)
+	public void onRopeArrowHit(World world, int x, int y, int z)
 	{
 		int[] coords = new int[3];
 		coords[0] = x;
@@ -274,27 +269,27 @@ public class RopesPlusCore
 		addRopeToArray(newent);
 	}
 	
-	public static void addRopeToArray(BlockRopePseudoEnt ent)
+	public void addRopeToArray(BlockRopePseudoEnt ent)
 	{
 		ropeEntArray.add(ent);
 	}
 	
-	public static void addRopeToArray(TileEntityRope newent)
+	public void addRopeToArray(TileEntityRope newent)
 	{
 		ropeEntArray.add(newent);
 	}
 	
-	public static void addCoordsToRopeArray(int[] coords)
+	public void addCoordsToRopeArray(int[] coords)
 	{
 		ropePosArray.add(coords);
 	}
 	
-	public static void removeCoordsFromRopeArray(int[] coords)
+	public void removeCoordsFromRopeArray(int[] coords)
 	{
 		ropePosArray.remove(coords);
 	}
 	
-	public static int[] areCoordsArrowRope(int i, int j, int k)
+	public int[] areCoordsArrowRope(int i, int j, int k)
 	{
 		for(int w = 0; w < ropePosArray.size(); w++)
 		{
@@ -308,7 +303,7 @@ public class RopesPlusCore
 		return null;
 	}
     
-    public static int selectedSlot(EntityPlayer p)
+    public int selectedSlot(EntityPlayer p)
     {
         if (selectedSlotMap.get(p) == null)
         {
@@ -318,12 +313,12 @@ public class RopesPlusCore
         return selectedSlotMap.get(p);
     }
     
-    public static void setselectedSlot(EntityPlayer p, int i)
+    public void setselectedSlot(EntityPlayer p, int i)
     {
         selectedSlotMap.put(p, i);      
     }
     
-    public static HashMap<EntityPlayer, EntityGrapplingHook> getGrapplingHookMap()
+    public HashMap<EntityPlayer, EntityGrapplingHook> getGrapplingHookMap()
     {
     	return grapplingHookMap;
     }

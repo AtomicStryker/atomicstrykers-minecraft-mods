@@ -17,20 +17,20 @@ public class EntityArrow303Rope extends EntityArrow303
     public EntityArrow303Rope(World world)
     {
         super(world);
-    }
-
-    public EntityArrow303Rope(World world, EntityLivingBase entityLivingBase, float power)
-    {
-        super(world, entityLivingBase, power);
+        init();
     }
     
-    @Override
-    public void entityInit()
+    public EntityArrow303Rope(World world, EntityLivingBase ent, float power)
     {
-        super.entityInit();
-        name = "Rope Arrow";
+        super(world, ent, power);
+        init();
+    }
+    
+    private void init()
+    {
+        name = "RopeArrow";
         craftingResults = 1;
-        tip = RopesPlusCore.blockRopeCentralPos;
+        tip = RopesPlusCore.instance.blockRope;
         item = new ItemStack(itemId, 1, 0);
         icon = "ropesplus:ropearrow";
     }
@@ -38,15 +38,15 @@ public class EntityArrow303Rope extends EntityArrow303
     @Override
     public boolean onHitBlock(int x, int y, int z)
     {
-        if(tryToPlaceBlock((EntityPlayer)shooter, RopesPlusCore.blockRopeCentralPos))
+        if(tryToPlaceBlock((EntityPlayer)shooter, RopesPlusCore.instance.blockRope))
         {
         	setDead();
-			RopesPlusCore.onRopeArrowHit(this.worldObj, placeCoords[0], placeCoords[1], placeCoords[2]);
+			RopesPlusCore.instance.onRopeArrowHit(this.worldObj, placeCoords[0], placeCoords[1], placeCoords[2]);
         }
 		else if(tryToPlaceWallRope())
 		{
             TileEntityRope newent = new TileEntityRope(worldObj, placeCoords[0], placeCoords[1], placeCoords[2], 32);
-            RopesPlusCore.addRopeToArray(newent);
+            RopesPlusCore.instance.addRopeToArray(newent);
             
             setDead();
 		}
@@ -56,7 +56,7 @@ public class EntityArrow303Rope extends EntityArrow303
 	
     private boolean tryToPlaceWallRope()
     {
-        Block blockID = RopesPlusCore.blockRopeWallPos;
+        Block blockID = RopesPlusCore.instance.blockRopeWall;
         int x = MathHelper.floor_double(posX);
         int y = MathHelper.floor_double(posY);
         int z = MathHelper.floor_double(posZ);
@@ -99,7 +99,7 @@ public class EntityArrow303Rope extends EntityArrow303
             int ix = coords[0];
             int iy = coords[1];
             int iz = coords[2];
-            if(worldObj.func_147472_a(blockID, x + ix, y + iy, z + iz, true, blockSide, null, item))
+            if(worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, blockSide, null, item))
             {
                 x += ix;
                 y += iy;

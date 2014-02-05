@@ -1,10 +1,14 @@
 package atomicstryker.ropesplus.common;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.network.ForgePacketWrapper;
@@ -19,12 +23,13 @@ public class BlockZipLineAnchor extends BlockContainer
         super(Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
+        this.setCreativeTab(CreativeTabs.tabBlock);
     }
     
     @Override
-    public void registerIcons(IIconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
-        this.field_149761_L = par1IconRegister.registerIcon("ropesplus:grhkanchor");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:grhkanchor");
     }
     
     @Override
@@ -50,7 +55,7 @@ public class BlockZipLineAnchor extends BlockContainer
                     {
                         if (rope.getEndY() > y)
                         {
-                            entityPlayer.addChatMessage("Newton says you can't Zipline upwards, sorry...");
+                            entityPlayer.addChatMessage(new ChatComponentText("Newton says you can't Zipline upwards, sorry..."));
                             break;
                         }
                         else
@@ -58,10 +63,14 @@ public class BlockZipLineAnchor extends BlockContainer
                             int targetX = MathHelper.floor_double(rope.getEndX());
                             int targetY = MathHelper.floor_double(rope.getEndY());
                             int targetZ = MathHelper.floor_double(rope.getEndZ());
-                            if (world.isBlockOpaqueCube(targetX, targetY, targetZ))
+                            if (world.getBlock(targetX, targetY, targetZ).isOpaqueCube())
                             {
                                 teAnchor.setTargetCoordinates(targetX, targetY, targetZ);
-                                entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShot.itemID);
+                                if (!entityPlayer.capabilities.isCreativeMode)
+                                {
+                                    entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.instance.itemHookShot);
+                                }
+                                
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 6, null), entityPlayer);
                                 rope.setDead();
                                 entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:ropetension", 1.0F, 1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
@@ -69,7 +78,7 @@ public class BlockZipLineAnchor extends BlockContainer
                             }
                             else
                             {
-                                entityPlayer.addChatMessage("Zipline target Block ["+targetX+"|"+targetY+"|"+targetZ+"] not opaque!");
+                                entityPlayer.addChatComponentMessage(new ChatComponentText("Zipline target Block ["+targetX+"|"+targetY+"|"+targetZ+"] not opaque!"));
                                 break;
                             }
                         }
@@ -82,32 +91,26 @@ public class BlockZipLineAnchor extends BlockContainer
     }
     
     @Override
-    public TileEntity createNewTileEntity(World world)
+    public TileEntity createNewTileEntity(World world, int i)
     {
         return new TileEntityZipLineAnchor();
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int i, int j, int k, int l)
+    public void onNeighborBlockChange(World world, int i, int j, int k, Block l)
     {
         super.onNeighborBlockChange(world, i, j, k, l);
-        if(!world.isBlockOpaqueCube(i, j + 1, k))
+        if(!world.getBlock(i, j + 1, k).isOpaqueCube())
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, Blocks.air, 0, 3);
         }
     }
 
     @Override
     public boolean canPlaceBlockAt(World world, int i, int j, int k)
     {
-        return world.isBlockOpaqueCube(i, j + 1, k);
-    }
-	
-    @Override
-    public void breakBlock(World world, int par2, int par3, int par4, int par5, int par6)
-    {
-        super.breakBlock(world, par2, par3, par4, par5, par6);
+        return world.getBlock(i, j + 1, k).isOpaqueCube();
     }
 
     @Override

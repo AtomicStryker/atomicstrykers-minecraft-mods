@@ -17,9 +17,9 @@ public class RopesPlusBowController
     public void onArrowNock(ArrowNockEvent event)
     {
         if (!Settings_RopePlus.disableBowHook
-        && event.entityPlayer.getCurrentEquippedItem().getItem() != RopesPlusCore.bowRopesPlus)
+        && event.entityPlayer.getCurrentEquippedItem().getItem() != RopesPlusCore.instance.bowRopesPlus)
         {
-            int slot = RopesPlusCore.selectedSlot(event.entityPlayer);
+            int slot = RopesPlusCore.instance.selectedSlot(event.entityPlayer);
             if (slot != -1)
             {
                 ItemStack selected = event.entityPlayer.inventory.mainInventory[slot];
@@ -28,7 +28,7 @@ public class RopesPlusBowController
                 && ((ItemArrow303)selected.getItem()).arrow.tip != Items.flint)
                 {
                     vanillaBows.put(event.entityPlayer, event.entityPlayer.getCurrentEquippedItem());
-                    ItemStack replacementBow = new ItemStack(RopesPlusCore.bowRopesPlus);
+                    ItemStack replacementBow = new ItemStack(RopesPlusCore.instance.bowRopesPlus);
                     event.result = replacementBow;
                     event.entityPlayer.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
                     event.setCanceled(true);

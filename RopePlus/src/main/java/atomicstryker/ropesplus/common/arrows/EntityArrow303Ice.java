@@ -12,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityArrow303Ice extends EntityArrow303
@@ -25,18 +24,18 @@ public class EntityArrow303Ice extends EntityArrow303
     public EntityArrow303Ice(World world)
     {
         super(world);
+        init();
     }
-
-    public EntityArrow303Ice(World world, EntityLivingBase entityLivingBase, float power)
+    
+    public EntityArrow303Ice(World world, EntityLivingBase ent, float power)
     {
-        super(world, entityLivingBase, power);
+        super(world, ent, power);
+        init();
     }
-
-    @Override
-    public void entityInit()
+    
+    private void init()
     {
-        super.entityInit();
-        name = "Frost Arrow";
+        name = "FrostArrow";
         craftingResults = 4;
         tip = Items.snowball;
         item = new ItemStack(itemId, 1, 0);
@@ -65,12 +64,10 @@ public class EntityArrow303Ice extends EntityArrow303
             {
                 entityarrow303ice.freezeTimer += getFreezeTimer((EntityLivingBase) entity);
                 entityarrow303ice.setDead();
-                entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 4);
                 return super.onHitTarget(entity);
             }
         }
-
-        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 4);
+        
         freezeMob((EntityLivingBase) entity);
         return super.onHitTarget(entity);
     }
@@ -158,7 +155,7 @@ public class EntityArrow303Ice extends EntityArrow303
                     }
                     if (b == Blocks.torch)
                     {
-                        b.func_149690_a(worldObj, iX, iY, iZ, worldObj.getBlockMetadata(iX, iY, iZ), 1.0F, 0);
+                        b.onEntityCollidedWithBlock(worldObj, iX, iY, iZ, this);
                         worldObj.setBlock(iX, iY, iZ, Blocks.air, 0, 3);
                     }
                 }

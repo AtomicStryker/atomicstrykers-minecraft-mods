@@ -16,18 +16,18 @@ public class EntityArrow303Fire extends EntityArrow303
     public EntityArrow303Fire(World world)
     {
         super(world);
+        init();
     }
-
-    public EntityArrow303Fire(World world, EntityLivingBase entityLivingBase, float power)
+    
+    public EntityArrow303Fire(World world, EntityLivingBase ent, float power)
     {
-        super(world, entityLivingBase, power);
+        super(world, ent, power);
+        init();
     }
-
-    @Override
-    public void entityInit()
+    
+    private void init()
     {
-        super.entityInit();
-        name = "Fire Arrow";
+        name = "FireArrow";
         craftingResults = 4;
         tip = Items.coal;
         item = new ItemStack(itemId, 1, 0);

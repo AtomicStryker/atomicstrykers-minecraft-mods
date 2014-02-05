@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
@@ -21,6 +22,7 @@ public class ItemBowRopesPlus extends ItemBow
 	public ItemBowRopesPlus()
 	{
 		super();
+		this.setCreativeTab(null);
 	}
 	
     @Override
@@ -28,10 +30,7 @@ public class ItemBowRopesPlus extends ItemBow
     {
         itemIcon = iconRegister.registerIcon("bow");
     }
-
-    /**
-     * called when the player releases the use item button.
-     */
+    
 	@Override
     public void onPlayerStoppedUsing(ItemStack usedItemStack, World world, EntityPlayer player, int heldTicks)
     {
@@ -40,7 +39,7 @@ public class ItemBowRopesPlus extends ItemBow
         ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
 	    
         ItemStack[] mainInv = player.inventory.mainInventory;
-    	int arrowSlot = RopesPlusCore.selectedSlot(player);
+    	int arrowSlot = RopesPlusCore.instance.selectedSlot(player);
     	if (arrowSlot != -1)
     	{
             if (mainInv[arrowSlot] != null && player.inventory.hasItemStack(mainInv[arrowSlot]))
@@ -72,7 +71,7 @@ public class ItemBowRopesPlus extends ItemBow
                     return;
                 }
                 
-                EntityArrow303 newArrow = entityarrow303.newArrow(world, player, bowChargeRatio*2);
+                EntityProjectileBase newArrow = entityarrow303.newArrow(world, player, bowChargeRatio*2);
 
                 if (bowChargeRatio == 1.0F)
                 {
@@ -91,10 +90,13 @@ public class ItemBowRopesPlus extends ItemBow
                 }
 
                 world.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + bowChargeRatio * 0.5F);
-
-                player.inventory.consumeInventoryItem(mainInv[arrowSlot].getItem());
-                player.inventory.inventoryChanged = true;
-
+                
+                if (!player.capabilities.isCreativeMode)
+                {
+                    player.inventory.consumeInventoryItem(mainInv[arrowSlot].getItem());
+                    player.inventory.inventoryChanged = true;
+                }
+                
                 if (!world.isRemote)
                 {
                     world.spawnEntityInWorld(newArrow);
@@ -113,10 +115,7 @@ public class ItemBowRopesPlus extends ItemBow
 		    player.addChatComponentMessage(new ChatComponentText("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!"));
 		}
     }
-    
-    /**
-     * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
-     */
+	
 	@Override
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
@@ -152,5 +151,11 @@ public class ItemBowRopesPlus extends ItemBow
         }
 	    
         return super.getIcon(stack, pass);
+    }
+	
+    @Override
+    public String getItemStackDisplayName(ItemStack itemStack)
+    {
+        return EnumChatFormatting.RED+super.getItemStackDisplayName(itemStack);
     }
 }

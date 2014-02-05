@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -23,13 +24,13 @@ public class BlockRopeWall extends BlockContainer
     }
     
     @Override
-    public void registerIcons(IIconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
-        this.field_149761_L = par1IconRegister.registerIcon("ropesplus:rope");
+        this.blockIcon = par1IconRegister.registerIcon("ropesplus:rope");
     }
     
     @Override
-    public boolean isLadder(World world, int x, int y, int z, EntityLivingBase entity) 
+    public boolean isLadder(IBlockAccess world, int x, int y, int z, EntityLivingBase entity)
     {
         return true;
     }
@@ -54,17 +55,9 @@ public class BlockRopeWall extends BlockContainer
         }
     }
 	
-    private boolean canBePlacedOn(int var1)
+    private boolean canBePlacedOn(Block var1)
     {
-        if (var1 == 0)
-        {
-            return false;
-        }
-        else
-        {
-            Block var2 = Block.blocksList[var1];
-            return var2.renderAsNormalBlock() && var2.blockMaterial.blocksMovement();
-        }
+        return var1.renderAsNormalBlock() && var1.getMaterial().blocksMovement();
     }
 
 	@Override
@@ -165,7 +158,7 @@ public class BlockRopeWall extends BlockContainer
 	@Override
     public int getRenderType()
     {
-		return Block.vine.getRenderType();
+		return Blocks.vine.getRenderType();
     }
 
 	@Override
@@ -198,7 +191,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 1;; x++)
 		{
-			if (world.getBlock(a, b+x, c) != RopesPlusCore.blockRopeWallPos)
+			if (world.getBlock(a, b+x, c) != RopesPlusCore.instance.blockRopeWall)
 			{
 				rope_max_y = (b+x)-1;
 				break;
@@ -207,7 +200,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = -1;; x--)
 		{
-			if (world.getBlock(a, b+x, c) != RopesPlusCore.blockRopeWallPos)
+			if (world.getBlock(a, b+x, c) != RopesPlusCore.instance.blockRopeWall)
 			{
 				rope_min_y = (b+x)+1;
 				break;
@@ -220,7 +213,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 0; x <= ropelenght; x++)
 		{
-			world.setBlock(a, rope_max_y-x, c, 0, 0, 3);
+			world.setBlock(a, rope_max_y-x, c, Blocks.air, 0, 3);
 		}
 		
 		//ModLoader.getMinecraftInstance().ingameGUI.addChatMessage("Rope height of ["+(h-b)+"] removed");
@@ -237,11 +230,11 @@ public class BlockRopeWall extends BlockContainer
 		boolean IsHook = false;
 		for(int y = 0; y < candidates.length; y++)
 		{
-			if(world.getBlock(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.blockGrapplingHook)
+			if(world.getBlock(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.instance.blockGrapplingHook)
 			{
-				world.setBlock(candidates[y][0], candidates[y][1], candidates[y][2], 0, 0, 3);
+				world.setBlock(candidates[y][0], candidates[y][1], candidates[y][2], Blocks.air, 0, 3);
 				
-				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.itemGrapplingHook));
+				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.instance.itemGrapplingHook));
 				entityitem.delayBeforeCanPickup = 5;
 				world.spawnEntityInWorld(entityitem);
 				
@@ -252,14 +245,14 @@ public class BlockRopeWall extends BlockContainer
 		
 		if (!IsHook)
 		{
-			EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.getArrowItemByTip(RopesPlusCore.blockRopeCentralPos)));
+			EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.instance.getArrowItemByTip(RopesPlusCore.instance.blockRope)));
 			entityitem.delayBeforeCanPickup = 5;
 			world.spawnEntityInWorld(entityitem);
 		}
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World var1)
+	public TileEntity createNewTileEntity(World var1, int i)
 	{
 		return null;
 	}

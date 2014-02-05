@@ -47,12 +47,12 @@ public class ItemGrapplingHook extends Item
         	//System.out.println("client swings, has hook out!");
             entityplayer.swingItem();
         }
-        if (!world.isRemote && RopesPlusCore.getGrapplingHookMap().get(entityplayer) != null)
+        if (!world.isRemote && RopesPlusCore.instance.getGrapplingHookMap().get(entityplayer) != null)
         {
         	//System.out.println("recalling serverside hook!");
-        	RopesPlusCore.getGrapplingHookMap().get(entityplayer).recallHook(entityplayer);
+        	RopesPlusCore.instance.getGrapplingHookMap().get(entityplayer).recallHook(entityplayer);
         	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 3, null), entityplayer);
-        	RopesPlusCore.getGrapplingHookMap().remove(entityplayer);
+        	RopesPlusCore.instance.getGrapplingHookMap().remove(entityplayer);
         }
 		else
         {
@@ -62,7 +62,7 @@ public class ItemGrapplingHook extends Item
             	//System.out.println("spawning serverside hook!");
             	EntityGrapplingHook newhook = new EntityGrapplingHook(world, entityplayer);
                 world.spawnEntityInWorld(newhook);
-                RopesPlusCore.getGrapplingHookMap().put(entityplayer, newhook);
+                RopesPlusCore.instance.getGrapplingHookMap().put(entityplayer, newhook);
                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 2, null), entityplayer);
             }
             entityplayer.swingItem();

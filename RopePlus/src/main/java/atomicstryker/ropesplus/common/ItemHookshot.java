@@ -44,16 +44,13 @@ public class ItemHookshot extends Item
         return true;
     }
     
-    /**
-     * called when the player releases the use item button.
-     */
     @Override
     public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityPlayer entityplayer, int heldTicks)
     {
         int ticksLeftToCharge = getMaxItemUseDuration(itemstack) - heldTicks;
         float chargeRatio = (float)ticksLeftToCharge / 20.0F;
         
-        boolean hasAmmo = entityplayer.inventory.hasItem(RopesPlusCore.itemHookShotCartridge);
+        boolean hasAmmo = entityplayer.inventory.hasItem(RopesPlusCore.instance.itemHookShotCartridge) || entityplayer.capabilities.isCreativeMode;
         
         if (chargeRatio < 0.5)
         {
@@ -109,7 +106,11 @@ public class ItemHookshot extends Item
                                 Object[] toSend = {ropeEnt.getEntityId(), target.blockX, target.blockY, target.blockZ};
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), entityplayer);
                                 entityplayer.worldObj.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
-                                entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge);
+                                
+                                if (!entityplayer.capabilities.isCreativeMode)
+                                {
+                                    entityplayer.inventory.consumeInventoryItem(RopesPlusCore.instance.itemHookShotCartridge);
+                                }
                             }
                         }
                         else
@@ -152,14 +153,13 @@ public class ItemHookshot extends Item
         return itemstack;
     }
     
+    @Override
     public int getMaxItemUseDuration(ItemStack par1ItemStack)
     {
         return 72000;
     }
-
-    /**
-     * returns the action that specifies what animation to play when the items is being used
-     */
+    
+    @Override
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
         return EnumAction.bow;

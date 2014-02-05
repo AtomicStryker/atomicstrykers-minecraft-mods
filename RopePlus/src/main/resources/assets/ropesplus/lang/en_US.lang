@@ -1,0 +1,20 @@
+tile.blockRopeCenter.name=Rope
+tile.blockZiplineAnchor.name=Zipline Anchor
+
+item.itemGrapplingHook.name=Grappling Hook
+item.itemHookshot.name=Hook Shot
+item.HookshotCartridge.name=Hook Shot Cartridge
+item.bowRopesPlus.name=[firing Ropes+ Arrow]
+
+item.DirtArrow.name=Dirt Arrow
+item.SeedArrow.name=Seed Arrow
+item.PenetratingArrow.name=Penetrating Arrow
+item.SlimeArrow.name=Slime Arrow
+item.RedstonetorchArrow.name=Redstonetorch Arrow
+item.RopeArrow.name=Rope Arrow
+item.FrostArrow.name=Frost Arrow
+item.FireArrow.name=Fire Arrow
+item.ConfusingArrow.name=Confusing Arrow
+item.ExplodingArrow.name=Exploding Arrow
+item.TorchArrow.name=Torch Arrow
+item.WarpArrow.name=Warp Arrow

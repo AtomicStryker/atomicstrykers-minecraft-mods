@@ -45,7 +45,7 @@ public class RopesPlusClient
 
     private static EntityFreeFormRope onZipLine;
     private static float lastZipLineLength;
-    private static long timeNextZipUpdate;
+    private static long timeNextZippingUpdate;
     private static int zipTicker;
     private static boolean wasZiplining;
 
@@ -55,6 +55,7 @@ public class RopesPlusClient
     private int guiStringX;
     private int guiStringY;
 
+    private long keysBlockedUntil;
     private final KeyBinding swapForward;
     private final KeyBinding swapBackward;
     private final KeyBinding keyToggle;
@@ -73,7 +74,8 @@ public class RopesPlusClient
         countDownToArrowCount = 100;
         onZipLine = null;
         lastZipLineLength = 0;
-        timeNextZipUpdate = 0;
+        timeNextZippingUpdate = 0;
+        keysBlockedUntil = 0;
         toggleEnabled = true;
 
         swapForward = new KeyBinding("SwapArrowsForward", Keyboard.KEY_COMMA, "key.categories.gameplay");
@@ -274,7 +276,7 @@ public class RopesPlusClient
                 }
 
                 if (toolTipEnabled && toggleEnabled && itemstack != null
-                        && (itemstack.getItem() == Items.bow || itemstack.getItem() == RopesPlusCore.bowRopesPlus))
+                        && (itemstack.getItem() == Items.bow || itemstack.getItem() == RopesPlusCore.instance.bowRopesPlus))
                 {
                     boolean hasArrows = selectedArrow != null;
                     String s = hasArrows ? selectedArrow.name : "No arrows";
@@ -289,35 +291,41 @@ public class RopesPlusClient
                     }
                     mc.fontRenderer.drawStringWithShadow(s, guiStringX, guiStringY, 0x2F96EB);
                     mc.fontRenderer.drawStringWithShadow(
-                            "Swap arrows with " + Keyboard.getKeyName(swapForward.func_151463_i()) + ", "
-                                    + Keyboard.getKeyName(swapBackward.func_151463_i()) + ", toggle with "
-                                    + Keyboard.getKeyName(keyToggle.func_151463_i()), guiStringX, guiStringY + 10, 0xffffff);
+                            "Swap arrows with " + Keyboard.getKeyName(swapForward.getKeyCode()) + ", "
+                                    + Keyboard.getKeyName(swapBackward.getKeyCode()) + ", toggle with "
+                                    + Keyboard.getKeyName(keyToggle.getKeyCode()), guiStringX, guiStringY + 10, 0xffffff);
                 }
-
-                if (swapForward.getIsKeyPressed())
+                
+                if (System.currentTimeMillis() > keysBlockedUntil)
                 {
-                    cycle(false);
-                }
-                else if (swapBackward.getIsKeyPressed())
-                {
-                    cycle(true);
-                }
-
-                if (keyToggle.getIsKeyPressed())
-                {
-                    toggleEnabled = !toggleEnabled;
-                    if (!toggleEnabled)
+                    if (swapForward.getIsKeyPressed())
                     {
-                        lastSelectedSlot = selectedSlot;
-                        selectedSlot = -1;
-                        toggleEnabled = true;
-                        sendPacketToUpdateArrowChoice();
-                        toggleEnabled = false;
+                        cycle(false);
+                        keysBlockedUntil = System.currentTimeMillis() + 250l;
                     }
-                    else
+                    else if (swapBackward.getIsKeyPressed())
                     {
-                        selectedSlot = lastSelectedSlot;
-                        sendPacketToUpdateArrowChoice();
+                        cycle(true);
+                        keysBlockedUntil = System.currentTimeMillis() + 250l;
+                    }
+
+                    if (keyToggle.getIsKeyPressed())
+                    {
+                        keysBlockedUntil = System.currentTimeMillis() + 250l;
+                        toggleEnabled = !toggleEnabled;
+                        if (!toggleEnabled)
+                        {
+                            lastSelectedSlot = selectedSlot;
+                            selectedSlot = -1;
+                            toggleEnabled = true;
+                            sendPacketToUpdateArrowChoice();
+                            toggleEnabled = false;
+                        }
+                        else
+                        {
+                            selectedSlot = lastSelectedSlot;
+                            sendPacketToUpdateArrowChoice();
+                        }
                     }
                 }
             }
@@ -338,14 +346,14 @@ public class RopesPlusClient
                     PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
                     onZipLine = null;
                 }
-                else if (System.currentTimeMillis() > timeNextZipUpdate)
+                else if (System.currentTimeMillis() > timeNextZippingUpdate)
                 {
                     double startCoords[] = onZipLine.getCoordsAtRelativeLength(lastZipLineLength);
                     localPlayer.setPosition(startCoords[0], startCoords[1] - 0.2D, startCoords[2]);
                     localPlayer.setVelocity(0, 0, 0);
                     localPlayer.fallDistance = 0f;
                     lastZipLineLength += 0.025;
-                    timeNextZipUpdate = System.currentTimeMillis() + 50L;
+                    timeNextZippingUpdate = System.currentTimeMillis() + 50L;
 
                     if (++zipTicker == 10)
                     {
@@ -384,7 +392,7 @@ public class RopesPlusClient
             {
                 onZipLine = (EntityFreeFormRope) ent;
                 lastZipLineLength = 0;
-                timeNextZipUpdate = System.currentTimeMillis();
+                timeNextZippingUpdate = System.currentTimeMillis();
                 wasZiplining = true;
             }
         }
