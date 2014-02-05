@@ -97,8 +97,8 @@ public class MinionAIFollowMaster extends EntityAIBase
                         {
                             for (int var5 = 0; var5 <= 4; ++var5)
                             {
-                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && theMinion.worldObj.func_147439_a(var1 + var4, var3 - 1, var2 + var5).func_149637_q()
-                                        && !theMinion.worldObj.func_147439_a(var1 + var4, var3, var2 + var5).func_149637_q() && !theMinion.worldObj.func_147439_a(var1 + var4, var3 + 1, var2 + var5).func_149637_q())
+                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && theMinion.worldObj.getBlock(var1 + var4, var3 - 1, var2 + var5).isBlockNormalCube()
+                                        && !theMinion.worldObj.getBlock(var1 + var4, var3, var2 + var5).isBlockNormalCube() && !theMinion.worldObj.getBlock(var1 + var4, var3 + 1, var2 + var5).isBlockNormalCube())
                                 {
                                     this.theMinion.setLocationAndAngles((double) ((float) (var1 + var4) + 0.5F), (double) var3, (double) ((float) (var2 + var5) + 0.5F), this.theMinion.rotationYaw,
                                             this.theMinion.rotationPitch);

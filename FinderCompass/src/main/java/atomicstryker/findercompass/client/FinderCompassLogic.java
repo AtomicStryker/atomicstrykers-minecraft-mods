@@ -64,7 +64,7 @@ public class FinderCompassLogic
                 FinderCompassLogic.hasStronghold = false;
                 if (serverHasFinderCompass)
                 {
-                    FinderCompassMod.instance.networkHelper.sendPacketToServer(new StrongholdPacket(mc.thePlayer.func_146103_bH().getName()));
+                    FinderCompassMod.instance.networkHelper.sendPacketToServer(new StrongholdPacket(mc.thePlayer.getGameProfile().getName()));
                 }
             }
 

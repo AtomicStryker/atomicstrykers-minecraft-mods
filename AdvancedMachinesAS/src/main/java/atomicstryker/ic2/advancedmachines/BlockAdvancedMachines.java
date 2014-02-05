@@ -112,7 +112,7 @@ public class BlockAdvancedMachines extends BlockContainer
     public IIcon getBlockTexture(IBlockAccess world, int x, int y, int z, int blockSide)
     {
         int blockMeta = world.getBlockMetadata(x, y, z);
-        TileEntity te = world.func_147438_o(x, y, z);
+        TileEntity te = world.getTileEntity(x, y, z);
         int facing = (te instanceof TileEntityBlock) ? ((int) (((TileEntityBlock) te).getFacing())) : 0;
 
         if (isActive(world, x, y, z))
@@ -155,7 +155,7 @@ public class BlockAdvancedMachines extends BlockContainer
     public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int meta, int fortune)
     {
         ArrayList<ItemStack> dropList = super.getBlockDropped(world, x, y, z, meta, fortune);
-        TileEntity te = world.func_147438_o(x, y, z);
+        TileEntity te = world.getTileEntity(x, y, z);
         if (te instanceof IInventory)
         {
             IInventory iinv = (IInventory) te;
@@ -221,7 +221,7 @@ public class BlockAdvancedMachines extends BlockContainer
     {
         super.onBlockPlacedBy(world, x, y, z, player, stack);
         int heading = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        TileEntityBlock te = (TileEntityBlock) world.func_147438_o(x, y, z);
+        TileEntityBlock te = (TileEntityBlock) world.getTileEntity(x, y, z);
         switch (heading)
         {
         case 0:
@@ -253,7 +253,7 @@ public class BlockAdvancedMachines extends BlockContainer
 
     private boolean isActive(IBlockAccess iba, int x, int y, int z)
     {
-        return ((TileEntityBlock) iba.func_147438_o(x, y, z)).getActive();
+        return ((TileEntityBlock) iba.getTileEntity(x, y, z)).getActive();
     }
 
     @Override
@@ -263,7 +263,7 @@ public class BlockAdvancedMachines extends BlockContainer
         {
             return false;
         }
-        TileEntity tileEntity = worldObj.func_147438_o(x, y, z);
+        TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
 
         if ((tileEntity instanceof IWrenchable))
         {
@@ -291,7 +291,7 @@ public class BlockAdvancedMachines extends BlockContainer
 
         if ((meta == 1) && (isActive(world, i, j, k)))
         {
-            TileEntity te = world.func_147438_o(i, j, k);
+            TileEntity te = world.getTileEntity(i, j, k);
             int facing = (te instanceof TileEntityBlock) ? ((TileEntityBlock) te).getFacing() : 0;
 
             float f = i + 0.5F;
@@ -344,7 +344,7 @@ public class BlockAdvancedMachines extends BlockContainer
     @Override
     public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5)
     {
-        TileEntity te = par1World.func_147438_o(par2, par3, par4);
+        TileEntity te = par1World.getTileEntity(par2, par3, par4);
         if (te != null)
         {
             if ((te instanceof TileEntityStandardMachine))

@@ -48,7 +48,7 @@ public class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    player.func_145747_a(new ChatComponentText("You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
+                    player.addChatMessage(new ChatComponentText("You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
                     player = null;
                 }
             }
@@ -75,13 +75,13 @@ public class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    sender.func_145747_a(new ChatComponentText("Could not open/write file "+file));
+                    sender.addChatMessage(new ChatComponentText("Could not open/write file "+file));
                 }
             }
         }
         else
         {
-            sender.func_145747_a(new ChatComponentText("Command is only available for ingame player entities."));
+            sender.addChatMessage(new ChatComponentText("Command is only available for ingame player entities."));
         }
     }
     

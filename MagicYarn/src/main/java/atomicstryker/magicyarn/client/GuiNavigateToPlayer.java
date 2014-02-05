@@ -35,20 +35,20 @@ public class GuiNavigateToPlayer extends GuiScreen
     @SuppressWarnings("unchecked")
     private void generateButtons()
     {
-        field_146292_n.clear();
-        field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 120, "Cancel"));
+        buttonList.clear();
+        buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Cancel"));
         
         if (playerList.length > 4)
         {
-            field_146292_n.add(new GuiButton(1, this.field_146294_l / 10 * 8, this.field_146295_m / 4 + 75, 50, 20, "->"));
+            buttonList.add(new GuiButton(1, this.width / 10 * 8, this.height / 4 + 75, 50, 20, "->"));
         }
         
-        int targetListSize = field_146292_n.size()+BUTTONS_WANTED;
+        int targetListSize = buttonList.size()+BUTTONS_WANTED;
         int i = 0;
         
         EntityPlayer c = FMLClientHandler.instance().getClient().thePlayer;
         EntityPlayer p;
-        for (int x = nextStartIndex; x < playerList.length && field_146292_n.size() != targetListSize ; x++)
+        for (int x = nextStartIndex; x < playerList.length && buttonList.size() != targetListSize ; x++)
         {
             if (nextStartIndex >= playerList.length)
             {
@@ -57,34 +57,34 @@ public class GuiNavigateToPlayer extends GuiScreen
             }
             
             p = (EntityPlayer) playerList[x];
-            if (!p.func_146103_bH().getName().equals(c.func_146103_bH().getName()))
+            if (!p.getGameProfile().getName().equals(c.getGameProfile().getName()))
             {
-                field_146292_n.add(new GuiButton(x+BUTTON_TO_PLAYER_ID_OFFSET, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + i++*40, p.func_146103_bH().getName()));
+                buttonList.add(new GuiButton(x+BUTTON_TO_PLAYER_ID_OFFSET, this.width / 2 - 100, this.height / 4 + i++*40, p.getGameProfile().getName()));
             }
             nextStartIndex = x;
         }
     }
     
     @Override
-    protected void func_146284_a(GuiButton button)
+    protected void actionPerformed(GuiButton button)
     {
-        if (button.field_146124_l)
+        if (button.enabled)
         {
-            if (button.field_146127_k == 0)
+            if (button.id == 0)
             {
-                field_146297_k.func_147108_a((GuiScreen)null);
+                mc.displayGuiScreen((GuiScreen)null);
             }
-            else if (button.field_146127_k == 1)
+            else if (button.id == 1)
             {
                 nextStartIndex += BUTTONS_WANTED;
                 generateButtons();
             }
             else
             {
-                EntityPlayer target = (EntityPlayer) playerList[button.field_146127_k-BUTTON_TO_PLAYER_ID_OFFSET];
+                EntityPlayer target = (EntityPlayer) playerList[button.id-BUTTON_TO_PLAYER_ID_OFFSET];
                 MagicYarnClient.instance.tryPathToPlayer(target);
-                field_146297_k.thePlayer.func_145747_a(new ChatComponentText("Trying to path to "+target.func_146103_bH().getName()));
-                field_146297_k.func_147108_a((GuiScreen)null);
+                mc.thePlayer.addChatMessage(new ChatComponentText("Trying to path to "+target.getGameProfile().getName()));
+                mc.displayGuiScreen((GuiScreen)null);
             }
         }
     }
@@ -92,10 +92,10 @@ public class GuiNavigateToPlayer extends GuiScreen
     @Override
     public void drawScreen(int var1, int var2, float var3)
     {
-        this.func_146276_q_();
-        this.drawCenteredString(this.field_146289_q, this.screenTitle, this.field_146294_l / 2, 40, 16777215);
+        this.drawDefaultBackground();
+        this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 40, 16777215);
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)(this.field_146294_l / 2), 0.0F, 50.0F);
+        GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);
         float scale = 93.75F;
         GL11.glScalef(-scale, -scale, -scale);
         GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);

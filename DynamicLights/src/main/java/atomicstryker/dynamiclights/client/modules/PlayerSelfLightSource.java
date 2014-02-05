@@ -140,7 +140,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             int x = MathHelper.floor_double(thePlayer.posX + 0.5D);
             int y = MathHelper.floor_double(thePlayer.posY + thePlayer.getEyeHeight());
             int z = MathHelper.floor_double(thePlayer.posZ + 0.5D);
-            return thePlayer.worldObj.func_147439_a(x, y, z).func_149688_o() == Material.field_151586_h;
+            return thePlayer.worldObj.getBlock(x, y, z).getMaterial() == Material.water;
         }
         return false;
     }

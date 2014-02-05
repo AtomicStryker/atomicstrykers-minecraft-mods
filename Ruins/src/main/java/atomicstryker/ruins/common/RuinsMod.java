@@ -78,8 +78,8 @@ public class RuinsMod
         if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
-            event.entityPlayer.func_146105_b(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.block.func_149732_F(), GameData.blockRegistry.func_148750_c(event.block), event.metadata)));
+            event.entityPlayer.addChatComponentMessage(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
+                    event.block.getLocalizedName(), GameData.blockRegistry.getNameForObject(event.block), event.metadata)));
         }
     }
 
@@ -92,9 +92,9 @@ public class RuinsMod
             if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
             {
                 nextInfoTime = System.currentTimeMillis() + 1000l;
-                event.getPlayer().func_146105_b(
-                        new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.block.func_149732_F(),
-                                GameData.blockRegistry.func_148750_c(event.block), event.blockMetadata)));
+                event.getPlayer().addChatComponentMessage(
+                        new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.block.getLocalizedName(),
+                                GameData.blockRegistry.getNameForObject(event.block), event.blockMetadata)));
                 event.setCanceled(true);
             }
         }
@@ -230,11 +230,11 @@ public class RuinsMod
 
     public static int getBiomeFromName(String name)
     {
-        for (int i = 0; i < BiomeGenBase.func_150565_n().length; i++)
+        for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
         {
-            if (BiomeGenBase.func_150565_n()[i] != null && BiomeGenBase.func_150565_n()[i].biomeName.equalsIgnoreCase(name))
+            if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(name))
             {
-                return BiomeGenBase.func_150565_n()[i].biomeID;
+                return BiomeGenBase.getBiomeGenArray()[i].biomeID;
             }
         }
 
@@ -344,11 +344,11 @@ public class RuinsMod
         pw.println("anyRuinsMinDistance=0");
         pw.println();
         // print all the biomes!
-        for (int i = 0; i < BiomeGenBase.func_150565_n().length; i++)
+        for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
         {
-            if (BiomeGenBase.func_150565_n()[i] != null)
+            if (BiomeGenBase.getBiomeGenArray()[i] != null)
             {
-                pw.println("specific_" + BiomeGenBase.func_150565_n()[i].biomeName + "=75");
+                pw.println("specific_" + BiomeGenBase.getBiomeGenArray()[i].biomeName + "=75");
             }
         }
         pw.flush();

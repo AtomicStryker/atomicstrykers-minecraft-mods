@@ -70,8 +70,8 @@ public class MM_Ninja extends MobModifier
             boolean hitGround = false;
             while (!hitGround && y < 96)
             {
-                blockID = mob.worldObj.func_147439_a(x, y - 1, z);
-                if (blockID.func_149688_o().blocksMovement())
+                blockID = mob.worldObj.getBlock(x, y - 1, z);
+                if (blockID.getMaterial().blocksMovement())
                 {
                     hitGround = true;
                 }

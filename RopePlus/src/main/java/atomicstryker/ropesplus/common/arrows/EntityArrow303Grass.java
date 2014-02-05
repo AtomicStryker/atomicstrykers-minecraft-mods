@@ -36,14 +36,14 @@ public class EntityArrow303Grass extends EntityArrow303
     @Override
     public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        Block hitBlockID = worldObj.func_147439_a(blockX, blockY, blockZ);
+        Block hitBlockID = worldObj.getBlock(blockX, blockY, blockZ);
         if(hitBlockID == Blocks.dirt)
         {
-            worldObj.func_147465_d(blockX, blockY, blockZ, Blocks.grass, 0, 3);
+            worldObj.setBlock(blockX, blockY, blockZ, Blocks.grass, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
-        else if(hitBlockID == Blocks.grass && worldObj.func_147439_a(blockX, blockY+1, blockZ) == Blocks.air)
+        else if(hitBlockID == Blocks.grass && worldObj.getBlock(blockX, blockY+1, blockZ) == Blocks.air)
         {
             Block targetblock = Blocks.air;
             switch (rand.nextInt(3))
@@ -64,19 +64,19 @@ public class EntityArrow303Grass extends EntityArrow303
                     break;
                 }
             }
-            worldObj.func_147465_d(blockX, blockY+1, blockZ, targetblock, 0, 3);
+            worldObj.setBlock(blockX, blockY+1, blockZ, targetblock, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
         else if(hitBlockID == Blocks.cobblestone)
         {
-            worldObj.func_147465_d(blockX, blockY, blockZ, Blocks.mossy_cobblestone, 0, 3);
+            worldObj.setBlock(blockX, blockY, blockZ, Blocks.mossy_cobblestone, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
-        else if(hitBlockID == Blocks.farmland && worldObj.func_147439_a(blockX, blockY+1, blockZ) == Blocks.air)
+        else if(hitBlockID == Blocks.farmland && worldObj.getBlock(blockX, blockY+1, blockZ) == Blocks.air)
         {
-            worldObj.func_147465_d(blockX, blockY+1, blockZ, Blocks.wheat, 0, 3);
+            worldObj.setBlock(blockX, blockY+1, blockZ, Blocks.wheat, 0, 3);
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }

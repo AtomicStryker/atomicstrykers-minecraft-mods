@@ -132,7 +132,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                         break;
                     }
                     
-                    if (w.func_147437_c(curX, y, curZ) && w.func_147437_c(curX, y-1, curZ) && w.func_147439_a(curX, y+1, curZ).func_149721_r())
+                    if (w.isAirBlock(curX, y, curZ) && w.isAirBlock(curX, y-1, curZ) && w.getBlock(curX, y+1, curZ).isNormalCube())
                     {
                         foundSpot(curX, y, curZ);
                         return;
@@ -211,7 +211,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                 {
                     for (int z = minZ; z <= endZ; z++)
                     {
-                        if (w.isAirBlock(x, y, z) && w.isAirBlock(x, y-1, z) && w.func_149637_q(x, y+1, z))
+                        if (w.isAirBlock(x, y, z) && w.isAirBlock(x, y-1, z) && w.isBlockNormalCube(x, y+1, z))
                         {
                             foundSpot(x, y, z);
                             return;

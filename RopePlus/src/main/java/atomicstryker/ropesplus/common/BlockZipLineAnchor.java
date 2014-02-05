@@ -16,7 +16,7 @@ public class BlockZipLineAnchor extends BlockContainer
     
     public BlockZipLineAnchor()
     {
-        super(Material.field_151582_l);
+        super(Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
     }
@@ -30,11 +30,11 @@ public class BlockZipLineAnchor extends BlockContainer
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float xOffset, float yOffset, float zOffset)
     {
-        TileEntityZipLineAnchor teAnchor = (TileEntityZipLineAnchor) world.func_147438_o(x, y, z);
+        TileEntityZipLineAnchor teAnchor = (TileEntityZipLineAnchor) world.getTileEntity(x, y, z);
         
         if (teAnchor.getHasZipLine() && !entityPlayer.worldObj.isRemote)
         {
-            Object[] toSend = { teAnchor.getZipLineEntity().func_145782_y() };
+            Object[] toSend = { teAnchor.getZipLineEntity().getEntityId() };
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend), entityPlayer);
             entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:zipline", 1.0F, 1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
             return true;
@@ -94,7 +94,7 @@ public class BlockZipLineAnchor extends BlockContainer
         if(!world.isBlockOpaqueCube(i, j + 1, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.func_147465_d(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
         }
     }
 

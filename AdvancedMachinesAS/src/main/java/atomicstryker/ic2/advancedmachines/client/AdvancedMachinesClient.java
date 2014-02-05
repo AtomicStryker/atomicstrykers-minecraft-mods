@@ -45,7 +45,7 @@ public class AdvancedMachinesClient implements IProxy
     @Override
     public Object getGuiElementForClient(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        TileEntity te = world.func_147438_o(x, y, z);
+        TileEntity te = world.getTileEntity(x, y, z);
         if (te != null)
         {
             if (te instanceof TileEntityAdvancedMacerator)

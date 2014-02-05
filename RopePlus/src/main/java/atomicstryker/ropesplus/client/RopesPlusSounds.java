@@ -28,7 +28,7 @@ public class RopesPlusSounds
         {
             try
             {
-                event.manager.func_148599_a(new PositionedSoundRecord(new ResourceLocation(SOUND_RESOURCE_LOCATION, soundFile), 1.0f, 0, 0, 0, 0), 0);
+                event.manager.addDelayedSound(new PositionedSoundRecord(new ResourceLocation(SOUND_RESOURCE_LOCATION, soundFile), 1.0f, 0, 0, 0, 0), 0);
                 System.out.println("Successfully loaded soundfile " + soundFile);
             }
             

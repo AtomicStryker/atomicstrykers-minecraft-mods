@@ -101,10 +101,10 @@ public class AS_TowerDestroyer
 	            {
 	                for(int yIterator = yGolem; yIterator >= minYdeletion; yIterator--) // go down the tower
 	                {
-	                    if(world.func_147439_a(xIterator, yIterator, zIterator) == spawnerid)
+	                    if(world.getBlock(xIterator, yIterator, zIterator) == spawnerid)
 	                    {
 	                        // destroy all present mobspawners
-	                        world.func_147465_d(xIterator, yIterator, zIterator, Blocks.air, 0, 3);
+	                        world.setBlock(xIterator, yIterator, zIterator, Blocks.air, 0, 3);
 	                    }
 	                }
 	            }
@@ -136,9 +136,9 @@ public class AS_TowerDestroyer
 			{
 				for(int yIterator = 1; yIterator < 9; yIterator++) // do Y 8 blocks high
 				{
-					if(world.func_147439_a(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator) != Blocks.air)
+					if(world.getBlock(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator) != Blocks.air)
 					{
-						world.func_147465_d(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator, Blocks.air, 0 ,3);
+						world.setBlock(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator, Blocks.air, 0 ,3);
 					}
 				}
 			}

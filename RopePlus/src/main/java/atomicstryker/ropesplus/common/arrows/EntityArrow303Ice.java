@@ -140,26 +140,26 @@ public class EntityArrow303Ice extends EntityArrow303
             {
                 for (int iZ = curZ - 1; iZ <= curZ + 1; iZ++)
                 {
-                    Block b = worldObj.func_147439_a(iX, iY, iZ);
-                    if (b.func_149688_o() == Material.field_151586_h && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
+                    Block b = worldObj.getBlock(iX, iY, iZ);
+                    if (b.getMaterial() == Material.water && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.func_147465_d(iX, iY, iZ, Blocks.ice, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, Blocks.ice, 0, 3);
                         continue;
                     }
-                    if (b.func_149688_o() == Material.field_151587_i && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
+                    if (b.getMaterial() == Material.lava && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
                     {
-                        worldObj.func_147465_d(iX, iY, iZ, Blocks.cobblestone, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, Blocks.cobblestone, 0, 3);
                         continue;
                     }
                     if (b == Blocks.fire)
                     {
-                        worldObj.func_147465_d(iX, iY, iZ, Blocks.air, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, Blocks.air, 0, 3);
                         continue;
                     }
                     if (b == Blocks.torch)
                     {
                         b.func_149690_a(worldObj, iX, iY, iZ, worldObj.getBlockMetadata(iX, iY, iZ), 1.0F, 0);
-                        worldObj.func_147465_d(iX, iY, iZ, Blocks.air, 0, 3);
+                        worldObj.setBlock(iX, iY, iZ, Blocks.air, 0, 3);
                     }
                 }
             }

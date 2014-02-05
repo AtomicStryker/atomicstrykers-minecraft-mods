@@ -33,7 +33,7 @@ public class CommonProxy
 
     public void sendSoundToClients(Entity ent, String string)
     {
-        Object[] toSend = {ent.func_145782_y(), string};
+        Object[] toSend = {ent.getEntityId(), string};
         PacketDispatcher.sendToAllNear(ent.posX, ent.posY, ent.posZ, 15, ent.worldObj.provider.dimensionId, ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.SOUNDTOALL.ordinal(), toSend));
     }
 

@@ -58,7 +58,7 @@ public class BlockTask_MineBlock extends BlockTask
     {
     	super.onReachedTaskBlock();
     	
-    	this.blockID = worker.worldObj.func_147439_a(posX, posY, posZ);
+    	this.blockID = worker.worldObj.getBlock(posX, posY, posZ);
     	//if (blockID > 13) System.out.println("Reached Block["+blockID+"], name "+Block.blocksList[blockID].getBlockName());
     	
     	if (blockID == Blocks.air)
@@ -84,11 +84,11 @@ public class BlockTask_MineBlock extends BlockTask
     	
     	checkDangers();
     	
-    	this.blockID = worker.worldObj.func_147439_a(posX, posY, posZ); // check against interference mining
-    	if (blockID != Blocks.air && blockID.func_149712_f(worker.worldObj, posX, posY, posZ) >= 0F)
+    	this.blockID = worker.worldObj.getBlock(posX, posY, posZ); // check against interference mining
+    	if (blockID != Blocks.air && blockID.getBlockHardness(worker.worldObj, posX, posY, posZ) >= 0F)
     	{
     	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-    		if (worker.worldObj.func_147465_d(posX, posY, posZ, Blocks.air, 0, 3))
+    		if (worker.worldObj.setBlock(posX, posY, posZ, Blocks.air, 0, 3))
     		{
     			putBlockHarvestInWorkerInventory(stackList);
     		}
@@ -113,13 +113,13 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForCaveIn(int x, int y, int z)
     {
-    	Block checkBlockID = worker.worldObj.func_147439_a(x, y, z);
+    	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
         if (checkBlockID == Blocks.sand || checkBlockID == Blocks.gravel)
         {
             putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
             
             this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-            this.worker.worldObj.func_147465_d(x, y, z, Blocks.dirt, 0, 3);
+            this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
         }
 	}
     
@@ -130,7 +130,7 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForDanger(int x, int y, int z, boolean putFloor)
     {
-    	Block checkBlockID = worker.worldObj.func_147439_a(x, y, z);
+    	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
     	boolean replaceBlock = false;
     	
     	if (checkBlockID == Blocks.air)
@@ -140,7 +140,7 @@ public class BlockTask_MineBlock extends BlockTask
     			replaceBlock = true;
     		}
     	}
-    	else if (!checkBlockID.func_149688_o().isSolid() && checkBlockID != Blocks.torch)
+    	else if (!checkBlockID.getMaterial().isSolid() && checkBlockID != Blocks.torch)
     	{
     		worker.worldObj.getBlockMetadata(x, y, z);
     		replaceBlock = true;
@@ -151,14 +151,14 @@ public class BlockTask_MineBlock extends BlockTask
         	if (checkBlockID != Blocks.air)
         	{
         	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-        		if (this.worker.worldObj.func_147465_d(x, y, z, Blocks.air, 0, 3))
+        		if (this.worker.worldObj.setBlock(x, y, z, Blocks.air, 0, 3))
         		{
         			putBlockHarvestInWorkerInventory(stackList);
         		}
         	}
         	
         	this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-        	this.worker.worldObj.func_147465_d(x, y, z, Blocks.dirt, 0, 3);
+        	this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
     	}
     }
 }

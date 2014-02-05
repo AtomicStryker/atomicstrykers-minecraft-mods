@@ -190,7 +190,7 @@ public class DroppedItemsLightSource
                 lightLevel = getLightFromItemStack(entity.getEntityItem());
                 
                 if (notWaterProof
-                && entity.worldObj.func_147439_a(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).func_149688_o() == Material.field_151586_h)
+                && entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).getMaterial() == Material.water)
                 {
                     lightLevel = 0;
                 }

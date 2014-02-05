@@ -37,6 +37,6 @@ public class CompassTargetData
     @Override
     public int hashCode()
     {
-        return blockID.func_149739_a().hashCode();
+        return blockID.getUnlocalizedName().hashCode();
     }
 }

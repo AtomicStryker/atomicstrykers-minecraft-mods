@@ -208,13 +208,13 @@ public class EntityArrow303 extends EntityProjectileBase
 
         if (!worldObj.isRemote)
         {
-            Block prevBlockID = worldObj.func_147439_a(x, y, z);
+            Block prevBlockID = worldObj.getBlock(x, y, z);
             if (prevBlockID != Blocks.air && shooter != null)
             {
                 int prevBlockMeta = worldObj.getBlockMetadata(x, y, z);
-                prevBlockID.func_149636_a(worldObj, shooter, x, y, z, prevBlockMeta);
+                prevBlockID.harvestBlock(worldObj, shooter, x, y, z, prevBlockMeta);
             }
-            worldObj.func_147465_d(x, y, z, blockID, 0, 3);
+            worldObj.setBlock(x, y, z, blockID, 0, 3);
         }
 
         return true;

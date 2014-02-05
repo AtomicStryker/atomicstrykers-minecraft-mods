@@ -199,7 +199,7 @@ public class RuinTemplate implements RuinIBuildable
     public boolean isAcceptable(World world, int x, int y, int z)
     {
         // checks if the square is acceptable for a ruin to be built upon
-        Block id = world.func_147439_a(x, y, z);
+        Block id = world.getBlock(x, y, z);
         for (int i = 0; i < targets.length; i++)
         {
             if (id == targets[i])
@@ -233,7 +233,7 @@ public class RuinTemplate implements RuinIBuildable
         {
             for (int z1 = 0; z1 < zDim; z1++)
             {
-                if (!(isAir(world.func_147439_a(x + x1, y, z + z1)) || isAcceptable(world, x + x1, y, z + z1)))
+                if (!(isAir(world.getBlock(x + x1, y, z + z1)) || isAcceptable(world, x + x1, y, z + z1)))
                 {
                     // stats.BadBlockFails++;
                     return false;
@@ -254,7 +254,7 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = (0 - lbuffer); z1 < (zDim + lbuffer * 2); z1++)
                 {
-                    if (isAir(world.func_147439_a(x + x1, y - (leveling + 1), z + z1)))
+                    if (isAir(world.getBlock(x + x1, y - (leveling + 1), z + z1)))
                     {
                         // stats.LevelingFails++;
                         return false;
@@ -273,7 +273,7 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = 0; z1 < zDim; z1++)
                 {
-                    if (world.func_147439_a(x + x1, y - 1, z + z1) == Blocks.air)
+                    if (world.getBlock(x + x1, y - 1, z + z1) == Blocks.air)
                     {
                         aircount++;
                     }
@@ -299,7 +299,7 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = (0 - cbuffer); z1 < (zDim + 2 * cbuffer); z1++)
                 {
-                    if (!isAir(world.func_147439_a(x + x1, y + cutHeight, z + z1)))
+                    if (!isAir(world.getBlock(x + x1, y + cutHeight, z + z1)))
                     {
                         // stats.CutInFails++;
                         return false;
@@ -317,7 +317,7 @@ public class RuinTemplate implements RuinIBuildable
                 {
                     for (int z1 = 0; z1 < zDim; z1++)
                     {
-                        if (!isAir(world.func_147439_a(x + x1, y + y1, z + z1)))
+                        if (!isAir(world.getBlock(x + x1, y + y1, z + z1)))
                         {
                             // stats.NoAirAboveFails++;
                             return false;
@@ -398,7 +398,7 @@ public class RuinTemplate implements RuinIBuildable
         }
         if (leveling > 0)
         {
-            levelSite(world, world.func_147439_a(xBase, y, zBase), xBase, y, zBase, eastwest);
+            levelSite(world, world.getBlock(xBase, y, zBase), xBase, y, zBase, eastwest);
         }
 
         int rulenum;
@@ -438,7 +438,7 @@ public class RuinTemplate implements RuinIBuildable
                         // later, or if the behavior breaks something
                         // if ((curRule.condition <= 0 ? 0 - curRule.condition :
                         // curRule.condition) > 3) {
-                        world.func_147465_d(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
+                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
                     }
                     else if (curRule.runLast())
                     {
@@ -447,7 +447,7 @@ public class RuinTemplate implements RuinIBuildable
                         // later, or if the behavior breaks something
                         // if ((curRule.condition <= 0 ? 0 - curRule.condition :
                         // curRule.condition) > 3) {
-                        world.func_147465_d(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
+                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
                     }
                     else
                     {
@@ -513,9 +513,9 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = 0; z1 < zDim; z1++)
                 {
-                    if (!preserveBlock(world.func_147439_a(x + x1, y + y1, z + z1)))
+                    if (!preserveBlock(world.getBlock(x + x1, y + y1, z + z1)))
                     {
-                        world.func_147465_d(x + x1, y + y1, z + z1, Blocks.air, 0, 3);
+                        world.setBlock(x + x1, y + y1, z + z1, Blocks.air, 0, 3);
                     }
                 }
             }
@@ -551,9 +551,9 @@ public class RuinTemplate implements RuinIBuildable
             {
                 for (int z1 = 0; z1 < zDim; z1++)
                 {
-                    if (isAir(world.func_147439_a(x + x1, y + y1, z + z1)))
+                    if (isAir(world.getBlock(x + x1, y + y1, z + z1)))
                     {
-                        world.func_147465_d(x + x1, y + y1, z + z1, fillBlockID, 0, 3);
+                        world.setBlock(x + x1, y + y1, z + z1, fillBlockID, 0, 3);
                     }
                 }
             }

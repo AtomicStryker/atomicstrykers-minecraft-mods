@@ -180,7 +180,7 @@ public class EntityGrapplingHook extends Entity
         }
         if(inGround)
         {
-            Block i = worldObj.func_147439_a(xTile, yTile, zTile);
+            Block i = worldObj.getBlock(xTile, yTile, zTile);
             if(i != inTile)
             {
                 inGround = false;
@@ -257,7 +257,7 @@ public class EntityGrapplingHook extends Entity
                 xTile = movingobjectposition.blockX;
                 yTile = movingobjectposition.blockY;
                 zTile = movingobjectposition.blockZ;
-                inTile = worldObj.func_147439_a(xTile, yTile, zTile);
+                inTile = worldObj.getBlock(xTile, yTile, zTile);
                 motionX = (float)(movingobjectposition.hitVec.xCoord - posX);
                 motionY = (float)(movingobjectposition.hitVec.yCoord - posY);
                 motionZ = (float)(movingobjectposition.hitVec.zCoord - posZ);
@@ -268,8 +268,8 @@ public class EntityGrapplingHook extends Entity
                 
                 double hookLyingHeight = movingobjectposition.hitVec.yCoord - (double)yTile;
                 
-                if(((hookLyingHeight == 1.0D && (worldObj.func_147439_a(xTile, yTile + 1, zTile) == Blocks.air)
-                || (hookLyingHeight == 0.125D && worldObj.func_147439_a(xTile, yTile, zTile) == Blocks.snow)))
+                if(((hookLyingHeight == 1.0D && (worldObj.getBlock(xTile, yTile + 1, zTile) == Blocks.air)
+                || (hookLyingHeight == 0.125D && worldObj.getBlock(xTile, yTile, zTile) == Blocks.snow)))
                 && yTile + 1 < 256)
                 {
                     if(orientationX == 0.0D || orientationZ == 0.0D)
@@ -280,10 +280,10 @@ public class EntityGrapplingHook extends Entity
                     byte xOffset = ((byte)(orientationX <= 0.0D ? -1 : 1));
                     byte zOffset = ((byte)(orientationZ <= 0.0D ? -1 : 1));
                     
-                    boolean snowSituation = (worldObj.func_147439_a(xTile, yTile, zTile) == Blocks.snow);
+                    boolean snowSituation = (worldObj.getBlock(xTile, yTile, zTile) == Blocks.snow);
                     
-                    boolean canPlaceAtXOffset = (worldObj.func_147439_a(xTile - xOffset, yTile, zTile) == Blocks.air || worldObj.func_147439_a(xTile - xOffset, yTile, zTile) == Blocks.snow) && worldObj.func_147439_a(xTile - xOffset, yTile + 1, zTile) == Blocks.air;
-                    boolean canPlaceAtZOffset = (worldObj.func_147439_a(xTile, yTile, zTile - zOffset) == Blocks.air || worldObj.func_147439_a(xTile, yTile, zTile - zOffset) == Blocks.snow) && worldObj.func_147439_a(xTile, yTile + 1, zTile - zOffset) == Blocks.air;
+                    boolean canPlaceAtXOffset = (worldObj.getBlock(xTile - xOffset, yTile, zTile) == Blocks.air || worldObj.getBlock(xTile - xOffset, yTile, zTile) == Blocks.snow) && worldObj.getBlock(xTile - xOffset, yTile + 1, zTile) == Blocks.air;
+                    boolean canPlaceAtZOffset = (worldObj.getBlock(xTile, yTile, zTile - zOffset) == Blocks.air || worldObj.getBlock(xTile, yTile, zTile - zOffset) == Blocks.snow) && worldObj.getBlock(xTile, yTile + 1, zTile - zOffset) == Blocks.air;
                     int xRope = xTile;
                     int yRope = yTile;
                     int zRope = zTile;
@@ -321,8 +321,8 @@ public class EntityGrapplingHook extends Entity
                     		yRope--;
                     	}
                     	
-                        worldObj.func_147465_d(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook, metaData, 3);
-                        worldObj.func_147465_d(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos, metaData, 3);
+                        worldObj.setBlock(xTile, yTile + 1, zTile, RopesPlusCore.blockGrapplingHook, metaData, 3);
+                        worldObj.setBlock(xRope, yRope, zRope, RopesPlusCore.blockRopeWallPos, metaData, 3);
                         
                         TileEntityRope newent = new TileEntityRope(worldObj, xRope, yRope, zRope, 32);
                         RopesPlusCore.addRopeToArray(newent);

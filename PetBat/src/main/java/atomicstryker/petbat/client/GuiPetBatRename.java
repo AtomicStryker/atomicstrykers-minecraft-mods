@@ -49,28 +49,28 @@ public class GuiPetBatRename extends GuiScreen
     {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        textfield = new GuiTextField(field_146289_q, this.field_146294_l / 2 - 75, 60, 150, 20);
-        textfield.func_146193_g(-1);
-        textfield.func_146203_f(30);
-        textfield.func_146195_b(true);
-        textfield.func_146180_a(ItemPocketedPetBat.getBatNameFromItemStack(petBatItemStack));
+        textfield = new GuiTextField(fontRendererObj, this.width / 2 - 75, 60, 150, 20);
+        textfield.setTextColor(-1);
+        textfield.setMaxStringLength(30);
+        textfield.setFocused(true);
+        textfield.setText(ItemPocketedPetBat.getBatNameFromItemStack(petBatItemStack));
     }
     
     @Override
-    public void func_146281_b()
+    public void onGuiClosed()
     {
-        super.func_146281_b();
+        super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
     }
     
     @Override
     protected void keyTyped(char par1, int par2)
     {
-        if (textfield.func_146201_a(par1, par2))
+        if (textfield.textboxKeyTyped(par1, par2))
         {
-            if (!textfield.func_146179_b().equals(""))
+            if (!textfield.getText().equals(""))
             {
-                Object[] toSend = { textfield.func_146179_b() };
+                Object[] toSend = { textfield.getText() };
                 PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("PetBat", 1, toSend));
             }
         }
@@ -84,48 +84,48 @@ public class GuiPetBatRename extends GuiScreen
     protected void mouseClicked(int par1, int par2, int par3)
     {
         super.mouseClicked(par1, par2, par3);
-        this.textfield.func_146192_a(par1, par2, par3);
+        this.textfield.mouseClicked(par1, par2, par3);
     }
     
     @Override
     public void updateScreen()
     {
-        textfield.func_146178_a();
+        textfield.updateCursorCounter();
     }
     
     @Override
     public void drawScreen(int par1, int par2, float par3)
     {
-        this.func_146276_q_();
+        this.drawDefaultBackground();
 
-        int x = this.field_146294_l / 2;
-        this.drawCenteredString(this.field_146289_q, this.screenTitle, x, 40, 0x0000AA);
+        int x = this.width / 2;
+        this.drawCenteredString(this.fontRendererObj, this.screenTitle, x, 40, 0x0000AA);
 
         int y = 100;
-        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:level")
+        drawCenteredString(fontRendererObj, (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:level")
                 + EnumChatFormatting.RESET + level + " " + levelTitle), x, y, 0xFFFFFF);
         y += 12;
         drawCenteredString(
-                field_146289_q,
+                fontRendererObj,
                 (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:experience") + EnumChatFormatting.RESET + xp + (xpToNext == -1
                         ? "" : StatCollector.translateToLocal("translation.PetBat:missing_xp") + xpToNext)), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:health")
+        drawCenteredString(fontRendererObj, (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:health")
                 + EnumChatFormatting.RESET + health + " / " + maxHealth), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(field_146289_q, (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:attack_power")
+        drawCenteredString(fontRendererObj, (EnumChatFormatting.BOLD + StatCollector.translateToLocal("translation.PetBat:attack_power")
                 + EnumChatFormatting.RESET + attackStrength), x, y, 0xFFFFFF);
 
         y += 30;
-        drawCenteredString(field_146289_q, EnumChatFormatting.ITALIC + levelDesc, x, y, 0xC82536);
+        drawCenteredString(fontRendererObj, EnumChatFormatting.ITALIC + levelDesc, x, y, 0xC82536);
 
         GL11.glPushMatrix();
-        GL11.glTranslatef((float) (this.field_146294_l / 2), 0.0F, 50.0F);
+        GL11.glTranslatef((float) (this.width / 2), 0.0F, 50.0F);
         float var4 = 93.75F;
         GL11.glScalef(-var4, -var4, -var4);
         GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
         GL11.glPopMatrix();
-        textfield.func_146194_f();
+        textfield.drawTextBox();
         super.drawScreen(par1, par2, par3);
     }
 

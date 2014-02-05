@@ -41,7 +41,7 @@ public class AStarStatic
 	 */
 	public static boolean isViable(World worldObj, int x, int y, int z, int yoffset)
 	{
-	    Block id = worldObj.func_147439_a(x, y, z);
+	    Block id = worldObj.getBlock(x, y, z);
 
 	    if (id == Blocks.ladder && isPassableBlock(worldObj, x, y+1, z))
 	    {
@@ -57,7 +57,7 @@ public class AStarStatic
 	    if (isPassableBlock(worldObj, x, y-1, z))
 	    {
 	        if (id != Blocks.air
-	        && !id.func_149655_b(worldObj, x, y-1, z))
+	        && !id.getBlocksMovement(worldObj, x, y-1, z))
 	        {
 	            // is a traversable fluid, allow navigating
 	        }
@@ -94,7 +94,7 @@ public class AStarStatic
 	 */
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
-		return !worldObj.func_147439_a(ix, iy, iz).func_149688_o().isSolid();
+		return !worldObj.getBlock(ix, iy, iz).getMaterial().isSolid();
 	}
 	
 	public static int getIntCoordFromDoubleCoord(double input)

@@ -64,9 +64,9 @@ public class AS_WorldGenTower
             int pair[] = candidates[ccounter];
             int checkBlockY = getSurfaceBlockHeight(world, ix+pair[0], kz+pair[1]);
             
-            Block ID = world.func_147439_a(ix+pair[0], checkBlockY, kz+pair[1]);
+            Block ID = world.getBlock(ix+pair[0], checkBlockY, kz+pair[1]);
             
-            if (world.func_147439_a(ix+pair[0], checkBlockY+1, kz+pair[1]) == Blocks.snow || ID == Blocks.ice)
+            if (world.getBlock(ix+pair[0], checkBlockY+1, kz+pair[1]) == Blocks.snow || ID == Blocks.ice)
             {
                 countSnow++;
             }
@@ -93,7 +93,7 @@ public class AS_WorldGenTower
             
             for (int ycounter2 = 1; ycounter2 <= 3; ycounter2++)
             {
-                ID = world.func_147439_a(ix+pair[0], (checkBlockY+ycounter2), kz+pair[1]);
+                ID = world.getBlock(ix+pair[0], (checkBlockY+ycounter2), kz+pair[1]);
                 if (isBannedBlockID(ID))
                 {
                     failState = "Surface banned Block of ID: "+ID+" at height: "+ycounter2;
@@ -103,7 +103,7 @@ public class AS_WorldGenTower
             
             for (int ycounter = 1; ycounter <= 5; ycounter++)
             {
-                ID = world.func_147439_a(ix+pair[0], checkBlockY - ycounter, kz+pair[1]);
+                ID = world.getBlock(ix+pair[0], checkBlockY - ycounter, kz+pair[1]);
                 
                 if (ID == Blocks.air || isBannedBlockID(ID))
                 {
@@ -209,11 +209,11 @@ public class AS_WorldGenTower
                                 {
                                     if (!(underground && floor == 1))
                                     {
-                                        world.func_147465_d(iCurrent, jCurrent, zCurrent, towerChosen.getStairBlockID(), 0, 3);
+                                        world.setBlock(iCurrent, jCurrent, zCurrent, towerChosen.getStairBlockID(), 0, 3);
                                     }
                                     if(floorIterator == 5)
                                     {
-                                        world.func_147465_d(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID, 0, 3);
+                                        world.setBlock(iCurrent - 7, jCurrent, zCurrent, towerFloorBlockID, 0, 3);
                                     }
                                     if(floorIterator == 6 && topFloor) // top ledge part
                                     {
@@ -223,7 +223,7 @@ public class AS_WorldGenTower
                                 }
                                 if(xIterator < 4 && xIterator > -5) // tower insides
                                 {
-                                    world.func_147465_d(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
+                                    world.setBlock(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
                                 }
                                 continue;
                             }
@@ -244,7 +244,7 @@ public class AS_WorldGenTower
                             }
 							else
                             {
-                                world.func_147465_d(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3); // stairwell space
+                                world.setBlock(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3); // stairwell space
                             }
                             continue;
                         }
@@ -264,9 +264,9 @@ public class AS_WorldGenTower
                                 buildFloorPiece(world, iCurrent, jCurrent, zCurrent, towerFloorBlockID, towerFloorMeta);
                                 continue;
                             }
-                            if(world.func_147439_a(iCurrent, jCurrent, zCurrent) != Blocks.chest) // tower inside space
+                            if(world.getBlock(iCurrent, jCurrent, zCurrent) != Blocks.chest) // tower inside space
                             {
-                                world.func_147465_d(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
+                                world.setBlock(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
                             }
                             continue;
                         }
@@ -280,7 +280,7 @@ public class AS_WorldGenTower
                                 }
 								else
                                 {
-                                    world.func_147465_d(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
+                                    world.setBlock(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
                                 }
                                 continue;
                             }
@@ -294,7 +294,7 @@ public class AS_WorldGenTower
                             }
 							else
                             {
-                                world.func_147465_d(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
+                                world.setBlock(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
                             }
                             continue;
                         }
@@ -315,7 +315,7 @@ public class AS_WorldGenTower
                             }
 							else
                             {
-                                world.func_147465_d(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
+                                world.setBlock(iCurrent, jCurrent, zCurrent, Blocks.air, 0, 3);
                             }
                             continue;
                         }
@@ -359,8 +359,8 @@ public class AS_WorldGenTower
 
             if(floor == 2)
             {
-                world.func_147465_d(ix + 3, builderHeight, kz - 5, towerWallBlockID, 0, 3);
-                world.func_147465_d(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID, 0, 3);
+                world.setBlock(ix + 3, builderHeight, kz - 5, towerWallBlockID, 0, 3);
+                world.setBlock(ix + 3, builderHeight - 1, kz - 5, towerWallBlockID, 0, 3);
             }
             if((!underground && topFloor) || (underground && floor == 1))
             {
@@ -375,29 +375,29 @@ public class AS_WorldGenTower
             {
                 if (towerChosen != TowerTypes.Null)
                 {
-                    world.func_147465_d(ix + 2, builderHeight + 6, kz + 2, Blocks.mob_spawner, 0, 3);
-                    TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner)world.func_147438_o(ix + 2, builderHeight + 6, kz + 2);
+                    world.setBlock(ix + 2, builderHeight + 6, kz + 2, Blocks.mob_spawner, 0, 3);
+                    TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner)world.getTileEntity(ix + 2, builderHeight + 6, kz + 2);
                     if (tileentitymobspawner != null)
                     {
-                        tileentitymobspawner.func_145881_a().setMobID(getMobType(world.rand));
+                        tileentitymobspawner.func_145881_a().setEntityName(getMobType(world.rand));
                     }
                     
-                    world.func_147465_d(ix - 3, builderHeight + 6, kz + 2, Blocks.mob_spawner, 0, 3);
-                    tileentitymobspawner = (TileEntityMobSpawner)world.func_147438_o(ix - 3, builderHeight + 6, kz + 2);
+                    world.setBlock(ix - 3, builderHeight + 6, kz + 2, Blocks.mob_spawner, 0, 3);
+                    tileentitymobspawner = (TileEntityMobSpawner)world.getTileEntity(ix - 3, builderHeight + 6, kz + 2);
                     if (tileentitymobspawner != null)
                     {
-                        tileentitymobspawner.func_145881_a().setMobID(getMobType(world.rand));
+                        tileentitymobspawner.func_145881_a().setEntityName(getMobType(world.rand));
                     }
                 }
                 else
                 {
-                    world.func_147465_d(ix + 2, builderHeight + 6, kz + 2, Blocks.air, 0, 3);
-                    world.func_147465_d(ix - 3, builderHeight + 6, kz + 2, Blocks.air, 0, 3);
+                    world.setBlock(ix + 2, builderHeight + 6, kz + 2, Blocks.air, 0, 3);
+                    world.setBlock(ix - 3, builderHeight + 6, kz + 2, Blocks.air, 0, 3);
                 }
             }
             // chest petal
-            world.func_147465_d(ix, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
-            world.func_147465_d(ix - 1, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
+            world.setBlock(ix, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
+            world.setBlock(ix - 1, builderHeight + 6, kz + 3, towerFloorBlockID, 0, 3);
             
             if(builderHeight + 56 >= 120 && floor == 1)
             {
@@ -419,13 +419,13 @@ public class AS_WorldGenTower
                 
                 for(int chestlength = 0; chestlength < 2; chestlength++)
                 {
-                    world.func_147465_d(ix - chestlength, builderHeight + 7, kz + 3, Blocks.chest, 2, 3);
+                    world.setBlock(ix - chestlength, builderHeight + 7, kz + 3, Blocks.chest, 2, 3);
                     for(int attempt = 0; attempt < (underground ? AS_BattleTowersCore.itemGenerateAttemptsPerFloor*2 : AS_BattleTowersCore.itemGenerateAttemptsPerFloor); attempt++)
                     {
                         ItemStack itemstack = floorChestManager.getStageItem(world.rand);
                         if(itemstack != null)
                         {
-                            TileEntityChest tileentitychest = (TileEntityChest) world.func_147438_o(ix - chestlength, builderHeight + 7, kz + 3);
+                            TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(ix - chestlength, builderHeight + 7, kz + 3);
                             if (tileentitychest != null)
                             {
                                 tileentitychest.setInventorySlotContents(world.rand.nextInt(tileentitychest.getSizeInventory()), itemstack);
@@ -438,15 +438,15 @@ public class AS_WorldGenTower
             {
                 for(int chestlength = 0; chestlength < 2; chestlength++)
                 {
-                    world.func_147465_d(ix - chestlength, builderHeight + 7, kz + 3, Blocks.air, 2, 3);
+                    world.setBlock(ix - chestlength, builderHeight + 7, kz + 3, Blocks.air, 2, 3);
                 }
             }
 			
             // move lights builder a bit higher, to support non-opaque lights such as lamps
-            world.func_147465_d(ix + 3, builderHeight+2, kz - 6, towerLightBlockID, 0, 3);
-            world.func_147465_d(ix - 4, builderHeight+2, kz - 6, towerLightBlockID, 0, 3);
-            world.func_147465_d(ix + 1, builderHeight+2, kz - 4, towerLightBlockID, 0, 3);
-            world.func_147465_d(ix - 2, builderHeight+2, kz - 4, towerLightBlockID, 0, 3);
+            world.setBlock(ix + 3, builderHeight+2, kz - 6, towerLightBlockID, 0, 3);
+            world.setBlock(ix - 4, builderHeight+2, kz - 6, towerLightBlockID, 0, 3);
+            world.setBlock(ix + 1, builderHeight+2, kz - 4, towerLightBlockID, 0, 3);
+            world.setBlock(ix - 2, builderHeight+2, kz - 4, towerLightBlockID, 0, 3);
 			
             if (towerChosen != TowerTypes.Null)
             {
@@ -461,9 +461,9 @@ public class AS_WorldGenTower
                     }
                     k4 += ix;
                     j6 += kz;
-                    if(world.func_147439_a(k4, k5, j6) == towerFloorBlockID && world.func_147439_a(k4, k5 + 1, j6) != Blocks.mob_spawner)
+                    if(world.getBlock(k4, k5, j6) == towerFloorBlockID && world.getBlock(k4, k5 + 1, j6) != Blocks.mob_spawner)
                     {
-                        world.func_147465_d(k4, k5, j6, Blocks.air, 0, 3);
+                        world.setBlock(k4, k5, j6, Blocks.air, 0, 3);
                     }
                 }
             }
@@ -476,7 +476,7 @@ public class AS_WorldGenTower
 	
 	private void buildFloorPiece(World world, int i, int j, int k, Block towerFloorBlockID, int towerFloorMeta)
 	{
-		world.func_147465_d(i, j, k, towerFloorBlockID, 0, 3);
+		world.setBlock(i, j, k, towerFloorBlockID, 0, 3);
 		
 		if (towerFloorMeta != 0)
 		{
@@ -486,7 +486,7 @@ public class AS_WorldGenTower
 	
 	private void buildWallPiece(World world, int i, int j, int k, Block towerWallBlockID, int floor, int floorIterator)
 	{
-		world.func_147465_d(i, j, k, towerWallBlockID, 0, 3);
+		world.setBlock(i, j, k, towerWallBlockID, 0, 3);
 		if(floor == 1 && floorIterator == 4)
 		{
 			fillTowerBaseToGround(world, i, j, k, towerWallBlockID);
@@ -496,9 +496,9 @@ public class AS_WorldGenTower
     private void fillTowerBaseToGround(World world, int i, int j, int k, Block blocktype)
 	{
 		int x = j-1;
-		while(x>0 && !isBuildableBlockID(world.func_147439_a(i, x, k)))
+		while(x>0 && !isBuildableBlockID(world.getBlock(i, x, k)))
 		{
-			world.func_147465_d(i, x, k, blocktype, 0, 3);
+			world.setBlock(i, x, k, blocktype, 0, 3);
 			x--;
 		}
 	}
@@ -511,7 +511,7 @@ public class AS_WorldGenTower
 		{
 			h++;
 		}
-		while (world.func_147439_a(x, h, z) != Blocks.air && !isFoliageBlockID(world.func_147439_a(x, h, z)));
+		while (world.getBlock(x, h, z) != Blocks.air && !isFoliageBlockID(world.getBlock(x, h, z)));
 		
 		return h-1;
 	}

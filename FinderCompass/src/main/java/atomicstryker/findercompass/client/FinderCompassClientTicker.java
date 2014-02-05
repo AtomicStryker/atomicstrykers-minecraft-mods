@@ -69,7 +69,7 @@ public class FinderCompassClientTicker
             {
                 if (mc.thePlayer.getCurrentEquippedItem() != null && mc.thePlayer.getCurrentEquippedItem().getItem() == COMPASS_ITEM_ID)
                 {
-                    if (mc.gameSettings.keyBindAttack.func_151470_d())
+                    if (mc.gameSettings.keyBindAttack.getIsKeyPressed())
                     {
                         if (!repeat)
                         {
@@ -109,7 +109,7 @@ public class FinderCompassClientTicker
         if (mc.theWorld != null)
         {
             mc.theWorld.playSound(mc.thePlayer.posX + 0.5D, mc.thePlayer.posY + 0.5D, mc.thePlayer.posZ + 0.5D, "random.click", 0.3F, 0.6F, false);
-            mc.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Finder Compass Mode: " + currentSetting.getName()));
+            mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
 
@@ -122,7 +122,7 @@ public class FinderCompassClientTicker
     {
         settingList.clear();
         new DefaultConfigFilePrinter().parseConfig(new BufferedReader(new InputStreamReader(dataIn)), settingList);
-        mc.ingameGUI.func_146158_b().func_146227_a(
+        mc.ingameGUI.getChatGUI().printChatMessage(
                 new ChatComponentText("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
     }
 

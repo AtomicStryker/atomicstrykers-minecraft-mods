@@ -13,7 +13,7 @@ public class BlockGrapplingHook extends Block
 {
     public BlockGrapplingHook()
     {
-        super(Material.field_151582_l);
+        super(Material.vine);
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.125F, 1.0F);
     }
     
@@ -44,7 +44,7 @@ public class BlockGrapplingHook extends Block
     @Override
     public boolean canPlaceBlockAt(World world, int i, int j, int k)
     {
-        int l = world.func_147439_a(i, j - 1, k);
+        int l = world.getBlock(i, j - 1, k);
         if(l == 0 || !Block.blocksList[l].isOpaqueCube())
         {
             return false;
@@ -60,7 +60,7 @@ public class BlockGrapplingHook extends Block
         if(!canPlaceBlockAt(world, i, j, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.func_147465_d(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
             onBlockDestroyed(world, i, j, k);
         }
     }
@@ -106,16 +106,16 @@ public class BlockGrapplingHook extends Block
         };
         for(int l = 0; l < candidates.length; l++)
         {
-            if(world.func_147439_a(candidates[l][0], candidates[l][1], candidates[l][2]) != RopesPlusCore.blockRopeWallPos)
+            if(world.getBlock(candidates[l][0], candidates[l][1], candidates[l][2]) != RopesPlusCore.blockRopeWallPos)
             {
                 continue;
             }
             
             System.out.println("Rope found at ["+candidates[l][0]+","+candidates[l][1]+","+candidates[l][2]+"]");
             
-            for(int m = candidates[l][1]; world.func_147439_a(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.blockRopeWallPos; m--)
+            for(int m = candidates[l][1]; world.getBlock(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.blockRopeWallPos; m--)
             {
-                world.func_147465_d(candidates[l][0], m, candidates[l][2], 0, 0, 3);
+                world.setBlock(candidates[l][0], m, candidates[l][2], 0, 0, 3);
             }
         }
     }

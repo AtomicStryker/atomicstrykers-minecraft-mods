@@ -175,7 +175,7 @@ public class InventoryMinion implements IInventory
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding item to inventory");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
-                crashreportcategory.addCrashSection("Item ID", Integer.valueOf(Item.func_150891_b(par1ItemStack.getItem())));
+                crashreportcategory.addCrashSection("Item ID", Integer.valueOf(Item.getIdFromItem(par1ItemStack.getItem())));
                 crashreportcategory.addCrashSection("Item data", Integer.valueOf(par1ItemStack.getItemDamage()));
                 throw new ReportedException(crashreport);
             }
@@ -210,7 +210,7 @@ public class InventoryMinion implements IInventory
 
         for (int i = 0; i < par1NBTTagList.tagCount(); ++i)
         {
-            NBTTagCompound nbttagcompound = par1NBTTagList.func_150305_b(i);
+            NBTTagCompound nbttagcompound = par1NBTTagList.getCompoundTagAt(i);
             int j = nbttagcompound.getByte("Slot") & 255;
             ItemStack itemstack = ItemStack.loadItemStackFromNBT(nbttagcompound);
 
@@ -292,10 +292,10 @@ public class InventoryMinion implements IInventory
                 else if (returnChestOrInventory instanceof TileEntityChest)
                 {
                     TileEntityChest returnChest = (TileEntityChest)returnChestOrInventory;
-                    if (returnChest.field_145991_k != null && addItemStackToInventory(returnChest.field_145991_k, this.mainInventory[var1])
-                    || returnChest.field_145990_j != null && addItemStackToInventory(returnChest.field_145990_j, this.mainInventory[var1])
-                    || returnChest.field_145992_i != null && addItemStackToInventory(returnChest.field_145992_i, this.mainInventory[var1])
-                    || returnChest.field_145988_l != null && addItemStackToInventory(returnChest.field_145988_l, this.mainInventory[var1]))
+                    if (returnChest.adjacentChestXNeg != null && addItemStackToInventory(returnChest.adjacentChestXNeg, this.mainInventory[var1])
+                    || returnChest.adjacentChestXPos != null && addItemStackToInventory(returnChest.adjacentChestXPos, this.mainInventory[var1])
+                    || returnChest.adjacentChestZNeg != null && addItemStackToInventory(returnChest.adjacentChestZNeg, this.mainInventory[var1])
+                    || returnChest.adjacentChestZPos != null && addItemStackToInventory(returnChest.adjacentChestZPos, this.mainInventory[var1]))
                     {
                         this.mainInventory[var1] = null;
                     }
@@ -511,13 +511,13 @@ public class InventoryMinion implements IInventory
     }
     
     @Override
-    public String func_145825_b()
+    public String getInventoryName()
     {
         return "MinionInventory";
     }
     
     @Override
-    public boolean func_145818_k_()
+    public boolean hasCustomInventoryName()
     {
         return false;
     }
@@ -529,7 +529,7 @@ public class InventoryMinion implements IInventory
     }
 
     @Override
-    public void onInventoryChanged()
+    public void markDirty()
     {
         this.inventoryChanged = true;
     }
@@ -541,10 +541,10 @@ public class InventoryMinion implements IInventory
     }
 
     @Override
-    public void openChest() {}
+    public void openInventory() {}
 
     @Override
-    public void closeChest() {}
+    public void closeInventory() {}
     
     @Override
     public boolean isItemValidForSlot(int par1, ItemStack par2ItemStack)
@@ -1027,14 +1027,14 @@ public class InventoryMinion implements IInventory
         }
     }
 
-    public void onInventoryChanged()
+    public void markDirty()
     {
         this.inventoryChanged = true;
     }
 
     public boolean isUseableByPlayer(EntityPlayer var1)
     {
-        return (var1.func_146103_bH().getName().equals(minion.getMasterUserName()) && var1.getDistanceSqToEntity(this.minion) <= 64.0D);
+        return (var1.getGameProfile().getName().equals(minion.getMasterUserName()) && var1.getDistanceSqToEntity(this.minion) <= 64.0D);
     }
 
     public boolean hasItemStack(ItemStack var1)
@@ -1051,9 +1051,9 @@ public class InventoryMinion implements IInventory
         return false;
     }
 
-    public void openChest() {}
+    public void openInventory() {}
 
-    public void closeChest() {}
+    public void closeInventory() {}
 
     public void copyInventory(InventoryMinion var1)
     {

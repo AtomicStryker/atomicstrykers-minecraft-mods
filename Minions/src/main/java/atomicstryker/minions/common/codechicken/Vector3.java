@@ -55,12 +55,12 @@ public class Vector3
 
 	public static Vector3 fromTileEntity(TileEntity e)
 	{
-		return new Vector3(e.field_145851_c, e.field_145848_d, e.field_145849_e);
+		return new Vector3(e.xCoord, e.yCoord, e.zCoord);
 	}
 	
 	public static Vector3 fromTileEntityCenter(TileEntity e)
 	{
-		return new Vector3(e.field_145851_c + 0.5, e.field_145848_d + 0.5, e.field_145849_e + 0.5);
+		return new Vector3(e.xCoord + 0.5, e.yCoord + 0.5, e.zCoord + 0.5);
 	}
 
 	public static Vector3 fromVec3(Vec3 vec)

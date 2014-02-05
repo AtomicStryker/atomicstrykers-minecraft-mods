@@ -29,7 +29,7 @@ public class TileEntityRope
 		
 		if (delay == 0)
 		{
-			if ((world.func_147439_a(ix, iy - 1, iz) == Blocks.air || world.func_147439_a(ix, iy - 1, iz) == Blocks.snow))
+			if ((world.getBlock(ix, iy - 1, iz) == Blocks.air || world.getBlock(ix, iy - 1, iz) == Blocks.snow))
 			{
 				remainrope -= 1;
 				if (remainrope <= 0)
@@ -37,7 +37,7 @@ public class TileEntityRope
 					return true;
 				}
 				
-				world.func_147465_d(ix, iy - 1, iz, RopesPlusCore.blockRopeWallPos, world.getBlockMetadata(ix, iy, iz), 3);
+				world.setBlock(ix, iy - 1, iz, RopesPlusCore.blockRopeWallPos, world.getBlockMetadata(ix, iy, iz), 3);
 				TileEntityRope newent = new TileEntityRope(world, ix, iy - 1, iz, remainrope);
 				RopesPlusCore.addRopeToArray(newent);
 			}

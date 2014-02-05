@@ -180,7 +180,7 @@ public abstract class BlockTask
         this.worker.setWorking(true);
         this.worker.setPathToEntity(null);
 
-        worker.adaptItem(worker.worldObj.func_147439_a(posX, posY, posZ).func_149688_o());
+        worker.adaptItem(worker.worldObj.getBlock(posX, posY, posZ).getMaterial());
     }
 
     /**
@@ -263,10 +263,10 @@ public abstract class BlockTask
      */
     protected ArrayList<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
     {
-        Block block = world.func_147439_a(i, j, k);
-        Material m = block.func_149688_o();
+        Block block = world.getBlock(i, j, k);
+        Material m = block.getMaterial();
         
-        if (block == Blocks.air || m == Material.field_151586_h || m == Material.field_151587_i || m == Material.field_151584_j || m == Material.field_151585_k)
+        if (block == Blocks.air || m == Material.water || m == Material.lava || m == Material.leaves || m == Material.plants)
         {
             return new ArrayList<ItemStack>();
         }

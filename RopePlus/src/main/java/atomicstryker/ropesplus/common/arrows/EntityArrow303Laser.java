@@ -71,7 +71,7 @@ public class EntityArrow303Laser extends EntityArrow303
     {
         MovingObjectPosition mop = worldObj.clip(worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ),
                 worldObj.getWorldVec3Pool().getVecFromPool(ent.posX, ent.posY + (double) ent.getEyeHeight(), ent.posZ));
-        return mop == null || mop.typeOfHit == MovingObjectType.BLOCK && (worldObj.func_147439_a(mop.blockX, mop.blockY, mop.blockZ).func_149717_k() == 255);
+        return mop == null || mop.typeOfHit == MovingObjectType.BLOCK && (worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ).func_149717_k() == 255);
     }
 
     @Override

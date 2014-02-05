@@ -97,7 +97,7 @@ public class World2TemplateParser extends Thread
         y = b;
         z = c;
         fileName = fName;
-        templateHelperBlock = new BlockData(world.func_147439_a(a, b, c), world.getBlockMetadata(a, b, c), null);
+        templateHelperBlock = new BlockData(world.getBlock(a, b, c), world.getBlockMetadata(a, b, c), null);
         usedBlocks = new ArrayList<BlockData>();
         layerData = new ArrayList<BlockData[][]>();
     }
@@ -148,7 +148,7 @@ public class World2TemplateParser extends Thread
             zLength = 1 + zmax - lowestZ;
 
             readBlocks(world);
-            player.func_145747_a(new ChatComponentText("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size()
+            player.addChatMessage(new ChatComponentText("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size()
                     + ", xlen: " + xLength + ", zlen: " + zLength));
 
             File templateFile = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/templateparser/" + fileName + ".tml");
@@ -156,12 +156,12 @@ public class World2TemplateParser extends Thread
 
             if (!failed)
             {
-                player.func_145747_a(new ChatComponentText("Success writing templatefile " + templateFile));
+                player.addChatMessage(new ChatComponentText("Success writing templatefile " + templateFile));
             }
         }
         else
         {
-            player.func_145747_a(new ChatComponentText("Template Parse fail, chosen Block was air WTF?!"));
+            player.addChatMessage(new ChatComponentText("Template Parse fail, chosen Block was air WTF?!"));
         }
     }
     
@@ -204,7 +204,7 @@ public class World2TemplateParser extends Thread
                     blocky = yi;
                     blockz = zi + lowestZ;
 
-                    temp.block = world.func_147439_a(blockx, blocky, blockz);
+                    temp.block = world.getBlock(blockx, blocky, blockz);
                     temp.meta = world.getBlockMetadata(blockx, blocky, blockz);
                     temp.data = null;
 
@@ -223,7 +223,7 @@ public class World2TemplateParser extends Thread
                     /* handle special blocks */
                     if (temp.block == Blocks.mob_spawner)
                     {
-                        TileEntity te = world.func_147438_o(blockx, blocky, blockz);
+                        TileEntity te = world.getTileEntity(blockx, blocky, blockz);
                         temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).func_145881_a().getEntityNameToSpawn();
                     }
                     else if (temp.block == Blocks.chest)
@@ -232,22 +232,22 @@ public class World2TemplateParser extends Thread
                     }
                     else if (temp.block == Blocks.command_block)
                     {
-                        TileEntityCommandBlock tec = (TileEntityCommandBlock) world.func_147438_o(blockx, blocky, blockz);
+                        TileEntityCommandBlock tec = (TileEntityCommandBlock) world.getTileEntity(blockx, blocky, blockz);
                         temp.data = "CommandBlock:" + tec.func_145993_a().func_145753_i() + ":" + tec.func_145993_a().getCommandSenderName();
                     }
                     else if (temp.block == Blocks.standing_sign)
                     {
-                        TileEntitySign tes = (TileEntitySign) world.func_147438_o(blockx, blocky, blockz);
+                        TileEntitySign tes = (TileEntitySign) world.getTileEntity(blockx, blocky, blockz);
                         temp.data = convertSignStrings("StandingSign:", tes) + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.wall_sign)
                     {
-                        TileEntitySign tes = (TileEntitySign) world.func_147438_o(blockx, blocky, blockz);
+                        TileEntitySign tes = (TileEntitySign) world.getTileEntity(blockx, blocky, blockz);
                         temp.data = convertSignStrings("WallSign:", tes) + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.skull)
                     {
-                        TileEntitySkull tes = (TileEntitySkull) world.func_147438_o(blockx, blocky, blockz);
+                        TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(blockx, blocky, blockz);
                         int skulltype = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 0);
                         int rot = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 1);
                         String specialType = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
@@ -272,13 +272,13 @@ public class World2TemplateParser extends Thread
     
     private String convertSignStrings(String prefix, TileEntitySign sign)
     {
-        String a = sign.field_145915_a[0];
+        String a = sign.signText[0];
         if (a.equals("")) a = "null";
-        String b = sign.field_145915_a[1];
+        String b = sign.signText[1];
         if (b.equals("")) b = "null";
-        String c = sign.field_145915_a[2];
+        String c = sign.signText[2];
         if (c.equals("")) c = "null";
-        String d = sign.field_145915_a[3];
+        String d = sign.signText[3];
         if (d.equals("")) d = "null";
         String result = prefix+a+":"+b+":"+c+":"+d;
         return result;
@@ -361,7 +361,7 @@ public class World2TemplateParser extends Thread
         {
             e.printStackTrace();
             failed = true;
-            player.func_145747_a(new ChatComponentText("Something broke! See logfile for exception message and get it to AtomicStryker."));
+            player.addChatMessage(new ChatComponentText("Something broke! See logfile for exception message and get it to AtomicStryker."));
         }
     }
 
@@ -385,13 +385,13 @@ public class World2TemplateParser extends Thread
 
         boolean matchesBlock(World w, int x, int y, int z)
         {
-            return w.func_147439_a(x, y, z) == block && meta == w.getBlockMetadata(x, y, z);
+            return w.getBlock(x, y, z) == block && meta == w.getBlockMetadata(x, y, z);
         }
 
         @Override
         public String toString()
         {
-            return (data != null) ? data : GameData.blockRegistry.func_148750_c(block) + "-" + meta;
+            return (data != null) ? data : GameData.blockRegistry.getNameForObject(block) + "-" + meta;
         }
 
         @Override
@@ -401,7 +401,7 @@ public class World2TemplateParser extends Thread
             {
                 return data.hashCode();
             }
-            return block.func_149739_a().hashCode() & meta;
+            return block.getUnlocalizedName().hashCode() & meta;
         }
 
         @Override

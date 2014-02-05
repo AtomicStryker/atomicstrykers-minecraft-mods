@@ -26,10 +26,10 @@ public class GuiRotaryMacerator extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.field_146289_q.drawString(StatCollector.translateToLocal("item.advancedmachines:rotaryMacerator.name"), 8, 6, 4210752);
-        this.field_146289_q.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
-        this.field_146289_q.drawString("Speed:", 4, 36, 4210752);
-        this.field_146289_q.drawString(((IAdvancedMachine)container.tileEntity).printFormattedData(), 10, 44, 4210752);
+        this.fontRendererObj.drawString(StatCollector.translateToLocal("item.advancedmachines:rotaryMacerator.name"), 8, 6, 4210752);
+        this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
+        this.fontRendererObj.drawString("Speed:", 4, 36, 4210752);
+        this.fontRendererObj.drawString(((IAdvancedMachine)container.tileEntity).printFormattedData(), 10, 44, 4210752);
     }
 
     @Override
@@ -37,8 +37,8 @@ public class GuiRotaryMacerator extends GuiContainer
     {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(tex);
-        int j = (this.field_146294_l - this.xSize) / 2;
-        int k = (this.field_146295_m - this.ySize) / 2;
+        int j = (this.width - this.xSize) / 2;
+        int k = (this.height - this.ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, this.xSize, this.ySize);
         
         int chargeLevel = (int)(14.0F * this.container.tileEntity.getChargeLevel());

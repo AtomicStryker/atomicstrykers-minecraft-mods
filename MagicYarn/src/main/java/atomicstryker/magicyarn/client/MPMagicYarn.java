@@ -43,7 +43,7 @@ public class MPMagicYarn
     {
         if (tick.phase == Phase.END)
         {
-            if (clientKey.func_151470_d())
+            if (clientKey.getIsKeyPressed())
             {
                 if (serverDoesNotHaveMod)
                 {
@@ -62,7 +62,7 @@ public class MPMagicYarn
                 else if (mcinstance.currentScreen == null && !messageShown)
                 {
                     messageShown = true;
-                    mcinstance.thePlayer.func_145747_a(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
+                    mcinstance.thePlayer.addChatMessage(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
                 }
             }
             else
@@ -74,24 +74,24 @@ public class MPMagicYarn
                 }
             }
             
-            if (mcinstance.currentScreen == null && playerKey.func_151470_d())
+            if (mcinstance.currentScreen == null && playerKey.getIsKeyPressed())
             {
                 if (!serverDoesNotHaveMod)
                 {
                     ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
                     if (curItem != null && curItem.getItem() == MagicYarn.magicYarn)
                     {
-                        mcinstance.func_147108_a(new GuiNavigateToPlayer()); 
+                        mcinstance.displayGuiScreen(new GuiNavigateToPlayer()); 
                     }
                     else if (!messageShown)
                     {
                         messageShown = true;
-                        mcinstance.thePlayer.func_145747_a(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
+                        mcinstance.thePlayer.addChatMessage(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
                     }
                 }
                 else if (mcinstance.currentScreen == null)
                 {
-                    mcinstance.func_147108_a(new GuiNavigateToPlayer());
+                    mcinstance.displayGuiScreen(new GuiNavigateToPlayer());
                 }
             }
         }
@@ -100,7 +100,7 @@ public class MPMagicYarn
     public void onServerHasMod()
     {
         serverDoesNotHaveMod = false;
-        mcinstance.thePlayer.func_145747_a(new ChatComponentText("Magic Yarn found on server."));
+        mcinstance.thePlayer.addChatMessage(new ChatComponentText("Magic Yarn found on server."));
     }
     
     public boolean getHasServerMod()

@@ -47,11 +47,11 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         setLocationAndAngles(posX, posY, posZ, 0.0F, 0.0F);
         attackCounter = 0;
         
-        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(300.0d); // max health
+        getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(300.0d); // max health
         setHealth(getMaxHealth());
         
-        getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(7.0d); // attack damage
-        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.3d); // movespeed
+        getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(7.0d); // attack damage
+        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.3d); // movespeed
         
         tasks.addTask(0, new EntityAISwimming(this));
         tasks.addTask(1, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0d, true));
@@ -108,8 +108,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 	private void updateGolemType()
 	{
 		drops = 5 + towerID;
-		getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(7.0f + towerID);
-		getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(150f + 50f*towerID);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(7.0f + towerID);
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(150f + 50f*towerID);
 		setHealth(getMaxHealth());
 	}
 
@@ -422,7 +422,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     }
 
     @Override
-    protected Item func_146068_u()
+    protected Item getDropItem()
     {
         return Items.paper;
     }

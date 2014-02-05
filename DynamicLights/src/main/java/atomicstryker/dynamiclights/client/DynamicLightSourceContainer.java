@@ -56,8 +56,8 @@ public class DynamicLightSourceContainer
              * We also have to call an update for the previous coordinates, otherwise they would
              * stay lit up.
              */
-            ent.worldObj.func_147463_c(EnumSkyBlock.Block, x, y, z);
-            ent.worldObj.func_147463_c(EnumSkyBlock.Block, prevX, prevY, prevZ);
+            ent.worldObj.updateLightByType(EnumSkyBlock.Block, x, y, z);
+            ent.worldObj.updateLightByType(EnumSkyBlock.Block, prevX, prevY, prevZ);
         }
         
         return false;

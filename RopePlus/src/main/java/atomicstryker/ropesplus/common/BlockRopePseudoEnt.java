@@ -29,7 +29,7 @@ public class BlockRopePseudoEnt
 		
 		if (delay == 0)
 		{
-			if ((world.func_147439_a(ix, iy - 1, iz) == 0 || world.func_147439_a(ix, iy - 1, iz) == Blocks.snow))
+			if ((world.getBlock(ix, iy - 1, iz) == 0 || world.getBlock(ix, iy - 1, iz) == Blocks.snow))
 			{
 				remainrope -= 1;
 				if (remainrope <= 0)
@@ -37,7 +37,7 @@ public class BlockRopePseudoEnt
 					return true;
 				}
 				
-				world.func_147465_d(ix, iy - 1, iz, RopesPlusCore.blockRopeCentralPos, 0, 3);
+				world.setBlock(ix, iy - 1, iz, RopesPlusCore.blockRopeCentralPos, 0, 3);
 				BlockRopePseudoEnt newent = new BlockRopePseudoEnt(world, ix, iy - 1, iz, remainrope);
 				RopesPlusCore.addRopeToArray(newent);
 				

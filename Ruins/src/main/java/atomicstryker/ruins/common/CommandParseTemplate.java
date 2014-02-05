@@ -56,19 +56,19 @@ public class CommandParseTemplate extends CommandBase
         {
             if (args.length != 1)
             {
-                player.func_145747_a(new ChatComponentText("You need to use the command with the target template name, eg. /parseruin funhouse"));
+                player.addChatMessage(new ChatComponentText("You need to use the command with the target template name, eg. /parseruin funhouse"));
                 player = null;
             }
             else
             {
                 templateName = args[0];
-                player.func_145747_a(new ChatComponentText("Template parser ready to create " + templateName
+                player.addChatMessage(new ChatComponentText("Template parser ready to create " + templateName
                         + ". Break any block of the baseplate now."));
             }
         }
         else
         {
-            sender.func_145747_a(new ChatComponentText("Command only available for ingame player entities."));
+            sender.addChatMessage(new ChatComponentText("Command only available for ingame player entities."));
         }
     }
 

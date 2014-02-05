@@ -171,7 +171,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        TileEntityStandardMachine tesm = (TileEntityStandardMachine) world.func_147438_o(x, y, z);
+        TileEntityStandardMachine tesm = (TileEntityStandardMachine) world.getTileEntity(x, y, z);
         if (tesm != null)
         {
             if (tesm instanceof TileEntityAdvancedMacerator)

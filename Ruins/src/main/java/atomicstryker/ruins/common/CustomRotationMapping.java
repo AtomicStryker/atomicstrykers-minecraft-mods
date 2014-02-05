@@ -61,7 +61,7 @@ public class CustomRotationMapping
         @Override
         public int compare(Block b1, Block b2)
         {
-            return b1.func_149739_a().compareTo(b2.func_149739_a());
+            return b1.getUnlocalizedName().compareTo(b2.getUnlocalizedName());
         }
     }
 

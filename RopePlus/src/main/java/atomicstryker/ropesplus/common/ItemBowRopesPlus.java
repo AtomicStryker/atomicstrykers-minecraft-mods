@@ -92,7 +92,7 @@ public class ItemBowRopesPlus extends ItemBow
 
                 world.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + bowChargeRatio * 0.5F);
 
-                player.inventory.func_146026_a(mainInv[arrowSlot].getItem());
+                player.inventory.consumeInventoryItem(mainInv[arrowSlot].getItem());
                 player.inventory.inventoryChanged = true;
 
                 if (!world.isRemote)
@@ -110,7 +110,7 @@ public class ItemBowRopesPlus extends ItemBow
 		}
 		else
 		{
-		    player.func_146105_b(new ChatComponentText("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!"));
+		    player.addChatComponentMessage(new ChatComponentText("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!"));
 		}
     }
     

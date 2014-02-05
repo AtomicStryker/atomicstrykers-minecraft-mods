@@ -300,7 +300,7 @@ public class ChickenLightningBolt
 	
 	private float rayTraceResistance(Vector3 start, Vector3 end, float prevresistance)
 	{
-		MovingObjectPosition mop = world.clip(start.toVec3D(), end.toVec3D());
+		MovingObjectPosition mop = world.rayTraceBlocks(start.toVec3D(), end.toVec3D());
 		
 		if(mop == null)
 		{
@@ -309,7 +309,7 @@ public class ChickenLightningBolt
 		
 		if(mop.typeOfHit == MovingObjectType.BLOCK)
 		{
-			Block blockID = world.func_147439_a(mop.blockX, mop.blockY, mop.blockZ);
+			Block blockID = world.getBlock(mop.blockX, mop.blockY, mop.blockZ);
 			
 			if(blockID == Blocks.air)
 			{

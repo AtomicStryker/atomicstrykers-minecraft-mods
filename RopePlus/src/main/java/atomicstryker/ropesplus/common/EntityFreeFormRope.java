@@ -198,7 +198,7 @@ public class EntityFreeFormRope extends Entity
 
         if (shooter != null)
         {
-            if (shooter.isDead || !shooter.inventory.func_146028_b(RopesPlusCore.itemHookShot))
+            if (shooter.isDead || !shooter.inventory.hasItem(RopesPlusCore.itemHookShot))
             {
                 setDead();
                 RopesPlusCore.proxy.setHasClientRopeOut(false);
@@ -227,7 +227,7 @@ public class EntityFreeFormRope extends Entity
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
                         RopesPlusCore.proxy.setShouldHookShotPull(0f);
-                        Object[] toSend = { func_145782_y() };
+                        Object[] toSend = { getEntityId() };
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 5, toSend));
                     }
                     else
@@ -312,13 +312,13 @@ public class EntityFreeFormRope extends Entity
         int x = MathHelper.floor_double(getEndX());
         int y = MathHelper.floor_double(getEndY()+0.5D);
         int z = MathHelper.floor_double(getEndZ());
-        Block b = worldObj.func_147439_a(x, y, z);
-        Block b2 = worldObj.func_147439_a(x, y+1, z);
+        Block b = worldObj.getBlock(x, y, z);
+        Block b2 = worldObj.getBlock(x, y+1, z);
         
-        if (!(b.func_149721_r()
-        || b2.func_149721_r()
-        || b.func_149688_o() == Material.field_151584_j
-        || b2.func_149688_o() == Material.field_151584_j))
+        if (!(b.isNormalCube()
+        || b2.isNormalCube()
+        || b.getMaterial() == Material.leaves
+        || b2.getMaterial() == Material.leaves))
         {
             return false;
         };

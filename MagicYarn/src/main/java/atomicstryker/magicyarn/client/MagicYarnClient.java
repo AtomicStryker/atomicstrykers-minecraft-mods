@@ -75,7 +75,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             
             mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.levelup", 1.0F, 1.0F, false);
             
-            sendPathToServer(mcinstance.thePlayer.func_146103_bH().getName(), clientTicker.path);
+            sendPathToServer(mcinstance.thePlayer.getGameProfile().getName(), clientTicker.path);
         }
         else if (!noSound)
         {

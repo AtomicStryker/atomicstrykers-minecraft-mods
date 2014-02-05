@@ -122,7 +122,7 @@ public class EntityLivingEquipmentLightSource
     
     private int getMobEquipMaxLight(EntityLivingBase ent)
     {
-        int light = getLightFromItemStack(ent.getCurrentItemOrArmor(0));
+        int light = getLightFromItemStack(ent.getEquipmentInSlot(0));
         for (int i = 1; i < ent.getLastActiveItems().length; i++)
         {
             light = Math.max(light, getLightFromItemStack(ent.getLastActiveItems()[i]));

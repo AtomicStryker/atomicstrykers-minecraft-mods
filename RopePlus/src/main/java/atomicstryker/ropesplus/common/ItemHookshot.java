@@ -53,7 +53,7 @@ public class ItemHookshot extends Item
         int ticksLeftToCharge = getMaxItemUseDuration(itemstack) - heldTicks;
         float chargeRatio = (float)ticksLeftToCharge / 20.0F;
         
-        boolean hasAmmo = entityplayer.inventory.func_146028_b(RopesPlusCore.itemHookShotCartridge);
+        boolean hasAmmo = entityplayer.inventory.hasItem(RopesPlusCore.itemHookShotCartridge);
         
         if (chargeRatio < 0.5)
         {
@@ -106,16 +106,16 @@ public class ItemHookshot extends Item
                                 
                                 RopesPlusCore.instance.setPlayerRope(entityplayer, ropeEnt);
                                 
-                                Object[] toSend = {ropeEnt.func_145782_y(), target.blockX, target.blockY, target.blockZ};
+                                Object[] toSend = {ropeEnt.getEntityId(), target.blockX, target.blockY, target.blockZ};
                                 PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("AS_Ropes", 4, toSend), entityplayer);
                                 entityplayer.worldObj.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
-                                entityplayer.inventory.func_146026_a(RopesPlusCore.itemHookShotCartridge);
+                                entityplayer.inventory.consumeInventoryItem(RopesPlusCore.itemHookShotCartridge);
                             }
                         }
                         else
                         {
                             RopesPlusCore.instance.setPlayerRope(entityplayer, null);
-                            entityplayer.func_146105_b(new ChatComponentText("No target for Hookshot"));
+                            entityplayer.addChatComponentMessage(new ChatComponentText("No target for Hookshot"));
                         }
                     }
                     else

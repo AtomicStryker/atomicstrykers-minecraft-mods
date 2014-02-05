@@ -18,9 +18,9 @@ public class RuinRuleAir extends RuinTemplateRule
     public void doBlock(World world, Random random, int x, int y, int z, int rotate)
     {
         // This will preserve blocks correctly.
-        if (canReplace(Blocks.air, world.func_147439_a(x, y, z)))
+        if (canReplace(Blocks.air, world.getBlock(x, y, z)))
         {
-            world.func_147465_d(x, y, z, Blocks.air, 0, 3);
+            world.setBlock(x, y, z, Blocks.air, 0, 3);
         }
     }
 

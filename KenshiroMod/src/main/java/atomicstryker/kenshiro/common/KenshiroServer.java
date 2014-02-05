@@ -61,7 +61,7 @@ public class KenshiroServer
     @SuppressWarnings("unchecked")
     public void onClientPunchedBlock(EntityPlayerMP player, int x, int y, int z)
     {
-        Block block = player.worldObj.func_147439_a(x, y, z);
+        Block block = player.worldObj.getBlock(x, y, z);
         if (block != null)
         {
             BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
@@ -70,13 +70,13 @@ public class KenshiroServer
                 int meta = player.worldObj.getBlockMetadata(x, y, z);
                 if (block.removedByPlayer(player.worldObj, player, x, y, z))
                 {
-                    block.func_149664_b(player.worldObj, x, y, z, meta);
-                    block.func_149636_a(player.worldObj, player, x, y, z, meta);
+                    block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
+                    block.harvestBlock(player.worldObj, player, x, y, z, meta);
                 }
                 
                 for (EntityPlayerMP p : (ArrayList<EntityPlayerMP>)MinecraftServer.getServer().getConfigurationManager().playerEntityList)
                 {
-                    p.playerNetServerHandler.func_147359_a(new S23PacketBlockChange(x, y, z, player.worldObj));
+                    p.playerNetServerHandler.sendPacket(new S23PacketBlockChange(x, y, z, player.worldObj));
                 }
             }
         }
@@ -137,7 +137,7 @@ public class KenshiroServer
         
         target.setFire(8);
         
-        KenshiroMod.instance().networkHelper.sendPacketToAllAroundPoint(new EntityKickedPacket(player.dimension, player.func_145782_y(), target.func_145782_y()), 
+        KenshiroMod.instance().networkHelper.sendPacketToAllAroundPoint(new EntityKickedPacket(player.dimension, player.getEntityId(), target.getEntityId()), 
                 new TargetPoint(player.worldObj.provider.dimensionId, target.posX, target.posY, target.posZ, 30D));
     }
 

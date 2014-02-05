@@ -175,7 +175,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         
         if (inGround) // handle being stuck in the ground
         {
-            Block blockID = worldObj.func_147439_a(xTile, yTile, zTile);
+            Block blockID = worldObj.getBlock(xTile, yTile, zTile);
             int blockMeta = worldObj.getBlockMetadata(xTile, yTile, zTile);
             if (blockID != inTileBlockID || blockMeta != inTileMetadata)
             {
@@ -266,7 +266,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
             xTile = collisionPosition.blockX;
             yTile = collisionPosition.blockY;
             zTile = collisionPosition.blockZ;
-            inTileBlockID = worldObj.func_147439_a(xTile, yTile, zTile);
+            inTileBlockID = worldObj.getBlock(xTile, yTile, zTile);
             inTileMetadata = worldObj.getBlockMetadata(xTile, yTile, zTile);
             
             if (onHitBlock(xTile, yTile, zTile))

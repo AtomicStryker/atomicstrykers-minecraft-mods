@@ -65,7 +65,7 @@ public class BlockTask_TreeChop extends BlockTask
                 if (!output.inventory.addItemStackToInventory(stack))
                 {
                     EntityItem item = new EntityItem(output.worldObj, output.posX, output.posY - 0.30000001192092896D + (double)output.getEyeHeight(), output.posZ, stack);
-                    item.field_145804_b = 40;
+                    item.delayBeforeCanPickup = 40;
                     output.worldObj.spawnEntityInWorld(item);
                 }
             }
@@ -78,20 +78,20 @@ public class BlockTask_TreeChop extends BlockTask
     	for (int i = treeBlockList.size()-1; i >= 0; i--)
     	{
     		tempCoords = treeBlockList.get(i);
-    		worker.worldObj.func_147465_d(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
     	}
     	
     	if (leaveBlockList.size() > 0)
     	{
     		tempCoords = leaveBlockList.get(0);
-    		Block id = worker.worldObj.func_147439_a(tempCoords.posX, tempCoords.posY, tempCoords.posZ);
+    		Block id = worker.worldObj.getBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ);
     		if (id != Blocks.air)
     		{
     	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
     	    	{
     	    		tempCoords = leaveBlockList.get(i);
-    	    		id.func_149697_b(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
-    	    		worker.worldObj.func_147465_d(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+    	    		id.dropBlockAsItem(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
+    	    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
     	    	}
     		}
     	}

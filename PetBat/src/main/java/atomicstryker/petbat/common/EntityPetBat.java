@@ -345,7 +345,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void setBatExperience(int value)
     {
         dataWatcher.updateObject(17, value);
-        getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(16d + (2*PetBatMod.instance().getLevelFromExperience(value)));
+        getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(16d + (2*PetBatMod.instance().getLevelFromExperience(value)));
     }
     
     public int getBatLevel()
@@ -450,7 +450,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     protected void updateFallState(double par1, boolean par3) {}
 
     @Override
-    public boolean func_145773_az()
+    public boolean doesEntityNotTriggerPressurePlate()
     {
         return true;
     }

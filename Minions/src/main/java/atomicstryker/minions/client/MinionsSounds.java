@@ -33,7 +33,7 @@ public class MinionsSounds
                     System.out.println("Directory detected! Iterating...");
                     for (String soundFile : fileCandidate.list())
                     {
-                        event.manager.func_148599_a(new PositionedSoundRecord(new ResourceLocation(SOUND_PREFIX, soundFile), 1.0f, 0, 0, 0, 0), 0);
+                        event.manager.addDelayedSound(new PositionedSoundRecord(new ResourceLocation(SOUND_PREFIX, soundFile), 1.0f, 0, 0, 0, 0), 0);
                         System.out.println("loaded soundfile " + soundFile);
                     }
                 }
@@ -55,7 +55,7 @@ public class MinionsSounds
                                 && s.length() > 0
                                 && s.startsWith(SOUND_RESOURCE_LOCATION))
                                 {
-                                    event.manager.func_148599_a(new PositionedSoundRecord(new ResourceLocation(SOUND_PREFIX, s.substring(s.lastIndexOf("/")+1)), 1.0f, 0, 0, 0, 0), 0);
+                                    event.manager.addDelayedSound(new PositionedSoundRecord(new ResourceLocation(SOUND_PREFIX, s.substring(s.lastIndexOf("/")+1)), 1.0f, 0, 0, 0, 0), 0);
                                     System.out.println("loaded soundfile " + s.substring(s.lastIndexOf("/")+1));
                                 }
                             }

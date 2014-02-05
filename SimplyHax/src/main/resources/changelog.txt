@@ -1,3 +1,9 @@
+1.7.2a
+- flying module now just enables creative style flying instead of hacking movement
+- flying module blocks all fall damage at all times now
+- the config subsequently condenses to max speeds and the sprinting button
+- the sprinting button is now configured in the mc keys menu
+
 1.7.2
 -updated for MC 1.7.2
 

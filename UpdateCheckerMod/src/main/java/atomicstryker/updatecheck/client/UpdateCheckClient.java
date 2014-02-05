@@ -11,7 +11,7 @@ public class UpdateCheckClient implements IProxy
     public void announce(String announcement)
     {
         /* getChatGUI, printChatMessage */
-        FMLClientHandler.instance().getClient().ingameGUI.func_146158_b().func_146227_a(new ChatComponentText(announcement));
+        FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage(new ChatComponentText(announcement));
     }
 
 }

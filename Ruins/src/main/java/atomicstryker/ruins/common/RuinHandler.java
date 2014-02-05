@@ -119,9 +119,9 @@ public class RuinHandler
              * BiomeGenBase
              */
             BiomeGenBase bgb;
-            for (int x = 0; x < BiomeGenBase.func_150565_n().length; x++)
+            for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
             {
-                bgb = BiomeGenBase.func_150565_n()[x];
+                bgb = BiomeGenBase.getBiomeGenArray()[x];
                 if (bgb != null)
                 {
                     try
@@ -350,9 +350,9 @@ public class RuinHandler
                 read = read.split("_")[1];
                 check = read.split("=");
                 boolean found = false;
-                for (int i = 0; i < BiomeGenBase.func_150565_n().length; i++)
+                for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
                 {
-                    if (BiomeGenBase.func_150565_n()[i] != null && BiomeGenBase.func_150565_n()[i].biomeName.equalsIgnoreCase(check[0]))
+                    if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(check[0]))
                     {
                         vars[CHANCE][i] = Integer.parseInt(check[1]);
                         if (!disableLogging)
@@ -389,7 +389,7 @@ public class RuinHandler
                 check = check[1].split(";");
                 int biome = Integer.parseInt(check[0]);
                 removeTemplate(check[1], biome);
-                pw.println("Excluded from biome " + BiomeGenBase.func_150565_n()[biome].biomeName + ": " + check[1]);
+                pw.println("Excluded from biome " + BiomeGenBase.getBiomeGenArray()[biome].biomeName + ": " + check[1]);
             }
             read = br.readLine();
         }
@@ -416,9 +416,9 @@ public class RuinHandler
                         BiomeGenBase bgb;
                         for (String biomeName : ((RuinTemplate) r).getBiomesToSpawnIn())
                         {
-                            for (int x = 0; x < BiomeGenBase.func_150565_n().length; x++)
+                            for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
                             {
-                                bgb = BiomeGenBase.func_150565_n()[x];
+                                bgb = BiomeGenBase.getBiomeGenArray()[x];
                                 if (bgb != null)
                                 {
                                     candidate = bgb.biomeName.toLowerCase();

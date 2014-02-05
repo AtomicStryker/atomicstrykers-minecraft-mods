@@ -96,7 +96,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     
     private void checkBlockForVein(int x, int y, int z)
     {
-    	Block checkBlockID = worker.worldObj.func_147439_a(x, y, z);
+    	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
     	if (!MinionsCore.instance.isBlockValueable(checkBlockID))
     	{
     		return;

@@ -167,15 +167,15 @@ public class MultiMineClient
     public void renderBlockDigParticles(int x, int y, int z)
     {
         World world = thePlayer.worldObj;
-        Block block = world.func_147439_a(x, y, z);
+        Block block = world.getBlock(x, y, z);
         if (block != Blocks.air)
         {
             int blockMeta = world.getBlockMetadata(x, y, z);
-            mc.func_147118_V().func_147682_a(
+            mc.getSoundHandler().playSound(
                     new PositionedSoundRecord(
-                            new ResourceLocation(block.field_149762_H.func_150495_a()), 
-                            (block.field_149762_H.func_150497_c() + 1.0F) / 2.0F, block.field_149762_H.func_150494_d() * 0.8F, x+0.5f, y+0.5f, z+0.5f));
-            mc.effectRenderer.func_147215_a(x, y, z, block, blockMeta);
+                            new ResourceLocation(block.stepSound.getBreakSound()), 
+                            (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F, x+0.5f, y+0.5f, z+0.5f));
+            mc.effectRenderer.addBlockDestroyEffects(x, y, z, block, blockMeta);
         }
     }
     
@@ -239,21 +239,21 @@ public class MultiMineClient
                 {
                     EntityPlayer player = thePlayer;
                     World w = player.worldObj;
-                    w.func_147443_d(player.func_145782_y(), x, y, z, -1);
+                    w.destroyBlockInWorldPartially(player.getEntityId(), x, y, z, -1);
                     
-                    Block block = w.func_147439_a(x, y, z);
+                    Block block = w.getBlock(x, y, z);
                     if (block != Blocks.air)
                     {
                         int meta = w.getBlockMetadata(x, y, z);
                         if (block.removedByPlayer(w, player, x, y, z))
                         {
-                            block.func_149664_b(w, x, y, z, meta);
-                            block.func_149636_a(w, player, x, y, z, meta);
+                            block.onBlockDestroyedByPlayer(w, x, y, z, meta);
+                            block.harvestBlock(w, player, x, y, z, meta);
                         }
 						
                         //w.playAuxSFX(2001, x, y, z, blockID + meta << 12);
-						w.playSound(x+0.5D, y+0.5D, z+0.5D, block.field_149762_H.func_150495_a(), 
-						        (block.field_149762_H.func_150497_c() + 1.0F) / 2.0F, block.field_149762_H.func_150494_d() * 0.8F, false);
+						w.playSound(x+0.5D, y+0.5D, z+0.5D, block.stepSound.getBreakSound(), 
+						        (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F, false);
                     }
                     onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
 
@@ -353,13 +353,13 @@ public class MultiMineClient
         DestroyBlockProgress dbp = vanillaDestroyBlockProgressMap.get(0);
         
         // execute code which gets the object assigned the private cloud tick value we want
-        mc.renderGlobal.func_147587_b(0, (int)thePlayer.posX, (int)thePlayer.posY, (int)thePlayer.posZ, 1);
+        mc.renderGlobal.destroyBlockPartially(0, (int)thePlayer.posX, (int)thePlayer.posY, (int)thePlayer.posZ, 1);
         
         // read the needed value
         lastCloudTickReading = vanillaDestroyBlockProgressMap.get(0).getCreationCloudUpdateTick();
         
         // execute code which destroys the helper object
-        mc.renderGlobal.func_147587_b(0, (int)thePlayer.posX, (int)thePlayer.posY, (int)thePlayer.posZ, 10);
+        mc.renderGlobal.destroyBlockPartially(0, (int)thePlayer.posX, (int)thePlayer.posY, (int)thePlayer.posZ, 10);
         
         // if necessary restore previous object
         if (dbp != null)

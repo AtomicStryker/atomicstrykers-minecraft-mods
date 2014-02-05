@@ -166,7 +166,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             h++;
         }
-        while (world.func_147439_a(x, h, z) != Blocks.air);
+        while (world.getBlock(x, h, z) != Blocks.air);
         
         return h-1;
     }

@@ -14,7 +14,7 @@ public class BlockRopeCenter extends Block
 {
     public BlockRopeCenter()
     {
-        super(Material.field_151582_l);
+        super(Material.vine);
         float f = 0.1F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 1.0F, 0.5F + f);
     }
@@ -37,22 +37,22 @@ public class BlockRopeCenter extends Block
         byte xoffset = 0;
         byte zoffset = 0;
         byte ropeending = 0;
-        if(world.func_147439_a(i - 1, j, k + 0) == this)
+        if(world.getBlock(i - 1, j, k + 0) == this)
         {
             xoffset = -1;
             zoffset = 0;
         }
-        else if(world.func_147439_a(i + 1, j, k + 0) == this)
+        else if(world.getBlock(i + 1, j, k + 0) == this)
         {
             xoffset = 1;
             zoffset = 0;
         }
-        else if(world.func_147439_a(i, j, k - 1) == this)
+        else if(world.getBlock(i, j, k - 1) == this)
         {
             xoffset = 0;
             zoffset = -1;
         }
-        else if(world.func_147439_a(i, j, k + 1) == this)
+        else if(world.getBlock(i, j, k + 1) == this)
         {
             xoffset = 0;
             zoffset = 1;
@@ -65,19 +65,19 @@ public class BlockRopeCenter extends Block
                 {
                     ropeending = 2;
                 }
-                if((ropeending == 0) & (world.func_147439_a(i + xoffset, j - length, k + zoffset) == 0))
+                if((ropeending == 0) & (world.getBlock(i + xoffset, j - length, k + zoffset) == 0))
                 {
                     ropeending = 1;
-                    world.func_147465_d(i, j, k, 0, 0, 3);
-                    world.func_147465_d(i + xoffset, j - length, k + zoffset, this, 0, 3);
+                    world.setBlock(i, j, k, 0, 0, 3);
+                    world.setBlock(i + xoffset, j - length, k + zoffset, this, 0, 3);
                 }
             }
 
         }
-        if((ropeending == 0 || ropeending == 2) & (world.func_147439_a(i, j + 1, k) != this) && !world.isBlockOpaqueCube(i, j + 1, k))
+        if((ropeending == 0 || ropeending == 2) & (world.getBlock(i, j + 1, k) != this) && !world.isBlockOpaqueCube(i, j + 1, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.func_147465_d(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
         }
     }
 
@@ -86,19 +86,19 @@ public class BlockRopeCenter extends Block
     {
         super.onNeighborBlockChange(world, i, j, k, l);
         boolean blockstays = false;
-        if(world.func_147439_a(i - 1, j, k + 0) == this)
+        if(world.getBlock(i - 1, j, k + 0) == this)
         {
             blockstays = true;
         }
-        if(world.func_147439_a(i + 1, j, k + 0) == this)
+        if(world.getBlock(i + 1, j, k + 0) == this)
         {
             blockstays = true;
         }
-        if(world.func_147439_a(i, j, k - 1) == this)
+        if(world.getBlock(i, j, k - 1) == this)
         {
             blockstays = true;
         }
-        if(world.func_147439_a(i, j, k + 1) == this)
+        if(world.getBlock(i, j, k + 1) == this)
         {
             blockstays = true;
         }
@@ -106,33 +106,33 @@ public class BlockRopeCenter extends Block
         {
             blockstays = true;
         }
-        if(world.func_147439_a(i, j + 1, k) == this)
+        if(world.getBlock(i, j + 1, k) == this)
         {
             blockstays = true;
         }
         if(!blockstays)
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.func_147465_d(i, j, k, 0, 0, 3);
+            world.setBlock(i, j, k, 0, 0, 3);
         }
     }
 
     @Override
     public boolean canPlaceBlockAt(World world, int i, int j, int k)
     {
-        if(world.func_147439_a(i - 1, j, k + 0) == this)
+        if(world.getBlock(i - 1, j, k + 0) == this)
         {
             return true;
         }
-        if(world.func_147439_a(i + 1, j, k + 0) == this)
+        if(world.getBlock(i + 1, j, k + 0) == this)
         {
             return true;
         }
-        if(world.func_147439_a(i, j, k - 1) == this)
+        if(world.getBlock(i, j, k - 1) == this)
         {
             return true;
         }
-        if(world.func_147439_a(i, j, k + 1) == this)
+        if(world.getBlock(i, j, k + 1) == this)
         {
             return true;
         }
@@ -140,7 +140,7 @@ public class BlockRopeCenter extends Block
         {
             return true;
         }
-        return world.func_147439_a(i, j + 1, k) == this;
+        return world.getBlock(i, j + 1, k) == this;
     }
 	
     @Override
@@ -158,25 +158,25 @@ public class BlockRopeCenter extends Block
 		int rope_max_y;
 		int rope_min_y;
 		
-		if (world.func_147439_a(a, b, c) == this)
+		if (world.getBlock(a, b, c) == this)
 		{
-			world.func_147465_d(a, b, c, 0, 0, 3);
+			world.setBlock(a, b, c, 0, 0, 3);
 		}
 		
 		for(int x = 1;; x++)
 		{
-			if (world.func_147439_a(a, b+x, c) != this)
+			if (world.getBlock(a, b+x, c) != this)
 			{
 				rope_max_y = b+x-1;
 				System.out.println("Player destroyed Rope goes ["+(x-1)+"] blocks higher, up to "+a+","+rope_max_y+","+c);
-				System.out.println("Differing BlockID is: "+world.func_147439_a(a, b+x, c));
+				System.out.println("Differing BlockID is: "+world.getBlock(a, b+x, c));
 				break;
 			}
 		}
 		
 		for(int x = 0;; x--)
 		{
-			if (world.func_147439_a(a, b+x, c) != this)
+			if (world.getBlock(a, b+x, c) != this)
 			{
 				rope_min_y = b+x+1;
 				System.out.println("Player destroyed Rope goes ["+(x+1)+"] blocks lower, down to "+a+","+rope_min_y+","+c);
@@ -190,7 +190,7 @@ public class BlockRopeCenter extends Block
 		{
 			coords = RopesPlusCore.areCoordsArrowRope(a, rope_min_y+x, c);
 			
-			world.func_147465_d(a, rope_min_y+x, c, 0, 0, 3);
+			world.setBlock(a, rope_min_y+x, c, 0, 0, 3);
 			
 			if (coords != null)
 			{

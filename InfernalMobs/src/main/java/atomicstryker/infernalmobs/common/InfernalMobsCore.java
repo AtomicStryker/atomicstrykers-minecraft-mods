@@ -329,7 +329,7 @@ public class InfernalMobsCore
                     {
                         proxy.getRareMobs().put(entity, mod);
                         mod.onSpawningComplete(entity);
-                        // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.func_145782_y()+": "+mod.getLinkedModName());
+                        // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.getEntityId()+": "+mod.getLinkedModName());
                     }
                 }
             }
@@ -411,7 +411,7 @@ public class InfernalMobsCore
      */
     public void setEntityHealthPastMax(EntityLivingBase entity, float amount)
     {
-        entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(amount);
+        entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(amount);
         entity.setHealth(amount);
         instance.sendHealthPacket(entity, amount);
     }
@@ -745,14 +745,14 @@ public class InfernalMobsCore
 
     public void sendHealthPacket(EntityLivingBase mob, float health)
     {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.func_145782_y(), mob.getHealth(), mob.getMaxHealth()), new TargetPoint(
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new TargetPoint(
                 mob.dimension, mob.posX, mob.posY, mob.posZ, 32d));
     }
 
     public void sendHealthRequestPacket(EntityLivingBase mob)
     {
-        networkHelper.sendPacketToServer(new HealthPacket(FMLClientHandler.instance().getClient().thePlayer.func_146103_bH().getName(), mob
-                .func_145782_y(), 0f, 0f));
+        networkHelper.sendPacketToServer(new HealthPacket(FMLClientHandler.instance().getClient().thePlayer.getGameProfile().getName(), mob
+                .getEntityId(), 0f, 0f));
     }
 
     @SubscribeEvent
@@ -766,7 +766,7 @@ public class InfernalMobsCore
             {
                 if (!mob.worldObj.loadedEntityList.contains(mob))
                 {
-                    // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.func_145782_y()+" from rareMobs");
+                    // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.getEntityId()+" from rareMobs");
                     removeEntFromElites((EntityLivingBase) mob);
                 }
             }

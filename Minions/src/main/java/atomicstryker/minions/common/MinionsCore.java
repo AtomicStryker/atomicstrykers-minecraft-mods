@@ -19,8 +19,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -58,7 +60,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.1")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.2")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -88,13 +90,15 @@ public class MinionsCore
     public final HashSet<Block> configWorthlessBlocks;
     public final LinkedList<Minion_Job_Manager> runningJobList;
     public final LinkedList<Minion_Job_Manager> finishedJobList;
-    public final HashMap<String, Integer> masterCommits;
+    
     private final HashMap<String, ArrayList<EntityMinion>> minionMap;
     private boolean minionMapLock;
     
     private final MinionsChunkManager chunkLoader;
     
     private boolean debugMode;
+    
+    private EvilCommitCount commitStorage;
     
     public MinionsCore()
     {
@@ -103,7 +107,6 @@ public class MinionsCore
         configWorthlessBlocks = new HashSet<Block>();
         runningJobList = new LinkedList<Minion_Job_Manager>();
         finishedJobList = new LinkedList<Minion_Job_Manager>();
-        masterCommits = new HashMap<String, Integer>();
         minionMap = new HashMap<String, ArrayList<EntityMinion>>();
         minionMapLock = false;
         chunkLoader = new MinionsChunkManager();
@@ -175,7 +178,7 @@ public class MinionsCore
             Object[] toSend = {MinionsCore.instance.evilDeedXPCost};
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.REQUESTXPSETTING.ordinal(), toSend), p);
             
-            MinionsCore.instance.prepareMinionHolder(p.func_146103_bH().getName());
+            MinionsCore.instance.prepareMinionHolder(p.getGameProfile().getName());
             Object[] toSend2 = {MinionsCore.instance.hasPlayerMinions(p) ? 1 : 0, MinionsCore.instance.hasAllMinions(p) ? 1 : 0};
             PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend2), p);
         }
@@ -201,9 +204,15 @@ public class MinionsCore
     {
         if (!hasBooted)
         {
-            if (System.currentTimeMillis() > firstBootTime + 10000L)
+            if (System.currentTimeMillis() > firstBootTime + 3000L)
             {
                 hasBooted = true;
+                commitStorage = (EvilCommitCount) world.perWorldStorage.loadData(EvilCommitCount.class, "minionsCommits");
+                if (commitStorage == null)
+                {
+                    commitStorage = new EvilCommitCount("minionsCommits");
+                    world.perWorldStorage.setData("minionsCommits", commitStorage);
+                }
             }
         }
         else if (System.currentTimeMillis() > time)
@@ -257,10 +266,10 @@ public class MinionsCore
     @SuppressWarnings("unchecked")
     private void getViableTreeBlocks()
     {
-        for (String s : (Set<String>)GameData.blockRegistry.func_148742_b())
+        for (String s : (Set<String>)GameData.blockRegistry.getKeys())
         {
             Block iter = GameData.blockRegistry.getObject(s);
-            if (iter instanceof BlockLog || iter.func_149732_F().contains("log"))
+            if (iter instanceof BlockLog || iter.getLocalizedName().contains("log"))
             {
                 debugPrint("Minions found viable TreeBlock: "+iter);
                 foundTreeBlocks.add(iter);
@@ -422,26 +431,30 @@ public class MinionsCore
 
     public void onMasterAddedEvil(EntityPlayer player)
     {
-        if (masterCommits.get(player.func_146103_bH().getName()) != null)
+        if (commitStorage.masterCommits.get(player.getGameProfile().getName()) != null)
         {
-            int commits = (Integer) masterCommits.get(player.func_146103_bH().getName());
+            int commits = commitStorage.masterCommits.get(player.getGameProfile().getName());
             commits++;
 
-            if (commits == 4)
+            if (commits % 4 == 0)
             {
-            	proxy.playSoundAtEntity(player, "minions:thegodshaverewardedyouroffering", 1.0F, 1.0F);
-                // give master item to player
-                player.inventory.addItemStackToInventory(new ItemStack(itemMastersStaff, 1, 0));
+                // check existing staff
+                if (!player.inventory.hasItem(itemMastersStaff))
+                {
+                    proxy.playSoundAtEntity(player, "minions:thegodshaverewardedyouroffering", 1.0F, 1.0F);
+                    // give master item to player
+                    player.inventory.addItemStackToInventory(new ItemStack(itemMastersStaff, 1, 0));
+                }
             }
             else
             {
-                masterCommits.put(player.func_146103_bH().getName(), commits);
+                commitStorage.masterCommits.put(player.getGameProfile().getName(), commits);
                 proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
             }
         }
         else
         {
-            masterCommits.put(player.func_146103_bH().getName(), 1);
+            commitStorage.masterCommits.put(player.getGameProfile().getName(), 1);
             proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
         }
     }
@@ -501,12 +514,12 @@ public class MinionsCore
             minion.setPosition(x, y+1, z);
             playerEnt.worldObj.spawnEntityInWorld(minion);
             MinionsCore.proxy.sendSoundToClients(minion, "minions:minionspawn");
-            offerMinionToMap(minion, playerEnt.func_146103_bH().getName());
-            //System.out.println("spawned missing minion for "+var3.func_146103_bH().getName());
+            offerMinionToMap(minion, playerEnt.getGameProfile().getName());
+            //System.out.println("spawned missing minion for "+var3.getGameProfile().getName());
             return true;
         }
         
-        //AS_EntityMinion[] readout = (AS_EntityMinion[]) masterNames.get(playerEnt.func_146103_bH().getName());
+        //AS_EntityMinion[] readout = (AS_EntityMinion[]) masterNames.get(playerEnt.getGameProfile().getName());
         orderMinionsToMoveTo(playerEnt, x, y, z);
         return false;
     }
@@ -519,7 +532,7 @@ public class MinionsCore
             minion.giveTask(null, true);
         }
         
-        cancelRunningJobsForMaster(playerEnt.func_146103_bH().getName());
+        cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
         
         if (minions.length > 0)
         {
@@ -537,7 +550,7 @@ public class MinionsCore
         }
         
         // stairwell job
-        cancelRunningJobsForMaster(playerEnt.func_146103_bH().getName());
+        cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
         
         if (minions.length > 0)
         {
@@ -568,12 +581,12 @@ public class MinionsCore
     public void orderMinionsToChestBlock(EntityPlayer playerEnt, boolean sneaking, int x, int y, int z)
     { 
         TileEntity chestOrInventoryBlock;
-        if ((chestOrInventoryBlock = playerEnt.worldObj.func_147438_o(x, y-1, z)) != null
+        if ((chestOrInventoryBlock = playerEnt.worldObj.getTileEntity(x, y-1, z)) != null
                 && chestOrInventoryBlock instanceof IInventory)
         {
             if (!sneaking)
             {
-                cancelRunningJobsForMaster(playerEnt.func_146103_bH().getName());
+                cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
             }
             
             EntityMinion[] minions = getMinionsForMaster(playerEnt);
@@ -597,7 +610,7 @@ public class MinionsCore
     {
         EntityMinion[] minions = getMinionsForMaster(playerEnt);
         
-        cancelRunningJobsForMaster(playerEnt.func_146103_bH().getName());
+        cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
         
         if (minions.length > 0)
         {
@@ -612,10 +625,10 @@ public class MinionsCore
     
     public void orderMinionsToMineOre(EntityPlayer playerEnt, int x, int y, int z)
     {        
-        if (isBlockValueable(playerEnt.worldObj.func_147439_a(x, y-1, z)))
+        if (isBlockValueable(playerEnt.worldObj.getBlock(x, y-1, z)))
         {
             EntityMinion[] minions = getMinionsForMaster(playerEnt);
-            cancelRunningJobsForMaster(playerEnt.func_146103_bH().getName());
+            cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
             
             if (minions.length > 0)
             {
@@ -634,7 +647,7 @@ public class MinionsCore
     
     public void orderMinionsToFollow(EntityPlayer playerEnt)
     {
-        cancelRunningJobsForMaster(playerEnt.func_146103_bH().getName());
+        cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
         
         EntityMinion[] minions = getMinionsForMaster(playerEnt);
         if (minions.length > 0)
@@ -761,6 +774,38 @@ public class MinionsCore
         {
             System.out.println(s);
         }
+    }
+    
+    private class EvilCommitCount extends WorldSavedData
+    {
+        
+        protected final HashMap<String, Integer> masterCommits;
+
+        public EvilCommitCount(String par1Str)
+        {
+            super(par1Str);
+            masterCommits = new HashMap<String, Integer>();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void readFromNBT(NBTTagCompound tags)
+        {
+            for(String s : (Set<String>)tags.func_150296_c())
+            {
+                masterCommits.put(s, tags.getInteger(s));
+            }
+        }
+
+        @Override
+        public void writeToNBT(NBTTagCompound tags)
+        {
+            for (String s : masterCommits.keySet())
+            {
+                tags.setInteger(s, masterCommits.get(s));
+            }
+        }
+        
     }
     
 }

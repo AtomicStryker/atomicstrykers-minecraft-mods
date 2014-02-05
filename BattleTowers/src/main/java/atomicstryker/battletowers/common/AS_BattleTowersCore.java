@@ -189,7 +189,7 @@ public class AS_BattleTowersCore
     
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
-        MinecraftServer.getServer().getConfigurationManager().func_148540_a(new S02PacketChat(new ChatComponentText("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...")));
+        MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(new S02PacketChat(new ChatComponentText("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...")));
         towerDestroyers.add(td);
     }
 

@@ -146,14 +146,14 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
    		{
    			if (worldObj.getLightBrightness(nextX, startY, nextZ) < 10F)
    			{
-   				worldObj.func_147465_d(nextX-2*xDirection, startY, nextZ-2*zDirection, Blocks.torch, 0, 3);
+   				worldObj.setBlock(nextX-2*xDirection, startY, nextZ-2*zDirection, Blocks.torch, 0, 3);
    			}
    		}
    		
    		// check previous segment floor for having been dug away
    		for (int len = 0; len < 4; len++)
    		{
-            if (worldObj.func_147439_a(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len)) == Blocks.air)
+            if (worldObj.getBlock(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len)) == Blocks.air)
             {
                 jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-(xDirection*len), startY-1, nextZ-(zDirection*len), Blocks.dirt, 0));
             }
@@ -188,7 +188,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
     
     private void checkBlockValuables(int x, int y, int z)
     {
-    	if (MinionsCore.instance.isBlockValueable(worldObj.func_147439_a(x, y, z)))
+    	if (MinionsCore.instance.isBlockValueable(worldObj.getBlock(x, y, z)))
     	{
     		BlockTask_MineOreVein minetask = new BlockTask_MineOreVein(this, null, x, y, z);
     		if (minetask.posY > startY)

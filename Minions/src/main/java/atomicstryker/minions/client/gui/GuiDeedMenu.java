@@ -40,9 +40,9 @@ public class GuiDeedMenu extends GuiScreen
 	@Override
     public void initGui()
     {
-        this.field_146292_n.clear();
+        this.buttonList.clear();
         
-        this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 120, "Chicken out"));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Chicken out"));
         
     	ArrayList<EvilDeed> copy = (ArrayList<EvilDeed>) MinionsCore.instance.evilDoings.clone();
     	deedButtons = new ArrayList<EvilDeed>();
@@ -54,14 +54,14 @@ public class GuiDeedMenu extends GuiScreen
     		copy.remove(i);
     	}
     	
-    	this.field_146292_n.clear();
+    	this.buttonList.clear();
     	
-    	this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 120, "Nevermind"));
+    	this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Nevermind"));
     	
     	for (int x = 0; x < 3; x++)
     	{
     		EvilDeed deed = (EvilDeed) deedButtons.get(x);
-    		this.field_146292_n.add(new GuiButton(x+1, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + x*40, deed.getButtonText()));
+    		this.buttonList.add(new GuiButton(x+1, this.width / 2 - 100, this.height / 4 + x*40, deed.getButtonText()));
     	}
     }
 
@@ -88,7 +88,7 @@ public class GuiDeedMenu extends GuiScreen
         			timeFadeStart = System.currentTimeMillis();
         			fadeState = 0;
         			
-        			field_146297_k.thePlayer.worldObj.playSound(field_146297_k.thePlayer.posX, field_146297_k.thePlayer.posY, field_146297_k.thePlayer.posZ, ((EvilDeed)this.deedButtons.get(actionCalled-1)).getSoundFile(), 1.0F, 1.0F, false);
+        			mc.thePlayer.worldObj.playSound(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, ((EvilDeed)this.deedButtons.get(actionCalled-1)).getSoundFile(), 1.0F, 1.0F, false);
         			timeStayBlack = ((EvilDeed)this.deedButtons.get(actionCalled-1)).getSoundLength() * 1000L;
         		}
         	}
@@ -103,10 +103,10 @@ public class GuiDeedMenu extends GuiScreen
         			fadeOutfadeInUnderWay = false;
         			timeFadeStart = 0L;
 
-        			Object[] toSend = {field_146297_k.thePlayer.func_146103_bH().getName()};
+        			Object[] toSend = {mc.thePlayer.getGameProfile().getName()};
         			PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.EVILDEEDDONE.ordinal(), toSend)); // evildeed call
 
-        			this.field_146297_k.func_147108_a((GuiScreen)null);
+        			this.mc.displayGuiScreen((GuiScreen)null);
         			//System.out.println("Unfade finished, destroyed menu!");
         		}
         	}
@@ -114,16 +114,16 @@ public class GuiDeedMenu extends GuiScreen
     }
 
     @Override
-    protected void func_146284_a(GuiButton var1)
+    protected void actionPerformed(GuiButton var1)
     {
-        if (var1.field_146124_l)
+        if (var1.enabled)
         {
-        	int ID = var1.field_146127_k;
+        	int ID = var1.id;
         	actionCalled = ID;
         	
         	if (ID == 0)
         	{
-        		this.field_146297_k.func_147108_a((GuiScreen)null);
+        		this.mc.displayGuiScreen((GuiScreen)null);
         	}
         	else
         	{
@@ -143,10 +143,10 @@ public class GuiDeedMenu extends GuiScreen
     @Override
     public void drawScreen(int var1, int var2, float var3)
     {
-    	this.func_146276_q_();
-    	this.drawCenteredString(this.field_146289_q, this.screenTitle, this.field_146294_l / 2, 40, 16777215);
+    	this.drawDefaultBackground();
+    	this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 40, 16777215);
     	GL11.glPushMatrix();
-    	GL11.glTranslatef((float)(this.field_146294_l / 2), 0.0F, 50.0F);
+    	GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);
     	float var4 = 93.75F;
     	GL11.glScalef(-var4, -var4, -var4);
     	GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -158,7 +158,7 @@ public class GuiDeedMenu extends GuiScreen
     	{
     		if (fadeState == 0)
     		{
-    			Gui.drawRect(0, 0, field_146297_k.displayWidth, field_146297_k.displayHeight, -16777216);
+    			Gui.drawRect(0, 0, mc.displayWidth, mc.displayHeight, -16777216);
     			return;
     		}
     		
@@ -173,7 +173,7 @@ public class GuiDeedMenu extends GuiScreen
     		{
     			fadeIn = (j4 << 24);
     		}
-    		Gui.drawRect(0, 0, field_146297_k.displayWidth, field_146297_k.displayHeight, 0 - fadeIn);
+    		Gui.drawRect(0, 0, mc.displayWidth, mc.displayHeight, 0 - fadeIn);
     	}
     }
 }

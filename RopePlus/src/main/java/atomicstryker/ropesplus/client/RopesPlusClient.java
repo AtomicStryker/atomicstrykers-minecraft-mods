@@ -294,16 +294,16 @@ public class RopesPlusClient
                                     + Keyboard.getKeyName(keyToggle.func_151463_i()), guiStringX, guiStringY + 10, 0xffffff);
                 }
 
-                if (swapForward.func_151470_d())
+                if (swapForward.getIsKeyPressed())
                 {
                     cycle(false);
                 }
-                else if (swapBackward.func_151470_d())
+                else if (swapBackward.getIsKeyPressed())
                 {
                     cycle(true);
                 }
 
-                if (keyToggle.func_151470_d())
+                if (keyToggle.getIsKeyPressed())
                 {
                     toggleEnabled = !toggleEnabled;
                     if (!toggleEnabled)
@@ -324,7 +324,7 @@ public class RopesPlusClient
 
             if (RopesPlusCore.proxy.getShouldHookShotPull() >= 0f)
             {
-                if (mc.gameSettings.keyBindSneak.func_151470_d())
+                if (mc.gameSettings.keyBindSneak.getIsKeyPressed())
                 {
                     RopesPlusCore.proxy.setShouldHookShotPull(RopesPlusCore.proxy.getShouldHookShotPull() + 0.33f);
                 }
@@ -332,9 +332,9 @@ public class RopesPlusClient
 
             if (onZipLine != null)
             {
-                if (mc.gameSettings.keyBindUseItem.func_151470_d() && lastZipLineLength > 0.2)
+                if (mc.gameSettings.keyBindUseItem.getIsKeyPressed() && lastZipLineLength > 0.2)
                 {
-                    Object[] toSend = { onZipLine.func_145782_y(), lastZipLineLength };
+                    Object[] toSend = { onZipLine.getEntityId(), lastZipLineLength };
                     PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
                     onZipLine = null;
                 }
@@ -350,7 +350,7 @@ public class RopesPlusClient
                     if (++zipTicker == 10)
                     {
                         zipTicker = 0;
-                        Object[] toSend = { onZipLine.func_145782_y(), lastZipLineLength };
+                        Object[] toSend = { onZipLine.getEntityId(), lastZipLineLength };
                         PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
                     }
 

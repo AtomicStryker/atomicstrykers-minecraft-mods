@@ -61,7 +61,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     private long timeLastSound;
     public boolean canPickUpItems;
     private long canPickUpItemsAgainAt;
-    private long closeChestTime;
+    private long closeInventoryTime;
     private long despawnTime;
     private float moveSpeed;
     
@@ -74,8 +74,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         this.isImmuneToFire = true;
 
         this.moveSpeed = 1.2F;
-        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.225D);
-        getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(MinionsCore.instance.minionFollowRange);
+        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.225D);
+        getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(MinionsCore.instance.minionFollowRange);
         
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
         
@@ -95,7 +95,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         isStripMining = false;
         canPickUpItems = true;
         canPickUpItemsAgainAt = 0L;
-        closeChestTime = 0;
+        closeInventoryTime = 0;
         despawnTime = -1l;
     }
 
@@ -103,7 +103,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         this(world);
         master = playerEnt;
-        setMasterUserName(playerEnt.func_146103_bH().getName());
+        setMasterUserName(playerEnt.getGameProfile().getName());
     }
 
     @Override
@@ -210,7 +210,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     public void readEntityFromNBT(NBTTagCompound var1)
     {
         super.readEntityFromNBT(var1);
-        NBTTagList var2 = var1.func_150295_c("MinionInventory", inventory.getSizeInventory());
+        NBTTagList var2 = var1.getTagList("MinionInventory", inventory.getSizeInventory());
         this.inventory.readFromNBT(var2);
         setMasterUserName(var1.getString("masterUsername"));
         master = worldObj.getPlayerEntityByName(getMasterUserName());
@@ -288,14 +288,14 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             int x = this.dataWatcher.getWatchableObjectInt(13);
             int y = this.dataWatcher.getWatchableObjectInt(14);
             int z = this.dataWatcher.getWatchableObjectInt(15);
-            Block blockID = worldObj.func_147439_a(x, y, z);
+            Block blockID = worldObj.getBlock(x, y, z);
 
             if (blockID != Blocks.air)
             {
                 long curTime = System.currentTimeMillis();
                 if (curTime - timeLastSound > (500L / workSpeed))
                 {
-                    worldObj.playSoundAtEntity(this, blockID.field_149762_H.func_150498_e(), (blockID.field_149762_H.func_150497_c() + 1.0F) / 2.0F, blockID.field_149762_H.func_150494_d() * 0.8F);
+                    worldObj.playSoundAtEntity(this, blockID.stepSound.getStepResourcePath(), (blockID.stepSound.getVolume() + 1.0F) / 2.0F, blockID.stepSound.getPitch() * 0.8F);
                     timeLastSound = curTime;
                 }
 
@@ -314,10 +314,10 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         super.onEntityUpdate();
 
-        if (closeChestTime != 0)
+        if (closeInventoryTime != 0)
         {
-            ((IInventory) returnChestOrInventory).closeChest();
-            closeChestTime = 0;
+            ((IInventory) returnChestOrInventory).closeInventory();
+            closeInventoryTime = 0;
         }
 
         if (workBoostTime != 0L && System.currentTimeMillis() - workBoostTime > 30000L)
@@ -391,8 +391,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                     }
                     else
                     {
-                        AStarNode[] possibles = AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ), returnChestOrInventory.field_145851_c,
-                                returnChestOrInventory.field_145848_d, returnChestOrInventory.field_145849_e);
+                        AStarNode[] possibles = AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ), returnChestOrInventory.xCoord,
+                                returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
                         if (possibles.length != 0)
                         {
                             orderMinionToMoveTo(possibles, false);
@@ -404,8 +404,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             {
                 if (this.inventory.containsItems() && checkReturnChestValidity())
                 {
-                    ((IInventory) returnChestOrInventory).openChest();
-                    closeChestTime = System.currentTimeMillis() + 4000L;
+                    ((IInventory) returnChestOrInventory).openInventory();
+                    closeInventoryTime = System.currentTimeMillis() + 4000L;
                     this.inventory.putAllItemsToInventory((IInventory) returnChestOrInventory);
                 }
                 returningGoods = false;
@@ -416,8 +416,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     private boolean checkReturnChestValidity()
     {
-        TileEntity test = worldObj.func_147438_o(returnChestOrInventory.field_145851_c,
-                returnChestOrInventory.field_145848_d, returnChestOrInventory.field_145849_e);
+        TileEntity test = worldObj.getTileEntity(returnChestOrInventory.xCoord,
+                returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
         if (test != null)
         {
             returnChestOrInventory = test;
@@ -500,8 +500,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     private double getDistanceToTileEntity(TileEntity tileent)
     {
-        return AStarStatic.getDistanceBetweenCoords(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), tileent.field_145851_c,
-                tileent.field_145848_d, tileent.field_145849_e);
+        return AStarStatic.getDistanceBetweenCoords(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), tileent.xCoord,
+                tileent.yCoord, tileent.zCoord);
     }
 
     public boolean hasReachedTarget()
@@ -543,7 +543,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         if (var1.getEntity() != null && timelastSqueak + timeSqueakIntervals < System.currentTimeMillis())
         {
             timelastSqueak = System.currentTimeMillis();
-            if (master != null && var1.getEntity().func_145782_y() == master.func_145782_y())
+            if (master != null && var1.getEntity().getEntityId() == master.getEntityId())
             {
                 workBoostTime = System.currentTimeMillis();
                 workSpeed = 2.0F;
@@ -663,11 +663,11 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     public void adaptItem(Material mat)
     {
-        if (mat == Material.field_151571_B || mat == Material.field_151577_b || mat == Material.field_151578_c || mat == Material.field_151595_p || mat == Material.field_151597_y || mat == Material.field_151583_m)
+        if (mat == Material.clay || mat == Material.grass || mat == Material.ground || mat == Material.sand || mat == Material.snow || mat == Material.sponge)
         {
             setHeldItemShovel();
         }
-        else if (mat == Material.field_151570_A || mat == Material.field_151580_n || mat == Material.field_151584_j || mat == Material.field_151585_k || mat == Material.field_151582_l || mat == Material.field_151569_G || mat == Material.field_151575_d)
+        else if (mat == Material.cactus || mat == Material.cloth || mat == Material.leaves || mat == Material.plants || mat == Material.vine || mat == Material.web || mat == Material.wood)
         {
             setHeldItemAxe();
         }
@@ -683,7 +683,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         if (stack != null)
         {
             EntityItem itemEnt = new EntityItem(this.worldObj, this.posX, this.posY - 0.3D + (double) this.getEyeHeight(), this.posZ, stack);
-            itemEnt.field_145804_b = 40;
+            itemEnt.delayBeforeCanPickup = 40;
             float varFloatA = 0.1F;
             itemEnt.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
             itemEnt.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
@@ -705,11 +705,11 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     @Override
     public int compareTo(EntityMinion mother)
     {
-        if (mother.func_145782_y() == this.func_145782_y())
+        if (mother.getEntityId() == this.getEntityId())
         {
             return 0;
         }
-        if (mother.func_145782_y() > this.func_145782_y())
+        if (mother.getEntityId() > this.getEntityId())
         {
             return -1;
         }

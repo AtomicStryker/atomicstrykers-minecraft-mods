@@ -89,7 +89,7 @@ public class KenshiroClient
         {
             if (minecraft.currentScreen != null)
             {
-                minecraft.func_147108_a((GuiScreen)null);
+                minecraft.displayGuiScreen((GuiScreen)null);
             }
             
             entPlayer.isSwingInProgress = true;
@@ -109,12 +109,12 @@ public class KenshiroClient
                     int y = mouseTargetObject.blockY;
                     int z = mouseTargetObject.blockZ;
                     
-                    Block blockID = minecraft.theWorld.func_147439_a(x, y, z);
+                    Block blockID = minecraft.theWorld.getBlock(x, y, z);
                     int metadata = minecraft.theWorld.getBlockMetadata(x, y, z);
                     float hardness = 0F;
                     if (blockID != Blocks.air)
                     {
-                        hardness = blockID.func_149712_f(minecraft.theWorld, x, y, z);
+                        hardness = blockID.getBlockHardness(minecraft.theWorld, x, y, z);
                     }
                     
                     if (((hardness <= 3.0F && hardness >= 0F) || blockID == Blocks.log || blockID == Blocks.log2 || blockID == Blocks.web)
@@ -124,7 +124,7 @@ public class KenshiroClient
                         
                         smashTime = currtime;
                         minecraft.playerController.onPlayerDestroyBlock(x, y, z, metadata);
-                        blockID.func_149636_a(minecraft.theWorld, minecraft.thePlayer, x, y, z, metadata);
+                        blockID.harvestBlock(minecraft.theWorld, minecraft.thePlayer, x, y, z, metadata);
                     }
                 }
                 else if(mouseTargetObject.typeOfHit == MovingObjectType.ENTITY)
@@ -166,7 +166,7 @@ public class KenshiroClient
                     if (entPlayer.getRNG().nextInt(3) == 0)
                     {
                         sendSoundPacketToServer("kenshiroshindeiru", (int)entPlayer.posX, (int)entPlayer.posY, (int)entPlayer.posZ);
-                        minecraft.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("[You are already dead.]"));
+                        minecraft.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("[You are already dead.]"));
                     }
                     else
                     {
@@ -283,7 +283,7 @@ public class KenshiroClient
     
     public void onEntityKicked(EntityPlayer kicker, EntityLivingBase target)
     {
-        //System.out.println("Client onEntityKicked, kicker: "+kicker.func_146103_bH().getName()+", entity: "+target);
+        //System.out.println("Client onEntityKicked, kicker: "+kicker.getGameProfile().getName()+", entity: "+target);
         target.attackEntityFrom(DamageSource.causePlayerDamage(kicker), 4);
         
         double var9 = entPlayer.posX - target.posX;
@@ -302,27 +302,27 @@ public class KenshiroClient
 
     private void sendPacketToServerHasDestroyedBlock(int x, int y, int z)
     {
-        KenshiroMod.instance().networkHelper.sendPacketToServer(new BlockPunchedPacket(minecraft.thePlayer.func_146103_bH().getName(), x, y, z));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new BlockPunchedPacket(minecraft.thePlayer.getGameProfile().getName(), x, y, z));
     }
     
     private void sendPacketToServerHasPunchedEntity(Entity ent)
     {
-        KenshiroMod.instance().networkHelper.sendPacketToServer(new EntityPunchedPacket(minecraft.thePlayer.func_146103_bH().getName(), ent.func_145782_y()));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new EntityPunchedPacket(minecraft.thePlayer.getGameProfile().getName(), ent.getEntityId()));
     }
     
     private void sendPacketToServerHasKickedEntity(EntityPlayer player, Entity ent)
     {
-        KenshiroMod.instance().networkHelper.sendPacketToServer(new EntityKickedPacket(player.dimension, player.func_145782_y(), ent.func_145782_y()));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new EntityKickedPacket(player.dimension, player.getEntityId(), ent.getEntityId()));
     }
     
     private void sendPacketToServerHasUnleashedKenshiro()
     {
-        KenshiroMod.instance().networkHelper.sendPacketToServer(new KenshiroStatePacket(minecraft.thePlayer.func_146103_bH().getName(), true));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new KenshiroStatePacket(minecraft.thePlayer.getGameProfile().getName(), true));
     }
     
     private void sendPacketToServerHasFinishedKenshiro()
     {
-        KenshiroMod.instance().networkHelper.sendPacketToServer(new KenshiroStatePacket(minecraft.thePlayer.func_146103_bH().getName(), false));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new KenshiroStatePacket(minecraft.thePlayer.getGameProfile().getName(), false));
     }
     
     private void sendSoundPacketToServer(String sound, int x, int y, int z)
@@ -334,7 +334,7 @@ public class KenshiroClient
     private final int ANIMATION_CRITMAGIC_FX = 7;
     private void sendAnimationPacketToServer(int animation)
     {
-        KenshiroMod.instance().networkHelper.sendPacketToServer(new AnimationPacket(minecraft.thePlayer.func_146103_bH().getName(), animation));
+        KenshiroMod.instance().networkHelper.sendPacketToServer(new AnimationPacket(minecraft.thePlayer.getGameProfile().getName(), animation));
     }
 
     public boolean getKenshiroMode()
@@ -351,7 +351,7 @@ public class KenshiroClient
 	{
 		if(DEBUGMODE)
 		{
-			minecraft.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText(s));
+			minecraft.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText(s));
 		}
 		else
 		{
@@ -365,7 +365,7 @@ public class KenshiroClient
         
         if (value)
         {
-            minecraft.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Kenshiromod active on this server, Mod now active!"));
+            minecraft.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Kenshiromod active on this server, Mod now active!"));
         }
     }
 }

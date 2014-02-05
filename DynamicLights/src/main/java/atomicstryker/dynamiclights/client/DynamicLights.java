@@ -101,16 +101,16 @@ public class DynamicLights
                     if (tickedLightContainer != null && tickedLightContainer.onUpdate())
                     {
                         iter.remove();
-                        mcinstance.theWorld.func_147463_c(EnumSkyBlock.Block, tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ());
+                        mcinstance.theWorld.updateLightByType(EnumSkyBlock.Block, tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ());
                         //System.out.println("Dynamic Lights killing off LightSource on dead Entity "+tickedLightContainer.getLightSource().getAttachmentEntity());
                     }
                 }
             }
             
-            if (mcinstance.currentScreen == null && toggleButton.func_151470_d())
+            if (mcinstance.currentScreen == null && toggleButton.getIsKeyPressed())
             {
                 globalLightsOff = !globalLightsOff;
-                mcinstance.ingameGUI.func_146158_b().func_146227_a(new ChatComponentText("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
+                mcinstance.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
                 
                 World world = mcinstance.theWorld;
                 if (world != null)
@@ -121,7 +121,7 @@ public class DynamicLights
                         while (iter.hasNext())
                         {
                             DynamicLightSourceContainer c = (DynamicLightSourceContainer) iter.next();
-                            world.func_147463_c(EnumSkyBlock.Block, c.getX(), c.getY(), c.getZ());
+                            world.updateLightByType(EnumSkyBlock.Block, c.getX(), c.getY(), c.getZ());
                         }
                     }
                 }
@@ -258,7 +258,7 @@ public class DynamicLights
                     
                     if (iterContainer != null)
                     {
-                        world.func_147463_c(EnumSkyBlock.Block, iterContainer.getX(), iterContainer.getY(), iterContainer.getZ());
+                        world.updateLightByType(EnumSkyBlock.Block, iterContainer.getX(), iterContainer.getY(), iterContainer.getZ());
                     }
                 }
             }
@@ -271,7 +271,7 @@ public class DynamicLights
      */
     public static String getShortItemName(ItemStack item)
     {
-        String s = GameData.itemRegistry.func_148750_c(item.getItem());
+        String s = GameData.itemRegistry.getNameForObject(item.getItem());
         if (s != null)
         {
             String[] split = s.split(":");

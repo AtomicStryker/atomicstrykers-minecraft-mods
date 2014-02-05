@@ -39,9 +39,9 @@ public class ClientTickHandler
                     if (ents.get(i) instanceof AS_EntityGolem)
                     {
                         AS_EntityGolem golem = (AS_EntityGolem) ents.get(i);
-                        ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.func_146103_bH().getName(), golem.func_145782_y());
+                        ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.getGameProfile().getName(), golem.getEntityId());
                         AS_BattleTowersCore.instance.networkHelper.sendPacketToServer(packet);
-                        mc.func_147108_a(null);
+                        mc.displayGuiScreen(null);
                         break;
                     }
                 }
@@ -60,7 +60,7 @@ public class ClientTickHandler
             int y = playerTarget.blockY;
             int z = playerTarget.blockZ;
 
-            if (mc.theWorld.func_147439_a(x, y, z) == Blocks.chest)
+            if (mc.theWorld.getBlock(x, y, z) == Blocks.chest)
             {
                 List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
                 if (!ents.isEmpty())
@@ -90,7 +90,7 @@ public class ClientTickHandler
                             {
                                 if (multiplayer)
                                 {
-                                    ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.func_146103_bH().getName(), golem.func_145782_y());
+                                    ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.getGameProfile().getName(), golem.getEntityId());
                                     AS_BattleTowersCore.instance.networkHelper.sendPacketToServer(packet);
                                 }
                                 else

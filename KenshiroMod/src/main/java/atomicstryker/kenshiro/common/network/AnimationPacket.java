@@ -50,7 +50,7 @@ public class AnimationPacket implements IPacket
             {
                 for (EntityPlayerMP po : (ArrayList<EntityPlayerMP>)MinecraftServer.getServer().getConfigurationManager().playerEntityList)
                 {
-                    po.playerNetServerHandler.func_147359_a(new S0BPacketAnimation(p, animation));
+                    po.playerNetServerHandler.sendPacket(new S0BPacketAnimation(p, animation));
                 }
             }
         }

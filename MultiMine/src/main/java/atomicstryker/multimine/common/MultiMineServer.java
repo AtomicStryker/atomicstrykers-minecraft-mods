@@ -93,11 +93,11 @@ public class MultiMineServer
                 {
                     //System.out.println("Server finishing partial block at: ["+x+"|"+y+"|"+z+"]");
                     // and if its done, destroy the world block
-                    player.worldObj.func_147443_d(player.func_145782_y(), x, y, z, -1);
-                    Block block = player.worldObj.func_147439_a(x, y, z);
+                    player.worldObj.destroyBlockInWorldPartially(player.getEntityId(), x, y, z, -1);
+                    Block block = player.worldObj.getBlock(x, y, z);
                     
                     S23PacketBlockChange packet = new S23PacketBlockChange(x, y, z, player.worldObj);
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_148537_a(packet, player.dimension);
+                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, player.dimension);
                     
                     if (block != Blocks.air)
                     {
@@ -108,11 +108,11 @@ public class MultiMineServer
                             BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
                             if (!event.isCanceled())
                             {
-                                block.func_149664_b(player.worldObj, x, y, z, meta);
+                                block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
                                 onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
                                 if (block.canHarvestBlock(player, meta))
                                 {
-                                    block.func_149636_a(player.worldObj, player, x, y, z, meta);
+                                    block.harvestBlock(player.worldObj, player, x, y, z, meta);
                                 }
                             }
                         }
@@ -292,7 +292,7 @@ public class MultiMineServer
      */
     private boolean isBlockGone(PartiallyMinedBlock block)
     {
-        return serverInstance.worldServerForDimension(block.getDimension()).func_147439_a(block.getX(), block.getY(), block.getZ()) == Blocks.air;
+        return serverInstance.worldServerForDimension(block.getDimension()).getBlock(block.getX(), block.getY(), block.getZ()) == Blocks.air;
     }
     
     /**

@@ -19,7 +19,7 @@ public class BlockRopeWall extends BlockContainer
 {
     public BlockRopeWall()
     {
-        super(Material.field_151582_l);
+        super(Material.vine);
     }
     
     @Override
@@ -40,15 +40,15 @@ public class BlockRopeWall extends BlockContainer
         switch (var5)
         {
             case 1:
-                return this.canBePlacedOn(var1.func_147439_a(var2, var3, var4 + 1));
+                return this.canBePlacedOn(var1.getBlock(var2, var3, var4 + 1));
             case 2:
-                return this.canBePlacedOn(var1.func_147439_a(var2, var3, var4 + 1));
+                return this.canBePlacedOn(var1.getBlock(var2, var3, var4 + 1));
             case 3:
-                return this.canBePlacedOn(var1.func_147439_a(var2, var3, var4 - 1));
+                return this.canBePlacedOn(var1.getBlock(var2, var3, var4 - 1));
             case 4:
-                return this.canBePlacedOn(var1.func_147439_a(var2 + 1, var3, var4));
+                return this.canBePlacedOn(var1.getBlock(var2 + 1, var3, var4));
             case 5:
-                return this.canBePlacedOn(var1.func_147439_a(var2 - 1, var3, var4));
+                return this.canBePlacedOn(var1.getBlock(var2 - 1, var3, var4));
             default:
                 return false;
         }
@@ -198,7 +198,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 1;; x++)
 		{
-			if (world.func_147439_a(a, b+x, c) != RopesPlusCore.blockRopeWallPos)
+			if (world.getBlock(a, b+x, c) != RopesPlusCore.blockRopeWallPos)
 			{
 				rope_max_y = (b+x)-1;
 				break;
@@ -207,7 +207,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = -1;; x--)
 		{
-			if (world.func_147439_a(a, b+x, c) != RopesPlusCore.blockRopeWallPos)
+			if (world.getBlock(a, b+x, c) != RopesPlusCore.blockRopeWallPos)
 			{
 				rope_min_y = (b+x)+1;
 				break;
@@ -220,7 +220,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 0; x <= ropelenght; x++)
 		{
-			world.func_147465_d(a, rope_max_y-x, c, 0, 0, 3);
+			world.setBlock(a, rope_max_y-x, c, 0, 0, 3);
 		}
 		
 		//ModLoader.getMinecraftInstance().ingameGUI.addChatMessage("Rope height of ["+(h-b)+"] removed");
@@ -237,9 +237,9 @@ public class BlockRopeWall extends BlockContainer
 		boolean IsHook = false;
 		for(int y = 0; y < candidates.length; y++)
 		{
-			if(world.func_147439_a(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.blockGrapplingHook)
+			if(world.getBlock(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.blockGrapplingHook)
 			{
-				world.func_147465_d(candidates[y][0], candidates[y][1], candidates[y][2], 0, 0, 3);
+				world.setBlock(candidates[y][0], candidates[y][1], candidates[y][2], 0, 0, 3);
 				
 				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.itemGrapplingHook));
 				entityitem.delayBeforeCanPickup = 5;

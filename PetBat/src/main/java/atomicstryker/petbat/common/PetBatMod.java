@@ -208,12 +208,12 @@ public class PetBatMod implements IProxy
                 if (item != null && item.getItem() == TAME_ITEM_ID)
                 {
                     event.setCanceled(true);
-                    p.inventory.func_146026_a(TAME_ITEM_ID);
+                    p.inventory.consumeInventoryItem(TAME_ITEM_ID);
                     
                     EntityBat b = (EntityBat) event.target;
                     EntityPetBat newPet = new EntityPetBat(p.worldObj);
                     newPet.setLocationAndAngles(b.posX, b.posY, b.posZ, b.rotationYaw, b.rotationPitch);
-                    newPet.setNames(p.func_146103_bH().getName(), getRandomBatName());
+                    newPet.setNames(p.getGameProfile().getName(), getRandomBatName());
                     newPet.setOwnerEntity(p);
                     
                     p.worldObj.spawnEntityInWorld(newPet);
@@ -229,7 +229,7 @@ public class PetBatMod implements IProxy
             if (item != null && item.getItem() == GLISTER_ITEM_ID)
             {
                 new GlisterBatAdapter((EntityPetBat) event.target);
-                p.inventory.func_146026_a(GLISTER_ITEM_ID);
+                p.inventory.consumeInventoryItem(GLISTER_ITEM_ID);
             }
         }
     }
