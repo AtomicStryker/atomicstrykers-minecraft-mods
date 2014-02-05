@@ -1,0 +1,6 @@
+1.7.2
+- updated to MC 1.7.2, made gradle project, added language file
+
+#1
+- provided sources built with Searge Names, and i fixed some imports and depreciated stuff
+- AtomicStryker
