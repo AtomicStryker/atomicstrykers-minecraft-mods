@@ -27,7 +27,6 @@ public class ClientProxy extends CommonProxy
     public void preInit(FMLPreInitializationEvent event)
     {
         client =  new MinionsClient();
-        MinecraftForge.EVENT_BUS.register(new MinionsSounds());
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(new RenderChickenLightningBolt());
         MinecraftForge.EVENT_BUS.register(client);
