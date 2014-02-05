@@ -16,6 +16,5 @@ public class ClientProxy extends CommonProxy
     @Override
     public void load()
     {
-        MinecraftForge.EVENT_BUS.register(new KenshiroSounds());
     }
 }
