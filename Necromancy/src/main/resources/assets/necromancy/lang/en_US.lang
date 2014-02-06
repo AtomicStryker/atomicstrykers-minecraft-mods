@@ -1,0 +1,22 @@
+itemGroup.Necromancy=Necromancy
+itemGroup.BodyParts=Body Parts
+
+tile.Summoning Altar.name=Summoning Altar
+tile.Sewing Machine.name=Sewing Machine
+tile.Scent Burner.name=Scent Burner
+tile.Scent.name=Scent
+tile.FlowingBlood.name=Flowing Blood
+
+item.NecroSpawner.name=Necromancy Spawner
+item.ItemScytheBone.name=Bone Scythe
+item.Necronomicon.name=Necronomicon
+item.BucketBlood.name=Bucket of Blood
+item.ItemScythe.name=Scythe
+item.IsaacsHead.name=Isaac's Head
+
+entity.teddyNecro.name=Necromantic Teddy
+entity.NightCrawler.name=Night Crawler
+entity.IsaacNormal.name=Isaac
+entity.IsaacBlood.name=Blood Isaac
+entity.IsaacHead.name=Isaac's Head
+entity.IsaacBody.name=Isaac's Body

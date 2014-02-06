@@ -1,0 +1,14 @@
+{
+  "nightcrawler.howl": {
+    "category": "hostile",
+    "sounds": [
+      "nightcrawler/howl"
+    ]
+  },
+  "nightcrawler.scream": {
+    "category": "hostile",
+    "sounds": [
+      "nightcrawler/scream"
+    ]
+  }
+}

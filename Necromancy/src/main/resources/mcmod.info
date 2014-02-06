@@ -1,0 +1,23 @@
+[
+{
+  "modid": "necromancy",
+  "name": "Necromancy",
+  "description": "This mod is all about necromancy. Also known as the art of reanimation. using this mod, you can reanimate slain foes and use your minions to rule the world! (of minecraftia).",
+  "url": "https://github.com/sirolf2009/Necromancy",
+  "updateUrl": "https://github.com/sirolf2009/Necromancy",
+  "authorList": [
+    "AtomicStryker",
+    "sirolf2009",
+    "Mr_boness",
+    "Fabiulu",
+    "TheBlackPixel"
+  ],
+  "credits": "sirolf2009, Mr_boness, Fabiulu and TheBlackPixel",
+  "logoFile": "/mods/necromancy/textures/logo.png",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

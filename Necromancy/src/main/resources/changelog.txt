@@ -1,0 +1,2 @@
+1.5
+- updated to MC 1.6.4 and Thaumcraft API 4.0.5b
