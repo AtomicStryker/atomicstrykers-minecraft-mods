@@ -37,7 +37,7 @@ public class MM_Storm extends MobModifier
 
     private void tryAbility(EntityLivingBase mob, EntityLivingBase target)
     {
-        if (target == null || !mob.canEntityBeSeen(target))
+        if (target == null || target.ridingEntity != null || !mob.canEntityBeSeen(target))
         {
             return;
         }
