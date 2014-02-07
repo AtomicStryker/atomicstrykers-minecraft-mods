@@ -46,7 +46,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.4")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.5")
 public class RopesPlusCore
 {
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
@@ -122,13 +122,11 @@ public class RopesPlusCore
         arrows.add(baseArrow);
         
         int index = 3;
-        EntityArrow303 entArrow303 = null;
         Configuration c = Settings_RopePlus.config;
         c.load();
         Item i;
-        for(Iterator<EntityArrow303> iter = arrows.iterator(); iter.hasNext();)
+        for(EntityArrow303 entArrow303 : arrows)
         {
-            entArrow303 = (EntityArrow303)iter.next();
             String name = entArrow303.name;
             i = makeItem(entArrow303, c, baseArrow);
             if (i != null)
@@ -164,7 +162,15 @@ public class RopesPlusCore
     
     @EventHandler
     public void load(FMLInitializationEvent evt)
-    {        
+    {
+        for(EntityArrow303 entArrow303 : arrows)
+        {
+            ItemStack craftedStack = new ItemStack(entArrow303.itemId, entArrow303.craftingResults, 0);
+            GameRegistry.addRecipe(craftedStack, new Object[] {
+                "X", "#", "Y", Character.valueOf('X'), entArrow303.tip, Character.valueOf('#'), Items.stick, Character.valueOf('Y'), Items.feather
+            });
+        }
+        
         ItemStack ropeCentral = new ItemStack(blockRope, 6);
         GameRegistry.addRecipe(ropeCentral, new Object[] {" # ", " # ", " # ", Character.valueOf('#'), Items.string});
         
@@ -218,14 +224,7 @@ public class RopesPlusCore
 		{
             entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage "+entityarrow303.name, "4").getInt();
             entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize "+entityarrow303.name, "4").getInt();
-		    
 			item = (ItemArrow303) (new ItemArrow303(entityarrow303)).setUnlocalizedName(entityarrow303.name);
-			ItemStack craftedStack = new ItemStack(entityarrow303.itemId, entityarrow303.craftingResults, 0);
-			
-			GameRegistry.addRecipe(craftedStack, new Object[] {
-				"X", "#", "Y", Character.valueOf('X'), entityarrow303.tip, Character.valueOf('#'), Items.stick, Character.valueOf('Y'), Items.feather
-			});
-
 			arrowItems.add(item);
 		}
 		return item;

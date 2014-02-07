@@ -1,3 +1,6 @@
+RopesPlus 1.5.5
+- moved arrow recipe registration from preInit to Init, should fix an issue
+
 RopesPlus 1.5.4
 - updated to mc 1.7.2
 - added language file
