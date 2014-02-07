@@ -43,11 +43,9 @@ import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -60,7 +58,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.2")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.3")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -68,8 +66,6 @@ public class MinionsCore
     
     @Instance(value = "AS_Minions")
     public static MinionsCore instance;
-    
-	private long time = System.currentTimeMillis();
 	
 	private long firstBootTime = System.currentTimeMillis();
 	private boolean hasBooted;
@@ -94,8 +90,6 @@ public class MinionsCore
     private final HashMap<String, ArrayList<EntityMinion>> minionMap;
     private boolean minionMapLock;
     
-    private final MinionsChunkManager chunkLoader;
-    
     private boolean debugMode;
     
     private EvilCommitCount commitStorage;
@@ -109,7 +103,6 @@ public class MinionsCore
         finishedJobList = new LinkedList<Minion_Job_Manager>();
         minionMap = new HashMap<String, ArrayList<EntityMinion>>();
         minionMapLock = false;
-        chunkLoader = new MinionsChunkManager();
     }
 
     @EventHandler
@@ -132,8 +125,6 @@ public class MinionsCore
             secondsWithoutMasterDespawn = cfg.get(Configuration.CATEGORY_GENERAL, "automaticDespawnDelay", 300, "Time in seconds after which a Minion without a Master ingame despawns").getInt();
             minionFollowRange = cfg.get(Configuration.CATEGORY_GENERAL, "minionFollowRange", 30d, "Distance to be used by MC follower pathing. MC default is 12. High values may impede performance").getDouble(30d);
             
-            chunkLoader.enabled = cfg.get(Configuration.CATEGORY_GENERAL, "minionsLoadChunks", true, "Do Minions act as Chunk Loaders? Best disable if using other Chunkloaders").getBoolean(true);
-            
             debugMode = cfg.get(Configuration.CATEGORY_GENERAL, "debugMode", false, "Enables debug printing. LOTS OF IT.").getBoolean(false);
         }
         catch (Exception e)
@@ -152,7 +143,6 @@ public class MinionsCore
         itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff");;
         GameRegistry.registerItem(itemMastersStaff, "masterstaff");
         
-        MinecraftForge.EVENT_BUS.register(chunkLoader);
         MinecraftForge.EVENT_BUS.register(this);
         EntityRegistry.registerModEntity(EntityMinion.class, "AS_EntityMinion", 1, this, 25, 5, true);
         
@@ -188,16 +178,6 @@ public class MinionsCore
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
         getViableTreeBlocks();
-        
-        for (ModContainer mod : Loader.instance().getActiveModList())
-        {
-            if (mod.getModId().equals("ChickenChunks"))
-            {
-                System.out.println("Minions detected loaded ChickenChunks, disabling Minion Chunkloading");
-                chunkLoader.enabled = false;
-                break;
-            }
-        }
     }
 	
     public void onTick(World world)
@@ -214,12 +194,6 @@ public class MinionsCore
                     world.perWorldStorage.setData("minionsCommits", commitStorage);
                 }
             }
-        }
-        else if (System.currentTimeMillis() > time)
-        {
-            time = System.currentTimeMillis() + 1000L;
-            
-            chunkLoader.updateLoadedChunks();
         }
         
         Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
@@ -424,7 +398,6 @@ public class MinionsCore
         else
         {
             offerMinionToMap(ent, mastername);
-            chunkLoader.registerChunkLoaderEntity(ent);
         }
         System.out.println("added additional minion for "+mastername+", now registered: "+minions.length);
     }
