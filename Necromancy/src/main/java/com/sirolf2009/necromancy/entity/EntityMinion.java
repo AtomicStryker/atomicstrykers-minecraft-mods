@@ -13,10 +13,6 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.attributes.BaseAttributeMap;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.attributes.ServersideAttributeMap;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -35,27 +31,26 @@ import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.client.model.ModelMinion;
 import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.item.ItemGeneric;
-import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class EntityMinion extends EntityTameable
 {
 
+    protected String legType = "";
+    protected BodyPart[] head, torso, armLeft, armRight, leg;
+    protected ModelMinion model;
+    private boolean isAltarMob = false;
+    private final EntityAIMinion aiMinion;
+    private final EntityAIControlledByPlayer aicontrolledByPlayer;
     private boolean isAgressive;
-    private BaseAttributeMap attributeMap;
-
-    public EntityMinion(World par1World, BodyPart[][] bodypart, String owner)
-    {
-        this(par1World);
-        setBodyParts(bodypart);
-        setTamed(true);
-        setOwner(owner);
-    }
 
     public EntityMinion(World par1World)
     {
         super(par1World);
+        model = new ModelMinion();
+        aiMinion = new EntityAIMinion(this);
+        aicontrolledByPlayer = new EntityAIControlledByPlayer(this, 0.8F);
         getNavigator().setAvoidsWater(true);
         this.getNavigator().setAvoidsWater(true);
         setSize(0.6F, 1.8F);
@@ -74,86 +69,67 @@ public class EntityMinion extends EntityTameable
         dataWatcher.addObject(24, "UNDEFINED");
         dataWatcher.addObject(25, Byte.valueOf((byte) 0));
         dataWatcher.addObject(26, Byte.valueOf((byte) 0));
-        onBodyChange();
+        
+        model.updateModel(this, isAltarMob);
     }
-
+    
+    public EntityMinion(World par1World, BodyPart[][] bodypart, String owner)
+    {
+        this(par1World);
+        setBodyParts(bodypart);
+        setTamed(true);
+        setOwner(owner);
+    }
+    
+    @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(Double.MAX_VALUE);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage);
+        getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
+        
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(1D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(0D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(0D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.1D);
     }
-
+    
+    /**
+     * Called upon spawning the Necro Entity (from Worldload or TileEntity)
+     */
     public void updateAttributes()
     {
         if (getBodyParts().length > 0)
         {
-            attributeMap = new ServersideAttributeMap();
-            attributeMap.getAttributeInstance(SharedMonsterAttributes.maxHealth);
-            attributeMap.getAttributeInstance(SharedMonsterAttributes.followRange);
-            attributeMap.getAttributeInstance(SharedMonsterAttributes.knockbackResistance);
-            attributeMap.getAttributeInstance(SharedMonsterAttributes.movementSpeed);
-            attributeMap.getAttributeInstance(SharedMonsterAttributes.attackDamage);
             if (head != null && head.length > 0 && head[0] != null)
             {
-                head[0].attributes = new ServersideAttributeMap();
                 head[0].entity.setAttributes(this, BodyPartLocation.Head);
-                combineAttributes(head[0].attributes);
             }
             if (torso != null && torso.length > 0 && torso[0] != null)
             {
-                torso[0].attributes = new ServersideAttributeMap();
                 torso[0].entity.setAttributes(this, BodyPartLocation.Torso);
-                combineAttributes(torso[0].attributes);
             }
             if (armLeft != null && armLeft.length > 0 && armLeft[0] != null)
             {
-                armLeft[0].attributes = new ServersideAttributeMap();
                 armLeft[0].entity.setAttributes(this, BodyPartLocation.ArmLeft);
-                combineAttributes(armLeft[0].attributes);
             }
             if (armRight != null && armRight.length > 0 && armRight[0] != null)
             {
-                armRight[0].attributes = new ServersideAttributeMap();
                 armRight[0].entity.setAttributes(this, BodyPartLocation.ArmRight);
-                combineAttributes(armRight[0].attributes);
             }
             if (leg != null && leg.length > 0 && leg[0] != null)
             {
-                leg[0].attributes = new ServersideAttributeMap();
                 leg[0].entity.setAttributes(this, BodyPartLocation.Legs);
-                combineAttributes(leg[0].attributes);
             }
+            
             setHealth((float) (getHealth() > getEntityAttribute(SharedMonsterAttributes.maxHealth).getBaseValue() ? getEntityAttribute(
                     SharedMonsterAttributes.maxHealth).getBaseValue() : getHealth()));
         }
     }
-
-    @SuppressWarnings("unchecked")
-    public void combineAttributes(BaseAttributeMap map)
-    {
-        Iterator<ModifiableAttributeInstance> itr = map.getAllAttributes().iterator();
-        while (itr.hasNext())
-        {
-            ModifiableAttributeInstance incrementAttribute = itr.next();
-            double oldValue =
-                    getAttributeMap().getAttributeInstanceByName(incrementAttribute.getAttribute().getAttributeUnlocalizedName()).getBaseValue();
-            double increment = incrementAttribute.getBaseValue();
-            getAttributeMap().getAttributeInstanceByName(incrementAttribute.getAttribute().getAttributeUnlocalizedName()).setBaseValue(
-                    oldValue + increment);
-        }
-    }
-
-    @Override
-    public BaseAttributeMap getAttributeMap()
-    {
-        if (this.attributeMap == null)
-        {
-            this.attributeMap = new ServersideAttributeMap();
-        }
-        return this.attributeMap;
-    }
-
+    
+    /**
+     * Sends the bodypart data to the dataWatcher system
+     */
     public void dataWatcherUpdate()
     {
         if (getBodyPartsNames()[0] != "UNDEFINED")
@@ -177,7 +153,7 @@ public class EntityMinion extends EntityTameable
             dataWatcher.updateObject(24, getBodyPartsNames()[4]);
         }
         setSaddled(getSaddled());
-        setAltarMob(isAltarMob());
+        setAltarMob(isAltarMob);
     }
 
     private void updateBodyParts()
@@ -217,18 +193,13 @@ public class EntityMinion extends EntityTameable
     }
 
     @Override
-    protected void entityInit()
-    {
-        super.entityInit();
-    }
-
-    @Override
     public boolean attackEntityAsMob(Entity par1Entity)
     {
+        float damage = (float) getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).getAttributeValue();
         if (getOwner() != null)
-            return par1Entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) getOwner()), 8);
+            return par1Entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) getOwner()), damage);
         else
-            return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), 8);
+            return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
     }
 
     @Override
@@ -285,7 +256,7 @@ public class EntityMinion extends EntityTameable
         }
     }
 
-    public static BodyPart[] getBodyPartFromlocation(BodyPartLocation location, String name)
+    private BodyPart[] getBodyPartFromlocation(BodyPartLocation location, String name)
     {
         NecroEntityBase mob;
         if ((mob = NecroEntityRegistry.registeredEntities.get(name)) != null)
@@ -368,15 +339,21 @@ public class EntityMinion extends EntityTameable
         }
         return true;
     }
-
+    
+    /**
+     * @return saddle state from datawatcher
+     */
     public boolean getSaddled()
     {
         return (dataWatcher.getWatchableObjectByte(25) & 1) != 0;
     }
-
-    public void setSaddled(boolean par1)
+    
+    /**
+     * updates dataWatcher with saddle state
+     */
+    public void setSaddled(boolean saddled)
     {
-        if (par1)
+        if (saddled)
         {
             dataWatcher.updateObject(25, Byte.valueOf((byte) 1));
         }
@@ -391,7 +368,10 @@ public class EntityMinion extends EntityTameable
     {
         return true;
     }
-
+    
+    /**
+     * Used by the TileEntity to specify entity body parts
+     */
     public void setBodyPart(BodyPartLocation location, BodyPart[] bodypart)
     {
         if (location == BodyPartLocation.Head)
@@ -431,7 +411,10 @@ public class EntityMinion extends EntityTameable
                         Double.valueOf(posZ), getBodyPartsNames()[0], getBodyPartsNames()[1], getBodyPartsNames()[2], getBodyPartsNames()[3],
                         getBodyPartsNames()[4] });
     }
-
+    
+    /**
+     * builds an array of the current body part names
+     */
     public String[] getBodyPartsNames()
     {
         String list[] =
@@ -442,45 +425,38 @@ public class EntityMinion extends EntityTameable
                         leg != null && leg.length > 0 && leg[0] != null ? leg[0].name : "UNDEFINED", };
         return list;
     }
-
+    
+    /**
+     * builds an array of the bodypart instances
+     */
     public BodyPart[][] getBodyParts()
     {
         BodyPart[][] list = { head, torso, armLeft, armRight, leg };
         return list;
     }
-
-    public void onBodyChange()
-    {
-        if (model != null)
-        {
-            model.updateModel(this, isAltarMob);
-        }
-    }
-
+    
+    /**
+     * model instance getter
+     */
     public ModelMinion getModel()
     {
         return model;
     }
 
+    /**
+     * model instance setter
+     */
     public void setModel(ModelMinion model)
     {
         this.model = model;
     }
-
-    public EntityAnimal spawnBabyAnimal(EntityAnimal var1)
+    
+    /**
+     * updates altar mob state datawatcher
+     */
+    public void setAltarMob(boolean b)
     {
-        return null;
-    }
-
-    public boolean isAltarMob()
-    {
-        return isAltarMob;
-    }
-
-    public void setAltarMob(boolean isAltarMob)
-    {
-        this.isAltarMob = isAltarMob;
-        if (isAltarMob)
+        if (b)
         {
             dataWatcher.updateObject(26, Byte.valueOf((byte) 1));
         }
@@ -489,7 +465,10 @@ public class EntityMinion extends EntityTameable
             dataWatcher.updateObject(26, Byte.valueOf((byte) 0));
         }
     }
-
+    
+    /**
+     * setter helper for body parts
+     */
     public void setBodyParts(BodyPart[][] bodypart)
     {
         head = bodypart[0];
@@ -498,11 +477,6 @@ public class EntityMinion extends EntityTameable
         armRight = bodypart[3];
         leg = bodypart[4];
         dataWatcherUpdate();
-    }
-
-    public void setAltar(TileEntityAltar tileEntityAltar)
-    {
-        altar = tileEntityAltar;
     }
 
     @Override
@@ -534,14 +508,6 @@ public class EntityMinion extends EntityTameable
     {
         getOwner().getEntityData().setInteger("minions", getOwner().getEntityData().getInteger("minions") - 1);
     }
-
-    protected String legType = "";
-    protected BodyPart[] head, torso, armLeft, armRight, leg;
-    protected ModelMinion model = new ModelMinion();
-    private boolean isAltarMob = false;
-    private EntityAIMinion aiMinion = new EntityAIMinion(this);
-    private final EntityAIControlledByPlayer aicontrolledByPlayer = new EntityAIControlledByPlayer(this, 0.8F);
-    public TileEntityAltar altar;
 
     @Override
     public EntityLivingBase getOwner()

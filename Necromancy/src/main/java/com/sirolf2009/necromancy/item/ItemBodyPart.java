@@ -35,8 +35,10 @@ public class ItemBodyPart extends Item
         addParts("Villager", "Head", "Torso", "Arm", "Legs");
         addParts("Witch", "Head", "Torso", "Arm", "Legs");
         addParts("Squid", "Head", "Torso", "Legs");
-        addParts("Cave_Spider", "Head", "Torso", "Legs");
+        addParts("CaveSpider", "Head", "Torso", "Legs");
         addParts("Sheep", "Head", "Torso", "Arm", "Legs");
+
+        addParts("IronGolem", "Head", "Torso", "Arm", "Legs");
         textures = new IIcon[necroEntities.size()];
     }
 
@@ -79,7 +81,7 @@ public class ItemBodyPart extends Item
     }
 
     @Override
-    public void registerIcons(IIconRegister IIconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
         String name, path;
         for (int index = 0; index < necroEntities.size(); index++)
@@ -87,7 +89,7 @@ public class ItemBodyPart extends Item
             name = necroEntities.get(index);
             path = name.replaceAll(" ", "/");
             path = path.replaceAll("_", " ");
-            textures[index] = IIconRegister.registerIcon("necromancy:bodyparts/" + path);
+            textures[index] = iconRegister.registerIcon("necromancy:bodyparts/" + path);
         }
     }
 

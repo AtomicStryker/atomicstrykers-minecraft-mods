@@ -1,8 +1,7 @@
 package com.sirolf2009.necromancy.entity.necroapi;
 
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -57,16 +56,11 @@ public class NecroEntityIsaac extends NecroEntityBiped
     }
 
     @Override
-    public void setAttributes(EntityLivingBase minion, BodyPartLocation location)
+    public void setAttributes(EntityLiving minion, BodyPartLocation location)
     {
         if (location == BodyPartLocation.Head)
         {
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(40.0D); // health
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(32.0D); // followrange
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                     // res
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.3D); // speed
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(2.0D); // damage
+            addAttributeMods(minion, "Head", 40.0D, 32.0D, 0D, 0.3D, 2.0D);
         }
     }
 }

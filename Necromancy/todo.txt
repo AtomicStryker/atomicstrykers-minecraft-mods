@@ -1,0 +1,110 @@
+Rituals are done with your Necronomicon and a variety of scent burners. Have several burners in an enclosed space and light a mixture of dyes up.
+Each dye has his own properties. By burning several of them, the properties get combined forming an aura that can be used to summon higher powers.
+
+The dye properties and colors goes as following:
+ Red: Courage, health and lust
+ Magenta: Progress
+ Pink: Friendship and love
+ Orange: Attraction, encouragement
+ Yellow: Persuasion and protection
+ Lime: Peace and joy
+ Green: Abundance, fertility
+ Cyan: Selfishness
+ Light Blue: Knowledge
+ Blue: Depression and vulnerability
+ Purple: Ambition and power
+ Brown: Earth, buried
+ Black: Negativity, banishment and death
+ White: Purity and truth
+ Gray: Instability and chaos
+ Light gray: Unorthodox
+
+When you have the right aura for the ritual you wish to perform, a sacrifice is required. This is done on the sacrifical altar. The required sacrifices are different for each spell.
+Damaging spells require death. It's pain will be passed on to your enemies.
+Buffing spells require blood. Blood is the source of life.
+De-buffing spells require souls. Multiple souls in one body cause instability.
+The more you sacrifice, the stronger the spell gets.
+
+When the ritual is complete, a page will be added to the necronomicon. When you open the necronomicon and select the spell, it can be cast by pressing the according hotkey.
+
+The possible spells are as following:
+
+Leech
+ Description
+  Drains the targets life and passes it on to the player
+ Required dyes
+  red, black, cyan
+ Required sacrifice
+  Death
+ Minimum sacrifice
+  N/A
+  
+Summon minion
+ Description
+  Summons a random minion
+ Required dyes
+  yellow, purple, gray, pink, brown
+ Required sacrifice
+  Blood
+ Minimum sacrifice
+  N/A
+  
+Soul stealing
+ Description
+  Instantly kills any target and harvests their soul
+ Required dyes
+  purple, purple, black, black, black
+ Required sacrifice
+  Death
+ Minimum sacrifice
+  13
+  
+Soul torment
+ Description
+  Inflicts damage
+ Required dyes
+  black, red
+ Required sacrifice
+  Death
+ Minimum sacrifice
+  N/A
+  
+Health reserve
+ Description
+  Instant health
+ Required dyes
+  red, green, green, white
+ Required sacrifice
+  Blood
+ Minimum sacrifice
+  N/A
+  
+Summon undead horse
+ Description
+  Summons an undead horse for a certain time
+ Required dyes
+  pink, orange, yellow, brown
+ Required sacrifice
+  Blood
+ Minimum sacrifice
+  N/A
+  
+Steal undead
+ Description
+  Steal an enemy minion
+ Required dyes
+  pink, orange, yellow, light gray
+ Required sacrifice
+  Death
+ Minimum sacrifice
+  N/A
+  
+Sacrifice minion
+ Description
+  Kill a friendly minion and get health as well as a random buff
+ Required dyes
+  black, red
+ Required sacrifice
+  Death
+ Minimum sacrifice
+  N/A

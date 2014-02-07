@@ -3,10 +3,6 @@ package com.sirolf2009.necromancy.generation;
 import java.util.List;
 import java.util.Random;
 
-import com.sirolf2009.necromancy.generation.villagecomponent.ComponentVillageCemetery;
-import com.sirolf2009.necromancy.item.ItemBodyPart;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
-
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -15,6 +11,11 @@ import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
+
+import com.sirolf2009.necromancy.generation.villagecomponent.ComponentVillageCemetery;
+import com.sirolf2009.necromancy.item.ItemBodyPart;
+import com.sirolf2009.necromancy.item.ItemNecromancy;
+
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageTradeHandler;
 

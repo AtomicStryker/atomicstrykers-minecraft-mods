@@ -45,8 +45,9 @@ public class ComponentVillageCemetery extends StructureVillagePieces.Village
                 return true;
         }
         boundingBox.offset(0, averageGroundLevel - boundingBox.minY - 1, 0);
-        
-        System.out.println("Necromod generating structure, at: "+boundingBox.getCenterX()+","+boundingBox.getCenterY()+","+boundingBox.getCenterZ());
+
+        System.out.println("Necromod generating structure, at: " + boundingBox.getCenterX() + "," + boundingBox.getCenterY() + ","
+                + boundingBox.getCenterZ());
 
         fillWithBlocks(par1World, par3StructureBoundingBox, 0, 0, 0, 17, 5, 18, Blocks.air, Blocks.air, false); // clear
         // area

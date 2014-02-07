@@ -2,8 +2,7 @@ package com.sirolf2009.necromancy.entity.necroapi;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
 
@@ -21,11 +20,11 @@ public class NecroEntityCaveSpider extends NecroEntitySpider
 
     public NecroEntityCaveSpider()
     {
-        super("Cave Spider");
-        headItem = ItemBodyPart.getItemStackFromName("Cave_Spider Head", 1);
-        torsoItem = ItemBodyPart.getItemStackFromName("Cave_Spider Torso", 1);
-        armItem = ItemBodyPart.getItemStackFromName("Cave_Spider Arm", 1);
-        legItem = ItemBodyPart.getItemStackFromName("Cave_Spider Legs", 1);
+        super("CaveSpider");
+        headItem = ItemBodyPart.getItemStackFromName("CaveSpider Head", 1);
+        torsoItem = ItemBodyPart.getItemStackFromName("CaveSpider Torso", 1);
+        armItem = ItemBodyPart.getItemStackFromName("CaveSpider Arm", 1);
+        legItem = ItemBodyPart.getItemStackFromName("CaveSpider Legs", 1);
         texture = new ResourceLocation("textures/entity/spider/cave_spider.png");
     }
 
@@ -51,34 +50,21 @@ public class NecroEntityCaveSpider extends NecroEntitySpider
     }
 
     @Override
-    public void setAttributes(EntityLivingBase minion, BodyPartLocation location)
+    public void setAttributes(EntityLiving minion, BodyPartLocation location)
     {
         if (location == BodyPartLocation.Head)
         {
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(2.0D); // health
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(16.0D); // followrange
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                     // res
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D); // speed
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(2.0D); // damage
+            addAttributeMods(minion, "Head", 2.0D, 16.0D, 0D, 0D, 2.0D);
         }
         else if (location == BodyPartLocation.Torso)
         {
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(12.0D); // health
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(0.0D); // followrange
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                      // res
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D); // speed
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(0.0D); // damage
+            addAttributeMods(minion, "Torso", 12.0D, 0D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.Legs)
         {
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(2.0D); // health
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(0.0D); // followrange
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                     // res
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.8D); // speed
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(0.0D); // damage
+            addAttributeMods(minion, "Legs", 2.0D, 0D, 0D, 0.8D, 0D);
         }
     }
+
+
 }

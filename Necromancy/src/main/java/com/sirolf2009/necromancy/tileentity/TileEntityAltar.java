@@ -2,8 +2,6 @@ package com.sirolf2009.necromancy.tileentity;
 
 import java.util.Iterator;
 
-import org.apache.logging.log4j.Level;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -15,6 +13,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.apache.logging.log4j.Level;
 
 import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
@@ -37,7 +37,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
     {
         EntityMinion minion = new EntityMinion(worldObj);
         minion.setAltarMob(true);
-        minion.setAltar(this);
         setMinion(minion);
         bodyPartsNew = new ItemStack[5];
         bodyPartsOld = new ItemStack[5];
@@ -241,7 +240,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
             getMinion().setBodyPart(BodyPartLocation.ArmRight, new BodyPart[] {});
         }
         getMinion().setAltarMob(true);
-        getMinion().setAltar(this);
         return getMinion();
     }
 

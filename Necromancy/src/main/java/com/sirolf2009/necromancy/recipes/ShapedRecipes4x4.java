@@ -29,50 +29,52 @@ public class ShapedRecipes4x4 implements IRecipe
         {
             for (int j = 0; j <= 4 - recipeHeight; j++)
             {
-                if (func_21137_a(inventorycrafting, i, j, true))
+                if (matches(inventorycrafting, i, j, true))
                     return true;
-                if (func_21137_a(inventorycrafting, i, j, false))
+                if (matches(inventorycrafting, i, j, false))
                     return true;
             }
-
         }
 
         return false;
     }
 
-    private boolean func_21137_a(InventoryCrafting inventorycrafting, int i, int j, boolean flag)
+    private boolean matches(InventoryCrafting inventorycrafting, int i, int j, boolean flag)
     {
-        for (int k = 0; k < 4; k++)
+        for (int row = 0; row < 4; row++)
         {
-            for (int l = 0; l < 4; l++)
+            for (int column = 0; column < 4; column++)
             {
-                int i1 = k - i;
-                int j1 = l - j;
-                ItemStack itemstack = null;
-                if (i1 >= 0 && j1 >= 0 && i1 < recipeWidth && j1 < recipeHeight)
+                int columnI = row - i;
+                int rowI = column - j;
+                ItemStack itemStackRecipe = null;
+                if (columnI >= 0 && rowI >= 0 && columnI < recipeWidth && rowI < recipeHeight)
+                {
                     if (flag)
                     {
-                        itemstack = recipeItems[recipeWidth - i1 - 1 + j1 * recipeWidth];
+                        itemStackRecipe = recipeItems[recipeWidth - columnI - 1 + rowI * recipeWidth];
                     }
                     else
                     {
-                        itemstack = recipeItems[i1 + j1 * recipeWidth];
+                        itemStackRecipe = recipeItems[columnI + rowI * recipeWidth];
                     }
-                ItemStack itemstack1 = inventorycrafting.getStackInRowAndColumn(k, l);
-                if (itemstack1 == null && itemstack == null)
+                }
+                ItemStack itemStackActual = inventorycrafting.getStackInRowAndColumn(row, column);
+                if (itemStackActual == null && itemStackRecipe == null)
                 {
                     continue;
                 }
-                if (itemstack1 == null && itemstack != null || itemstack1 != null && itemstack == null)
+                if ((itemStackActual == null && itemStackRecipe != null) || (itemStackActual != null && itemStackRecipe == null))
+                {
                     return false;
-                if (itemstack != itemstack1)
+                }
+
+                if (!itemStackRecipe.isItemEqual(itemStackActual))
+                {
                     return false;
-                if (itemstack.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
-                    return false;
+                }
             }
-
         }
-
         return true;
     }
 

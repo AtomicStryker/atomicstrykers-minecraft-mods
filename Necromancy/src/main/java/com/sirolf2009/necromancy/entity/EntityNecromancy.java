@@ -12,6 +12,7 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntityChicken;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityCow;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityCreeper;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityEnderman;
+import com.sirolf2009.necromancy.entity.necroapi.NecroEntityIronGolem;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityIsaac;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityMooshroom;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityPig;
@@ -69,21 +70,23 @@ public class EntityNecromancy
         EntityRegistry.registerModEntity(EntityTear.class, "TearNormal", 7, Necromancy.instance, 144, 2, true);
         EntityRegistry.registerModEntity(EntityTearBlood.class, "TearBlood", 8, Necromancy.instance, 144, 2, true);
 
-        NecroEntityRegistry.RegisterEntity(new NecroEntitySkeleton());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityZombie());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityPig());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityCow());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityPigZombie());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityCreeper());
-        NecroEntityRegistry.RegisterEntity(new NecroEntitySpider());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityEnderman());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityIsaac());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityChicken());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityMooshroom());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityVillager());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityWitch());
-        NecroEntityRegistry.RegisterEntity(new NecroEntitySquid());
-        NecroEntityRegistry.RegisterEntity(new NecroEntityCaveSpider());
-        NecroEntityRegistry.RegisterEntity(new NecroEntitySheep());
+        NecroEntityRegistry.registerEntity(new NecroEntitySkeleton());
+        NecroEntityRegistry.registerEntity(new NecroEntityZombie());
+        NecroEntityRegistry.registerEntity(new NecroEntityPig());
+        NecroEntityRegistry.registerEntity(new NecroEntityCow());
+        NecroEntityRegistry.registerEntity(new NecroEntityPigZombie());
+        NecroEntityRegistry.registerEntity(new NecroEntityCreeper());
+        NecroEntityRegistry.registerEntity(new NecroEntitySpider());
+        NecroEntityRegistry.registerEntity(new NecroEntityEnderman());
+        NecroEntityRegistry.registerEntity(new NecroEntityIsaac());
+        NecroEntityRegistry.registerEntity(new NecroEntityChicken());
+        NecroEntityRegistry.registerEntity(new NecroEntityMooshroom());
+        NecroEntityRegistry.registerEntity(new NecroEntityVillager());
+        NecroEntityRegistry.registerEntity(new NecroEntityWitch());
+        NecroEntityRegistry.registerEntity(new NecroEntitySquid());
+        NecroEntityRegistry.registerEntity(new NecroEntityCaveSpider());
+        NecroEntityRegistry.registerEntity(new NecroEntitySheep());
+
+        NecroEntityRegistry.registerEntity(new NecroEntityIronGolem());
     }
 }

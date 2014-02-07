@@ -39,48 +39,28 @@ public class ShapelessRecipes4x4 implements IRecipe
     private final ArrayList<ItemStack> recipeItems;
 
     @Override
-    public boolean matches(InventoryCrafting var1, World par2World)
+    public boolean matches(InventoryCrafting invCrafting, World world)
     {
-        ArrayList<ItemStack> var2 = new ArrayList<ItemStack>(recipeItems);
-        int var3 = 0;
-        do
+        ArrayList<ItemStack> recipeItemsList = new ArrayList<ItemStack>(recipeItems);
+        for (int column = 0; column < 4; column++)
         {
-            if (var3 >= 4)
+            for (int row = 0; row < 4; row++)
             {
-                break;
-            }
-            for (int var4 = 0; var4 < 4; var4++)
-            {
-                ItemStack var5 = var1.getStackInRowAndColumn(var4, var3);
-                if (var5 == null)
-                {
-                    continue;
-                }
-                boolean var6 = false;
-                Iterator<ItemStack> var7 = var2.iterator();
-                do
-                {
-                    if (!var7.hasNext())
-                    {
-                        break;
-                    }
-                    ItemStack var8 = var7.next();
-                    if (var5 != var8 || var8.getItemDamage() != -1 && var5.getItemDamage() != var8.getItemDamage())
-                    {
-                        continue;
-                    }
-                    var6 = true;
-                    var2.remove(var8);
-                    break;
-                }
-                while (true);
-                if (!var6)
-                    return false;
-            }
+                ItemStack itemStack = invCrafting.getStackInRowAndColumn(row, column);
 
-            var3++;
+                if (itemStack != null)
+                {
+                    for (Iterator<ItemStack> iter = recipeItemsList.iterator(); iter.hasNext();)
+                    {
+                        ItemStack itemStackRecipe = iter.next();
+                        if (itemStack.isItemEqual(itemStackRecipe))
+                        {
+                            iter.remove();
+                        }
+                    }
+                }
+            }
         }
-        while (true);
-        return var2.isEmpty();
+        return recipeItemsList.isEmpty();
     }
 }

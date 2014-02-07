@@ -16,7 +16,7 @@ public class RenderMinion extends RenderLiving
         model.renderer = this;
         setRenderPassModel(model);
     }
-    
+
     @Override
     public void bindTexture(ResourceLocation par1ResourceLocation)
     {

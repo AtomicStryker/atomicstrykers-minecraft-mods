@@ -17,6 +17,7 @@ import com.sirolf2009.necromancy.block.BlockNecromancy;
 import com.sirolf2009.necromancy.core.handler.ForgeEventHandler;
 import com.sirolf2009.necromancy.core.handler.PacketHandler;
 import com.sirolf2009.necromancy.core.proxy.CommonProxy;
+import com.sirolf2009.necromancy.craftingmanager.CraftingManagerSewing;
 import com.sirolf2009.necromancy.creativetab.CreativeTabNecro;
 import com.sirolf2009.necromancy.entity.EntityNecromancy;
 import com.sirolf2009.necromancy.generation.VillageCreationHandler;
@@ -62,6 +63,8 @@ public class Necromancy
     public static ForgeEventHandler eventHandler = new ForgeEventHandler();
     public static VillageCreationHandler villageHandler = new VillageCreationHandler();
 
+    public CraftingManagerSewing sewingRecipeHandler;
+
     @SidedProxy(clientSide = "com.sirolf2009.necromancy.core.proxy.ClientProxy", serverSide = "com.sirolf2009.necromancy.core.proxy.CommonProxy")
     public static CommonProxy proxy;
 
@@ -82,7 +85,7 @@ public class Necromancy
         MinecraftForge.EVENT_BUS.register(eventHandler);
 
         proxy.preInit();
-        
+
         MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
 
         try
@@ -103,12 +106,12 @@ public class Necromancy
         ItemNecromancy.initItems();
         EntityNecromancy.initEntities();
         BlockNecromancy.initBlocks();
-        
+
         villageHandler = new VillageCreationHandler();
         VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
         ArrayList<Class<PacketHandler>> villageComponentsList = new ArrayList<Class<PacketHandler>>();
         villageComponentsList.add(PacketHandler.class);
-        
+
         GameRegistry.registerWorldGenerator(new WorldGenerator(), 5);
     }
 
@@ -123,6 +126,7 @@ public class Necromancy
     {
         ItemNecroSkull.initSkulls();
         proxy.refreshTextures();
+        sewingRecipeHandler = new CraftingManagerSewing();
     }
 
     @EventHandler

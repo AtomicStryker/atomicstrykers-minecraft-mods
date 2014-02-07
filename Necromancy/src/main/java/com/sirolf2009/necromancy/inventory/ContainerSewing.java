@@ -12,8 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.block.BlockNecromancy;
-import com.sirolf2009.necromancy.craftingmanager.CraftingManagerSewing;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
 
@@ -67,7 +67,7 @@ public class ContainerSewing extends Container
         if (Sewing.getStackInSlot(0) != null && Sewing.getStackInSlot(0).getItem() == ItemGeneric.getItemStackFromName("Bone Needle").getItem()
                 && Sewing.getStackInSlot(1) != null && Sewing.getStackInSlot(1).getItem() == Items.string)
         {
-            craftResult.setInventorySlotContents(0, CraftingManagerSewing.getInstance().findMatchingRecipe(craftMatrix, worldObj));
+            craftResult.setInventorySlotContents(0, Necromancy.instance.sewingRecipeHandler.findMatchingRecipe(craftMatrix, worldObj));
         }
     }
 

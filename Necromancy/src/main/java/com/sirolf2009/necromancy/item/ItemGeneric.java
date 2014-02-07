@@ -23,7 +23,7 @@ public class ItemGeneric extends Item
     public ItemGeneric()
     {
         super();
-        IIcons = new IIcon[names.length];
+        icons = new IIcon[names.length];
         setHasSubtypes(true);
         setMaxDamage(0);
         setCreativeTab(Necromancy.tabNecromancy);
@@ -77,6 +77,7 @@ public class ItemGeneric extends Item
     @Override
     public String getItemStackDisplayName(ItemStack par1ItemStack)
     {
+        // TODO translation file support
         return new StringBuilder().append("").append(names[par1ItemStack.getItemDamageForDisplay()]).toString();
     }
 
@@ -107,24 +108,24 @@ public class ItemGeneric extends Item
     }
 
     @Override
-    public void registerIcons(IIconRegister IIconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
         for (int index = 0; index < names.length; index++)
         {
             String path = names[index].replace(" ", "").toLowerCase();
-            IIcons[index] = IIconRegister.registerIcon("necromancy:" + path.toLowerCase());
+            icons[index] = iconRegister.registerIcon("necromancy:" + path.toLowerCase());
         }
-        tearBlood = IIconRegister.registerIcon("necromancy:BloodTear");
-        tearNormal = IIconRegister.registerIcon("necromancy:Tear");
+        tearBlood = iconRegister.registerIcon("necromancy:BloodTear");
+        tearNormal = iconRegister.registerIcon("necromancy:Tear");
     }
 
     @Override
     public IIcon getIconFromDamage(int par1)
     {
-        return IIcons[par1];
+        return icons[par1];
     }
 
-    private IIcon[] IIcons;
+    private IIcon[] icons;
     public static String names[] = { "Bone Needle", "Soul in a Jar", "Jar of Blood", "Brain on a Stick" };
     public static IIcon tearNormal;
     public static IIcon tearBlood;

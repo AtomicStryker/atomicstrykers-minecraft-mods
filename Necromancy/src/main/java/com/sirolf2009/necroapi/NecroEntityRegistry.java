@@ -17,7 +17,7 @@ public class NecroEntityRegistry
      * @param the
      *            mob to be registered
      */
-    public static void RegisterEntity(NecroEntityBase data)
+    public static void registerEntity(NecroEntityBase data)
     {
         if (data.isNecromancyInstalled && !registeredEntities.containsKey(data.mobName))
         {

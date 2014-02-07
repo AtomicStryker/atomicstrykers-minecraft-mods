@@ -20,7 +20,7 @@ public class AchievementNecromancy
         SewingAchieve = new Achievement("667", "SewingAchieve", -2, 0, Items.book, NecronomIIconAchieve).registerStat();
         AltarAchieve = new Achievement("668", "AltarAchieve", 0, 2, Items.book, NecronomIIconAchieve).registerStat();
         SpawnAchieve = new Achievement("669", "SpawnAchieve", 2, 4, Items.book, AltarAchieve).registerStat().setSpecial();
-        
+
         achievePage = new AchievementPage("Necromancy", new Achievement[] { NecronomIIconAchieve, SpawnAchieve, AltarAchieve, SewingAchieve });
         AchievementPage.registerAchievementPage(achievePage);
     }

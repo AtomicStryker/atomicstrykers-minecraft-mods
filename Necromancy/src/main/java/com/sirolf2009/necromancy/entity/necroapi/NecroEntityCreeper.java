@@ -2,8 +2,7 @@ package com.sirolf2009.necromancy.entity.necroapi;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -99,34 +98,19 @@ public class NecroEntityCreeper extends NecroEntityBase
     }
 
     @Override
-    public void setAttributes(EntityLivingBase minion, BodyPartLocation location)
+    public void setAttributes(EntityLiving minion, BodyPartLocation location)
     {
         if (location == BodyPartLocation.Head)
         {
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(3.0D); // health
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(16.0D); // followrange
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                     // res
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D); // speed
-            head[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(2.0D); // damage
+            addAttributeMods(minion, "Head", 3.0D, 16.0D, 0D, 0D, 2.0D);
         }
         else if (location == BodyPartLocation.Torso)
         {
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(14.0D); // health
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(0.0D); // followrange
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                      // res
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D); // speed
-            torso[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(0.0D); // damage
+            addAttributeMods(minion, "Torso", 14.0D, 0D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.Legs)
         {
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(3.0D); // health
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(0.0D); // followrange
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.0D); // knockback
-                                                                                                                     // res
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D); // speed
-            legs[0].attributes.getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(0.0D); // damage
+            addAttributeMods(minion, "Legs", 3.0D, 0D, 0D, 0.25D, 0D);
         }
     }
 }

@@ -1,14 +1,17 @@
 package com.sirolf2009.necroapi;
 
-import com.sirolf2009.necromancy.item.ItemNecromancy;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import com.sirolf2009.necromancy.item.ItemNecromancy;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -20,6 +23,53 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public abstract class NecroEntityBase
 {
+    
+    /** The name for your mob */
+    public String mobName;
+    /** The location of the mobs texture file */
+    public ResourceLocation texture;
+    /** The item assigned to your mobs head */
+    public ItemStack headItem;
+    /** The item assigned to your mobs torso */
+    public ItemStack torsoItem;
+    /** The item assigned to your mobs arms */
+    public ItemStack armItem;
+    /** The item assigned to your mobs legs */
+    public ItemStack legItem;
+    /** The recipe assigned to your mobs head */
+    public Object[] headRecipe;
+    /** The recipe assigned to your mobs torso */
+    public Object[] torsoRecipe;
+    /** The recipe assigned to your mobs arms */
+    public Object[] armRecipe;
+    /** The recipe assigned to your mobs legs */
+    public Object[] legRecipe;
+    /** set to false if your mob doesn't have a head */
+    public boolean hasHead;
+    /** set to false if your mob doesn't have a torso */
+    public boolean hasTorso;
+    /** set to false if your mob doesn't have arms */
+    public boolean hasArms;
+    /** set to false if your mob doesn't have legs */
+    public boolean hasLegs;
+    /** The organs item (Brains, Heart, Muscle, Lungs, Skin) */
+    public Item organs;
+    /** The textures width */
+    public int textureWidth;
+    /** The textures height */
+    public int textureHeight;
+    /** i'm sure you can figure this one out... */
+    protected boolean isNecromancyInstalled;
+    /** Your entities head */
+    public BodyPart[] head;
+    /** Your entities torso */
+    public BodyPart[] torso;
+    /** Your entities armLeft */
+    public BodyPart[] armLeft;
+    /** Your entities armRight */
+    public BodyPart[] armRight;
+    /** Your entities legs */
+    public BodyPart[] legs;
 
     public NecroEntityBase(String mobName)
     {
@@ -160,15 +210,44 @@ public abstract class NecroEntityBase
      * @param location
      *            - the bodypart
      */
-    public void setAttributes(EntityLivingBase minion, BodyPartLocation location)
+    public void setAttributes(EntityLiving minion, BodyPartLocation location)
     {
-        /*
-         * head[0].setAttributes(2.0D, 32.0D, 0.0D, 0.0D, 0.0D);
-         * torso[0].setAttributes(12.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-         * armLeft[0].setAttributes(2.0D, 0.0D, 0.0D, 0.5D, 1.0D);
-         * armRight[0].setAttributes(2.0D, 0.0D, 0.0D, 0.5D, 1.0D);
-         * legs[0].setAttributes(2.0D, 0.0D, 0.0D, 0.699D, 0.0D);
-         */
+        addAttributeMods(minion, "default", 20D, 32D, 0.7D, 1D, 2D);
+    }
+    
+    /**
+     * Helper to set many Attribute modifiers in a single line.
+     * Modifiers are only added for values != 0D
+     * @param entity to modify
+     * @param bodyPart calling the mod
+     * @param health addition
+     * @param followRange addition
+     * @param knockBackResistance addition
+     * @param movementSpeed addition
+     * @param attackDamage addition
+     */
+    protected void addAttributeMods(EntityLiving entity, String bodyPart, double health, double followRange, double knockBackResistance, double movementSpeed, double attackDamage)
+    {
+        if (health != 0D)
+        {
+            entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(bodyPart+"FPMod", health, 1));
+        }
+        if (followRange != 0D)
+        {
+            entity.getEntityAttribute(SharedMonsterAttributes.followRange).applyModifier(new AttributeModifier(bodyPart+"FRMod", followRange, 1));
+        }
+        if (knockBackResistance != 0D)
+        {
+            entity.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier(bodyPart+"KBRMod", knockBackResistance, 1));
+        }
+        if (movementSpeed != 0D)
+        {
+            entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier(bodyPart+"MOVMod", movementSpeed, 1));
+        }
+        if (attackDamage != 0D)
+        {
+            entity.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier(bodyPart+"DMGMod", attackDamage, 1));
+        }
     }
 
     /**
@@ -218,80 +297,5 @@ public abstract class NecroEntityBase
     public void postRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
     }
-
-    /**
-     * Deprecated since 1.1b, replaced the string that was used to get the
-     * location with {@link BodypartLocation}
-     */
-    @Deprecated
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity, BodyPart[] part, String location)
-    {
-    }
-
-    /**
-     * Deprecated since 1.1b, replaced the string that was used to get the
-     * location with {@link BodypartLocation}
-     */
-    @Deprecated
-    @SideOnly(Side.CLIENT)
-    public void preRender(Entity entity, BodyPart[] parts, String location, ModelBase model)
-    {
-    }
-
-    /**
-     * Deprecated since 1.1b, replaced the string that was used to get the
-     * location with {@link BodypartLocation}
-     */
-    @Deprecated
-    @SideOnly(Side.CLIENT)
-    public void postRender(Entity entity, BodyPart[] parts, String location, ModelBase model)
-    {
-    }
-
-    /** The name for your mob */
-    public String mobName;
-    /** The location of the mobs texture file */
-    public ResourceLocation texture;
-    /** The item assigned to your mobs head */
-    public ItemStack headItem;
-    /** The item assigned to your mobs torso */
-    public ItemStack torsoItem;
-    /** The item assigned to your mobs arms */
-    public ItemStack armItem;
-    /** The item assigned to your mobs legs */
-    public ItemStack legItem;
-    /** The recipe assigned to your mobs head */
-    public Object[] headRecipe;
-    /** The recipe assigned to your mobs torso */
-    public Object[] torsoRecipe;
-    /** The recipe assigned to your mobs arms */
-    public Object[] armRecipe;
-    /** The recipe assigned to your mobs legs */
-    public Object[] legRecipe;
-    /** set to false if your mob doesn't have a head */
-    public boolean hasHead;
-    /** set to false if your mob doesn't have a torso */
-    public boolean hasTorso;
-    /** set to false if your mob doesn't have arms */
-    public boolean hasArms;
-    /** set to false if your mob doesn't have legs */
-    public boolean hasLegs;
-    /** The organs item (Brains, Heart, Muscle, Lungs, Skin) */
-    public Item organs;
-    /** The textures width */
-    public int textureWidth;
-    /** The textures height */
-    public int textureHeight;
-    /** i'm sure you can figure this one out... */
-    protected boolean isNecromancyInstalled;
-    /** Your entities head */
-    public BodyPart[] head;
-    /** Your entities torso */
-    public BodyPart[] torso;
-    /** Your entities armLeft */
-    public BodyPart[] armLeft;
-    /** Your entities armRight */
-    public BodyPart[] armRight;
-    /** Your entities legs */
-    public BodyPart[] legs;
+    
 }

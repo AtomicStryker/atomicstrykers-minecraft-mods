@@ -1,6 +1,5 @@
 package com.sirolf2009.necromancy.item;
 
-import cpw.mods.fml.common.eventhandler.Event.Result;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +11,7 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class ItemBucketBlood extends ItemBucket
 {
@@ -102,9 +102,9 @@ public class ItemBucketBlood extends ItemBucket
     }
 
     @Override
-    public void registerIcons(IIconRegister IIconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
-        itemIcon = IIconRegister.registerIcon("necromancy:bucketblood");
+        itemIcon = iconRegister.registerIcon("necromancy:bucketblood");
     }
 
 }

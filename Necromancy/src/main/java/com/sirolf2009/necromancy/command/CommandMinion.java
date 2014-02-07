@@ -3,10 +3,6 @@ package com.sirolf2009.necromancy.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sirolf2009.necromancy.network.ForgePacketWrapper;
-import com.sirolf2009.necromancy.network.PacketDispatcher;
-import com.sirolf2009.necromancy.network.PacketDispatcher.WrappedPacket;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
@@ -15,6 +11,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+
+import com.sirolf2009.necromancy.network.ForgePacketWrapper;
+import com.sirolf2009.necromancy.network.PacketDispatcher;
+import com.sirolf2009.necromancy.network.PacketDispatcher.WrappedPacket;
 
 public class CommandMinion extends CommandBase
 {
