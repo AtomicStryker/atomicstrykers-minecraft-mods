@@ -70,7 +70,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.5")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.6")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -139,7 +139,7 @@ public class InfernalMobsCore
 
     @EventHandler
     public void load(FMLInitializationEvent evt)
-    {
+    {        
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
 

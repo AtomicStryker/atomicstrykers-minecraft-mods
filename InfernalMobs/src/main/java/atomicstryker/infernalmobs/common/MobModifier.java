@@ -42,10 +42,19 @@ public abstract class MobModifier
      */
     private float actualMaxHealth;
     
+    /**
+     * internal mob attack target
+     */
     private EntityLivingBase attackTarget;
     
+    /**
+     * buffered modifier size
+     */
     private int bufferedSize;
     
+    /**
+     * buffered modifier string result
+     */
     private String bufferedEntityName;
     
     public MobModifier()
@@ -134,6 +143,10 @@ public abstract class MobModifier
         }
     }
 
+    /**
+     * Passes the death event to the modifier list
+     * @return true if death should be aborted
+     */
     public boolean onDeath()
     {
         if (nextMod != null)
@@ -144,6 +157,9 @@ public abstract class MobModifier
         return false;
     }
 
+    /**
+     * Passes the loot drop event to the modifier list
+     */
     public void onDropItems(EntityLivingBase moddedMob, DamageSource killSource, ArrayList<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
     {
         if (recentlyHit)
@@ -152,6 +168,10 @@ public abstract class MobModifier
         }
     }
 
+    /**
+     * passes the setAttackTarget event to the modifier list
+     * @param target being passed from the event
+     */
     public void onSetAttackTarget(EntityLivingBase target)
     {
         if (nextMod != null)
@@ -206,6 +226,9 @@ public abstract class MobModifier
         return amount;
     }
     
+    /**
+     * passes the fall event to the modifier list
+     */
     public boolean onFall(float distance)
     {
         if (nextMod != null)
@@ -216,6 +239,9 @@ public abstract class MobModifier
         return false;
     }
     
+    /**
+     * passes the jump event to the modifier list
+     */
     public void onJump(EntityLivingBase entityLiving)
     {
         if (nextMod != null)
@@ -224,6 +250,10 @@ public abstract class MobModifier
         }
     }
     
+    /**
+     * passes the update event to the modifier list
+     * the return value is currently unused
+     */
     public boolean onUpdate(EntityLivingBase mob)
     {
         if (nextMod != null)
@@ -234,7 +264,7 @@ public abstract class MobModifier
         {
             if (attackTarget == null)
             {
-                attackTarget = mob.worldObj.getClosestVulnerablePlayerToEntity(mob, 12f);
+                attackTarget = mob.worldObj.getClosestVulnerablePlayerToEntity(mob, 7.5f);
             }
             
             if (attackTarget != null)
@@ -357,11 +387,17 @@ public abstract class MobModifier
         return bufferedSize;
     }
     
+    /**
+     * Should be overridden by modifiers to provide possible name prefixes
+     */
     protected String[] getModNamePrefix()
     {
         return null;
     }
     
+    /**
+     * Should be overridden by modifiers to provide possible name suffixes
+     */
     protected String[] getModNameSuffix()
     {
         return null;

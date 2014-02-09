@@ -1,3 +1,7 @@
+1.4.6
+- lowered default modifier attack target aquisition range to 7 blocks (from 12)
+- introducing anti mob farm mechanic. when mobs take a lot of non-playercaused damage in a confined area... things might happen.
+
 1.4.5
 - fixed problem where derpy entities attacked themselves causing an infinite loop with vengeance
 
