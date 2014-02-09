@@ -20,9 +20,6 @@ import net.minecraft.world.World;
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntitySkullWall;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class BlockSkullWall extends BlockContainer
 {
     public BlockSkullWall()
@@ -42,7 +39,6 @@ public class BlockSkullWall extends BlockContainer
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
     {
         return new ItemStack(Blocks.skull);
@@ -104,7 +100,6 @@ public class BlockSkullWall extends BlockContainer
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister par1IIconRegister)
     {
         par1IIconRegister.registerIcon("obsidian");

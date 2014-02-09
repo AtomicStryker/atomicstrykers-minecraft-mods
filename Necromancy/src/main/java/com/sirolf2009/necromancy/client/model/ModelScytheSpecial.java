@@ -21,13 +21,13 @@ public class ModelScytheSpecial extends ModelBase
     ModelRenderer BladeBaseRight;
     ModelRenderer BladeBaseLeft;
 
-    private ResourceLocation metal = new ResourceLocation(ReferenceNecromancy.MOD_ID + ":" + ReferenceNecromancy.LOC_RESOURCES_TEXTURES_MODELS
+    private ResourceLocation metal = new ResourceLocation(ReferenceNecromancy.MOD_ID, ReferenceNecromancy.LOC_RESOURCES_TEXTURES_MODELS
             + "/swordmetal.jpg");
-    private ResourceLocation cloth = new ResourceLocation(ReferenceNecromancy.MOD_ID + ":" + ReferenceNecromancy.LOC_RESOURCES_TEXTURES_MODELS
+    private ResourceLocation cloth = new ResourceLocation(ReferenceNecromancy.MOD_ID, ReferenceNecromancy.LOC_RESOURCES_TEXTURES_MODELS
             + "/cloth.jpg");
-    private ResourceLocation gun = new ResourceLocation(ReferenceNecromancy.MOD_ID + ":" + ReferenceNecromancy.LOC_RESOURCES_TEXTURES_MODELS
+    private ResourceLocation gun = new ResourceLocation(ReferenceNecromancy.MOD_ID, ReferenceNecromancy.LOC_RESOURCES_TEXTURES_MODELS
             + "/guntex.jpg");
-    private ResourceLocation scythemodel = new ResourceLocation(ReferenceNecromancy.MOD_ID, "/models/scythe.obj");
+    private ResourceLocation scythemodel = new ResourceLocation(ReferenceNecromancy.MOD_ID, "models/scythe.obj");
 
     public ItemScytheRenderer renderer;
     private IModelCustom scytheSpecial;

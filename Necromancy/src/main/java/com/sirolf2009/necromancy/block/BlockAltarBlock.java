@@ -23,7 +23,7 @@ public class BlockAltarBlock extends BlockContainer
         return getTileEntity(var1, (int) maxX, (int) maxY, (int) maxZ);
     }
 
-    public TileEntity getTileEntity(World par1World, int x, int y, int z)
+    private TileEntity getTileEntity(World par1World, int x, int y, int z)
     {
         switch (par1World.getBlockMetadata(x, y, z))
         {

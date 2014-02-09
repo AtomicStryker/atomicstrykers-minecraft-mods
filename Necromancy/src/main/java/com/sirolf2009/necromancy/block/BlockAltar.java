@@ -13,7 +13,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.Necromancy;
-import com.sirolf2009.necromancy.entity.EntityMinion;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 
 public class BlockAltar extends BlockContainer
@@ -141,6 +140,5 @@ public class BlockAltar extends BlockContainer
     {
         return null;
     }
-
-    EntityMinion minion;
+    
 }

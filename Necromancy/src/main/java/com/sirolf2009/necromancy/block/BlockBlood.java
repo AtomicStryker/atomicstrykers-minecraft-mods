@@ -9,9 +9,6 @@ import net.minecraftforge.fluids.Fluid;
 
 import com.sirolf2009.necromancy.Necromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class BlockBlood extends BlockFluidClassic
 {
 
@@ -22,7 +19,6 @@ public class BlockBlood extends BlockFluidClassic
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta)
     {
         return Blocks.flowing_water.getIcon(side, meta);

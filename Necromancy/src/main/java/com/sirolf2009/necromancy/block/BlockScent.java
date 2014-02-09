@@ -18,21 +18,22 @@ import com.sirolf2009.necromancy.tileentity.TileEntityScent;
 public class BlockScent extends Block implements ITileEntityProvider
 {
 
-    private IIcon[] IIcons;
+    private IIcon[] icons;
 
     public BlockScent()
     {
-        super(Material.air);
+        super(Material.snow);
         this.setCreativeTab(Necromancy.tabNecromancy);
-        setBlockTextureName("necromancy:scent");
     }
 
+    @Override
     public void randomDisplayTick(World par1World, int par2, int par3, int par4, Random par5Random)
     {
         par1World.markBlockForUpdate(par2, par3, par4);
     }
-
-    public TileEntity createNewTileEntity(World par1World)
+    
+    @Override
+    public TileEntity createNewTileEntity(World par1World, int i)
     {
         return new TileEntityScent();
     }
@@ -68,28 +69,18 @@ public class BlockScent extends Block implements ITileEntityProvider
     }
 
     @Override
-    public int getRenderBlockPass()
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
-        return 0;
-    }
-
-    public void registerIIcons(IIconRegister par1IIconRegister)
-    {
-        IIcons = new IIcon[4];
+        icons = new IIcon[4];
         for (int i = 0; i < 4; i++)
         {
-            IIcons[i] = par1IIconRegister.registerIcon("necromancy:scent" + i);
+            icons[i] = par1IconRegister.registerIcon("necromancy:scent" + i);
         }
     }
 
-    public IIcon getIIcon(int par1, int par2)
-    {
-        return IIcons[par2];
-    }
-
     @Override
-    public TileEntity createNewTileEntity(World var1, int var2)
+    public IIcon getIcon(int par1, int par2)
     {
-        return null;
+        return icons[par2];
     }
 }

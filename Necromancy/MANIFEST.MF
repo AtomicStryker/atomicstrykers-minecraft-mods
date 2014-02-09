@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 1.7.0 (Oracle Corporation)
+FMLCorePlugin: com.sirolf2009.necromancy.core.handler.FMLCoreModHandler
+FMLCorePluginContainsFMLMod: ulovebreakingstuffcpwdontcha

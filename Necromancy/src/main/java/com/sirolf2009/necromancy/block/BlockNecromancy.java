@@ -64,7 +64,7 @@ public class BlockNecromancy
         initRecipes();
     }
 
-    public static void initRecipes()
+    private static void initRecipes()
     {
         GameRegistry.addRecipe(new ItemStack(BlockNecromancy.sewing, 1), new Object[] { "III", "ISB", "III", 'I', Items.iron_ingot, 'S',
                 Items.string, 'B', ItemGeneric.getItemStackFromName("Bone Needle") });
