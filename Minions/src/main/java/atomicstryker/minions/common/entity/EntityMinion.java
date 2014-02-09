@@ -24,6 +24,10 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.ForgeChunkManager.Type;
 import atomicstryker.astarpathing.AS_PathEntity;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarPathPlanner;
@@ -67,6 +71,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     
     public boolean followingMaster;
     public boolean returningGoods;
+    
+    private Chunk lastChunk;
+    private Ticket chunkLoadingTicket;
 
     public EntityMinion(World var1)
     {
@@ -97,6 +104,14 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         canPickUpItemsAgainAt = 0L;
         closeInventoryTime = 0;
         despawnTime = -1l;
+        
+        chunkLoadingTicket = ForgeChunkManager.requestTicket(MinionsCore.instance, worldObj, Type.ENTITY);
+        if (chunkLoadingTicket != null)
+        {
+            chunkLoadingTicket.bindEntity(this);
+            lastChunk = worldObj.getChunkFromBlockCoords((int)posX, (int)posZ);
+            ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+        }
     }
 
     public EntityMinion(World world, EntityPlayer playerEnt)
@@ -139,10 +154,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         String s = dataWatcher.getWatchableObjectString(16);
         return s.equals("") ? "undef" : s;
     }
-
-    /**
-     * Returns true if the newer Entity AI code should be run
-     */
+    
     @Override
     public boolean isAIEnabled()
     {
@@ -235,13 +247,23 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             MinionsCore.proxy.playSoundAtEntity(this, "mob.endermen.portal", 0.5F, 1.0F);
         }
     }
-
+    
+    /**
+     * Gives a Minion a list of possible target Nodes and causes the pathplanner to try and path
+     * to one of them. If pathing was underway, it is interrupted.
+     * @param possibles list of reachable target nodes
+     * @param allowDropping whether or not drops >1 block high are allowed in the path
+     */
     public void orderMinionToMoveTo(AStarNode[] possibles, boolean allowDropping)
     {
         currentTarget = new ChunkCoordinates(possibles[0].x, possibles[0].y, possibles[0].z);
         pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), possibles, allowDropping);
     }
 
+    /**
+     * Orders a Minion to pathfind towards coordinates. The Pathplanner starts working with the
+     * target, if there was another path being planned, it is scrapped.
+     */
     public void orderMinionToMoveTo(int targetX, int targetY, int targetZ, boolean allowDropping)
     {
         currentTarget = new ChunkCoordinates(targetX, targetY, targetZ);
@@ -253,6 +275,14 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     public void onUpdate()
     {
         super.onUpdate();
+        
+        Chunk curChunk = worldObj.getChunkFromBlockCoords((int)posX, (int)posZ);
+        if (curChunk.xPosition != lastChunk.xPosition || curChunk.zPosition != lastChunk.zPosition)
+        {
+            ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+            lastChunk = curChunk;
+            ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+        }
 
         if (this.riddenByEntity != null && this.riddenByEntity.equals(master) && this.getNavigator().noPath())
         {

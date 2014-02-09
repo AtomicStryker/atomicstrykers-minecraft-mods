@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -21,8 +22,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -58,7 +63,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.3")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.4")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -149,6 +154,8 @@ public class MinionsCore
         proxy.preInit(event);
         
         FMLCommonHandler.instance().bus().register(this);
+        
+        ForgeChunkManager.setForcedChunkLoadingCallback(this, new ChunkLoaderCallback());
     }
     
     @EventHandler
@@ -751,7 +758,6 @@ public class MinionsCore
     
     private class EvilCommitCount extends WorldSavedData
     {
-        
         protected final HashMap<String, Integer> masterCommits;
 
         public EvilCommitCount(String par1Str)
@@ -778,7 +784,25 @@ public class MinionsCore
                 tags.setInteger(s, masterCommits.get(s));
             }
         }
-        
+    }
+    
+    private class ChunkLoaderCallback implements LoadingCallback
+    {
+        @Override
+        public void ticketsLoaded(List<Ticket> tickets, World world)
+        {
+            for (Ticket t : tickets)
+            {
+                System.out.println("Minions Chunkloader ticketsLoaded, getEntity(): "+t.getEntity());
+                for (ChunkCoordIntPair c : t.getChunkList())
+                {
+                    // just load the chunk. The minion entities inside will re-register their own tickets
+                    ForgeChunkManager.fetchDormantChunk(ChunkCoordIntPair.chunkXZ2Int(c.chunkXPos, c.chunkZPos), world);
+                }
+                // get rid of these old tickets
+                ForgeChunkManager.releaseTicket(t);
+            }
+        }
     }
     
 }
