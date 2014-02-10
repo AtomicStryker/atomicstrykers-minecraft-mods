@@ -27,7 +27,7 @@ rule6=0,100,double_stone_slab
 #lower stairs
 rule7=2,75,stone_stairs-1
 #chests
-rule8=0,75,HardMobSpawn,MediumChest,chest,chest
+rule8=0,75,HardMobSpawn,MediumChest,MediumChest,MediumChest
 #upper main blocks
 rule9=1,80,mossy_cobblestone,cobblestone
 #upper window blocks

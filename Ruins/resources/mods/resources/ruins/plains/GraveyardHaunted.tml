@@ -18,9 +18,9 @@ rule2=0,100,gravel
 # grass
 rule3=0,100,grass
 # coffins (10% chance of minor treasure)
-rule4=0,100,chest,chest,chest,chest,chest,chest,chest,chest,chest,HardMobSpawn
+rule4=0,100,MediumChest,MediumChest,MediumChest,MediumChest,MediumChest,MediumChest,MediumChest,MediumChest,MediumChest,HardMobSpawn
 # haunted coffins (20% chance of minor monster spawner)
-rule5=0,100,chest,chest,chest,EasyMobSpawn
+rule5=0,100,MediumChest,MediumChest,MediumChest,EasyMobSpawn
 # overgrowth (60% nothing, 20% grass, 20% other)
 rule6=0,40,tallgrass-1,tallgrass-1,tallgrass-1,tallgrass-1,yellow_flower,red_flower,tallgrass-0,tallgrass-0
 # double-slab headstone 

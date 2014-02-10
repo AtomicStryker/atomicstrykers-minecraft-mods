@@ -21,7 +21,7 @@ rule2=0,100,sandstone
 rule3=0,100,sandstone-1
 rule4=0,100,stone_slab-1
 rule5=0,100,sandstone-2
-rule6=0,100,chest-3
+rule6=0,100,MediumChest-3
 
 
 layer

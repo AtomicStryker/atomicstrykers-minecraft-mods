@@ -29,7 +29,7 @@ rule6=0,75,stone_stairs-1,stone_stairs-1,stone_stairs-1
 #window fence
 rule7=0,0,nether_brick_fence
 #chest
-rule8=0,100,HardMobSpawn,MediumChest,chest
+rule8=0,100,HardMobSpawn,MediumChest,MediumChest
 #roof chest
 rule9=0,100,HardChest
 
