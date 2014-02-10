@@ -310,6 +310,11 @@ public class Vector3 implements Comparable<Vector3> {
 	public boolean equals(Object o) {
 		return Vector3.equals(this, o);
 	}
+	
+	@Override
+	public int hashCode() {
+	    return (int) (x+y+z);
+	}
 
 	/**
 	 * toString Override

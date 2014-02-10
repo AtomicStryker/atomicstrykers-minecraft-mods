@@ -40,7 +40,8 @@ public class RuinGenerator
 
         if (ruinsDataFile.getAbsolutePath().contains(worldName))
         {
-            new LoadThread().start();
+            Thread t = new LoadThread();
+            t.start();
         }
         else
         {

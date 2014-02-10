@@ -79,7 +79,7 @@ public class RuinData implements Comparable<RuinData>
     @Override
     public int hashCode()
     {
-        return (int) (xMin ^ (xMin >> 32) ^ yMin ^ (yMin >> 32) ^ zMin ^ (zMin >> 32));
+        return xMid + zMid << 8 + yMid << 16;
     }
 
     @Override

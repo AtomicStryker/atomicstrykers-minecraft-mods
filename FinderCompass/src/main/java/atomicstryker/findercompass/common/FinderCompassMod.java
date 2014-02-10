@@ -77,7 +77,7 @@ public class FinderCompassMod
         FMLCommonHandler.instance().bus().register(this);
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
-            FMLCommonHandler.instance().bus().register(new FinderCompassClientTicker());
+            FinderCompassClientTicker.instance = new FinderCompassClientTicker();
         }
         
         networkHelper = new NetworkHelper("AS_FC", HandshakePacket.class, StrongholdPacket.class);

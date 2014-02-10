@@ -15,6 +15,7 @@ import atomicstryker.magicyarn.common.network.PacketDispatcher;
 import atomicstryker.magicyarn.common.network.PacketWrapper;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -24,6 +25,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.1.1")
 public class MagicYarn implements IProxy
 {
+    
+    @Instance("MagicYarn")
     public static MagicYarn instance;
     
     @SidedProxy(clientSide = "atomicstryker.magicyarn.client.MagicYarnClient", serverSide = "atomicstryker.magicyarn.common.MagicYarn")
@@ -34,7 +37,6 @@ public class MagicYarn implements IProxy
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        instance = this;
         PacketDispatcher.init("AS_MY", new ClientPacketHandler(), new ServerPacketHandler());
         
         magicYarn = (new ItemMagicYarn()).setUnlocalizedName("magic_yarn");

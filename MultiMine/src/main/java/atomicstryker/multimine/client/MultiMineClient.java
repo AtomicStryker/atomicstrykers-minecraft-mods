@@ -178,18 +178,6 @@ public class MultiMineClient
             mc.effectRenderer.addBlockDestroyEffects(x, y, z, block, blockMeta);
         }
     }
-    
-    /**
-     * Called by the transformed PlayerControllerMP to determine whether or not to suppress vanilla mining behaviour
-     * @param blockId Block ID currently being mined
-     * @return true when Multi Mine takes over now, false otherwise
-     */
-    public boolean getIsEnabledForServerAndBlockId(int blockId)
-    {
-        return !thePlayer.capabilities.isCreativeMode
-                && !MultiMine.instance().getIsExcludedItem(thePlayer.getCurrentEquippedItem())
-                && !MultiMine.instance().getIsExcludedBlock(blockId);
-    }
 
     /**
      * Called when a server informs the client about new Block progress. See if it exists locally and update, else add it.

@@ -11,6 +11,7 @@ import atomicstryker.multimine.client.ClientPacketHandler;
 import atomicstryker.multimine.common.network.PacketDispatcher;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -23,7 +24,9 @@ import cpw.mods.fml.common.registry.GameData;
 @Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.5")
 public class MultiMine
 {
+    @Instance("AS_MultiMine")
     private static MultiMine instance;
+    
     private boolean blockRegenEnabled;
     private long initialBlockRegenDelay;
     private long blockRegenInterval;
@@ -38,7 +41,6 @@ public class MultiMine
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        instance = this;
         PacketDispatcher.init("AS_MM", new ClientPacketHandler(), new ServerPacketHandler());
         
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
@@ -112,15 +114,6 @@ public class MultiMine
                 excludedBlockSet.add(b);
             }
         }
-    }
-    
-    /**
-     * @param blockID Block ID to be checked
-     * @return true if that Block ID is configured to be ignored by Multi Mine, false otherwise
-     */
-    public boolean getIsExcludedBlock(int blockID)
-    {
-        return excludedBlockSet.contains(blockID);
     }
     
     /**

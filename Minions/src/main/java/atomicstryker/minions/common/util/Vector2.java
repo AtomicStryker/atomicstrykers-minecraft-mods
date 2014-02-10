@@ -282,7 +282,6 @@ public class Vector2 implements Comparable<Vector2> {
 	/**
 	 * Compares two Vector3s
 	 */
-
 	public int compareTo(Vector2 o) {
 		return Vector2.compareTo(this, o);
 	}
@@ -290,10 +289,14 @@ public class Vector2 implements Comparable<Vector2> {
 	/**
 	 * Checks if two Vector2s are equal
 	 */
-
 	@Override
 	public boolean equals(Object o) {
-		return Vector2.equals(this, o);
+        return Vector2.equals(this, o);
+	}
+	
+	@Override
+	public int hashCode() {
+	    return (int) (x+z);
 	}
 
 	/**

@@ -20,6 +20,7 @@ import atomicstryker.kenshiro.common.network.SoundPacket;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -32,6 +33,7 @@ public class KenshiroMod
     @SidedProxy(clientSide = "atomicstryker.kenshiro.client.ClientProxy", serverSide = "atomicstryker.kenshiro.common.CommonProxy")
     public static CommonProxy proxy;
 
+    @Instance("AS_Kenshiro")
     private static KenshiroMod instance;
 
     public static KenshiroMod instance()
@@ -44,7 +46,6 @@ public class KenshiroMod
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        instance = this;
         networkHelper =
                 new NetworkHelper("AS_KM", AnimationPacket.class, BlockPunchedPacket.class, EntityKickedPacket.class, EntityPunchedPacket.class,
                         HandshakePacket.class, KenshiroStatePacket.class, SoundPacket.class);

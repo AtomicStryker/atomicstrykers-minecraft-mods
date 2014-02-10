@@ -269,7 +269,7 @@ public class EntityGrapplingHook extends Entity
                 double hookLyingHeight = movingobjectposition.hitVec.yCoord - (double)yTile;
                 
                 if(((hookLyingHeight == 1.0D && (worldObj.getBlock(xTile, yTile + 1, zTile) == Blocks.air)
-                || (hookLyingHeight == 0.125D && worldObj.getBlock(xTile, yTile, zTile) == Blocks.snow)))
+                || worldObj.getBlock(xTile, yTile, zTile) == Blocks.snow))
                 && yTile + 1 < 256)
                 {
                     if(orientationX == 0.0D || orientationZ == 0.0D)

@@ -265,8 +265,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         // process entity hit
         if (entityHit != null)
         {
-            collisionPosition = new MovingObjectPosition(entityHit);
-            
             if (onHitTarget(entityHit))
             {
                 float damage = calculateArrowDamage();

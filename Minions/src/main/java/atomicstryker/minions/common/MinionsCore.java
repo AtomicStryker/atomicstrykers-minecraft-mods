@@ -204,17 +204,19 @@ public class MinionsCore
         }
         
         Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
+        Minion_Job_Manager i;
         while (iter.hasNext())
         {
-            if (finishedJobList.contains(iter))
+            i = iter.next();
+            if (finishedJobList.contains(i))
             {
-                debugPrint("Now removing finished Job: "+iter);
-                finishedJobList.remove(iter);
-                runningJobList.remove(iter);
+                debugPrint("Now removing finished Job: "+i);
+                finishedJobList.remove(i);
+                runningJobList.remove(i);
             }
             else
             {
-                ((Minion_Job_Manager) iter.next()).onJobUpdateTick();
+                ((Minion_Job_Manager) i).onJobUpdateTick();
             }
         }        
         ChickenLightningBolt.update();
@@ -256,11 +258,6 @@ public class MinionsCore
                 foundTreeBlocks.add(iter);
             }
         }
-    }
-
-    public boolean isBlockIDViableTreeBlock(int ID)
-    {
-        return foundTreeBlocks.contains(ID);
     }
     
     public boolean hasPlayerWillPower(EntityPlayer player)
@@ -354,7 +351,9 @@ public class MinionsCore
         {
             System.out.println("Minions got faulty request for username "+n+", no Minionlist prepared?!");
             minionMapLock = false;
-            return (EntityMinion[]) prepareMinionHolder(n).toArray();
+            
+            l = prepareMinionHolder(n);
+            return new EntityMinion[0];
         }
         Iterator<EntityMinion> iter = l.iterator();
         while (iter.hasNext())
@@ -786,11 +785,12 @@ public class MinionsCore
         }
     }
     
-    private class ChunkLoaderCallback implements LoadingCallback
+    public static class ChunkLoaderCallback implements LoadingCallback
     {
         @Override
         public void ticketsLoaded(List<Ticket> tickets, World world)
         {
+            System.out.println("Minions Chunkloader ticketsLoaded, tickets: "+tickets);
             for (Ticket t : tickets)
             {
                 System.out.println("Minions Chunkloader ticketsLoaded, getEntity(): "+t.getEntity());

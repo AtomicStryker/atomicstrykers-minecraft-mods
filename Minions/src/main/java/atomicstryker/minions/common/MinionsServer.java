@@ -35,7 +35,7 @@ public class MinionsServer
         
             case EVILDEEDDONE:
             {
-                if (player != null && player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
+                if (player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
                 {
                     player.addExperienceLevel(-MinionsCore.instance.evilDeedXPCost);
                     MinionsCore.instance.onMasterAddedEvil(player);
@@ -190,10 +190,7 @@ public class MinionsServer
             
             case CMDUNSUMMON:
             {
-                if (player != null)
-                {
-                    MinionsCore.instance.unSummonPlayersMinions(player);
-                }
+                MinionsCore.instance.unSummonPlayersMinions(player);
                 break;
             }
             
@@ -202,7 +199,7 @@ public class MinionsServer
                 Class<?>[] decodeAs = {String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class};
                 Object[] packetReadout = ForgePacketWrapper.readPacketData(data, decodeAs);
                 
-                if (player != null && MinionsCore.instance.hasPlayerWillPower(player))
+                if (MinionsCore.instance.hasPlayerWillPower(player))
                 {
                     MinionsCore.instance.orderMinionsToDigCustomSpace(player, (Integer)packetReadout[1], (Integer)packetReadout[2], (Integer)packetReadout[3], (Integer)packetReadout[4], (Integer)packetReadout[5]);
                     MinionsCore.instance.exhaustPlayerBig(player);

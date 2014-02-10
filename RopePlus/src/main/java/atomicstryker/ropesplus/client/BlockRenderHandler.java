@@ -3,7 +3,6 @@ package atomicstryker.ropesplus.client;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.init.Blocks;
 import net.minecraft.world.IBlockAccess;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -51,10 +50,6 @@ public class BlockRenderHandler implements ISimpleBlockRenderingHandler
         float f4 = f3 * f;
         float f5 = f3 * f1;
         float f6 = f3 * f2;
-        if(block == Blocks.grass)
-        {
-            f = f1 = f2 = 1.0F;
-        }
         float f7 = block.getMixedBrightnessForBlock(iblockaccess, i, j, k);
         if(block.shouldSideBeRendered(iblockaccess, i, j + 1, k, 1))
         {

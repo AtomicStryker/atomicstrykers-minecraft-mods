@@ -65,11 +65,11 @@ public class BlockRope extends Block
         {
             for(int length = 1; length <= 32; length++)
             {
-                if((ropeending == 0) & world.getBlock(i + xoffset, j - length, k + zoffset).isOpaqueCube())
+                if(world.getBlock(i + xoffset, j - length, k + zoffset).isOpaqueCube())
                 {
                     ropeending = 2;
                 }
-                if((ropeending == 0) & (world.getBlock(i + xoffset, j - length, k + zoffset) == Blocks.air))
+                if(ropeending == 0 && world.getBlock(i + xoffset, j - length, k + zoffset) == Blocks.air)
                 {
                     ropeending = 1;
                     world.setBlock(i, j, k, Blocks.air, 0, 3);
@@ -78,7 +78,7 @@ public class BlockRope extends Block
             }
 
         }
-        if((ropeending == 0 || ropeending == 2) & (world.getBlock(i, j + 1, k) != this) && !world.getBlock(i, j + 1, k).isOpaqueCube())
+        if((ropeending == 0 || ropeending == 2) && (world.getBlock(i, j + 1, k) != this) && !world.getBlock(i, j + 1, k).isOpaqueCube())
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
             world.setBlock(i, j, k, Blocks.air, 0, 3);

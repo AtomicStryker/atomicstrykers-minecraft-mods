@@ -61,6 +61,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -87,11 +88,11 @@ public class InfernalMobsCore
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
     private HashMap<String, Float> classesHealthMap;
-    private ArrayList<String[]> failedItemStrings;
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
     private double modHealthFactor;
-
+    
+    @Instance("InfernalMobs")
     private static InfernalMobsCore instance;
 
     public static InfernalMobsCore instance()
@@ -119,7 +120,6 @@ public class InfernalMobsCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        instance = this;
         dropIdListElite = new ArrayList<ItemStack>();
         dropIdListUltra = new ArrayList<ItemStack>();
         dropIdListInfernal = new ArrayList<ItemStack>();
@@ -284,10 +284,6 @@ public class InfernalMobsCore
                 {
                     list.add(new ItemStack(((Item) itemOrBlock), stackSize + rand.nextInt(randomizer), imeta));
                 }
-            }
-            else
-            {
-                failedItemStrings.add(meta);
             }
         }
     }
@@ -474,7 +470,7 @@ public class InfernalMobsCore
             }
 
             boolean allowed = true;
-            if (nextMod.getBlackListMobClasses() != null)
+            if (nextMod != null && nextMod.getBlackListMobClasses() != null)
             {
                 for (Class<?> cl : nextMod.getBlackListMobClasses())
                 {

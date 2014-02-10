@@ -36,6 +36,7 @@ import atomicstryker.ropesplus.common.network.PacketDispatcher;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -51,6 +52,9 @@ public class RopesPlusCore
 {
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
     public static IProxy proxy;
+    
+    @Instance("RopesPlus")
+    public static RopesPlusCore instance;
     
 	public final static Class<?> coreArrowClasses[] =
 	{
@@ -71,7 +75,7 @@ public class RopesPlusCore
 	private List<EntityArrow303> arrows;
 	public Item bowRopesPlus;
 	public List<ItemArrow303> arrowItems;
-	public static RopesPlusCore instance;
+	
 	
     public Block blockRope;
     public List<Object> ropeEntArray;
@@ -92,7 +96,6 @@ public class RopesPlusCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-    	instance = this;
     	arrows = new ArrayList<EntityArrow303>();
     	arrowItems = new ArrayList<ItemArrow303>();
     	ropeEntArray = new ArrayList<Object>();

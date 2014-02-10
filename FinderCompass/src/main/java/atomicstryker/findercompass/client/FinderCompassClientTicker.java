@@ -18,6 +18,7 @@ import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -37,7 +38,6 @@ public class FinderCompassClientTicker
 
     public FinderCompassClientTicker()
     {
-        instance = this;
         mc = FMLClientHandler.instance().getClient();
         repeat = false;
         settingList = FinderCompassMod.instance.settingList;
@@ -51,6 +51,7 @@ public class FinderCompassClientTicker
         }
 
         compassLogic = new FinderCompassLogic(mc);
+        FMLCommonHandler.instance().bus().register(this);
     }
 
     @SubscribeEvent
