@@ -29,14 +29,14 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class AS_BattleTowersCore
 {
     
-	private static Set<AS_TowerDestroyer> towerDestroyers;
-	public static int minDistanceFromSpawn;
-	public static int minDistanceBetweenTowers;
-	public static int towerDestroyerEnabled;
-	public static int itemGenerateAttemptsPerFloor;
-	public static int chanceTowerIsUnderGround;
-	public static boolean noGolemExplosions;
-	public static boolean towerFallDestroysMobSpawners;
+	private Set<AS_TowerDestroyer> towerDestroyers;
+	public int minDistanceFromSpawn;
+	public int minDistanceBetweenTowers;
+	public int towerDestroyerEnabled;
+	public int itemGenerateAttemptsPerFloor;
+	public int chanceTowerIsUnderGround;
+	public boolean noGolemExplosions;
+	public boolean towerFallDestroysMobSpawners;
 	private int golemEntityID;
 	
     @Instance(value = "BattleTowers")
@@ -45,8 +45,8 @@ public class AS_BattleTowersCore
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
     public static CommonProxy proxy;
     
-    public static TowerStageItemManager[] floorItemManagers = new TowerStageItemManager[10];
-    public static Configuration configuration;
+    public TowerStageItemManager[] floorItemManagers = new TowerStageItemManager[10];
+    public Configuration configuration;
     
     public NetworkHelper networkHelper;
 	
@@ -190,12 +190,12 @@ public class AS_BattleTowersCore
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
         MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(new S02PacketChat(new ChatComponentText("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...")));
-        towerDestroyers.add(td);
+        instance.towerDestroyers.add(td);
     }
 
 	public static synchronized Set<AS_TowerDestroyer> getTowerDestroyers()
 	{
-		return AS_BattleTowersCore.towerDestroyers;
+		return instance.towerDestroyers;
 	}
 	
 }

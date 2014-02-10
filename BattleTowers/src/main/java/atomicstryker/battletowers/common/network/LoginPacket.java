@@ -12,14 +12,14 @@ public class LoginPacket implements IPacket
     @Override
     public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        bytes.writeByte(AS_BattleTowersCore.towerDestroyerEnabled);
+        bytes.writeByte(AS_BattleTowersCore.instance.towerDestroyerEnabled);
     }
     
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         System.out.println("LoginPacket read, side "+FMLCommonHandler.instance().getEffectiveSide());
-        AS_BattleTowersCore.towerDestroyerEnabled = bytes.readByte();   
+        AS_BattleTowersCore.instance.towerDestroyerEnabled = bytes.readByte();   
     }
     
 }

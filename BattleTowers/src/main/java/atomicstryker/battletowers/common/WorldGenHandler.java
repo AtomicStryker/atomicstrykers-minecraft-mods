@@ -90,7 +90,7 @@ public class WorldGenHandler implements IWorldGenerator
             return providerMap.get(name);
         }
         
-        Configuration config = AS_BattleTowersCore.configuration;
+        Configuration config = AS_BattleTowersCore.instance.configuration;
         config.load();
         boolean result = config.get("ChunkProviderAllowed", name, true).getBoolean(true);
         config.save();
@@ -105,7 +105,7 @@ public class WorldGenHandler implements IWorldGenerator
             return biomesMap.get(target.biomeName);
         }
         
-        Configuration config = AS_BattleTowersCore.configuration;
+        Configuration config = AS_BattleTowersCore.instance.configuration;
         config.load();
         boolean result = config.get("BiomeSpawnAllowed", target.biomeName, true).getBoolean(true);
         config.save();
@@ -144,7 +144,7 @@ public class WorldGenHandler implements IWorldGenerator
         
         if (choice >= 0)
         {
-            pos.underground = world.rand.nextInt(100)+1 < AS_BattleTowersCore.chanceTowerIsUnderGround;
+            pos.underground = world.rand.nextInt(100)+1 < AS_BattleTowersCore.instance.chanceTowerIsUnderGround;
             generator.generate(world, x, y, z, choice, pos.underground);
             return true;
         }
@@ -175,27 +175,27 @@ public class WorldGenHandler implements IWorldGenerator
     {
         floor--; // subtract 1 to match the floors to the array
         
-        if (floor >= AS_BattleTowersCore.floorItemManagers.length)
+        if (floor >= AS_BattleTowersCore.instance.floorItemManagers.length)
         {
-            floor = AS_BattleTowersCore.floorItemManagers.length-1;
+            floor = AS_BattleTowersCore.instance.floorItemManagers.length-1;
         }
         if (floor < 0)
         {
             floor = 0;
         }
         
-        return new TowerStageItemManager(AS_BattleTowersCore.floorItemManagers[floor]);
+        return new TowerStageItemManager(AS_BattleTowersCore.instance.floorItemManagers[floor]);
     }
     
     private TowerPosition canTowerSpawnAt(World world, int xActual, int zActual)
     {
         ChunkCoordinates spawn = world.getSpawnPoint();
-        if (Math.sqrt((spawn.posX - xActual)*(spawn.posX - xActual) + (spawn.posZ - zActual)*(spawn.posZ - zActual)) < AS_BattleTowersCore.minDistanceFromSpawn)
+        if (Math.sqrt((spawn.posX - xActual)*(spawn.posX - xActual) + (spawn.posZ - zActual)*(spawn.posZ - zActual)) < AS_BattleTowersCore.instance.minDistanceFromSpawn)
         {
             return null;
         }
         
-        if (AS_BattleTowersCore.minDistanceBetweenTowers > 0)
+        if (AS_BattleTowersCore.instance.minDistanceBetweenTowers > 0)
         {
             double mindist = 9999f;
             for (TowerPosition temp : towerPositions)
@@ -204,7 +204,7 @@ public class WorldGenHandler implements IWorldGenerator
                 int diffZ = temp.z - zActual;
                 double dist = Math.sqrt(diffX*diffX + diffZ*diffZ);
                 mindist = Math.min(mindist, dist);
-                if (dist < AS_BattleTowersCore.minDistanceBetweenTowers)
+                if (dist < AS_BattleTowersCore.instance.minDistanceBetweenTowers)
                 {
                     //System.out.printf("refusing site coords [%d,%d], mindist %f\n", xActual, zActual, mindist);
                     return null;
@@ -259,7 +259,7 @@ public class WorldGenHandler implements IWorldGenerator
         @Override
         public int hashCode()
         {
-            return (int)(x ^ (x >> 32) ^ y ^ (y >> 32) ^ z ^ (z >> 32));
+            return x + z << 8 + y << 16;
         }
     }
     
@@ -381,7 +381,6 @@ public class WorldGenHandler implements IWorldGenerator
 
     public static TowerPosition deleteNearestTower(World world, int x, int z)
     {
-        int index = -1;
         double lowestDist = 9999d;
         TowerPosition chosen = null;
         
@@ -398,7 +397,7 @@ public class WorldGenHandler implements IWorldGenerator
         if (chosen != null)
         {
             instance.generator.generate(world, chosen.x, chosen.y, chosen.z, TowerTypes.Null.ordinal(), chosen.underground);
-            towerPositions.remove(index);
+            towerPositions.remove(chosen);
         }
         return chosen;
     }

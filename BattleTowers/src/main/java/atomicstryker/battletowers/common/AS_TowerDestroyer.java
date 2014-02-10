@@ -91,7 +91,7 @@ public class AS_TowerDestroyer
     {
 	    deleteMe = true;
 	    
-	    if (AS_BattleTowersCore.towerFallDestroysMobSpawners)
+	    if (AS_BattleTowersCore.instance.towerFallDestroysMobSpawners)
 	    {
 	        Block spawnerid = Blocks.mob_spawner;
 	        int minYdeletion = Math.max(yGolem - 80, 8);
