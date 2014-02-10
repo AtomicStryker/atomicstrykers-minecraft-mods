@@ -100,10 +100,13 @@ public class EntityTeddy extends EntityTameable
         {
         case 0:
             entityState = EntityState.WALKING;
+            break;
         case 1:
             entityState = EntityState.DEFENDING;
+            break;
         case 2:
             entityState = EntityState.SITTING;
+            break;
         }
     }
 

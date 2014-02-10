@@ -14,6 +14,9 @@ import org.lwjgl.opengl.GL11;
  */
 public abstract class NecroEntityQuadruped extends NecroEntityBase
 {
+    
+    /** the height of the mob, default is 12 and relates to cows */
+    public int size = 12;
 
     public NecroEntityQuadruped(String mobName, int size)
     {
@@ -112,13 +115,11 @@ public abstract class NecroEntityQuadruped extends NecroEntityBase
     @Override
     public void preRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
-        if (entity.getDataWatcher().getWatchableObjectByte(16) == 1 && location == BodyPartLocation.Torso)
+        if ((entity.getDataWatcher().getWatchableObjectByte(16) & 1) != 0 && location == BodyPartLocation.Torso)
         {
             GL11.glRotatef(-90, 1, 0, 0);
             GL11.glTranslatef(0, -0.5F, 1);
         }
     }
-
-    /** the height of the mob, default is 12 and relates to cows */
-    public int size = 12;
+    
 }

@@ -22,7 +22,6 @@ import com.sirolf2009.necroapi.NecroEntityBase;
 import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
-import com.sirolf2009.necromancy.client.model.ModelMinion;
 import com.sirolf2009.necromancy.entity.EntityMinion;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 
@@ -36,7 +35,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
     public TileEntityAltar()
     {
         EntityMinion minion = new EntityMinion(worldObj);
-        minion.setAltarMob(true);
         setMinion(minion);
         bodyPartsNew = new ItemStack[5];
         bodyPartsOld = new ItemStack[5];
@@ -151,16 +149,16 @@ public class TileEntityAltar extends TileEntity implements IInventory
         {
             NecroEntityBase mob = itr.next();
             if (mob.headItem != null && stack.isItemEqual(mob.headItem))
-                return mob.head == null ? mob.updateParts(ModelMinion.instance).head : mob.head;
+                return mob.head == null ? mob.updateParts(minion.getModel()).head : mob.head;
             if (mob.torsoItem != null && stack.isItemEqual(mob.torsoItem))
-                return mob.torso == null ? mob.updateParts(ModelMinion.instance).torso : mob.torso;
+                return mob.torso == null ? mob.updateParts(minion.getModel()).torso : mob.torso;
             if (mob.armItem != null && stack.isItemEqual(mob.armItem))
                 if (isRightArm)
-                    return mob.armRight == null ? mob.updateParts(ModelMinion.instance).armRight : mob.armRight;
+                    return mob.armRight == null ? mob.updateParts(minion.getModel()).armRight : mob.armRight;
                 else
-                    return mob.armLeft == null ? mob.updateParts(ModelMinion.instance).armLeft : mob.armLeft;
+                    return mob.armLeft == null ? mob.updateParts(minion.getModel()).armLeft : mob.armLeft;
             if (mob.legItem != null && stack.isItemEqual(mob.legItem))
-                return mob.legs == null ? mob.updateParts(ModelMinion.instance).legs : mob.legs;
+                return mob.legs == null ? mob.updateParts(minion.getModel()).legs : mob.legs;
         }
         return null;
     }
@@ -239,7 +237,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
         {
             getMinion().setBodyPart(BodyPartLocation.ArmRight, new BodyPart[] {});
         }
-        getMinion().setAltarMob(true);
         return getMinion();
     }
 

@@ -14,11 +14,12 @@ import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.Necromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class ItemGeneric extends Item
 {
+    
+    private static final String names[] = { "Bone Needle", "Soul in a Jar", "Jar of Blood", "Brain on a Stick" };
+    
+    private IIcon[] icons;
 
     public ItemGeneric()
     {
@@ -45,21 +46,12 @@ public class ItemGeneric extends Item
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    /**
-     * Returns True is the item is renderer in full 3D when hold.
-     */
     public boolean isFull3D()
     {
         return true;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    /**
-     * Returns true if this item should be rotated by 180 degrees around the Y axis when being held in an entities
-     * hands.
-     */
     public boolean shouldRotateAroundWhenRendering()
     {
         return true;
@@ -115,8 +107,11 @@ public class ItemGeneric extends Item
             String path = names[index].replace(" ", "").toLowerCase();
             icons[index] = iconRegister.registerIcon("necromancy:" + path.toLowerCase());
         }
+        
+        /*
         tearBlood = iconRegister.registerIcon("necromancy:BloodTear");
         tearNormal = iconRegister.registerIcon("necromancy:Tear");
+        */
     }
 
     @Override
@@ -124,9 +119,5 @@ public class ItemGeneric extends Item
     {
         return icons[par1];
     }
-
-    private IIcon[] icons;
-    public static String names[] = { "Bone Needle", "Soul in a Jar", "Jar of Blood", "Brain on a Stick" };
-    public static IIcon tearNormal;
-    public static IIcon tearBlood;
+    
 }

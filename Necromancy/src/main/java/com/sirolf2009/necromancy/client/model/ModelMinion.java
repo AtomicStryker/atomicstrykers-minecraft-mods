@@ -1,12 +1,6 @@
 package com.sirolf2009.necromancy.client.model;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
 import org.lwjgl.opengl.GL11;
@@ -18,19 +12,17 @@ import com.sirolf2009.necroapi.NecroEntityBase;
 import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.client.renderer.RenderMinion;
 import com.sirolf2009.necromancy.entity.EntityMinion;
-import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
-import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 
 public class ModelMinion extends ModelBase
 {
 
-    public static ModelMinion instance;
     public RenderMinion renderer;
+    public static boolean remodelCommand = false;
+    
+    private BodyPart[] head, torso, armLeft, armRight, legs;
+    private BodyPart[][] parts;
+    private float[] torsoPos = new float[3], armLeftPos = new float[3], armRightPos = new float[3], headPos = new float[3];
 
-    public ModelMinion()
-    {
-        instance = this;
-    }
 
     @Override
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7)
@@ -110,6 +102,8 @@ public class ModelMinion extends ModelBase
         {
             GL11.glPushMatrix();
             GL11.glTranslatef(headPos[0] / 16, headPos[1] / 16, headPos[2] / 16);
+            
+            /*
             if (isChristmas() && santahat != null)
             {
                 textureHeight = 32;
@@ -117,6 +111,8 @@ public class ModelMinion extends ModelBase
                 renderer.bindTexture(ReferenceNecromancy.TEXTURES_MISC_CHRISTMASHAT);
                 santahat.render(par7 + 0.001F);
             }
+            */
+            
             bindTexByPart(parts[0]);
             NecroEntityBase mob = NecroEntityRegistry.registeredEntities.get(head[0].name);
             mob.preRender(minion, head, BodyPartLocation.Head, this);
@@ -163,27 +159,27 @@ public class ModelMinion extends ModelBase
             if (parts.length > 0 && parts[0] != null && parts[0].length > 0 && parts[0][0] != null
                     && (mob = NecroEntityRegistry.registeredEntities.get(parts[0][0].name)) != null && (head = mob.head) == null)
             {
-                head = mob.head == null ? mob.updateParts(ModelMinion.instance).head : mob.head;
+                head = mob.head == null ? mob.updateParts(this).head : mob.head;
             }
             if (parts.length > 1 && parts[1] != null && parts[1].length > 0 && parts[1][0] != null
                     && (mob = NecroEntityRegistry.registeredEntities.get(parts[1][0].name)) != null && (torso = mob.torso) == null)
             {
-                torso = mob.torso == null ? mob.updateParts(ModelMinion.instance).torso : mob.torso;
+                torso = mob.torso == null ? mob.updateParts(this).torso : mob.torso;
             }
             if (parts.length > 2 && parts[2] != null && parts[2].length > 0 && parts[2][0] != null
                     && (mob = NecroEntityRegistry.registeredEntities.get(parts[2][0].name)) != null && (armLeft = mob.armLeft) == null)
             {
-                armLeft = mob.armRight == null ? mob.updateParts(ModelMinion.instance).armRight : mob.armRight;
+                armLeft = mob.armRight == null ? mob.updateParts(this).armRight : mob.armRight;
             }
             if (parts.length > 3 && parts[3] != null && parts[3].length > 0 && parts[3][0] != null
                     && (mob = NecroEntityRegistry.registeredEntities.get(parts[3][0].name)) != null && (armRight = mob.armRight) == null)
             {
-                armRight = mob.armLeft == null ? mob.updateParts(ModelMinion.instance).armLeft : mob.armLeft;
+                armRight = mob.armLeft == null ? mob.updateParts(this).armLeft : mob.armLeft;
             }
             if (parts.length > 4 && parts[4] != null && parts[4].length > 0 && parts[4][0] != null
                     && (mob = NecroEntityRegistry.registeredEntities.get(parts[4][0].name)) != null && (legs = mob.legs) == null)
             {
-                legs = mob.legs == null ? mob.updateParts(ModelMinion.instance).legs : mob.legs;
+                legs = mob.legs == null ? mob.updateParts(this).legs : mob.legs;
             }
             minion.setBodyParts(new BodyPart[][] { head, torso, armLeft, armRight, legs });
         }
@@ -207,7 +203,8 @@ public class ModelMinion extends ModelBase
             headPos = torso[0].headPos;
         }
     }
-
+    
+    /*
     private boolean isChristmas()
     {
         DateFormat month = new SimpleDateFormat("MM");
@@ -219,6 +216,7 @@ public class ModelMinion extends ModelBase
             return true;
         return false;
     }
+    */
 
     @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity)
@@ -246,11 +244,5 @@ public class ModelMinion extends ModelBase
             mob.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity, legs, BodyPartLocation.Legs);
         }
     }
-
-    private BodyPart[] head, torso, armLeft, armRight, legs;
-    ModelRenderer santahat;
-    Random rand = new Random();
-    BodyPart[][] parts;
-    float[] torsoPos = new float[3], armLeftPos = new float[3], armRightPos = new float[3], headPos = new float[3];
-    public static boolean remodelCommand = false;
+    
 }

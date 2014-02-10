@@ -8,11 +8,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIControlledByPlayer;
+import net.minecraft.entity.ai.EntityAIFollowOwner;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
+import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -40,37 +46,30 @@ public class EntityMinion extends EntityTameable
     protected String legType = "";
     protected BodyPart[] head, torso, armLeft, armRight, leg;
     protected ModelMinion model;
-    private boolean isAltarMob = false;
-    private final EntityAIMinion aiMinion;
-    private final EntityAIControlledByPlayer aicontrolledByPlayer;
     private boolean isAgressive;
-
+    
     public EntityMinion(World par1World)
     {
         super(par1World);
         model = new ModelMinion();
-        aiMinion = new EntityAIMinion(this);
-        aicontrolledByPlayer = new EntityAIControlledByPlayer(this, 0.8F);
         getNavigator().setAvoidsWater(true);
-        this.getNavigator().setAvoidsWater(true);
         setSize(0.6F, 1.8F);
         ticksExisted = 0;
-        tasks.addTask(0, aiMinion);
-        tasks.addTask(1, aiSit);
-        tasks.addTask(2, aicontrolledByPlayer);
-        tasks.addTask(4, new EntityAITempt(this, 0.3F, ItemGeneric.getItemStackFromName("Brain on a Stick").getItem(), false));
+        
+        tasks.addTask(1, new EntityAISwimming(this));
+        tasks.addTask(2, aiSit);
+        tasks.addTask(3, new EntityAIControlledByPlayer(this, 0.8F));
+        tasks.addTask(4, new EntityAIAttackOnCollide(this, 0.3F, true));
+        tasks.addTask(5, new EntityAIWander(this, 0.3F));
+        tasks.addTask(6, new EntityAITempt(this, 0.3F, ItemGeneric.getItemStackFromName("Brain on a Stick").getItem(), false));
+        tasks.addTask(7, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        tasks.addTask(8, new EntityAILookIdle(this));
         targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-        targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-        dataWatcher.addObject(20, "UNDEFINED");
-        dataWatcher.addObject(21, "UNDEFINED");
-        dataWatcher.addObject(22, "UNDEFINED");
-        dataWatcher.addObject(23, "UNDEFINED");
-        dataWatcher.addObject(24, "UNDEFINED");
-        dataWatcher.addObject(25, Byte.valueOf((byte) 0));
-        dataWatcher.addObject(26, Byte.valueOf((byte) 0));
+        targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));        
         
-        model.updateModel(this, isAltarMob);
+        model.updateModel(this, false);
     }
     
     public EntityMinion(World par1World, BodyPart[][] bodypart, String owner)
@@ -79,6 +78,19 @@ public class EntityMinion extends EntityTameable
         setBodyParts(bodypart);
         setTamed(true);
         setOwner(owner);
+    }
+    
+    @Override
+    protected void entityInit()
+    {
+        super.entityInit();
+        dataWatcher.addObject(20, "UNDEFINED");
+        dataWatcher.addObject(21, "UNDEFINED");
+        dataWatcher.addObject(22, "UNDEFINED");
+        dataWatcher.addObject(23, "UNDEFINED");
+        dataWatcher.addObject(24, "UNDEFINED");
+        dataWatcher.addObject(25, Byte.valueOf((byte) 0));
+        dataWatcher.addObject(26, Byte.valueOf((byte) 0));
     }
     
     @Override
@@ -122,8 +134,12 @@ public class EntityMinion extends EntityTameable
                 leg[0].entity.setAttributes(this, BodyPartLocation.Legs);
             }
             
-            setHealth((float) (getHealth() > getEntityAttribute(SharedMonsterAttributes.maxHealth).getBaseValue() ? getEntityAttribute(
-                    SharedMonsterAttributes.maxHealth).getBaseValue() : getHealth()));
+            setHealth((float) (getHealth() > getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() ? getEntityAttribute(
+                    SharedMonsterAttributes.maxHealth).getAttributeValue() : getHealth()));
+            
+            System.out.println("Necromancy Minion spawned, final movementSpeed:" + getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
+            System.out.println("Necromancy Minion spawned, final health:" + getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
+            System.out.println("Necromancy Minion spawned, final damage:" + getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
         }
     }
     
@@ -152,8 +168,6 @@ public class EntityMinion extends EntityTameable
         {
             dataWatcher.updateObject(24, getBodyPartsNames()[4]);
         }
-        setSaddled(getSaddled());
-        setAltarMob(isAltarMob);
     }
 
     private void updateBodyParts()
@@ -228,7 +242,7 @@ public class EntityMinion extends EntityTameable
                     {
                         setAttackTarget((EntityPlayer) obj);
                     }
-                    else if (nbt.getString(((EntityPlayer) obj).getCommandSenderName()) == "" && isAgressive)
+                    else if (nbt.getString(((EntityPlayer) obj).getCommandSenderName()).equals("") && isAgressive)
                     {
                         setAttackTarget((EntityPlayer) obj);
                     }
@@ -262,15 +276,15 @@ public class EntityMinion extends EntityTameable
         if ((mob = NecroEntityRegistry.registeredEntities.get(name)) != null)
         {
             if (location == BodyPartLocation.Head)
-                return mob.head == null ? mob.updateParts(ModelMinion.instance).head : mob.head;
+                return mob.head == null ? mob.updateParts(model).head : mob.head;
             if (location == BodyPartLocation.Torso)
-                return mob.torso == null ? mob.updateParts(ModelMinion.instance).torso : mob.torso;
+                return mob.torso == null ? mob.updateParts(model).torso : mob.torso;
             if (location == BodyPartLocation.ArmLeft)
-                return mob.armLeft == null ? mob.updateParts(ModelMinion.instance).armLeft : mob.armLeft;
+                return mob.armLeft == null ? mob.updateParts(model).armLeft : mob.armLeft;
             if (location == BodyPartLocation.ArmRight)
-                return mob.armRight == null ? mob.updateParts(ModelMinion.instance).armRight : mob.armRight;
+                return mob.armRight == null ? mob.updateParts(model).armRight : mob.armRight;
             if (location == BodyPartLocation.Legs)
-                return mob.legs == null ? mob.updateParts(ModelMinion.instance).legs : mob.legs;
+                return mob.legs == null ? mob.updateParts(model).legs : mob.legs;
         }
         else if (name != "UNDEFINED")
         {
@@ -452,21 +466,6 @@ public class EntityMinion extends EntityTameable
     }
     
     /**
-     * updates altar mob state datawatcher
-     */
-    public void setAltarMob(boolean b)
-    {
-        if (b)
-        {
-            dataWatcher.updateObject(26, Byte.valueOf((byte) 1));
-        }
-        else
-        {
-            dataWatcher.updateObject(26, Byte.valueOf((byte) 0));
-        }
-    }
-    
-    /**
      * setter helper for body parts
      */
     public void setBodyParts(BodyPart[][] bodypart)
@@ -488,19 +487,19 @@ public class EntityMinion extends EntityTameable
     @Override
     protected String getLivingSound()
     {
-        return "mob." + aiMinion.getSound(this) + ".say";
+        return "mob." + getBodyPartsNames()[0] + ".say";
     }
 
     @Override
     protected String getHurtSound()
     {
-        return "mob." + aiMinion.getSound(this) + ".hurt";
+        return "mob." + getBodyPartsNames()[0] + ".hurt";
     }
 
     @Override
     protected String getDeathSound()
     {
-        return "mob." + aiMinion.getSound(this) + ".death";
+        return "mob." + getBodyPartsNames()[0] + ".death";
     }
 
     @Override
