@@ -121,4 +121,10 @@ public class DynamicLightSourceContainer
         }
         return false;
     }
+    
+    @Override
+    public int hashCode()
+    {
+        return lightSource.getAttachmentEntity().getEntityId();
+    }
 }

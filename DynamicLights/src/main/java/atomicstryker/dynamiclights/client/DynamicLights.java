@@ -21,6 +21,7 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -43,6 +44,8 @@ import cpw.mods.fml.common.registry.GameData;
 public class DynamicLights
 {
     private Minecraft mcinstance;
+    
+    @Instance("DynamicLights")
     private static DynamicLights instance;
     
     /*
@@ -71,7 +74,6 @@ public class DynamicLights
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        instance = this;
         globalLightsOff = false;
         mcinstance = FMLClientHandler.instance().getClient();
         worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();

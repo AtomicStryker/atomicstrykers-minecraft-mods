@@ -142,6 +142,12 @@ public class ItemConfigHelper
             }
             return false;
         }
+        
+        @Override
+        public int hashCode()
+        {
+            return nameOf.hashCode() + startMeta + endMeta;
+        }
     }
     
 }
