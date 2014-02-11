@@ -4,7 +4,6 @@ import net.minecraft.util.ResourceLocation;
 
 public interface ISaddleAble
 {
-
     public ResourceLocation getSaddleTex();
 
     public int riderHeight();

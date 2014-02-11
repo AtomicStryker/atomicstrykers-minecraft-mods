@@ -23,9 +23,9 @@ public class NecroEntityCaveSpider extends NecroEntitySpider
         super("CaveSpider");
         headItem = ItemBodyPart.getItemStackFromName("CaveSpider Head", 1);
         torsoItem = ItemBodyPart.getItemStackFromName("CaveSpider Torso", 1);
-        armItem = ItemBodyPart.getItemStackFromName("CaveSpider Arm", 1);
         legItem = ItemBodyPart.getItemStackFromName("CaveSpider Legs", 1);
         texture = new ResourceLocation("textures/entity/spider/cave_spider.png");
+        hasArms = false;
     }
 
     @Override

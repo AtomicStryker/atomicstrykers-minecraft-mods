@@ -12,6 +12,15 @@ public class NecroEntityRegistry
 {
 
     /**
+     * The map containing the registered mobs
+     */
+    public static HashMap<String, NecroEntityBase> registeredEntities = new HashMap<String, NecroEntityBase>();
+    /**
+     * The map containing the registered mobs that have registered a skull
+     */
+    public static HashMap<String, ISkull> registeredSkullEntities = new HashMap<String, ISkull>();
+
+    /**
      * Call this to register your necro mob
      * 
      * @param the
@@ -28,13 +37,4 @@ public class NecroEntityRegistry
             }
         }
     }
-
-    /**
-     * The map containing the registered mobs
-     */
-    public static HashMap<String, NecroEntityBase> registeredEntities = new HashMap<String, NecroEntityBase>();
-    /**
-     * The map containing the registered mobs that have registered a skull
-     */
-    public static HashMap<String, ISkull> registeredSkullEntities = new HashMap<String, ISkull>();
 }

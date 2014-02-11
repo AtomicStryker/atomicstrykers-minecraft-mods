@@ -12,6 +12,7 @@ import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 import com.sirolf2009.necromancy.tileentity.TileEntityScent;
 import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
+import com.sirolf2009.necromancy.tileentity.TileEntitySkullWall;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -24,6 +25,7 @@ public class BlockNecromancy
     public static Block scentBurner;
     public static Block scent;
     public static BlockBlood blood;
+    public static Block skullWall;
 
     public static Fluid fluidBlood;
 
@@ -60,7 +62,12 @@ public class BlockNecromancy
         blood.setBlockName("FlowingBlood");
         fluidBlood.setBlock(blood);
         GameRegistry.registerBlock(blood, "FlowingBlood");
-
+        
+        skullWall = new BlockSkullWall();
+        skullWall.setBlockName("skullWall");
+        GameRegistry.registerBlock(skullWall, "skullWall");
+        GameRegistry.registerTileEntity(TileEntitySkullWall.class, "skullWall");
+        
         initRecipes();
     }
 

@@ -27,7 +27,7 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntityZombie;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
 
-public class EntityNecromancy
+public class RegistryNecromancyEntities
 {
 
     public static int TeddyID;
@@ -35,7 +35,7 @@ public class EntityNecromancy
 
     public static void initEntities()
     {
-        TeddyID = EntityRegistry.findGlobalUniqueEntityId();
+        RegistryNecromancyEntities.TeddyID = EntityRegistry.findGlobalUniqueEntityId();
         EntityRegistry.registerGlobalEntityID(EntityTeddy.class, "teddyNecro", TeddyID, new Color(99, 69, 29).getRGB(), Color.red.getRGB());
         EntityRegistry.registerModEntity(EntityTeddy.class, "teddyNecro", 0, Necromancy.instance, 25, 5, true);
 
@@ -47,7 +47,7 @@ public class EntityNecromancy
                 BiomeGenBase.forest, BiomeGenBase.jungle, BiomeGenBase.megaTaiga, BiomeGenBase.plains, BiomeGenBase.savanna, BiomeGenBase.swampland,
                 BiomeGenBase.taiga);
 
-        IsaacID = EntityRegistry.findGlobalUniqueEntityId();
+        RegistryNecromancyEntities.IsaacID = EntityRegistry.findGlobalUniqueEntityId();
         EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", IsaacID, new Color(6, 6, 6).getRGB(),
                 new Color(204, 153, 153).getRGB());
         EntityRegistry.registerModEntity(EntityIsaacNormal.class, "IsaacNormal", 2, Necromancy.instance, 25, 5, true);
@@ -69,24 +69,23 @@ public class EntityNecromancy
 
         EntityRegistry.registerModEntity(EntityTear.class, "TearNormal", 7, Necromancy.instance, 144, 2, true);
         EntityRegistry.registerModEntity(EntityTearBlood.class, "TearBlood", 8, Necromancy.instance, 144, 2, true);
-
-        NecroEntityRegistry.registerEntity(new NecroEntitySkeleton());
-        NecroEntityRegistry.registerEntity(new NecroEntityZombie());
-        NecroEntityRegistry.registerEntity(new NecroEntityPig());
-        NecroEntityRegistry.registerEntity(new NecroEntityCow());
-        NecroEntityRegistry.registerEntity(new NecroEntityPigZombie());
-        NecroEntityRegistry.registerEntity(new NecroEntityCreeper());
-        NecroEntityRegistry.registerEntity(new NecroEntitySpider());
-        NecroEntityRegistry.registerEntity(new NecroEntityEnderman());
-        NecroEntityRegistry.registerEntity(new NecroEntityIsaac());
+        
+        NecroEntityRegistry.registerEntity(new NecroEntityCaveSpider());
         NecroEntityRegistry.registerEntity(new NecroEntityChicken());
+        NecroEntityRegistry.registerEntity(new NecroEntityCow());
+        NecroEntityRegistry.registerEntity(new NecroEntityCreeper());
+        NecroEntityRegistry.registerEntity(new NecroEntityEnderman());
+        NecroEntityRegistry.registerEntity(new NecroEntityIronGolem());
+        NecroEntityRegistry.registerEntity(new NecroEntityIsaac());
         NecroEntityRegistry.registerEntity(new NecroEntityMooshroom());
+        NecroEntityRegistry.registerEntity(new NecroEntityPig());
+        NecroEntityRegistry.registerEntity(new NecroEntityPigZombie());
+        NecroEntityRegistry.registerEntity(new NecroEntitySheep());
+        NecroEntityRegistry.registerEntity(new NecroEntitySkeleton());
+        NecroEntityRegistry.registerEntity(new NecroEntitySpider());
+        NecroEntityRegistry.registerEntity(new NecroEntitySquid());
         NecroEntityRegistry.registerEntity(new NecroEntityVillager());
         NecroEntityRegistry.registerEntity(new NecroEntityWitch());
-        NecroEntityRegistry.registerEntity(new NecroEntitySquid());
-        NecroEntityRegistry.registerEntity(new NecroEntityCaveSpider());
-        NecroEntityRegistry.registerEntity(new NecroEntitySheep());
-
-        NecroEntityRegistry.registerEntity(new NecroEntityIronGolem());
+        NecroEntityRegistry.registerEntity(new NecroEntityZombie());
     }
 }

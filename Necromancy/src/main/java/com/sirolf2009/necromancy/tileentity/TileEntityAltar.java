@@ -2,7 +2,6 @@ package com.sirolf2009.necromancy.tileentity;
 
 import java.util.Iterator;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,9 +24,7 @@ import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
 import com.sirolf2009.necromancy.entity.EntityMinion;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.relauncher.Side;
 
 public class TileEntityAltar extends TileEntity implements IInventory
 {
@@ -49,87 +46,83 @@ public class TileEntityAltar extends TileEntity implements IInventory
     public void spawn(EntityPlayer user)
     {
         lastUser = user;
-        if (!worldObj.isRemote && Necromancy.maxSpawn != -1 && user.getEntityData().getInteger("minions") >= Necromancy.maxSpawn)
+        if (!worldObj.isRemote)
         {
-            if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+            if (Necromancy.maxSpawn != -1 && user.getEntityData().getInteger("minions") >= Necromancy.maxSpawn)
             {
-                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(
-                        new ChatComponentText("<Death> Mortal fool! Thou shan't never grow that strong."));
+                user.addChatMessage(new ChatComponentText("<Death> Mortal fool! Thou shan't never grow that strong."));
                 Entity thunder = new EntityLightningBolt(worldObj, xCoord, yCoord, zCoord);
                 worldObj.spawnEntityInWorld(thunder);
             }
-        }
-        else if (!worldObj.isRemote)
-        {
-            BodyPart[][] types = new BodyPart[5][];
-            ItemStack head = getStackInSlot(2);
-            ItemStack body = getStackInSlot(3);
-            ItemStack leg = getStackInSlot(4);
-            ItemStack armRight = getStackInSlot(5);
-            ItemStack armLeft = getStackInSlot(6);
-            if (head != null && head.getItem() != null)
-            {
-                types[0] = getBodyPart(head, false);
-            }
             else
             {
-                types[0] = new BodyPart[] {};
-            }
-            if (body != null)
-            {
-                types[1] = getBodyPart(body, false);
-            }
-            else
-            {
-                types[1] = new BodyPart[] {};
-            }
-            if (armLeft != null)
-            {
-                types[2] = getBodyPart(armLeft, false);
-            }
-            else
-            {
-                types[2] = new BodyPart[] {};
-            }
-            if (armRight != null)
-            {
-                types[3] = getBodyPart(armRight, true);
-            }
-            else
-            {
-                types[3] = new BodyPart[] {};
-            }
-            if (leg != null)
-            {
-                types[4] = getBodyPart(leg, false);
-            }
-            else
-            {
-                types[4] = new BodyPart[] {};
-            }
-            EntityMinion minionTemp = new EntityMinion(worldObj, types, user.getCommandSenderName());
-            minionTemp.setPosition(xCoord, yCoord + 1, zCoord);
-            minionTemp.updateAttributes();
-            worldObj.spawnEntityInWorld(minionTemp);
-            Necromancy.loggerNecromancy.info(minionTemp.toString());
-            user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-            if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-            {
-                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("<Minion> Craft me Thy dark command."));
-            }
-            minionTemp.dataWatcherUpdate();
-            minionTemp.getModel().updateModel(minionTemp, true);
-            if (!user.capabilities.isCreativeMode)
-            {
-                for (int x = 0; x < 7; x++)
+                BodyPart[][] types = new BodyPart[5][];
+                ItemStack head = getStackInSlot(2);
+                ItemStack body = getStackInSlot(3);
+                ItemStack leg = getStackInSlot(4);
+                ItemStack armRight = getStackInSlot(5);
+                ItemStack armLeft = getStackInSlot(6);
+                if (head != null && head.getItem() != null)
                 {
-                    decrStackSize(x, 1);
+                    types[0] = getBodyPart(head, false);
                 }
+                else
+                {
+                    types[0] = new BodyPart[] {};
+                }
+                if (body != null)
+                {
+                    types[1] = getBodyPart(body, false);
+                }
+                else
+                {
+                    types[1] = new BodyPart[] {};
+                }
+                if (armLeft != null)
+                {
+                    types[2] = getBodyPart(armLeft, false);
+                }
+                else
+                {
+                    types[2] = new BodyPart[] {};
+                }
+                if (armRight != null)
+                {
+                    types[3] = getBodyPart(armRight, true);
+                }
+                else
+                {
+                    types[3] = new BodyPart[] {};
+                }
+                if (leg != null)
+                {
+                    types[4] = getBodyPart(leg, false);
+                }
+                else
+                {
+                    types[4] = new BodyPart[] {};
+                }
+                EntityMinion minionTemp = new EntityMinion(worldObj, types, user.getCommandSenderName());
+                minionTemp.setPosition(xCoord, yCoord + 1, zCoord);
+                minionTemp.calculateAttributes();
+                worldObj.spawnEntityInWorld(minionTemp);
+                Necromancy.loggerNecromancy.info(minionTemp.toString());
+                user.addStat(AchievementNecromancy.SpawnAchieve, 1);
+                user.addChatMessage(new ChatComponentText("<Minion> Craft me Thy dark command."));
+                minionTemp.dataWatcherUpdate();
+                minionTemp.getModel().updateModel(minionTemp, true);
+                if (!user.capabilities.isCreativeMode)
+                {
+                    for (int x = 0; x < 7; x++)
+                    {
+                        decrStackSize(x, 1);
+                    }
+                }
+                user.getEntityData().setInteger("minions", user.getEntityData().getInteger("minions") + 1);
+                bodyPartsOld = null;
+                user.addStat(AchievementNecromancy.SpawnAchieve, 1);
+                log(minionTemp);
             }
-            user.getEntityData().setInteger("minions", user.getEntityData().getInteger("minions") + 1);
-            bodyPartsOld = null;
-            user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-            log(minionTemp);
         }
     }
 
@@ -240,12 +233,15 @@ public class TileEntityAltar extends TileEntity implements IInventory
         return getMinion();
     }
 
-    public boolean isLegalCombo(String location, ItemStack stack)
+    private boolean isLegalCombo(String location, ItemStack stack)
     {
         Iterator<NecroEntityBase> itr = NecroEntityRegistry.registeredEntities.values().iterator();
         while (itr.hasNext() && stack != null)
         {
             NecroEntityBase mob = itr.next();
+            System.out.println("mob: "+mob);
+            System.out.println("stack: "+stack);
+            System.out.println("mob.headItem: "+mob.headItem);
             if (location.equals("head") && mob.hasHead && stack.isItemEqual(mob.headItem))
                 return true;
             if (location.equals("body") && mob.hasTorso && stack.isItemEqual(mob.torsoItem))
@@ -255,7 +251,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
             if (location.equals("leg") && mob.hasLegs && stack.isItemEqual(mob.legItem))
                 return true;
         }
-        log(stack.getDisplayName() + " is not a " + location + " item");
         return false;
     }
 

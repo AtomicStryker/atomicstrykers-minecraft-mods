@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 import com.sirolf2009.necroapi.NecroEntityBase;
 import com.sirolf2009.necroapi.NecroEntityRegistry;
-import com.sirolf2009.necromancy.entity.EntityNecromancy;
+import com.sirolf2009.necromancy.entity.RegistryNecromancyEntities;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.item.ItemNecromancy;
 import com.sirolf2009.necromancy.recipes.ShapedRecipes4x4;
@@ -56,7 +56,7 @@ public class CraftingManagerSewing
         addShapelessRecipe(new ItemStack(ItemNecromancy.spawner, 1), new Object[] { Items.rotten_flesh, Items.rotten_flesh, Items.rotten_flesh,
                 Items.rotten_flesh, Items.rotten_flesh, Items.ghast_tear, Items.ghast_tear,
                 ItemGeneric.getItemStackFromName("Soul in a Jar").getItem(), new ItemStack(ItemNecromancy.organs, 1, 1).getItem() });
-        addRecipe(new ItemStack(Items.spawn_egg, 1, EntityNecromancy.TeddyID), new Object[] { "LLLL", "LWWL", "LWWL", "LLLL", 'L', Items.leather,
+        addRecipe(new ItemStack(Items.spawn_egg, 1, RegistryNecromancyEntities.TeddyID), new Object[] { "LLLL", "LWWL", "LWWL", "LLLL", 'L', Items.leather,
                 'W', Blocks.wool });
     }
 

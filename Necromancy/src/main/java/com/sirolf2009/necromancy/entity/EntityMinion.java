@@ -35,10 +35,7 @@ import com.sirolf2009.necroapi.ISaddleAble;
 import com.sirolf2009.necroapi.NecroEntityBase;
 import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.client.model.ModelMinion;
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.item.ItemGeneric;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class EntityMinion extends EntityTameable
 {
@@ -100,19 +97,22 @@ public class EntityMinion extends EntityTameable
         getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
         
         getAttributeMap().getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(1D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(0D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(0D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(1D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(10D);
         getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.1D);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.3D);
     }
     
     /**
-     * Called upon spawning the Necro Entity (from Worldload or TileEntity)
+     * Called upon spawning the Minion Entity, ONCE
      */
-    public void updateAttributes()
+    public void calculateAttributes()
     {
         if (getBodyParts().length > 0)
         {
+            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.1D);
+            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(4D);
+            
             if (head != null && head.length > 0 && head[0] != null)
             {
                 head[0].entity.setAttributes(this, BodyPartLocation.Head);
@@ -137,9 +137,11 @@ public class EntityMinion extends EntityTameable
             setHealth((float) (getHealth() > getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() ? getEntityAttribute(
                     SharedMonsterAttributes.maxHealth).getAttributeValue() : getHealth()));
             
-            System.out.println("Necromancy Minion spawned, final movementSpeed:" + getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
-            System.out.println("Necromancy Minion spawned, final health:" + getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
-            System.out.println("Necromancy Minion spawned, final damage:" + getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
+            System.out.println("Necromancy Minion final movementSpeed:" + getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
+            System.out.println("Necromancy Minion final health:" + getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
+            System.out.println("Necromancy Minion final damage:" + getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
+            System.out.println("Necromancy Minion final followRange:" + getEntityAttribute(SharedMonsterAttributes.followRange).getAttributeValue());
+            System.out.println("Necromancy Minion final knockbackres:" + getEntityAttribute(SharedMonsterAttributes.knockbackResistance).getAttributeValue());
         }
     }
     
@@ -203,7 +205,6 @@ public class EntityMinion extends EntityTameable
         leg = getBodyPartFromlocation(BodyPartLocation.Legs, par1NBTTagCompound.getString("leg"));
         setSaddled(par1NBTTagCompound.getBoolean("Saddle"));
         dataWatcherUpdate();
-        updateAttributes();
     }
 
     @Override
@@ -294,30 +295,32 @@ public class EntityMinion extends EntityTameable
     }
 
     @Override
-    public boolean interact(EntityPlayer par1EntityPlayer)
+    public boolean interact(EntityPlayer player)
     {
-        if (!getSaddled() && !worldObj.isRemote && par1EntityPlayer.getHeldItem() != null && par1EntityPlayer.getHeldItem().getItem() == Items.saddle)
+        if (!worldObj.isRemote)
         {
-            NecroEntityBase mob;
-            if (torso != null && torso[0] != null && (mob = NecroEntityRegistry.registeredEntities.get(torso[0].name)) != null
-                    && mob instanceof ISaddleAble)
+            if (!getSaddled())
             {
-                setSaddled(true);
-                if (!par1EntityPlayer.capabilities.isCreativeMode)
+                if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.saddle)
                 {
-                    par1EntityPlayer.inventory.consumeInventoryItem(Items.saddle);
+                    NecroEntityBase mob;
+                    if (torso != null && torso[0] != null && (mob = NecroEntityRegistry.registeredEntities.get(torso[0].name)) != null
+                            && mob instanceof ISaddleAble)
+                    {
+                        setSaddled(true);
+                        if (!player.capabilities.isCreativeMode)
+                        {
+                            player.inventory.consumeInventoryItem(Items.saddle);
+                        }
+                        return true;
+                    }
+                    return false;
                 }
-                return true;
             }
-            return false;
-        }
-        if (this.getSaddled() && !worldObj.isRemote && (riddenByEntity == null || riddenByEntity == par1EntityPlayer)
-                && (par1EntityPlayer.isSneaking() || riddenByEntity == par1EntityPlayer))
-        {
-            ISaddleAble mob = (ISaddleAble) NecroEntityRegistry.registeredEntities.get(torso[0].name);
-            par1EntityPlayer.mountEntity(this);
-            if (riddenByEntity != null)
+            else if (riddenByEntity == null && player.getCommandSenderName().equals(getOwnerName()))
             {
+                ISaddleAble mob = (ISaddleAble) NecroEntityRegistry.registeredEntities.get(torso[0].name);
+                player.mountEntity(this);
                 float lowestPoint = 0;
                 float highestPoint = 0;
                 for (Object model : leg[0].cubeList)
@@ -333,23 +336,25 @@ public class EntityMinion extends EntityTameable
                     }
                 }
                 riddenByEntity.height = mob.riderHeight() + (highestPoint - lowestPoint);
+                return true;
             }
-            return true;
-        }
-        if (riddenByEntity == null && par1EntityPlayer.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !worldObj.isRemote)
-        {
-            aiSit.setSitting(!this.isSitting());
-            isJumping = false;
-            this.setPathToEntity((PathEntity) null);
-            if (FMLCommonHandler.instance().getSide() != cpw.mods.fml.relauncher.Side.SERVER)
+            
+            if (riddenByEntity == null)
             {
-                ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Minion is " + (isSitting() ? "walking" : "sitting")));
+                if (player.getCommandSenderName().equalsIgnoreCase(getOwnerName()))
+                {
+                    aiSit.setSitting(!this.isSitting());
+                    isJumping = false;
+                    setPathToEntity((PathEntity) null);
+                    setTarget((Entity)null);
+                    setAttackTarget((EntityLivingBase)null);
+                    player.addChatMessage(new ChatComponentText("Minion is " + (isSitting() ? "free to move." : "staying put.")));
+                }
+                else
+                {
+                    player.addChatMessage(new ChatComponentText("<Minion> I obey only " + getOwnerName()));
+                }
             }
-        }
-        else if (riddenByEntity == null && !par1EntityPlayer.getCommandSenderName().equalsIgnoreCase(this.getOwnerName())
-                && FMLCommonHandler.instance().getSide() == cpw.mods.fml.relauncher.Side.CLIENT && !worldObj.isRemote)
-        {
-            ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("<Minion> I obey only " + getOwnerName()));
         }
         return true;
     }

@@ -22,7 +22,6 @@ public class NecroEntitySpider extends NecroEntityBase implements ISaddleAble
         super(name);
         headItem = ItemBodyPart.getItemStackFromName("Spider Head", 1);
         torsoItem = ItemBodyPart.getItemStackFromName("Spider Torso", 1);
-        armItem = ItemBodyPart.getItemStackFromName("Spider Arm", 1);
         legItem = ItemBodyPart.getItemStackFromName("Spider Legs", 1);
         texture = new ResourceLocation("textures/entity/spider/spider.png");
         hasArms = false;

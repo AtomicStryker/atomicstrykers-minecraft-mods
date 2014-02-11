@@ -12,9 +12,6 @@ import net.minecraft.util.ResourceLocation;
 
 import com.sirolf2009.necromancy.item.ItemNecromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 /**
  * The base class for all the necro mobs
  * 
@@ -212,7 +209,7 @@ public abstract class NecroEntityBase
      */
     public void setAttributes(EntityLiving minion, BodyPartLocation location)
     {
-        addAttributeMods(minion, "default", 20D, 32D, 0.7D, 1D, 2D);
+        addAttributeMods(minion, "default", 2D, 4D, 0D, 0.3D, 1D);
     }
     
     /**
@@ -276,7 +273,6 @@ public abstract class NecroEntityBase
      * @param model
      *            - the model
      */
-    @SideOnly(Side.CLIENT)
     public void preRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
     }
@@ -293,7 +289,6 @@ public abstract class NecroEntityBase
      * @param model
      *            - the model
      */
-    @SideOnly(Side.CLIENT)
     public void postRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
     }

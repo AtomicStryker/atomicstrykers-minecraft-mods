@@ -56,8 +56,6 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.VillagerRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy
 {
@@ -70,7 +68,6 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void init()
     {
         super.init();
@@ -85,7 +82,7 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityIsaacHead.class, new RenderIsaacBlood(new ModelIsaacHead(), 0.3F));
         RenderingRegistry.registerEntityRenderingHandler(EntityTear.class, new RenderTear());
         RenderingRegistry.registerEntityRenderingHandler(EntityTearBlood.class, new RenderTearBlood());
-
+        
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAltar.class, new TileEntityAltarRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySewing.class, new TileEntitySewingRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityScentBurner.class, new TileEntityScentBurnerRenderer());
@@ -122,9 +119,8 @@ public class ClientProxy extends CommonProxy
             System.exit(-1);
         }
     }
-
-    @SideOnly(Side.CLIENT)
-    public int loadShader(String filename, int type)
+    
+    private int loadShader(String filename, int type)
     {
         StringBuilder shaderSource = new StringBuilder();
         int shaderID = 0;
@@ -178,6 +174,6 @@ public class ClientProxy extends CommonProxy
     @Override
     public void refreshTextures()
     {
-        // mc.renderEngine.refreshTextures(); TODO
+        // mc.renderEngine.refreshTextures(); TODO ?
     }
 }

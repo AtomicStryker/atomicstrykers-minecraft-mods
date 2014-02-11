@@ -14,12 +14,14 @@ import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.command.CommandMinion;
+import com.sirolf2009.necromancy.command.CommandRemodel;
 import com.sirolf2009.necromancy.core.handler.ForgeEventHandler;
 import com.sirolf2009.necromancy.core.handler.PacketHandler;
 import com.sirolf2009.necromancy.core.proxy.CommonProxy;
 import com.sirolf2009.necromancy.craftingmanager.CraftingManagerSewing;
 import com.sirolf2009.necromancy.creativetab.CreativeTabNecro;
-import com.sirolf2009.necromancy.entity.EntityNecromancy;
+import com.sirolf2009.necromancy.entity.RegistryNecromancyEntities;
 import com.sirolf2009.necromancy.generation.VillageCreationHandler;
 import com.sirolf2009.necromancy.generation.WorldGenerator;
 import com.sirolf2009.necromancy.generation.villagecomponent.ComponentVillageCemetery;
@@ -102,9 +104,9 @@ public class Necromancy
         {
             System.err.println("not connected to the internet, special scythes are de-activated");
         }
-
+        
         ItemNecromancy.initItems();
-        EntityNecromancy.initEntities();
+        RegistryNecromancyEntities.initEntities();
         BlockNecromancy.initBlocks();
 
         villageHandler = new VillageCreationHandler();
@@ -132,7 +134,8 @@ public class Necromancy
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
-        eventHandler.initCommands(event);
+        event.registerServerCommand(new CommandRemodel());
+        event.registerServerCommand(new CommandMinion());
     }
 
     @EventHandler

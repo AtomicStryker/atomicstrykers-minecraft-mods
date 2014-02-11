@@ -13,21 +13,26 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.Necromancy;
-import com.sirolf2009.necromancy.entity.EntityNecromancy;
 
 public class ItemSpawner extends Item
 {
-
-    public int[] entityIDs = { EntityNecromancy.IsaacID, EntityNecromancy.TeddyID };
+    
+    private final String[] necroNames = new String[] {"IsaacNormal", "teddyNecro", "NightCrawler"};
 
     public ItemSpawner()
     {
         super();
         setCreativeTab(Necromancy.tabNecromancy);
     }
+    
+    @Override
+    public void registerIcons(IIconRegister iconRegister)
+    {
+        itemIcon = iconRegister.registerIcon("necromancy:soulheart");
+    }
 
     @Override
-    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
+    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer player, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
     {
         if (par3World.isRemote)
             return true;
@@ -43,33 +48,26 @@ public class ItemSpawner extends Item
             {
                 d0 = 0.5D;
             }
-
-            Entity entity = spawnCreature(par3World, entityIDs[0], par4 + 0.5D, par5 + d0, par6 + 0.5D);
-
+            
+            Entity entity = spawnCreature(par3World, necroNames[player.getRNG().nextInt(necroNames.length)], par4 + 0.5D, par5 + d0, par6 + 0.5D);
             if (entity != null)
             {
-                if (!par2EntityPlayer.capabilities.isCreativeMode)
+                if (!player.capabilities.isCreativeMode)
                 {
                     --par1ItemStack.stackSize;
                 }
             }
-
             return true;
         }
     }
-
-    /**
-     * Spawns the creature specified by the egg's type in the location specified
-     * by the last three parameters. Parameters: world, entityID, x, y, z.
-     */
-    public static Entity spawnCreature(World par0World, int par1, double par2, double par4, double par6)
+    
+    private Entity spawnCreature(World par0World, String entString, double par2, double par4, double par6)
     {
         Entity entity = null;
 
         for (int j = 0; j < 1; ++j)
         {
-            entity = EntityList.createEntityByID(par1, par0World);
-
+            entity = EntityList.createEntityByName(entString, par0World);
             if (entity != null && entity instanceof EntityLiving)
             {
                 EntityLiving entityliving = (EntityLiving) entity;
@@ -83,12 +81,6 @@ public class ItemSpawner extends Item
         }
 
         return entity;
-    }
-
-    @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("necromancy:soulheart");
     }
 
 }

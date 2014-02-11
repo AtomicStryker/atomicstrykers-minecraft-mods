@@ -14,6 +14,9 @@ import com.sirolf2009.necromancy.Necromancy;
 
 public class ItemBodyPart extends Item
 {
+    
+    public static List<String> necroEntities = new ArrayList<String>();
+    public static IIcon[] textures;
 
     public ItemBodyPart()
     {
@@ -39,6 +42,10 @@ public class ItemBodyPart extends Item
         addParts("Sheep", "Head", "Torso", "Arm", "Legs");
 
         addParts("IronGolem", "Head", "Torso", "Arm", "Legs");
+        // TODO
+        // wolf parts?
+        // ghast parts?
+        // blaze parts?
         textures = new IIcon[necroEntities.size()];
     }
 
@@ -67,6 +74,8 @@ public class ItemBodyPart extends Item
                 return new ItemStack(ItemNecromancy.bodyparts, amount, i);
             i++;
         }
+        
+        System.err.println("Necromancy major bug with bodyparts, "+name+" did not return a valid ItemStack");
         return null;
     }
 
@@ -98,7 +107,5 @@ public class ItemBodyPart extends Item
     {
         return textures[par1];
     }
-
-    public static List<String> necroEntities = new ArrayList<String>();
-    public static IIcon[] textures;
+    
 }
