@@ -1,19 +1,18 @@
 package com.sirolf2009.necromancy.core.proxy;
 
-import com.sirolf2009.necromancy.Necromancy;
-
-import cpw.mods.fml.common.network.NetworkRegistry;
+import net.minecraft.util.ResourceLocation;
 
 public class CommonProxy
 {
 
     public void preInit()
     {
+        // NOOP
     }
 
     public void init()
     {
-        NetworkRegistry.INSTANCE.registerGuiHandler(Necromancy.instance, Necromancy.packetHandler);
+        // NOOP
     }
 
     public int addArmour(String path)
@@ -23,6 +22,17 @@ public class CommonProxy
 
     public void refreshTextures()
     {
+        // NOOP
+    }
+
+    public void spawnParticle(String name, double posX, double posY, double posZ, double motionX, double motionY, double motionZ)
+    {
+        // NOOP
+    }
+
+    public void bindTexture(ResourceLocation par1ResourceLocation)
+    {
+        // NOOP
     }
 
 }

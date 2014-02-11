@@ -6,12 +6,12 @@ import net.minecraft.entity.Entity;
 
 public class ModelIsaacHead extends ModelBase
 {
-    // fields
-    ModelRenderer neck4;
-    ModelRenderer neck3;
-    ModelRenderer neck2;
-    ModelRenderer head;
-    ModelRenderer neck1;
+
+    private final ModelRenderer neck4;
+    private final ModelRenderer neck3;
+    private final ModelRenderer neck2;
+    private final ModelRenderer head;
+    private final ModelRenderer neck1;
 
     public ModelIsaacHead()
     {

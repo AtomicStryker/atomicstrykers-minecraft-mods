@@ -5,14 +5,14 @@ import net.minecraft.client.model.ModelRenderer;
 
 public class ModelScythe extends ModelBase
 {
-    // fields
-    ModelRenderer HandleMiddle;
-    ModelRenderer BladeEdge;
-    ModelRenderer BladeBase1;
-    ModelRenderer HandleBottom;
-    ModelRenderer HandleTop;
-    ModelRenderer Joint;
-    ModelRenderer BladeBase2;
+    
+    private final ModelRenderer HandleMiddle;
+    private final ModelRenderer BladeEdge;
+    private final ModelRenderer BladeBase1;
+    private final ModelRenderer HandleBottom;
+    private final ModelRenderer HandleTop;
+    private final ModelRenderer Joint;
+    private final ModelRenderer BladeBase2;
 
     public ModelScythe()
     {
@@ -62,7 +62,10 @@ public class ModelScythe extends ModelBase
         BladeBase2.mirror = true;
         setRotation(BladeBase2, 0F, 0F, 0F);
     }
-
+    
+    /**
+     * called by ItemScytheRenderer
+     */
     public void render()
     {
         float f5 = 0.0625F;

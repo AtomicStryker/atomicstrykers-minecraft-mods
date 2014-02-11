@@ -37,9 +37,9 @@ public class ItemGeneric extends Item
             if (player.inventory.consumeInventoryItem(Items.glass_bottle))
             {
                 stack.stackSize--;
-                if (!player.inventory.addItemStackToInventory(new ItemStack(ItemNecromancy.genericItems, 1, 2)))
+                if (!player.inventory.addItemStackToInventory(new ItemStack(RegistryNecromancyItems.genericItems, 1, 2)))
                 {
-                    player.entityDropItem(new ItemStack(ItemNecromancy.genericItems, 1, 2), 0f);
+                    player.entityDropItem(new ItemStack(RegistryNecromancyItems.genericItems, 1, 2), 0f);
                 }
             }
         return false;
@@ -87,7 +87,7 @@ public class ItemGeneric extends Item
     {
         for (int i = 0; i < names.length; i++)
             if (names[i].equalsIgnoreCase(name))
-                return new ItemStack(ItemNecromancy.genericItems, 1, i);
+                return new ItemStack(RegistryNecromancyItems.genericItems, 1, i);
         return null;
     }
 
@@ -95,7 +95,7 @@ public class ItemGeneric extends Item
     {
         for (int i = 0; i < names.length; i++)
             if (names[i].equalsIgnoreCase(name))
-                return new ItemStack(ItemNecromancy.genericItems, amount, i);
+                return new ItemStack(RegistryNecromancyItems.genericItems, amount, i);
         return null;
     }
 

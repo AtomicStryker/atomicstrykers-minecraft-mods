@@ -15,7 +15,8 @@ public class EntityNightCrawler extends EntityMob
         super(par1World);
         setSize(0.6F, 1F);
     }
-
+    
+    @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
@@ -56,7 +57,7 @@ public class EntityNightCrawler extends EntityMob
         }
     }
 
-    public float getAngle(double x1, double x2, double y1, double y2)
+    private float getAngle(double x1, double x2, double y1, double y2)
     {
         float angle1 = (float) (x1 > x2 ? x1 - x2 : x1 - x2);
         float angle2 = (float) (y1 > y2 ? y2 - y1 : y2 - y1);

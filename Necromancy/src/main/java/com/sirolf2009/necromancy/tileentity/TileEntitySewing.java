@@ -10,29 +10,29 @@ import net.minecraft.tileentity.TileEntity;
 public class TileEntitySewing extends TileEntity implements IInventory
 {
 
-    private ItemStack[] inventory;
+    private final ItemStack[] inventory;
 
     public TileEntitySewing()
     {
-        setInventory(new ItemStack[2]);
+        inventory = new ItemStack[2];
     }
 
     @Override
     public int getSizeInventory()
     {
-        return getInventory().length;
+        return inventory.length;
     }
 
     @Override
     public ItemStack getStackInSlot(int slotIndex)
     {
-        return getInventory()[slotIndex];
+        return inventory[slotIndex];
     }
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack)
     {
-        getInventory()[slot] = stack;
+        inventory[slot] = stack;
         if (stack != null && stack.stackSize > getInventoryStackLimit())
         {
             stack.stackSize = getInventoryStackLimit();
@@ -110,9 +110,9 @@ public class TileEntitySewing extends TileEntity implements IInventory
 
             byte slot = tag.getByte("Slot");
 
-            if (slot >= 0 && slot < getInventory().length)
+            if (slot >= 0 && slot < inventory.length)
             {
-                getInventory()[slot] = ItemStack.loadItemStackFromNBT(tag);
+                inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
             }
         }
     }
@@ -124,9 +124,9 @@ public class TileEntitySewing extends TileEntity implements IInventory
 
         NBTTagList itemList = new NBTTagList();
 
-        for (int i = 0; i < getInventory().length; i++)
+        for (int i = 0; i < inventory.length; i++)
         {
-            ItemStack stack = getInventory()[i];
+            ItemStack stack = inventory[i];
 
             if (stack != null)
             {
@@ -145,16 +145,6 @@ public class TileEntitySewing extends TileEntity implements IInventory
     public String getInventoryName()
     {
         return "TileEntitySewing";
-    }
-
-    public ItemStack[] getInventory()
-    {
-        return inventory;
-    }
-
-    public void setInventory(ItemStack[] inventory)
-    {
-        this.inventory = inventory;
     }
 
     @Override

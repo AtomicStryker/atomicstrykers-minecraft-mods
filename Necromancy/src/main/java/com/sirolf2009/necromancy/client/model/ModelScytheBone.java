@@ -6,13 +6,13 @@ import net.minecraft.client.model.ModelRenderer;
 public class ModelScytheBone extends ModelBase
 {
 
-    ModelRenderer HandleMiddle;
-    ModelRenderer HandleBottom;
-    ModelRenderer HandleTop;
-    ModelRenderer Joint;
-    ModelRenderer Blade;
-    ModelRenderer BladeBaseLeft;
-    ModelRenderer BladeBaseRight;
+    private final ModelRenderer HandleMiddle;
+    private final ModelRenderer HandleBottom;
+    private final ModelRenderer HandleTop;
+    private final ModelRenderer Joint;
+    private final ModelRenderer Blade;
+    private final ModelRenderer BladeBaseLeft;
+    private final ModelRenderer BladeBaseRight;
 
     public ModelScytheBone()
     {
@@ -63,6 +63,9 @@ public class ModelScytheBone extends ModelBase
         setRotation(BladeBaseRight, -0.1115358F, 0F, 0F);
     }
 
+    /**
+     * called by ItemScytheBoneRenderer
+     */
     public void render()
     {
         float f5 = 0.0625F;

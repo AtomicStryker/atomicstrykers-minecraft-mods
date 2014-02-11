@@ -16,6 +16,7 @@ public class EntityIsaacBody extends EntityMob implements IMob
         setSize(0.6F, 1.8F);
     }
 
+    @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();

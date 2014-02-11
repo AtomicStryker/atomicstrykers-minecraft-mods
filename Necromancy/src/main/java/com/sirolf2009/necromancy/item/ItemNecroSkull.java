@@ -16,16 +16,14 @@ import com.sirolf2009.necroapi.NecroEntityBase;
 import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.Necromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class ItemNecroSkull extends ItemSkull
 {
-
-    public static String[] IIconTextures;
-    public static String[] modelTextures;
+    
     public static String[] skullTypes;
-    public IIcon[] IIcons;
+
+    private static String[] iconTextures;
+    private static String[] modelTextures;
+    private IIcon[] icons;
 
     public ItemNecroSkull()
     {
@@ -36,14 +34,14 @@ public class ItemNecroSkull extends ItemSkull
     public static void initSkulls()
     {
         Iterator<ISkull> itr = NecroEntityRegistry.registeredSkullEntities.values().iterator();
-        IIconTextures = new String[NecroEntityRegistry.registeredSkullEntities.size()];
+        iconTextures = new String[NecroEntityRegistry.registeredSkullEntities.size()];
         modelTextures = new String[NecroEntityRegistry.registeredSkullEntities.size()];
         skullTypes = new String[NecroEntityRegistry.registeredSkullEntities.size()];
         int i = 0;
         while (itr.hasNext())
         {
             ISkull mob = itr.next();
-            IIconTextures[i] = mob.getSkullIIconTexture();
+            iconTextures[i] = mob.getSkullIIconTexture();
             modelTextures[i] = mob.getSkullModelTexture();
             skullTypes[i] = ((NecroEntityBase) mob).mobName;
             // LanguageRegistry.addName(new ItemStack(Necromancy.skull, 1, i),
@@ -70,7 +68,7 @@ public class ItemNecroSkull extends ItemSkull
             par1 = 0;
         }
 
-        return IIcons[par1];
+        return icons[par1];
     }
 
     @Override
@@ -95,14 +93,13 @@ public class ItemNecroSkull extends ItemSkull
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister par1IIconRegister)
     {
-        IIcons = new IIcon[IIconTextures.length];
+        icons = new IIcon[iconTextures.length];
 
-        for (int i = 0; i < IIconTextures.length; ++i)
+        for (int i = 0; i < iconTextures.length; ++i)
         {
-            IIcons[i] = par1IIconRegister.registerIcon(IIconTextures[i]);
+            icons[i] = par1IIconRegister.registerIcon(iconTextures[i]);
         }
     }
 }

@@ -105,7 +105,7 @@ public class CommandMinion extends CommandBase
         return par1ICommandSender instanceof EntityPlayer;
     }
 
-    protected String[] getPlayers()
+    private String[] getPlayers()
     {
         return MinecraftServer.getServer().getAllUsernames();
     }

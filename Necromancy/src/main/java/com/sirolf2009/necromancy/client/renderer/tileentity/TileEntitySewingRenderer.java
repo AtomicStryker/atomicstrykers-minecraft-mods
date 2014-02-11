@@ -7,17 +7,15 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.client.model.ModelSewing;
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-@SideOnly(Side.CLIENT)
 public class TileEntitySewingRenderer extends TileEntitySpecialRenderer implements IItemRenderer
 {
+    
+    private final ModelSewing model;
 
     public TileEntitySewingRenderer()
     {
@@ -75,7 +73,7 @@ public class TileEntitySewingRenderer extends TileEntitySpecialRenderer implemen
 
     private void renderSewing(TileEntitySewing entity, double x, double y, double z, float f)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SEWING);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SEWING);
         GL11.glPushMatrix();
         GL11.glEnable(32826);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -110,8 +108,6 @@ public class TileEntitySewingRenderer extends TileEntitySpecialRenderer implemen
         }
     }
 
-    public ModelSewing model;
-
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
     {
@@ -145,7 +141,7 @@ public class TileEntitySewingRenderer extends TileEntitySpecialRenderer implemen
 
     private void renderSewing(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SEWING);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SEWING);
         GL11.glPushMatrix(); // start
         GL11.glTranslatef(posX, posY, posZ); // size
         GL11.glRotatef(rotX, 1, 0, 0);

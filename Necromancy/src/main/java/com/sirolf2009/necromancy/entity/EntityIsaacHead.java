@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 
 public class EntityIsaacHead extends EntityIsaacBlood implements IRangedAttackMob, IMob
 {
@@ -17,6 +17,7 @@ public class EntityIsaacHead extends EntityIsaacBlood implements IRangedAttackMo
         super(par1World);
     }
 
+    @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
@@ -43,6 +44,6 @@ public class EntityIsaacHead extends EntityIsaacBlood implements IRangedAttackMo
     @Override
     protected Item getDropItem()
     {
-        return ItemNecromancy.isaacsHead;
+        return RegistryNecromancyItems.isaacsHead;
     }
 }

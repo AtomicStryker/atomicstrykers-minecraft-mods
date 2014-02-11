@@ -21,10 +21,7 @@ public class TileEntitySkullWall extends TileEntity
         par1NBTTagCompound.setString("SkullType", skullType);
         par1NBTTagCompound.setInteger("BlockColor", blockColor);
     }
-
-    /**
-     * Reads a tile entity from NBT.
-     */
+    
     @Override
     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
     {
@@ -32,31 +29,12 @@ public class TileEntitySkullWall extends TileEntity
         skullType = par1NBTTagCompound.getString("SkullType");
         blockColor = par1NBTTagCompound.getInteger("BlockColor");
     }
-
-    /**
-     * Overriden in a sign to provide the text.
-     */
+    
     @Override
     public Packet getDescriptionPacket()
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
         this.writeToNBT(nbttagcompound);
         return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 4, nbttagcompound);
-    }
-
-    /**
-     * Set the entity type for the skull
-     */
-    public void setSkullType(String par1)
-    {
-        skullType = par1;
-    }
-
-    /**
-     * Get the entity type for the skull
-     */
-    public String getSkullType()
-    {
-        return skullType;
     }
 }

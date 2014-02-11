@@ -27,6 +27,6 @@ public class BlockBlood extends BlockFluidClassic
     @Override
     public int colorMultiplier(IBlockAccess iblockaccess, int x, int y, int z)
     {
-        return 0x660000;
+        return 0xD90000;
     }
 }

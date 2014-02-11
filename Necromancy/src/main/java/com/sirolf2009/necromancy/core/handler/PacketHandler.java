@@ -9,10 +9,12 @@ import com.sirolf2009.necromancy.block.BlockSewing;
 import com.sirolf2009.necromancy.client.gui.GuiAltar;
 import com.sirolf2009.necromancy.client.gui.GuiScentBurner;
 import com.sirolf2009.necromancy.client.gui.GuiSewing;
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
+import com.sirolf2009.necromancy.entity.EntityTear;
+import com.sirolf2009.necromancy.entity.EntityTearBlood;
 import com.sirolf2009.necromancy.inventory.ContainerAltar;
 import com.sirolf2009.necromancy.inventory.ContainerScentBurner;
 import com.sirolf2009.necromancy.inventory.ContainerSewing;
+import com.sirolf2009.necromancy.network.ForgePacketWrapper;
 import com.sirolf2009.necromancy.network.PacketDispatcher.IPacketHandler;
 import com.sirolf2009.necromancy.network.PacketDispatcher.WrappedPacket;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
@@ -25,7 +27,7 @@ public class PacketHandler implements IPacketHandler, IGuiHandler
 {
 
     @Override
-    public Object getServerGuiElement(int ID, net.minecraft.entity.player.EntityPlayer player, net.minecraft.world.World world, int x, int y, int z)
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
         if (ID == BlockAltar.guiID)
             return new ContainerAltar(player.inventory, (TileEntityAltar) player.worldObj.getTileEntity(x, y, z));
@@ -53,17 +55,26 @@ public class PacketHandler implements IPacketHandler, IGuiHandler
     {
         if (packetType == 0)
         {
-            ClientProxy.mc.thePlayer.getEntityData().setBoolean("aggressive", packet.data.readInt() == 1);
+            player.getEntityData().setBoolean("aggressive", packet.data.readInt() == 1);
         }
         else if (packetType == 1)
         { // we're making friends :D
-            EntityPlayer playerEntity = (EntityPlayer) ClientProxy.mc.theWorld.getEntityByID(packet.data.readInt() & 0xFF);
-            playerEntity.getEntityData().setString(playerEntity.getCommandSenderName(), "friend");
+            EntityPlayer playerEntity = (EntityPlayer) player.worldObj.getEntityByID(packet.data.readInt() & 0xFF);
+            player.getEntityData().setString(playerEntity.getCommandSenderName(), "friend");
         }
         else if (packetType == 2)
         { // who needs friends anyway
-            EntityPlayer playerEntity = (EntityPlayer) ClientProxy.mc.theWorld.getEntityByID(packet.data.readInt() & 0xFF);
-            playerEntity.getEntityData().setString(playerEntity.getCommandSenderName(), "enemy");
+            EntityPlayer playerEntity = (EntityPlayer) player.worldObj.getEntityByID(packet.data.readInt() & 0xFF);
+            player.getEntityData().setString(playerEntity.getCommandSenderName(), "enemy");
+        }
+        else if (packetType == 3)
+        {
+            boolean blood = packet.data.readBoolean();
+            EntityTear tearNormal = blood ? new EntityTearBlood(player.worldObj, player, 2) : new EntityTear(player.worldObj, player, 2);
+            Double[] readOut = (Double[]) ForgePacketWrapper.readPacketData(packet.data, new Class[] { Double.class, Double.class, Double.class, Double.class, Double.class, Double.class });
+            tearNormal.setPosition(readOut[0], readOut[1], readOut[2]);
+            tearNormal.setVelocity(readOut[3], readOut[4], readOut[5]);
+            player.worldObj.spawnEntityInWorld(tearNormal);
         }
     }
 }

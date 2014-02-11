@@ -16,7 +16,7 @@ import com.sirolf2009.necromancy.tileentity.TileEntitySkullWall;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BlockNecromancy
+public class RegistryBlocksNecromancy
 {
 
     public static Block altar;
@@ -73,7 +73,7 @@ public class BlockNecromancy
 
     private static void initRecipes()
     {
-        GameRegistry.addRecipe(new ItemStack(BlockNecromancy.sewing, 1), new Object[] { "III", "ISB", "III", 'I', Items.iron_ingot, 'S',
+        GameRegistry.addRecipe(new ItemStack(RegistryBlocksNecromancy.sewing, 1), new Object[] { "III", "ISB", "III", 'I', Items.iron_ingot, 'S',
                 Items.string, 'B', ItemGeneric.getItemStackFromName("Bone Needle") });
     }
 

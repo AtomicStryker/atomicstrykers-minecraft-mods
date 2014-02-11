@@ -194,19 +194,13 @@ public class EntityBoltShadow extends EntityThrowable
             }
 
             float var20;
-
             if (var4 != null)
             {
                 if (var4.entityHit != null)
                 {
                     var20 = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
-                    int var23 = MathHelper.ceiling_double_int(var20 * damage);
-
-                    DamageSource var21 = null;
-
-                    var21 = DamageSource.causeIndirectMagicDamage(this, shootingEntity);
-
-                    if (var4.entityHit.attackEntityFrom(var21, var23))
+                    DamageSource var21 = DamageSource.causeIndirectMagicDamage(this, shootingEntity);
+                    if (var4.entityHit.attackEntityFrom(var21, (float) (var20 * damage)))
                     {
                         if (var4.entityHit instanceof EntityLiving)
                         {
@@ -360,20 +354,9 @@ public class EntityBoltShadow extends EntityThrowable
     }
 
     @Override
-    @cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
     public float getShadowSize()
     {
         return 0.0F;
-    }
-
-    public void setDamage(double par1)
-    {
-        damage = par1;
-    }
-
-    public double getDamage()
-    {
-        return damage;
     }
 
     /**

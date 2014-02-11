@@ -7,12 +7,18 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 
 public class ContainerAltar extends Container
 {
+    
+    private TileEntityAltar altar;
+    private World worldObj;
+    private int posX;
+    private int posY;
+    private int posZ;
 
     public ContainerAltar(InventoryPlayer inventory, com.sirolf2009.necromancy.tileentity.TileEntityAltar tileEntityAltar)
     {
@@ -43,15 +49,10 @@ public class ContainerAltar extends Container
         }
     }
 
-    public void log(Object obj)
-    {
-        System.out.println(ContainerAltar.class + "	" + obj);
-    }
-
     @Override
     public boolean canInteractWith(EntityPlayer par1EntityPlayer)
     {
-        return worldObj.getBlock(posX, posY, posZ) == BlockNecromancy.altar
+        return worldObj.getBlock(posX, posY, posZ) == RegistryBlocksNecromancy.altar
                 ? par1EntityPlayer.getDistanceSq(posX + 0.5D, posY + 0.5D, posZ + 0.5D) <= 64D : false;
     }
 
@@ -91,10 +92,5 @@ public class ContainerAltar extends Container
         }
         return var2;
     }
-
-    private TileEntityAltar altar;
-    private World worldObj;
-    private int posX;
-    private int posY;
-    private int posZ;
+    
 }

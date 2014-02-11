@@ -13,11 +13,19 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
 
 public class ContainerScentBurner extends Container
 {
+    
+    private TileEntityScentBurner burner;
+    public InventoryCrafting craftMatrix;
+    public IInventory craftResult;
+    private World worldObj;
+    private int posX;
+    private int posY;
+    private int posZ;
 
     public ContainerScentBurner(InventoryPlayer inventory, TileEntity tileEntityBurner)
     {
@@ -46,11 +54,6 @@ public class ContainerScentBurner extends Container
         }
     }
 
-    public void log(Object obj)
-    {
-        System.out.println(ContainerScentBurner.class + "	" + obj);
-    }
-
     @Override
     public void onContainerClosed(EntityPlayer par1EntityPlayer)
     {
@@ -72,7 +75,7 @@ public class ContainerScentBurner extends Container
     @Override
     public boolean canInteractWith(EntityPlayer par1EntityPlayer)
     {
-        return worldObj.getBlock(posX, posY, posZ) == BlockNecromancy.scentBurner ? par1EntityPlayer.getDistanceSq(posX + 0.5D, posY + 0.5D,
+        return worldObj.getBlock(posX, posY, posZ) == RegistryBlocksNecromancy.scentBurner ? par1EntityPlayer.getDistanceSq(posX + 0.5D, posY + 0.5D,
                 posZ + 0.5D) <= 64D : false;
     }
 
@@ -148,12 +151,4 @@ public class ContainerScentBurner extends Container
 
         return itemstack;
     }
-
-    private TileEntityScentBurner burner;
-    public InventoryCrafting craftMatrix;
-    public IInventory craftResult;
-    private World worldObj;
-    private int posX;
-    private int posY;
-    private int posZ;
 }

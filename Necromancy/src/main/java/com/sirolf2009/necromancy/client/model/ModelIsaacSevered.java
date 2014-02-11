@@ -5,8 +5,8 @@ import net.minecraft.entity.Entity;
 
 public class ModelIsaacSevered extends ModelIsaacNormal
 {
-    // fields
-    ModelRenderer neck;
+    
+    private final ModelRenderer neck;
 
     public ModelIsaacSevered()
     {

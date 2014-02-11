@@ -13,12 +13,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.Necromancy;
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
 
 public class ContainerSewing extends Container
 {
+
+    private TileEntitySewing Sewing;
+    public InventoryCrafting craftMatrix;
+    public IInventory craftResult;
+    private World worldObj;
+    private int posX;
+    private int posY;
+    private int posZ;
 
     public ContainerSewing(InventoryPlayer inventory, TileEntity sewing)
     {
@@ -71,11 +79,6 @@ public class ContainerSewing extends Container
         }
     }
 
-    public void log(Object obj)
-    {
-        System.out.println(ContainerSewing.class + "	" + obj);
-    }
-
     @Override
     public void onContainerClosed(EntityPlayer par1EntityPlayer)
     {
@@ -97,7 +100,7 @@ public class ContainerSewing extends Container
     @Override
     public boolean canInteractWith(EntityPlayer par1EntityPlayer)
     {
-        return worldObj.getBlock(posX, posY, posZ) == BlockNecromancy.sewing
+        return worldObj.getBlock(posX, posY, posZ) == RegistryBlocksNecromancy.sewing
                 ? par1EntityPlayer.getDistanceSq(posX + 0.5D, posY + 0.5D, posZ + 0.5D) <= 64D : false;
     }
 
@@ -132,11 +135,4 @@ public class ContainerSewing extends Container
         return var2;
     }
 
-    private TileEntitySewing Sewing;
-    public InventoryCrafting craftMatrix;
-    public IInventory craftResult;
-    private World worldObj;
-    private int posX;
-    private int posY;
-    private int posZ;
 }

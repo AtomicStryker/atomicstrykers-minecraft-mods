@@ -8,13 +8,12 @@ import com.sirolf2009.necromancy.client.model.ModelMinion;
 
 public class RenderMinion extends RenderLiving
 {
-    public static ModelMinion model = new ModelMinion();
-
+    
     public RenderMinion()
     {
-        super(model, 1.0F);
-        model.renderer = this;
-        setRenderPassModel(model);
+        super(new ModelMinion(), 1.0F);
+        ((ModelMinion)mainModel).renderer = this;
+        setRenderPassModel(mainModel);
     }
 
     @Override

@@ -22,7 +22,8 @@ public class EntityIsaacBlood extends EntityIsaacNormal implements IRangedAttack
     {
         return true;
     }
-
+    
+    @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();

@@ -6,17 +6,17 @@ import net.minecraft.client.model.ModelRenderer;
 public class ModelSewing extends ModelBase
 {
     // fields
-    ModelRenderer Base;
-    ModelRenderer Needle;
-    ModelRenderer Arm1;
-    ModelRenderer Arm3;
-    ModelRenderer Arm2;
-    ModelRenderer CrankHandle;
-    ModelRenderer CrankArm3;
-    ModelRenderer CrankArm4;
-    ModelRenderer CrankArm2;
-    ModelRenderer CrankArm1;
-    ModelRenderer CrankBase;
+    private final ModelRenderer Base;
+    private final ModelRenderer Needle;
+    private final ModelRenderer Arm1;
+    private final ModelRenderer Arm3;
+    private final ModelRenderer Arm2;
+    private final ModelRenderer CrankHandle;
+    private final ModelRenderer CrankArm3;
+    private final ModelRenderer CrankArm4;
+    private final ModelRenderer CrankArm2;
+    private final ModelRenderer CrankArm1;
+    private final ModelRenderer CrankBase;
 
     public ModelSewing()
     {
@@ -90,7 +90,10 @@ public class ModelSewing extends ModelBase
         CrankBase.mirror = true;
         setRotation(CrankBase, 0F, 0F, 0F);
     }
-
+    
+    /**
+     * called by TileEntitySewingRenderer
+     */
     public void render()
     {
         float f5 = 0.0625F;

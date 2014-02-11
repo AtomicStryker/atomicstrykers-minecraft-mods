@@ -12,9 +12,6 @@ import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
 import com.sirolf2009.necromancy.item.ItemBodyPart;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class NecroEntityCaveSpider extends NecroEntitySpider
 {
 
@@ -35,7 +32,6 @@ public class NecroEntityCaveSpider extends NecroEntitySpider
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void preRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
         GL11.glPushMatrix();
@@ -43,7 +39,6 @@ public class NecroEntityCaveSpider extends NecroEntitySpider
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void postRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
         GL11.glPopMatrix();

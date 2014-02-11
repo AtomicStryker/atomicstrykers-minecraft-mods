@@ -7,6 +7,11 @@ import net.minecraft.world.World;
 
 public class ShapedRecipes4x4 implements IRecipe
 {
+    
+    private int recipeWidth;
+    private int recipeHeight;
+    private ItemStack recipeItems[];
+    private ItemStack recipeOutput;
 
     public ShapedRecipes4x4(int i, int j, ItemStack aitemstack[], ItemStack itemstack)
     {
@@ -89,9 +94,5 @@ public class ShapedRecipes4x4 implements IRecipe
     {
         return recipeWidth * recipeHeight;
     }
-
-    private int recipeWidth;
-    private int recipeHeight;
-    private ItemStack recipeItems[];
-    private ItemStack recipeOutput;
+    
 }

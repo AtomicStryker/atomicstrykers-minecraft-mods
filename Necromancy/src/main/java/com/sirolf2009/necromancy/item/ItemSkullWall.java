@@ -15,15 +15,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemSkullWall extends Item
 {
     private static final String[] skullTypes = new String[] { "skeleton", "wither", "zombie", "char", "creeper" };
-    public static final String[] field_94587_a = new String[] { "skull_skeleton", "skull_wither", "skull_zombie", "skull_char", "skull_creeper" };
-    @SideOnly(Side.CLIENT)
-    private IIcon[] field_94586_c;
+    private static final String[] skullNames = new String[] { "skull_skeleton", "skull_wither", "skull_zombie", "skull_char", "skull_creeper" };
+    private IIcon[] icons;
 
     public ItemSkullWall()
     {
@@ -32,12 +29,7 @@ public class ItemSkullWall extends Item
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
-
-    /**
-     * Callback for item usage. If the item does something special on right
-     * clicking, he will have one of those. Return True if something happen and
-     * false if it don't. This is for ITEMS, not BLOCKS
-     */
+    
     @Override
     public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
     {
@@ -110,7 +102,6 @@ public class ItemSkullWall extends Item
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    @SideOnly(Side.CLIENT)
     public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
         for (int j = 0; j < skullTypes.length; ++j)
@@ -126,7 +117,6 @@ public class ItemSkullWall extends Item
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int par1)
     {
         if (par1 < 0 || par1 >= skullTypes.length)
@@ -134,7 +124,7 @@ public class ItemSkullWall extends Item
             par1 = 0;
         }
 
-        return field_94586_c[par1];
+        return icons[par1];
     }
 
     @Override
@@ -159,14 +149,13 @@ public class ItemSkullWall extends Item
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister par1IIconRegister)
     {
-        field_94586_c = new IIcon[field_94587_a.length];
+        icons = new IIcon[skullNames.length];
 
-        for (int i = 0; i < field_94587_a.length; ++i)
+        for (int i = 0; i < skullNames.length; ++i)
         {
-            field_94586_c[i] = par1IIconRegister.registerIcon(field_94587_a[i]);
+            icons[i] = par1IIconRegister.registerIcon(skullNames[i]);
         }
     }
 }

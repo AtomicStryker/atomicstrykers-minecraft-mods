@@ -15,6 +15,12 @@ import cpw.mods.fml.common.FMLCommonHandler;
 public class SlotSewing extends SlotCrafting
 {
 
+    private final IInventory craftMatrix;
+    private EntityPlayer thePlayer;
+    private int amountCrafted;
+    private TileEntitySewing sewing;
+    private ContainerSewing containerSewing;
+
     public SlotSewing(EntityPlayer par1EntityPlayer, IInventory par2IInventory, IInventory par3IInventory, TileEntity sewing, ContainerSewing containerSewing, int par4, int par5, int par6)
     {
         super(par1EntityPlayer, par3IInventory, par3IInventory, par4, par5, par6);
@@ -76,9 +82,4 @@ public class SlotSewing extends SlotCrafting
         }
     }
 
-    private final IInventory craftMatrix;
-    private EntityPlayer thePlayer;
-    private int amountCrafted;
-    private TileEntitySewing sewing;
-    private ContainerSewing containerSewing;
 }

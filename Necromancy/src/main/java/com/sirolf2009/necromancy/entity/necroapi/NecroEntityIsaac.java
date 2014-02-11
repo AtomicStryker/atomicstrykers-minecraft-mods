@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
 import com.sirolf2009.necroapi.NecroEntityBiped;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 
 public class NecroEntityIsaac extends NecroEntityBiped
@@ -17,7 +17,7 @@ public class NecroEntityIsaac extends NecroEntityBiped
     public NecroEntityIsaac()
     {
         super("Isaac");
-        headItem = new ItemStack(ItemNecromancy.isaacsHead, 1);
+        headItem = new ItemStack(RegistryNecromancyItems.isaacsHead, 1);
         hasTorso = false;
         hasArms = false;
         hasLegs = false;

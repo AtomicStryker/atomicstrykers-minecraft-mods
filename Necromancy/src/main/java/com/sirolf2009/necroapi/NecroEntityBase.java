@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 
 /**
  * The base class for all the necro mobs
@@ -81,7 +81,7 @@ public abstract class NecroEntityBase
         {
             Class.forName("com.sirolf2009.necromancy.Necromancy");
             isNecromancyInstalled = true;
-            organs = ItemNecromancy.organs;
+            organs = RegistryNecromancyItems.organs;
             initRecipes();
         }
         catch (ClassNotFoundException e)

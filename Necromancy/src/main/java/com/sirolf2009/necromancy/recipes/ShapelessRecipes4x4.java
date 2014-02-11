@@ -10,6 +10,9 @@ import net.minecraft.world.World;
 
 public class ShapelessRecipes4x4 implements IRecipe
 {
+    
+    private final ItemStack recipeOutput;
+    private final ArrayList<ItemStack> recipeItems;
 
     public ShapelessRecipes4x4(ItemStack par1ItemStack, ArrayList<ItemStack> par2List)
     {
@@ -34,9 +37,6 @@ public class ShapelessRecipes4x4 implements IRecipe
     {
         return recipeItems.size();
     }
-
-    private final ItemStack recipeOutput;
-    private final ArrayList<ItemStack> recipeItems;
 
     @Override
     public boolean matches(InventoryCrafting invCrafting, World world)

@@ -13,24 +13,24 @@ import org.lwjgl.opengl.GL11;
 public class ModelNightCrawler extends ModelBase
 {
 
-    ModelRenderer midBody;
-    ModelRenderer upperBody;
-    ModelRenderer neck;
-    ModelRenderer lowerBody;
-    ModelRenderer Shape1;
-    ModelRenderer Shape2;
-    ModelRenderer Shape7;
-    ModelRenderer Shape8;
-    ModelRenderer Shape9;
-    ModelRenderer Shape10;
-    ModelRenderer Shape11;
-    ModelRenderer Shape12;
-    ModelRenderer Shape13;
-    ModelRenderer Shape14;
-    ModelRenderer Shape15;
-    ModelRenderer headset;
-    ModelRenderer leftarmset;
-    ModelRenderer rightarmset;
+    private final ModelRenderer midBody;
+    private final ModelRenderer upperBody;
+    private final ModelRenderer neck;
+    private final ModelRenderer lowerBody;
+    private final ModelRenderer Shape1;
+    private final ModelRenderer Shape2;
+    private final ModelRenderer Shape7;
+    private final ModelRenderer Shape8;
+    private final ModelRenderer Shape9;
+    private final ModelRenderer Shape10;
+    private final ModelRenderer Shape11;
+    private final ModelRenderer Shape12;
+    private final ModelRenderer Shape13;
+    private final ModelRenderer Shape14;
+    private final ModelRenderer Shape15;
+    private final ModelRenderer headset;
+    private final ModelRenderer leftarmset;
+    private final ModelRenderer rightarmset;
 
     public ModelNightCrawler()
     {
@@ -217,12 +217,6 @@ public class ModelNightCrawler extends ModelBase
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
-    }
-
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-        super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     }
 
 }

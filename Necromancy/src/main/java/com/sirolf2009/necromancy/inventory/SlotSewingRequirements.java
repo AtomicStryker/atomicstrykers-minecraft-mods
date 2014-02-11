@@ -6,7 +6,7 @@ import net.minecraft.inventory.Slot;
 
 public class SlotSewingRequirements extends Slot
 {
-    ContainerSewing machine;
+    private final ContainerSewing machine;
 
     public SlotSewingRequirements(IInventory par1IInventory, int par2, int par3, int par4, Container container)
     {

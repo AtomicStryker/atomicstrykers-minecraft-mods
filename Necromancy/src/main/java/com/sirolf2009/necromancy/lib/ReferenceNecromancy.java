@@ -31,7 +31,7 @@ public class ReferenceNecromancy
 
     public static final ResourceLocation TEXTURES_MODELS_SCYTHE = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/scythe.png");
     public static final ResourceLocation TEXTURES_MODELS_SCYTHEBONE = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/scythebone.png");
-    public static final ResourceLocation TEXTURES_MODELS_NECRONOMIIcon = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS
+    public static final ResourceLocation TEXTURES_MODELS_NECRONOMICON = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS
             + "/necronomicon.png");
     public static final ResourceLocation TEXTURES_MODELS_ALTAR = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/altartexture.png");
     public static final ResourceLocation TEXTURES_MODELS_SEWING = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/sewingtexture.png");

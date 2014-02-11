@@ -23,7 +23,6 @@ public class ModelMinion extends ModelBase
     private BodyPart[][] parts;
     private float[] torsoPos = new float[3], armLeftPos = new float[3], armRightPos = new float[3], headPos = new float[3];
 
-
     @Override
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7)
     {

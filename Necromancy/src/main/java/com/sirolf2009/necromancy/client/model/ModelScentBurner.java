@@ -8,20 +8,20 @@ import org.lwjgl.opengl.GL11;
 public class ModelScentBurner extends ModelBase
 {
 
-    ModelRenderer ropeFrontLeft;
-    ModelRenderer base;
-    ModelRenderer burner;
-    ModelRenderer legFrontRight;
-    ModelRenderer armFrontRight;
-    ModelRenderer armFrontLeft;
-    ModelRenderer armBackLeft;
-    ModelRenderer legFrontLeft;
-    ModelRenderer legBackRight;
-    ModelRenderer legBackLeft;
-    ModelRenderer armBackRight;
-    ModelRenderer ropeFrontRight;
-    ModelRenderer ropeBackLeft;
-    ModelRenderer ropeBackRight;
+    private final ModelRenderer ropeFrontLeft;
+    private final ModelRenderer base;
+    private final ModelRenderer burner;
+    private final ModelRenderer legFrontRight;
+    private final ModelRenderer armFrontRight;
+    private final ModelRenderer armFrontLeft;
+    private final ModelRenderer armBackLeft;
+    private final ModelRenderer legFrontLeft;
+    private final ModelRenderer legBackRight;
+    private final ModelRenderer legBackLeft;
+    private final ModelRenderer armBackRight;
+    private final ModelRenderer ropeFrontRight;
+    private final ModelRenderer ropeBackLeft;
+    private final ModelRenderer ropeBackRight;
 
     public ModelScentBurner()
     {
@@ -112,7 +112,10 @@ public class ModelScentBurner extends ModelBase
         ropeBackRight.mirror = true;
         setRotation(ropeBackRight, 0F, -0.7853982F, 1.134464F);
     }
-
+    
+    /**
+     * Called by TileEntityScentBurnerRenderer
+     */
     public void render()
     {
         float f5 = 0.0625F;

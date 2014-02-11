@@ -24,19 +24,16 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntitySquid;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityVillager;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityWitch;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityZombie;
+import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
 
 public class RegistryNecromancyEntities
 {
 
-    public static int TeddyID;
-    public static int IsaacID;
-
     public static void initEntities()
     {
-        RegistryNecromancyEntities.TeddyID = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityTeddy.class, "teddyNecro", TeddyID, new Color(99, 69, 29).getRGB(), Color.red.getRGB());
+        EntityRegistry.registerGlobalEntityID(EntityTeddy.class, "teddyNecro", ConfigurationNecromancy.TeddyID, new Color(99, 69, 29).getRGB(), Color.red.getRGB());
         EntityRegistry.registerModEntity(EntityTeddy.class, "teddyNecro", 0, Necromancy.instance, 25, 5, true);
 
         EntityRegistry.registerGlobalEntityID(EntityNightCrawler.class, "NightCrawler", EntityRegistry.findGlobalUniqueEntityId(),
@@ -46,9 +43,8 @@ public class RegistryNecromancyEntities
                 BiomeGenBase.coldTaiga, BiomeGenBase.coldTaigaHills, BiomeGenBase.desert, BiomeGenBase.desertHills, BiomeGenBase.extremeHills,
                 BiomeGenBase.forest, BiomeGenBase.jungle, BiomeGenBase.megaTaiga, BiomeGenBase.plains, BiomeGenBase.savanna, BiomeGenBase.swampland,
                 BiomeGenBase.taiga);
-
-        RegistryNecromancyEntities.IsaacID = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", IsaacID, new Color(6, 6, 6).getRGB(),
+        
+        EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", ConfigurationNecromancy.IsaacID, new Color(6, 6, 6).getRGB(),
                 new Color(204, 153, 153).getRGB());
         EntityRegistry.registerModEntity(EntityIsaacNormal.class, "IsaacNormal", 2, Necromancy.instance, 25, 5, true);
 

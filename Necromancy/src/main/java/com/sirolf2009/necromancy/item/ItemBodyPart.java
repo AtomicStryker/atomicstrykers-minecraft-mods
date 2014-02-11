@@ -71,7 +71,7 @@ public class ItemBodyPart extends Item
         {
             String part = itr.next();
             if (part.equals(name))
-                return new ItemStack(ItemNecromancy.bodyparts, amount, i);
+                return new ItemStack(RegistryNecromancyItems.bodyparts, amount, i);
             i++;
         }
         

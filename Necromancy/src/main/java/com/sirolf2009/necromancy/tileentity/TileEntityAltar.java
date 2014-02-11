@@ -11,7 +11,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.logging.log4j.Level;
 
@@ -28,6 +27,12 @@ import cpw.mods.fml.common.FMLLog;
 
 public class TileEntityAltar extends TileEntity implements IInventory
 {
+    
+    private ItemStack altarItemStacks[] = new ItemStack[7];
+    private EntityMinion minion;
+    private ItemStack bodyPartsNew[];
+    private ItemStack bodyPartsOld[];
+    public EntityPlayer lastUser;
 
     public TileEntityAltar()
     {
@@ -42,13 +47,16 @@ public class TileEntityAltar extends TileEntity implements IInventory
     {
         return true;
     }
-
+    
+    /**
+     * Called by BlockAltar
+     */
     public void spawn(EntityPlayer user)
     {
         lastUser = user;
         if (!worldObj.isRemote)
         {
-            if (Necromancy.maxSpawn != -1 && user.getEntityData().getInteger("minions") >= Necromancy.maxSpawn)
+            if (Necromancy.instance.maxSpawn != -1 && user.getEntityData().getInteger("minions") >= Necromancy.instance.maxSpawn)
             {
                 user.addChatMessage(new ChatComponentText("<Death> Mortal fool! Thou shan't never grow that strong."));
                 Entity thunder = new EntityLightningBolt(worldObj, xCoord, yCoord, zCoord);
@@ -121,11 +129,14 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 user.getEntityData().setInteger("minions", user.getEntityData().getInteger("minions") + 1);
                 bodyPartsOld = null;
                 user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-                log(minionTemp);
+                FMLLog.getLogger().log(Level.INFO, TileEntityAltar.class + "    " + minionTemp);
             }
         }
     }
-
+    
+    /**
+     * called by BlockAltar
+     */
     public boolean canSpawn()
     {
         if (getStackInSlot(0) == null || getStackInSlot(0).getItem() != ItemGeneric.getItemStackFromName("Jar of Blood").getItem())
@@ -135,7 +146,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
         return true;
     }
 
-    public BodyPart[] getBodyPart(ItemStack stack, boolean isRightArm)
+    private BodyPart[] getBodyPart(ItemStack stack, boolean isRightArm)
     {
         Iterator<NecroEntityBase> itr = NecroEntityRegistry.registeredEntities.values().iterator();
         while (itr.hasNext())
@@ -155,7 +166,10 @@ public class TileEntityAltar extends TileEntity implements IInventory
         }
         return null;
     }
-
+    
+    /**
+     * called by TileEntityAltarRenderer
+     */
     public boolean hasContainerChanged()
     {
         bodyPartsNew[0] = getStackInSlot(2);
@@ -182,7 +196,10 @@ public class TileEntityAltar extends TileEntity implements IInventory
         bodyPartsOld = bodyPartsNew.clone();
         return false;
     }
-
+    
+    /**
+     * builds the current Entity from the pieces
+     */
     public Entity getPreviewEntity()
     {
         ItemStack head = getStackInSlot(2);
@@ -369,40 +386,19 @@ public class TileEntityAltar extends TileEntity implements IInventory
         return 64;
     }
 
-    private void log(Object msg)
-    {
-        FMLLog.getLogger().log(Level.INFO, TileEntityAltar.class + "	" + msg);
-    }
-
     public EntityMinion getMinion()
     {
         return minion;
     }
 
-    public void setMinion(EntityMinion minion)
+    private void setMinion(EntityMinion minion)
     {
         this.minion = minion;
     }
 
-    public boolean soulCheck()
+    private boolean soulCheck()
     {
-        if (getStackInSlot(1).getItem() == ItemGeneric.getItemStackFromName("Soul in a Jar").getItem()
-                || "Items.HSBottledSoul".equals(getStackInSlot(1).getUnlocalizedName()))
-            return true;
-        return false;
-    }
-
-    private ItemStack altarItemStacks[] = new ItemStack[7];
-    private EntityMinion minion;
-    private ItemStack bodyPartsNew[];
-    private ItemStack bodyPartsOld[];
-    public EntityPlayer lastUser;
-
-    public int getStartInventorySide(ForgeDirection side)
-    {
-        if (side == ForgeDirection.DOWN)
-            return 1;
-        return 0;
+        return getStackInSlot(1).getItem() == ItemGeneric.getItemStackFromName("Soul in a Jar").getItem();
     }
 
     @Override

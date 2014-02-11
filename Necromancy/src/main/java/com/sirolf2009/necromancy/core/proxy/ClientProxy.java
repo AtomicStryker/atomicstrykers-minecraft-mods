@@ -13,7 +13,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import org.lwjgl.opengl.GL20;
 
 import com.sirolf2009.necromancy.Necromancy;
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.client.model.ModelIsaacHead;
 import com.sirolf2009.necromancy.client.model.ModelIsaacNormal;
 import com.sirolf2009.necromancy.client.model.ModelIsaacSevered;
@@ -44,7 +44,7 @@ import com.sirolf2009.necromancy.entity.EntityNightCrawler;
 import com.sirolf2009.necromancy.entity.EntityTear;
 import com.sirolf2009.necromancy.entity.EntityTearBlood;
 import com.sirolf2009.necromancy.entity.EntityTeddy;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
@@ -59,7 +59,8 @@ import cpw.mods.fml.common.registry.VillagerRegistry;
 
 public class ClientProxy extends CommonProxy
 {
-    static public Minecraft mc;
+    public static Minecraft mc;
+    public static int scentProgram;
 
     @Override
     public void preInit()
@@ -70,7 +71,6 @@ public class ClientProxy extends CommonProxy
     @Override
     public void init()
     {
-        super.init();
         mc = FMLClientHandler.instance().getClient();
 
         RenderingRegistry.registerEntityRenderingHandler(EntityMinion.class, new RenderMinion());
@@ -91,14 +91,14 @@ public class ClientProxy extends CommonProxy
 
         RenderingRegistry.registerBlockHandler(new RenderScent());
 
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockNecromancy.altar), new TileEntityAltarRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockNecromancy.sewing), new TileEntitySewingRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockNecromancy.scentBurner), new TileEntityScentBurnerRenderer());
-        MinecraftForgeClient.registerItemRenderer(ItemNecromancy.scythe, new ItemScytheRenderer());
-        MinecraftForgeClient.registerItemRenderer(ItemNecromancy.scytheBone, new ItemScytheBoneRenderer());
-        MinecraftForgeClient.registerItemRenderer(ItemNecromancy.necronomicon, new ItemNecronomiconRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(RegistryBlocksNecromancy.altar), new TileEntityAltarRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(RegistryBlocksNecromancy.sewing), new TileEntitySewingRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(RegistryBlocksNecromancy.scentBurner), new TileEntityScentBurnerRenderer());
+        MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.scythe, new ItemScytheRenderer());
+        MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.scytheBone, new ItemScytheBoneRenderer());
+        MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.necronomicon, new ItemNecronomiconRenderer());
 
-        FluidRegistry.registerFluid(BlockNecromancy.fluidBlood);
+        FluidRegistry.registerFluid(RegistryBlocksNecromancy.fluidBlood);
 
         VillagerRegistry.instance().registerVillagerSkin(ConfigurationNecromancy.NecroVillagerID, ReferenceNecromancy.TEXTURES_ENTITIES_NECROMANCER);
         VillagerRegistry.instance().registerVillageTradeHandler(ConfigurationNecromancy.NecroVillagerID, Necromancy.villageHandler);
@@ -107,7 +107,7 @@ public class ClientProxy extends CommonProxy
         {
             int vertShader = loadShader("/assets/necromancy/shaders/scent/scentFragment.shader", GL20.GL_VERTEX_SHADER);
             int fragShader = loadShader("/assets/necromancy/shaders/scent/scentVertex.shader", GL20.GL_FRAGMENT_SHADER);
-            int scentProgram = GL20.glCreateProgram();
+            scentProgram = GL20.glCreateProgram();
             GL20.glAttachShader(scentProgram, vertShader);
             GL20.glAttachShader(scentProgram, fragShader);
             GL20.glLinkProgram(scentProgram);
@@ -148,8 +148,9 @@ public class ClientProxy extends CommonProxy
 
         return shaderID;
     }
-
-    public static void spawnParticle(String name, double posX, double posY, double posZ, double motionX, double motionY, double motionZ)
+    
+    @Override
+    public void spawnParticle(String name, double posX, double posY, double posZ, double motionX, double motionY, double motionZ)
     {
         if (mc != null && mc.renderViewEntity != null && mc.effectRenderer != null)
         {
@@ -159,8 +160,9 @@ public class ClientProxy extends CommonProxy
             }
         }
     }
-
-    public static void bindTexture(ResourceLocation par1ResourceLocation)
+    
+    @Override
+    public void bindTexture(ResourceLocation par1ResourceLocation)
     {
         mc.renderEngine.bindTexture(par1ResourceLocation);
     }

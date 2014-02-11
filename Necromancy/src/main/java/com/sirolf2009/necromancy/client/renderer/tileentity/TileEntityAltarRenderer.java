@@ -18,28 +18,33 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.client.model.ModelAltar;
 import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.entity.EntityMinion;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implements IItemRenderer
 {
 
-    RenderBlocks renderBlocks = new RenderBlocks();
-    private ModelBook modelBook = new ModelBook();
-    public ResourceLocation terrain = TextureMap.locationBlocksTexture;
-    public ResourceLocation book = new ResourceLocation("textures/entity/enchanting_table_book.png");
+    private final RenderBlocks renderBlocks;
+    private final ModelBook modelBook;
+    private final ResourceLocation terrain;
+    private final ResourceLocation book;
+    
+    private final ModelAltar model;
+    private final Random rand;
 
     public TileEntityAltarRenderer()
     {
-        entity = null;
         model = new ModelAltar();
+        renderBlocks = new RenderBlocks();
+        modelBook = new ModelBook();
+        terrain = TextureMap.locationBlocksTexture;
+        book = new ResourceLocation("textures/entity/enchanting_table_book.png");
+        rand = new Random();
     }
 
     @Override
@@ -50,7 +55,7 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
             renderAltar((TileEntityAltar) tileentity, d, d1, d2, f);
             TileEntityAltar altar = (TileEntityAltar) tileentity;
 
-            entity = altar.getMinion();
+            EntityMinion entity = altar.getMinion();
 
             if (altar.hasContainerChanged())
             {
@@ -113,7 +118,7 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
 
     private void renderAltar(TileEntityAltar entity, double x, double y, double z, float f)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_ALTAR);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_ALTAR);
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x, (float) y + 2.0F, (float) z + 1.0F);
         GL11.glScalef(1.0F, -1F, -1F);
@@ -152,9 +157,9 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j1 / 1.0F, k / 1.0F);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            ClientProxy.bindTexture(terrain);
+            Necromancy.proxy.bindTexture(terrain);
             renderBlocks.renderBlockAsItem(Blocks.torch, 0, 1.0F);
-            ClientProxy.bindTexture(book);
+            Necromancy.proxy.bindTexture(book);
             GL11.glScalef(0.1F, 0.1F, 0.1F);
             GL11.glRotatef(90, 0, 0, 1);
             GL11.glTranslatef(-4F, -8F, 8F);
@@ -173,7 +178,7 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
      * A randomly called display update to be able to add particles or other
      * items for display also shameless copying
      */
-    public void randomDisplayTick(World par1World, int par2, int par3, int par4, Random par5Random, int metadata)
+    private void randomDisplayTick(World par1World, int par2, int par3, int par4, Random par5Random, int metadata)
     {
         int l = par1World.getBlockMetadata(par2, par3, par4);
         double d0 = 0;
@@ -233,10 +238,6 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
         }
     }
 
-    public ModelAltar model;
-    private EntityMinion entity;
-    Random rand = new Random();
-
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
     {
@@ -274,7 +275,7 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
 
     private void renderAltar(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_ALTAR);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_ALTAR);
         GL11.glPushMatrix(); // start
         GL11.glTranslatef(posX, posY, posZ); // size
         GL11.glRotatef(rotX, 1, 0, 0);

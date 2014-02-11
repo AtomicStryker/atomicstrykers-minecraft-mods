@@ -5,18 +5,15 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.client.model.ModelScytheBone;
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class ItemScytheBoneRenderer implements IItemRenderer
 {
 
-    public ModelScytheBone model = new ModelScytheBone();
+    private final ModelScytheBone model = new ModelScytheBone();
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
@@ -55,7 +52,7 @@ public class ItemScytheBoneRenderer implements IItemRenderer
 
     private void renderScythe(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SCYTHEBONE);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SCYTHEBONE);
         GL11.glPushMatrix(); // start
         GL11.glTranslatef(posX, posY, posZ); // size
         GL11.glRotatef(rotX, 1, 0, 0);
@@ -64,11 +61,6 @@ public class ItemScytheBoneRenderer implements IItemRenderer
         GL11.glScalef(scale, scale, scale);
         model.render();
         GL11.glPopMatrix(); // end
-    }
-
-    public void log(Object msg)
-    {
-        System.out.println(this.getClass() + "	" + msg);
     }
 
 }

@@ -9,10 +9,12 @@ import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 
 public class ItemNecronomicon extends Item
 {
+    
+    public double page;
 
     public ItemNecronomicon()
     {
@@ -33,33 +35,33 @@ public class ItemNecronomicon extends Item
         {
             if (par3World.getBlock(xPos + 1, yPos, zPos) == Blocks.cobblestone && par3World.getBlock(xPos + 2, yPos, zPos) == Blocks.cobblestone)
             {
-                par3World.setBlock(xPos, yPos, zPos, BlockNecromancy.altar, 3, 0);
-                par3World.setBlock(xPos + 1, yPos, zPos, BlockNecromancy.altarBlock, 3, 0);
-                par3World.setBlock(xPos + 2, yPos, zPos, BlockNecromancy.altarBlock, 3, 0);
+                par3World.setBlock(xPos, yPos, zPos, RegistryBlocksNecromancy.altar, 3, 0);
+                par3World.setBlock(xPos + 1, yPos, zPos, RegistryBlocksNecromancy.altarBlock, 3, 0);
+                par3World.setBlock(xPos + 2, yPos, zPos, RegistryBlocksNecromancy.altarBlock, 3, 0);
                 par2EntityPlayer.addStat(AchievementNecromancy.AltarAchieve, 1);
                 return true;
             }
             if (par3World.getBlock(xPos - 1, yPos, zPos) == Blocks.cobblestone && par3World.getBlock(xPos - 2, yPos, zPos) == Blocks.cobblestone)
             {
-                par3World.setBlock(xPos, yPos, zPos, BlockNecromancy.altar, 1, 0);
-                par3World.setBlock(xPos - 1, yPos, zPos, BlockNecromancy.altarBlock, 1, 0);
-                par3World.setBlock(xPos - 2, yPos, zPos, BlockNecromancy.altarBlock, 1, 0);
+                par3World.setBlock(xPos, yPos, zPos, RegistryBlocksNecromancy.altar, 1, 0);
+                par3World.setBlock(xPos - 1, yPos, zPos, RegistryBlocksNecromancy.altarBlock, 1, 0);
+                par3World.setBlock(xPos - 2, yPos, zPos, RegistryBlocksNecromancy.altarBlock, 1, 0);
                 par2EntityPlayer.addStat(AchievementNecromancy.AltarAchieve, 1);
                 return true;
             }
             if (par3World.getBlock(xPos, yPos, zPos + 1) == Blocks.cobblestone && par3World.getBlock(xPos, yPos, zPos + 2) == Blocks.cobblestone)
             {
-                par3World.setBlock(xPos, yPos, zPos, BlockNecromancy.altar, 0, 0);
-                par3World.setBlock(xPos, yPos, zPos + 1, BlockNecromancy.altarBlock, 0, 0);
-                par3World.setBlock(xPos, yPos, zPos + 2, BlockNecromancy.altarBlock, 0, 0);
+                par3World.setBlock(xPos, yPos, zPos, RegistryBlocksNecromancy.altar, 0, 0);
+                par3World.setBlock(xPos, yPos, zPos + 1, RegistryBlocksNecromancy.altarBlock, 0, 0);
+                par3World.setBlock(xPos, yPos, zPos + 2, RegistryBlocksNecromancy.altarBlock, 0, 0);
                 par2EntityPlayer.addStat(AchievementNecromancy.AltarAchieve, 1);
                 return true;
             }
             if (par3World.getBlock(xPos, yPos, zPos - 1) == Blocks.cobblestone && par3World.getBlock(xPos, yPos, zPos - 2) == Blocks.cobblestone)
             {
-                par3World.setBlock(xPos, yPos, zPos, BlockNecromancy.altar, 2, 0);
-                par3World.setBlock(xPos, yPos, zPos - 1, BlockNecromancy.altarBlock, 2, 0);
-                par3World.setBlock(xPos, yPos, zPos - 2, BlockNecromancy.altarBlock, 2, 0);
+                par3World.setBlock(xPos, yPos, zPos, RegistryBlocksNecromancy.altar, 2, 0);
+                par3World.setBlock(xPos, yPos, zPos - 1, RegistryBlocksNecromancy.altarBlock, 2, 0);
+                par3World.setBlock(xPos, yPos, zPos - 2, RegistryBlocksNecromancy.altarBlock, 2, 0);
                 par2EntityPlayer.addStat(AchievementNecromancy.AltarAchieve, 1);
                 return true;
             }
@@ -73,6 +75,4 @@ public class ItemNecronomicon extends Item
     {
         return par1ItemStack;
     }
-
-    public double page = 0;
 }

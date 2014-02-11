@@ -10,10 +10,6 @@ import org.lwjgl.opengl.GL12;
 
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-@SideOnly(Side.CLIENT)
 public class RenderTearBlood extends Render
 {
 

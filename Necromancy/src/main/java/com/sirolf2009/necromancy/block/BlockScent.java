@@ -64,7 +64,6 @@ public class BlockScent extends Block implements ITileEntityProvider
     @Override
     public boolean canRenderInPass(int pass)
     {
-        RenderScent.renderPass = pass;
         return pass == 0;
     }
 

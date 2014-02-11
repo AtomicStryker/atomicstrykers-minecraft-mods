@@ -10,21 +10,22 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 
 public class TileEntityScentBurner extends TileEntity implements IInventory, ISidedInventory
 {
 
-    private ItemStack[] inventory;
+    private final ItemStack[] inventory;
     public boolean isBurning;
-    public int burnTime;
-    public int dyeColor;
+    private int burnTime;
+    private int dyeColor;
 
     public TileEntityScentBurner()
     {
-        setInventory(new ItemStack[2]);
+        inventory = new ItemStack[2];
     }
-
+    
+    @Override
     public void updateEntity()
     {
         if (!isBurning)
@@ -57,9 +58,9 @@ public class TileEntityScentBurner extends TileEntity implements IInventory, ISi
             {
                 isBurning = false;
             }
-            if (worldObj.getBlock(xCoord, yCoord + 1, zCoord) != BlockNecromancy.scent)
+            if (worldObj.getBlock(xCoord, yCoord + 1, zCoord) != RegistryBlocksNecromancy.scent)
             {
-                worldObj.setBlock(xCoord, yCoord + 1, zCoord, BlockNecromancy.scent, 0, 3);
+                worldObj.setBlock(xCoord, yCoord + 1, zCoord, RegistryBlocksNecromancy.scent, 0, 3);
                 TileEntityScent scent = (TileEntityScent) worldObj.getTileEntity(xCoord, yCoord + 1, zCoord);
                 scent.addScent(dyeColor, 255);
                 scent.setReach(5);
@@ -78,19 +79,19 @@ public class TileEntityScentBurner extends TileEntity implements IInventory, ISi
     @Override
     public int getSizeInventory()
     {
-        return getInventory().length;
+        return inventory.length;
     }
 
     @Override
     public ItemStack getStackInSlot(int slotIndex)
     {
-        return getInventory()[slotIndex];
+        return inventory[slotIndex];
     }
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack)
     {
-        getInventory()[slot] = stack;
+        inventory[slot] = stack;
         if (stack != null && stack.stackSize > getInventoryStackLimit())
         {
             stack.stackSize = getInventoryStackLimit();
@@ -168,9 +169,9 @@ public class TileEntityScentBurner extends TileEntity implements IInventory, ISi
 
             byte slot = tag.getByte("Slot");
 
-            if (slot >= 0 && slot < getInventory().length)
+            if (slot >= 0 && slot < inventory.length)
             {
-                getInventory()[slot] = ItemStack.loadItemStackFromNBT(tag);
+                inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
             }
         }
     }
@@ -182,9 +183,9 @@ public class TileEntityScentBurner extends TileEntity implements IInventory, ISi
 
         NBTTagList itemList = new NBTTagList();
 
-        for (int i = 0; i < getInventory().length; i++)
+        for (int i = 0; i < inventory.length; i++)
         {
-            ItemStack stack = getInventory()[i];
+            ItemStack stack = inventory[i];
 
             if (stack != null)
             {
@@ -203,16 +204,6 @@ public class TileEntityScentBurner extends TileEntity implements IInventory, ISi
     public String getInventoryName()
     {
         return "TileEntityScentBurner";
-    }
-
-    public ItemStack[] getInventory()
-    {
-        return inventory;
-    }
-
-    public void setInventory(ItemStack[] inventory)
-    {
-        this.inventory = inventory;
     }
 
     @Override

@@ -10,10 +10,6 @@ import net.minecraft.item.ItemSword;
 import net.minecraftforge.common.util.EnumHelper;
 
 import com.sirolf2009.necromancy.Necromancy;
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 
 public class ItemScythe extends ItemSword
 {
@@ -35,12 +31,12 @@ public class ItemScythe extends ItemSword
             if (((EntityPlayer) par3EntityLivingBase).inventory.consumeInventoryItem(Items.glass_bottle))
             {
                 ((EntityPlayer) par3EntityLivingBase).inventory.addItemStackToInventory(ItemGeneric.getItemStackFromName("Soul in a Jar"));
-                if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+                if (par2EntityLivingBase.worldObj.isRemote)
                 {
                     Random rand = new Random();
                     for (int i = 0; i < 30; i++)
                     {
-                        ClientProxy.spawnParticle("skull", par2EntityLivingBase.posX, par2EntityLivingBase.posY, par2EntityLivingBase.posZ,
+                        Necromancy.proxy.spawnParticle("skull", par2EntityLivingBase.posX, par2EntityLivingBase.posY, par2EntityLivingBase.posZ,
                                 rand.nextDouble() / 360 * 10, rand.nextDouble() / 360 * 10, rand.nextDouble() / 360 * 10);
                     }
                 }

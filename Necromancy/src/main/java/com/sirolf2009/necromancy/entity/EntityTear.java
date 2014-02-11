@@ -22,8 +22,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityTear extends Entity implements IProjectile
 {
@@ -34,20 +32,14 @@ public class EntityTear extends Entity implements IProjectile
     private Block inTile = Blocks.air;
     private int inData = 0;
     private boolean inGround = false;
-
-    /** 1 if the player can pick up the arrow */
-    public int canBePickedUp = 0;
-
-    /** Seems to be some sort of timer for animating an arrow. */
-    public int arrowShake = 0;
-
-    /** The owner of this arrow. */
-    public EntityLivingBase shootingEntity;
+    
+    private int canBePickedUp = 0;
+    private int arrowShake = 0;
+    private EntityLivingBase shootingEntity;
     private int ticksInAir = 0;
-    private int damage = 5;
-
-    /** The amount of knockback an arrow applies when it hits a mob. */
     private int knockbackStrength;
+    
+    public int damage = 5;
 
     public EntityTear(World par1World)
     {
@@ -125,11 +117,7 @@ public class EntityTear extends Entity implements IProjectile
     {
         dataWatcher.addObject(16, Byte.valueOf((byte) 0));
     }
-
-    /**
-     * Similar to setArrowHeading, it's point the throwable entity to a x, y, z
-     * direction.
-     */
+    
     @Override
     public void setThrowableHeading(double par1, double par3, double par5, float par7, float par8)
     {
@@ -152,11 +140,6 @@ public class EntityTear extends Entity implements IProjectile
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    /**
-     * Sets the position and rotation. Only difference from the other one is no bounding on the rotation. Args: posX,
-     * posY, posZ, yaw, pitch
-     */
     public void setPositionAndRotation2(double par1, double par3, double par5, float par7, float par8, int par9)
     {
         this.setPosition(par1, par3, par5);
@@ -164,10 +147,6 @@ public class EntityTear extends Entity implements IProjectile
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    /**
-     * Sets the velocity to the args. Args: x, y, z
-     */
     public void setVelocity(double par1, double par3, double par5)
     {
         motionX = par1;
@@ -184,10 +163,7 @@ public class EntityTear extends Entity implements IProjectile
             this.setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
         }
     }
-
-    /**
-     * Called to update the entity's position/logic.
-     */
+    
     @Override
     public void onUpdate()
     {
@@ -303,9 +279,7 @@ public class EntityTear extends Entity implements IProjectile
                 if (movingobjectposition.entityHit != null)
                 {
 
-                    DamageSource damagesource = null;
-
-                    damagesource = DamageSource.generic;
+                    DamageSource damagesource = DamageSource.generic;
                     if (movingobjectposition.entityHit.attackEntityFrom(damagesource, damage))
                     {
                         if (movingobjectposition.entityHit instanceof EntityLiving)
@@ -438,10 +412,7 @@ public class EntityTear extends Entity implements IProjectile
             this.func_145775_I(); // doBlockCollisions
         }
     }
-
-    /**
-     * (abstract) Protected helper method to write subclass entity data to NBT.
-     */
+    
     @Override
     public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound)
     {
@@ -454,10 +425,7 @@ public class EntityTear extends Entity implements IProjectile
         par1NBTTagCompound.setByte("pickup", (byte) canBePickedUp);
         par1NBTTagCompound.setInteger("damage", damage);
     }
-
-    /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
-     */
+    
     @Override
     public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound)
     {
@@ -482,10 +450,7 @@ public class EntityTear extends Entity implements IProjectile
             canBePickedUp = par1NBTTagCompound.getBoolean("player") ? 1 : 0;
         }
     }
-
-    /**
-     * Called by a player entity when they collide with an entity
-     */
+    
     @Override
     public void onCollideWithPlayer(EntityPlayer par1EntityPlayer)
     {
@@ -506,11 +471,7 @@ public class EntityTear extends Entity implements IProjectile
             }
         }
     }
-
-    /**
-     * returns if this entity triggers Blocks.onEntityWalking on the blocks they
-     * walk on. used for spiders and wolves to prevent them from trampling crops
-     */
+    
     @Override
     protected boolean canTriggerWalking()
     {
@@ -518,44 +479,18 @@ public class EntityTear extends Entity implements IProjectile
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public float getShadowSize()
     {
         return 0.0F;
     }
-
-    public void setDamage(int par1)
-    {
-        damage = par1;
-    }
-
-    public double getDamage()
-    {
-        return damage;
-    }
-
-    /**
-     * Sets the amount of knockback the arrow applies when it hits a mob.
-     */
-    public void setKnockbackStrength(int par1)
-    {
-        knockbackStrength = par1;
-    }
-
-    /**
-     * If returns false, the item will not inflict any damage against entities.
-     */
+    
     @Override
     public boolean canAttackWithItem()
     {
         return false;
     }
-
-    /**
-     * Whether the arrow has a stream of critical hit particles flying behind
-     * it.
-     */
-    public void setIsCritical(boolean par1)
+    
+    private void setIsCritical(boolean par1)
     {
         byte b0 = dataWatcher.getWatchableObjectByte(16);
 
@@ -568,12 +503,8 @@ public class EntityTear extends Entity implements IProjectile
             dataWatcher.updateObject(16, Byte.valueOf((byte) (b0 & -2)));
         }
     }
-
-    /**
-     * Whether the arrow has a stream of critical hit particles flying behind
-     * it.
-     */
-    public boolean getIsCritical()
+    
+    private boolean getIsCritical()
     {
         byte b0 = dataWatcher.getWatchableObjectByte(16);
         return (b0 & 1) != 0;

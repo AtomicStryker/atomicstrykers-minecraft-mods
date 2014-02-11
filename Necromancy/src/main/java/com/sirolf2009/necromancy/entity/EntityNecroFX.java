@@ -9,12 +9,7 @@ import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 
 public class EntityNecroFX extends EntityFX
 {
-
-    public EntityNecroFX(World par1World, double par2, double par4, double par6, double par8, double par10, double par12)
-    {
-        this(par1World, par2, par4, par6, par8, par10, par12, 1.0F);
-    }
-
+    
     public EntityNecroFX(World par1World, double par2, double par4, double par6, double par8, double par10, double par12, float par14)
     {
         super(par1World, par2, par4, par6, 0.0D, 0.0D, 0.0D);
@@ -27,10 +22,14 @@ public class EntityNecroFX extends EntityFX
         particleRed = particleGreen = particleBlue = (float) (Math.random() * 0.50000001192092891D);
         particleScale *= 0.75F;
         particleScale *= par14;
-        smokeParticleScale = particleScale;
         particleMaxAge = (int) (8D / (Math.random() * 0.80000000000000004D + 0.20000000000000001D) + 64D);
         particleMaxAge = (int) (particleMaxAge * par14);
         noClip = true;
+    }
+
+    public EntityNecroFX(World par1World, double par2, double par4, double par6, double par8, double par10, double par12)
+    {
+        this(par1World, par2, par4, par6, par8, par10, par12, 1.0F);
     }
 
     @Override
@@ -84,6 +83,5 @@ public class EntityNecroFX extends EntityFX
             motionZ *= 0.69999998807907104D;
         }
     }
-
-    float smokeParticleScale;
+    
 }

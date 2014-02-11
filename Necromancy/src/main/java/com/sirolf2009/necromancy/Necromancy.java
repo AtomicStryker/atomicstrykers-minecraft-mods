@@ -13,7 +13,7 @@ import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
 
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.command.CommandMinion;
 import com.sirolf2009.necromancy.command.CommandRemodel;
 import com.sirolf2009.necromancy.core.handler.ForgeEventHandler;
@@ -26,7 +26,7 @@ import com.sirolf2009.necromancy.generation.VillageCreationHandler;
 import com.sirolf2009.necromancy.generation.WorldGenerator;
 import com.sirolf2009.necromancy.generation.villagecomponent.ComponentVillageCemetery;
 import com.sirolf2009.necromancy.item.ItemNecroSkull;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.network.PacketDispatcher;
@@ -41,6 +41,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
@@ -53,17 +54,15 @@ public class Necromancy
     public static final CreativeTabs tabNecromancyBodyParts = new CreativeTabNecro(CreativeTabs.getNextID(), "BodyParts", 2)
             .setBackgroundImageName("necro_gui.png");
 
-    public int scentProgram;
+    public static final List<String> specialFolk = new ArrayList<String>();
 
-    public static List<String> specialFolk = new ArrayList<String>();
-
-    public static int maxSpawn = -1;
+    public int maxSpawn = -1;
 
     public static Logger loggerNecromancy;
 
-    public static PacketHandler packetHandler = new PacketHandler();
-    public static ForgeEventHandler eventHandler = new ForgeEventHandler();
-    public static VillageCreationHandler villageHandler = new VillageCreationHandler();
+    public static final PacketHandler packetHandler = new PacketHandler();
+    public static final ForgeEventHandler eventHandler = new ForgeEventHandler();
+    public static final VillageCreationHandler villageHandler = new VillageCreationHandler();
 
     public CraftingManagerSewing sewingRecipeHandler;
 
@@ -82,6 +81,7 @@ public class Necromancy
         ConfigurationNecromancy.initProperties(event);
 
         PacketDispatcher.init("NecromancyMod", packetHandler, packetHandler);
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, packetHandler);
 
         FMLCommonHandler.instance().bus().register(eventHandler);
         MinecraftForge.EVENT_BUS.register(eventHandler);
@@ -89,7 +89,8 @@ public class Necromancy
         proxy.preInit();
 
         MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
-
+        specialFolk.add("AtomicStryker");
+        
         try
         {
             URL url = new URL("https://dl.dropboxusercontent.com/u/50553915/necromancy/specialFolk.txt");
@@ -105,11 +106,10 @@ public class Necromancy
             System.err.println("not connected to the internet, special scythes are de-activated");
         }
         
-        ItemNecromancy.initItems();
+        RegistryNecromancyItems.initItems();
         RegistryNecromancyEntities.initEntities();
-        BlockNecromancy.initBlocks();
-
-        villageHandler = new VillageCreationHandler();
+        RegistryBlocksNecromancy.initBlocks();
+        
         VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
         ArrayList<Class<PacketHandler>> villageComponentsList = new ArrayList<Class<PacketHandler>>();
         villageComponentsList.add(PacketHandler.class);

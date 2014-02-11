@@ -10,18 +10,12 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 
 public class EntityTeddy extends EntityTameable
 {
@@ -31,8 +25,9 @@ public class EntityTeddy extends EntityTameable
         WALKING, DEFENDING, SITTING
     };
 
-    EntityState entityState;
-    protected float moveSpeed;
+    public EntityState entityState;
+    
+    private float moveSpeed;
 
     public EntityTeddy(World par1World)
     {
@@ -50,7 +45,8 @@ public class EntityTeddy extends EntityTameable
         tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 10F));
         tasks.addTask(6, new EntityAIScareEntities(this, 10F, 7F, moveSpeed, EntityMob.class));
     }
-
+    
+    @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
@@ -80,7 +76,7 @@ public class EntityTeddy extends EntityTameable
         setStateIndex(par1NBTTagCompound.getInteger("state"));
     }
 
-    protected int getStateIndex()
+    private int getStateIndex()
     {
         switch (entityState)
         {
@@ -94,7 +90,7 @@ public class EntityTeddy extends EntityTameable
         return -1;
     }
 
-    protected void setStateIndex(int index)
+    private void setStateIndex(int index)
     {
         switch (index)
         {
@@ -176,9 +172,9 @@ public class EntityTeddy extends EntityTameable
             moveSpeed = 0.3F;
             break;
         }
-        if (getOwner() instanceof EntityPlayerMP && FMLCommonHandler.instance().getSide() == Side.CLIENT)
+        if (getOwner() instanceof EntityPlayer)
         {
-            ClientProxy.mc.thePlayer.addChatMessage(new ChatComponentText("Animated Teddy is now " + ((entityState).toString().toLowerCase())));
+            ((EntityPlayer)getOwner()).addChatMessage(new ChatComponentText("Animated Teddy is now " + ((entityState).toString().toLowerCase())));
         }
         return true;
     }

@@ -5,6 +5,18 @@ import net.minecraft.client.model.ModelRenderer;
 
 public class ModelAltar extends ModelBase
 {
+    
+    private final ModelRenderer bottomAltar;
+    private final ModelRenderer pillarAltar;
+    private final ModelRenderer baseAltar;
+    private final ModelRenderer backpiece1;
+    private final ModelRenderer backpiece2;
+    private final ModelRenderer backpiece3;
+    private final ModelRenderer connection1;
+    private final ModelRenderer tableBottom;
+    private final ModelRenderer connection2;
+    private final ModelRenderer tableMiddle;
+    private final ModelRenderer tableTop;
 
     public ModelAltar()
     {
@@ -77,7 +89,10 @@ public class ModelAltar extends ModelBase
         tableTop.mirror = true;
         setRotation(tableTop, 0.0F, 0.0F, 0.0F);
     }
-
+    
+    /**
+     * Called by TileEntityAltar
+     */
     public void render()
     {
         float f5 = 0.0625F;
@@ -100,16 +115,5 @@ public class ModelAltar extends ModelBase
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
     }
-
-    ModelRenderer bottomAltar;
-    ModelRenderer pillarAltar;
-    ModelRenderer baseAltar;
-    ModelRenderer backpiece1;
-    ModelRenderer backpiece2;
-    ModelRenderer backpiece3;
-    ModelRenderer connection1;
-    ModelRenderer tableBottom;
-    ModelRenderer connection2;
-    ModelRenderer tableMiddle;
-    ModelRenderer tableTop;
+    
 }

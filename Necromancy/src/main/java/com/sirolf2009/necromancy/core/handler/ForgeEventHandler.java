@@ -15,12 +15,12 @@ import net.minecraftforge.event.entity.player.FillBucketEvent;
 
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
-import com.sirolf2009.necromancy.block.BlockNecromancy;
+import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.client.model.ModelMinion;
 import com.sirolf2009.necromancy.command.CommandRemodel;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.item.ItemNecroSkull;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -37,25 +37,25 @@ public class ForgeEventHandler
             switch (evt.entity.worldObj.rand.nextInt(7))
             {
             case 0:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 0), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 0), 1);
                 break; // brains
             case 1:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 1), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 1), 1);
                 break; // heart
             case 2:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 2), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 2), 1);
                 break; // muscle
             case 3:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 2), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 2), 1);
                 break; // muscle
             case 4:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 2), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 2), 1);
                 break; // muscle
             case 5:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 2), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 2), 1);
                 break; // muscle
             case 6:
-                evt.entity.entityDropItem(new ItemStack(ItemNecromancy.organs, 1, 3), 1);
+                evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 3), 1);
                 break; // lungs
             }
         }
@@ -69,7 +69,7 @@ public class ForgeEventHandler
         IInventory craftMatrix = event.craftMatrix;
         if (item != null)
         {
-            if (item.getItem() == ItemNecromancy.necronomicon)
+            if (item.getItem() == RegistryNecromancyItems.necronomicon)
             {
                 player.addStat(AchievementNecromancy.NecronomiconAchieve, 1);
             }
@@ -77,18 +77,18 @@ public class ForgeEventHandler
             {
                 player.inventory.addItemStackToInventory(new ItemStack(Items.bucket));
             }
-            else if (item.getItem() ==ItemNecromancy.bucketBlood)
+            else if (item.getItem() ==RegistryNecromancyItems.bucketBlood)
             {
                 player.inventory.addItemStackToInventory(new ItemStack(Items.glass_bottle, 8));
             }
             else if (item.getItem() instanceof ItemBlock)
             {
                 Block block = ((ItemBlock) item.getItem()).field_150939_a;
-                if (block == BlockNecromancy.sewing)
+                if (block == RegistryBlocksNecromancy.sewing)
                 {
                     player.addStat(AchievementNecromancy.SewingAchieve, 1);
                 }
-                else if (block == BlockNecromancy.skullWall)
+                else if (block == RegistryBlocksNecromancy.skullWall)
                 {
                     Necromancy.loggerNecromancy.info(craftMatrix.getStackInSlot(0) + " is in " + craftMatrix.getStackInSlot(0).getUnlocalizedName());
                     item.stackTagCompound.setString("Base", craftMatrix.getStackInSlot(1).getUnlocalizedName());
@@ -126,13 +126,13 @@ public class ForgeEventHandler
 
         Block blockID = world.getBlock(pos.blockX, pos.blockY, pos.blockZ);
 
-        if ((blockID == BlockNecromancy.fluidBlood.getBlock() || blockID == BlockNecromancy.blood)
+        if ((blockID == RegistryBlocksNecromancy.fluidBlood.getBlock() || blockID == RegistryBlocksNecromancy.blood)
                 && world.getBlockMetadata(pos.blockX, pos.blockY, pos.blockZ) == 0)
         {
 
             world.setBlock(pos.blockX, pos.blockY, pos.blockZ, Blocks.air, 0, 0);
 
-            return new ItemStack(ItemNecromancy.bucketBlood);
+            return new ItemStack(RegistryNecromancyItems.bucketBlood);
         }
         else
             return null;

@@ -14,6 +14,8 @@ import com.sirolf2009.necromancy.Necromancy;
 
 public class ItemOrgans extends ItemFood
 {
+    private IIcon[] icons;
+    private final static String names[] = { "Brains", "Heart", "Muscle", "Lungs", "Skin" };
 
     public ItemOrgans()
     {
@@ -22,7 +24,7 @@ public class ItemOrgans extends ItemFood
         setHasSubtypes(true);
         setMaxDamage(0);
         setCreativeTab(Necromancy.tabNecromancy);
-        IIcons = new IIcon[names.length];
+        icons = new IIcon[names.length];
     }
 
     @Override
@@ -48,20 +50,16 @@ public class ItemOrgans extends ItemFood
     {
         for (int index = 0; index < names.length; index++)
         {
-            IIcons[index] = iconRegister.registerIcon("necromancy:" + names[index].toLowerCase());
+            icons[index] = iconRegister.registerIcon("necromancy:" + names[index].toLowerCase());
         }
     }
 
     @Override
     public IIcon getIconFromDamage(int par1)
     {
-        if (par1 < IIcons.length)
-            return IIcons[par1];
+        if (par1 < icons.length)
+            return icons[par1];
         else
             return null;
     }
-
-    private IIcon[] IIcons;
-
-    public static String names[] = { "Brains", "Heart", "Muscle", "Lungs", "Skin" };
 }

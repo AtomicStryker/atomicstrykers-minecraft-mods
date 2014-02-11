@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemDye;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 
@@ -17,13 +16,15 @@ public class TileEntityScent extends TileEntity
      */
     private int[] scents = new int[17];
     private int red, green, blue, alpha;
-    private Random rand = new Random();
+    
+    private final Random rand = new Random();
     private int reach;
     private int[] sourceLocation = new int[3];
     private boolean isMarkedForDespawn;
-    public IIcon[] IIcons = new IIcon[6];
-    public int IIconTimer = 0;
-
+    public IIcon[] icons = new IIcon[6];
+    public int iconTimer = 0;
+    
+    @Override
     public void updateEntity()
     {
         if (getAir() < 200)
@@ -50,7 +51,7 @@ public class TileEntityScent extends TileEntity
         }
     }
 
-    public void spreadScents()
+    private void spreadScents()
     {
         for (int x2 = 0; x2 < 3; x2++)
         {
@@ -106,7 +107,7 @@ public class TileEntityScent extends TileEntity
         }
     }
 
-    public void calculateColors()
+    private void calculateColors()
     {
         red = 0;
         blue = 0;
@@ -120,7 +121,12 @@ public class TileEntityScent extends TileEntity
         }
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
-
+    
+    /**
+     * 
+     * @param scentIndex
+     * @param amount
+     */
     public void addScent(int scentIndex, int amount)
     {
         if (scentIndex == 16)
@@ -145,12 +151,11 @@ public class TileEntityScent extends TileEntity
             }
         }
     }
-
-    public int[] getSourceLocation()
-    {
-        return sourceLocation;
-    }
-
+    
+    /**
+     * 
+     * @param sourceLocation
+     */
     public void setSourceLocation(int[] sourceLocation)
     {
         this.sourceLocation[0] = sourceLocation[0];
@@ -178,11 +183,15 @@ public class TileEntityScent extends TileEntity
         return alpha;
     }
 
-    public int getScent(int scentIndex)
+    private int getScent(int scentIndex)
     {
         return scents[scentIndex];
     }
-
+    
+    /**
+     * 
+     * @param amount
+     */
     public void setAir(int amount)
     {
         scents[16] = amount;
@@ -209,27 +218,5 @@ public class TileEntityScent extends TileEntity
     public void setReach(int reach)
     {
         this.reach = reach;
-    }
-
-    public boolean isMarkedForDespawn()
-    {
-        return isMarkedForDespawn;
-    }
-
-    public void setMarkedForDespawn(boolean isMarkedForDespawn)
-    {
-        this.isMarkedForDespawn = isMarkedForDespawn;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tagCompound)
-    {
-        super.readFromNBT(tagCompound);
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound tagCompound)
-    {
-        super.writeToNBT(tagCompound);
     }
 }

@@ -7,6 +7,15 @@ import net.minecraft.util.MathHelper;
 
 public class ModelTeddy extends ModelBase
 {
+    
+    private final ModelRenderer pawFrontRight;
+    private final ModelRenderer pawFrontLeft;
+    private final ModelRenderer pawBackRight;
+    private final ModelRenderer pawBackLeft;
+    private final ModelRenderer Belly;
+    private final ModelRenderer Head;
+    private final ModelRenderer earRight;
+    private final ModelRenderer earLeft;
 
     public ModelTeddy()
     {
@@ -66,7 +75,7 @@ public class ModelTeddy extends ModelBase
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
         super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(entity, f, f1, f2, f3, f4, f5);
+        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         pawFrontRight.render(f5);
         pawFrontLeft.render(f5);
         pawBackRight.render(f5);
@@ -84,7 +93,8 @@ public class ModelTeddy extends ModelBase
         model.rotateAngleZ = z;
     }
 
-    public void setRotationAngles(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    @Override
+    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
     {
         super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         float var7 = MathHelper.sin(onGround * 3.141593F);
@@ -106,13 +116,5 @@ public class ModelTeddy extends ModelBase
         pawBackRight.rotateAngleY = 0.0F;
         pawBackLeft.rotateAngleY = 0.0F;
     }
-
-    ModelRenderer pawFrontRight;
-    ModelRenderer pawFrontLeft;
-    ModelRenderer pawBackRight;
-    ModelRenderer pawBackLeft;
-    ModelRenderer Belly;
-    ModelRenderer Head;
-    ModelRenderer earRight;
-    ModelRenderer earLeft;
+    
 }

@@ -12,11 +12,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
-import com.sirolf2009.necromancy.core.proxy.ClientProxy;
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.item.ItemBodyPart;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class NecroEntityMooshroom extends NecroEntityCow
 {
@@ -38,11 +35,10 @@ public class NecroEntityMooshroom extends NecroEntityCow
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void preRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
         RenderBlocks renderBlocks = new RenderBlocks();
-        ClientProxy.bindTexture(TextureMap.locationBlocksTexture);
+        Necromancy.proxy.bindTexture(TextureMap.locationBlocksTexture);
         GL11.glEnable(GL11.GL_CULL_FACE);
         if (location == BodyPartLocation.Torso)
         {
@@ -67,7 +63,7 @@ public class NecroEntityMooshroom extends NecroEntityCow
             GL11.glPopMatrix();
         }
         GL11.glDisable(GL11.GL_CULL_FACE);
-        ClientProxy.bindTexture(texture);
+        Necromancy.proxy.bindTexture(texture);
     }
 
     @Override

@@ -16,9 +16,9 @@ import net.minecraft.world.World;
 
 import com.sirolf2009.necroapi.NecroEntityBase;
 import com.sirolf2009.necroapi.NecroEntityRegistry;
-import com.sirolf2009.necromancy.entity.RegistryNecromancyEntities;
 import com.sirolf2009.necromancy.item.ItemGeneric;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
+import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 import com.sirolf2009.necromancy.recipes.ShapedRecipes4x4;
 import com.sirolf2009.necromancy.recipes.ShapelessRecipes4x4;
 
@@ -52,14 +52,15 @@ public class CraftingManagerSewing
                 addRecipe(mob.legItem, mob.legRecipe);
             }
         }
-        addShapelessRecipe(new ItemStack(ItemNecromancy.organs, 8, 4), new Object[] { Items.leather });
-        addShapelessRecipe(new ItemStack(ItemNecromancy.spawner, 1), new Object[] { Items.rotten_flesh, Items.rotten_flesh, Items.rotten_flesh,
+        addShapelessRecipe(new ItemStack(RegistryNecromancyItems.organs, 8, 4), new Object[] { Items.leather });
+        addShapelessRecipe(new ItemStack(RegistryNecromancyItems.spawner, 1), new Object[] { Items.rotten_flesh, Items.rotten_flesh, Items.rotten_flesh,
                 Items.rotten_flesh, Items.rotten_flesh, Items.ghast_tear, Items.ghast_tear,
-                ItemGeneric.getItemStackFromName("Soul in a Jar").getItem(), new ItemStack(ItemNecromancy.organs, 1, 1).getItem() });
-        addRecipe(new ItemStack(Items.spawn_egg, 1, RegistryNecromancyEntities.TeddyID), new Object[] { "LLLL", "LWWL", "LWWL", "LLLL", 'L', Items.leather,
+                ItemGeneric.getItemStackFromName("Soul in a Jar").getItem(), new ItemStack(RegistryNecromancyItems.organs, 1, 1).getItem() });
+        addRecipe(new ItemStack(Items.spawn_egg, 1, ConfigurationNecromancy.TeddyID), new Object[] { "LLLL", "LWWL", "LWWL", "LLLL", 'L', Items.leather,
                 'W', Blocks.wool });
     }
-
+    
+    /*
     public void addHeadRecipe(ItemStack result, Object essence)
     {
         addRecipe(
@@ -86,6 +87,7 @@ public class CraftingManagerSewing
         addRecipe(result, new Object[] { "LBBL", "LMML", "LEEL", "LBBL", 'L', new ItemStack(ItemNecromancy.genericItems, 1, 7), 'E', essence, 'M',
                 ItemGeneric.getItemStackFromName("Muscle"), 'B', Items.bone });
     }
+    */
 
     private void addShapelessRecipe(ItemStack par1ItemStack, Object objArray[])
     {
@@ -125,7 +127,6 @@ public class CraftingManagerSewing
                 length = s2.length();
                 s = new StringBuilder().append(s).append(s2).toString();
             }
-
         }
         else
         {
@@ -173,7 +174,10 @@ public class CraftingManagerSewing
 
         recipes.add(new ShapedRecipes4x4(length, count, aitemstack, itemstack));
     }
-
+    
+    /**
+     * called by ContainerSewing to determine what should happen to a crafting matrix
+     */
     public ItemStack findMatchingRecipe(InventoryCrafting inventorycrafting, World world)
     {
         int i = 0;

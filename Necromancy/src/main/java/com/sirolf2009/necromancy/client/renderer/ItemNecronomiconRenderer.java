@@ -7,24 +7,28 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.client.model.ModelNecronomicon;
 import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.item.ItemNecronomicon;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-@SideOnly(Side.CLIENT)
 public class ItemNecronomiconRenderer implements IItemRenderer
 {
 
-    public ModelNecronomicon modelInteractive = new ModelNecronomicon();
-    public ModelNecronomicon modelStatic = new ModelNecronomicon();
+    private final ModelNecronomicon modelInteractive;
+    private final ModelNecronomicon modelStatic;
 
     public String[] leftPageContent = {}, rightPageContent = {};
 
-    FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+    private final FontRenderer font;
+    
+    public ItemNecronomiconRenderer()
+    {
+        modelInteractive = new ModelNecronomicon();
+        modelStatic = new ModelNecronomicon();
+        font = Minecraft.getMinecraft().fontRenderer;
+    }
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
@@ -68,7 +72,7 @@ public class ItemNecronomiconRenderer implements IItemRenderer
         GL11.glRotatef(rotY, 0, 1, 0);
         GL11.glRotatef(rotZ, 0, 0, 1);
         GL11.glScalef(scale, scale, scale);
-        ClientProxy.mc.renderEngine.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_NECRONOMIIcon);
+        ClientProxy.mc.renderEngine.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_NECRONOMICON);
         book.page = 0;
         // GL11.glRotatef((float)(book.page/(book.page+1)), 0, -1, 0);
         modelInteractive.render(null, 1, 0, 0, (float) (book.page * 1.6), 1, 1);
@@ -98,7 +102,7 @@ public class ItemNecronomiconRenderer implements IItemRenderer
         GL11.glRotatef(rotY, 0, 1, 0);
         GL11.glRotatef(rotZ, 0, 0, 1);
         GL11.glScalef(scale, scale, scale);
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_NECRONOMIIcon);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_NECRONOMICON);
         modelStatic.render(null, 0, 0, 0, 0f, 1, 1);
         GL11.glPopMatrix();// end
     }

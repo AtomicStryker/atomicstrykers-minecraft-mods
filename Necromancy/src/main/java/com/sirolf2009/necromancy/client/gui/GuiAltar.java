@@ -19,7 +19,8 @@ public class GuiAltar extends GuiContainer
         altar.getPreviewEntity();
     }
 
-    protected void drawGuIIcontainerForegroundLayer()
+    @Override
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         fontRendererObj.drawString("Blood", 8, 95, 1);
         fontRendererObj.drawString("Soul", 60, 95, 1);

@@ -14,14 +14,11 @@ import com.sirolf2009.necromancy.core.proxy.ClientProxy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class TileEntityScentBurnerRenderer extends TileEntitySpecialRenderer implements IItemRenderer
 {
 
-    public ModelScentBurner model;
+    private final ModelScentBurner model;
 
     public TileEntityScentBurnerRenderer()
     {
@@ -79,7 +76,7 @@ public class TileEntityScentBurnerRenderer extends TileEntitySpecialRenderer imp
 
     private void renderBurner(TileEntityScentBurner entity, double x, double y, double z, float f)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SCENTBURNER);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SCENTBURNER);
         GL11.glPushMatrix();
         GL11.glEnable(32826);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -107,7 +104,7 @@ public class TileEntityScentBurnerRenderer extends TileEntitySpecialRenderer imp
                 j = 180;
             }
             GL11.glRotatef(j, 0.0F, 1.0F, 0.0F);
-            GL20.glUseProgram(Necromancy.instance.scentProgram);
+            GL20.glUseProgram(ClientProxy.scentProgram);
             model.render();
             GL11.glDisable(32826);
             GL11.glPopMatrix();
@@ -148,7 +145,7 @@ public class TileEntityScentBurnerRenderer extends TileEntitySpecialRenderer imp
 
     private void renderSewing(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale)
     {
-        ClientProxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SCENTBURNER);
+        Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_SCENTBURNER);
         GL11.glPushMatrix(); // start
         GL11.glTranslatef(posX, posY, posZ); // size
         GL11.glRotatef(rotX, 1, 0, 0);

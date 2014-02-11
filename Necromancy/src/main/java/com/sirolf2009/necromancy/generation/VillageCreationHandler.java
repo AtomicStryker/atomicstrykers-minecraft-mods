@@ -14,7 +14,7 @@ import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 
 import com.sirolf2009.necromancy.generation.villagecomponent.ComponentVillageCemetery;
 import com.sirolf2009.necromancy.item.ItemBodyPart;
-import com.sirolf2009.necromancy.item.ItemNecromancy;
+import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageTradeHandler;
@@ -38,12 +38,12 @@ public class VillageCreationHandler implements IVillageCreationHandler, IVillage
     @Override
     public void manipulateTradesForVillager(EntityVillager villager, MerchantRecipeList recipeList, Random random)
     {
-        recipeList.add(new MerchantRecipe(new ItemStack(Items.emerald, 6), new ItemStack(Items.book), new ItemStack(ItemNecromancy.necronomicon)));
-        recipeList.add(new MerchantRecipe(new ItemStack(Items.emerald, new Random().nextInt(3)), null, new ItemStack(ItemNecromancy.bodyparts, 1,
+        recipeList.add(new MerchantRecipe(new ItemStack(Items.emerald, 6), new ItemStack(Items.book), new ItemStack(RegistryNecromancyItems.necronomicon)));
+        recipeList.add(new MerchantRecipe(new ItemStack(Items.emerald, new Random().nextInt(3)), null, new ItemStack(RegistryNecromancyItems.bodyparts, 1,
                 random.nextInt(ItemBodyPart.necroEntities.size() - 1))));
-        recipeList.add(new MerchantRecipe(new ItemStack(ItemNecromancy.bodyparts, 1, random.nextInt(ItemBodyPart.necroEntities.size() - 1)), null,
+        recipeList.add(new MerchantRecipe(new ItemStack(RegistryNecromancyItems.bodyparts, 1, random.nextInt(ItemBodyPart.necroEntities.size() - 1)), null,
                 new ItemStack(Items.emerald, new Random().nextInt(3))));
-        recipeList.add(new MerchantRecipe(new ItemStack(ItemNecromancy.bodyparts, 1, random.nextInt(ItemBodyPart.necroEntities.size() - 1)), null,
+        recipeList.add(new MerchantRecipe(new ItemStack(RegistryNecromancyItems.bodyparts, 1, random.nextInt(ItemBodyPart.necroEntities.size() - 1)), null,
                 new ItemStack(Items.emerald, new Random().nextInt(3))));
     }
 
