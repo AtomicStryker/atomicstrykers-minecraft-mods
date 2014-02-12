@@ -1,3 +1,6 @@
+1.1.2
+- fixed packets to work on dedicated servers
+
 1.1.1
 - fixed MP key not keeping track of pressed time correctly
 - added logo file

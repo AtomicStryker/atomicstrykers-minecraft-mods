@@ -11,8 +11,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import atomicstryker.magicyarn.client.ClientPacketHandler;
-import atomicstryker.magicyarn.common.network.PacketDispatcher;
-import atomicstryker.magicyarn.common.network.PacketWrapper;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -22,7 +22,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.1.1")
+@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.1.2")
 public class MagicYarn implements IProxy
 {
     
@@ -66,7 +66,7 @@ public class MagicYarn implements IProxy
     {
         if (event.entity instanceof EntityPlayer)
         {
-            PacketDispatcher.sendPacketToPlayer(PacketWrapper.createPacket(1, null), (EntityPlayer) event.entity);
+            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(1, null), (EntityPlayer) event.entity);
         }
     }
 

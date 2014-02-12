@@ -1,19 +1,16 @@
-package atomicstryker.magicyarn.common.network;
+package atomicstryker.network;
 
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import atomicstryker.magicyarn.common.network.PacketDispatcher.WrappedPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
-
 /**
  * @author AtomicStryker
  * 
  * Utility class offering convenience methods to deal with recurring Packet stuff.
  */
-public final class PacketWrapper
+public final class ForgePacketWrapper
 {
     
     /**
@@ -60,7 +57,13 @@ public final class PacketWrapper
         }
         else if (curClass.equals(String.class))
         {
-            return ByteBufUtils.readUTF8String(data);
+            short len = data.readShort();
+            char[] chars = new char[len];
+            for (int i = 0; i < len; i++)
+            {
+                chars[i] = data.readChar();
+            }
+            return String.valueOf(chars);
         }
         else if (curClass.equals(Double.class))
         {

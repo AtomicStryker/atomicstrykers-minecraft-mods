@@ -2,10 +2,10 @@ package atomicstryker.magicyarn.common;
 
 
 import net.minecraft.entity.player.EntityPlayer;
-import atomicstryker.magicyarn.common.network.PacketDispatcher;
-import atomicstryker.magicyarn.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.magicyarn.common.network.PacketDispatcher.WrappedPacket;
-import atomicstryker.magicyarn.common.network.PacketWrapper;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 
 public class ServerPacketHandler implements IPacketHandler
 {
@@ -15,7 +15,7 @@ public class ServerPacketHandler implements IPacketHandler
     {
         if (packetType == 1)
         {
-            PacketDispatcher.sendPacketToPlayer(PacketWrapper.createPacket("MagicYarn", 1, null), player);
+            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket("MagicYarn", 1, null), player);
         }
         else if (packetType == 2)
         {

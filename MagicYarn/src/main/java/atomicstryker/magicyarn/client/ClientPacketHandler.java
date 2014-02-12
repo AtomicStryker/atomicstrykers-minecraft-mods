@@ -2,8 +2,8 @@ package atomicstryker.magicyarn.client;
 
 
 import net.minecraft.entity.player.EntityPlayer;
-import atomicstryker.magicyarn.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.magicyarn.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 
 public class ClientPacketHandler implements IPacketHandler
 {

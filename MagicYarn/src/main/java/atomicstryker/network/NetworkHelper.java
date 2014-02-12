@@ -1,4 +1,4 @@
-package atomicstryker.magicyarn.common.network;
+package atomicstryker.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
