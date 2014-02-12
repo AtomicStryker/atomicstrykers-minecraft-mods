@@ -2,9 +2,9 @@ package atomicstryker.kenshiro.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.KenshiroMod;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -54,7 +54,7 @@ public class SoundPacket implements IPacket
         }
         else
         {
-            FMLClientHandler.instance().getClient().theWorld.playSound(x, y, z, "kenshiro:"+sound, 1.0F, 1.0F, false);
+            KenshiroClient.instance().playSound(x, y, z, "kenshiro:"+sound);
         }
     }
 

@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.KenshiroServer;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class EntityKickedPacket implements IPacket
@@ -44,13 +43,7 @@ public class EntityKickedPacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
-            World w = FMLClientHandler.instance().getClient().theWorld;
-            Entity ep = w.getEntityByID(playerID);
-            Entity ek = w.getEntityByID(entID);
-            if (ep != null && ep instanceof EntityPlayer && ek != null && ek instanceof EntityLivingBase)
-            {
-                KenshiroClient.instance().onEntityKicked((EntityPlayer)ep, (EntityLivingBase)ek);
-            }
+            KenshiroClient.instance().onEntityKicked(playerID, entID);
         }
         else
         {

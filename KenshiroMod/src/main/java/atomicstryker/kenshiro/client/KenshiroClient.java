@@ -281,23 +281,29 @@ public class KenshiroClient
         }
     }
     
-    public void onEntityKicked(EntityPlayer kicker, EntityLivingBase target)
+    public void onEntityKicked(int playerID, int entID)
     {
-        //System.out.println("Client onEntityKicked, kicker: "+kicker.getGameProfile().getName()+", entity: "+target);
-        target.attackEntityFrom(DamageSource.causePlayerDamage(kicker), 4);
+        EntityPlayer kicker = (EntityPlayer) minecraft.theWorld.getEntityByID(playerID);
+        EntityLivingBase target = (EntityLivingBase) minecraft.theWorld.getEntityByID(entID);
         
-        double var9 = entPlayer.posX - target.posX;
-        double var7;
-        for(var7 = entPlayer.posZ - target.posZ; var9 * var9 + var7 * var7 < 1.0E-4D; var7 = (Math.random() - Math.random()) * 0.01D)
+        if (kicker != null && target != null)
         {
-           var9 = (Math.random() - Math.random()) * 0.01D;
+            //System.out.println("Client onEntityKicked, kicker: "+kicker.getGameProfile().getName()+", entity: "+target);
+            target.attackEntityFrom(DamageSource.causePlayerDamage(kicker), 4);
+            
+            double var9 = entPlayer.posX - target.posX;
+            double var7;
+            for(var7 = entPlayer.posZ - target.posZ; var9 * var9 + var7 * var7 < 1.0E-4D; var7 = (Math.random() - Math.random()) * 0.01D)
+            {
+               var9 = (Math.random() - Math.random()) * 0.01D;
+            }
+            //((EntityLivingBase) mc.objectMouseOver.entityHit).knockBack(entPlayer, 10, var9, var7);
+            
+            target.setFire(8);
+            
+            float quad = MathHelper.sqrt_double(var9-var9 + var7*var7);
+            target.addVelocity((var9 / (double)quad)*-1, 0.6, (var9 / (double)quad)*-1*-1);
         }
-        //((EntityLivingBase) mc.objectMouseOver.entityHit).knockBack(entPlayer, 10, var9, var7);
-        
-        target.setFire(8);
-        
-        float quad = MathHelper.sqrt_double(var9-var9 + var7*var7);
-        target.addVelocity((var9 / (double)quad)*-1, 0.6, (var9 / (double)quad)*-1*-1);
     }
 
     private void sendPacketToServerHasDestroyedBlock(int x, int y, int z)
@@ -367,5 +373,10 @@ public class KenshiroClient
         {
             minecraft.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Kenshiromod active on this server, Mod now active!"));
         }
+    }
+
+    public void playSound(int x, int y, int z, String sound)
+    {
+        minecraft.theWorld.playSound(x, y, z, sound, 1.0F, 1.0F, false);
     }
 }
