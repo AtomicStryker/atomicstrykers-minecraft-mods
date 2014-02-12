@@ -1,15 +1,8 @@
 package atomicstryker.infernalmobs.common.network;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
-import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 
 public class HealthPacket implements IPacket
@@ -51,36 +44,7 @@ public class HealthPacket implements IPacket
         health = bytes.readFloat();
         maxhealth = bytes.readFloat();
         
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer()) // client request being parsed
-        {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(stringData);
-            if (p != null)
-            {
-                EntityLivingBase e = (EntityLivingBase) p.worldObj.getEntityByID(entID);
-                if (e != null)
-                {
-                    MobModifier mod = InfernalMobsCore.getMobModifiers(e);
-                    if (mod != null)
-                    {
-                        health = e.getHealth();
-                        maxhealth = e.getMaxHealth();
-                        InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(this, p);
-                    }
-                }
-            }
-        }
-        else
-        {
-            Entity ent = FMLClientHandler.instance().getClient().theWorld.getEntityByID(entID);
-            if (ent != null && ent instanceof EntityLivingBase)
-            {
-                MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) ent);
-                if (mod != null)
-                {
-                    mod.setActualHealth(health, maxhealth);
-                }
-            }
-        }
+        InfernalMobsCore.proxy.onHealthPacket(stringData, entID, health, maxhealth);
     }
 
 }

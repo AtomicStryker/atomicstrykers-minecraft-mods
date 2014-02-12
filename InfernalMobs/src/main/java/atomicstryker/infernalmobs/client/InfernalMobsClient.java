@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 import atomicstryker.infernalmobs.common.ISidedProxy;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -226,6 +227,38 @@ public class InfernalMobsClient implements ISidedProxy
     public ConcurrentHashMap<EntityLivingBase, MobModifier> getRareMobs()
     {
         return rareMobsClient;
+    }
+
+    @Override
+    public void onHealthPacket(String stringData, int entID, float health, float maxhealth)
+    {
+        Entity ent = FMLClientHandler.instance().getClient().theWorld.getEntityByID(entID);
+        if (ent != null && ent instanceof EntityLivingBase)
+        {
+            MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) ent);
+            if (mod != null)
+            {
+                mod.setActualHealth(health, maxhealth);
+            }
+        }
+    }
+
+    @Override
+    public void onKnockBackPacket(float xv, float zv)
+    {
+        MM_Gravity.knockBack(FMLClientHandler.instance().getClient().thePlayer, xv, zv);
+    }
+
+    @Override
+    public void onMobModsPacket(String stringData, int entID)
+    {
+        InfernalMobsCore.instance().addRemoteEntityModifiers(FMLClientHandler.instance().getClient().theWorld, entID, stringData);
+    }
+
+    @Override
+    public void onVelocityPacket(float xv, float yv, float zv)
+    {
+        FMLClientHandler.instance().getClient().thePlayer.addVelocity(xv, yv, zv);
     }
 
 }

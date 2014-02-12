@@ -1,10 +1,8 @@
 package atomicstryker.infernalmobs.common.network;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 
 public class KnockBackPacket implements IPacket
@@ -33,10 +31,7 @@ public class KnockBackPacket implements IPacket
         xv = bytes.readFloat();
         zv = bytes.readFloat();
         
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            MM_Gravity.knockBack(FMLClientHandler.instance().getClient().thePlayer, xv, zv);
-        }
+        InfernalMobsCore.proxy.onKnockBackPacket(xv, zv);
     }
 
 }

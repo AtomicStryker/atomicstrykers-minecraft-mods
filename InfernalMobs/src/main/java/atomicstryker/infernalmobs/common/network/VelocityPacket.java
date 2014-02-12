@@ -1,9 +1,8 @@
 package atomicstryker.infernalmobs.common.network;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 
 public class VelocityPacket implements IPacket
@@ -35,10 +34,7 @@ public class VelocityPacket implements IPacket
         yv = bytes.readFloat();
         zv = bytes.readFloat();
         
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            FMLClientHandler.instance().getClient().thePlayer.addVelocity(xv, yv, zv);
-        }
+        InfernalMobsCore.proxy.onVelocityPacket(xv, yv, zv);
     }
 
 }
