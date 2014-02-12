@@ -12,6 +12,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
+import atomicstryker.network.PacketDispatcher;
 
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.command.CommandMinion;
@@ -29,7 +30,6 @@ import com.sirolf2009.necromancy.item.ItemNecroSkull;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
-import com.sirolf2009.necromancy.network.PacketDispatcher;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;

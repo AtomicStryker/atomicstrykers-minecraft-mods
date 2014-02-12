@@ -2,6 +2,9 @@ package com.sirolf2009.necromancy.core.handler;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 
 import com.sirolf2009.necromancy.block.BlockAltar;
 import com.sirolf2009.necromancy.block.BlockScentBurner;
@@ -14,9 +17,6 @@ import com.sirolf2009.necromancy.entity.EntityTearBlood;
 import com.sirolf2009.necromancy.inventory.ContainerAltar;
 import com.sirolf2009.necromancy.inventory.ContainerScentBurner;
 import com.sirolf2009.necromancy.inventory.ContainerSewing;
-import com.sirolf2009.necromancy.network.ForgePacketWrapper;
-import com.sirolf2009.necromancy.network.PacketDispatcher.IPacketHandler;
-import com.sirolf2009.necromancy.network.PacketDispatcher.WrappedPacket;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;

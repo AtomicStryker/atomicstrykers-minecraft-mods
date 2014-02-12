@@ -11,10 +11,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
-
-import com.sirolf2009.necromancy.network.ForgePacketWrapper;
-import com.sirolf2009.necromancy.network.PacketDispatcher;
-import com.sirolf2009.necromancy.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
+import atomicstryker.network.WrappedPacket;
 
 public class CommandMinion extends CommandBase
 {

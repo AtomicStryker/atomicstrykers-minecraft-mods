@@ -6,11 +6,12 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.input.Keyboard;
 
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
+
 import com.sirolf2009.necromancy.entity.EntityTear;
 import com.sirolf2009.necromancy.entity.EntityTearBlood;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
-import com.sirolf2009.necromancy.network.ForgePacketWrapper;
-import com.sirolf2009.necromancy.network.PacketDispatcher;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

@@ -1,4 +1,4 @@
-package com.sirolf2009.necromancy.network;
+package atomicstryker.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,73 +22,57 @@ import cpw.mods.fml.relauncher.Side;
  * the packet classes themselves.
  * 
  * @author AtomicStryker
- * 
+ *
  */
 public class NetworkHelper
 {
-
+    
     private final FMLEmbeddedChannel clientOutboundChannel;
     private final FMLEmbeddedChannel serverOutboundChannel;
-
+    
     /**
-     * Creates an instance of the NetworkHelper with included channels for
-     * client and server communication. Automatically registers the necessary
-     * channels and discriminators for the supplied Packet classes.
-     * 
-     * @param channelName
-     *            channel name to use, anything but already taken designations
-     *            goes
-     * @param handledPacketClasses
-     *            provide the IPacket classes you want to use for communication
-     *            here
+     * Creates an instance of the NetworkHelper with included channels for client and server communication.
+     * Automatically registers the necessary channels and discriminators for the supplied Packet classes.
+     * @param channelName channel name to use, anything but already taken designations goes
+     * @param handledPacketClasses provide the IPacket classes you want to use for communication here
      */
     @SafeVarargs
-    public NetworkHelper(String channelName, Class<? extends IPacket>... handledPacketClasses)
+    public NetworkHelper(String channelName, Class<? extends IPacket> ... handledPacketClasses)
     {
         EnumMap<Side, FMLEmbeddedChannel> channelPair = NetworkRegistry.INSTANCE.newChannel(channelName, new ChannelHandler(handledPacketClasses));
         clientOutboundChannel = channelPair.get(Side.CLIENT);
         serverOutboundChannel = channelPair.get(Side.SERVER);
     }
-
+    
     /**
      * Packets only need to implement this and offer a constructor with no args,
      * unless you don't have constructors with >0 args. The class MUST also be
      * statically accessible, else you will suffer an InstantiationException!
-     * Note Packets don't distinguish between being sent from client to server
-     * or the other way around, so be careful using them bidirectional or avoid
+     * Note Packets don't distinguish between being sent from client to server or
+     * the other way around, so be careful using them bidirectional or avoid
      * doing that altogether.
      */
     public static interface IPacket
     {
-
+        
         /**
-         * Executed upon sending a Packet away. Put your arbitrary data into the
-         * ByteBuffer, and retrieve it on the receiving side when readBytes is
-         * executed.
-         * 
-         * @param ctx
-         *            channel context
-         * @param bytes
-         *            data being sent
+         * Executed upon sending a Packet away. Put your arbitrary data into the ByteBuffer,
+         * and retrieve it on the receiving side when readBytes is executed.
+         * @param ctx channel context
+         * @param bytes data being sent
          */
         public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes);
-
+        
         /**
-         * Executed upon arrival of a Packet at a recipient. Byte order matches
-         * writeBytes exactly.
-         * 
-         * @param ctx
-         *            channel context, you can send answers through here
-         *            directly
-         * @param bytes
-         *            data being received
+         * Executed upon arrival of a Packet at a recipient. Byte order matches writeBytes exactly.
+         * @param ctx channel context, you can send answers through here directly
+         * @param bytes data being received
          */
         public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes);
     }
-
+    
     /**
      * Sends the supplied Packet from a client to the server
-     * 
      * @param packet
      */
     public void sendPacketToServer(IPacket packet)
@@ -99,10 +83,9 @@ public class NetworkHelper
             clientOutboundChannel.writeOutbound(packet);
         }
     }
-
+    
     /**
      * Sends the supplied Packet from the server to the chosen Player
-     * 
      * @param packet
      * @param player
      */
@@ -115,10 +98,9 @@ public class NetworkHelper
             serverOutboundChannel.writeOutbound(packet);
         }
     }
-
+    
     /**
      * Sends a packet from the server to all currently connected players
-     * 
      * @param packet
      */
     public void sendPacketToAllPlayers(IPacket packet)
@@ -129,11 +111,9 @@ public class NetworkHelper
             serverOutboundChannel.writeOutbound(packet);
         }
     }
-
+    
     /**
-     * Sends a packet from the server to all players in a dimension around a
-     * location
-     * 
+     * Sends a packet from the server to all players in a dimension around a location
      * @param packet
      * @param tp
      */
@@ -146,10 +126,9 @@ public class NetworkHelper
             serverOutboundChannel.writeOutbound(packet);
         }
     }
-
+    
     /**
      * Sends a packet from the server to all players in a dimension
-     * 
      * @param packet
      * @param dimension
      */
@@ -162,15 +141,15 @@ public class NetworkHelper
             serverOutboundChannel.writeOutbound(packet);
         }
     }
-
+    
     /**
      * Internal ChannelHandler, automatic discrimination and data forwarding
      */
     private class ChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket>
     {
-
+        
         @SafeVarargs
-        public ChannelHandler(Class<? extends IPacket>... handledPacketClasses)
+        public ChannelHandler(Class<? extends IPacket> ... handledPacketClasses)
         {
             for (int i = 0; i < handledPacketClasses.length; i++)
             {
@@ -189,7 +168,7 @@ public class NetworkHelper
         {
             msg.readBytes(ctx, bytes);
         }
-
+        
     }
-
+    
 }
