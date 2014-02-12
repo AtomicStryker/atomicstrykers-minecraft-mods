@@ -1,8 +1,8 @@
 package atomicstryker.petbat.client;
 
 import net.minecraft.entity.player.EntityPlayer;
-import atomicstryker.petbat.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.petbat.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 
 public class ClientPacketHandler implements IPacketHandler
 {

@@ -21,8 +21,8 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import atomicstryker.network.PacketDispatcher;
 import atomicstryker.petbat.client.ClientPacketHandler;
-import atomicstryker.petbat.common.network.PacketDispatcher;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -34,7 +34,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.2.9")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.0")
 public class PetBatMod implements IProxy
 {
     public final Item TAME_ITEM_ID = Items.pumpkin_pie;

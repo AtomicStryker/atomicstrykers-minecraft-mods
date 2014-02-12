@@ -1,11 +1,9 @@
-package atomicstryker.petbat.common.network;
+package atomicstryker.network;
 
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import atomicstryker.petbat.common.network.PacketDispatcher.WrappedPacket;
 
 /**
  * @author AtomicStryker

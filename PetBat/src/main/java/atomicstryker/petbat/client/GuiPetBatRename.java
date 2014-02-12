@@ -9,10 +9,10 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
-import atomicstryker.petbat.common.network.ForgePacketWrapper;
-import atomicstryker.petbat.common.network.PacketDispatcher;
 
 public class GuiPetBatRename extends GuiScreen
 {

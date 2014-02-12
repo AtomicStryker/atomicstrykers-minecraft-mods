@@ -2,9 +2,9 @@ package atomicstryker.petbat.common;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import atomicstryker.petbat.common.network.ForgePacketWrapper;
-import atomicstryker.petbat.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.petbat.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 
 public class ServerPacketHandler implements IPacketHandler
 {
