@@ -1,3 +1,6 @@
+RopesPlus 1.5.6
+- fixed packets to work on dedicated servers
+
 RopesPlus 1.5.5
 - moved arrow recipe registration from preInit to Init, should fix an issue
 

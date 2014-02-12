@@ -7,9 +7,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 import atomicstryker.ropesplus.client.RopesPlusClient;
-import atomicstryker.ropesplus.common.network.ForgePacketWrapper;
-import atomicstryker.ropesplus.common.network.PacketDispatcher;
 
 public class ItemGrapplingHook extends Item
 {

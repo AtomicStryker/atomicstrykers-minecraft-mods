@@ -11,8 +11,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.network.ForgePacketWrapper;
-import atomicstryker.ropesplus.common.network.PacketDispatcher;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 
 
 public class BlockZipLineAnchor extends BlockContainer

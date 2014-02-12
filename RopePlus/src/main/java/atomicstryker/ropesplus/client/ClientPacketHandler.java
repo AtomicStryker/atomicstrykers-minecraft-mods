@@ -2,12 +2,12 @@ package atomicstryker.ropesplus.client;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
-import atomicstryker.ropesplus.common.network.ForgePacketWrapper;
-import atomicstryker.ropesplus.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.ropesplus.common.network.PacketDispatcher.WrappedPacket;
 
 public class ClientPacketHandler implements IPacketHandler
 {

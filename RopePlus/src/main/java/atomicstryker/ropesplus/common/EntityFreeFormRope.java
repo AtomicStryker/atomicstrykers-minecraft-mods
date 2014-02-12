@@ -8,8 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.network.ForgePacketWrapper;
-import atomicstryker.ropesplus.common.network.PacketDispatcher;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 
 public class EntityFreeFormRope extends Entity
 {

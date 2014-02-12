@@ -1,11 +1,9 @@
-package atomicstryker.ropesplus.common.network;
+package atomicstryker.network;
 
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import atomicstryker.ropesplus.common.network.PacketDispatcher.WrappedPacket;
 
 /**
  * @author AtomicStryker
