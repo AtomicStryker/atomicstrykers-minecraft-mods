@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import atomicstryker.multimine.client.ClientPacketHandler;
-import atomicstryker.multimine.common.network.PacketDispatcher;
+import atomicstryker.network.PacketDispatcher;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -21,7 +21,7 @@ import cpw.mods.fml.common.registry.GameData;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.5")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.6")
 public class MultiMine
 {
     @Instance("AS_MultiMine")

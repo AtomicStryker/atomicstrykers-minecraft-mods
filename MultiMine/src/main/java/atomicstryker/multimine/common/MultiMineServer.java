@@ -15,8 +15,8 @@ import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import atomicstryker.multimine.common.network.ForgePacketWrapper;
-import atomicstryker.multimine.common.network.PacketDispatcher;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

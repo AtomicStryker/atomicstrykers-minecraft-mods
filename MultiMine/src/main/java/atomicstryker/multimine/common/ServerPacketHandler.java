@@ -3,9 +3,9 @@ package atomicstryker.multimine.common;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import atomicstryker.multimine.common.network.ForgePacketWrapper;
-import atomicstryker.multimine.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.multimine.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.network.WrappedPacket;
 
 public class ServerPacketHandler implements IPacketHandler
 {

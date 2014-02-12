@@ -15,8 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
-import atomicstryker.multimine.common.network.ForgePacketWrapper;
-import atomicstryker.multimine.common.network.PacketDispatcher;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class MultiMineClient
