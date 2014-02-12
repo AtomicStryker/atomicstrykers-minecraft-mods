@@ -24,16 +24,21 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntitySquid;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityVillager;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityWitch;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityZombie;
-import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.VillagerRegistry;
 
 public class RegistryNecromancyEntities
 {
+    
+    public static int entityIDTeddy;
+    public static int entityIDIsaac;
+    public static int villagerIDNecro;
 
     public static void initEntities()
     {
-        EntityRegistry.registerGlobalEntityID(EntityTeddy.class, "teddyNecro", ConfigurationNecromancy.TeddyID, new Color(99, 69, 29).getRGB(), Color.red.getRGB());
+        entityIDTeddy = EntityRegistry.findGlobalUniqueEntityId();
+        EntityRegistry.registerGlobalEntityID(EntityTeddy.class, "teddyNecro", entityIDTeddy, new Color(99, 69, 29).getRGB(), Color.red.getRGB());
         EntityRegistry.registerModEntity(EntityTeddy.class, "teddyNecro", 0, Necromancy.instance, 25, 5, true);
 
         EntityRegistry.registerGlobalEntityID(EntityNightCrawler.class, "NightCrawler", EntityRegistry.findGlobalUniqueEntityId(),
@@ -44,7 +49,8 @@ public class RegistryNecromancyEntities
                 BiomeGenBase.forest, BiomeGenBase.jungle, BiomeGenBase.megaTaiga, BiomeGenBase.plains, BiomeGenBase.savanna, BiomeGenBase.swampland,
                 BiomeGenBase.taiga);
         
-        EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", ConfigurationNecromancy.IsaacID, new Color(6, 6, 6).getRGB(),
+        entityIDIsaac = EntityRegistry.findGlobalUniqueEntityId();
+        EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", entityIDIsaac, new Color(6, 6, 6).getRGB(),
                 new Color(204, 153, 153).getRGB());
         EntityRegistry.registerModEntity(EntityIsaacNormal.class, "IsaacNormal", 2, Necromancy.instance, 25, 5, true);
 
@@ -65,6 +71,16 @@ public class RegistryNecromancyEntities
 
         EntityRegistry.registerModEntity(EntityTear.class, "TearNormal", 7, Necromancy.instance, 144, 2, true);
         EntityRegistry.registerModEntity(EntityTearBlood.class, "TearBlood", 8, Necromancy.instance, 144, 2, true);
+        
+        for (int freeID = 0; freeID < 100; freeID++)
+        {
+            VillagerRegistry.instance();
+            if (!VillagerRegistry.getRegisteredVillagers().contains(Integer.valueOf(freeID)))
+            {
+                villagerIDNecro = freeID;
+                break;
+            }
+        }
         
         NecroEntityRegistry.registerEntity(new NecroEntityCaveSpider());
         NecroEntityRegistry.registerEntity(new NecroEntityChicken());

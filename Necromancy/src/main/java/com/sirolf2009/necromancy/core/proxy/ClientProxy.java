@@ -44,8 +44,8 @@ import com.sirolf2009.necromancy.entity.EntityNightCrawler;
 import com.sirolf2009.necromancy.entity.EntityTear;
 import com.sirolf2009.necromancy.entity.EntityTearBlood;
 import com.sirolf2009.necromancy.entity.EntityTeddy;
+import com.sirolf2009.necromancy.entity.RegistryNecromancyEntities;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
-import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
@@ -99,14 +99,15 @@ public class ClientProxy extends CommonProxy
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.necronomicon, new ItemNecronomiconRenderer());
 
         FluidRegistry.registerFluid(RegistryBlocksNecromancy.fluidBlood);
+        
 
-        VillagerRegistry.instance().registerVillagerSkin(ConfigurationNecromancy.NecroVillagerID, ReferenceNecromancy.TEXTURES_ENTITIES_NECROMANCER);
-        VillagerRegistry.instance().registerVillageTradeHandler(ConfigurationNecromancy.NecroVillagerID, Necromancy.villageHandler);
+        VillagerRegistry.instance().registerVillagerSkin(RegistryNecromancyEntities.villagerIDNecro, ReferenceNecromancy.TEXTURES_ENTITIES_NECROMANCER);
+        VillagerRegistry.instance().registerVillageTradeHandler(RegistryNecromancyEntities.villagerIDNecro, Necromancy.villageHandler);
 
         try
         {
-            int vertShader = loadShader("/assets/necromancy/shaders/scent/scentFragment.shader", GL20.GL_VERTEX_SHADER);
-            int fragShader = loadShader("/assets/necromancy/shaders/scent/scentVertex.shader", GL20.GL_FRAGMENT_SHADER);
+            int vertShader = loadShader("/assets/necromancy/shaders/scent/scentFragment.shader", GL20.GL_FRAGMENT_SHADER);
+            int fragShader = loadShader("/assets/necromancy/shaders/scent/scentVertex.shader", GL20.GL_VERTEX_SHADER);
             scentProgram = GL20.glCreateProgram();
             GL20.glAttachShader(scentProgram, vertShader);
             GL20.glAttachShader(scentProgram, fragShader);
@@ -145,6 +146,13 @@ public class ClientProxy extends CommonProxy
         shaderID = GL20.glCreateShader(type);
         GL20.glShaderSource(shaderID, shaderSource);
         GL20.glCompileShader(shaderID);
+        String s = GL20.glGetShaderInfoLog(shaderID, 1000);
+        if(!s.isEmpty())
+        {
+            System.err.println("Error compiling " + shaderSource);
+            System.err.println(s);
+            System.exit(-1);
+        }
 
         return shaderID;
     }
