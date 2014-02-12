@@ -9,9 +9,9 @@ import net.minecraft.world.World;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.network.ForgePacketWrapper;
-import atomicstryker.minions.common.network.PacketDispatcher;
-import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
+import atomicstryker.network.WrappedPacket;
 
 public class MinionsServer
 {

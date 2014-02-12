@@ -40,10 +40,10 @@ import atomicstryker.minions.common.jobmanager.Minion_Job_DigMineStairwell;
 import atomicstryker.minions.common.jobmanager.Minion_Job_Manager;
 import atomicstryker.minions.common.jobmanager.Minion_Job_StripMine;
 import atomicstryker.minions.common.jobmanager.Minion_Job_TreeHarvest;
-import atomicstryker.minions.common.network.ForgePacketWrapper;
-import atomicstryker.minions.common.network.PacketDispatcher;
-import atomicstryker.minions.common.network.PacketDispatcher.IPacketHandler;
-import atomicstryker.minions.common.network.PacketDispatcher.WrappedPacket;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
+import atomicstryker.network.WrappedPacket;
+import atomicstryker.network.PacketDispatcher.IPacketHandler;
 
 import com.google.common.collect.Lists;
 
@@ -63,7 +63,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.4")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.5")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")

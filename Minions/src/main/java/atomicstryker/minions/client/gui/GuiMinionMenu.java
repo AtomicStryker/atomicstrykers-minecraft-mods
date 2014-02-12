@@ -5,8 +5,8 @@ import net.minecraft.client.gui.GuiScreen;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.PacketType;
-import atomicstryker.minions.common.network.ForgePacketWrapper;
-import atomicstryker.minions.common.network.PacketDispatcher;
+import atomicstryker.network.ForgePacketWrapper;
+import atomicstryker.network.PacketDispatcher;
 
 /**
  * Minion Menu, provides access to evil deeds and later minion commands
