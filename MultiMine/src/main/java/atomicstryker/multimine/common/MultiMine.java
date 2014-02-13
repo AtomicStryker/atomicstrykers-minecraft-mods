@@ -7,8 +7,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
-import atomicstryker.multimine.client.ClientPacketHandler;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.multimine.common.network.ConfigPacket;
+import atomicstryker.multimine.common.network.NetworkHelper;
+import atomicstryker.multimine.common.network.PartialBlockPacket;
+import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -38,10 +40,12 @@ public class MultiMine
     @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
     public static CommonProxy proxy;
     
+    public NetworkHelper networkHelper;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        PacketDispatcher.init("AS_MM", new ClientPacketHandler(), new ServerPacketHandler());
+        networkHelper = new NetworkHelper("AS_MM", ConfigPacket.class, PartialBlockPacket.class, PartialBlockRemovalPacket.class);
         
         Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();

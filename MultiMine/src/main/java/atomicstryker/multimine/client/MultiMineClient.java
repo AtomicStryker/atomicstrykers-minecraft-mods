@@ -15,8 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.multimine.common.network.PartialBlockPacket;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class MultiMineClient
@@ -116,13 +115,12 @@ public class MultiMineClient
                     blockCompletion = 1.0f;
                 }
                 
-                Object[] toSend = {curBlockX, curBlockY, curBlockZ, thePlayer.dimension};
                 if (curBlockX != x || curBlockY != y || curBlockZ != z)
                 {
                     // case block change, check one last time for partial mining
                     while (blockCompletion >= lastBlockCompletion+0.1f)
                     {
-                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
+                        MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
                         lastBlockCompletion += 0.1f;
                     }
                     
@@ -134,12 +132,12 @@ public class MultiMineClient
                 }
                 else if (blockCompletion+0.1f >= lastBlockCompletion)
                 {
-                    // System.out.println("Client has block progress for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion+", lastCompletion: "+lastBlockCompletion);
+                    System.out.println("Client has block progress for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion+", lastCompletion: "+lastBlockCompletion);
                     // case same block, and mining has progressed
                     while (blockCompletion >= lastBlockCompletion+0.1f)
                     {
-                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_MM", 1, toSend));
-                        // System.out.println("Sent one 10% block progress packet to server...");
+                        MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
+                        System.out.println("Sent one 10% block progress packet to server...");
                         lastBlockCompletion += 0.1f;
                     }
                 }
@@ -193,7 +191,7 @@ public class MultiMineClient
             return;
         }
         
-        //System.out.println("Client received partial Block packet for: ["+x+"|"+y+"|"+z+"], progress now: "+progress);
+        System.out.println("Client received partial Block packet for: ["+x+"|"+y+"|"+z+"], progress now: "+progress);
         updateCloudTickReading();
         
         int dimension = thePlayer.dimension;
