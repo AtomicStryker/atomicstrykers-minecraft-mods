@@ -21,8 +21,8 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
-import atomicstryker.network.PacketDispatcher;
-import atomicstryker.petbat.client.ClientPacketHandler;
+import atomicstryker.petbat.common.network.BatNamePacket;
+import atomicstryker.petbat.common.network.NetworkHelper;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -120,6 +120,8 @@ public class PetBatMod implements IProxy
         return instance;
     }
     
+    public NetworkHelper networkHelper;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {        
@@ -146,7 +148,7 @@ public class PetBatMod implements IProxy
         itemBatFlute = new ItemBatFlute().setUnlocalizedName("bat_flute");
         GameRegistry.registerItem(itemBatFlute, "bat_flute");
         
-        PacketDispatcher.init("AS_PB", new ClientPacketHandler(), new ServerPacketHandler());
+        networkHelper = new NetworkHelper("AS_PB", BatNamePacket.class);
         
         EntityRegistry.registerModEntity(EntityPetBat.class, "PetBat", 1, this, 25, 5, true);
         

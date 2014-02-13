@@ -1,5 +1,6 @@
 package atomicstryker.petbat.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.item.ItemStack;
@@ -9,10 +10,9 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
+import atomicstryker.petbat.common.network.BatNamePacket;
 
 public class GuiPetBatRename extends GuiScreen
 {
@@ -43,7 +43,7 @@ public class GuiPetBatRename extends GuiScreen
         levelTitle = PetBatMod.instance().getLevelTitle(level);
         levelDesc = PetBatMod.instance().getLevelDescription(level);
     }
-    
+
     @Override
     public void initGui()
     {
@@ -55,14 +55,14 @@ public class GuiPetBatRename extends GuiScreen
         textfield.setFocused(true);
         textfield.setText(ItemPocketedPetBat.getBatNameFromItemStack(petBatItemStack));
     }
-    
+
     @Override
     public void onGuiClosed()
     {
         super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
     }
-    
+
     @Override
     protected void keyTyped(char par1, int par2)
     {
@@ -70,8 +70,8 @@ public class GuiPetBatRename extends GuiScreen
         {
             if (!textfield.getText().equals(""))
             {
-                Object[] toSend = { textfield.getText() };
-                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("PetBat", 1, toSend));
+                PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getMinecraft().thePlayer.getCommandSenderName(),
+                        textfield.getText()));
             }
         }
         else
@@ -79,20 +79,20 @@ public class GuiPetBatRename extends GuiScreen
             super.keyTyped(par1, par2);
         }
     }
-    
+
     @Override
     protected void mouseClicked(int par1, int par2, int par3)
     {
         super.mouseClicked(par1, par2, par3);
         this.textfield.mouseClicked(par1, par2, par3);
     }
-    
+
     @Override
     public void updateScreen()
     {
         textfield.updateCursorCounter();
     }
-    
+
     @Override
     public void drawScreen(int par1, int par2, float par3)
     {
