@@ -43,15 +43,18 @@ public class FinderCompassClientTicker
         settingList = FinderCompassMod.instance.settingList;
         currentSetting = settingList.get(0);
 
+        FMLCommonHandler.instance().bus().register(this);
+    }
+
+    public void onLoad()
+    {
         COMPASS_ITEM_ID = Items.compass;
         MinecraftForgeClient.registerItemRenderer(FinderCompassMod.instance.compass, new CompassCustomRenderer());
         if (!FinderCompassMod.instance.itemEnabled)
         {
             MinecraftForgeClient.registerItemRenderer(COMPASS_ITEM_ID, new CompassCustomRenderer());
         }
-
         compassLogic = new FinderCompassLogic(mc);
-        FMLCommonHandler.instance().bus().register(this);
     }
 
     @SubscribeEvent
@@ -62,13 +65,13 @@ public class FinderCompassClientTicker
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.WorldTickEvent tick)
+    public void onTick(TickEvent.PlayerTickEvent tick)
     {
-        if (tick.phase == Phase.END)
+        if (tick.phase == Phase.END && compassLogic != null)
         {
-            if (!FinderCompassMod.instance.itemEnabled && mc.theWorld != null && mc.thePlayer != null)
+            if (!FinderCompassMod.instance.itemEnabled)
             {
-                if (mc.thePlayer.getCurrentEquippedItem() != null && mc.thePlayer.getCurrentEquippedItem().getItem() == COMPASS_ITEM_ID)
+                if (tick.player.getCurrentEquippedItem() != null && tick.player.getCurrentEquippedItem().getItem() == COMPASS_ITEM_ID)
                 {
                     if (mc.gameSettings.keyBindAttack.getIsKeyPressed())
                     {
@@ -76,8 +79,8 @@ public class FinderCompassClientTicker
                         {
                             repeat = true;
                             switchSetting();
-                            mc.theWorld.playSound(mc.thePlayer.posX + 0.5D, mc.thePlayer.posY + 0.5D, mc.thePlayer.posZ + 0.5D, "random.click", 0.3F,
-                                    0.6F, false);
+                            tick.player.worldObj.playSound(tick.player.posX + 0.5D, tick.player.posY + 0.5D, tick.player.posZ + 0.5D, "random.click",
+                                    0.3F, 0.6F, false);
                         }
                     }
                     else
@@ -129,7 +132,7 @@ public class FinderCompassClientTicker
 
     public void onFoundChunkCoordinates(ChunkCoordinates input, Block b, int meta)
     {
-        //System.out.println("onFoundChunkCoordinates ["+input.posX+"|"+input.posZ+"] for ID "+b+", damage "+meta);
+        // System.out.println("onFoundChunkCoordinates ["+input.posX+"|"+input.posZ+"] for ID "+b+", damage "+meta);
         CompassTargetData key = new CompassTargetData(b, meta);
         currentSetting.getNewFoundTargets().put(key, input);
     }

@@ -1,3 +1,6 @@
+1.7.2b
+fixed Compass Tick not being executed in remote multiplayer mode
+
 1.7.2a
 fixed ConcurrentModificationException crash
 

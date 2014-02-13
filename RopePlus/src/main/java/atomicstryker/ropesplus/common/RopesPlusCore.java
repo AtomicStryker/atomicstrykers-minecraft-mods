@@ -52,7 +52,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.5")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.6")
 public class RopesPlusCore
 {
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")

@@ -24,7 +24,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2a")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2b")
 public class FinderCompassMod
 {
 
@@ -75,6 +75,7 @@ public class FinderCompassMod
         }
         
         FMLCommonHandler.instance().bus().register(this);
+        
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
             FinderCompassClientTicker.instance = new FinderCompassClientTicker();
@@ -96,6 +97,11 @@ public class FinderCompassMod
         {
             GameRegistry.addRecipe(new ItemStack(compass),
                     new Object[] { " # ", "#X#", " # ", Character.valueOf('#'), Items.diamond, Character.valueOf('X'), Items.compass });
+        }
+        
+        if (FinderCompassClientTicker.instance != null)
+        {
+            FinderCompassClientTicker.instance.onLoad();
         }
     }
     
