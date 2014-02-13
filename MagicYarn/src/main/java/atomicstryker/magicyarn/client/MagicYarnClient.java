@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
-import atomicstryker.network.PacketDispatcher;
-import atomicstryker.network.WrappedPacket;
+import atomicstryker.magicyarn.common.MagicYarn;
+import atomicstryker.magicyarn.common.network.PathPacket;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -228,7 +228,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             data.writeInt(n.z);
         }
         
-        PacketDispatcher.sendPacketToServer(new WrappedPacket(2, data));
+        MagicYarn.instance.networkHelper.sendPacketToServer(new PathPacket(data));
     }
     
     public void onReceivedPathPacket(ByteBuf data)

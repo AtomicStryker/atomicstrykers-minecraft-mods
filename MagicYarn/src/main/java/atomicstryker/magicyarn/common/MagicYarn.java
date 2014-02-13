@@ -10,9 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import atomicstryker.magicyarn.client.ClientPacketHandler;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.magicyarn.common.network.HandshakePacket;
+import atomicstryker.magicyarn.common.network.NetworkHelper;
+import atomicstryker.magicyarn.common.network.PathPacket;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -29,6 +29,8 @@ public class MagicYarn implements IProxy
     @Instance("MagicYarn")
     public static MagicYarn instance;
     
+    public NetworkHelper networkHelper;
+    
     @SidedProxy(clientSide = "atomicstryker.magicyarn.client.MagicYarnClient", serverSide = "atomicstryker.magicyarn.common.MagicYarn")
     public static IProxy proxy;
     
@@ -37,7 +39,7 @@ public class MagicYarn implements IProxy
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        PacketDispatcher.init("AS_MY", new ClientPacketHandler(), new ServerPacketHandler());
+        networkHelper = new NetworkHelper("AS_MY", HandshakePacket.class, PathPacket.class);
         
         magicYarn = (new ItemMagicYarn()).setUnlocalizedName("magic_yarn");
         GameRegistry.registerItem(magicYarn, "magic_yarn");
@@ -64,9 +66,9 @@ public class MagicYarn implements IProxy
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (event.entity instanceof EntityPlayer)
+        if (!event.world.isRemote && event.entity instanceof EntityPlayer)
         {
-            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(1, null), (EntityPlayer) event.entity);
+            networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayer) event.entity);
         }
     }
 
