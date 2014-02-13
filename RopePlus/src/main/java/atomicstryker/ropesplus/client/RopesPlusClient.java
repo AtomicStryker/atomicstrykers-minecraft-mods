@@ -408,4 +408,26 @@ public class RopesPlusClient
         }
     }
 
+    public static void onReleasedHookshot()
+    {
+        EntityPlayer p = Minecraft.getMinecraft().thePlayer;
+        for (Object o : p.worldObj.loadedEntityList)
+        {
+            if (o instanceof EntityFreeFormRope)
+            {
+                EntityFreeFormRope rope = (EntityFreeFormRope) o;
+                if (rope.getShooter() != null && rope.getShooter().equals(p))
+                {
+                    rope.setDead();
+                    break;
+                }
+            }
+        }
+    }
+
+    public static void onHookshotHit(int x, int y, int z)
+    {
+        Minecraft.getMinecraft().theWorld.spawnParticle("largeexplode", x+0.5D, y, z+0.5D, 1.0D, 0.0D, 0.0D);
+    }
+
 }

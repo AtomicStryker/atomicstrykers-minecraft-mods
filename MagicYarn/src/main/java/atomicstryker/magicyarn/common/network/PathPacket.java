@@ -34,7 +34,7 @@ public class PathPacket implements IPacket
         }
         else
         {
-            MagicYarn.instance.networkHelper.sendPacketToAllPlayers(this);
+            MagicYarn.instance.networkHelper.sendPacketToAllPlayers(new PathPacket(bytes.copy()));
         }
     }
 }

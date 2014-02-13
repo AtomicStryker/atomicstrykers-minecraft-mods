@@ -145,18 +145,26 @@ public class EntityFreeFormRope extends Entity
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        setStartX(compound.getDouble("startX"));
-        setStartY(compound.getDouble("startY"));
-        setStartZ(compound.getDouble("startZ"));
-        setEndX(compound.getDouble("endX"));
-        setEndY(compound.getDouble("endY"));
-        setEndZ(compound.getDouble("endZ"));
-        setPowValue(compound.getDouble("ropePOWvalue"));
+        if (compound.getBoolean("attachedToEnt"))
+        {
+            setDead();
+        }
+        else
+        {
+            setStartX(compound.getDouble("startX"));
+            setStartY(compound.getDouble("startY"));
+            setStartZ(compound.getDouble("startZ"));
+            setEndX(compound.getDouble("endX"));
+            setEndY(compound.getDouble("endY"));
+            setEndZ(compound.getDouble("endZ"));
+            setPowValue(compound.getDouble("ropePOWvalue"));
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound)
     {
+        compound.setBoolean("attachedToEnt", shooter != null);
         compound.setDouble("startX", getStartX());
         compound.setDouble("startY", getStartY());
         compound.setDouble("startZ", getStartZ());

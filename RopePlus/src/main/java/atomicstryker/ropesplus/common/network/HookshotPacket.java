@@ -2,10 +2,7 @@ package atomicstryker.ropesplus.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import atomicstryker.ropesplus.client.RopesPlusClient;
-import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.network.NetworkHelper.IPacket;
 
@@ -47,19 +44,7 @@ public class HookshotPacket implements IPacket
             RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
             RopesPlusCore.proxy.setShouldHookShotPull(0f);
             
-            EntityPlayer p = Minecraft.getMinecraft().thePlayer;
-            for (Object o : p.worldObj.loadedEntityList)
-            {
-                if (o instanceof EntityFreeFormRope)
-                {
-                    EntityFreeFormRope rope = (EntityFreeFormRope) o;
-                    if (rope.getShooter() != null && rope.getShooter().equals(p))
-                    {
-                        rope.setDead();
-                        break;
-                    }
-                }
-            }
+            RopesPlusClient.onReleasedHookshot();
         }
         else
         {
@@ -67,7 +52,7 @@ public class HookshotPacket implements IPacket
             RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
             RopesPlusCore.proxy.setShouldHookShotPull(0f);
             RopesPlusClient.onAffixedToHookShotRope(ropeEntID);
-            Minecraft.getMinecraft().theWorld.spawnParticle("largeexplode", x+0.5D, y, z+0.5D, 1.0D, 0.0D, 0.0D);
+            RopesPlusClient.onHookshotHit(x, y, z);
         }
     }
 

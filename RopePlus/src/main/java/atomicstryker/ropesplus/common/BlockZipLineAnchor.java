@@ -38,8 +38,8 @@ public class BlockZipLineAnchor extends BlockContainer
 
         if (teAnchor.getHasZipLine() && !entityPlayer.worldObj.isRemote)
         {
-            RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(entityPlayer.getCommandSenderName(), teAnchor
-                    .getZipLineEntity().getEntityId(), 0f));
+            RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new ZiplinePacket("server", teAnchor.getZipLineEntity().getEntityId(), 0f),
+                    entityPlayer);
             entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:zipline", 1.0F,
                     1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
             return true;
@@ -70,9 +70,9 @@ public class BlockZipLineAnchor extends BlockContainer
                                 {
                                     entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.instance.itemHookShot);
                                 }
-                                
+
                                 RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(-1, 0, 0, 0), entityPlayer);
-                                
+
                                 rope.setDead();
                                 entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:ropetension", 1.0F, 1.0F / (entityPlayer.getRNG()
                                         .nextFloat() * 0.1F + 0.95F));

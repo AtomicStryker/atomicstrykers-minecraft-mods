@@ -37,8 +37,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.0")
 public class PetBatMod implements IProxy
 {
-    public final Item TAME_ITEM_ID = Items.pumpkin_pie;
-    public final Item GLISTER_ITEM_ID = Items.glowstone_dust;
+    private Item TAME_ITEM_ID;
+    private Item GLISTER_ITEM_ID;
     
     public final byte BAT_MAX_LVL = 7;
     
@@ -164,6 +164,8 @@ public class PetBatMod implements IProxy
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
         glisterBatEnabled = Loader.isModLoaded("DynamicLights");
+        TAME_ITEM_ID = Items.pumpkin_pie;
+        GLISTER_ITEM_ID = Items.glowstone_dust;
     }
 	
 	public boolean getPetBatInventoryTeleportEnabled()
