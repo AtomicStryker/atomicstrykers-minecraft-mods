@@ -262,22 +262,26 @@ public class KenshiroClient
         }
     }
 
-    public void onEntityPunched(EntityLivingBase ent)
+    public void onEntityPunched(int entID)
     {
-        KenshiroMod.instance().debuffEntityLiving((EntityLivingBase) ent);
-        
-        ent.worldObj.spawnParticle("explode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
-        ent.worldObj.spawnParticle("largeexplode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
-        minecraft.effectRenderer.addEffect(new EntityCrit2FX(ent.worldObj, ent));
-        entPlayer.worldObj.playSound(ent.posX, ent.posY, ent.posZ, "kenshiropunch", 1.0F, (entPlayer.getRNG().nextFloat() - entPlayer.getRNG().nextFloat()) * 0.2F + 1.0F, false);
-        
-        if (ent instanceof EntityCreeper)
+        Entity ent = this.minecraft.theWorld.getEntityByID(entID);
+        if (ent instanceof EntityLivingBase)
         {
-            KenshiroMod.instance().stopCreeperExplosion((EntityCreeper) ent);
-        }
-        else if (ent instanceof EntitySkeleton)
-        {
-            KenshiroMod.instance().stopSkeletonShooter((EntitySkeleton) ent);
+            KenshiroMod.instance().debuffEntityLiving((EntityLivingBase) ent);
+            
+            ent.worldObj.spawnParticle("explode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
+            ent.worldObj.spawnParticle("largeexplode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
+            minecraft.effectRenderer.addEffect(new EntityCrit2FX(ent.worldObj, ent));
+            entPlayer.worldObj.playSound(ent.posX, ent.posY, ent.posZ, "kenshiropunch", 1.0F, (entPlayer.getRNG().nextFloat() - entPlayer.getRNG().nextFloat()) * 0.2F + 1.0F, false);
+            
+            if (ent instanceof EntityCreeper)
+            {
+                KenshiroMod.instance().stopCreeperExplosion((EntityCreeper) ent);
+            }
+            else if (ent instanceof EntitySkeleton)
+            {
+                KenshiroMod.instance().stopSkeletonShooter((EntitySkeleton) ent);
+            }
         }
     }
     

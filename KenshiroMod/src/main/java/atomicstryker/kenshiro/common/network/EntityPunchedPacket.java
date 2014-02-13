@@ -2,14 +2,11 @@ package atomicstryker.kenshiro.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.KenshiroServer;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class EntityPunchedPacket implements IPacket
@@ -51,11 +48,7 @@ public class EntityPunchedPacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
-            Entity e = FMLClientHandler.instance().getClient().theWorld.getEntityByID(entID);
-            if (e != null)
-            {
-                KenshiroClient.instance().onEntityPunched((EntityLivingBase) e);
-            }
+            KenshiroClient.instance().onEntityPunched(entID);
         }
         else
         {
