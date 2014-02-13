@@ -1,5 +1,6 @@
 Update 1.8.5
 - fixed packet system to work on dedicated servers
+- fixed several soundfiles not working on 1.7.2
 
 Update 1.8.4
 - readded chunkloading code now using the ForgeChunkManager

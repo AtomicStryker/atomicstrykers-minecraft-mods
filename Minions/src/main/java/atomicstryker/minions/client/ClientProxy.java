@@ -7,8 +7,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.minions.common.CommonProxy;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.network.WrappedPacket;
-import atomicstryker.network.PacketDispatcher.IPacketHandler;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -85,13 +83,4 @@ public class ClientProxy extends CommonProxy
 	{
 		FMLClientHandler.instance().getClient().theWorld.playSound(ent.posX, ent.posY, ent.posZ, sound, volume, pitch, false);
 	}
-    
-    public static class ClientPacketHandler implements IPacketHandler
-    {
-        @Override
-        public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
-        {
-            client.onPacketData(packetType, packet, player);
-        }
-    }
 }

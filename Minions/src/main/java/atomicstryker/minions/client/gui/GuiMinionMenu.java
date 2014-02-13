@@ -4,9 +4,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.PacketType;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.minions.common.network.HaxPacket;
+import atomicstryker.minions.common.network.UnsummonPacket;
 
 /**
  * Minion Menu, provides access to evil deeds and later minion commands
@@ -69,9 +68,8 @@ public class GuiMinionMenu extends GuiScreen
         	{
         		if (MinionsClient.hasMinionsSMPOverride)
         		{
-        			Object[] toSend = {mc.thePlayer.getGameProfile().getName()};
-        			PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.CMDUNSUMMON.ordinal(), toSend)); // minion unsummon command to server
-        			this.mc.displayGuiScreen((GuiScreen)null);
+        			MinionsCore.instance.networkHelper.sendPacketToServer(new UnsummonPacket(mc.thePlayer.getCommandSenderName()));
+        			mc.displayGuiScreen((GuiScreen)null);
         		}
         		else
         		{
@@ -111,8 +109,8 @@ public class GuiMinionMenu extends GuiScreen
     	if (var1 == 'i' && cheatCount == 6) cheatCount++;
     	if (var1 == 'l' && cheatCount == 7)
         {
-            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HAX.ordinal(), null)); // cheater!!!!
-            this.mc.displayGuiScreen((GuiScreen) null);
+    	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.thePlayer.getCommandSenderName())); // cheater!!!!
+            mc.displayGuiScreen((GuiScreen) null);
         }
     }
 

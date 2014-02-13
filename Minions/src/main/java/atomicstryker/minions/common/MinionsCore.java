@@ -31,7 +31,6 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import atomicstryker.minions.client.ClientProxy.ClientPacketHandler;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.jobmanager.BlockTask_MineOreVein;
@@ -40,10 +39,26 @@ import atomicstryker.minions.common.jobmanager.Minion_Job_DigMineStairwell;
 import atomicstryker.minions.common.jobmanager.Minion_Job_Manager;
 import atomicstryker.minions.common.jobmanager.Minion_Job_StripMine;
 import atomicstryker.minions.common.jobmanager.Minion_Job_TreeHarvest;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
-import atomicstryker.network.WrappedPacket;
-import atomicstryker.network.PacketDispatcher.IPacketHandler;
+import atomicstryker.minions.common.network.AssignChestPacket;
+import atomicstryker.minions.common.network.ChopTreesPacket;
+import atomicstryker.minions.common.network.CustomDigPacket;
+import atomicstryker.minions.common.network.DigOreVeinPacket;
+import atomicstryker.minions.common.network.DigStairwellPacket;
+import atomicstryker.minions.common.network.DropAllPacket;
+import atomicstryker.minions.common.network.EvilDeedPacket;
+import atomicstryker.minions.common.network.FollowPacket;
+import atomicstryker.minions.common.network.HasMinionsPacket;
+import atomicstryker.minions.common.network.HaxPacket;
+import atomicstryker.minions.common.network.LightningPacket;
+import atomicstryker.minions.common.network.MinionMountPacket;
+import atomicstryker.minions.common.network.MinionSpawnPacket;
+import atomicstryker.minions.common.network.MovetoPacket;
+import atomicstryker.minions.common.network.NetworkHelper;
+import atomicstryker.minions.common.network.PickupEntPacket;
+import atomicstryker.minions.common.network.RequestXPSettingPacket;
+import atomicstryker.minions.common.network.SoundPacket;
+import atomicstryker.minions.common.network.StripminePacket;
+import atomicstryker.minions.common.network.UnsummonPacket;
 
 import com.google.common.collect.Lists;
 
@@ -71,6 +86,8 @@ public class MinionsCore
     
     @Instance(value = "AS_Minions")
     public static MinionsCore instance;
+    
+    public NetworkHelper networkHelper;
 	
 	private long firstBootTime = System.currentTimeMillis();
 	private boolean hasBooted;
@@ -113,7 +130,11 @@ public class MinionsCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        PacketDispatcher.init("AS_M", new ClientPacketHandler(), new ServerPacketHandler());
+        networkHelper =
+                new NetworkHelper("AS_M", AssignChestPacket.class, ChopTreesPacket.class, CustomDigPacket.class, DigOreVeinPacket.class,
+                        DigStairwellPacket.class, DropAllPacket.class, EvilDeedPacket.class, FollowPacket.class, HasMinionsPacket.class,
+                        HaxPacket.class, LightningPacket.class, MinionMountPacket.class, MinionSpawnPacket.class, MovetoPacket.class,
+                        PickupEntPacket.class, RequestXPSettingPacket.class, SoundPacket.class, StripminePacket.class, UnsummonPacket.class);
         
         Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
         try
@@ -172,12 +193,10 @@ public class MinionsCore
         if (!event.world.isRemote && event.entity instanceof EntityPlayer)
         {
             EntityPlayer p = (EntityPlayer) event.entity;
-            Object[] toSend = {MinionsCore.instance.evilDeedXPCost};
-            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.REQUESTXPSETTING.ordinal(), toSend), p);
+            networkHelper.sendPacketToPlayer(new RequestXPSettingPacket(evilDeedXPCost), p);
             
             MinionsCore.instance.prepareMinionHolder(p.getGameProfile().getName());
-            Object[] toSend2 = {MinionsCore.instance.hasPlayerMinions(p) ? 1 : 0, MinionsCore.instance.hasAllMinions(p) ? 1 : 0};
-            PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend2), p);
+            networkHelper.sendPacketToPlayer(new HasMinionsPacket(MinionsCore.instance.hasPlayerMinions(p) ? 1 : 0, MinionsCore.instance.hasAllMinions(p) ? 1 : 0), p);
         }
     }
 
@@ -649,8 +668,7 @@ public class MinionsCore
             minion.setDead();
         }
     	
-        Object[] toSend = { Integer.valueOf(0), Integer.valueOf(0) };
-    	PacketDispatcher.sendPacketToPlayer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), toSend), playerEnt);
+        networkHelper.sendPacketToPlayer(new HasMinionsPacket(0, 0), playerEnt);
     }
     
     public void orderMinionsToDigCustomSpace(EntityPlayer playerEnt, int x, int y, int z, int XZsize, int ySize)
@@ -732,15 +750,6 @@ public class MinionsCore
             onTick(tick.world);
         }
     }
-    
-    public class ServerPacketHandler implements IPacketHandler
-    {
-        @Override
-        public void onPacketData(int packetType, WrappedPacket packet, EntityPlayer player)
-        {
-            MinionsServer.onPacketData(packetType, packet, player);
-        }
-    }
 
     public final static String getPacketChannel()
     {
@@ -790,10 +799,8 @@ public class MinionsCore
         @Override
         public void ticketsLoaded(List<Ticket> tickets, World world)
         {
-            System.out.println("Minions Chunkloader ticketsLoaded, tickets: "+tickets);
             for (Ticket t : tickets)
             {
-                System.out.println("Minions Chunkloader ticketsLoaded, getEntity(): "+t.getEntity());
                 for (ChunkCoordIntPair c : t.getChunkList())
                 {
                     // just load the chunk. The minion entities inside will re-register their own tickets

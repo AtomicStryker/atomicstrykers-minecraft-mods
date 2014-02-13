@@ -11,9 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.common.EvilDeed;
 import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.PacketType;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.minions.common.network.EvilDeedPacket;
 
 /**
  * Evil Deed selection menu
@@ -102,9 +100,8 @@ public class GuiDeedMenu extends GuiScreen
         			fadeState = 1;
         			fadeOutfadeInUnderWay = false;
         			timeFadeStart = 0L;
-
-        			Object[] toSend = {mc.thePlayer.getGameProfile().getName()};
-        			PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.EVILDEEDDONE.ordinal(), toSend)); // evildeed call
+        			
+        			MinionsCore.instance.networkHelper.sendPacketToServer(new EvilDeedPacket(mc.thePlayer.getCommandSenderName()));
 
         			this.mc.displayGuiScreen((GuiScreen)null);
         			//System.out.println("Unfade finished, destroyed menu!");
