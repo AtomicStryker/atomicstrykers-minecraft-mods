@@ -15,13 +15,13 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 import org.lwjgl.input.Keyboard;
 
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.Settings_RopePlus;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
+import atomicstryker.ropesplus.common.network.ArrowChoicePacket;
+import atomicstryker.ropesplus.common.network.ZiplinePacket;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -59,7 +59,7 @@ public class RopesPlusClient
     private final KeyBinding swapForward;
     private final KeyBinding swapBackward;
     private final KeyBinding keyToggle;
-    
+
     private int lastSelectedSlot;
 
     public RopesPlusClient()
@@ -222,8 +222,7 @@ public class RopesPlusClient
         if (toggleEnabled)
         {
             arrowCount = -1;
-            Object[] toSend = { selectedSlot };
-            PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 1, toSend));   
+            RopesPlusCore.instance.networkHelper.sendPacketToServer(new ArrowChoicePacket(mc.thePlayer.getCommandSenderName(), selectedSlot));
         }
     }
 
@@ -290,12 +289,13 @@ public class RopesPlusClient
                         s = s.concat("x" + arrowCount);
                     }
                     mc.fontRenderer.drawStringWithShadow(s, guiStringX, guiStringY, 0x2F96EB);
-                    mc.fontRenderer.drawStringWithShadow(
-                            "Swap arrows with " + Keyboard.getKeyName(swapForward.getKeyCode()) + ", "
-                                    + Keyboard.getKeyName(swapBackward.getKeyCode()) + ", toggle with "
-                                    + Keyboard.getKeyName(keyToggle.getKeyCode()), guiStringX, guiStringY + 10, 0xffffff);
+                    mc.fontRenderer
+                            .drawStringWithShadow(
+                                    "Swap arrows with " + Keyboard.getKeyName(swapForward.getKeyCode()) + ", "
+                                            + Keyboard.getKeyName(swapBackward.getKeyCode()) + ", toggle with "
+                                            + Keyboard.getKeyName(keyToggle.getKeyCode()), guiStringX, guiStringY + 10, 0xffffff);
                 }
-                
+
                 if (System.currentTimeMillis() > keysBlockedUntil)
                 {
                     if (swapForward.getIsKeyPressed())
@@ -342,8 +342,8 @@ public class RopesPlusClient
             {
                 if (mc.gameSettings.keyBindUseItem.getIsKeyPressed() && lastZipLineLength > 0.2)
                 {
-                    Object[] toSend = { onZipLine.getEntityId(), lastZipLineLength };
-                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
+                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getCommandSenderName(), onZipLine
+                            .getEntityId(), lastZipLineLength));
                     onZipLine = null;
                 }
                 else if (System.currentTimeMillis() > timeNextZippingUpdate)
@@ -358,8 +358,8 @@ public class RopesPlusClient
                     if (++zipTicker == 10)
                     {
                         zipTicker = 0;
-                        Object[] toSend = { onZipLine.getEntityId(), lastZipLineLength };
-                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 7, toSend));
+                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getCommandSenderName(), onZipLine
+                                .getEntityId(), lastZipLineLength));
                     }
 
                     if (lastZipLineLength > .9F)

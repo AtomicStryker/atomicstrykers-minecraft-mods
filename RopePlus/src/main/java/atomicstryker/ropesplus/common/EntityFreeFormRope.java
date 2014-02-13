@@ -8,8 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.ropesplus.common.network.HookshotPullPacket;
+import atomicstryker.ropesplus.common.network.SoundPacket;
 
 public class EntityFreeFormRope extends Entity
 {
@@ -227,8 +227,7 @@ public class EntityFreeFormRope extends Entity
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
                         RopesPlusCore.proxy.setShouldHookShotPull(0f);
-                        Object[] toSend = { getEntityId() };
-                        PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 5, toSend));
+                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new HookshotPullPacket(shooter.getCommandSenderName(), getEntityId()));
                     }
                     else
                     {
@@ -266,13 +265,11 @@ public class EntityFreeFormRope extends Entity
                             if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
                             {
                                 jungleCall = true;
-                                Object[] toSend = { "ropesplus:jungleking" };
-                                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 8, toSend));
+                                RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:jungleking"));
                             }
                             else
                             {
-                                Object[] toSend = { "ropesplus:ropetension" };
-                                PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket("AS_Ropes", 8, toSend));
+                                RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:ropetension"));
                             }
                         }
                         

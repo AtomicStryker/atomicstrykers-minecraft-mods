@@ -1,4 +1,4 @@
-package atomicstryker.network;
+package atomicstryker.ropesplus.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
