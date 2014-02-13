@@ -12,7 +12,8 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.necromancy.network.TearShotPacket;
+import atomicstryker.necromancy.network.NetworkHelper;
 
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.command.CommandMinion;
@@ -71,6 +72,8 @@ public class Necromancy
 
     @Instance(ReferenceNecromancy.MOD_ID)
     public static Necromancy instance;
+    
+    public NetworkHelper networkHelper;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -79,8 +82,9 @@ public class Necromancy
         // loggerNecromancy.setParent(FMLLog.getLogger());
 
         ConfigurationNecromancy.initProperties(event);
-
-        PacketDispatcher.init("NecromancyMod", packetHandler, packetHandler);
+        
+        networkHelper = new NetworkHelper("NecromancyMod", TearShotPacket.class);
+        
         NetworkRegistry.INSTANCE.registerGuiHandler(this, packetHandler);
 
         FMLCommonHandler.instance().bus().register(eventHandler);

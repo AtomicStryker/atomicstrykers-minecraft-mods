@@ -6,9 +6,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.input.Keyboard;
 
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
+import atomicstryker.necromancy.network.TearShotPacket;
 
+import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.entity.EntityTear;
 import com.sirolf2009.necromancy.entity.EntityTearBlood;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
@@ -38,7 +38,7 @@ public class KeyHandlerNecro
     public void onTick(ClientTickEvent event)
     {
         EntityPlayer player = mc.thePlayer;
-        if (player != null && player.isEntityAlive() &&  event.phase == Phase.END)
+        if (player != null && player.isEntityAlive() && event.phase == Phase.END)
         {
             if (mc.currentScreen == null && player.inventory.armorInventory[3] != null
                     && player.inventory.armorInventory[3].getItem() == RegistryNecromancyItems.isaacsHead)
@@ -46,17 +46,17 @@ public class KeyHandlerNecro
                 if (tearNormal.getIsKeyPressed() && lastShotNormal + 1200 < System.currentTimeMillis())
                 {
                     EntityTear tear = new EntityTear(player.worldObj, player, 2);
-                    Object[] toSend = { false, tear.posX, tear.posX, tear.posZ, tear.motionX, tear.motionY, tear.motionZ };
-                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(3, toSend));
-                    //player.worldObj.spawnEntityInWorld(tearNormal);
+                    Necromancy.instance.networkHelper.sendPacketToServer(new TearShotPacket(player.getCommandSenderName(), false, tear.posX,
+                            tear.posX, tear.posZ, tear.motionX, tear.motionY, tear.motionZ));
+                    // player.worldObj.spawnEntityInWorld(tearNormal);
                     lastShotNormal = System.currentTimeMillis();
                 }
                 if (tearBlood.getIsKeyPressed() && lastShotBlood + 1900 < System.currentTimeMillis())
                 {
                     EntityTearBlood tear = new EntityTearBlood(player.worldObj, player, 2);
-                    Object[] toSend = { true, tear.posX, tear.posX, tear.posZ, tear.motionX, tear.motionY, tear.motionZ };
-                    PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(3, toSend));
-                    //player.worldObj.spawnEntityInWorld(tearBlood);
+                    Necromancy.instance.networkHelper.sendPacketToServer(new TearShotPacket(player.getCommandSenderName(), true, tear.posX,
+                            tear.posX, tear.posZ, tear.motionX, tear.motionY, tear.motionZ));
+                    // player.worldObj.spawnEntityInWorld(tearBlood);
                     lastShotBlood = System.currentTimeMillis();
                 }
             }

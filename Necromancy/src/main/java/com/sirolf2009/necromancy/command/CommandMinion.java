@@ -11,9 +11,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
-import atomicstryker.network.ForgePacketWrapper;
-import atomicstryker.network.PacketDispatcher;
-import atomicstryker.network.WrappedPacket;
 
 public class CommandMinion extends CommandBase
 {
@@ -31,19 +28,16 @@ public class CommandMinion extends CommandBase
         {
             EntityPlayerMP player = getPlayer(var1, var1.getCommandSenderName());
             NBTTagCompound nbt = player.getEntityData();
-            WrappedPacket packet = null;
             if (var2[0].equals("set"))
             {
                 if (var2[1].equals("aggressive"))
                 {
                     nbt.setBoolean("aggressive", true);
-                    packet = ForgePacketWrapper.createPacket(0, new Object[] { Integer.valueOf(1) });
                     var1.addChatMessage(new ChatComponentText("Minions are set to aggressive"));
                 }
                 else if (var2[1].equals("passive"))
                 {
                     nbt.setBoolean("aggressive", false);
-                    packet = ForgePacketWrapper.createPacket(0, new Object[] { Integer.valueOf(0) });
                     var1.addChatMessage(new ChatComponentText("Minions are set to passive"));
                 }
                 else
@@ -52,18 +46,15 @@ public class CommandMinion extends CommandBase
             else if (var2[0].equals("friend"))
             {
                 nbt.setString(var2[1], "friend");
-                packet = ForgePacketWrapper.createPacket(1, new Object[] { getPlayer(var1, var2[1]).getEntityId() });
                 var1.addChatMessage(new ChatComponentText(var2[1] + " is now a friend"));
             }
             else if (var2[0].equals("enemy"))
             {
                 nbt.setString(var2[1], "enemy");
-                packet = ForgePacketWrapper.createPacket(2, new Object[] { getPlayer(var1, var2[1]).getEntityId() });
                 var1.addChatMessage(new ChatComponentText(var2[1] + " is now an enemy"));
             }
             else
                 throw new WrongUsageException("minion", new Object[0]);
-            PacketDispatcher.sendPacketToAllPlayers(packet);
         }
     }
 
