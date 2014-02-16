@@ -107,9 +107,13 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         chunkLoadingTicket = ForgeChunkManager.requestTicket(MinionsCore.instance, worldObj, Type.ENTITY);
         if (chunkLoadingTicket != null)
         {
-            chunkLoadingTicket.bindEntity(this);
             lastChunk = worldObj.getChunkFromBlockCoords((int) posX, (int) posZ);
+            chunkLoadingTicket.bindEntity(this);
             ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+        }
+        else
+        {
+            System.err.println("Minions Minion "+this+" did not get a ForgeChunkManager ticket???");
         }
     }
 
@@ -124,10 +128,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(12, new Integer(0)); // boolean isWorking for
-                                                        // SwingProgress and
-                                                        // Sounds, set by
-                                                        // AS_BlockTask
+        /* boolean isWorking for SwingProgress and Sounds, set by AS_BlockTask */
+        this.dataWatcher.addObject(12, new Integer(0));
         this.dataWatcher.addObject(13, new Integer(0)); // x blocktask
         this.dataWatcher.addObject(14, new Integer(0)); // y blocktask
         this.dataWatcher.addObject(15, new Integer(0)); // z blocktask
@@ -284,11 +286,14 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         super.onUpdate();
 
         Chunk curChunk = worldObj.getChunkFromBlockCoords((int) posX, (int) posZ);
-        if (curChunk.xPosition != lastChunk.xPosition || curChunk.zPosition != lastChunk.zPosition)
+        if (chunkLoadingTicket != null && curChunk != null && lastChunk != null)
         {
-            ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
-            lastChunk = curChunk;
-            ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+            if (curChunk.xPosition != lastChunk.xPosition || curChunk.zPosition != lastChunk.zPosition)
+            {
+                ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+                lastChunk = curChunk;
+                ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+            }
         }
 
         if (this.riddenByEntity != null && this.riddenByEntity.equals(master) && this.getNavigator().noPath())
