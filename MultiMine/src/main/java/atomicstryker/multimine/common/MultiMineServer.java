@@ -75,7 +75,7 @@ public class MultiMineServer
     {
         serverInstance = FMLCommonHandler.instance().getMinecraftServerInstance();
         int dimension = player.dimension;
-        System.out.println("multi mine client sent progress packet from dimension " + dim + ", server says its dimension " + dimension);
+        MultiMine.instance().debugPrint("multi mine client sent progress packet from dimension " + dim + ", server says its dimension " + dimension);
 
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
 
@@ -93,28 +93,23 @@ public class MultiMineServer
             {
                 iterBlock.advanceProgress();
                 iterBlock.setLastTimeMined(System.currentTimeMillis() + MultiMine.instance().getInitialBlockRegenDelay());
-                // System.out.println("Server advancing partial block at: ["+x+"|"+y+"|"+z+"], progress now: "+iterBlock.getProgress());
+                MultiMine.instance().debugPrint("Server advancing partial block at: ["+x+"|"+y+"|"+z+"], progress now: "+iterBlock.getProgress());
 
                 // send the newly advanced partialblock to all relevant players
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock);
 
                 if (iterBlock.isFinished())
                 {
-                    // System.out.println("Server finishing partial block at: ["+x+"|"+y+"|"+z+"]");
+                    MultiMine.instance().debugPrint("Server finishing partial block at: ["+x+"|"+y+"|"+z+"]");
                     // and if its done, destroy the world block
                     player.worldObj.destroyBlockInWorldPartially(player.getEntityId(), x, y, z, -1);
                     Block block = player.worldObj.getBlock(x, y, z);
-
-                    S23PacketBlockChange packet = new S23PacketBlockChange(x, y, z, player.worldObj);
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager()
-                            .sendPacketToAllPlayersInDimension(packet, player.dimension);
 
                     if (block != Blocks.air)
                     {
                         int meta = player.worldObj.getBlockMetadata(x, y, z);
                         if (block.removedByPlayer(player.worldObj, player, x, y, z))
                         {
-
                             BlockEvent.BreakEvent event =
                                     ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
                             if (!event.isCanceled())
@@ -125,6 +120,10 @@ public class MultiMineServer
                                 {
                                     block.harvestBlock(player.worldObj, player, x, y, z, meta);
                                 }
+                                
+                                S23PacketBlockChange packet = new S23PacketBlockChange(x, y, z, player.worldObj);
+                                FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager()
+                                        .sendPacketToAllPlayersInDimension(packet, player.dimension);
                             }
                         }
                     }

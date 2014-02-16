@@ -48,7 +48,7 @@ public class MultiMineClient
         lastBlockCompletion = 0F;
         lastCloudTickReading = 0;
         
-        System.out.println("Multi Mine about to hack vanilla RenderMap");
+        MultiMine.instance().debugPrint("Multi Mine about to hack vanilla RenderMap");
         for (Field f : RenderGlobal.class.getDeclaredFields())
         {
             if (f.getType().equals(Map.class))
@@ -57,7 +57,7 @@ public class MultiMineClient
                 try
                 {
                     vanillaDestroyBlockProgressMap = (Map) f.get(mc.renderGlobal);
-                    System.out.println("Multi Mine vanilla RenderMap invasion successful, field: "+f.getName());
+                    MultiMine.instance().debugPrint("Multi Mine vanilla RenderMap invasion successful, field: "+f.getName());
                     break;
                 }
                 catch (Exception e)
@@ -84,75 +84,63 @@ public class MultiMineClient
     public float eventPlayerDamageBlock(int x, int y, int z, float blockCompletion)
     {
         thePlayer = FMLClientHandler.instance().getClient().thePlayer;
-        if (blockCompletion < 1.0f) // do not trigger on finished blocks
+        boolean partiallyMined = false;
+        // see if we have multimine completion cached somewhere
+        for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
         {
-            boolean partiallyMined = false;
-            // see if we have multimine completion cached somewhere
-            for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
+            if (partiallyMinedBlocksArray[i] != null
+            && partiallyMinedBlocksArray[i].getX() == x
+            && partiallyMinedBlocksArray[i].getY() == y
+            && partiallyMinedBlocksArray[i].getZ() == z)
             {
-                if (partiallyMinedBlocksArray[i] != null
-                && partiallyMinedBlocksArray[i].getX() == x
-                && partiallyMinedBlocksArray[i].getY() == y
-                && partiallyMinedBlocksArray[i].getZ() == z)
+                float savedProgress = partiallyMinedBlocksArray[i].getProgress() * 0.1F;
+                // System.out.println("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
+                if (savedProgress > blockCompletion)
                 {
-                    float savedProgress = partiallyMinedBlocksArray[i].getProgress() * 0.1F;
-                    // System.out.println("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
-                    if (savedProgress > blockCompletion)
-                    {
-                        blockCompletion = savedProgress;
-                        lastBlockCompletion = savedProgress;
-                        partiallyMined = true;
-                    }
-                    break;
+                    blockCompletion = savedProgress;
+                    lastBlockCompletion = savedProgress;
+                    partiallyMined = true;
                 }
+                break;
+            }
+        }
+        
+        if (!partiallyMined)
+        {
+            // edge state optimization
+            if (blockCompletion > 0.99f)
+            {
+                blockCompletion = 1.0f;
             }
             
-            if (!partiallyMined)
+            if (curBlockX != x || curBlockY != y || curBlockZ != z)
             {
-                // edge state optimization
-                if (blockCompletion > 0.99f)
+                // case block change, check one last time for partial mining
+                while (blockCompletion >= lastBlockCompletion+0.1f)
                 {
-                    blockCompletion = 1.0f;
+                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
+                    lastBlockCompletion += 0.1f;
                 }
                 
-                if (curBlockX != x || curBlockY != y || curBlockZ != z)
-                {
-                    // case block change, check one last time for partial mining
-                    while (blockCompletion >= lastBlockCompletion+0.1f)
-                    {
-                        MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
-                        lastBlockCompletion += 0.1f;
-                    }
-                    
-                    // setup new block values
-                    curBlockX = x;
-                    curBlockY = y;
-                    curBlockZ = z;
-                    lastBlockCompletion = 0f;
-                }
-                else if (blockCompletion+0.1f >= lastBlockCompletion)
-                {
-                    System.out.println("Client has block progress for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion+", lastCompletion: "+lastBlockCompletion);
-                    // case same block, and mining has progressed
-                    while (blockCompletion >= lastBlockCompletion+0.1f)
-                    {
-                        MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
-                        System.out.println("Sent one 10% block progress packet to server...");
-                        lastBlockCompletion += 0.1f;
-                    }
-                }
+                // setup new block values
+                curBlockX = x;
+                curBlockY = y;
+                curBlockZ = z;
+                lastBlockCompletion = 0f;
             }
-            
-            if (blockCompletion == 1.0f)
+            else if (blockCompletion+0.1f >= lastBlockCompletion)
             {
-                // upon finising a block, reset the cached value here
-                lastBlockCompletion = 0F;
+                MultiMine.instance().debugPrint("Client has block progress for: ["+x+"|"+y+"|"+z+"], actual completion: "+blockCompletion+", lastCompletion: "+lastBlockCompletion);
+                // case same block, and mining has progressed
+                while (blockCompletion >= lastBlockCompletion+0.1f)
+                {
+                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
+                    MultiMine.instance().debugPrint("Sent one 10% block progress packet to server...");
+                    lastBlockCompletion += 0.1f;
+                }
             }
         }
-        else
-        {
-            lastBlockCompletion = 0F;
-        }
+        
         return blockCompletion;
     }
     
@@ -191,7 +179,7 @@ public class MultiMineClient
             return;
         }
         
-        System.out.println("Client received partial Block packet for: ["+x+"|"+y+"|"+z+"], progress now: "+progress);
+        MultiMine.instance().debugPrint("Client received partial Block packet for: ["+x+"|"+y+"|"+z+"], progress now: "+progress);
         updateCloudTickReading();
         
         int dimension = thePlayer.dimension;

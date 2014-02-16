@@ -23,7 +23,7 @@ import cpw.mods.fml.common.registry.GameData;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.6")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.7")
 public class MultiMine
 {
     @Instance("AS_MultiMine")
@@ -36,6 +36,7 @@ public class MultiMine
     private HashSet<Block> excludedBlockSet;
     private String excludedItemsString;
     private HashSet<Item> excludedItemSet;
+    public boolean debugMode;
     
     @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
     public static CommonProxy proxy;
@@ -56,6 +57,8 @@ public class MultiMine
         
         excludedBlocksString = config.get("general", "Excluded Block IDs", "sapling,tallgrass,yellow_flower,red_flower,brown_mushroom,red_mushroom,torch,fire,redstone_wire,wheat,wooden_door,lever,unlit_redstone_torch,redstone_torch,reeds,unpowered_repeater,powered_repeater,trapdoor,pumpkin_stem,melon_stem,waterlily,tripwire_hook,tripwire,carrots,potatoes").getString();
         excludedItemsString = config.get("general", "Excluded Item IDs", "wooden_hoe,stone_hoe,iron_hoe,diamond_hoe,golden_hoe,shears").getString();
+        
+        debugMode = config.get("general", "debugMode", false, "Tons of debug printing. Only enable if really needed.").getBoolean(false);
         
         config.save();
         
@@ -145,5 +148,13 @@ public class MultiMine
     public boolean getIsExcludedItem(ItemStack itemStack)
     {
         return itemStack != null && excludedItemSet.contains(itemStack.getItem());
+    }
+    
+    public void debugPrint(String s)
+    {
+        if (debugMode)
+        {
+            System.out.println(s);
+        }
     }
 }

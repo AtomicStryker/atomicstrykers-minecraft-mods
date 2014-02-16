@@ -37,6 +37,7 @@ public class PartialBlockPacket implements IPacket
         bytes.writeInt(x);
         bytes.writeInt(y);
         bytes.writeInt(z);
+        bytes.writeInt(value);
     }
 
     @Override
