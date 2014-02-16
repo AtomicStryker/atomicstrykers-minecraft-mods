@@ -9,6 +9,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 
 import com.sirolf2009.necromancy.Necromancy;
 
@@ -32,7 +33,7 @@ public class ItemOrgans extends ItemFood
     {
         if (par1ItemStack.getItemDamage() > names.length)
             return "Invalid Item, please destroy";
-        return new StringBuilder().append("").append(names[par1ItemStack.getItemDamageForDisplay()]).toString();
+        return StatCollector.translateToLocal("NecromancyorganItem"+par1ItemStack.getItemDamageForDisplay());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

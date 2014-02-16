@@ -1,5 +1,6 @@
 1.6.0
 - updated to MC 1.7.2, removed Thaumcraft parts for now
+- fixed a whole army of bugs
 - added Iron Golem to Necro Mobs
 
 1.5

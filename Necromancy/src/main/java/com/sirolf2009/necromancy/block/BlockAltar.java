@@ -53,7 +53,6 @@ public class BlockAltar extends BlockContainer
             for (int var8 = 0; var8 < var7.getSizeInventory(); ++var8)
             {
                 ItemStack var9 = var7.getStackInSlot(var8);
-                log(var9);
 
                 if (var9 != null)
                 {
@@ -128,11 +127,6 @@ public class BlockAltar extends BlockContainer
     public boolean isOpaqueCube()
     {
         return false;
-    }
-
-    public void log(Object msg)
-    {
-        System.out.println(BlockAltar.class + "	" + msg);
     }
 
     @Override

@@ -55,11 +55,9 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
             renderAltar((TileEntityAltar) tileentity, d, d1, d2, f);
             TileEntityAltar altar = (TileEntityAltar) tileentity;
 
-            EntityMinion entity = altar.getMinion();
-
-            if (altar.hasContainerChanged())
+            EntityMinion entity = altar.getPreviewEntity();
+            if (altar.hasAltarChanged())
             {
-                entity = (EntityMinion) altar.getPreviewEntity();
                 entity.getModel().updateModel(entity, true);
             }
 
@@ -256,16 +254,16 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
         switch (type)
         {
         case ENTITY:
-            renderAltar(1.5F, 1F, 0.5F, 1F, 1F, 180F, 1);
+            renderAltarItem(1.5F, 1F, 0.5F, 1F, 1F, 180F, 1);
             break;
         case EQUIPPED:
-            renderAltar(0.5F, 1F, 0.5F, 1F, 250F, 180F, 1);
+            renderAltarItem(0.5F, 1F, 0.5F, 1F, 250F, 180F, 1);
             break;
         case EQUIPPED_FIRST_PERSON:
-            renderAltar(0.5F, 1F, 0.5F, 1F, 250F, 180F, 1);
+            renderAltarItem(0.5F, 1F, 0.5F, 1F, 250F, 180F, 1);
             break;
         case INVENTORY:
-            renderAltar(-0.5F, 0.5F, 0, 1F, -180F, 180F, 0.55F);
+            renderAltarItem(-0.5F, 0.5F, 0, 1F, -180F, 180F, 0.55F);
             break;
         default:
             break;
@@ -273,7 +271,7 @@ public class TileEntityAltarRenderer extends TileEntitySpecialRenderer implement
 
     }
 
-    private void renderAltar(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale)
+    private void renderAltarItem(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale)
     {
         Necromancy.proxy.bindTexture(ReferenceNecromancy.TEXTURES_MODELS_ALTAR);
         GL11.glPushMatrix(); // start

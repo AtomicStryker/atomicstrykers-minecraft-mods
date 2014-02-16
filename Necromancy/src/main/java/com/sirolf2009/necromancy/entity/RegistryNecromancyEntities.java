@@ -14,7 +14,6 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntityCreeper;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityEnderman;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityIronGolem;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityIsaac;
-import com.sirolf2009.necromancy.entity.necroapi.NecroEntityMooshroom;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityPig;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityPigZombie;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntitySheep;
@@ -23,6 +22,7 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntitySpider;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntitySquid;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityVillager;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityWitch;
+import com.sirolf2009.necromancy.entity.necroapi.NecroEntityWolf;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityZombie;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
@@ -89,7 +89,6 @@ public class RegistryNecromancyEntities
         NecroEntityRegistry.registerEntity(new NecroEntityEnderman());
         NecroEntityRegistry.registerEntity(new NecroEntityIronGolem());
         NecroEntityRegistry.registerEntity(new NecroEntityIsaac());
-        NecroEntityRegistry.registerEntity(new NecroEntityMooshroom());
         NecroEntityRegistry.registerEntity(new NecroEntityPig());
         NecroEntityRegistry.registerEntity(new NecroEntityPigZombie());
         NecroEntityRegistry.registerEntity(new NecroEntitySheep());
@@ -97,6 +96,7 @@ public class RegistryNecromancyEntities
         NecroEntityRegistry.registerEntity(new NecroEntitySpider());
         NecroEntityRegistry.registerEntity(new NecroEntitySquid());
         NecroEntityRegistry.registerEntity(new NecroEntityVillager());
+        NecroEntityRegistry.registerEntity(new NecroEntityWolf());
         NecroEntityRegistry.registerEntity(new NecroEntityWitch());
         NecroEntityRegistry.registerEntity(new NecroEntityZombie());
     }

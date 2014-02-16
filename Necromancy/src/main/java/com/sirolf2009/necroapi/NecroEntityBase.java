@@ -67,6 +67,8 @@ public abstract class NecroEntityBase
     public BodyPart[] armRight;
     /** Your entities legs */
     public BodyPart[] legs;
+    
+    private boolean modelInit;
 
     public NecroEntityBase(String mobName)
     {
@@ -89,6 +91,7 @@ public abstract class NecroEntityBase
             System.err.println(mobName + " could not be registered, the necromancy mod is not installed");
             isNecromancyInstalled = false;
         }
+        modelInit = false;
     }
 
     /** Define your recipes here */
@@ -190,11 +193,15 @@ public abstract class NecroEntityBase
      */
     public NecroEntityBase updateParts(ModelBase model)
     {
-        head = initHead(model);
-        torso = initTorso(model);
-        armLeft = initArmLeft(model);
-        armRight = initArmRight(model);
-        legs = initLegs(model);
+        if (!modelInit)
+        {
+            head = initHead(model);
+            torso = initTorso(model);
+            armLeft = initArmLeft(model);
+            armRight = initArmRight(model);
+            legs = initLegs(model);
+            modelInit = true;
+        }
         return this;
     }
 

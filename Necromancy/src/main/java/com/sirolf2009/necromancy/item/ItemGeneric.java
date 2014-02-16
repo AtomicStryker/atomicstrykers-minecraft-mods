@@ -10,6 +10,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.Necromancy;
@@ -69,8 +70,7 @@ public class ItemGeneric extends Item
     @Override
     public String getItemStackDisplayName(ItemStack par1ItemStack)
     {
-        // TODO translation file support
-        return new StringBuilder().append("").append(names[par1ItemStack.getItemDamageForDisplay()]).toString();
+        return StatCollector.translateToLocal("NecromancygenericItem"+par1ItemStack.getItemDamageForDisplay());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

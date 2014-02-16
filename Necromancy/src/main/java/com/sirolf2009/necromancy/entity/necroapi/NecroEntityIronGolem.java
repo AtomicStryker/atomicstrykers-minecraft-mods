@@ -7,10 +7,10 @@ import net.minecraft.util.ResourceLocation;
 
 import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
-import com.sirolf2009.necroapi.NecroEntityBase;
+import com.sirolf2009.necroapi.NecroEntityBiped;
 import com.sirolf2009.necromancy.item.ItemBodyPart;
 
-public class NecroEntityIronGolem extends NecroEntityBase
+public class NecroEntityIronGolem extends NecroEntityBiped
 {
 
     public NecroEntityIronGolem()

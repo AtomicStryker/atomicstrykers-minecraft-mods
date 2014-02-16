@@ -15,8 +15,6 @@ public class GuiAltar extends GuiContainer
     public GuiAltar(InventoryPlayer par1InventoryPlayer, TileEntityAltar par2TileEntityAltar)
     {
         super(new ContainerAltar(par1InventoryPlayer, par2TileEntityAltar));
-        altar = par2TileEntityAltar;
-        altar.getPreviewEntity();
     }
 
     @Override
@@ -35,6 +33,4 @@ public class GuiAltar extends GuiContainer
         int var6 = (height - ySize) / 2;
         drawTexturedModalRect(var5, var6, 0, 0, xSize, ySize);
     }
-
-    private TileEntityAltar altar;
 }

@@ -20,7 +20,7 @@ public class ItemIsaacsHead extends ItemArmor
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type)
     {
-        return "/armor/Isaac_1.png";
+        return "necromancy:textures/models/armor/isaacarmor.png";
     }
 
     @Override

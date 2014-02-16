@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import com.sirolf2009.necroapi.BodyPart;
@@ -55,22 +56,32 @@ public class NecroEntitySquid extends NecroEntityBase
     @Override
     public BodyPart[] initLegs(ModelBase model)
     {
-        float[] torsoPos = { -4, -7, -3 };
-        BodyPart[] bodyParts = new BodyPart[8];
-        for (int i = 0; i < bodyParts.length; ++i)
-        {
-            bodyParts[i] = new BodyPart(this, torsoPos, model, 48, 0);
-            double d0 = i * Math.PI * 2.0D / bodyParts.length;
-            float f = (float) Math.cos(d0) * 5.0F;
-            float f1 = (float) Math.sin(d0) * 5.0F;
-            bodyParts[i].addBox(-1.0F, -10.0F, -1.0F, 2, 18, 2);
-            bodyParts[i].rotationPointX = f;
-            bodyParts[i].rotationPointZ = f1;
-            bodyParts[i].rotationPointY = 31 + -16;
-            d0 = i * Math.PI * -2.0D / bodyParts.length + Math.PI / 2D;
-            bodyParts[i].rotateAngleY = (float) d0;
-        }
-        return bodyParts;
+        float[] torsoPos = { -4F, 6F, 3F };
+        BodyPart leg1 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg1.addBox(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg1.setRotationPoint(-4.0F, 15.0F, 2.0F);
+        BodyPart leg2 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg2.addBox(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg2.setRotationPoint(4.0F, 15.0F, 2.0F);
+        BodyPart leg3 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg3.addBox(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg3.setRotationPoint(-4.0F, 15.0F, 1.0F);
+        BodyPart leg4 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg4.addBox(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg4.setRotationPoint(4.0F, 15.0F, 1.0F);
+        BodyPart leg5 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg5.addBox(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg5.setRotationPoint(-4.0F, 15.0F, 0.0F);
+        BodyPart leg6 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg6.addBox(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg6.setRotationPoint(4.0F, 15.0F, 0.0F);
+        BodyPart leg7 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg7.addBox(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg7.setRotationPoint(-4.0F, 15.0F, -1.0F);
+        BodyPart leg8 = new BodyPart(this, torsoPos, model, 18, 0);
+        leg8.addBox(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
+        leg8.setRotationPoint(4.0F, 15.0F, -1.0F);
+        return new BodyPart[] { leg1, leg2, leg3, leg4, leg5, leg6, leg7, leg8 };
     }
 
     @Override
@@ -78,10 +89,49 @@ public class NecroEntitySquid extends NecroEntityBase
     {
         if (location == BodyPartLocation.Legs)
         {
-            for (BodyPart parts : part)
-            {
-                parts.rotateAngleX = par3;
-            }
+            float var8 = (float) Math.PI / 4F;
+            part[0].rotateAngleZ = -var8;
+            part[1].rotateAngleZ = var8;
+            part[2].rotateAngleZ = -var8 * 0.74F;
+            part[3].rotateAngleZ = var8 * 0.74F;
+            part[4].rotateAngleZ = -var8 * 0.74F;
+            part[5].rotateAngleZ = var8 * 0.74F;
+            part[6].rotateAngleZ = -var8;
+            part[7].rotateAngleZ = var8;
+            float var9 = -0.0F;
+            float var10 = 0.3926991F;
+            part[0].rotateAngleY = var10 * 2.0F + var9;
+            part[1].rotateAngleY = -var10 * 2.0F - var9;
+            part[2].rotateAngleY = var10 * 1.0F + var9;
+            part[3].rotateAngleY = -var10 * 1.0F - var9;
+            part[4].rotateAngleY = -var10 * 1.0F + var9;
+            part[5].rotateAngleY = var10 * 1.0F - var9;
+            part[6].rotateAngleY = -var10 * 2.0F + var9;
+            part[7].rotateAngleY = var10 * 2.0F - var9;
+            float var11 = -(MathHelper.cos(par1 * 0.6662F * 2.0F + 0.0F) * 0.4F) * par2;
+            float var12 = -(MathHelper.cos(par1 * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * par2;
+            float var13 = -(MathHelper.cos(par1 * 0.6662F * 2.0F + (float) Math.PI / 2F) * 0.4F) * par2;
+            float var14 = -(MathHelper.cos(par1 * 0.6662F * 2.0F + (float) Math.PI * 3F / 2F) * 0.4F) * par2;
+            float var15 = Math.abs(MathHelper.sin(par1 * 0.6662F + 0.0F) * 0.4F) * par2;
+            float var16 = Math.abs(MathHelper.sin(par1 * 0.6662F + (float) Math.PI) * 0.4F) * par2;
+            float var17 = Math.abs(MathHelper.sin(par1 * 0.6662F + (float) Math.PI / 2F) * 0.4F) * par2;
+            float var18 = Math.abs(MathHelper.sin(par1 * 0.6662F + (float) Math.PI * 3F / 2F) * 0.4F) * par2;
+            part[0].rotateAngleY += var11;
+            part[1].rotateAngleY += -var11;
+            part[2].rotateAngleY += var12;
+            part[3].rotateAngleY += -var12;
+            part[4].rotateAngleY += var13;
+            part[5].rotateAngleY += -var13;
+            part[6].rotateAngleY += var14;
+            part[7].rotateAngleY += -var14;
+            part[0].rotateAngleZ += var15;
+            part[1].rotateAngleZ += -var15;
+            part[2].rotateAngleZ += var16;
+            part[3].rotateAngleZ += -var16;
+            part[4].rotateAngleZ += var17;
+            part[5].rotateAngleZ += -var17;
+            part[6].rotateAngleZ += var18;
+            part[7].rotateAngleZ += -var18;
         }
     }
 
@@ -98,7 +148,7 @@ public class NecroEntitySquid extends NecroEntityBase
         }
         else if (location == BodyPartLocation.Legs)
         {
-            addAttributeMods(minion, "Legs", 2.0D, 0D, 0D, 0.7D, 2.0D);
+            addAttributeMods(minion, "Legs", 2.0D, 0D, 0D, 0.7D, 3.0D);
         }
     }
 }

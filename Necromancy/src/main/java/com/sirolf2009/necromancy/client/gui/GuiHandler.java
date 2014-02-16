@@ -1,10 +1,12 @@
 package com.sirolf2009.necromancy.client.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import com.sirolf2009.necromancy.block.BlockAltar;
+import com.sirolf2009.necromancy.block.BlockSewing;
 import com.sirolf2009.necromancy.inventory.ContainerAltar;
+import com.sirolf2009.necromancy.inventory.ContainerSewing;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
 
@@ -14,24 +16,23 @@ public class GuiHandler implements IGuiHandler
 {
 
     @Override
-    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof TileEntityAltar)
-            return new ContainerAltar(player.inventory, (TileEntityAltar) tileEntity);
-        else
-            return null;
+        if (ID == BlockAltar.guiID)
+            return new ContainerAltar(player.inventory, (TileEntityAltar) player.worldObj.getTileEntity(x, y, z));
+        if (ID == BlockSewing.guiID)
+            return new ContainerSewing(player.inventory, player.worldObj.getTileEntity(x, y, z));
+        return null;
     }
 
     @Override
-    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof TileEntityAltar)
-            return new GuiAltar(player.inventory, (TileEntityAltar) tileEntity);
-        if (tileEntity instanceof TileEntitySewing)
-            return new GuiSewing(player.inventory, (TileEntitySewing) tileEntity);
-        else
-            return null;
+        if (ID == BlockAltar.guiID)
+            return new GuiAltar(player.inventory, (TileEntityAltar) player.worldObj.getTileEntity(x, y, z));
+        if (ID == BlockSewing.guiID)
+            return new GuiSewing(player.inventory, (TileEntitySewing) player.worldObj.getTileEntity(x, y, z));
+        return null;
     }
+
 }

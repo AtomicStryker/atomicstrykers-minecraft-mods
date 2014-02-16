@@ -1,16 +1,10 @@
 package com.sirolf2009.necromancy.core.proxy;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fluids.FluidRegistry;
-
-import org.lwjgl.opengl.GL20;
 
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
@@ -26,12 +20,10 @@ import com.sirolf2009.necromancy.client.renderer.RenderIsaac;
 import com.sirolf2009.necromancy.client.renderer.RenderIsaacBlood;
 import com.sirolf2009.necromancy.client.renderer.RenderMinion;
 import com.sirolf2009.necromancy.client.renderer.RenderNightCrawler;
-import com.sirolf2009.necromancy.client.renderer.RenderScent;
 import com.sirolf2009.necromancy.client.renderer.RenderTear;
 import com.sirolf2009.necromancy.client.renderer.RenderTearBlood;
 import com.sirolf2009.necromancy.client.renderer.RenderTeddy;
 import com.sirolf2009.necromancy.client.renderer.tileentity.TileEntityAltarRenderer;
-import com.sirolf2009.necromancy.client.renderer.tileentity.TileEntityScentBurnerRenderer;
 import com.sirolf2009.necromancy.client.renderer.tileentity.TileEntitySewingRenderer;
 import com.sirolf2009.necromancy.core.handler.KeyHandlerNecro;
 import com.sirolf2009.necromancy.entity.EntityIsaacBlood;
@@ -48,7 +40,6 @@ import com.sirolf2009.necromancy.entity.RegistryNecromancyEntities;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 import com.sirolf2009.necromancy.lib.ReferenceNecromancy;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
-import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
 
 import cpw.mods.fml.client.FMLClientHandler;
@@ -60,7 +51,6 @@ import cpw.mods.fml.common.registry.VillagerRegistry;
 public class ClientProxy extends CommonProxy
 {
     public static Minecraft mc;
-    public static int scentProgram;
 
     @Override
     public void preInit()
@@ -85,15 +75,9 @@ public class ClientProxy extends CommonProxy
         
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAltar.class, new TileEntityAltarRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySewing.class, new TileEntitySewingRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityScentBurner.class, new TileEntityScentBurnerRenderer());
-        // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityScent.class,
-        // new RenderScent());
-
-        RenderingRegistry.registerBlockHandler(new RenderScent());
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(RegistryBlocksNecromancy.altar), new TileEntityAltarRenderer());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(RegistryBlocksNecromancy.sewing), new TileEntitySewingRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(RegistryBlocksNecromancy.scentBurner), new TileEntityScentBurnerRenderer());
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.scythe, new ItemScytheRenderer());
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.scytheBone, new ItemScytheBoneRenderer());
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.necronomicon, new ItemNecronomiconRenderer());
@@ -103,58 +87,6 @@ public class ClientProxy extends CommonProxy
 
         VillagerRegistry.instance().registerVillagerSkin(RegistryNecromancyEntities.villagerIDNecro, ReferenceNecromancy.TEXTURES_ENTITIES_NECROMANCER);
         VillagerRegistry.instance().registerVillageTradeHandler(RegistryNecromancyEntities.villagerIDNecro, Necromancy.villageHandler);
-
-        try
-        {
-            int vertShader = loadShader("/assets/necromancy/shaders/scent/scentFragment.shader", GL20.GL_FRAGMENT_SHADER);
-            int fragShader = loadShader("/assets/necromancy/shaders/scent/scentVertex.shader", GL20.GL_VERTEX_SHADER);
-            scentProgram = GL20.glCreateProgram();
-            GL20.glAttachShader(scentProgram, vertShader);
-            GL20.glAttachShader(scentProgram, fragShader);
-            GL20.glLinkProgram(scentProgram);
-            GL20.glValidateProgram(scentProgram);
-        }
-        catch (Exception e1)
-        {
-            e1.printStackTrace();
-            System.exit(-1);
-        }
-    }
-    
-    private int loadShader(String filename, int type)
-    {
-        StringBuilder shaderSource = new StringBuilder();
-        int shaderID = 0;
-
-        try
-        {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(Necromancy.class.getResourceAsStream(filename)));
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-                shaderSource.append(line).append("\n");
-            }
-            reader.close();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Could not read file.");
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
-        shaderID = GL20.glCreateShader(type);
-        GL20.glShaderSource(shaderID, shaderSource);
-        GL20.glCompileShader(shaderID);
-        String s = GL20.glGetShaderInfoLog(shaderID, 1000);
-        if(!s.isEmpty())
-        {
-            System.err.println("Error compiling " + shaderSource);
-            System.err.println(s);
-            System.exit(-1);
-        }
-
-        return shaderID;
     }
     
     @Override

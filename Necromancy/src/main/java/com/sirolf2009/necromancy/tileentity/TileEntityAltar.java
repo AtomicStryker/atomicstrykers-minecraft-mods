@@ -9,7 +9,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 
 import org.apache.logging.log4j.Level;
@@ -27,17 +31,15 @@ import cpw.mods.fml.common.FMLLog;
 
 public class TileEntityAltar extends TileEntity implements IInventory
 {
-    
+
     private ItemStack altarItemStacks[] = new ItemStack[7];
-    private EntityMinion minion;
+    private final EntityMinion minion;
     private ItemStack bodyPartsNew[];
     private ItemStack bodyPartsOld[];
-    public EntityPlayer lastUser;
 
     public TileEntityAltar()
     {
-        EntityMinion minion = new EntityMinion(worldObj);
-        setMinion(minion);
+        minion = new EntityMinion(worldObj);
         bodyPartsNew = new ItemStack[5];
         bodyPartsOld = new ItemStack[5];
     }
@@ -47,13 +49,19 @@ public class TileEntityAltar extends TileEntity implements IInventory
     {
         return true;
     }
-    
+
+    // altar stays rendered when the TE isnt onscreen. thanks AbrarSyed
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return TileEntity.INFINITE_EXTENT_AABB;
+    }
+
     /**
      * Called by BlockAltar
      */
     public void spawn(EntityPlayer user)
     {
-        lastUser = user;
         if (!worldObj.isRemote)
         {
             if (Necromancy.instance.maxSpawn != -1 && user.getEntityData().getInteger("minions") >= Necromancy.instance.maxSpawn)
@@ -110,15 +118,15 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 {
                     types[4] = new BodyPart[] {};
                 }
-                EntityMinion minionTemp = new EntityMinion(worldObj, types, user.getCommandSenderName());
-                minionTemp.setPosition(xCoord, yCoord + 1, zCoord);
-                minionTemp.calculateAttributes();
-                worldObj.spawnEntityInWorld(minionTemp);
-                Necromancy.loggerNecromancy.info(minionTemp.toString());
+                EntityMinion minionSpawned = new EntityMinion(worldObj, types, user.getCommandSenderName());
+                minionSpawned.setPosition(xCoord, yCoord + 1, zCoord);
+                minionSpawned.calculateAttributes();
+                worldObj.spawnEntityInWorld(minionSpawned);
+                Necromancy.loggerNecromancy.info(minionSpawned.toString());
                 user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-                user.addChatMessage(new ChatComponentText("<Minion> Craft me Thy dark command."));
-                minionTemp.dataWatcherUpdate();
-                minionTemp.getModel().updateModel(minionTemp, true);
+                user.addChatMessage(new ChatComponentText("<Minion> Thy command?"));
+                minionSpawned.dataWatcherUpdate();
+                minionSpawned.getModel().updateModel(minionSpawned, true);
                 if (!user.capabilities.isCreativeMode)
                 {
                     for (int x = 0; x < 7; x++)
@@ -129,11 +137,11 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 user.getEntityData().setInteger("minions", user.getEntityData().getInteger("minions") + 1);
                 bodyPartsOld = null;
                 user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-                FMLLog.getLogger().log(Level.INFO, TileEntityAltar.class + "    " + minionTemp);
+                FMLLog.getLogger().log(Level.INFO, TileEntityAltar.class + "    " + minionSpawned);
             }
         }
     }
-    
+
     /**
      * called by BlockAltar
      */
@@ -166,11 +174,11 @@ public class TileEntityAltar extends TileEntity implements IInventory
         }
         return null;
     }
-    
+
     /**
      * called by TileEntityAltarRenderer
      */
-    public boolean hasContainerChanged()
+    public boolean hasAltarChanged()
     {
         bodyPartsNew[0] = getStackInSlot(2);
         bodyPartsNew[1] = getStackInSlot(3);
@@ -196,58 +204,61 @@ public class TileEntityAltar extends TileEntity implements IInventory
         bodyPartsOld = bodyPartsNew.clone();
         return false;
     }
-    
+
     /**
      * builds the current Entity from the pieces
      */
-    public Entity getPreviewEntity()
+    public EntityMinion getPreviewEntity()
     {
-        ItemStack head = getStackInSlot(2);
-        ItemStack body = getStackInSlot(3);
-        ItemStack leg = getStackInSlot(4);
-        ItemStack armRight = getStackInSlot(5);
-        ItemStack armLeft = getStackInSlot(6);
-        if (head != null && head.getItem() != null && isLegalCombo("head", head))
+        if (hasAltarChanged())
         {
-            getMinion().setBodyPart(BodyPartLocation.Head, getBodyPart(head, false));
+            ItemStack head = getStackInSlot(2);
+            ItemStack body = getStackInSlot(3);
+            ItemStack leg = getStackInSlot(4);
+            ItemStack armRight = getStackInSlot(5);
+            ItemStack armLeft = getStackInSlot(6);
+            if (head != null && head.getItem() != null && isLegalCombo("head", head))
+            {
+                minion.setBodyPart(BodyPartLocation.Head, getBodyPart(head, false));
+            }
+            else
+            {
+                minion.setBodyPart(BodyPartLocation.Head, new BodyPart[] {});
+            }
+            if (body != null && isLegalCombo("body", body))
+            {
+                minion.setBodyPart(BodyPartLocation.Torso, getBodyPart(body, false));
+            }
+            else
+            {
+                minion.setBodyPart(BodyPartLocation.Torso, new BodyPart[] {});
+            }
+            if (leg != null && isLegalCombo("leg", leg))
+            {
+                minion.setBodyPart(BodyPartLocation.Legs, getBodyPart(leg, false));
+            }
+            else
+            {
+                minion.setBodyPart(BodyPartLocation.Legs, new BodyPart[] {});
+            }
+            if (armLeft != null && isLegalCombo("arm", armLeft))
+            {
+                minion.setBodyPart(BodyPartLocation.ArmLeft, getBodyPart(armLeft, false));
+            }
+            else
+            {
+                minion.setBodyPart(BodyPartLocation.ArmLeft, new BodyPart[] {});
+            }
+            if (armRight != null && isLegalCombo("arm", armRight))
+            {
+                minion.setBodyPart(BodyPartLocation.ArmRight, getBodyPart(armRight, true));
+            }
+            else
+            {
+                minion.setBodyPart(BodyPartLocation.ArmRight, new BodyPart[] {});
+            }
         }
-        else
-        {
-            getMinion().setBodyPart(BodyPartLocation.Head, new BodyPart[] {});
-        }
-        if (body != null && isLegalCombo("body", body))
-        {
-            getMinion().setBodyPart(BodyPartLocation.Torso, getBodyPart(body, false));
-        }
-        else
-        {
-            getMinion().setBodyPart(BodyPartLocation.Torso, new BodyPart[] {});
-        }
-        if (leg != null && isLegalCombo("leg", leg))
-        {
-            getMinion().setBodyPart(BodyPartLocation.Legs, getBodyPart(leg, false));
-        }
-        else
-        {
-            getMinion().setBodyPart(BodyPartLocation.Legs, new BodyPart[] {});
-        }
-        if (armLeft != null && isLegalCombo("arm", armLeft))
-        {
-            getMinion().setBodyPart(BodyPartLocation.ArmLeft, getBodyPart(armLeft, false));
-        }
-        else
-        {
-            getMinion().setBodyPart(BodyPartLocation.ArmLeft, new BodyPart[] {});
-        }
-        if (armRight != null && isLegalCombo("arm", armRight))
-        {
-            getMinion().setBodyPart(BodyPartLocation.ArmRight, getBodyPart(armRight, true));
-        }
-        else
-        {
-            getMinion().setBodyPart(BodyPartLocation.ArmRight, new BodyPart[] {});
-        }
-        return getMinion();
+        return minion;
     }
 
     private boolean isLegalCombo(String location, ItemStack stack)
@@ -256,9 +267,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
         while (itr.hasNext() && stack != null)
         {
             NecroEntityBase mob = itr.next();
-            System.out.println("mob: "+mob);
-            System.out.println("stack: "+stack);
-            System.out.println("mob.headItem: "+mob.headItem);
             if (location.equals("head") && mob.hasHead && stack.isItemEqual(mob.headItem))
                 return true;
             if (location.equals("body") && mob.hasTorso && stack.isItemEqual(mob.torsoItem))
@@ -296,7 +304,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 altarItemStacks[var5] = ItemStack.loadItemStackFromNBT(var4);
             }
         }
-
+        getPreviewEntity();
     }
 
     @Override
@@ -305,6 +313,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
         super.writeToNBT(par1NBTTagCompound);
         NBTTagList var2 = new NBTTagList();
         for (int var3 = 0; var3 < altarItemStacks.length; var3++)
+        {
             if (altarItemStacks[var3] != null)
             {
                 NBTTagCompound var4 = new NBTTagCompound();
@@ -312,7 +321,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 altarItemStacks[var3].writeToNBT(var4);
                 var2.appendTag(var4);
             }
-
+        }
         par1NBTTagCompound.setTag("Items", var2);
     }
 
@@ -361,6 +370,20 @@ public class TileEntityAltar extends TileEntity implements IInventory
             var2.stackSize = getInventoryStackLimit();
         }
     }
+    
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
+    {
+        readFromNBT(pkt.func_148857_g());
+    }
+
+    @Override
+    public Packet getDescriptionPacket()
+    {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        writeToNBT(nbttagcompound);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, nbttagcompound);
+    }
 
     @Override
     public String getInventoryName()
@@ -384,16 +407,6 @@ public class TileEntityAltar extends TileEntity implements IInventory
     public int getInventoryStackLimit()
     {
         return 64;
-    }
-
-    public EntityMinion getMinion()
-    {
-        return minion;
-    }
-
-    private void setMinion(EntityMinion minion)
-    {
-        this.minion = minion;
     }
 
     private boolean soulCheck()

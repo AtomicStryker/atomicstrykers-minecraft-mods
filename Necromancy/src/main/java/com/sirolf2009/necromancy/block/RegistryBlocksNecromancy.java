@@ -9,8 +9,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.tileentity.TileEntityAltar;
-import com.sirolf2009.necromancy.tileentity.TileEntityScent;
-import com.sirolf2009.necromancy.tileentity.TileEntityScentBurner;
 import com.sirolf2009.necromancy.tileentity.TileEntitySewing;
 import com.sirolf2009.necromancy.tileentity.TileEntitySkullWall;
 
@@ -22,8 +20,6 @@ public class RegistryBlocksNecromancy
     public static Block altar;
     public static Block altarBlock;
     public static Block sewing;
-    public static Block scentBurner;
-    public static Block scent;
     public static BlockBlood blood;
     public static Block skullWall;
 
@@ -44,16 +40,6 @@ public class RegistryBlocksNecromancy
         sewing.setBlockName("Sewing Machine");
         GameRegistry.registerBlock(sewing, "Sewing Machine");
         GameRegistry.registerTileEntity(TileEntitySewing.class, "Sewing");
-
-        scentBurner = new BlockScentBurner().setHardness(4);
-        scentBurner.setBlockName("Scent Burner");
-        GameRegistry.registerBlock(scentBurner, "Scent Burner");
-        GameRegistry.registerTileEntity(TileEntityScentBurner.class, "Scent Burner");
-
-        scent = new BlockScent();
-        scent.setBlockName("Scent");
-        GameRegistry.registerBlock(scent, "Scent");
-        GameRegistry.registerTileEntity(TileEntityScent.class, "Scent");
 
         fluidBlood = new Fluid("Blood");
         FluidRegistry.registerFluid(fluidBlood);

@@ -16,10 +16,10 @@ import atomicstryker.necromancy.network.TearShotPacket;
 import atomicstryker.necromancy.network.NetworkHelper;
 
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
+import com.sirolf2009.necromancy.client.gui.GuiHandler;
 import com.sirolf2009.necromancy.command.CommandMinion;
 import com.sirolf2009.necromancy.command.CommandRemodel;
 import com.sirolf2009.necromancy.core.handler.ForgeEventHandler;
-import com.sirolf2009.necromancy.core.handler.PacketHandler;
 import com.sirolf2009.necromancy.core.proxy.CommonProxy;
 import com.sirolf2009.necromancy.craftingmanager.CraftingManagerSewing;
 import com.sirolf2009.necromancy.creativetab.CreativeTabNecro;
@@ -61,7 +61,7 @@ public class Necromancy
 
     public static Logger loggerNecromancy;
 
-    public static final PacketHandler packetHandler = new PacketHandler();
+    public static final GuiHandler guiHandler = new GuiHandler();
     public static final ForgeEventHandler eventHandler = new ForgeEventHandler();
     public static final VillageCreationHandler villageHandler = new VillageCreationHandler();
 
@@ -85,14 +85,13 @@ public class Necromancy
         
         networkHelper = new NetworkHelper("NecromancyMod", TearShotPacket.class);
         
-        NetworkRegistry.INSTANCE.registerGuiHandler(this, packetHandler);
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, guiHandler);
 
         FMLCommonHandler.instance().bus().register(eventHandler);
         MinecraftForge.EVENT_BUS.register(eventHandler);
 
         proxy.preInit();
-
-        MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
+        
         specialFolk.add("AtomicStryker");
         
         try
@@ -114,10 +113,8 @@ public class Necromancy
         RegistryNecromancyEntities.initEntities();
         RegistryBlocksNecromancy.initBlocks();
         
+        MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
         VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
-        ArrayList<Class<PacketHandler>> villageComponentsList = new ArrayList<Class<PacketHandler>>();
-        villageComponentsList.add(PacketHandler.class);
-
         GameRegistry.registerWorldGenerator(new WorldGenerator(), 5);
     }
 

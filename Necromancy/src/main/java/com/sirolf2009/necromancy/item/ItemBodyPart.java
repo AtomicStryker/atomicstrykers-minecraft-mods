@@ -9,6 +9,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 
 import com.sirolf2009.necromancy.Necromancy;
 
@@ -34,7 +35,6 @@ public class ItemBodyPart extends Item
         addParts("Spider", "Head", "Torso", "Legs");
         addParts("Zombie", "Torso", "Arm", "Legs");
         addParts("Chicken", "Head", "Torso", "Arm", "Legs");
-        addParts("Mooshroom", "Head", "Torso", "Arm", "Legs");
         addParts("Villager", "Head", "Torso", "Arm", "Legs");
         addParts("Witch", "Head", "Torso", "Arm", "Legs");
         addParts("Squid", "Head", "Torso", "Legs");
@@ -42,17 +42,14 @@ public class ItemBodyPart extends Item
         addParts("Sheep", "Head", "Torso", "Arm", "Legs");
 
         addParts("IronGolem", "Head", "Torso", "Arm", "Legs");
-        // TODO
-        // wolf parts?
-        // ghast parts?
-        // blaze parts?
+        addParts("Wolf", "Head");
         textures = new IIcon[necroEntities.size()];
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack par1ItemStack)
     {
-        return necroEntities.get(par1ItemStack.getItemDamage());
+        return StatCollector.translateToLocal(necroEntities.get(par1ItemStack.getItemDamage()));
     }
 
     public void addParts(String entity, String... parts)
