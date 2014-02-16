@@ -257,7 +257,7 @@ public class MinionsClient
         }
     }
 
-    public void onWorldTick(World world)
+    public void onPlayerTick(World world)
     {
         if (world != lastWorld && world != null)
         {
@@ -266,7 +266,8 @@ public class MinionsClient
         
         if (FMLCommonHandler.instance().getMinecraftServerInstance() == null)
         {
-        	ChickenLightningBolt.update();
+            // this prevents double updates on local play
+            ChickenLightningBolt.update();
         }
     }
     
@@ -283,7 +284,7 @@ public class MinionsClient
             bolt.defaultFractal();
             bolt.finalizeBolt();
             bolt.setWrapper(shooter);
-            ChickenLightningBolt.boltlist.add(bolt);   
+            ChickenLightningBolt.offerBolt(bolt);   
         }
         
         if (timeNextSoundAllowed + timeSoundDelay < System.currentTimeMillis())
@@ -324,7 +325,7 @@ public class MinionsClient
         // this raytrace does not hit entities since 1.7!
         MovingObjectPosition targetObjectMouseOver = mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
         // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.getGameProfile().getName());
-        MinionsCore.instance.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getCommandSenderName());
+        MinionsCore.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getCommandSenderName());
         
         if (targetObjectMouseOver == null)
         {
@@ -335,7 +336,7 @@ public class MinionsClient
         Entity target = mcinstance.objectMouseOver.entityHit;
         if (target != null)
         {
-            MinionsCore.instance.debugPrint("OnMastersGloveRightClick hit entity "+target);
+            MinionsCore.debugPrint("OnMastersGloveRightClick hit entity "+target);
             if (target instanceof EntityAnimal || target instanceof EntityPlayer)
             {
                 MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getCommandSenderName(), target.getEntityId()));
@@ -351,7 +352,7 @@ public class MinionsClient
             int y = targetObjectMouseOver.blockY +1;
             int z = targetObjectMouseOver.blockZ;
             
-            MinionsCore.instance.debugPrint("OnMastersGloveRightClick coordinate mode, ["+x+"|"+y+"|"+z+"]");
+            MinionsCore.debugPrint("OnMastersGloveRightClick coordinate mode, ["+x+"|"+y+"|"+z+"]");
 
             if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y-1, z))
             {

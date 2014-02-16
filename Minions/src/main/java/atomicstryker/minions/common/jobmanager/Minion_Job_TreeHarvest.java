@@ -39,7 +39,7 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     }
     
     @Override
-    public void onJobUpdateTick()
+    public boolean onJobUpdateTick()
     {
     	super.onJobUpdateTick();
     	
@@ -70,6 +70,7 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     			this.setWorkerFree(worker);
     		}
     	}
+    	return isFinished;
     }
     
     @Override

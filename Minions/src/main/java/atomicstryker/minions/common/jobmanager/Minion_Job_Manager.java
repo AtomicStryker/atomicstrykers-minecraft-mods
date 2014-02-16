@@ -38,16 +38,25 @@ public abstract class Minion_Job_Manager
 	 */
 	public String masterName;
 	
-	private boolean isWorking;
+	/**
+	 * Keeps track of the job having received the first update tick
+	 */
+	private boolean hasJobStarted;
+	
+	/**
+	 * Keeps track of the job being finished and disposable
+	 */
+	protected boolean isFinished;
 	
 	private Minion_Job_Manager()
 	{
-        MinionsCore.instance.debugPrint("Created Minion_Job_Manager "+this);
+        MinionsCore.debugPrint("Created Minion_Job_Manager "+this);
         workerList = new ArrayList<EntityMinion>();
         jobQueue = new ArrayList<BlockTask>();
-        isWorking = false;
+        hasJobStarted = false;
         masterName = null;
         pointOfOrigin = new ChunkCoordinates();
+        isFinished = false;
 	}
 	
 	private Minion_Job_Manager(Collection<EntityMinion> minions)
@@ -160,18 +169,19 @@ public abstract class Minion_Job_Manager
      */
     public void onJobStarted()
     {
-        MinionsCore.instance.debugPrint("onJobStarted() "+this);
+        MinionsCore.debugPrint("onJobStarted() "+this);
     }
     
     /**
      * Method to be called by some Updatetick propagating device, either a mod or an Entity
+     * if it returns true, the job is done and should be removed from considerations
      */
-    public void onJobUpdateTick()
+    public boolean onJobUpdateTick()
     {
-    	if (!isWorking)
+    	if (!hasJobStarted)
     	{
     	    onJobStarted();
-    	    isWorking = true;
+    	    hasJobStarted = true;
     	}
         
         boolean abort = false;
@@ -188,10 +198,12 @@ public abstract class Minion_Job_Manager
         {
             onJobFinished();
         }
+        
+        return isFinished;
     }
     
     /**
-     * Sets all Workers free and Idle and removes this Job Manager from the mod's registry
+     * Sets all Workers free and Idle and marks this Job Manager for removal
      */
     public void onJobFinished()
     {
@@ -200,7 +212,7 @@ public abstract class Minion_Job_Manager
     		this.setWorkerFree((EntityMinion) this.workerList.get(0));
     	}
     	
-    	MinionsCore.instance.onJobHasFinished(this);
+    	isFinished = true;
     }
     
     /**

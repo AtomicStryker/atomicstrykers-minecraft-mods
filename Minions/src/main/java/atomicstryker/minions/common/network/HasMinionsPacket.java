@@ -52,7 +52,7 @@ public class HasMinionsPacket implements IPacket
             hasAllMinions = bytes.readInt();
             MinionsClient.hasMinionsSMPOverride = hasMinions > 0;
             MinionsClient.hasAllMinionsSMPOverride = hasAllMinions > 0;
-            MinionsCore.instance.debugPrint("Client got status packet, now: hasMinionsSMPOverride = "+hasMinions+", hasAllMinionsSMPOverride: "+hasAllMinions);
+            MinionsCore.debugPrint("Client got status packet, now: hasMinionsSMPOverride = "+hasMinions+", hasAllMinionsSMPOverride: "+hasAllMinions);
         }
         else
         {

@@ -93,7 +93,7 @@ public class LightningPacket implements IPacket
             bolt.defaultFractal();
             bolt.finalizeBolt();
             bolt.setWrapper(shooter);
-            ChickenLightningBolt.boltlist.add(bolt);   
+            ChickenLightningBolt.offerBolt(bolt);   
         }
     }
 

@@ -31,10 +31,9 @@ import net.minecraft.world.World;
 public class ChickenLightningBolt
 {
     public ArrayList<Segment> segments = new ArrayList<Segment>();
-    Vector3 start;
-    Vector3 end;
-    BlockCoord target;
-    HashMap<Integer, Integer> splitparents = new HashMap<Integer, Integer>();
+    private final Vector3 start;
+    private final Vector3 end;
+    private final HashMap<Integer, Integer> splitparents = new HashMap<Integer, Integer>();
     
     public double length;
     public int numsegments0;
@@ -51,7 +50,7 @@ public class ChickenLightningBolt
     private World world;
     private Entity source;
 
-    public static ConcurrentLinkedQueue<ChickenLightningBolt> boltlist = new ConcurrentLinkedQueue<ChickenLightningBolt>();
+    public final static ConcurrentLinkedQueue<ChickenLightningBolt> boltlist = new ConcurrentLinkedQueue<ChickenLightningBolt>();
     
     public static final float speed = 1.5F;//ticks per metre
     public static final int fadetime = 20;
@@ -59,8 +58,6 @@ public class ChickenLightningBolt
     /* Damage in half hearts */
     public static int playerdamage = 1;
     public static int entitydamage = 1;
-    
-
     
 	public class BoltPoint
 	{
@@ -210,7 +207,6 @@ public class ChickenLightningBolt
 	public ChickenLightningBolt(World world, Vector3 sourcevec, TileEntity target, long seed)
 	{
 		this(world, sourcevec, getFocalPoint(target), seed);
-		this.target = new BlockCoord((TileEntity) target);
 	}
 	
 	public void setWrapper(Entity entity)
@@ -218,7 +214,7 @@ public class ChickenLightningBolt
 		source = entity;
 	}
 	
-	public void fractal(int splits, double amount, double splitchance, double splitlength, double splitangle)
+	private void fractal(int splits, double amount, double splitchance, double splitlength, double splitangle)
 	{
 		if(finalized)
 		{
@@ -350,30 +346,24 @@ public class ChickenLightningBolt
 	
 	private void bbTestEntityDamage()
 	{
-		if(world.isRemote)
+		if(!world.isRemote)
 		{
-			return;
-		}
-		
-		int newestsegment = (int) ((particleAge+(int)(length*speed))/ (float)(int)(length*speed) * numsegments0);
-		
-		@SuppressWarnings("unchecked")
-		List<Entity> nearentities = world.getEntitiesWithinAABBExcludingEntity(source, boundingBox);
-		if(nearentities.size() == 0)
-		{
-			return;
-		}
-		
-		for(Iterator<Segment> iterator = segments.iterator(); iterator.hasNext();)
-		{
-			Segment segment = iterator.next();
-			
-			if(segment.segmentno > newestsegment)
-			{
-				continue;
-			}
-			
-			vecBBDamageSegment(segment.startpoint.point, segment.endpoint.point, nearentities);
+	        @SuppressWarnings("unchecked")
+	        List<Entity> nearentities = world.getEntitiesWithinAABBExcludingEntity(source, boundingBox);
+	        if(nearentities.size() != 0)
+	        {
+	            int newestsegment = (int) ((particleAge+(int)(length*speed))/ (float)(int)(length*speed) * numsegments0);
+	            for(Iterator<Segment> iterator = segments.iterator(); iterator.hasNext();)
+	            {
+	                Segment segment = iterator.next();
+	                
+	                if(segment.segmentno > newestsegment)
+	                {
+	                    continue;
+	                }
+	                vecBBDamageSegment(segment.startpoint.point, segment.endpoint.point, nearentities);
+	            }
+	        }
 		}
 	}
 	
@@ -472,5 +462,30 @@ public class ChickenLightningBolt
 				iterator.remove();
 			}
 		}
+	}
+	
+    public static void offerBolt(ChickenLightningBolt bolt)
+    {
+        if (!boltlist.contains(bolt))
+        {
+            boltlist.add(bolt);
+        }
+    }
+	
+	@Override
+	public boolean equals(Object o)
+	{
+	    if (o instanceof ChickenLightningBolt)
+	    {
+	        ChickenLightningBolt bolt = (ChickenLightningBolt) o;
+	        return bolt.start.equals(start) && bolt.end.equals(end);
+	    }
+	    return false;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+	    return start.hashCode() + end.hashCode();
 	}
 }

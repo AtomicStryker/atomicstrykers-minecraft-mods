@@ -17,8 +17,6 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
 	private int currentDepth = -1;
 	private int currentSegment = 0;
 	
-	private boolean isFinished = false;
-	
 	private final int startX;
 	private final int startY;
 	private final int startZ;
@@ -32,7 +30,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     }
     
     @Override
-    public void onJobUpdateTick()
+    public boolean onJobUpdateTick()
     {
     	super.onJobUpdateTick();
     	
@@ -72,6 +70,8 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     			this.setWorkerFree(worker);
     		}
     	}
+    	
+    	return isFinished;
     }
     
     private boolean canAddNextLayer()
@@ -148,7 +148,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     	
     	if (currentSegment == 1 && ((xDiff-1) == (currentDepth%4)) && zDiff == 0)
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_brick_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 2 && xDiff == 4 &&
@@ -156,7 +156,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		|| (zDiff == 2 && currentDepth%4 == 0)
     		|| (zDiff == 3 && currentDepth%4 == 1)))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_brick_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 3 && zDiff == 4 &&
@@ -164,12 +164,12 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		|| (xDiff == 2 && currentDepth%4 == 3)
     		|| (xDiff == 1 && currentDepth%4 == 0)))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_brick_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 4 && xDiff == 0 && areModsCounterPosed(zDiff, currentDepth))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_brick_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
     		return true;
     	}
     	

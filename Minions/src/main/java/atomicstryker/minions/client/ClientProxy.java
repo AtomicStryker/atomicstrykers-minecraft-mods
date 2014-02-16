@@ -46,11 +46,11 @@ public class ClientProxy extends CommonProxy
     }
     
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent tick)
+    public void onWorldTick(TickEvent.PlayerTickEvent tick)
     {
         if (tick.phase == Phase.END)
         {
-            client.onWorldTick(tick.world);
+            client.onPlayerTick(tick.player.worldObj);
         }
     }
     

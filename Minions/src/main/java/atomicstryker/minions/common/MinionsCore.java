@@ -4,13 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
@@ -31,6 +30,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.jobmanager.BlockTask_MineOreVein;
@@ -78,7 +78,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.5")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.6")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -106,13 +106,12 @@ public class MinionsCore
     
     public final HashSet<Block> foundTreeBlocks;
     public final HashSet<Block> configWorthlessBlocks;
-    public final LinkedList<Minion_Job_Manager> runningJobList;
-    public final LinkedList<Minion_Job_Manager> finishedJobList;
+    public final ConcurrentLinkedQueue<Minion_Job_Manager> runningJobList;
     
     private final HashMap<String, ArrayList<EntityMinion>> minionMap;
     private boolean minionMapLock;
     
-    private boolean debugMode;
+    private static boolean debugMode;
     
     private EvilCommitCount commitStorage;
     
@@ -121,8 +120,7 @@ public class MinionsCore
         evilDoings = new ArrayList<EvilDeed>();
         foundTreeBlocks = new HashSet<Block>();
         configWorthlessBlocks = new HashSet<Block>();
-        runningJobList = new LinkedList<Minion_Job_Manager>();
-        finishedJobList = new LinkedList<Minion_Job_Manager>();
+        runningJobList = new ConcurrentLinkedQueue<Minion_Job_Manager>();
         minionMap = new HashMap<String, ArrayList<EntityMinion>>();
         minionMapLock = false;
     }
@@ -205,40 +203,50 @@ public class MinionsCore
     {
         getViableTreeBlocks();
     }
-	
-    public void onTick(World world)
+    
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event)
     {
-        if (!hasBooted)
+        if (!event.world.isRemote)
         {
-            if (System.currentTimeMillis() > firstBootTime + 3000L)
+            runningJobList.clear();
+            getMinionMap().clear();
+            hasBooted = false;
+            commitStorage = null;
+            firstBootTime = System.currentTimeMillis();
+        }
+    }
+	
+    @SubscribeEvent
+    public void onTick(TickEvent.WorldTickEvent tick)
+    {
+        if (!tick.world.isRemote && tick.phase == Phase.END)
+        {
+            if (!hasBooted)
             {
-                hasBooted = true;
-                commitStorage = (EvilCommitCount) world.perWorldStorage.loadData(EvilCommitCount.class, "minionsCommits");
-                if (commitStorage == null)
+                if (System.currentTimeMillis() > firstBootTime + 3000L)
                 {
-                    commitStorage = new EvilCommitCount("minionsCommits");
-                    world.perWorldStorage.setData("minionsCommits", commitStorage);
+                    hasBooted = true;
+                    commitStorage = (EvilCommitCount) tick.world.perWorldStorage.loadData(EvilCommitCount.class, "minionsCommits");
+                    debugPrint("Minions loaded evil commit storage: "+commitStorage);
+                    if (commitStorage == null)
+                    {
+                        commitStorage = new EvilCommitCount("minionsCommits");
+                        tick.world.perWorldStorage.setData("minionsCommits", commitStorage);
+                        debugPrint("Minions stored new evil commit storage: "+commitStorage);
+                    }
                 }
             }
+            
+            for (Iterator <Minion_Job_Manager> iter = runningJobList.iterator(); iter.hasNext();)
+            {
+                if (iter.next().onJobUpdateTick())
+                {
+                    iter.remove();
+                }
+            }
+            ChickenLightningBolt.update();
         }
-        
-        Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
-        Minion_Job_Manager i;
-        while (iter.hasNext())
-        {
-            i = iter.next();
-            if (finishedJobList.contains(i))
-            {
-                debugPrint("Now removing finished Job: "+i);
-                finishedJobList.remove(i);
-                runningJobList.remove(i);
-            }
-            else
-            {
-                ((Minion_Job_Manager) i).onJobUpdateTick();
-            }
-        }        
-        ChickenLightningBolt.update();
     }
 	
     public boolean isBlockValueable(Block blockID)
@@ -299,23 +307,12 @@ public class MinionsCore
             player.getFoodStats().addExhaustion(exhaustAmountBig);
         }
     }
-    
-    public void onJobHasFinished(Minion_Job_Manager input)
-    {
-        if (!finishedJobList.contains(input))
-        {
-            finishedJobList.add(input);
-        }
-    }
 
     private void cancelRunningJobsForMaster(String name)
     {
-        Minion_Job_Manager temp;
-        Iterator<Minion_Job_Manager> iter = runningJobList.iterator();
-        while (iter.hasNext())
+        for (Minion_Job_Manager temp : runningJobList)
         {
-            temp = (Minion_Job_Manager) iter.next();
-            if (temp != null && temp.masterName != null && temp.masterName.equals(name))
+            if (name.equals(temp.masterName))
             {
                 temp.onJobFinished();
             }
@@ -324,12 +321,13 @@ public class MinionsCore
     
     private HashMap<String, ArrayList<EntityMinion>> getMinionMap()
     {
-        long wait = System.currentTimeMillis()+1000l;
+        long wait = System.currentTimeMillis()+333l;
         while (minionMapLock)
         {
             if (System.currentTimeMillis() > wait)
             {
-                throw new ConcurrentModificationException("Minions: minionMapLock is hanging");
+                System.out.println("Minions: minionMapLock was hanging");
+                return minionMap;
             }
             Thread.yield();
         }        
@@ -455,6 +453,7 @@ public class MinionsCore
             commitStorage.masterCommits.put(player.getGameProfile().getName(), 1);
             proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
         }
+        commitStorage.markDirty();
     }
     
     public boolean hasPlayerMinions(EntityPlayer player)
@@ -741,22 +740,13 @@ public class MinionsCore
             System.out.println("EXCEPTION BufferedReader: " + var6);
         }
     }
-    
-    @SubscribeEvent
-    public void onTick(TickEvent.WorldTickEvent tick)
-    {
-        if (!tick.world.isRemote && tick.phase == Phase.END)
-        {
-            onTick(tick.world);
-        }
-    }
 
     public final static String getPacketChannel()
     {
         return "AS_Minions";
     }
     
-    public void debugPrint(String s)
+    public static void debugPrint(String s)
     {
         if (debugMode)
         {
@@ -764,7 +754,7 @@ public class MinionsCore
         }
     }
     
-    private class EvilCommitCount extends WorldSavedData
+    public static class EvilCommitCount extends WorldSavedData
     {
         protected final HashMap<String, Integer> masterCommits;
 
@@ -778,8 +768,10 @@ public class MinionsCore
         @Override
         public void readFromNBT(NBTTagCompound tags)
         {
+            debugPrint("EvilCommitCount readFromNBT");
             for(String s : (Set<String>)tags.func_150296_c())
             {
+                debugPrint("loaded master "+s+" with commitcount "+tags.getInteger(s));
                 masterCommits.put(s, tags.getInteger(s));
             }
         }
@@ -787,6 +779,7 @@ public class MinionsCore
         @Override
         public void writeToNBT(NBTTagCompound tags)
         {
+            debugPrint("EvilCommitCount writeToNBT");
             for (String s : masterCommits.keySet())
             {
                 tags.setInteger(s, masterCommits.get(s));
@@ -804,6 +797,7 @@ public class MinionsCore
                 for (ChunkCoordIntPair c : t.getChunkList())
                 {
                     // just load the chunk. The minion entities inside will re-register their own tickets
+                    // note: im 99% sure forge does this by itself. but whatevers
                     ForgeChunkManager.fetchDormantChunk(ChunkCoordIntPair.chunkXZ2Int(c.chunkXPos, c.chunkZPos), world);
                 }
                 // get rid of these old tickets

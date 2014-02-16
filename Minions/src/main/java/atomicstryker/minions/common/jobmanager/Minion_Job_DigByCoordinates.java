@@ -114,12 +114,13 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 		jobQueue.add(mineTask);
     }
     
-	public void onJobUpdateTick()
+    @Override
+	public boolean onJobUpdateTick()
 	{
 		if (!indexFinished)
 		{
 			progressIndexing();
-			return;
+			return false;
 		}
     	
     	BlockTask nextBlock = null;
@@ -176,6 +177,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     			this.setWorkerFree(worker);
     		}
     	}
+    	return isFinished;
     }
     
     private void progressIndexing()

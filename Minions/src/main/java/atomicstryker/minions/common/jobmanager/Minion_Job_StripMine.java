@@ -75,13 +75,13 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 	}
     
     @Override
-    public void onJobUpdateTick()
+    public boolean onJobUpdateTick()
     {
     	super.onJobUpdateTick();
     	if (workerList.isEmpty())
     	{
     	    onJobFinished();
-    	    return;
+    	    return true;
     	}
     	else if (!workerList.get(0).hasTask() && !jobQueue.isEmpty())
     	{
@@ -95,6 +95,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
             //currentSegment++;
             queueCurrentSegmentJobs();
         }
+        return isFinished;
     }
     
     @Override

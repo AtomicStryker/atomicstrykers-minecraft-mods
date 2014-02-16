@@ -77,7 +77,7 @@ public abstract class BlockTask
      */
     public void setWorker(EntityMinion input)
     {
-        MinionsCore.instance.debugPrint("task "+this+" at ["+posX+"|"+posY+"|"+posZ+"] assigned to worker "+worker);
+        MinionsCore.debugPrint("task "+this+" at ["+posX+"|"+posY+"|"+posZ+"] assigned to worker "+worker);
         this.worker = input;
     }
 
@@ -117,7 +117,7 @@ public abstract class BlockTask
             {
                 worker.returningGoods = true;
                 worker.runInventoryDumpLogic();
-                MinionsCore.instance.debugPrint("Blocktask "+this+" worker "+worker+" is full, sending to return goods");
+                MinionsCore.debugPrint("Blocktask "+this+" worker "+worker+" is full, sending to return goods");
             }
         }
         else if (!workerReachedBlock && System.currentTimeMillis() - taskTimeStarted > 1000L)
@@ -192,7 +192,7 @@ public abstract class BlockTask
         if (startedTask)
             return;
         startedTask = true;
-        MinionsCore.instance.debugPrint("onStartedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], worker "+worker);
+        MinionsCore.debugPrint("onStartedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], worker "+worker);
 
         taskTimeStarted = System.currentTimeMillis();
         startMinionX = worker.posX;
@@ -205,7 +205,7 @@ public abstract class BlockTask
         }
         else
         {
-            MinionsCore.instance.debugPrint("Teleporting Minion to impathable task "+this);
+            MinionsCore.debugPrint("Teleporting Minion to impathable task "+this);
             worker.performTeleportToTarget();
         }
     }
@@ -216,7 +216,7 @@ public abstract class BlockTask
      */
     public void onFinishedTask()
     {
-        MinionsCore.instance.debugPrint("onFinishedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], resetting minion "+worker);
+        MinionsCore.debugPrint("onFinishedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], resetting minion "+worker);
         this.worker.giveTask(null, true);
         
         if (boss != null)

@@ -39,7 +39,6 @@ import atomicstryker.minions.common.jobmanager.BlockTask;
 /**
  * Minion Entity class, this is where the evil magic happens
  * 
- * 
  * @author AtomicStryker
  */
 
@@ -68,10 +67,10 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     private long closeInventoryTime;
     private long despawnTime;
     private float moveSpeed;
-    
+
     public boolean followingMaster;
     public boolean returningGoods;
-    
+
     private Chunk lastChunk;
     private Ticket chunkLoadingTicket;
 
@@ -83,9 +82,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         this.moveSpeed = 1.2F;
         getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.225D);
         getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(MinionsCore.instance.minionFollowRange);
-        
+
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
-        
+
         this.getNavigator().setAvoidsWater(false);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new MinionAIStalkAndGrab(this, this.moveSpeed));
@@ -104,12 +103,12 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         canPickUpItemsAgainAt = 0L;
         closeInventoryTime = 0;
         despawnTime = -1l;
-        
+
         chunkLoadingTicket = ForgeChunkManager.requestTicket(MinionsCore.instance, worldObj, Type.ENTITY);
         if (chunkLoadingTicket != null)
         {
             chunkLoadingTicket.bindEntity(this);
-            lastChunk = worldObj.getChunkFromBlockCoords((int)posX, (int)posZ);
+            lastChunk = worldObj.getChunkFromBlockCoords((int) posX, (int) posZ);
             ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
         }
     }
@@ -125,19 +124,22 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(12, new Integer(0)); // boolean isWorking for SwingProgress and Sounds, set by AS_BlockTask
+        this.dataWatcher.addObject(12, new Integer(0)); // boolean isWorking for
+                                                        // SwingProgress and
+                                                        // Sounds, set by
+                                                        // AS_BlockTask
         this.dataWatcher.addObject(13, new Integer(0)); // x blocktask
         this.dataWatcher.addObject(14, new Integer(0)); // y blocktask
         this.dataWatcher.addObject(15, new Integer(0)); // z blocktask
         this.dataWatcher.addObject(16, "undef"); // masterUserName
         this.dataWatcher.addObject(17, new Integer(0)); // heldItem Index
     }
-    
+
     public void setWorking(boolean b)
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(12, (Integer)(b ? 1 : 0));
+            dataWatcher.updateObject(12, (Integer) (b ? 1 : 0));
         }
     }
 
@@ -154,7 +156,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         String s = dataWatcher.getWatchableObjectString(16);
         return s.equals("") ? "undef" : s;
     }
-    
+
     @Override
     public boolean isAIEnabled()
     {
@@ -247,12 +249,16 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             MinionsCore.proxy.playSoundAtEntity(this, "mob.endermen.portal", 0.5F, 1.0F);
         }
     }
-    
+
     /**
-     * Gives a Minion a list of possible target Nodes and causes the pathplanner to try and path
-     * to one of them. If pathing was underway, it is interrupted.
-     * @param possibles list of reachable target nodes
-     * @param allowDropping whether or not drops >1 block high are allowed in the path
+     * Gives a Minion a list of possible target Nodes and causes the pathplanner
+     * to try and path to one of them. If pathing was underway, it is
+     * interrupted.
+     * 
+     * @param possibles
+     *            list of reachable target nodes
+     * @param allowDropping
+     *            whether or not drops >1 block high are allowed in the path
      */
     public void orderMinionToMoveTo(AStarNode[] possibles, boolean allowDropping)
     {
@@ -261,8 +267,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     }
 
     /**
-     * Orders a Minion to pathfind towards coordinates. The Pathplanner starts working with the
-     * target, if there was another path being planned, it is scrapped.
+     * Orders a Minion to pathfind towards coordinates. The Pathplanner starts
+     * working with the target, if there was another path being planned, it is
+     * scrapped.
      */
     public void orderMinionToMoveTo(int targetX, int targetY, int targetZ, boolean allowDropping)
     {
@@ -275,8 +282,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     public void onUpdate()
     {
         super.onUpdate();
-        
-        Chunk curChunk = worldObj.getChunkFromBlockCoords((int)posX, (int)posZ);
+
+        Chunk curChunk = worldObj.getChunkFromBlockCoords((int) posX, (int) posZ);
         if (curChunk.xPosition != lastChunk.xPosition || curChunk.zPosition != lastChunk.zPosition)
         {
             ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
@@ -309,28 +316,27 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
         if (this.dataWatcher.getWatchableObjectInt(12) != 0)
         {
-            swingProgress += (0.17F * 0.5 * workSpeed);
-            if (swingProgress > 1.0F)
-            {
-                swingProgress = 0;
-            }
-
             int x = this.dataWatcher.getWatchableObjectInt(13);
             int y = this.dataWatcher.getWatchableObjectInt(14);
             int z = this.dataWatcher.getWatchableObjectInt(15);
             Block blockID = worldObj.getBlock(x, y, z);
+
+            swingProgress += (0.17F * 0.5 * workSpeed);
+            if (swingProgress > 1.0F)
+            {
+                swingProgress = 0;
+                worldObj.playAuxSFXAtEntity(null, 2006, x, y, z, rand.nextInt(10));
+            }
 
             if (blockID != Blocks.air)
             {
                 long curTime = System.currentTimeMillis();
                 if (curTime - timeLastSound > (500L / workSpeed))
                 {
-                    worldObj.playSoundAtEntity(this, blockID.stepSound.getStepResourcePath(), (blockID.stepSound.getVolume() + 1.0F) / 2.0F, blockID.stepSound.getPitch() * 0.8F);
+                    worldObj.playSoundAtEntity(this, blockID.stepSound.getStepResourcePath(), (blockID.stepSound.getVolume() + 1.0F) / 2.0F,
+                            blockID.stepSound.getPitch() * 0.8F);
                     timeLastSound = curTime;
                 }
-
-                this.worldObj.spawnParticle(("tilecrack_" + blockID + "_" + worldObj.getBlockMetadata(x, y, z)), posX + ((double) rand.nextFloat() - 0.5D), posY + 1.5D,
-                        posZ + ((double) rand.nextFloat() - 0.5D), 1, 1, 1);
             }
         }
         else
@@ -362,10 +368,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             {
                 getNavigator().setPath(null, this.moveSpeed);
             }
-            else if (getNavigator().getPath() != null
-                    && getNavigator().getPath() instanceof AS_PathEntity
-                    && ((AS_PathEntity) getNavigator().getPath()).getTimeSinceLastPathIncrement() > 500L
-                    && !worldObj.isRemote)
+            else if (getNavigator().getPath() != null && getNavigator().getPath() instanceof AS_PathEntity
+                    && ((AS_PathEntity) getNavigator().getPath()).getTimeSinceLastPathIncrement() > 500L && !worldObj.isRemote)
             {
                 currentPathingStopCooldownTick++;
                 if (currentPathingStopCooldownTick > pathingCooldownTicks)
@@ -380,7 +384,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                         this.setPositionAndUpdate(nextUp.xCoord + 0.5, nextUp.yCoord + 0.5, nextUp.zCoord + 0.5);
                         this.motionX = 0;
                         this.motionZ = 0;
-                        pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY) - 1, doubleToInt(this.posZ), currentTarget.posX, currentTarget.posY, currentTarget.posZ, false);
+                        pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY) - 1, doubleToInt(this.posZ), currentTarget.posX,
+                                currentTarget.posY, currentTarget.posZ, false);
                     }
                     else
                     {
@@ -421,8 +426,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                     }
                     else
                     {
-                        AStarNode[] possibles = AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ), returnChestOrInventory.xCoord,
-                                returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
+                        AStarNode[] possibles =
+                                AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ),
+                                        returnChestOrInventory.xCoord, returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
                         if (possibles.length != 0)
                         {
                             orderMinionToMoveTo(possibles, false);
@@ -446,8 +452,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     private boolean checkReturnChestValidity()
     {
-        TileEntity test = worldObj.getTileEntity(returnChestOrInventory.xCoord,
-                returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
+        TileEntity test = worldObj.getTileEntity(returnChestOrInventory.xCoord, returnChestOrInventory.yCoord, returnChestOrInventory.zCoord);
         if (test != null)
         {
             returnChestOrInventory = test;
@@ -536,8 +541,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     public boolean hasReachedTarget()
     {
-        return (!hasPath() && currentTarget != null && AStarStatic.getDistanceBetweenCoords(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), currentTarget.posX,
-                currentTarget.posY, currentTarget.posZ) < 1.5D);
+        return (!hasPath() && currentTarget != null && AStarStatic.getDistanceBetweenCoords(doubleToInt(this.posX), doubleToInt(this.posY),
+                doubleToInt(this.posZ), currentTarget.posX, currentTarget.posY, currentTarget.posZ) < 1.5D);
     }
 
     @Override
@@ -569,7 +574,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             this.riddenByEntity.mountEntity(null);
             return true;
         }
-        
+
         if (var1.getEntity() != null && timelastSqueak + timeSqueakIntervals < System.currentTimeMillis())
         {
             timelastSqueak = System.currentTimeMillis();
@@ -580,7 +585,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
                 master.onCriticalHit(this);
                 MinionsCore.proxy.sendSoundToClients(this, "minions:minionsqueak");
-                // worldObj.playSoundAtEntity(this, "minions:minionsqueak", 1.0F, 1.0F);
+                // worldObj.playSoundAtEntity(this, "minions:minionsqueak",
+                // 1.0F, 1.0F);
                 return true;
             }
             else if (var1.getEntity() instanceof EntityPlayer)
@@ -617,7 +623,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
         pathToWalkInputCache = AStarStatic.translateAStarPathtoPathEntity(result);
         // System.out.println("Path found and translated!");
-        
+
         setWorking(false);
     }
 
@@ -637,7 +643,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             performTeleportToTarget();
             pathFindingFails = 0;
         }
-        
+
         setWorking(false);
     }
 
@@ -693,11 +699,13 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     public void adaptItem(Material mat)
     {
-        if (mat == Material.clay || mat == Material.grass || mat == Material.ground || mat == Material.sand || mat == Material.snow || mat == Material.sponge)
+        if (mat == Material.clay || mat == Material.grass || mat == Material.ground || mat == Material.sand || mat == Material.snow
+                || mat == Material.sponge)
         {
             setHeldItemShovel();
         }
-        else if (mat == Material.cactus || mat == Material.cloth || mat == Material.leaves || mat == Material.plants || mat == Material.vine || mat == Material.web || mat == Material.wood)
+        else if (mat == Material.cactus || mat == Material.cloth || mat == Material.leaves || mat == Material.plants || mat == Material.vine
+                || mat == Material.web || mat == Material.wood)
         {
             setHeldItemAxe();
         }
@@ -715,8 +723,10 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             EntityItem itemEnt = new EntityItem(this.worldObj, this.posX, this.posY - 0.3D + (double) this.getEyeHeight(), this.posZ, stack);
             itemEnt.delayBeforeCanPickup = 40;
             float varFloatA = 0.1F;
-            itemEnt.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
-            itemEnt.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
+            itemEnt.motionX =
+                    (double) (-MathHelper.sin(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
+            itemEnt.motionZ =
+                    (double) (MathHelper.cos(this.rotationYaw / 180.0F * 3.1415927F) * MathHelper.cos(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA);
             itemEnt.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * 3.1415927F) * varFloatA + 0.1F);
             float randomAngle = this.rand.nextFloat() * 3.1415927F * 2.0F;
             varFloatA = this.rand.nextFloat() * 0.02F;

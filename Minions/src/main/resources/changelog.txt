@@ -1,3 +1,11 @@
+Update 1.8.6
+- fixed minion digging particles to work again
+- fixed Concurrency crash in jobmanager
+- fixed persistent evil deeds to actually persist
+- fixed mod to reset on world unload properly
+- fixed stairs blocktype
+- fixed lightning on dedicated servers
+
 Update 1.8.5
 - fixed packet system to work on dedicated servers
 - fixed several soundfiles not working on 1.7.2

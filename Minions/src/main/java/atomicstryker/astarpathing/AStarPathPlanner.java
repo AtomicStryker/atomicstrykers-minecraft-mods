@@ -121,7 +121,7 @@ public class AStarPathPlanner
             }
             else if (pathedEntity != null)
             {
-                MinionsCore.instance.debugPrint("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
+                MinionsCore.debugPrint("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
                 pathedEntity.onNoPathAvailable();
             }
         }

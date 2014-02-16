@@ -231,4 +231,21 @@ public class Vector3
 	{
 		return x == 0 && y == 0 && z == 0;
 	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+	    if (o instanceof Vector3)
+	    {
+	        Vector3 v = (Vector3) o;
+	        return v.x == x && v.z == z && v.y == y;
+	    }
+	    return false;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+	    return (int) (x+y+z);
+	}
 }
