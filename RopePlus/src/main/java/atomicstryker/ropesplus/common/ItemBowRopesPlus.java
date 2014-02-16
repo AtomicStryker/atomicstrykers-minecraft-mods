@@ -110,7 +110,7 @@ public class ItemBowRopesPlus extends ItemBow
 		{
 			mainInv[player.inventory.currentItem].damageItem(1, player);
 		}
-		else
+		else if (!world.isRemote)
 		{
 		    player.addChatComponentMessage(new ChatComponentText("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!"));
 		}
