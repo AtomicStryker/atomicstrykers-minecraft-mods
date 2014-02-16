@@ -189,7 +189,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             {
                 entityDropItem(new ItemStack(Blocks.clay, 1), 0f);
             }
-			if(getEntityToAttack() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0))
+			if(getEntityToAttack() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50)
 			{
 				AS_BattleTowersCore.onBattleTowerDestroyed(new AS_TowerDestroyer(worldObj, new ChunkCoordinates(towerX, towerY, towerZ), System.currentTimeMillis(), getEntityToAttack()));
 			}

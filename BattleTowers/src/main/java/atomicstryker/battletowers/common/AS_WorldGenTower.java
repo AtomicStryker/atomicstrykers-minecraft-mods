@@ -575,11 +575,11 @@ public class AS_WorldGenTower
 	public enum TowerTypes
 	{
 	    Null(Blocks.air, Blocks.air, Blocks.air, 0, Blocks.air),
-	    CobbleStone(Blocks.cobblestone, Blocks.torch, Blocks.double_stone_slab, 0, Blocks.stone_brick_stairs),
-		CobbleStoneMossy(Blocks.mossy_cobblestone, Blocks.torch, Blocks.double_stone_slab, 0, Blocks.stone_brick_stairs),
+	    CobbleStone(Blocks.cobblestone, Blocks.torch, Blocks.double_stone_slab, 0, Blocks.stone_stairs),
+		CobbleStoneMossy(Blocks.mossy_cobblestone, Blocks.torch, Blocks.double_stone_slab, 0, Blocks.stone_stairs),
 		SandStone(Blocks.sandstone, Blocks.torch, Blocks.double_stone_slab, 1, Blocks.sandstone_stairs),
 		Ice(Blocks.ice, Blocks.air /*Blocks.glowStone*/, Blocks.clay, 2, Blocks.oak_stairs), // since when does glowstone melt ice
-		SmoothStone(Blocks.stone, Blocks.torch, Blocks.double_stone_slab, 3, Blocks.stone_brick_stairs),
+		SmoothStone(Blocks.stone, Blocks.torch, Blocks.double_stone_slab, 3, Blocks.stone_stairs),
 		Netherrack(Blocks.netherrack, Blocks.glowstone, Blocks.soul_sand, 0, Blocks.nether_brick_stairs),
 		Jungle(Blocks.mossy_cobblestone, Blocks.web, Blocks.dirt, 0, Blocks.jungle_stairs);
 		
