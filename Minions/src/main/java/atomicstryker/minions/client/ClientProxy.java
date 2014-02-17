@@ -7,7 +7,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.minions.common.CommonProxy;
 import atomicstryker.minions.common.entity.EntityMinion;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -81,6 +80,9 @@ public class ClientProxy extends CommonProxy
     @Override
 	public void playSoundAtEntity(Entity ent, String sound, float volume, float pitch)
 	{
-		FMLClientHandler.instance().getClient().theWorld.playSound(ent.posX, ent.posY, ent.posZ, sound, volume, pitch, false);
+        if (!ent.isDead)
+        {
+            ent.worldObj.playSound(ent.posX, ent.posY, ent.posZ, sound, volume, pitch, false);
+        }
 	}
 }

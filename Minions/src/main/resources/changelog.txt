@@ -1,3 +1,9 @@
+Update 1.8.7
+- reworked GUI to use translations
+- changed Deeds UI handling to fix sound doubling (damnit jeb)
+- changed sounds all around to fix a crash, maybe
+- a held Master Staff will no longer prevent you from commiting more evil and getting more staffs
+
 Update 1.8.6
 - fixed minion digging particles to work again
 - fixed Concurrency crash in jobmanager

@@ -476,15 +476,6 @@ public class MinionsClient
         }
     }
 
-    public static void onSoundPacket(String sound, int entID)
-    {
-        Entity e = mc.theWorld.getEntityByID(entID);
-        if (e != null)
-        {
-            mc.theWorld.playSound(e.posX, e.posY, e.posZ, sound, 1.0F, 1.0F, false);
-        }
-    }
-
     public static void onMinionMountPacket(int minionID, int targetID)
     {
         Entity minion = mc.theWorld.getEntityByID(minionID);

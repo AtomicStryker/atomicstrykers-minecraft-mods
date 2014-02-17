@@ -3,8 +3,9 @@ package atomicstryker.minions.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.S29PacketSoundEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
-import atomicstryker.minions.common.network.SoundPacket;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
@@ -14,17 +15,17 @@ public class CommonProxy
     {
         // NOOP
     }
-    
+
     public void load(FMLInitializationEvent evt)
     {
         // NOOP
     }
-    
+
     public void registerRenderInformation()
     {
         // NOOP
     }
-    
+
     public boolean hasPlayerMinions(EntityPlayer player)
     {
         return MinionsCore.instance.getMinionsForMaster(player).length > 0;
@@ -32,7 +33,8 @@ public class CommonProxy
 
     public void sendSoundToClients(Entity ent, String string)
     {
-        MinionsCore.instance.networkHelper.sendPacketToAllInDimension(new SoundPacket(string, ent.dimension, ent.getEntityId()), ent.dimension);
+        MinecraftServer.getServer().getConfigurationManager()
+                .sendToAllNear(ent.posX, ent.posY, ent.posZ, 16D, ent.dimension, new S29PacketSoundEffect(string, ent.posX, ent.posY, ent.posZ, 1f, 1f));
     }
 
     public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
@@ -45,8 +47,8 @@ public class CommonProxy
         // NOOP
     }
 
-	public void playSoundAtEntity(Entity ent, String sound, float volume, float pitch)
-	{
-		// NOOP
-	}
+    public void playSoundAtEntity(Entity ent, String sound, float volume, float pitch)
+    {
+        // NOOP
+    }
 }

@@ -4,10 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
-import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class SoundPacket implements IPacket
@@ -40,18 +38,10 @@ public class SoundPacket implements IPacket
         dimension = bytes.readInt();
         entID = bytes.readInt();
         
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        Entity e = MinecraftServer.getServer().worldServerForDimension(dimension).getEntityByID(entID);
+        if (e != null)
         {
-            MinionsClient.onSoundPacket(sound, entID);
-        }
-        else
-        {
-            Entity e = MinecraftServer.getServer().worldServerForDimension(dimension).getEntityByID(entID);
-            if (e != null)
-            {
-                MinionsCore.proxy.sendSoundToClients(e, sound);
-            }
+            MinionsCore.proxy.sendSoundToClients(e, sound);
         }
     }
-
 }

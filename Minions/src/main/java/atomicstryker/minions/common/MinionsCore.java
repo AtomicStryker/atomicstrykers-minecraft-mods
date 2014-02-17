@@ -78,7 +78,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.6")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.7")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -114,6 +114,7 @@ public class MinionsCore
     private static boolean debugMode;
     
     private EvilCommitCount commitStorage;
+    private final ArrayList<FutureDeedEvent> delayedDeedEvents;
     
     public MinionsCore()
     {
@@ -123,6 +124,7 @@ public class MinionsCore
         runningJobList = new ConcurrentLinkedQueue<Minion_Job_Manager>();
         minionMap = new HashMap<String, ArrayList<EntityMinion>>();
         minionMapLock = false;
+        delayedDeedEvents = new ArrayList<FutureDeedEvent>();
     }
 
     @EventHandler
@@ -245,7 +247,22 @@ public class MinionsCore
                     iter.remove();
                 }
             }
+            
             ChickenLightningBolt.update();
+            
+            for (Iterator <FutureDeedEvent> iter = delayedDeedEvents.iterator(); iter.hasNext();)
+            {
+                FutureDeedEvent e = iter.next();
+                if (System.currentTimeMillis() >= e.targetTime)
+                {
+                    proxy.sendSoundToClients(e.player, e.sound);
+                    if (e.staff)
+                    {
+                        e.player.inventory.addItemStackToInventory(new ItemStack(itemMastersStaff, 1, 0));
+                    }
+                    iter.remove();
+                }
+            }
         }
     }
 	
@@ -424,36 +441,41 @@ public class MinionsCore
         }
         System.out.println("added additional minion for "+mastername+", now registered: "+minions.length);
     }
-
-    public void onMasterAddedEvil(EntityPlayer player)
+    
+    public void onMasterAddedEvil(EntityPlayer player, int soundLength)
     {
+        FutureDeedEvent event = new FutureDeedEvent();
+        
+        event.player = player;
+        event.targetTime = System.currentTimeMillis() + (soundLength*1000l);
+        event.staff = false;
+        event.sound = "minions:thegodsarepleaseedwithyoursacrifice";
         if (commitStorage.masterCommits.get(player.getGameProfile().getName()) != null)
         {
             int commits = commitStorage.masterCommits.get(player.getGameProfile().getName());
             commits++;
-
-            if (commits % 4 == 0)
+            if (commits >= 4)
             {
-                // check existing staff
-                if (!player.inventory.hasItem(itemMastersStaff))
-                {
-                    proxy.playSoundAtEntity(player, "minions:thegodshaverewardedyouroffering", 1.0F, 1.0F);
-                    // give master item to player
-                    player.inventory.addItemStackToInventory(new ItemStack(itemMastersStaff, 1, 0));
-                }
+                event.sound = "minions:thegodshaverewardedyouroffering";
+                event.staff = true;
+                commits -= 4;
             }
-            else
-            {
-                commitStorage.masterCommits.put(player.getGameProfile().getName(), commits);
-                proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
-            }
+            commitStorage.masterCommits.put(player.getGameProfile().getName(), commits);
         }
         else
         {
             commitStorage.masterCommits.put(player.getGameProfile().getName(), 1);
-            proxy.playSoundAtEntity(player, "minions:thegodsarepleaseedwithyoursacrifice", 1.0F, 1.0F);
         }
+        delayedDeedEvents.add(event);
         commitStorage.markDirty();
+    }
+    
+    private class FutureDeedEvent
+    {
+        public long targetTime;
+        public String sound;
+        public EntityPlayer player;
+        public boolean staff;
     }
     
     public boolean hasPlayerMinions(EntityPlayer player)

@@ -338,8 +338,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                 long curTime = System.currentTimeMillis();
                 if (curTime - timeLastSound > (500L / workSpeed))
                 {
-                    worldObj.playSoundAtEntity(this, blockID.stepSound.getStepResourcePath(), (blockID.stepSound.getVolume() + 1.0F) / 2.0F,
-                            blockID.stepSound.getPitch() * 0.8F);
+                    worldObj.playSound(posX, posY, posZ, blockID.stepSound.getStepResourcePath(), (blockID.stepSound.getVolume() + 1.0F) / 2.0F,
+                            blockID.stepSound.getPitch() * 0.8F, false);
                     timeLastSound = curTime;
                 }
             }
