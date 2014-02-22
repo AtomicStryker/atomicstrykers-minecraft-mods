@@ -34,10 +34,12 @@ if( dfile.exists() ) {
 			println 'Adding dependency on project ' + it.text()
 			compile files(projectpath+'/../'+it.text()+'/build/libs/'+it.text()+'-'+version+'.jar')
 		}
-		
-		// also punch in anything in the forgegradle libs folder
-		compile fileTree(dir: projectpath+'/../forgegradle/libs', include: '*.jar')
 	}
+}
+
+dependencies {
+	// also punch in anything in the forgegradle libs folder
+	compile fileTree(dir: projectpath+'/../../forgegradle/libs', include: '*.jar')
 }
 
 processResources
