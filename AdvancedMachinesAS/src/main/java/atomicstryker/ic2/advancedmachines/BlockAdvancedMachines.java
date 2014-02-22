@@ -10,20 +10,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import atomicstryker.ic2.advancedmachines.client.AdvancedMachinesClient;
 
 public class BlockAdvancedMachines extends BlockContainer
@@ -31,15 +33,15 @@ public class BlockAdvancedMachines extends BlockContainer
 
     private IIcon[][] iconBuffer;
 
-    public BlockAdvancedMachines(int var1)
+    public BlockAdvancedMachines()
     {
-        super(var1, Material.iron);
+        super(Material.iron);
         this.setHardness(2.0F);
-        this.setStepSound(soundMetalFootstep);
+        this.setStepSound(soundTypeAnvil);
     }
 
     @Override
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
         iconBuffer = new IIcon[4][12]; // 4 machines, 6 sides each, in ON and OFF states
 
@@ -109,7 +111,7 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public IIcon getBlockTexture(IBlockAccess world, int x, int y, int z, int blockSide)
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int blockSide)
     {
         int blockMeta = world.getBlockMetadata(x, y, z);
         TileEntity te = world.getTileEntity(x, y, z);
@@ -128,7 +130,7 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world)
+    public TileEntity createNewTileEntity(World world, int i)
     {
         return null;
     }
@@ -152,9 +154,9 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int meta, int fortune)
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
     {
-        ArrayList<ItemStack> dropList = super.getBlockDropped(world, x, y, z, meta, fortune);
+        ArrayList<ItemStack> dropList = super.getDrops(world, x, y, z, metadata, fortune);
         TileEntity te = world.getTileEntity(x, y, z);
         if (te instanceof IInventory)
         {
@@ -174,11 +176,11 @@ public class BlockAdvancedMachines extends BlockContainer
     }
 
     @Override
-    public void breakBlock(World world, int x, int y, int z, int blockID, int blockMeta)
+    public void breakBlock(World world, int x, int y, int z, Block blockID, int blockMeta)
     {
         super.breakBlock(world, x, y, z, blockID, blockMeta);
         boolean var5 = true;
-        for (Iterator<ItemStack> iter = this.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 0).iterator(); iter.hasNext(); var5 = false)
+        for (Iterator<ItemStack> iter = getDrops(world, x, y, z, world.getBlockMetadata(x, y, z), 0).iterator(); iter.hasNext(); var5 = false)
         {
             ItemStack var7 = (ItemStack) iter.next();
             if (!var5)
@@ -199,11 +201,11 @@ public class BlockAdvancedMachines extends BlockContainer
             }
         }
     }
-
+    
     @Override
-    public int idDropped(int var1, Random var2, int var3)
+    public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_)
     {
-        return Items.getItem("advancedMachine").itemID;
+        return Items.getItem("advancedMachine").getItem();
     }
 
     /**

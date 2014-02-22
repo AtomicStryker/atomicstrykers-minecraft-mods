@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -36,6 +34,13 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
     private final ItemStack hydratedCoalDust;
     private final ItemStack twoQuartz;
     
+    private final ItemStack waterBucket;
+    private final ItemStack quartzOre;
+    private final ItemStack sand;
+    private final ItemStack netherrack;
+    private final ItemStack ice;
+    private final ItemStack redstone;
+    
     private final InvSlot supplementSlot;
 
     public TileEntityAdvancedMacerator()
@@ -52,7 +57,14 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         idWaterCell = Items.getItem("waterCell");
         bronzeDust = Items.getItem("bronzeDust");
         hydratedCoalDust = Items.getItem("hydratedCoalDust");
-        twoQuartz = new ItemStack(Item.netherQuartz, 2);
+        twoQuartz = new ItemStack(net.minecraft.init.Items.quartz, 2);
+        
+        waterBucket = new ItemStack(net.minecraft.init.Items.water_bucket);
+        quartzOre = new ItemStack(net.minecraft.init.Blocks.quartz_ore);
+        sand = new ItemStack(net.minecraft.init.Blocks.sand);
+        netherrack = new ItemStack(net.minecraft.init.Blocks.netherrack);
+        ice = new ItemStack(net.minecraft.init.Blocks.ice);
+        redstone = new ItemStack(net.minecraft.init.Items.redstone);
     }
     
     @Override
@@ -165,17 +177,17 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                     }
                 }
             }
-            else if (original.getItem().itemID == Blocks.oreNetherQuartz && supplement.itemID == Blocks.sand)
+            else if (original.isItemEqual(quartzOre) && supplement.isItemEqual(sand))
             {
                 nextSupplementResultCount = 1;
                 results.add(twoQuartz);
             }
-            else if (original.getItem().itemID == Blocks.netherrack && supplement.itemID == Item.redstone.itemID)
+            else if (original.isItemEqual(netherrack) && supplement.isItemEqual(redstone))
             {
                 if (original.stackSize > 7)
                 {
                     nextSupplementResultCount = 1;
-                    results.add(new ItemStack(Item.glowstone, 1));
+                    results.add(new ItemStack(net.minecraft.init.Items.glowstone_dust, 1));
                     nextSupplementResourceDrain = 6; // to pull 6 additional netherrack for a total cost of 7
                 }
             }
@@ -191,7 +203,7 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
     
     private boolean isWater(ItemStack item)
     {
-        return item.itemID == Item.bucketWater.itemID || item.isItemEqual(idWaterCell) || item.itemID == Blocks.ice;
+        return item.isItemEqual(waterBucket) || item.isItemEqual(idWaterCell) || item.isItemEqual(ice);
     }
 
     @Override

@@ -1,16 +1,18 @@
 package atomicstryker.ic2.advancedmachines;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ic2.api.item.Items;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.Recipes;
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -23,12 +25,10 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.IGuiHandler;
-import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.6", dependencies = "required-after:IC2@2.0.325")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false)
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.7", dependencies = "required-after:IC2@2.1.403")
 public class ModAdvancedMachines implements IGuiHandler, IProxy
 {
     
@@ -56,7 +56,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
-        blockAdvancedMachine = new BlockAdvancedMachines(config.getBlock("IDs", "AdvancedMachineBlock", 1188).getInt());
+        blockAdvancedMachine = new BlockAdvancedMachines();
         blockAdvancedMachine.setCreativeTab(CreativeTabs.tabRedstone);
         
         GameRegistry.registerBlock(blockAdvancedMachine, ItemAdvancedMachine.class, "blockAdvMachine");
@@ -79,7 +79,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         GameRegistry.registerTileEntity(TileEntityAdvancedExtractor.class, "Centrifuge Extractor");
         GameRegistry.registerTileEntity(TileEntityAdvancedRecycler.class, "Combined Recycler");
         
-        NetworkRegistry.instance().registerGuiHandler(this, this);
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, this);
         
         proxy.load();
     }
@@ -102,7 +102,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         {
             GameRegistry.addRecipe(stackSingularityCompressor,
                     new Object[] {"RGR", "MMM", "PAP",
-                Character.valueOf('R'), Block.obsidian,
+                Character.valueOf('R'), Blocks.obsidian,
                 Character.valueOf('G'), Items.getItem("reinforcedGlass"),
                 Character.valueOf('P'), Items.getItem("plateiron"),
                 Character.valueOf('M'), Items.getItem("compressor"),
@@ -131,8 +131,8 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
                 Character.valueOf('R'), Items.getItem("recycler")});
         }
         
-        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Block.netherrack)), new NBTTagCompound(), new ItemStack(Block.netherrack));
-        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Block.oreNetherQuartz)), new NBTTagCompound(), new ItemStack(Block.oreNetherQuartz));
+        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.netherrack)), new NBTTagCompound(), new ItemStack(Blocks.netherrack));
+        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.quartz_ore)), new NBTTagCompound(), new ItemStack(Blocks.quartz_ore));
         
         config.save();
     }

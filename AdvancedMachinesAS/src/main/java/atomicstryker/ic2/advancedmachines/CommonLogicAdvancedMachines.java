@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -22,7 +22,7 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
     private int speed;
     private final String dataFormat;
     private final int dataScaling;
-    private final RecipeOutput dummyOut = new RecipeOutput(new NBTTagCompound(), new ItemStack(Block.dirt));
+    private final RecipeOutput dummyOut = new RecipeOutput(new NBTTagCompound(), new ItemStack(Blocks.dirt));
 
     private static boolean failed;
     private static Field progressField;
@@ -142,7 +142,7 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
     {
         try
         {
-            if (progressField != null && !te.worldObj.isRemote)
+            if (progressField != null && !te.getWorldObj().isRemote)
             {
                 if (te.getActive())
                 {
