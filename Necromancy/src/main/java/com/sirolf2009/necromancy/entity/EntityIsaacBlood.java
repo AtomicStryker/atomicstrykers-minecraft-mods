@@ -42,7 +42,7 @@ public class EntityIsaacBlood extends EntityIsaacNormal implements IRangedAttack
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase par1EntityLiving, float par2)
     {
-        EntityTear tear = new EntityTear(worldObj, this, par1EntityLiving, 1.6F, (float) (14 - worldObj.difficultySetting.getDifficultyId() * 4));
+        EntityTear tear = new EntityTear(worldObj, this);
         worldObj.spawnEntityInWorld(tear);
     }
 

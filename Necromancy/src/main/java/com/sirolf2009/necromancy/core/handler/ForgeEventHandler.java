@@ -16,8 +16,6 @@ import net.minecraftforge.event.entity.player.FillBucketEvent;
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
-import com.sirolf2009.necromancy.client.model.ModelMinion;
-import com.sirolf2009.necromancy.command.CommandRemodel;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.item.ItemNecroSkull;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
@@ -77,7 +75,7 @@ public class ForgeEventHandler
             {
                 player.inventory.addItemStackToInventory(new ItemStack(Items.bucket));
             }
-            else if (item.getItem() ==RegistryNecromancyItems.bucketBlood)
+            else if (item.getItem() == RegistryNecromancyItems.bucketBlood)
             {
                 player.inventory.addItemStackToInventory(new ItemStack(Items.glass_bottle, 8));
             }
@@ -101,29 +99,18 @@ public class ForgeEventHandler
     }
 
     @SubscribeEvent
-    public void CommandEvent(net.minecraftforge.event.CommandEvent evt)
-    {
-        if (evt.command instanceof CommandRemodel)
-        {
-            ModelMinion.remodelCommand = true;
-        }
-    }
-
-    @SubscribeEvent
     public void onBucketFill(FillBucketEvent event)
     {
         ItemStack result = fillCustomBucket(event.world, event.target);
-
-        if (result == null)
-            return;
-
-        event.result = result;
-        event.setResult(Result.ALLOW);
+        if (result != null)
+        {
+            event.result = result;
+            event.setResult(Result.ALLOW);
+        }
     }
 
     private ItemStack fillCustomBucket(World world, MovingObjectPosition pos)
     {
-
         Block blockID = world.getBlock(pos.blockX, pos.blockY, pos.blockZ);
 
         if ((blockID == RegistryBlocksNecromancy.fluidBlood.getBlock() || blockID == RegistryBlocksNecromancy.blood)

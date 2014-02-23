@@ -17,7 +17,6 @@ public class ModelMinion extends ModelBase
 {
 
     public RenderMinion renderer;
-    public static boolean remodelCommand = false;
     
     private BodyPart[] head, torso, armLeft, armRight, legs;
     private BodyPart[][] parts;
@@ -31,7 +30,7 @@ public class ModelMinion extends ModelBase
         {
             minion.setModel(this);
         }
-        updateModel(minion, minion.ticksExisted < 10 || remodelCommand);
+        updateModel(minion, minion.ticksExisted < 10);
         setRotationAngles(par2, par3, par4, par5, par6, par7, minion);
         if (legs != null)
         {
@@ -146,15 +145,6 @@ public class ModelMinion extends ModelBase
             armRight = null;
             legs = null;
             NecroEntityBase mob;
-            if (remodelCommand)
-            {
-                for (int i = 0; i < NecroEntityRegistry.registeredEntities.size(); i++)
-                    if (parts.length > i && parts[i] != null && parts[i].length > 0 && parts[i][0] != null)
-                    {
-                        NecroEntityRegistry.registeredEntities.get(parts[i][0].name).updateParts(this);
-                    }
-                remodelCommand = false;
-            }
             if (parts.length > 0 && parts[0] != null && parts[0].length > 0 && parts[0][0] != null
                     && (mob = NecroEntityRegistry.registeredEntities.get(parts[0][0].name)) != null && (head = mob.head) == null)
             {

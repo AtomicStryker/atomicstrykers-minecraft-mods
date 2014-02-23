@@ -12,13 +12,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
-import atomicstryker.necromancy.network.TearShotPacket;
 import atomicstryker.necromancy.network.NetworkHelper;
+import atomicstryker.necromancy.network.TearShotPacket;
 
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.client.gui.GuiHandler;
 import com.sirolf2009.necromancy.command.CommandMinion;
-import com.sirolf2009.necromancy.command.CommandRemodel;
 import com.sirolf2009.necromancy.core.handler.ForgeEventHandler;
 import com.sirolf2009.necromancy.core.proxy.CommonProxy;
 import com.sirolf2009.necromancy.craftingmanager.CraftingManagerSewing;
@@ -135,7 +134,6 @@ public class Necromancy
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
-        event.registerServerCommand(new CommandRemodel());
         event.registerServerCommand(new CommandMinion());
     }
 

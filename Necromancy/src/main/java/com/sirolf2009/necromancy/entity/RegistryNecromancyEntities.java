@@ -69,8 +69,8 @@ public class RegistryNecromancyEntities
         EntityRegistry.registerGlobalEntityID(EntityMinion.class, "minionNecro", EntityRegistry.findGlobalUniqueEntityId());
         EntityRegistry.registerModEntity(EntityMinion.class, "minionNecro", 6, Necromancy.instance, 25, 5, true);
 
-        EntityRegistry.registerModEntity(EntityTear.class, "TearNormal", 7, Necromancy.instance, 144, 2, true);
-        EntityRegistry.registerModEntity(EntityTearBlood.class, "TearBlood", 8, Necromancy.instance, 144, 2, true);
+        EntityRegistry.registerModEntity(EntityTear.class, "TearNormal", 7, Necromancy.instance, 32, 5, true);
+        EntityRegistry.registerModEntity(EntityTearBlood.class, "TearBlood", 8, Necromancy.instance, 32, 5, true);
         
         for (int freeID = 0; freeID < 100; freeID++)
         {

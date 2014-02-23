@@ -69,7 +69,7 @@ public class EntityIsaacNormal extends EntityMob implements IMob, IRangedAttackM
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase entitylivingbase, float f)
     {
-        EntityTear tear = new EntityTear(worldObj, this, entitylivingbase, 1.6F, (float) (14 - worldObj.difficultySetting.getDifficultyId() * 4));
+        EntityTear tear = new EntityTear(worldObj, this);
         worldObj.spawnEntityInWorld(tear);
     }
 
