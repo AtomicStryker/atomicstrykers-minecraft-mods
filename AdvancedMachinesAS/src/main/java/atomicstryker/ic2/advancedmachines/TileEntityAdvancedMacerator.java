@@ -1,6 +1,6 @@
 package atomicstryker.ic2.advancedmachines;
 
-import ic2.api.item.Items;
+import ic2.api.item.IC2Items;
 import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 import ic2.core.block.invslot.InvSlot;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -51,20 +53,20 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
         advLogic.getOutputSlots().add(new InvSlotOutput(this, "outputextra1", EXTRA_OUT_SLOT_INDEX, 1));
         supplementSlot = new InvSlot(this, "supplement", SUPPLEMENT_SLOT_INDEX, InvSlot.Access.I, 1);
         
-        idCopperOreCrushed = Items.getItem("crushedCopperOre");
-        idTinOreCrushed = Items.getItem("crushedTinOre");
-        idCoalDust = Items.getItem("coalDust");
-        idWaterCell = Items.getItem("waterCell");
-        bronzeDust = Items.getItem("bronzeDust");
-        hydratedCoalDust = Items.getItem("hydratedCoalDust");
-        twoQuartz = new ItemStack(net.minecraft.init.Items.quartz, 2);
+        idCopperOreCrushed = IC2Items.getItem("crushedCopperOre");
+        idTinOreCrushed = IC2Items.getItem("crushedTinOre");
+        idCoalDust = IC2Items.getItem("coalDust");
+        idWaterCell = IC2Items.getItem("waterCell");
+        bronzeDust = IC2Items.getItem("bronzeDust");
+        hydratedCoalDust = IC2Items.getItem("hydratedCoalDust");
+        twoQuartz = new ItemStack(Items.quartz, 2);
         
-        waterBucket = new ItemStack(net.minecraft.init.Items.water_bucket);
-        quartzOre = new ItemStack(net.minecraft.init.Blocks.quartz_ore);
-        sand = new ItemStack(net.minecraft.init.Blocks.sand);
-        netherrack = new ItemStack(net.minecraft.init.Blocks.netherrack);
-        ice = new ItemStack(net.minecraft.init.Blocks.ice);
-        redstone = new ItemStack(net.minecraft.init.Items.redstone);
+        waterBucket = new ItemStack(Items.water_bucket);
+        quartzOre = new ItemStack(Blocks.quartz_ore);
+        sand = new ItemStack(Blocks.sand);
+        netherrack = new ItemStack(Blocks.netherrack);
+        ice = new ItemStack(Blocks.ice);
+        redstone = new ItemStack(Items.redstone);
     }
     
     @Override
@@ -187,7 +189,7 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
                 if (original.stackSize > 7)
                 {
                     nextSupplementResultCount = 1;
-                    results.add(new ItemStack(net.minecraft.init.Items.glowstone_dust, 1));
+                    results.add(new ItemStack(Items.glowstone_dust, 1));
                     nextSupplementResourceDrain = 6; // to pull 6 additional netherrack for a total cost of 7
                 }
             }

@@ -1,6 +1,6 @@
 package atomicstryker.ic2.advancedmachines;
 
-import ic2.api.item.Items;
+import ic2.api.item.IC2Items;
 import ic2.api.tile.IWrenchable;
 import ic2.core.IC2;
 import ic2.core.block.TileEntityBlock;
@@ -205,7 +205,7 @@ public class BlockAdvancedMachines extends BlockContainer
     @Override
     public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_)
     {
-        return Items.getItem("advancedMachine").getItem();
+        return IC2Items.getItem("advancedMachine").getItem();
     }
 
     /**
