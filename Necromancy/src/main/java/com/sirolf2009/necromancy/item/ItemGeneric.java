@@ -110,11 +110,6 @@ public class ItemGeneric extends Item
             String path = names[index].replace(" ", "").toLowerCase();
             icons[index] = iconRegister.registerIcon("necromancy:" + path.toLowerCase());
         }
-        
-        /*
-        tearBlood = iconRegister.registerIcon("necromancy:BloodTear");
-        tearNormal = iconRegister.registerIcon("necromancy:Tear");
-        */
     }
 
     @Override

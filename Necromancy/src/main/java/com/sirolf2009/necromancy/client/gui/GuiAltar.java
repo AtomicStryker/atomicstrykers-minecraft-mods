@@ -20,8 +20,9 @@ public class GuiAltar extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        fontRendererObj.drawString("Blood", 8, 95, 1);
-        fontRendererObj.drawString("Soul", 60, 95, 1);
+        // 0xFFFFFF = WHITE
+        fontRendererObj.drawString("Blood", 21, 60, 0xFFFFFF);
+        fontRendererObj.drawString("Soul", 132, 60, 0xFFFFFF);
     }
 
     @Override

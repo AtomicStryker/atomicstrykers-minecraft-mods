@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
@@ -30,14 +31,12 @@ public class TileEntityAltar extends TileEntity implements IInventory
 
     private ItemStack altarItemStacks[] = new ItemStack[7];
     private final EntityMinion minion;
-    private ItemStack bodyPartsNew[];
-    private ItemStack bodyPartsOld[];
+    private ItemStack bodyPartsPrev[];
 
     public TileEntityAltar()
     {
         minion = new EntityMinion(worldObj);
-        bodyPartsNew = new ItemStack[5];
-        bodyPartsOld = new ItemStack[5];
+        bodyPartsPrev = new ItemStack[5];
     }
 
     @Override
@@ -131,9 +130,10 @@ public class TileEntityAltar extends TileEntity implements IInventory
                     }
                 }
                 user.getEntityData().setInteger("minions", user.getEntityData().getInteger("minions") + 1);
-                bodyPartsOld = null;
                 user.addStat(AchievementNecromancy.SpawnAchieve, 1);
                 minionSpawned.playSound("necromancy:spawn", 1.0F, 1.0F / (minionSpawned.getRNG().nextFloat() * 0.4F + 0.8F));
+
+                MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(getDescriptionPacket(), user.dimension);
             }
         }
     }
@@ -176,29 +176,42 @@ public class TileEntityAltar extends TileEntity implements IInventory
      */
     public boolean hasAltarChanged()
     {
-        bodyPartsNew[0] = getStackInSlot(2);
-        bodyPartsNew[1] = getStackInSlot(3);
-        bodyPartsNew[2] = getStackInSlot(4);
-        bodyPartsNew[3] = getStackInSlot(5);
-        bodyPartsNew[4] = getStackInSlot(6);
-
-        for (int i = 0; i < 5; i++)
-            if (bodyPartsNew[i] != null && bodyPartsOld[i] != null)
-            {
-                if (!bodyPartsNew[i].isItemEqual(bodyPartsOld[i]))
-                {
-                    bodyPartsOld = bodyPartsNew.clone();
-                    return true;
-                }
-            }
-            else if (bodyPartsNew[i] != null || bodyPartsOld[i] != null && !(bodyPartsNew[i] == null && bodyPartsOld[i] == null))
-            {
-                bodyPartsOld = bodyPartsNew.clone();
-                return true;
-            }
-
-        bodyPartsOld = bodyPartsNew.clone();
+        if (!areEqual(bodyPartsPrev[0], getStackInSlot(2)) || !areEqual(bodyPartsPrev[1], getStackInSlot(3))
+                || !areEqual(bodyPartsPrev[2], getStackInSlot(4)) || !areEqual(bodyPartsPrev[3], getStackInSlot(5))
+                || !areEqual(bodyPartsPrev[4], getStackInSlot(6)))
+        {
+            bodyPartsPrev[0] = tryCopy(getStackInSlot(2));
+            bodyPartsPrev[1] = tryCopy(getStackInSlot(3));
+            bodyPartsPrev[2] = tryCopy(getStackInSlot(4));
+            bodyPartsPrev[3] = tryCopy(getStackInSlot(5));
+            bodyPartsPrev[4] = tryCopy(getStackInSlot(6));
+            return true;
+        }
         return false;
+    }
+
+    private ItemStack tryCopy(ItemStack i)
+    {
+        if (i != null)
+        {
+            return i.copy();
+        }
+        return i;
+    }
+
+    private boolean areEqual(ItemStack a, ItemStack b)
+    {
+        if (a == null && b == null)
+        {
+            return true;
+        }
+
+        if ((a != null && b == null) || (a == null && b != null))
+        {
+            return false;
+        }
+
+        return a.isItemEqual(b);
     }
 
     /**
@@ -366,7 +379,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
             var2.stackSize = getInventoryStackLimit();
         }
     }
-    
+
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
     {

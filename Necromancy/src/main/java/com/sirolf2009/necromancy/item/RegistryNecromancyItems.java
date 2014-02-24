@@ -31,8 +31,6 @@ public class RegistryNecromancyItems
     public static Item isaacsHead;
 
     public static ArmorMaterial isaac = EnumHelper.addArmorMaterial("Isaac", Integer.MAX_VALUE, new int[] { 0, 0, 0, 0 }, 0);
-    public static ArmorMaterial apprenticeRobes = EnumHelper.addArmorMaterial("apprenticeRobesNecromancy", Integer.MAX_VALUE,
-            new int[] { 0, 0, 0, 0 }, 100);
 
     public static void initItems()
     {
