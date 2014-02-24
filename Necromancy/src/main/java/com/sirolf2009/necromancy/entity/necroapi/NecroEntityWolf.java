@@ -49,7 +49,7 @@ public class NecroEntityWolf extends NecroEntityBiped
     {
         if (location == BodyPartLocation.Head)
         {
-            addAttributeMods(minion, "Head", 5.0D, 16.0D, 0D, 0D, 4.0D);
+            addAttributeMods(minion, "Head", 2D, 1D, 1D, 1D, 2D);
         }
     }
 }

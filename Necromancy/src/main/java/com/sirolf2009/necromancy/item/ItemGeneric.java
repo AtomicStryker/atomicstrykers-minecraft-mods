@@ -18,6 +18,9 @@ import com.sirolf2009.necromancy.Necromancy;
 public class ItemGeneric extends Item
 {
     
+    /**
+     * HARDCODED DONT CHANGE THESE
+     */
     private static final String names[] = { "Bone Needle", "Soul in a Jar", "Jar of Blood", "Brain on a Stick" };
     
     private IIcon[] icons;

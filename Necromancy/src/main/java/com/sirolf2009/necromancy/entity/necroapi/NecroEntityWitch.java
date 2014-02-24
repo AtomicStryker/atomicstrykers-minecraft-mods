@@ -72,23 +72,23 @@ public class NecroEntityWitch extends NecroEntityVillager
     {
         if (location == BodyPartLocation.Head)
         {
-            addAttributeMods(minion, "Head", 3.0D, 16.0D, 0D, 0D, 0.0D);
+            addAttributeMods(minion, "Head", 1.5D, 1D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.Torso)
         {
-            addAttributeMods(minion, "Torso", 14.0D, 0D, 0D, 0D, 0D);
+            addAttributeMods(minion, "Torso", 2D, 0D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.ArmLeft)
         {
-            addAttributeMods(minion, "ArmL", 3.0D, 0D, 0D, 0D, 2.0D);
+            addAttributeMods(minion, "ArmL", 0.5D, 0D, 0D, 0D, 0.75D);
         }
         else if (location == BodyPartLocation.ArmRight)
         {
-            addAttributeMods(minion, "ArmR", 3.0D, 0D, 0D, 0D, 2.0D);
+            addAttributeMods(minion, "ArmR", 0.5D, 0D, 0D, 0D, 0.75D);
         }
         else if (location == BodyPartLocation.Legs)
         {
-            addAttributeMods(minion, "Legs", 3.0D, 0D, 0D, 0.25D, 0D);
+            addAttributeMods(minion, "Legs", 1.5D, 0D, 3D, 3D, 0D);
         }
     }
 }

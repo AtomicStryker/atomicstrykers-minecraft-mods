@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import com.sirolf2009.necromancy.entity.EntityMinion;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 
 /**
@@ -20,7 +21,7 @@ import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
  */
 public abstract class NecroEntityBase
 {
-    
+
     /** The name for your mob */
     public String mobName;
     /** The location of the mobs texture file */
@@ -67,7 +68,7 @@ public abstract class NecroEntityBase
     public BodyPart[] armRight;
     /** Your entities legs */
     public BodyPart[] legs;
-    
+
     private boolean modelInit;
 
     public NecroEntityBase(String mobName)
@@ -207,7 +208,7 @@ public abstract class NecroEntityBase
 
     /**
      * Used to set the attributes for your necro entity. If not used, the minion
-     * will get the default values
+     * will get the default values.
      * 
      * @param minion
      *            - the minion
@@ -216,41 +217,40 @@ public abstract class NecroEntityBase
      */
     public void setAttributes(EntityLiving minion, BodyPartLocation location)
     {
-        addAttributeMods(minion, "default", 2D, 4D, 0D, 0.3D, 1D);
+        addAttributeMods(minion, "default", 2D, 1D, 0D, 2D, 2D);
     }
-    
+
     /**
-     * Helper to set many Attribute modifiers in a single line.
-     * Modifiers are only added for values != 0D
-     * @param entity to modify
-     * @param bodyPart calling the mod
-     * @param health addition
-     * @param followRange addition
-     * @param knockBackResistance addition
-     * @param movementSpeed addition
-     * @param attackDamage addition
+     * Helper to set many Attribute modifiers in a single line. Modifiers are
+     * only added for values != 0D. Note modifiers are handled as RELATIVE to
+     * the base values and ADDED to the result. e.g. using a modifier of 1 will
+     * ADD one BASEVALUE to the result. Base values are 20 (10 hearts) health,
+     * 16 followrange, 0.1 knockbackresist, 0.1 movspeed and 2 attack damage.
      */
     protected void addAttributeMods(EntityLiving entity, String bodyPart, double health, double followRange, double knockBackResistance, double movementSpeed, double attackDamage)
     {
         if (health != 0D)
         {
-            entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(bodyPart+"FPMod", health, 1));
+            entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(bodyPart + "FPMod", health, 1));
         }
         if (followRange != 0D)
         {
-            entity.getEntityAttribute(SharedMonsterAttributes.followRange).applyModifier(new AttributeModifier(bodyPart+"FRMod", followRange, 1));
+            entity.getEntityAttribute(SharedMonsterAttributes.followRange).applyModifier(new AttributeModifier(bodyPart + "FRMod", followRange, 1));
         }
         if (knockBackResistance != 0D)
         {
-            entity.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier(bodyPart+"KBRMod", knockBackResistance, 1));
+            entity.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(
+                    new AttributeModifier(bodyPart + "KBRMod", knockBackResistance, 1));
         }
         if (movementSpeed != 0D)
         {
-            entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier(bodyPart+"MOVMod", movementSpeed, 1));
+            entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(
+                    new AttributeModifier(bodyPart + "MOVMod", movementSpeed, 1));
         }
         if (attackDamage != 0D)
         {
-            entity.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier(bodyPart+"DMGMod", attackDamage, 1));
+            entity.getEntityAttribute(SharedMonsterAttributes.attackDamage)
+                    .applyModifier(new AttributeModifier(bodyPart + "DMGMod", attackDamage, 1));
         }
     }
 
@@ -299,5 +299,18 @@ public abstract class NecroEntityBase
     public void postRender(Entity entity, BodyPart[] parts, BodyPartLocation location, ModelBase model)
     {
     }
-    
+
+    /**
+     * Called when a Minion attacks something. Can apply part specific Potion
+     * effects etc in here
+     * 
+     * @param minion
+     * @param location
+     * @param target
+     * @param damage
+     */
+    public void attackEntityAsMob(EntityMinion minion, BodyPartLocation location, Entity target, float damage)
+    {
+    }
+
 }

@@ -49,17 +49,16 @@ public class NecroEntityCaveSpider extends NecroEntitySpider
     {
         if (location == BodyPartLocation.Head)
         {
-            addAttributeMods(minion, "Head", 2.0D, 16.0D, 0D, 0D, 2.0D);
+            addAttributeMods(minion, "Head", 0.5D, 1D, 0D, 0D, 0.5D);
         }
         else if (location == BodyPartLocation.Torso)
         {
-            addAttributeMods(minion, "Torso", 12.0D, 0D, 0D, 0D, 0D);
+            addAttributeMods(minion, "Torso", 2D, 0D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.Legs)
         {
-            addAttributeMods(minion, "Legs", 2.0D, 0D, 0D, 0.8D, 0D);
+            addAttributeMods(minion, "Legs", 0.5D, 0D, 1D, 2D, 0.5D);
         }
     }
-
 
 }

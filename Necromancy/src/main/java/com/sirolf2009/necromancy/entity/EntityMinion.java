@@ -9,11 +9,11 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIArrowAttack;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIControlledByPlayer;
 import net.minecraft.entity.ai.EntityAIFollowOwner;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILeapAtTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
@@ -46,7 +46,9 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     protected BodyPart[] head, torso, armLeft, armRight, leg;
     protected ModelMinion model;
     private boolean isAgressive;
-    
+    private int attackTimer;
+    private int rangedAttackTimer;
+
     public EntityMinion(World par1World)
     {
         super(par1World);
@@ -54,24 +56,26 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         getNavigator().setAvoidsWater(true);
         setSize(0.6F, 1.8F);
         ticksExisted = 0;
-        
+
         tasks.addTask(1, new EntityAISwimming(this));
         tasks.addTask(2, aiSit);
         tasks.addTask(3, new EntityAIControlledByPlayer(this, 0.8F));
-        tasks.addTask(4, new EntityAIArrowAttack(this, 1.25D, 30, 10.0F));
-        tasks.addTask(5, new EntityAIAttackOnCollide(this, 0.3F, true));
-        tasks.addTask(6, new EntityAIWander(this, 0.3F));
-        tasks.addTask(7, new EntityAITempt(this, 0.3F, ItemGeneric.getItemStackFromName("Brain on a Stick").getItem(), false));
-        tasks.addTask(8, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        tasks.addTask(9, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        tasks.addTask(9, new EntityAILookIdle(this));
+        tasks.addTask(4, new EntityAILeapAtTarget(this, 0.4F));
+        tasks.addTask(5, new EntityAIAttackOnCollide(this, 1, true));
+        tasks.addTask(7, new EntityAIWander(this, 1));
+        tasks.addTask(8, new EntityAITempt(this, 1, ItemGeneric.getItemStackFromName("Brain on a Stick").getItem(), false));
+        tasks.addTask(9, new EntityAIFollowOwner(this, 1, 10.0F, 2.0F));
+        tasks.addTask(10, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        tasks.addTask(10, new EntityAILookIdle(this));
         targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-        targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));        
-        
+        targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
+
         model.updateModel(this, false);
+
+        attackTimer = rangedAttackTimer = 0;
     }
-    
+
     public EntityMinion(World par1World, BodyPart[][] bodypart, String owner)
     {
         this(par1World);
@@ -79,7 +83,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         setTamed(true);
         setOwner(owner);
     }
-    
+
     @Override
     protected void entityInit()
     {
@@ -92,20 +96,14 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         dataWatcher.addObject(25, Byte.valueOf((byte) 0));
         dataWatcher.addObject(26, Byte.valueOf((byte) 0));
     }
-    
+
     @Override
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
         getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
-        
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(1D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(1D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(10D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0D);
-        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.3D);
     }
-    
+
     /**
      * Called upon spawning the Minion Entity, ONCE
      */
@@ -113,9 +111,12 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     {
         if (getBodyParts().length > 0)
         {
+            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.maxHealth).setBaseValue(20D);
             getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed).setBaseValue(0.1D);
-            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(4D);
-            
+            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(16D);
+            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.1D);
+            getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).setBaseValue(2D);
+
             if (head != null && head.length > 0 && head[0] != null)
             {
                 head[0].entity.setAttributes(this, BodyPartLocation.Head);
@@ -136,18 +137,12 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
             {
                 leg[0].entity.setAttributes(this, BodyPartLocation.Legs);
             }
-            
-            setHealth((float) (getHealth() > getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() ? getEntityAttribute(
-                    SharedMonsterAttributes.maxHealth).getAttributeValue() : getHealth()));
-            
-            System.out.println("Necromancy Minion final movementSpeed:" + getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
-            System.out.println("Necromancy Minion final health:" + getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
-            System.out.println("Necromancy Minion final damage:" + getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
-            System.out.println("Necromancy Minion final followRange:" + getEntityAttribute(SharedMonsterAttributes.followRange).getAttributeValue());
-            System.out.println("Necromancy Minion final knockbackres:" + getEntityAttribute(SharedMonsterAttributes.knockbackResistance).getAttributeValue());
+
+            setHealth((float) getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
+            printMinionInfo();
         }
     }
-    
+
     /**
      * Sends the bodypart data to the dataWatcher system
      */
@@ -184,6 +179,15 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         leg = getBodyPartFromlocation(BodyPartLocation.Legs, legType = dataWatcher.getWatchableObjectString(24));
     }
 
+    private void printMinionInfo()
+    {
+        System.out.println("Necromancy Minion movementSpeed:" + getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
+        System.out.println("Necromancy Minion health:" + getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
+        System.out.println("Necromancy Minion damage:" + getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
+        System.out.println("Necromancy Minion followRange:" + getEntityAttribute(SharedMonsterAttributes.followRange).getAttributeValue());
+        System.out.println("Necromancy Minion knockbackres:" + getEntityAttribute(SharedMonsterAttributes.knockbackResistance).getAttributeValue());
+    }
+
     @Override
     public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound)
     {
@@ -213,7 +217,32 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     @Override
     public boolean attackEntityAsMob(Entity par1Entity)
     {
+        attackTimer = 10;
+        worldObj.setEntityState(this, (byte) 4);
+
         float damage = (float) getAttributeMap().getAttributeInstance(SharedMonsterAttributes.attackDamage).getAttributeValue();
+
+        if (head != null && head.length > 0 && head[0] != null)
+        {
+            head[0].entity.attackEntityAsMob(this, BodyPartLocation.Head, par1Entity, damage);
+        }
+        if (torso != null && torso.length > 0 && torso[0] != null)
+        {
+            torso[0].entity.attackEntityAsMob(this, BodyPartLocation.Torso, par1Entity, damage);
+        }
+        if (armLeft != null && armLeft.length > 0 && armLeft[0] != null)
+        {
+            armLeft[0].entity.attackEntityAsMob(this, BodyPartLocation.ArmLeft, par1Entity, damage);
+        }
+        if (armRight != null && armRight.length > 0 && armRight[0] != null)
+        {
+            armRight[0].entity.attackEntityAsMob(this, BodyPartLocation.ArmRight, par1Entity, damage);
+        }
+        if (leg != null && leg.length > 0 && leg[0] != null)
+        {
+            leg[0].entity.attackEntityAsMob(this, BodyPartLocation.Legs, par1Entity, damage);
+        }
+
         if (getOwner() != null)
             return par1Entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) getOwner()), damage);
         else
@@ -341,7 +370,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
                 riddenByEntity.height = mob.riderHeight() + (highestPoint - lowestPoint);
                 return true;
             }
-            
+
             if (riddenByEntity == null)
             {
                 if (player.getCommandSenderName().equalsIgnoreCase(getOwnerName()))
@@ -349,9 +378,10 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
                     aiSit.setSitting(!this.isSitting());
                     isJumping = false;
                     setPathToEntity((PathEntity) null);
-                    setTarget((Entity)null);
-                    setAttackTarget((EntityLivingBase)null);
+                    setTarget((Entity) null);
+                    setAttackTarget((EntityLivingBase) null);
                     player.addChatMessage(new ChatComponentText("Minion is " + (isSitting() ? "free to move." : "staying put.")));
+                    printMinionInfo();
                 }
                 else
                 {
@@ -361,7 +391,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         }
         return true;
     }
-    
+
     /**
      * @return saddle state from datawatcher
      */
@@ -369,7 +399,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     {
         return (dataWatcher.getWatchableObjectByte(25) & 1) != 0;
     }
-    
+
     /**
      * updates dataWatcher with saddle state
      */
@@ -390,7 +420,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     {
         return true;
     }
-    
+
     /**
      * Used by the TileEntity to specify entity body parts
      */
@@ -433,7 +463,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
                         Double.valueOf(posZ), getBodyPartsNames()[0], getBodyPartsNames()[1], getBodyPartsNames()[2], getBodyPartsNames()[3],
                         getBodyPartsNames()[4] });
     }
-    
+
     /**
      * builds an array of the current body part names
      */
@@ -447,7 +477,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
                         leg != null && leg.length > 0 && leg[0] != null ? leg[0].name : "UNDEFINED", };
         return list;
     }
-    
+
     /**
      * builds an array of the bodypart instances
      */
@@ -456,7 +486,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         BodyPart[][] list = { head, torso, armLeft, armRight, leg };
         return list;
     }
-    
+
     /**
      * model instance getter
      */
@@ -472,7 +502,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     {
         this.model = model;
     }
-    
+
     /**
      * setter helper for body parts
      */
@@ -528,7 +558,52 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         if (getBodyPartsNames()[0].equals("Isaac"))
         {
             playSound("necromancy:tear", 1.0F, 1.0F / (getRNG().nextFloat() * 0.4F + 0.8F));
-            worldObj.spawnEntityInWorld(new EntityTear(worldObj, this, target));
+            worldObj.spawnEntityInWorld(rand.nextInt(5) == 0 ? new EntityTearBlood(worldObj, this, target) : new EntityTear(worldObj, this, target));
         }
+    }
+
+    @Override
+    public void onLivingUpdate()
+    {
+        super.onLivingUpdate();
+
+        if (attackTimer > 0)
+        {
+            attackTimer--;
+        }
+        else
+        {
+            if (getAttackTarget() != null && rangedAttackTimer == 0)
+            {
+                attackEntityWithRangedAttack(getAttackTarget(), 0);
+                rangedAttackTimer = 60;
+            }
+        }
+
+        if (rangedAttackTimer > 0)
+        {
+            rangedAttackTimer--;
+        }
+    }
+
+    @Override
+    public void handleHealthUpdate(byte meta)
+    {
+        if (meta == 4)
+        {
+            attackTimer = 10;
+        }
+        else
+        {
+            super.handleHealthUpdate(meta);
+        }
+    }
+
+    /**
+     * Used by the model for arm raising animations
+     */
+    public int getAttackTimer()
+    {
+        return attackTimer;
     }
 }

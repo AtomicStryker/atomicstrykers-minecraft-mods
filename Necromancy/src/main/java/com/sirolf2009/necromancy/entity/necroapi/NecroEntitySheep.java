@@ -55,23 +55,23 @@ public class NecroEntitySheep extends NecroEntityQuadruped
     {
         if (location == BodyPartLocation.Head)
         {
-            addAttributeMods(minion, "Head", 1.0D, 16.0D, 0D, 0D, 0.0D);
+            addAttributeMods(minion, "Head", 0.5D, 1D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.Torso)
         {
-            addAttributeMods(minion, "Torso", 6.0D, 0D, 0D, 0D, 0D);
+            addAttributeMods(minion, "Torso", 1D, 0D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.ArmLeft)
         {
-            addAttributeMods(minion, "ArmL", 1.0D, 0D, 0D, 0.175D, 0.5D);
+            addAttributeMods(minion, "ArmL", 0.25D, 0D, 0D, 0D, 0.25D);
         }
         else if (location == BodyPartLocation.ArmRight)
         {
-            addAttributeMods(minion, "ArmR", 1.0D, 0D, 0D, 0.175D, 0.5D);
+            addAttributeMods(minion, "ArmL", 0.25D, 0D, 0D, 0D, 0.25D);
         }
         else if (location == BodyPartLocation.Legs)
         {
-            addAttributeMods(minion, "Legs", 1.0D, 0D, 0D, 0.35D, 0D);
+            addAttributeMods(minion, "Legs", 0.25D, 0D, 1D, 3D, 0D);
         }
     }
 }

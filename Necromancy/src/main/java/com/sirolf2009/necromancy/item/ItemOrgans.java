@@ -16,6 +16,10 @@ import com.sirolf2009.necromancy.Necromancy;
 public class ItemOrgans extends ItemFood
 {
     private IIcon[] icons;
+    
+    /**
+     * HARDCODED DONT CHANGE THESE
+     */
     private final static String names[] = { "Brains", "Heart", "Muscle", "Lungs", "Skin" };
 
     public ItemOrgans()

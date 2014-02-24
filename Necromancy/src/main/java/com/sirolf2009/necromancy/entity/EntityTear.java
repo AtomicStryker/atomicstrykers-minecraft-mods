@@ -40,7 +40,7 @@ public class EntityTear extends EntityThrowable
             double extraZ = zDiff / distEuclid;
             setLocationAndAngles(shooter.posX + extraX, this.posY, shooter.posZ + extraZ, rot, pitch);
             yOffset = 0.0F;
-            setThrowableHeading(xDiff, yDiff + (distEuclid * 0.2D), zDiff, 1.6F, 2F);
+            setThrowableHeading(xDiff, yDiff, zDiff, 1.0F, 2F);
         }
     }
 

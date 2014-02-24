@@ -208,30 +208,57 @@ public class ModelMinion extends ModelBase
     */
 
     @Override
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity)
+    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity minionEntity)
     {
+        EntityMinion minion = (EntityMinion) minionEntity;
         NecroEntityBase mob;
-        String[] parts = ((EntityMinion) par7Entity).getBodyPartsNames();
+        String[] parts = minion.getBodyPartsNames();
         if ((mob = NecroEntityRegistry.registeredEntities.get(parts[0])) != null)
         {
-            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity, head, BodyPartLocation.Head);
+            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, minionEntity, head, BodyPartLocation.Head);
         }
         if ((mob = NecroEntityRegistry.registeredEntities.get(parts[1])) != null)
         {
-            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity, torso, BodyPartLocation.Torso);
+            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, minionEntity, torso, BodyPartLocation.Torso);
         }
         if ((mob = NecroEntityRegistry.registeredEntities.get(parts[2])) != null)
         {
-            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity, armLeft, BodyPartLocation.ArmLeft);
+            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, minionEntity, armLeft, BodyPartLocation.ArmLeft);
         }
         if ((mob = NecroEntityRegistry.registeredEntities.get(parts[3])) != null)
         {
-            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity, armRight, BodyPartLocation.ArmRight);
+            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, minionEntity, armRight, BodyPartLocation.ArmRight);
         }
         if ((mob = NecroEntityRegistry.registeredEntities.get(parts[4])) != null)
         {
-            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity, legs, BodyPartLocation.Legs);
+            mob.setRotationAngles(par1, par2, par3, par4, par5, par6, minionEntity, legs, BodyPartLocation.Legs);
         }
+        
+        int i = minion.getAttackTimer();
+        if (i > 0)
+        {
+            if (armLeft != null)
+            {
+                for (BodyPart p : armLeft)
+                {
+                    p.rotateAngleX = -2.0F + 1.5F * calc((float)i - par4, 10.0F);
+                    p.rotateAngleX = -2.0F + 1.5F * calc((float)i - par4, 10.0F);
+                }
+            }
+            if (armRight != null)
+            {
+                for (BodyPart p : armRight)
+                {
+                    p.rotateAngleX = -2.0F + 1.5F * calc((float)i - par4, 10.0F);
+                    p.rotateAngleX = -2.0F + 1.5F * calc((float)i - par4, 10.0F);
+                }
+            }
+        }
+    }
+    
+    private float calc(float par1, float par2)
+    {
+        return (Math.abs(par1 % par2 - par2 * 0.5F) - par2 * 0.25F) / (par2 * 0.25F);
     }
     
 }

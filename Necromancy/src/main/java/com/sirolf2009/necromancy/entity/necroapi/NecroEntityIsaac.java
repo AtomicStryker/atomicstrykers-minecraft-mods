@@ -59,7 +59,7 @@ public class NecroEntityIsaac extends NecroEntityBiped
     {
         if (location == BodyPartLocation.Head)
         {
-            addAttributeMods(minion, "Head", 40.0D, 32.0D, 0D, 0.3D, 2.0D);
+            addAttributeMods(minion, "Head", 2D, 1D, 1D, 0D, 0.5D);
         }
     }
 }

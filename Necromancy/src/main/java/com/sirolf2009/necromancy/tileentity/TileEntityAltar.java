@@ -120,7 +120,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 worldObj.spawnEntityInWorld(minionSpawned);
                 Necromancy.loggerNecromancy.info(minionSpawned.toString());
                 user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-                user.addChatMessage(new ChatComponentText("<Minion> Thy command?"));
+                user.addChatMessage(new ChatComponentText("<Minion> Your bidding?"));
                 minionSpawned.dataWatcherUpdate();
                 minionSpawned.getModel().updateModel(minionSpawned, true);
                 if (!user.capabilities.isCreativeMode)

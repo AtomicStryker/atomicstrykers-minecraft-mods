@@ -79,23 +79,23 @@ public class NecroEntitySkeleton extends NecroEntityBiped implements ISkull
     {
         if (location == BodyPartLocation.Head)
         {
-            addAttributeMods(minion, "Head", 2.0D, 16.0D, 0D, 0D, 0.0D);
+            addAttributeMods(minion, "Head", 1D, 1D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.Torso)
         {
-            addAttributeMods(minion, "Torso", 12.0D, 0D, 0D, 0D, 0D);
+            addAttributeMods(minion, "Torso", 1.5D, 0D, 0D, 0D, 0D);
         }
         else if (location == BodyPartLocation.ArmLeft)
         {
-            addAttributeMods(minion, "ArmL", 2.0D, 0D, 0D, 0D, 1.5D);
+            addAttributeMods(minion, "ArmL", 0.5D, 0D, 0D, 0D, 0.5D);
         }
         else if (location == BodyPartLocation.ArmRight)
         {
-            addAttributeMods(minion, "ArmR", 2.0D, 0D, 0D, 0D, 1.5D);
+            addAttributeMods(minion, "ArmR", 0.5D, 0D, 0D, 0D, 0.5D);
         }
         else if (location == BodyPartLocation.Legs)
         {
-            addAttributeMods(minion, "Legs", 2.0D, 0D, 0D, 0.4D, 0D);
+            addAttributeMods(minion, "Legs", 0.75D, 0D, 3D, 3D, 0D);
         }
     }
 }
