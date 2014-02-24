@@ -1,7 +1,12 @@
 1.6.0
 - updated to MC 1.7.2, removed Thaumcraft parts for now
 - fixed a whole army of bugs
+- removed some broken and/or unfinished things such as scents
 - added Iron Golem to Necro Mobs
+- added Wolf Head to craftable bodyparts (name tags as ingredient)
+- made Isaac's Head tear shooting work
+- added Nightcrawlers and Isaac mobs as rare spawns along Zombies and Skeletons
+- fixed Isaac AI and Nightcrawler sounds
 
 1.5
 - updated to MC 1.6.4 and Thaumcraft API 4.0.5b

@@ -7,7 +7,9 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIArrowAttack;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIControlledByPlayer;
 import net.minecraft.entity.ai.EntityAIFollowOwner;
@@ -37,7 +39,7 @@ import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.client.model.ModelMinion;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 
-public class EntityMinion extends EntityTameable
+public class EntityMinion extends EntityTameable implements IRangedAttackMob
 {
 
     protected String legType = "";
@@ -56,12 +58,13 @@ public class EntityMinion extends EntityTameable
         tasks.addTask(1, new EntityAISwimming(this));
         tasks.addTask(2, aiSit);
         tasks.addTask(3, new EntityAIControlledByPlayer(this, 0.8F));
-        tasks.addTask(4, new EntityAIAttackOnCollide(this, 0.3F, true));
-        tasks.addTask(5, new EntityAIWander(this, 0.3F));
-        tasks.addTask(6, new EntityAITempt(this, 0.3F, ItemGeneric.getItemStackFromName("Brain on a Stick").getItem(), false));
-        tasks.addTask(7, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        tasks.addTask(8, new EntityAILookIdle(this));
+        tasks.addTask(4, new EntityAIArrowAttack(this, 1.25D, 30, 10.0F));
+        tasks.addTask(5, new EntityAIAttackOnCollide(this, 0.3F, true));
+        tasks.addTask(6, new EntityAIWander(this, 0.3F));
+        tasks.addTask(7, new EntityAITempt(this, 0.3F, ItemGeneric.getItemStackFromName("Brain on a Stick").getItem(), false));
+        tasks.addTask(8, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        tasks.addTask(9, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        tasks.addTask(9, new EntityAILookIdle(this));
         targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
         targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));        
@@ -517,5 +520,15 @@ public class EntityMinion extends EntityTameable
     public EntityLivingBase getOwner()
     {
         return worldObj.getPlayerEntityByName(getOwnerName());
+    }
+
+    @Override
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float var2)
+    {
+        if (getBodyPartsNames()[0].equals("Isaac"))
+        {
+            playSound("necromancy:tear", 1.0F, 1.0F / (getRNG().nextFloat() * 0.4F + 0.8F));
+            worldObj.spawnEntityInWorld(new EntityTear(worldObj, this, target));
+        }
     }
 }

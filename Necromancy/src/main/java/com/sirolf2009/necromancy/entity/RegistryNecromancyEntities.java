@@ -3,7 +3,11 @@ package com.sirolf2009.necromancy.entity;
 import java.awt.Color;
 
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
+import net.minecraftforge.event.world.WorldEvent.PotentialSpawns;
 
 import com.sirolf2009.necroapi.NecroEntityRegistry;
 import com.sirolf2009.necromancy.Necromancy;
@@ -25,6 +29,7 @@ import com.sirolf2009.necromancy.entity.necroapi.NecroEntityWitch;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityWolf;
 import com.sirolf2009.necromancy.entity.necroapi.NecroEntityZombie;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
@@ -34,8 +39,11 @@ public class RegistryNecromancyEntities
     public static int entityIDTeddy;
     public static int entityIDIsaac;
     public static int villagerIDNecro;
-
-    public static void initEntities()
+    
+    private final SpawnListEntry nightCrawlerEntry;
+    private final SpawnListEntry isaacEntry;
+    
+    public RegistryNecromancyEntities()
     {
         entityIDTeddy = EntityRegistry.findGlobalUniqueEntityId();
         EntityRegistry.registerGlobalEntityID(EntityTeddy.class, "teddyNecro", entityIDTeddy, new Color(99, 69, 29).getRGB(), Color.red.getRGB());
@@ -44,6 +52,7 @@ public class RegistryNecromancyEntities
         EntityRegistry.registerGlobalEntityID(EntityNightCrawler.class, "NightCrawler", EntityRegistry.findGlobalUniqueEntityId(),
                 new Color(6, 6, 6).getRGB(), new Color(13, 13, 13).getRGB());
         EntityRegistry.registerModEntity(EntityNightCrawler.class, "NightCrawler", 1, Necromancy.instance, 25, 5, true);
+        
         EntityRegistry.addSpawn(EntityNightCrawler.class, 1, 1, 1, EnumCreatureType.monster, BiomeGenBase.birchForest, BiomeGenBase.birchForestHills,
                 BiomeGenBase.coldTaiga, BiomeGenBase.coldTaigaHills, BiomeGenBase.desert, BiomeGenBase.desertHills, BiomeGenBase.extremeHills,
                 BiomeGenBase.forest, BiomeGenBase.jungle, BiomeGenBase.megaTaiga, BiomeGenBase.plains, BiomeGenBase.savanna, BiomeGenBase.swampland,
@@ -99,5 +108,36 @@ public class RegistryNecromancyEntities
         NecroEntityRegistry.registerEntity(new NecroEntityWolf());
         NecroEntityRegistry.registerEntity(new NecroEntityWitch());
         NecroEntityRegistry.registerEntity(new NecroEntityZombie());
+        
+        nightCrawlerEntry = new SpawnListEntry(EntityNightCrawler.class, 10, 1, 2);
+        isaacEntry = new SpawnListEntry(EntityIsaacNormal.class, 5, 1, 1);
+    }
+    
+    @SubscribeEvent
+    public void onPotentialSpawns(PotentialSpawns event)
+    {
+        boolean nightCrawler = false;
+        boolean isaac = false;
+        
+        for (SpawnListEntry spawn : event.list)
+        {
+            if (spawn.entityClass.equals(EntityZombie.class))
+            {
+                nightCrawler = true;
+            }
+            else if (spawn.entityClass.equals(EntitySkeleton.class))
+            {
+                isaac = true;
+            }
+        }
+        
+        if (nightCrawler)
+        {
+            event.list.add(nightCrawlerEntry);
+        }
+        if (isaac)
+        {
+            event.list.add(isaacEntry);
+        }
     }
 }

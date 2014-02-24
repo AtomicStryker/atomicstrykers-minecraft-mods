@@ -10,5 +10,17 @@
     "sounds": [
       "nightcrawler/scream"
     ]
+  },
+    "spawn": {
+    "category": "player",
+    "sounds": [
+      "spawn"
+    ]
+  },
+    "tear": {
+    "category": "hostile",
+    "sounds": [
+      "tear"
+    ]
   }
 }

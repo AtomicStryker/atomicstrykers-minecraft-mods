@@ -16,8 +16,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 
-import org.apache.logging.log4j.Level;
-
 import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
 import com.sirolf2009.necroapi.NecroEntityBase;
@@ -26,8 +24,6 @@ import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
 import com.sirolf2009.necromancy.entity.EntityMinion;
 import com.sirolf2009.necromancy.item.ItemGeneric;
-
-import cpw.mods.fml.common.FMLLog;
 
 public class TileEntityAltar extends TileEntity implements IInventory
 {
@@ -137,7 +133,7 @@ public class TileEntityAltar extends TileEntity implements IInventory
                 user.getEntityData().setInteger("minions", user.getEntityData().getInteger("minions") + 1);
                 bodyPartsOld = null;
                 user.addStat(AchievementNecromancy.SpawnAchieve, 1);
-                FMLLog.getLogger().log(Level.INFO, TileEntityAltar.class + "    " + minionSpawned);
+                minionSpawned.playSound("necromancy:spawn", 1.0F, 1.0F / (minionSpawned.getRNG().nextFloat() * 0.4F + 0.8F));
             }
         }
     }

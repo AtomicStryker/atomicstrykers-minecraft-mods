@@ -109,7 +109,7 @@ public class Necromancy
         }
         
         RegistryNecromancyItems.initItems();
-        RegistryNecromancyEntities.initEntities();
+        MinecraftForge.EVENT_BUS.register(new RegistryNecromancyEntities());
         RegistryBlocksNecromancy.initBlocks();
         
         MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
@@ -127,7 +127,6 @@ public class Necromancy
     public void postInit(FMLPostInitializationEvent event)
     {
         ItemNecroSkull.initSkulls();
-        proxy.refreshTextures();
         sewingRecipeHandler = new CraftingManagerSewing();
     }
 

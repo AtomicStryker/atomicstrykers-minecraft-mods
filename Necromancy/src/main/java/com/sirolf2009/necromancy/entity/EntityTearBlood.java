@@ -12,15 +12,15 @@ public class EntityTearBlood extends EntityTear
         doInit();
     }
 
-    public EntityTearBlood(World par1World, double par2, double par4, double par6)
-    {
-        super(par1World, par2, par4, par6);
-        doInit();
-    }
-
     public EntityTearBlood(World par1World, EntityLivingBase par2EntityLiving)
     {
         super(par1World, par2EntityLiving);
+        doInit();
+    }
+    
+    public EntityTearBlood(World world, EntityLivingBase shooter, EntityLivingBase target)
+    {
+        super(world, shooter, target);
         doInit();
     }
     

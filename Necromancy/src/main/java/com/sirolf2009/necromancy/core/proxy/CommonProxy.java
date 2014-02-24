@@ -20,11 +20,6 @@ public class CommonProxy
         return 0;
     }
 
-    public void refreshTextures()
-    {
-        // NOOP
-    }
-
     public void spawnParticle(String name, double posX, double posY, double posZ, double motionX, double motionY, double motionZ)
     {
         // NOOP

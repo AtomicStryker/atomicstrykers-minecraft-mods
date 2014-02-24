@@ -22,8 +22,7 @@ public class KeyHandlerNecro
     private final Minecraft mc;
     public static KeyBinding tearNormal = new KeyBinding("Shoot Normal Tear", Keyboard.KEY_F, "key.categories.gameplay");
     public static KeyBinding tearBlood = new KeyBinding("Shoot Blood Tear", Keyboard.KEY_G, "key.categories.gameplay");
-    public long nextShotNormal = 0;
-    public long nextShotBlood = 0;
+    public long nextShot = 0;
 
     public KeyHandlerNecro()
     {
@@ -41,15 +40,15 @@ public class KeyHandlerNecro
             if (mc.currentScreen == null && player.inventory.armorInventory[3] != null
                     && player.inventory.armorInventory[3].getItem() == RegistryNecromancyItems.isaacsHead)
             {
-                if (tearNormal.getIsKeyPressed() && System.currentTimeMillis() > nextShotNormal)
+                if (tearNormal.getIsKeyPressed() && System.currentTimeMillis() > nextShot)
                 {
                     Necromancy.instance.networkHelper.sendPacketToServer(new TearShotPacket(player.getCommandSenderName(), false));
-                    nextShotNormal = System.currentTimeMillis() + 1200l;
+                    nextShot = System.currentTimeMillis() + 333l;
                 }
-                if (tearBlood.getIsKeyPressed() && System.currentTimeMillis() > nextShotBlood)
+                if (tearBlood.getIsKeyPressed() && System.currentTimeMillis() > nextShot)
                 {
                     Necromancy.instance.networkHelper.sendPacketToServer(new TearShotPacket(player.getCommandSenderName(), true));
-                    nextShotBlood = System.currentTimeMillis() + 1900l;
+                    nextShot = System.currentTimeMillis() + 333l;
                 }
             }
         }

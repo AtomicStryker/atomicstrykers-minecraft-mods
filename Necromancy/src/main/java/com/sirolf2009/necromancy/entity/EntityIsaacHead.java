@@ -1,15 +1,13 @@
 package com.sirolf2009.necromancy.entity;
 
-import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.IMob;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
 
-public class EntityIsaacHead extends EntityIsaacBlood implements IRangedAttackMob, IMob
+public class EntityIsaacHead extends EntityIsaacBlood
 {
 
     public EntityIsaacHead(World par1World)
@@ -33,17 +31,15 @@ public class EntityIsaacHead extends EntityIsaacBlood implements IRangedAttackMo
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(2.0D);
     }
 
-    /**
-     * Called when the mob's health reaches 0.
-     */
-    @Override
-    public void onDeath(DamageSource par1DamageSource)
-    {
-    }
-
     @Override
     protected Item getDropItem()
     {
         return RegistryNecromancyItems.isaacsHead;
+    }
+    
+    @Override
+    public void onDeath(DamageSource par1DamageSource)
+    {
+        // prevent circular spawning
     }
 }

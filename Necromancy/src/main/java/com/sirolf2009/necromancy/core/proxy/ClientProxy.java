@@ -112,10 +112,4 @@ public class ClientProxy extends CommonProxy
     {
         return RenderingRegistry.addNewArmourRendererPrefix(path);
     }
-
-    @Override
-    public void refreshTextures()
-    {
-        // mc.renderEngine.refreshTextures(); TODO ?
-    }
 }

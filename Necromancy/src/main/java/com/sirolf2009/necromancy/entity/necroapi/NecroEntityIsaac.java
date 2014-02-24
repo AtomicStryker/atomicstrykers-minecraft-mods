@@ -3,7 +3,6 @@ package com.sirolf2009.necromancy.entity.necroapi;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import com.sirolf2009.necroapi.BodyPart;
 import com.sirolf2009.necroapi.BodyPartLocation;
@@ -21,7 +20,7 @@ public class NecroEntityIsaac extends NecroEntityBiped
         hasTorso = false;
         hasArms = false;
         hasLegs = false;
-        texture = new ResourceLocation(ReferenceNecromancy.LOC_RESOURCES_TEXTURES_ENTITIES + "/IsaacBlood.png");
+        texture = ReferenceNecromancy.TEXTURES_ENTITIES_ISAACBLOOD;
     }
 
     @Override
