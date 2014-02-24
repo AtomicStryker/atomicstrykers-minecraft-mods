@@ -78,6 +78,12 @@ public class ClientProxy extends CommonProxy
     }
     
     @Override
+    public void sendSoundToClients(Entity ent, String string)
+    {
+        playSoundAtEntity(ent, string, 1f, 1f);
+    }
+    
+    @Override
 	public void playSoundAtEntity(Entity ent, String sound, float volume, float pitch)
 	{
         if (!ent.isDead)

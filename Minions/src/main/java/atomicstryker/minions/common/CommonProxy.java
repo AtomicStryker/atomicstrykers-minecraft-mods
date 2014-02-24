@@ -33,8 +33,14 @@ public class CommonProxy
 
     public void sendSoundToClients(Entity ent, String string)
     {
-        MinecraftServer.getServer().getConfigurationManager()
-                .sendToAllNear(ent.posX, ent.posY, ent.posZ, 16D, ent.dimension, new S29PacketSoundEffect(string, ent.posX, ent.posY, ent.posZ, 1f, 1f));
+        if (!ent.worldObj.isRemote && MinecraftServer.getServer() != null)
+        {
+            MinecraftServer
+                    .getServer()
+                    .getConfigurationManager()
+                    .sendToAllNear(ent.posX, ent.posY, ent.posZ, 16D, ent.dimension,
+                            new S29PacketSoundEffect(string, ent.posX, ent.posY, ent.posZ, 1f, 1f));
+        }
     }
 
     public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)

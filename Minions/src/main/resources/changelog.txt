@@ -1,3 +1,6 @@
+Update 1.8.8
+- fixed crash in soundpacket
+
 Update 1.8.7
 - reworked GUI to use translations
 - changed Deeds UI handling to fix sound doubling (damnit jeb)
