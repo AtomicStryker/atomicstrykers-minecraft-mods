@@ -41,7 +41,7 @@ public class RegistryBlocksNecromancy
         GameRegistry.registerBlock(sewing, "Sewing Machine");
         GameRegistry.registerTileEntity(TileEntitySewing.class, "Sewing");
 
-        fluidBlood = new Fluid("Blood");
+        fluidBlood = new Fluid("blood");
         FluidRegistry.registerFluid(fluidBlood);
 
         blood = new BlockBlood(fluidBlood);
@@ -53,11 +53,9 @@ public class RegistryBlocksNecromancy
         skullWall.setBlockName("skullWall");
         GameRegistry.registerBlock(skullWall, "skullWall");
         GameRegistry.registerTileEntity(TileEntitySkullWall.class, "skullWall");
-        
-        initRecipes();
     }
 
-    private static void initRecipes()
+    public static void initRecipes()
     {
         GameRegistry.addRecipe(new ItemStack(RegistryBlocksNecromancy.sewing, 1), new Object[] { "III", "ISB", "III", 'I', Items.iron_ingot, 'S',
                 Items.string, 'B', ItemGeneric.getItemStackFromName("Bone Needle") });

@@ -6,6 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
@@ -86,6 +88,10 @@ public class RegistryNecromancyItems
 
         bucketBlood = new ItemBucketBlood(RegistryBlocksNecromancy.blood).setUnlocalizedName("BucketBlood");
         GameRegistry.registerItem(bucketBlood, "BucketBlood");
+        
+        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("blood", FluidContainerRegistry.BUCKET_VOLUME), new ItemStack(
+                bucketBlood), new ItemStack(Items.bucket));
+
         /*
          * //LanguageRegistry.addName(bucketBlood, "Blood Bucket"); alist = new
          * AspectList(bucketBlood, -1); alist.aspects.put(Aspect.METAL, 13);
@@ -128,22 +134,20 @@ public class RegistryNecromancyItems
         GameRegistry.registerItem(spawner, "NecroSpawner");
         // LanguageRegistry.addName(new ItemStack(spawner, 1, 0),
         // "Isaac's Soul Heart");
-
-        initRecipes();
     }
 
     public static void initRecipes()
     {
-        GameRegistry.addRecipe(new ItemStack(RegistryNecromancyItems.necronomicon, 1),
-                new Object[] { "LSL", "IBF", "LNL", Character.valueOf('B'), Items.book, Character.valueOf('L'), Items.leather,
-                        Character.valueOf('S'), ItemGeneric.getItemStackFromName("Jar of Blood"), Character.valueOf('I'),
-                        new ItemStack(Items.dye, 1, 0), Character.valueOf('F'), Items.feather, Character.valueOf('N'), Items.nether_wart });
+        GameRegistry.addRecipe(new ItemStack(RegistryNecromancyItems.necronomicon, 1), new Object[] { "LSL", "IBF", "LNL", Character.valueOf('B'),
+                Items.book, Character.valueOf('L'), Items.leather, Character.valueOf('S'), ItemGeneric.getItemStackFromName("Jar of Blood"),
+                Character.valueOf('I'), new ItemStack(Items.dye, 1, 0), Character.valueOf('F'), Items.feather, Character.valueOf('N'),
+                Items.nether_wart });
         GameRegistry.addRecipe(ItemGeneric.getItemStackFromName("Bone Needle"), new Object[] { "X", Character.valueOf('X'),
                 new ItemStack(Items.dye, 1, 15) });
-        GameRegistry.addRecipe(new ItemStack(RegistryNecromancyItems.scythe, 1), new Object[] { "IH", " S", " B", Character.valueOf('I'), Blocks.obsidian,
-                'H', Items.iron_hoe, 'S', Items.stick, 'B', ItemGeneric.getItemStackFromName("Jar of Blood") });
-        GameRegistry.addRecipe(new ItemStack(RegistryNecromancyItems.scytheBone, 1), new Object[] { "IH", " S", " B", Character.valueOf('I'), Blocks.obsidian,
-                'H', RegistryNecromancyItems.scythe, 'S', Items.bone, 'B', Items.diamond });
+        GameRegistry.addRecipe(new ItemStack(RegistryNecromancyItems.scythe, 1), new Object[] { "IH", " S", " B", Character.valueOf('I'),
+                Blocks.obsidian, 'H', Items.iron_hoe, 'S', Items.stick, 'B', ItemGeneric.getItemStackFromName("Jar of Blood") });
+        GameRegistry.addRecipe(new ItemStack(RegistryNecromancyItems.scytheBone, 1), new Object[] { "IH", " S", " B", Character.valueOf('I'),
+                Blocks.obsidian, 'H', RegistryNecromancyItems.scythe, 'S', Items.bone, 'B', Items.diamond });
         GameRegistry.addRecipe(ItemGeneric.getItemStackFromName("Brain on a Stick"), new Object[] { "# ", " X", '#', Items.fishing_rod, 'X',
                 new ItemStack(RegistryNecromancyItems.organs, 1, 0) });
         GameRegistry.addShapelessRecipe(ItemGeneric.getItemStackFromName("Jar of Blood", 8), new Object[] {

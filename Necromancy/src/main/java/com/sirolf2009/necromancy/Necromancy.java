@@ -45,11 +45,11 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
-@Mod(modid = ReferenceNecromancy.MOD_ID, name = ReferenceNecromancy.MOD_NAME, version = ReferenceNecromancy.MOD_VERSION)
+@Mod(modid = ReferenceNecromancy.MOD_ID, name = ReferenceNecromancy.MOD_NAME, version = "1.6.2", dependencies = "required:Forge@10.12.0.1034")
 public class Necromancy
 {
 
-    public static final CreativeTabs tabNecromancy = new CreativeTabNecro(CreativeTabs.getNextID(), "Necromancy", 1)
+    public static final CreativeTabs tabNecromancy = new CreativeTabNecro(CreativeTabs.getNextID(), ReferenceNecromancy.MOD_NAME, 1)
             .setBackgroundImageName("necro_gui.png");
     public static final CreativeTabs tabNecromancyBodyParts = new CreativeTabNecro(CreativeTabs.getNextID(), "BodyParts", 2)
             .setBackgroundImageName("necro_gui.png");
@@ -71,7 +71,7 @@ public class Necromancy
 
     @Instance(ReferenceNecromancy.MOD_ID)
     public static Necromancy instance;
-    
+
     public NetworkHelper networkHelper;
 
     @EventHandler
@@ -81,18 +81,18 @@ public class Necromancy
         // loggerNecromancy.setParent(FMLLog.getLogger());
 
         ConfigurationNecromancy.initProperties(event);
-        
-        networkHelper = new NetworkHelper("NecromancyMod", TearShotPacket.class);
-        
+
+        networkHelper = new NetworkHelper(ReferenceNecromancy.MOD_NAME, TearShotPacket.class);
+
         NetworkRegistry.INSTANCE.registerGuiHandler(this, guiHandler);
 
         FMLCommonHandler.instance().bus().register(eventHandler);
         MinecraftForge.EVENT_BUS.register(eventHandler);
 
         proxy.preInit();
-        
+
         specialFolk.add("AtomicStryker");
-        
+
         try
         {
             URL url = new URL("https://dl.dropboxusercontent.com/u/50553915/necromancy/specialFolk.txt");
@@ -107,11 +107,11 @@ public class Necromancy
         {
             System.err.println("not connected to the internet, special scythes are de-activated");
         }
-        
+
+        RegistryBlocksNecromancy.initBlocks();
         RegistryNecromancyItems.initItems();
         MinecraftForge.EVENT_BUS.register(new RegistryNecromancyEntities());
-        RegistryBlocksNecromancy.initBlocks();
-        
+
         MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
         VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
         GameRegistry.registerWorldGenerator(new WorldGenerator(), 5);
@@ -121,6 +121,8 @@ public class Necromancy
     public void init(FMLInitializationEvent event)
     {
         proxy.init();
+        RegistryBlocksNecromancy.initRecipes();
+        RegistryNecromancyItems.initRecipes();
     }
 
     @EventHandler

@@ -6,7 +6,6 @@ public class ReferenceNecromancy
 {
     public static final String MOD_ID = "necromancy";
     public static final String MOD_NAME = "Necromancy";
-    public static final String MOD_VERSION = "1.5";
 
     public static final String LOC_RESOURCES_SOUNDS = "/sounds";
     public static final String LOC_RESOURCES_TEXTURES = "textures";

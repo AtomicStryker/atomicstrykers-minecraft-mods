@@ -2,102 +2,36 @@ package com.sirolf2009.necromancy.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ItemBucketBlood extends ItemBucket
 {
+    
+    private Block blood;
 
     public ItemBucketBlood(Block b)
     {
         super(b);
+        blood = b;
+        MinecraftForge.EVENT_BUS.register(this);
     }
-
-    @Override
-    public ItemStack onItemRightClick(ItemStack item, World world, EntityPlayer player)
+    
+    @SubscribeEvent
+    public void onFillBucket(FillBucketEvent event)
     {
-        MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
-
-        if (movingobjectposition == null)
-            return item;
-        else
+        Block target = event.world.getBlock(event.target.blockX, event.target.blockY, event.target.blockZ);
+        System.out.println("Necromancy onFillBucket, target "+target);
+        if (target == blood)
         {
-            FillBucketEvent event = new FillBucketEvent(player, item, world, movingobjectposition);
-            if (MinecraftForge.EVENT_BUS.post(event))
-                return item;
-
-            if (event.getResult() == Result.ALLOW)
-            {
-                if (player.capabilities.isCreativeMode)
-                    return item;
-
-                if (--item.stackSize <= 0)
-                    return event.result;
-
-                if (!player.inventory.addItemStackToInventory(event.result))
-                {
-                    player.dropItem(event.result.getItem(), event.result.stackSize);
-                }
-
-                return item;
-            }
-
-            if (movingobjectposition.typeOfHit == MovingObjectType.BLOCK)
-            {
-                int x = movingobjectposition.blockX;
-                int y = movingobjectposition.blockY;
-                int z = movingobjectposition.blockZ;
-
-                if (!world.canMineBlock(player, x, y, z))
-                    return item;
-
-                if (movingobjectposition.sideHit == 0)
-                {
-                    --y;
-                }
-
-                if (movingobjectposition.sideHit == 1)
-                {
-                    ++y;
-                }
-
-                if (movingobjectposition.sideHit == 2)
-                {
-                    --z;
-                }
-
-                if (movingobjectposition.sideHit == 3)
-                {
-                    ++z;
-                }
-
-                if (movingobjectposition.sideHit == 4)
-                {
-                    --x;
-                }
-
-                if (movingobjectposition.sideHit == 5)
-                {
-                    ++x;
-                }
-
-                if (!player.canPlayerEdit(x, y, z, movingobjectposition.sideHit, item))
-                    return item;
-
-                if (this.tryPlaceContainedLiquid(world, x, y, z) && !player.capabilities.isCreativeMode)
-                    return new ItemStack(Items.bucket);
-
-            }
-
-            return item;
+            event.world.setBlock(event.target.blockX, event.target.blockY, event.target.blockZ, Blocks.air);
+            event.result = new ItemStack(this);
+            event.setResult(Result.ALLOW);
         }
     }
 
