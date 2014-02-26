@@ -117,7 +117,7 @@ public class ForgeEventHandler
                 && world.getBlockMetadata(pos.blockX, pos.blockY, pos.blockZ) == 0)
         {
 
-            world.setBlock(pos.blockX, pos.blockY, pos.blockZ, Blocks.air, 0, 0);
+            world.setBlock(pos.blockX, pos.blockY, pos.blockZ, Blocks.air, 0, 3);
 
             return new ItemStack(RegistryNecromancyItems.bucketBlood);
         }

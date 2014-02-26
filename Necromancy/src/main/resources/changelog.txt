@@ -1,3 +1,8 @@
+1.6.3
+- fixed derpy Forge version requirement crashing the mod at all times
+- fixed Necromancy not loading on dedicated servers
+- fixed Night Crawler and Isaac spawn rates being too high
+
 1.6.2
 - fixed Blood Buckets, requires latest Forge
 - BLOOD FOR THE BUCKET GOD

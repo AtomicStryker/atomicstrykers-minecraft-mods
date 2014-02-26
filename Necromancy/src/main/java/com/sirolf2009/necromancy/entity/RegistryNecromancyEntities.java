@@ -1,6 +1,7 @@
 package com.sirolf2009.necromancy.entity;
 
 import java.awt.Color;
+import java.util.Collections;
 
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
@@ -124,13 +125,18 @@ public class RegistryNecromancyEntities
             }
         }
         
-        if (nightCrawler)
+        if (event.world.rand.nextInt(6) == 0)
         {
-            event.list.add(nightCrawlerEntry);
-        }
-        if (isaac)
-        {
-            event.list.add(isaacEntry);
+            if (nightCrawler)
+            {
+                event.list.add(nightCrawlerEntry);
+            }
+            if (isaac)
+            {
+                event.list.add(isaacEntry);
+            }
+            // maybe this will fix nightCrawlers and isaac overriding
+            Collections.shuffle(event.list);
         }
     }
 }

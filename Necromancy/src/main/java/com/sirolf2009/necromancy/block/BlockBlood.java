@@ -3,8 +3,6 @@ package com.sirolf2009.necromancy.block;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.particle.EntityDropParticleFX;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -13,8 +11,6 @@ import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
 import com.sirolf2009.necromancy.Necromancy;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class BlockBlood extends BlockFluidClassic
 {
@@ -47,9 +43,7 @@ public class BlockBlood extends BlockFluidClassic
             double px = (double) ((float) x + rand.nextFloat());
             double py = (double) y - 1.05D;
             double pz = (double) ((float) z + rand.nextFloat());
-            EntityFX fx = new EntityDropParticleFX(world, px, py, pz, Material.water);
-            fx.setRBGColorF(1f, 0.2f, 0);
-            FMLClientHandler.instance().getClient().effectRenderer.addEffect(fx);
+            world.spawnParticle("dripLava", px, py, pz, 0, 0, 0);
         }
     }
 }
