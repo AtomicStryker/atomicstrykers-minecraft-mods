@@ -25,6 +25,8 @@ public class ReferenceNecromancy
     public static final ResourceLocation TEXTURES_ENTITIES_ISAAC = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_ENTITIES + "/isaac.png");
     public static final ResourceLocation TEXTURES_ENTITIES_ISAACBLOOD = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_ENTITIES
             + "/isaacblood.png");
+    public static final ResourceLocation TEXTURES_ENTITIES_VILLAGER = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_ENTITIES
+            + "/villagernecro.png");
 
     public static final ResourceLocation TEXTURES_MODELS_SCYTHE = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/scythe.png");
     public static final ResourceLocation TEXTURES_MODELS_SCYTHEBONE = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/scythebone.png");
@@ -32,15 +34,9 @@ public class ReferenceNecromancy
             + "/necronomicon.png");
     public static final ResourceLocation TEXTURES_MODELS_ALTAR = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/altartexture.png");
     public static final ResourceLocation TEXTURES_MODELS_SEWING = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS + "/sewingtexture.png");
-    public static final ResourceLocation TEXTURES_MODELS_SCENTBURNER = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_MODELS
-            + "/scentburnertexture.png");
 
     public static final ResourceLocation TEXTURES_GUI_ALTAR = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_GUIS + "/altargui.png");
     public static final ResourceLocation TEXTURES_GUI_SEWING = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_GUIS + "/sewinggui.png");
-    public static final ResourceLocation TEXTURES_GUI_SCENTBURNER = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES_GUIS + "/scentburnergui.png");
 
     public static final ResourceLocation TEXTURES_PARTICLES = new ResourceLocation(MOD_ID, LOC_RESOURCES_TEXTURES + "/particles.png");
-
-    public static final ResourceLocation TEXTURES_MISC_CHRISTMASHAT = new ResourceLocation("MOD_ID", LOC_RESOURCES_TEXTURES_ENTITIES
-            + "/christmashat.png");
 }

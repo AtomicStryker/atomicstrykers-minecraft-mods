@@ -6,7 +6,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.client.model.ModelIsaacHead;
 import com.sirolf2009.necromancy.client.model.ModelIsaacNormal;
@@ -84,9 +83,7 @@ public class ClientProxy extends CommonProxy
 
         FluidRegistry.registerFluid(RegistryBlocksNecromancy.fluidBlood);
         
-
-        VillagerRegistry.instance().registerVillagerSkin(RegistryNecromancyEntities.villagerIDNecro, ReferenceNecromancy.TEXTURES_ENTITIES_NECROMANCER);
-        VillagerRegistry.instance().registerVillageTradeHandler(RegistryNecromancyEntities.villagerIDNecro, Necromancy.villageHandler);
+        VillagerRegistry.instance().registerVillagerSkin(RegistryNecromancyEntities.villagerIDNecro, ReferenceNecromancy.TEXTURES_ENTITIES_VILLAGER);
     }
     
     @Override

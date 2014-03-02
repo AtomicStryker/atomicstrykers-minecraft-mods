@@ -1,7 +1,5 @@
 package com.sirolf2009.necromancy.item;
 
-import java.util.Random;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -24,25 +22,24 @@ public class ItemScythe extends ItemSword
     }
 
     @Override
-    public boolean hitEntity(ItemStack par1ItemStack, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase)
+    public boolean hitEntity(ItemStack par1ItemStack, EntityLivingBase target, EntityLivingBase player)
     {
-        par1ItemStack.damageItem(1, par3EntityLivingBase);
-        if (par2EntityLivingBase.getHealth() <= 0)
-            if (((EntityPlayer) par3EntityLivingBase).inventory.consumeInventoryItem(Items.glass_bottle))
+        par1ItemStack.damageItem(1, player);
+        if (target.getHealth() <= 0)
+            if (((EntityPlayer) player).inventory.consumeInventoryItem(Items.glass_bottle))
             {
-                ((EntityPlayer) par3EntityLivingBase).inventory.addItemStackToInventory(ItemGeneric.getItemStackFromName("Soul in a Jar"));
-                if (par2EntityLivingBase.worldObj.isRemote)
+                ((EntityPlayer) player).inventory.addItemStackToInventory(ItemGeneric.getItemStackFromName("Soul in a Jar"));
+                if (target.worldObj.isRemote)
                 {
-                    Random rand = new Random();
                     for (int i = 0; i < 30; i++)
                     {
-                        Necromancy.proxy.spawnParticle("skull", par2EntityLivingBase.posX, par2EntityLivingBase.posY, par2EntityLivingBase.posZ,
-                                rand.nextDouble() / 360 * 10, rand.nextDouble() / 360 * 10, rand.nextDouble() / 360 * 10);
+                        Necromancy.proxy.spawnParticle("skull", target.posX, target.posY, target.posZ, target.getRNG().nextDouble() / 360 * 10,
+                                target.getRNG().nextDouble() / 360 * 10, target.getRNG().nextDouble() / 360 * 10);
                     }
                 }
-                par2EntityLivingBase.motionY = 10000;
+                target.motionY = 10000;
             }
-        super.hitEntity(par1ItemStack, par2EntityLivingBase, par3EntityLivingBase);
+        super.hitEntity(par1ItemStack, target, player);
         return false;
     }
 }

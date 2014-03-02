@@ -33,28 +33,21 @@ public class EntityNecroFX extends EntityFX
     }
 
     @Override
-    public void renderParticle(Tessellator par1Tessellator, float par2, float par3, float par4, float par5, float par6, float par7)
+    public void renderParticle(Tessellator tessellator, float par2, float par3, float par4, float par5, float par6, float par7)
     {
-        Tessellator tessellator1 = new Tessellator();
-        tessellator1.startDrawingQuads();
-        tessellator1.setBrightness(getBrightnessForRender(par2));
+        tessellator.startDrawingQuads();
+        tessellator.setBrightness(getBrightnessForRender(par2));
         ClientProxy.mc.renderEngine.bindTexture(ReferenceNecromancy.TEXTURES_PARTICLES);
-        float f = 32F;
-        float f1 = f + 0.0624375F;
-        float f2 = 32F;
-        float f3 = f2 + 0.0624375F;
-        float f4 = 0.1F * particleScale;
-        float f5 = (float) (prevPosX + (posX - prevPosX) * par2 - interpPosX);
-        float f6 = (float) (prevPosY + (posY - prevPosY) * par2 - interpPosY);
-        float f7 = (float) (prevPosZ + (posZ - prevPosZ) * par2 - interpPosZ);
-        float f8 = 1.0F;
-        tessellator1.setColorOpaque_F(particleRed * f8, particleGreen * f8, particleBlue * f8);
-        tessellator1.addVertexWithUV(f5 - par3 * f4 - par6 * f4, f6 - par4 * f4, f7 - par5 * f4 - par7 * f4, f1, f3);
-        tessellator1.addVertexWithUV(f5 - par3 * f4 + par6 * f4, f6 + par4 * f4, f7 - par5 * f4 + par7 * f4, f1, f2);
-        tessellator1.addVertexWithUV(f5 + par3 * f4 + par6 * f4, f6 + par4 * f4, f7 + par5 * f4 + par7 * f4, f, f2);
-        tessellator1.addVertexWithUV(f5 + par3 * f4 - par6 * f4, f6 - par4 * f4, f7 + par5 * f4 - par7 * f4, f, f3);
-        tessellator1.draw();
-        ClientProxy.mc.renderEngine.bindTexture(ReferenceNecromancy.TEXTURES_PARTICLES);
+        float sC = 0.1F * particleScale;
+        float dX = (float) (prevPosX + (posX - prevPosX) * par2 - interpPosX);
+        float dY = (float) (prevPosY + (posY - prevPosY) * par2 - interpPosY);
+        float dZ = (float) (prevPosZ + (posZ - prevPosZ) * par2 - interpPosZ);
+        tessellator.setColorOpaque_F(particleRed, particleGreen, particleBlue);
+        tessellator.addVertexWithUV(dX - par3 * sC - par6 * sC, dY - par4 * sC, dZ - par5 * sC - par7 * sC, 32.0624375F, 32.0624375F);
+        tessellator.addVertexWithUV(dX - par3 * sC + par6 * sC, dY + par4 * sC, dZ - par5 * sC + par7 * sC, 32.0624375F, 32f);
+        tessellator.addVertexWithUV(dX + par3 * sC + par6 * sC, dY + par4 * sC, dZ + par5 * sC + par7 * sC, 32f, 32f);
+        tessellator.addVertexWithUV(dX + par3 * sC - par6 * sC, dY - par4 * sC, dZ + par5 * sC - par7 * sC, 32f, 32.0624375F);
+        tessellator.draw();
     }
 
     @Override

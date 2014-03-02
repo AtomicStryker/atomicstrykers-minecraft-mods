@@ -34,14 +34,14 @@ import cpw.mods.fml.common.registry.VillagerRegistry;
 
 public class RegistryNecromancyEntities
 {
-    
+
     public static int entityIDTeddy;
     public static int entityIDIsaac;
     public static int villagerIDNecro;
-    
+
     private final SpawnListEntry nightCrawlerEntry;
     private final SpawnListEntry isaacEntry;
-    
+
     public RegistryNecromancyEntities()
     {
         entityIDTeddy = EntityRegistry.findGlobalUniqueEntityId();
@@ -51,10 +51,10 @@ public class RegistryNecromancyEntities
         EntityRegistry.registerGlobalEntityID(EntityNightCrawler.class, "NightCrawler", EntityRegistry.findGlobalUniqueEntityId(),
                 new Color(6, 6, 6).getRGB(), new Color(13, 13, 13).getRGB());
         EntityRegistry.registerModEntity(EntityNightCrawler.class, "NightCrawler", 1, Necromancy.instance, 25, 5, true);
-        
+
         entityIDIsaac = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", entityIDIsaac, new Color(6, 6, 6).getRGB(),
-                new Color(204, 153, 153).getRGB());
+        EntityRegistry.registerGlobalEntityID(EntityIsaacNormal.class, "IsaacNormal", entityIDIsaac, new Color(6, 6, 6).getRGB(), new Color(204, 153,
+                153).getRGB());
         EntityRegistry.registerModEntity(EntityIsaacNormal.class, "IsaacNormal", 2, Necromancy.instance, 25, 5, true);
 
         EntityRegistry.registerGlobalEntityID(EntityIsaacBlood.class, "IsaacBlood", EntityRegistry.findGlobalUniqueEntityId(),
@@ -74,17 +74,18 @@ public class RegistryNecromancyEntities
 
         EntityRegistry.registerModEntity(EntityTear.class, "TearNormal", 7, Necromancy.instance, 32, 5, true);
         EntityRegistry.registerModEntity(EntityTearBlood.class, "TearBlood", 8, Necromancy.instance, 32, 5, true);
-        
+
         for (int freeID = 0; freeID < 100; freeID++)
         {
-            VillagerRegistry.instance();
             if (!VillagerRegistry.getRegisteredVillagers().contains(Integer.valueOf(freeID)))
             {
                 villagerIDNecro = freeID;
+                VillagerRegistry.instance().registerVillagerId(villagerIDNecro);
+                VillagerRegistry.instance().registerVillageTradeHandler(RegistryNecromancyEntities.villagerIDNecro, Necromancy.villageHandler);
                 break;
             }
         }
-        
+
         NecroEntityRegistry.registerEntity(new NecroEntityCaveSpider());
         NecroEntityRegistry.registerEntity(new NecroEntityChicken());
         NecroEntityRegistry.registerEntity(new NecroEntityCow());
@@ -102,17 +103,17 @@ public class RegistryNecromancyEntities
         NecroEntityRegistry.registerEntity(new NecroEntityWolf());
         NecroEntityRegistry.registerEntity(new NecroEntityWitch());
         NecroEntityRegistry.registerEntity(new NecroEntityZombie());
-        
+
         nightCrawlerEntry = new SpawnListEntry(EntityNightCrawler.class, 10, 1, 2);
         isaacEntry = new SpawnListEntry(EntityIsaacNormal.class, 5, 1, 1);
     }
-    
+
     @SubscribeEvent
     public void onPotentialSpawns(PotentialSpawns event)
     {
         boolean nightCrawler = false;
         boolean isaac = false;
-        
+
         for (SpawnListEntry spawn : event.list)
         {
             if (spawn.entityClass.equals(EntityZombie.class))
@@ -124,8 +125,8 @@ public class RegistryNecromancyEntities
                 isaac = true;
             }
         }
-        
-        if (event.world.rand.nextInt(6) == 0)
+
+        if ((nightCrawler || isaac) && event.world.rand.nextInt(6) == 0)
         {
             if (nightCrawler)
             {
