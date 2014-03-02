@@ -52,7 +52,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.6")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.7")
 public class RopesPlusCore
 {
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
@@ -86,6 +86,10 @@ public class RopesPlusCore
     private HashMap<EntityPlayer, EntityGrapplingHook> grapplingHookMap;
     private HashMap<EntityPlayer, EntityFreeFormRope> playerRopeMap;
     private HashMap<EntityPlayer, Integer> selectedSlotMap;
+
+    private boolean hookShotEnabled;
+    private boolean zipLinesEnabled;
+    private boolean grapplingEnabled;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -138,17 +142,33 @@ public class RopesPlusCore
 
             // System.out.println("registered "+name+" as Networked Entity for ALL TIME!!!");
         }
+
+        hookShotEnabled = c.get(Configuration.CATEGORY_GENERAL, "Hook Shot enabled", true).getBoolean(true);
+        zipLinesEnabled = c.get(Configuration.CATEGORY_GENERAL, "Ziplines enabled", true).getBoolean(true);
+        grapplingEnabled = c.get(Configuration.CATEGORY_GENERAL, "Grappling Hook enabled", true).getBoolean(true);
+
         c.save();
 
-        GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
-        GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook", "RopesPlus");
+        if (grapplingEnabled)
+        {
+            GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
+            GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook", "RopesPlus");
+        }
+
         GameRegistry.registerBlock(blockRopeWall, "blockRope");
         GameRegistry.registerBlock(blockRope, "blockRopeCentral");
-        GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
-        GameRegistry.registerItem(itemHookShot, "itemHookshot", "RopesPlus");
-        GameRegistry.registerItem(itemHookShotCartridge, "HookshotCartridge", "RopesPlus");
+
+        if (hookShotEnabled)
+        {
+            if (zipLinesEnabled)
+            {
+                GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
+                GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
+            }
+            GameRegistry.registerItem(itemHookShot, "itemHookshot", "RopesPlus");
+            GameRegistry.registerItem(itemHookShotCartridge, "HookshotCartridge", "RopesPlus");
+        }
         GameRegistry.registerItem(bowRopesPlus, "bowRopesPlus", "RopesPlus");
-        GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
 
         networkHelper =
                 new NetworkHelper("AS_RP", ArrowChoicePacket.class, GrapplingHookPacket.class, HookshotPacket.class, HookshotPullPacket.class,

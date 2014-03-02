@@ -1,3 +1,9 @@
+RopesPlus 1.5.7
+- added configuration options to disable grappling hook,
+  hook shot and ziplines. Ziplines require the hook shot,
+  obviously. Careful, disabling this on running worlds may
+  break the savefile.
+
 RopesPlus 1.5.6
 - fixed packets to work on dedicated servers
 
