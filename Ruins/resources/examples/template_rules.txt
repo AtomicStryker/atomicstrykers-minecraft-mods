@@ -245,6 +245,20 @@ preserve_plants=0
 # Example 9: rule1=0,100,StandingSign:a|b|c|d-4
 # a,b,c,d are the 4 Strings/lines you can write on a sign. The metadata/rotation of the sign is affixed as usual.
 #
+# Ruins 12.2 adds IInventory block support. Usage: IInventory|<blockName>|<itemList>-<blockrotation>
+# where <blockName> is the registry name of the Block that sports an inventory
+# where <itemList> is a list of elements seperated by commata, each element is a block or item registry name
+# optionally followed by #stacksize OR #stacksize#metadata
+# Example 10: rule1=0,100,IInventory|chest|red_flower,arrow#10,wool#3#15-5
+# this spawns a chest rotated to 5, which will contain a single red flower, 10 arrows, and 3 wool of color red (meta 15)
+# Example 11: rule1=0,100,IInventory|dispenser|arrow#10,snowball#20,egg#3-1
+# this spawns a dispenser rotated to 1, with 10 arrows 20 snowballs and 3 eggs
+# you may use this for items added by mods. names not found in the registry will simply be skipped over.
+# you may also use this for container blocks added by mods. invalid anythings should be skipped.
+# the Ruins Parser will do this for you when you parse an IInventory block. Empty chests get hooked with dungeon loot
+# automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
+#
+
 
 rule1=0,100,preserveBlock
 rule2=0,80,brick_block,brick_block,dirt,stone,gravel

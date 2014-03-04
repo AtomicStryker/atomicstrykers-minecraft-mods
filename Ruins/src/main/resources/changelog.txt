@@ -277,3 +277,9 @@ a: setAccessible now true
 +   any template is specified by "biomefolder/filename" (SERVERS FOLDER!)
 +   or just "filename" when the template is located in the "templateparser" biome folder
 +   you may also append an optional rotation digit [NESW = 0123] to test template rotation
+
+12.2
++ added Ruins support for any IInventory block with any Block/Item specs
++ see template_rules.txt for details and examples
++ Ruins ingame parser now supports reading and saving IInventory containers and contents
++ yes this does in fact include mod added chests and mod added items

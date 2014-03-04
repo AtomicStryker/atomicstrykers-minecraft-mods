@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -226,9 +229,52 @@ public class World2TemplateParser extends Thread
                         TileEntity te = world.getTileEntity(blockx, blocky, blockz);
                         temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).func_145881_a().getEntityNameToSpawn();
                     }
-                    else if (temp.block == Blocks.chest)
+                    else if (world.getTileEntity(blockx, blocky, blockz) instanceof IInventory)
                     {
-                        temp.data = "ChestGenHook:dungeonChest:5-"+temp.meta;
+                        IInventory inventory = (IInventory) world.getTileEntity(blockx, blocky, blockz);
+                        ArrayList<ItemStack> invItems = new ArrayList<ItemStack>();
+                        for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
+                        {
+                            if (inventory.getStackInSlot(slot) != null)
+                            {
+                                invItems.add(inventory.getStackInSlot(slot));
+                            }
+                        }
+                        
+                        if (invItems.isEmpty() && temp.block == Blocks.chest)
+                        {
+                            temp.data = "ChestGenHook:dungeonChest:5-"+temp.meta;
+                        }
+                        else
+                        {
+                            temp.data = "IInventory|"+GameData.blockRegistry.getNameForObject(temp.block)+"|";
+                            for (ItemStack i : invItems)
+                            {
+                                String ident;
+                                if (i.getItem() instanceof ItemBlock)
+                                {
+                                    ident = GameData.blockRegistry.getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
+                                }
+                                else
+                                {
+                                    ident = GameData.itemRegistry.getNameForObject(i.getItem());
+                                }
+                                if (ident != null)
+                                {
+                                    temp.data = temp.data.concat(ident+"#"+i.stackSize+"#"+i.getItemDamage()+",");
+                                }
+                            }
+                            
+                            int iLastComma = temp.data.lastIndexOf(",");
+                            if (iLastComma != -1)
+                            {
+                                temp.data = temp.data.substring(0, temp.data.lastIndexOf(","))+"-"+temp.meta;
+                            }
+                            else
+                            {
+                                temp.data = temp.data+"-"+temp.meta;
+                            }
+                        }
                     }
                     else if (temp.block == Blocks.command_block)
                     {

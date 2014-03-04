@@ -46,7 +46,7 @@ public class RuinsMod
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
     
-    public static final String modversion = "12.1";
+    public static final String modversion = "12.2";
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
     private ConcurrentLinkedQueue<int[]> currentlyGenerating;

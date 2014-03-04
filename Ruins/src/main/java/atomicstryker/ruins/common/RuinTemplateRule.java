@@ -7,7 +7,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -168,7 +171,6 @@ public class RuinTemplateRule
 
     public boolean runLater()
     {
-
         switch (condition <= 0 ? 0 - condition : condition)
         {
         case 1:
@@ -320,6 +322,16 @@ public class RuinTemplateRule
             String[] s = dataString.split(":");
             addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2].split("-")[0]), rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate));
         }
+        else if (dataString.startsWith("IInventory|"))
+        {
+            String[] s = dataString.split("|");
+            Object o = tryFindingObject(s[1]);
+            if (o instanceof Block)
+            {
+                Block b = (Block) o;
+                addIInventoryBlock(world, random, x, y, z, b, s[2], rotateMetadata(b, blockMDs[blocknum], rotate));
+            }
+        }
         else if (dataString.equals("EnderCrystal"))
         {
             spawnEnderCrystal(world, x, y, z);
@@ -377,7 +389,7 @@ public class RuinTemplateRule
             System.err.println("Ruins Mod could not determine what to spawn for [" + dataString + "] in Ruin template: " + owner.getName());
         }
     }
-    
+
     private int rotateFloorSkull(int meta, int rot)
     {
         if (meta == 1)
@@ -558,6 +570,77 @@ public class RuinTemplateRule
             ChestGenHooks info = ChestGenHooks.getInfo(gen);
             WeightedRandomChestContent.generateChestContents(random, info.getItems(random), chest, items);
         }
+    }
+    
+    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemData, int rotateMetadata)
+    {
+        world.setBlock(x, y, z, block, rotateMetadata, 3);
+        world.setBlockMetadataWithNotify(x, y, z, rotateMetadata, 3);
+        TileEntity te = world.getTileEntity(x, y, z);
+        if (te instanceof IInventory)
+        {
+            handleIInventory((IInventory) te, itemData);
+        }
+    }
+    
+    private void handleIInventory(IInventory inv, String itemData)
+    {
+        ItemStack putItem;
+        ItemStack slotItemPrev;
+        String[] itemStrings = itemData.split(",");
+        String[] split;
+        Object o;
+        for (String s : itemStrings)
+        {
+            split = s.split("#");
+            int itemStackSize = s.length() > 1 ? Integer.valueOf(split[1]) : 1;
+            int itemMeta = s.length() > 2 ? Integer.valueOf(split[2]) : 0;
+            o = tryFindingObject(split[0]);
+            
+            putItem = null;
+            if (o instanceof Block)
+            {
+                putItem = new ItemStack(((Block)o), itemStackSize, itemMeta);
+            }
+            else if (o instanceof Item)
+            {
+                putItem = new ItemStack(((Item)o), itemStackSize, itemMeta);
+            }
+            
+            if (putItem != null)
+            {
+                for (int slot = 0; slot < inv.getSizeInventory(); slot++)
+                {
+                    slotItemPrev = inv.getStackInSlot(slot);
+                    if (slotItemPrev == null)
+                    {
+                        inv.setInventorySlotContents(slot, putItem);
+                        break;
+                    }
+                    else if (slotItemPrev.isItemEqual(putItem))
+                    {
+                        slotItemPrev.stackSize += putItem.stackSize;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    private Object tryFindingObject(String s)
+    {
+        Item item = GameData.itemRegistry.getObject(s);
+        if (item != null)
+        {
+            return item;
+        }
+        
+        Block block = GameData.blockRegistry.getObject(s);
+        if (block != Blocks.air)
+        {
+            return block;
+        }
+        return null;
     }
 
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender)

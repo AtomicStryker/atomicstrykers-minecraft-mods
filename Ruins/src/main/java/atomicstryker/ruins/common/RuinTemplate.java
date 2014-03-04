@@ -466,16 +466,14 @@ public class RuinTemplate implements RuinIBuildable
 
     private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun)
     {
-        Iterator<RuinRuleProcess> rp = laterun.iterator();
-        while (rp.hasNext())
+        for (RuinRuleProcess rp : laterun)
         {
-            rp.next().doBlock(world, random);
+            rp.doBlock(world, random);
         }
-
-        rp = lastrun.iterator();
-        while (rp.hasNext())
+        
+        for (RuinRuleProcess rp : lastrun)
         {
-            rp.next().doBlock(world, random);
+            rp.doBlock(world, random);
         }
     }
 

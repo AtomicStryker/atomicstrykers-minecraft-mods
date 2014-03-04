@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -90,5 +91,15 @@ public class CommandTestTemplate extends CommandBase
         parsedRuin.doBuild(player.worldObj, player.getRNG(), MathHelper.floor_double(player.posX + .5),
                 MathHelper.floor_double(player.posY - .5), MathHelper.floor_double(player.posZ + .5), rotation);
         parsedRuin = null;
+    }
+    
+    @Override
+    public int compareTo(Object o)
+    {
+        if (o instanceof ICommand)
+        {
+            return ((ICommand)o).getCommandName().compareTo(getCommandName());
+        }
+        return 0;
     }
 }
