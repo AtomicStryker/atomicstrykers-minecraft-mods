@@ -283,3 +283,8 @@ a: setAccessible now true
 + see template_rules.txt for details and examples
 + Ruins ingame parser now supports reading and saving IInventory containers and contents
 + yes this does in fact include mod added chests and mod added items
+
+12.3
++ changed IInventory block syntax, 12.2 cant work unfortunately
++ fixed some errors in IInventory system
++ fixed some bugs with TileEntity blocks not rotating correctly

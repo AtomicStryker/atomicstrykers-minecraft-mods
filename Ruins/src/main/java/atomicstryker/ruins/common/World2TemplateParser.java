@@ -222,16 +222,16 @@ public class World2TemplateParser extends Thread
                         yPadding = yi - y;
                     }
                     highestY = yi;
-
+                    
+                    TileEntity te = world.getTileEntity(blockx, blocky, blockz);
                     /* handle special blocks */
                     if (temp.block == Blocks.mob_spawner)
                     {
-                        TileEntity te = world.getTileEntity(blockx, blocky, blockz);
                         temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).func_145881_a().getEntityNameToSpawn();
                     }
-                    else if (world.getTileEntity(blockx, blocky, blockz) instanceof IInventory)
+                    else if (te instanceof IInventory && !isIInventoryEmpty((IInventory)te))
                     {
-                        IInventory inventory = (IInventory) world.getTileEntity(blockx, blocky, blockz);
+                        IInventory inventory = (IInventory) te;
                         ArrayList<ItemStack> invItems = new ArrayList<ItemStack>();
                         for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
                         {
@@ -241,59 +241,56 @@ public class World2TemplateParser extends Thread
                             }
                         }
                         
-                        if (invItems.isEmpty() && temp.block == Blocks.chest)
+                        temp.data = "IInventory;"+GameData.blockRegistry.getNameForObject(temp.block)+";";
+                        for (ItemStack i : invItems)
                         {
-                            temp.data = "ChestGenHook:dungeonChest:5-"+temp.meta;
-                        }
-                        else
-                        {
-                            temp.data = "IInventory|"+GameData.blockRegistry.getNameForObject(temp.block)+"|";
-                            for (ItemStack i : invItems)
+                            String ident;
+                            if (i.getItem() instanceof ItemBlock)
                             {
-                                String ident;
-                                if (i.getItem() instanceof ItemBlock)
-                                {
-                                    ident = GameData.blockRegistry.getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
-                                }
-                                else
-                                {
-                                    ident = GameData.itemRegistry.getNameForObject(i.getItem());
-                                }
-                                if (ident != null)
-                                {
-                                    temp.data = temp.data.concat(ident+"#"+i.stackSize+"#"+i.getItemDamage()+",");
-                                }
-                            }
-                            
-                            int iLastComma = temp.data.lastIndexOf(",");
-                            if (iLastComma != -1)
-                            {
-                                temp.data = temp.data.substring(0, temp.data.lastIndexOf(","))+"-"+temp.meta;
+                                ident = GameData.blockRegistry.getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
                             }
                             else
                             {
-                                temp.data = temp.data+"-"+temp.meta;
+                                ident = GameData.itemRegistry.getNameForObject(i.getItem());
+                            }
+                            if (ident != null)
+                            {
+                                temp.data = temp.data.concat(ident+"#"+i.stackSize+"#"+i.getItemDamage()+"+");
                             }
                         }
+                        
+                        int iLastSep = temp.data.lastIndexOf("+");
+                        if (iLastSep != -1)
+                        {
+                            temp.data = temp.data.substring(0, iLastSep)+"-"+temp.meta;
+                        }
+                        else
+                        {
+                            temp.data = temp.data+"-"+temp.meta;
+                        }
+                    }
+                    else if (temp.block == Blocks.chest)
+                    {
+                        temp.data = "ChestGenHook:dungeonChest:5-"+temp.meta;
                     }
                     else if (temp.block == Blocks.command_block)
                     {
-                        TileEntityCommandBlock tec = (TileEntityCommandBlock) world.getTileEntity(blockx, blocky, blockz);
+                        TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
                         temp.data = "CommandBlock:" + tec.func_145993_a().func_145753_i() + ":" + tec.func_145993_a().getCommandSenderName();
                     }
                     else if (temp.block == Blocks.standing_sign)
                     {
-                        TileEntitySign tes = (TileEntitySign) world.getTileEntity(blockx, blocky, blockz);
+                        TileEntitySign tes = (TileEntitySign) te;
                         temp.data = convertSignStrings("StandingSign:", tes) + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.wall_sign)
                     {
-                        TileEntitySign tes = (TileEntitySign) world.getTileEntity(blockx, blocky, blockz);
+                        TileEntitySign tes = (TileEntitySign) te;
                         temp.data = convertSignStrings("WallSign:", tes) + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.skull)
                     {
-                        TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(blockx, blocky, blockz);
+                        TileEntitySkull tes = (TileEntitySkull) te;
                         int skulltype = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 0);
                         int rot = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 1);
                         String specialType = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
@@ -316,6 +313,18 @@ public class World2TemplateParser extends Thread
         }
     }
     
+    private boolean isIInventoryEmpty(IInventory inventory)
+    {
+        for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
+        {
+            if (inventory.getStackInSlot(slot) != null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String convertSignStrings(String prefix, TileEntitySign sign)
     {
         String a = sign.signText[0];

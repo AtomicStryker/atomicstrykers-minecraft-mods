@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import java.io.PrintWriter;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -9,6 +10,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -251,7 +253,7 @@ public class RuinTemplateRule
         Block blockID = blockIDs[blocknum];
         if (excessiveDebugging)
         {
-            debugPrinter.println("About to place blockID "+blockID+", rotation "+rotate+", string: "+blockString);
+            debugPrinter.println("About to place blockID "+blockID+", meta "+blockMDs[blocknum]+" rotation "+rotate+", string: "+blockString);
         }
         if (blockID == null)
         {
@@ -271,10 +273,12 @@ public class RuinTemplateRule
             {
                 int metadata = rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate);
                 world.setBlock(x, y, z, blockIDs[blocknum], metadata, 2);
+                world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
             }
             else
             {
                 world.setBlock(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 2);
+                world.setBlockMetadataWithNotify(x, y, z, blockMDs[blocknum], 2);
             }
         }
     }
@@ -322,14 +326,19 @@ public class RuinTemplateRule
             String[] s = dataString.split(":");
             addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2].split("-")[0]), rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate));
         }
-        else if (dataString.startsWith("IInventory|"))
+        else if (dataString.startsWith("IInventory;"))
         {
-            String[] s = dataString.split("|");
+            String[] s = dataString.split(";");
             Object o = tryFindingObject(s[1]);
             if (o instanceof Block)
             {
                 Block b = (Block) o;
-                addIInventoryBlock(world, random, x, y, z, b, s[2], rotateMetadata(b, blockMDs[blocknum], rotate));
+                // need to strip meta '-x' value if present
+                addIInventoryBlock(world, random, x, y, z, b, s[2].split("-")[0], rotateMetadata(b, blockMDs[blocknum], rotate));
+            }
+            else
+            {
+                System.err.println("Ruins Mod could not determine what block to spawn for [" + s[1] + "] in Ruin template: " + owner.getName());
             }
         }
         else if (dataString.equals("EnderCrystal"))
@@ -581,20 +590,24 @@ public class RuinTemplateRule
         {
             handleIInventory((IInventory) te, itemData);
         }
+        else
+        {
+            System.err.println("Ruins Mod could not find IInventory instance for [" + block + "] in Ruin template: " + owner.getName());
+        }
     }
     
     private void handleIInventory(IInventory inv, String itemData)
     {
         ItemStack putItem;
         ItemStack slotItemPrev;
-        String[] itemStrings = itemData.split(",");
+        String[] itemStrings = itemData.split(Pattern.quote("+"));
         String[] split;
         Object o;
         for (String s : itemStrings)
         {
             split = s.split("#");
-            int itemStackSize = s.length() > 1 ? Integer.valueOf(split[1]) : 1;
-            int itemMeta = s.length() > 2 ? Integer.valueOf(split[2]) : 0;
+            int itemStackSize = split.length > 1 ? Integer.valueOf(split[1]) : 1;
+            int itemMeta = split.length > 2 ? Integer.valueOf(split[2]) : 0;
             o = tryFindingObject(split[0]);
             
             putItem = null;
@@ -632,6 +645,10 @@ public class RuinTemplateRule
         Item item = GameData.itemRegistry.getObject(s);
         if (item != null)
         {
+            if (item instanceof ItemBlock)
+            {
+                return ((ItemBlock)item).field_150939_a;
+            }
             return item;
         }
         
