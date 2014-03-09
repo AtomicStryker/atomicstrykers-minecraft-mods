@@ -40,7 +40,7 @@ import cpw.mods.fml.common.registry.GameData;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.1")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.2")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -92,15 +92,15 @@ public class DynamicLights
     {
         if (tick.phase == Phase.END && mcinstance.theWorld != null)
         {
-            ConcurrentLinkedQueue<?> worldLights = worldLightsMap.get(mcinstance.theWorld);
+            ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(mcinstance.theWorld);
             
             if (worldLights != null)
             {
-                Iterator<?> iter = worldLights.iterator();
+                Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
                 while (iter.hasNext())
                 {
-                    DynamicLightSourceContainer tickedLightContainer = (DynamicLightSourceContainer) iter.next();
-                    if (tickedLightContainer != null && tickedLightContainer.onUpdate())
+                    DynamicLightSourceContainer tickedLightContainer = iter.next();
+                    if (tickedLightContainer.onUpdate())
                     {
                         iter.remove();
                         mcinstance.theWorld.updateLightByType(EnumSkyBlock.Block, tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ());
@@ -119,10 +119,10 @@ public class DynamicLights
                 {
                     if (worldLights != null)
                     {
-                        Iterator<?> iter = worldLights.iterator();
+                        Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
                         while (iter.hasNext())
                         {
-                            DynamicLightSourceContainer c = (DynamicLightSourceContainer) iter.next();
+                            DynamicLightSourceContainer c = iter.next();
                             world.updateLightByType(EnumSkyBlock.Block, c.getX(), c.getY(), c.getZ());
                         }
                     }
