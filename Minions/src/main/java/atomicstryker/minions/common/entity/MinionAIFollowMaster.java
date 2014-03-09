@@ -77,32 +77,34 @@ public class MinionAIFollowMaster extends EntityAIBase
     @Override
     public void updateTask()
     {
-        this.theMinion.getLookHelper().setLookPositionWithEntity(theMinion.master, 10.0F, (float) this.theMinion.getVerticalFaceSpeed());
+        theMinion.getLookHelper().setLookPositionWithEntity(theMinion.master, 10.0F, (float) theMinion.getVerticalFaceSpeed());
 
         if (shouldFollowMaster())
         {
-            if (--this.updateTicker <= 0)
+            if (--updateTicker <= 0)
             {
-                this.updateTicker = 30;
+                updateTicker = 30;
 
-                if (!this.petPathfinder.tryMoveToEntityLiving(theMinion.master, this.followSpeed))
+                if (!petPathfinder.tryMoveToEntityLiving(theMinion.master, followSpeed))
                 {
-                    if (this.theMinion.getDistanceSqToEntity(theMinion.master) >= followRangeSq)
+                    if (theMinion.getDistanceSqToEntity(theMinion.master) >= followRangeSq)
                     {
-                        int var1 = MathHelper.floor_double(theMinion.master.posX) - 2;
-                        int var2 = MathHelper.floor_double(theMinion.master.posZ) - 2;
-                        int var3 = MathHelper.floor_double(theMinion.master.boundingBox.minY);
+                        int x = MathHelper.floor_double(theMinion.master.posX) - 2;
+                        int z = MathHelper.floor_double(theMinion.master.posZ) - 2;
+                        int y = MathHelper.floor_double(theMinion.master.boundingBox.minY);
 
-                        for (int var4 = 0; var4 <= 4; ++var4)
+                        for (int xIter = 0; xIter <= 4; ++xIter)
                         {
-                            for (int var5 = 0; var5 <= 4; ++var5)
+                            for (int zIter = 0; zIter <= 4; ++zIter)
                             {
-                                if ((var4 < 1 || var5 < 1 || var4 > 3 || var5 > 3) && theMinion.worldObj.getBlock(var1 + var4, var3 - 1, var2 + var5).isBlockNormalCube()
-                                        && !theMinion.worldObj.getBlock(var1 + var4, var3, var2 + var5).isBlockNormalCube() && !theMinion.worldObj.getBlock(var1 + var4, var3 + 1, var2 + var5).isBlockNormalCube())
+                                if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3)
+                                        && theMinion.worldObj.getBlock(x + xIter, y - 1, z + zIter).isNormalCube()
+                                        && !theMinion.worldObj.getBlock(x + xIter, y, z + zIter).isNormalCube()
+                                        && !theMinion.worldObj.getBlock(x + xIter, y + 1, z + zIter).isNormalCube())
                                 {
-                                    this.theMinion.setLocationAndAngles((double) ((float) (var1 + var4) + 0.5F), (double) var3, (double) ((float) (var2 + var5) + 0.5F), this.theMinion.rotationYaw,
-                                            this.theMinion.rotationPitch);
-                                    this.petPathfinder.clearPathEntity();
+                                    theMinion.setLocationAndAngles((double) (x + xIter) + 0.5D, (double) y, (double) (z + zIter) + 0.5D,
+                                            theMinion.rotationYaw, theMinion.rotationPitch);
+                                    petPathfinder.clearPathEntity();
                                     return;
                                 }
                             }
@@ -112,7 +114,7 @@ public class MinionAIFollowMaster extends EntityAIBase
             }
         }
     }
-    
+
     private boolean shouldFollowMaster()
     {
         return theMinion.followingMaster || (theMinion.returningGoods && theMinion.returnChestOrInventory == null);

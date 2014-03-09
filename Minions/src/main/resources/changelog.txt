@@ -1,3 +1,6 @@
+Hotfix 1.8.8
+- fixed EntityAIFollowOwner to work on serverside
+
 Update 1.8.8
 - fixed crash in soundpacket
 
