@@ -1,3 +1,6 @@
+1.6.5
+- fixed Blood Fluid registration to use pre-existing entry if present
+
 1.6.4 (Necromany, not MC)
 - fixed Villager ID not being registered, probably breaking the skin
 

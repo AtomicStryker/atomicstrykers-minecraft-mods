@@ -9,7 +9,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\Users\Floris\Desktop\SwordMetal.jpg
+map_Kd swordMetal.jpg
 
 newmtl Handle_Tex
 Ns 96.078431
@@ -19,7 +19,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\Users\Floris\Desktop\Black fabric.jpg
+map_Kd cloth.jpg
 
 newmtl Joint1_Cloth_Tex
 Ns 96.078431
@@ -29,7 +29,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\Users\Floris\Desktop\Black fabric.jpg
+map_Kd cloth.jpg
 
 newmtl Joint2_Cloth_Tex
 Ns 96.078431
@@ -39,4 +39,4 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\Users\Floris\Desktop\Black fabric.jpg
+map_Kd cloth.jpg

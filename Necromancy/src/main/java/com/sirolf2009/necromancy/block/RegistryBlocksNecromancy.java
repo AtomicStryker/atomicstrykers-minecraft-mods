@@ -40,10 +40,14 @@ public class RegistryBlocksNecromancy
         sewing.setBlockName("Sewing Machine");
         GameRegistry.registerBlock(sewing, "Sewing Machine");
         GameRegistry.registerTileEntity(TileEntitySewing.class, "Sewing");
-
-        fluidBlood = new Fluid("blood");
-        FluidRegistry.registerFluid(fluidBlood);
-
+        
+        fluidBlood = FluidRegistry.getFluid("blood");
+        if (fluidBlood == null)
+        {
+            fluidBlood = new Fluid("blood");
+            FluidRegistry.registerFluid(fluidBlood);
+        }
+        
         blood = new BlockBlood(fluidBlood);
         blood.setBlockName("FlowingBlood");
         fluidBlood.setBlock(blood);
