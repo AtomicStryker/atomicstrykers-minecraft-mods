@@ -20,7 +20,7 @@ public class RegistryBlocksNecromancy
     public static Block altar;
     public static Block altarBlock;
     public static Block sewing;
-    public static BlockBlood blood;
+    public static Block blood;
     public static Block skullWall;
 
     public static Fluid fluidBlood;
@@ -46,12 +46,15 @@ public class RegistryBlocksNecromancy
         {
             fluidBlood = new Fluid("blood");
             FluidRegistry.registerFluid(fluidBlood);
+            blood = new BlockBlood(fluidBlood);
+            blood.setBlockName("FlowingBlood");
+            fluidBlood.setBlock(blood);
+            GameRegistry.registerBlock(blood, "FlowingBlood");
         }
-        
-        blood = new BlockBlood(fluidBlood);
-        blood.setBlockName("FlowingBlood");
-        fluidBlood.setBlock(blood);
-        GameRegistry.registerBlock(blood, "FlowingBlood");
+        else
+        {
+            blood = fluidBlood.getBlock();
+        }
         
         skullWall = new BlockSkullWall();
         skullWall.setBlockName("skullWall");
