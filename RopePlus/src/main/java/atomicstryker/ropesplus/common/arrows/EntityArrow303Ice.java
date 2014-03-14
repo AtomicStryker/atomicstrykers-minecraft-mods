@@ -27,7 +27,7 @@ public class EntityArrow303Ice extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Ice(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Ice(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -43,32 +43,31 @@ public class EntityArrow303Ice extends EntityArrow303
     }
 
     @Override
-    public boolean onHitTarget(Entity entity)
+    public boolean onHitTarget(EntityLivingBase entity)
     {
-        if (!(entity instanceof EntityLivingBase) || victim != null)
+        if (victim != null)
         {
             return false;
         }
         
-        @SuppressWarnings("rawtypes")
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(3D, 3D, 3D));
-        for (int i = 0; i < list.size(); i++)
+
+        @SuppressWarnings("unchecked")
+        List<Entity> list = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(3D, 3D, 3D));
+        for (Entity e : list)
         {
-            Entity entity1 = (Entity) list.get(i);
-            if (!(entity1 instanceof EntityArrow303Ice))
+            if (e instanceof EntityArrow303Ice)
             {
-                continue;
-            }
-            EntityArrow303Ice entityarrow303ice = (EntityArrow303Ice) entity1;
-            if (entityarrow303ice.victim == entity)
-            {
-                entityarrow303ice.freezeTimer += getFreezeTimer((EntityLivingBase) entity);
-                entityarrow303ice.setDead();
-                return super.onHitTarget(entity);
+                EntityArrow303Ice entityarrow303ice = (EntityArrow303Ice) e;
+                if (entityarrow303ice.victim == e)
+                {
+                    entityarrow303ice.freezeTimer += getFreezeTimer((EntityLivingBase) e);
+                    entityarrow303ice.setDead();
+                    return super.onHitTarget(entity);
+                }
             }
         }
         
-        freezeMob((EntityLivingBase) entity);
+        freezeMob(entity);
         return super.onHitTarget(entity);
     }
 

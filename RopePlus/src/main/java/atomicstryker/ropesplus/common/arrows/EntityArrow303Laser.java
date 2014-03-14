@@ -10,7 +10,6 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityArrow303Laser extends EntityArrow303
@@ -27,7 +26,7 @@ public class EntityArrow303Laser extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Laser(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Laser(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -49,9 +48,9 @@ public class EntityArrow303Laser extends EntityArrow303
     }
 
     @Override
-    public boolean onHitTarget(Entity entity)
+    public boolean onHitTarget(EntityLivingBase entity)
     {
-        entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), calculateArrowDamage());
+        causeArrowDamage(entity);
         pierced = true;
         piercedMobs.add(entity);
         target = null;

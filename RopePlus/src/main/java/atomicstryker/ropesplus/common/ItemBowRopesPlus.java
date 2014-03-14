@@ -72,6 +72,11 @@ public class ItemBowRopesPlus extends ItemBow
                 }
                 
                 EntityProjectileBase newArrow = entityarrow303.newArrow(world, player, bowChargeRatio*2);
+                EntityProjectileBase template = RopesPlusCore.instance.getArrowTemplate(newArrow);
+                if (template != null)
+                {
+                    newArrow.damage = template.damage;
+                }
 
                 if (bowChargeRatio == 1.0F)
                 {
@@ -81,7 +86,7 @@ public class ItemBowRopesPlus extends ItemBow
                 int damageEnchantPower = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, vanillaBow);
                 if (damageEnchantPower > 0)
                 {
-                    newArrow.dmg = (int) Math.rint(newArrow.dmg + (double)damageEnchantPower * 0.5D + 0.5D);
+                    newArrow.damage = (int) Math.rint(newArrow.damage + (double)damageEnchantPower * 0.5D + 0.5D);
                 }
                 
                 if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, vanillaBow) > 0)

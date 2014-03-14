@@ -1,7 +1,6 @@
 package atomicstryker.ropesplus.common.arrows;
 
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +18,7 @@ public class EntityArrow303Fire extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Fire(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Fire(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -45,10 +44,10 @@ public class EntityArrow303Fire extends EntityArrow303
     }
 
     @Override
-    public boolean onHitTarget(Entity entity)
+    public boolean onHitTarget(EntityLivingBase entity)
     {
     	entity.setFire(300/20);
-        return super.onHitTarget(entity);
+    	return super.onHitTarget(entity);
     }
     
     @Override

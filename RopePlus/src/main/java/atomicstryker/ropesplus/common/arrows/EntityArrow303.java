@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,7 +42,7 @@ public class EntityArrow303 extends EntityProjectileBase
         init();
     }
     
-    public EntityArrow303(World world, EntityLivingBase ent, float power)
+    public EntityArrow303(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -85,16 +84,9 @@ public class EntityArrow303 extends EntityProjectileBase
         {
             if (target == null || target.isDead || (target instanceof EntityLivingBase) && ((EntityLivingBase) target).deathTime != 0)
             {
-                if (shooter instanceof EntityCreature)
-                {
-                    target = ((EntityCreature) shooter).getAITarget();
-                }
-                else
-                {
-                    target = getTarget(posX, posY, posZ, 16D);
-                }
+                target = getTarget(posX, posY, posZ, 16D);
             }
-            else if ((shooter instanceof EntityPlayer) && !isInSight(target))
+            else if (!isInSight(target))
             {
                 target = getTarget(posX, posY, posZ, 16D);
             }

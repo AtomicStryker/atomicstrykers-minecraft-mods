@@ -52,7 +52,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.7")
+@Mod(modid = "RopesPlus", name = "Ropes+", version = "1.5.8")
 public class RopesPlusCore
 {
     @SidedProxy(clientSide = "atomicstryker.ropesplus.client.ClientProxy", serverSide = "atomicstryker.ropesplus.common.CommonProxy")
@@ -98,7 +98,6 @@ public class RopesPlusCore
         arrowItems = new ArrayList<ItemArrow303>();
         ropeEntArray = new ArrayList<Object>();
         ropePosArray = new ArrayList<int[]>();
-        new HashMap<EntityPlayer, Boolean>();
         grapplingHookMap = new HashMap<EntityPlayer, EntityGrapplingHook>();
         playerRopeMap = new HashMap<EntityPlayer, EntityFreeFormRope>();
         selectedSlotMap = new HashMap<EntityPlayer, Integer>();
@@ -120,7 +119,7 @@ public class RopesPlusCore
         {
             arrows.add(constructArrowInstance(c));
         }
-        arrows.add(baseArrow);
+        //arrows.add(baseArrow);
 
         int index = 3;
         Configuration c = Settings_RopePlus.config;
@@ -243,7 +242,7 @@ public class RopesPlusCore
         }
         else if (config.get("Arrows Enabled", entityarrow303.name, true).getBoolean(true))
         {
-            entityarrow303.configuredDamage = config.get("ArrowConfig", "Damage " + entityarrow303.name, "4").getInt();
+            entityarrow303.damage = config.get("ArrowConfig", "Damage " + entityarrow303.name, "2", "base arrow damage independent from crits/motion").getInt();
             entityarrow303.craftingResults = config.get("ArrowConfig", "CraftedStackSize " + entityarrow303.name, "4").getInt();
             item = (ItemArrow303) (new ItemArrow303(entityarrow303)).setUnlocalizedName(entityarrow303.name);
             arrowItems.add(item);
@@ -251,16 +250,28 @@ public class RopesPlusCore
         return item;
     }
 
-    private EntityArrow303 constructArrowInstance(Class<?> class1)
+    private EntityArrow303 constructArrowInstance(Class<?> clazz)
     {
         try
         {
-            return (EntityArrow303) class1.getConstructor(new Class[] { World.class }).newInstance(new Object[] { (World) null });
+            return (EntityArrow303) clazz.getConstructor(new Class[] { World.class }).newInstance(new Object[] { (World) null });
         }
         catch (Throwable throwable)
         {
             throw new RuntimeException(throwable);
         }
+    }
+    
+    public EntityProjectileBase getArrowTemplate(EntityProjectileBase copy)
+    {
+        for (EntityArrow303 a : arrows)
+        {
+            if (a.item.isItemEqual(copy.item))
+            {
+                return a;
+            }
+        }
+        return null;
     }
 
     public Item getArrowItemByTip(Object desiredtip)

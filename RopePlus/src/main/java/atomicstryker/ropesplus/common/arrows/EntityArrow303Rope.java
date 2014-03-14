@@ -2,7 +2,6 @@ package atomicstryker.ropesplus.common.arrows;
 
 import net.minecraft.block.Block;
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -20,7 +19,7 @@ public class EntityArrow303Rope extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Rope(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Rope(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();

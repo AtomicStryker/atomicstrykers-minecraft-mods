@@ -28,8 +28,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
     public float curvature;
     public float precision;
     public float hitBoxSize;
-    public int configuredDamage;
-    public int dmg;
     public ItemStack item;
     public int ttlInGround;
     public int xTile;
@@ -39,10 +37,11 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
     public int inTileMetadata;
     public boolean inGround;
     public int arrowShake;
-    public EntityLivingBase shooter;
+    public EntityPlayer shooter;
     public int ticksInGround;
     public int ticksFlying;
-    public boolean shotByPlayer;
+    
+    public int damage;
 
     public EntityProjectileBase(World world)
     {
@@ -50,12 +49,11 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         shooter = null;
     }
 
-    public EntityProjectileBase(World world, EntityLivingBase EntityLivingBase, float power)
+    public EntityProjectileBase(World world, EntityPlayer player, float power)
     {
         this(world);
-        shooter = EntityLivingBase;
-        shotByPlayer = EntityLivingBase instanceof EntityPlayer;
-        setLocationAndAngles(EntityLivingBase.posX, EntityLivingBase.posY + (double) EntityLivingBase.getEyeHeight(), EntityLivingBase.posZ, EntityLivingBase.rotationYaw, EntityLivingBase.rotationPitch);
+        shooter = player;
+        setLocationAndAngles(player.posX, player.posY + (double) player.getEyeHeight(), player.posZ, player.rotationYaw, player.rotationPitch);
         posX -= MathHelper.cos((rotationYaw / 180F) * 3.141593F) * 0.16F;
         posY -= 0.10000000149011612D;
         posZ -= MathHelper.sin((rotationYaw / 180F) * 3.141593F) * 0.16F;
@@ -66,11 +64,11 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         setThrowableHeading(motionX, motionY, motionZ, speed*power, precision);
     }
     
-    public EntityProjectileBase newArrow(World world, EntityLivingBase entityLivingBase, float power)
+    public EntityProjectileBase newArrow(World world, EntityPlayer player, float power)
     {
         try
         {
-            return getClass().getConstructor(new Class[] { World.class, EntityLivingBase.class, float.class }).newInstance(new Object[] { world, entityLivingBase, power });
+            return getClass().getConstructor(new Class[] { World.class, EntityPlayer.class, float.class }).newInstance(new Object[] { world, player, power });
         }
         catch (Throwable throwable)
         {
@@ -94,7 +92,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         speed = 1.0F;
         slowdown = 0.99F;
         curvature = 0.03F;
-        dmg = configuredDamage;//4;
         precision = 1.0F;
         ttlInGround = 1200;
         item = null;
@@ -169,17 +166,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
             this.ticksInGround = 0;
         }
     }
-    
-    protected float calculateArrowDamage()
-    {
-        float damage = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-        damage *= dmg;
-        if (getIsCritical())
-        {
-            damage *= 2;
-        }
-        return damage;
-    }
 
     @Override
     public void onUpdate()
@@ -237,25 +223,24 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
             nextPosVec = worldObj.getWorldVec3Pool().getVecFromPool(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
         
-        Entity entityHit = null;
-        @SuppressWarnings("rawtypes")
-        List possibleHitsList = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        EntityLivingBase entityHit = null;
+        @SuppressWarnings("unchecked")
+        List<Entity> possibleHitsList = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double nearestHit = 0.0D;
-        for (int k = 0; k < possibleHitsList.size(); k++)
+        MovingObjectPosition mopCollision = null;
+        AxisAlignedBB axisalignedbb;
+        for (Entity possibleHitEnt : possibleHitsList)
         {
-            Entity possibleHitEnt = (Entity) possibleHitsList.get(k);
             if (canBeShot(possibleHitEnt))
             {
-                float f3 = hitBoxSize;
-                AxisAlignedBB axisalignedbb = possibleHitEnt.boundingBox.expand(f3, f3, f3);
-                MovingObjectPosition mopCollision = axisalignedbb.calculateIntercept(currentPosVec, nextPosVec);
-                
+                axisalignedbb = possibleHitEnt.boundingBox.expand(hitBoxSize, hitBoxSize, hitBoxSize);
+                mopCollision = axisalignedbb.calculateIntercept(currentPosVec, nextPosVec);
                 if (mopCollision != null)
                 {
                     double dist = currentPosVec.distanceTo(mopCollision.hitVec);
                     if (dist < nearestHit || nearestHit == 0.0D)
                     {
-                        entityHit = possibleHitEnt;
+                        entityHit = (EntityLivingBase) possibleHitEnt;
                         nearestHit = dist;
                     }
                 }
@@ -267,17 +252,9 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         {
             if (onHitTarget(entityHit))
             {
-                float damage = calculateArrowDamage();
-                if (shooter != null)
-                {
-                    entityHit.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), damage);
-                }
-                else
-                {
-                    entityHit.attackEntityFrom((new EntityDamageSourceIndirect("arrow", this, this)).setProjectile(), damage);
-                }
-
+                causeArrowDamage(entityHit);                
                 setDead();
+                return;
             }
         }
         else if (collisionPosition != null && collisionPosition.typeOfHit == MovingObjectType.BLOCK)
@@ -342,7 +319,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         setPosition(posX, posY, posZ);
     }
 
-    public void handleMotionUpdate()
+    private void handleMotionUpdate()
     {
         float slow = slowdown;
         if (handleWaterMovement())
@@ -360,6 +337,32 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         motionZ *= slow;
         motionY -= curvature;
     }
+    
+    protected void causeArrowDamage(EntityLivingBase entityHit)
+    {
+        float damage = calculateArrowDamage();
+        //System.out.println("hitting "+entityHit+" with damage "+damage+", prevhealth: "+entityHit.getHealth());
+        if (shooter != null)
+        {
+            entityHit.attackEntityFrom(DamageSource.causePlayerDamage(shooter), damage);
+        }
+        else
+        {
+            entityHit.attackEntityFrom((new EntityDamageSourceIndirect("arrow", this, this)).setProjectile(), damage);
+        }
+        //System.out.println("posthealth: "+entityHit.getHealth());
+    }
+    
+    protected float calculateArrowDamage()
+    {
+        float dmg = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
+        dmg += damage;
+        if (getIsCritical())
+        {
+            dmg *= 2;
+        }
+        return dmg;
+    }
 
     @Override
     public void writeEntityToNBT(NBTTagCompound nbttagcompound)
@@ -369,7 +372,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         nbttagcompound.setShort("zTile", (short) zTile);
         nbttagcompound.setByte("shake", (byte) arrowShake);
         nbttagcompound.setByte("inGround", (byte) (inGround ? 1 : 0));
-        nbttagcompound.setBoolean("player", shotByPlayer);
     }
 
     @Override
@@ -380,7 +382,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         zTile = nbttagcompound.getShort("zTile");
         arrowShake = nbttagcompound.getByte("shake") & 0xff;
         inGround = nbttagcompound.getByte("inGround") == 1;
-        shotByPlayer = nbttagcompound.getBoolean("player");
     }
 
     @Override
@@ -394,7 +395,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         {
             return;
         }
-        if (inGround && shotByPlayer && arrowShake <= 0 && entityplayer.inventory.addItemStackToInventory(item.copy()))
+        if (inGround && shooter != null && arrowShake <= 0 && entityplayer.inventory.addItemStackToInventory(item.copy()))
         {
             worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             entityplayer.onItemPickup(this, 1);
@@ -404,7 +405,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
 
     public boolean canBeShot(Entity entity)
     {
-        return entity.canBeCollidedWith() && ((!worldObj.isRemote && entity != shooter) || ticksFlying >= TICKS_BEFORE_COLLIDABLE);
+        return entity instanceof EntityLivingBase && entity.canBeCollidedWith() && ((!worldObj.isRemote && entity != shooter) || ticksFlying >= TICKS_BEFORE_COLLIDABLE);
     }
     
     /**
@@ -416,11 +417,11 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         {
             for (int i = 0; i < 4; ++i)
             {
-                this.worldObj.spawnParticle("crit",
-                        this.posX + this.motionX * (double) i / 4.0D,
-                        this.posY + this.motionY * (double) i / 4.0D,
-                        this.posZ + this.motionZ * (double) i / 4.0D,
-                        -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+                worldObj.spawnParticle("crit",
+                        posX + motionX * (double) i / 4.0D,
+                        posY + motionY * (double) i / 4.0D,
+                        posZ + motionZ * (double) i / 4.0D,
+                        -motionX, -motionY + 0.2D, -motionZ);
             }
         }
     }
@@ -438,15 +439,11 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
      * @param entity that was just hit by the arrow
      * @return true if the hit was accepted, false if the arrow should continue flight
      */
-    public boolean onHitTarget(Entity entity)
+    public boolean onHitTarget(EntityLivingBase entity)
     {
-        if (entity instanceof EntityLivingBase)
-        {
-            ((EntityLivingBase)entity).setArrowCountInEntity(((EntityLivingBase)entity).getArrowCountInEntity() + 1);
-            worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
-            return true;
-        }
-        return false;
+        entity.setArrowCountInEntity(((EntityLivingBase)entity).getArrowCountInEntity() + 1);
+        worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
+        return true;
     }
     
     /**

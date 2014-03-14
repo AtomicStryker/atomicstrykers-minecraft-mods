@@ -1,7 +1,6 @@
 package atomicstryker.ropesplus.common.arrows;
 
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -17,7 +16,7 @@ public class EntityArrow303RedStoneTorch extends EntityArrow303
         init();
     }
     
-    public EntityArrow303RedStoneTorch(World world, EntityLivingBase ent, float power)
+    public EntityArrow303RedStoneTorch(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();

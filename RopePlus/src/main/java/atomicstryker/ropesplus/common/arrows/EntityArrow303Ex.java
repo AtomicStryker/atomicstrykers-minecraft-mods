@@ -7,7 +7,6 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityArrow303Ex extends EntityArrow303
@@ -22,7 +21,7 @@ public class EntityArrow303Ex extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Ex(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Ex(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -40,7 +39,7 @@ public class EntityArrow303Ex extends EntityArrow303
     }
 
     @Override
-    public boolean onHitTarget(Entity ent)
+    public boolean onHitTarget(EntityLivingBase ent)
     {
         if (!isCharged)
         {
@@ -48,16 +47,8 @@ public class EntityArrow303Ex extends EntityArrow303
             worldObj.playSoundAtEntity(this, "random.fuse", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
             entStuckIn = ent;
             
-            // deal minimal damage to provoke a reaction
-            if (shooter != null)
-            {
-                ent.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shooter), 1);
-            }
-            
-            if (ent instanceof EntityLivingBase)
-            {
-                ((EntityLivingBase)ent).setArrowCountInEntity(((EntityLivingBase)ent).getArrowCountInEntity() + 1);
-            }
+            causeArrowDamage(ent);
+            ent.setArrowCountInEntity(((EntityLivingBase)ent).getArrowCountInEntity() + 1);
             setSize(0, 0);
         }
         return false;

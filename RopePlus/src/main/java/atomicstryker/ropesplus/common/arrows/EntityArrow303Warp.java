@@ -1,8 +1,8 @@
 package atomicstryker.ropesplus.common.arrows;
 
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -16,7 +16,7 @@ public class EntityArrow303Warp extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Warp(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Warp(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();

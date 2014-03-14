@@ -1,10 +1,10 @@
 package atomicstryker.ropesplus.common.arrows;
 
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -18,7 +18,7 @@ public class EntityArrow303Slime extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Slime(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Slime(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -57,7 +57,7 @@ public class EntityArrow303Slime extends EntityArrow303
     }
 
     @Override
-    public boolean onHitTarget(Entity entity)
+    public boolean onHitTarget(EntityLivingBase entity)
     {
         EntityLivingBase entityLivingBase = makeMob();
         entityLivingBase.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);

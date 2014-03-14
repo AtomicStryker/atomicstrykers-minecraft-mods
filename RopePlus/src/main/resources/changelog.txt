@@ -1,3 +1,9 @@
+RopesPlus 1.5.8
+- fixed bug where arrows did 0 damage
+- streamlined arrow damage calculations, base damage now gets added not multiplied
+- nerfed default base arrow damage to 2
+- some code refactoring
+
 RopesPlus 1.5.7
 - added configuration options to disable grappling hook,
   hook shot and ziplines. Ziplines require the hook shot,

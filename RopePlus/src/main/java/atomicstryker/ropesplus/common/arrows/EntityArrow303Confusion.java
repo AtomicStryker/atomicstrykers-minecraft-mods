@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -22,7 +23,7 @@ public class EntityArrow303Confusion extends EntityArrow303
         init();
     }
     
-    public EntityArrow303Confusion(World world, EntityLivingBase ent, float power)
+    public EntityArrow303Confusion(World world, EntityPlayer ent, float power)
     {
         super(world, ent, power);
         init();
@@ -46,11 +47,10 @@ public class EntityArrow303Confusion extends EntityArrow303
     }
 
     @Override
-    public boolean onHitTarget(Entity entity)
+    public boolean onHitTarget(EntityLivingBase entity)
     {
-        worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
         confuse(entity);
-        return true;
+        return super.onHitTarget(entity);
     }
 
     private void confuse(Entity entity)
