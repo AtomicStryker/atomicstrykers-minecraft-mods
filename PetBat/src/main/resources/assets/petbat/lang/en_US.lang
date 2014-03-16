@@ -25,3 +25,6 @@ translation.PetBat:batlevel3desc=Developed a taste for Blood, now has Life Steal
 translation.PetBat:batlevel4desc=Don't cross this bat.
 translation.PetBat:batlevel5desc=It doesn't get much deadlier.
 translation.PetBat:batlevel6desc=YOU POINT. THEY DIE.
+
+translation.PetBat:staying=Staying put.
+translation.PetBat:notstaying=Not Staying put.

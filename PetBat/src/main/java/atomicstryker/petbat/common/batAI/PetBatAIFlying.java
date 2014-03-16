@@ -63,7 +63,7 @@ public class PetBatAIFlying extends EntityAIBase
     public void updateTask()
     {
         lookForOwnerEntity();
-        
+
         if (petBat.getIsBatHanging())
         {
             checkTakeOffConditions();
@@ -82,7 +82,7 @@ public class PetBatAIFlying extends EntityAIBase
         if (petBat.getOwnerEntity() != null)
         {
             if (petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF
-            || (sittingSpotAbortTime > 0 && System.currentTimeMillis() > sittingSpotAbortTime))
+                    || (sittingSpotAbortTime > 0 && System.currentTimeMillis() > sittingSpotAbortTime))
             {
                 petBat.setHangingSpot(null);
             }
@@ -112,39 +112,41 @@ public class PetBatAIFlying extends EntityAIBase
                 }
             }
         }
-        
+
         if (petBat.getHangingSpot() == null)
         {
             sittingSpotAbortTime = -1L;
-            
+
             // target invalid or no free block
-            if (currentFlightTarget != null && (!petBat.worldObj.isAirBlock(currentFlightTarget.posX, currentFlightTarget.posY, currentFlightTarget.posZ) || currentFlightTarget.posY < 1))
+            if (currentFlightTarget != null
+                    && (!petBat.worldObj.isAirBlock(currentFlightTarget.posX, currentFlightTarget.posY, currentFlightTarget.posZ) || currentFlightTarget.posY < 1))
             {
                 currentFlightTarget = null;
             }
 
             // finding a new target, randomly
-            if (currentFlightTarget == null || rand.nextInt(30) == 0 || currentFlightTarget.getDistanceSquared((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ) < 4.0F)
+            if (currentFlightTarget == null || rand.nextInt(30) == 0
+                    || currentFlightTarget.getDistanceSquared((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ) < 4.0F)
             {
                 currentFlightTarget = getRandomFlightCoordinates();
             }
         }
         else
         {
-			currentFlightTarget = petBat.getHangingSpot();
-		
+            currentFlightTarget = petBat.getHangingSpot();
+
             if (sittingSpotAbortTime < 0)
             {
                 sittingSpotAbortTime = System.currentTimeMillis() + SITTINGSPOT_REACHTIME;
             }
-            
+
             if (currentFlightTarget.getDistanceSquared((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ) < 2F)
             {
                 land();
             }
         }
     }
-    
+
     /**
      * Attack targets >>> Food targets >>> currentFlightTarget
      */
@@ -203,7 +205,7 @@ public class PetBatAIFlying extends EntityAIBase
                 petBat.updateOwnerCoords();
             }
         }
-        
+
         int x = 0;
         int y = 0;
         int z = 0;
@@ -215,11 +217,12 @@ public class PetBatAIFlying extends EntityAIBase
             x = petBat.getLastOwnerX() + rand.nextInt(7) - rand.nextInt(7);
             y = petBat.getLastOwnerY() + rand.nextInt(6) - 2 + BAT_OWNER_FOLLOW_Y_OFFSET;
             z = petBat.getLastOwnerZ() + rand.nextInt(7) - rand.nextInt(7);
-            
+
             orig = petBat.worldObj.getWorldVec3Pool().getVecFromPool(petBat.posX, petBat.posY, petBat.posZ);
-            dest = petBat.worldObj.getWorldVec3Pool().getVecFromPool(x+0.5D, y+0.5D, z+0.5D);
+            dest = petBat.worldObj.getWorldVec3Pool().getVecFromPool(x + 0.5D, y + 0.5D, z + 0.5D);
             movingobjectposition = petBat.worldObj.func_147447_a(orig, dest, false, true, false);
-            if (movingobjectposition == null) // no collision detected, path is free
+            if (movingobjectposition == null) // no collision detected, path is
+                                              // free
             {
                 break;
             }
@@ -227,7 +230,7 @@ public class PetBatAIFlying extends EntityAIBase
 
         return new ChunkCoordinates(x, y, z);
     }
-    
+
     private void lookForOwnerEntity()
     {
         if (!petBat.getOwnerName().equals("") && System.currentTimeMillis() > nextOwnerCheckTime)
@@ -236,44 +239,49 @@ public class PetBatAIFlying extends EntityAIBase
             nextOwnerCheckTime = System.currentTimeMillis() + OWNER_FIND_INTERVAL;
         }
     }
-    
+
     private void checkTakeOffConditions()
     {
-        if (petBat.getHasTarget())
-        {
-            takeOff();
-        }
-        
-        if (petBat.getOwnerEntity() != null && petBat.getOwnerEntity().isEntityAlive() &&  petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF)
-        {
-            takeOff();
-        }
-        
         // block it was hanging from is no more
-        if (!petBat.worldObj.getBlock(MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ)).isNormalCube())
+        if (!petBat.worldObj.getBlock(MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ))
+                .isNormalCube())
         {
             takeOff();
         }
 
-        // player scare
-        EntityPlayer nearest = petBat.worldObj.getClosestPlayerToEntity(petBat, 4.0D);
-        if (nearest != null && nearest != petBat.getOwnerEntity())
+        if (!petBat.getIsBatStaying())
         {
-            takeOff();
+            if (petBat.getHasTarget())
+            {
+                takeOff();
+            }
+
+            if (petBat.getOwnerEntity() != null && petBat.getOwnerEntity().isEntityAlive()
+                    && petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF)
+            {
+                takeOff();
+            }
+
+            // player scare
+            EntityPlayer nearest = petBat.worldObj.getClosestPlayerToEntity(petBat, 4.0D);
+            if (nearest != null && nearest != petBat.getOwnerEntity())
+            {
+                takeOff();
+            }
         }
     }
-    
+
     private void land()
     {
         sittingSpotAbortTime = -1L;
-        petBat.setPosition(currentFlightTarget.posX+0.5D, currentFlightTarget.posY+0.5D, currentFlightTarget.posZ+0.5D);
+        petBat.setPosition(currentFlightTarget.posX + 0.5D, currentFlightTarget.posY + 0.5D, currentFlightTarget.posZ + 0.5D);
         petBat.setIsBatHanging(true);
     }
-    
+
     private void takeOff()
     {
         petBat.setIsBatHanging(false);
-        petBat.setPosition(petBat.posX, petBat.posY-1D, petBat.posZ);
+        petBat.setPosition(petBat.posX, petBat.posY - 1D, petBat.posZ);
         petBat.worldObj.playAuxSFXAtEntity((EntityPlayer) null, 1015, (int) petBat.posX, (int) petBat.posY, (int) petBat.posZ, 0);
     }
 }
