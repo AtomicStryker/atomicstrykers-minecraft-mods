@@ -71,7 +71,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.7")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.8")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -91,7 +91,7 @@ public class InfernalMobsCore
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
     private double modHealthFactor;
-    
+
     @Instance("InfernalMobs")
     private static InfernalMobsCore instance;
 
@@ -117,6 +117,8 @@ public class InfernalMobsCore
 
     public NetworkHelper networkHelper;
 
+    private double maxDamage;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -139,7 +141,7 @@ public class InfernalMobsCore
 
     @EventHandler
     public void load(FMLInitializationEvent evt)
-    {        
+    {
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
 
@@ -253,6 +255,10 @@ public class InfernalMobsCore
                         "diamond-0-3,diamond_sword,diamond_shovel,diamond_pickaxe,diamond_axe,diamond_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,diamond_helmet,diamond_chestplate,diamond_leggings,diamond_boots,ender_pearl,enchanted_book",
                         "List of equally likely to drop Items for Infernals, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
                         .getString(), instance.dropIdListInfernal);
+
+        maxDamage =
+                config.get(Configuration.CATEGORY_GENERAL, "maxOneShotDamage", 10d,
+                        "highest amount of damage an Infernal Mob or reflecting Mod will do in a single strike").getDouble(10d);
 
         config.save();
     }
@@ -777,6 +783,11 @@ public class InfernalMobsCore
     public double getMobModHealthFactor()
     {
         return modHealthFactor;
+    }
+    
+    public float getLimitedDamage(float test)
+    {
+        return (float) Math.min(test, maxDamage);
     }
 
 }

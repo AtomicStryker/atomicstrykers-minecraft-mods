@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.util.DamageSource;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Berserk extends MobModifier
@@ -25,6 +26,7 @@ public class MM_Berserk extends MobModifier
         {
             source.getEntity().attackEntityFrom(DamageSource.generic, damage);
             damage *= 2;
+            damage = InfernalMobsCore.instance().getLimitedDamage(damage);
         }
         
         return super.onAttack(entity, source, damage);

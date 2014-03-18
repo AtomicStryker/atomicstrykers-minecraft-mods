@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ninja extends MobModifier
@@ -34,7 +35,7 @@ public class MM_Ninja extends MobModifier
         && teleportToEntity(mob, source.getEntity()))
         {
             nextAbilityUse = time+coolDown;
-            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), Math.min(damage, 15));
+            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
             return super.onHurt(mob, source, 0);
         }
         

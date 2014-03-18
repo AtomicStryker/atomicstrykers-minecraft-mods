@@ -197,7 +197,7 @@ public abstract class MobModifier
         {
             return nextMod.onAttack(entity, source, amount);
         }
-
+        
         return amount;
     }
 

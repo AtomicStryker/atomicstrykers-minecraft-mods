@@ -1,3 +1,7 @@
+1.4.8
+- added new configuration variable maxOneShotDamage which limits how high infernally enhanced attacks 
+  or reflected damage can go for a single strike. Default is 10 which is 5 hearts.
+
 1.4.7
 - fixed packet code to work on dedicated servers
 
