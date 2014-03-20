@@ -1,7 +1,11 @@
 package com.sirolf2009.necromancy.core.handler;
 
+import java.util.Collections;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -10,12 +14,16 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.world.WorldEvent.PotentialSpawns;
 
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
+import com.sirolf2009.necromancy.entity.EntityIsaacNormal;
+import com.sirolf2009.necromancy.entity.EntityNightCrawler;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.item.ItemNecroSkull;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
@@ -27,12 +35,48 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 public class ForgeEventHandler
 {
     
+    private final SpawnListEntry nightCrawlerEntry = new SpawnListEntry(EntityNightCrawler.class, 10, 1, 2);
+    private final SpawnListEntry isaacEntry = new SpawnListEntry(EntityIsaacNormal.class, 5, 1, 1);
+    
+    @SubscribeEvent
+    public void onPotentialSpawns(PotentialSpawns event)
+    {
+        boolean nightCrawler = false;
+        boolean isaac = false;
+
+        for (SpawnListEntry spawn : event.list)
+        {
+            if (spawn.entityClass.equals(EntityZombie.class))
+            {
+                nightCrawler = true;
+            }
+            else if (spawn.entityClass.equals(EntitySkeleton.class))
+            {
+                isaac = true;
+            }
+        }
+
+        if ((nightCrawler || isaac) && event.world.rand.nextInt(6) == 0)
+        {
+            if (nightCrawler)
+            {
+                event.list.add(nightCrawlerEntry);
+            }
+            if (isaac)
+            {
+                event.list.add(isaacEntry);
+            }
+            // maybe this will fix nightCrawlers and isaac overriding
+            Collections.shuffle(event.list);
+        }
+    }
+    
     @SubscribeEvent
     public void LivingDropsEvent(LivingDeathEvent evt)
     {
-        if (evt.entity instanceof EntityLiving && !evt.entity.worldObj.isRemote && evt.entity.worldObj.rand.nextInt(100) <= 8)
+        if (evt.entity instanceof EntityLiving && !evt.entity.worldObj.isRemote)
         {
-            switch (evt.entity.worldObj.rand.nextInt(7))
+            switch (evt.entity.worldObj.rand.nextInt(100))
             {
             case 0:
                 evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 0), 1);
@@ -55,6 +99,8 @@ public class ForgeEventHandler
             case 6:
                 evt.entity.entityDropItem(new ItemStack(RegistryNecromancyItems.organs, 1, 3), 1);
                 break; // lungs
+            default:
+                break;
             }
         }
     }

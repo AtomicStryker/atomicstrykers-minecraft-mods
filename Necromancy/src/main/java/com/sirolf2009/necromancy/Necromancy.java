@@ -110,7 +110,7 @@ public class Necromancy
 
         RegistryBlocksNecromancy.initBlocks();
         RegistryNecromancyItems.initItems();
-        MinecraftForge.EVENT_BUS.register(new RegistryNecromancyEntities());
+        RegistryNecromancyEntities.initEntities();
 
         MapGenStructureIO.func_143031_a(ComponentVillageCemetery.class, "NeViCem");
         VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
