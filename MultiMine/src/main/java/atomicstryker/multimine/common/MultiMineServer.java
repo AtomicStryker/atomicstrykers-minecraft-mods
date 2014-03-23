@@ -15,7 +15,6 @@ import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import atomicstryker.multimine.common.network.ConfigPacket;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 
@@ -209,9 +208,6 @@ public class MultiMineServer
                 sendPartiallyMinedBlockToPlayer(player, block);
             }
         }
-
-        MultiMine.instance().networkHelper.sendPacketToPlayer(new ConfigPacket(MultiMine.instance().getExcludedBlocksString(), MultiMine.instance()
-                .getExcludedItemssString()), player);
     }
 
     /**

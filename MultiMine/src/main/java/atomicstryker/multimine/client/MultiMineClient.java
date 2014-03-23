@@ -302,24 +302,6 @@ public class MultiMineClient
             }
         }
     }
-
-    /**
-     * Called by the server via packet to enforce his excluded Block IDs upon the client.
-     * @param excludedBlocksString String of Block IDs, seperated by a comma
-     */
-    public void onServerSentExcludedBlocksList(String excludedBlocksString)
-    {
-        MultiMine.instance().setExcludedBlocksString(excludedBlocksString);
-    }
-
-    /**
-     * Called by the server via packet to enforce his excluded Item IDs upon the client.
-     * @param excludedItemsString String of Item IDs, seperated by a comma
-     */
-    public void onServerSentExcludedItemsList(String excludedItemsString)
-    {
-        MultiMine.instance().setExcludedItemssString(excludedItemsString);
-    }
     
     private void updateCloudTickReading()
     {
