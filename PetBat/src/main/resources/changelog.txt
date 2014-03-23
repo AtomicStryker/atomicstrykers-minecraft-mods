@@ -1,3 +1,6 @@
+1.3.2
+fixed health conversion issue on stashing bats. Newly converted bats should retain all health
+
 1.3.1
 added wolf-like 'stay' command. Interact with your tamed sitting bat and it will stay.
 will prevent all take-off conditions except the perch block being broken

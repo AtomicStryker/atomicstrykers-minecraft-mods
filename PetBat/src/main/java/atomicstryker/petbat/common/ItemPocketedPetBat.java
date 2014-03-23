@@ -66,7 +66,7 @@ public class ItemPocketedPetBat extends Item
         writeCompoundStringToItemStack(batstack, "display", "Name", batEnt.getDisplayName());
         writeCompoundStringToItemStack(batstack, "petbatmod", "Owner", batEnt.getOwnerName());
         writeCompoundIntegerToItemStack(batstack, "petbatmod", "BatXP", batEnt.getBatExperience());
-        writeCompoundIntegerToItemStack(batstack, "petbatmod", "health", (int) batEnt.getHealth());
+        writeCompoundFloatToItemStack(batstack, "petbatmod", "health", batEnt.getHealth());
         batstack.getTagCompound().getCompoundTag("petbatmod").setFloat("health", batEnt.getHealth());
         batstack.setItemDamage((int) invertHealthValue(batEnt.getHealth(), batEnt.getMaxHealth()));
         return batstack;
@@ -82,8 +82,8 @@ public class ItemPocketedPetBat extends Item
         if (name.equals("")) name = "Battus Genericus";
         batEnt.setNames(owner, name);
         batEnt.setOwnerEntity(player);
-        batEnt.setHealth(batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getFloat("health") : batEnt.getMaxHealth());
         batEnt.setBatExperience(xp);
+        batEnt.setHealth(batStack.stackTagCompound != null ? batStack.stackTagCompound.getCompoundTag("petbatmod").getFloat("health") : batEnt.getMaxHealth());
         return batEnt;
     }
     
@@ -111,6 +111,12 @@ public class ItemPocketedPetBat extends Item
     {
         checkCompoundTag(stack, tag);
         stack.stackTagCompound.getCompoundTag(tag).setInteger(key, data);
+    }
+    
+    public static void writeCompoundFloatToItemStack(ItemStack stack, String tag, String key, float data)
+    {
+        checkCompoundTag(stack, tag);
+        stack.stackTagCompound.getCompoundTag(tag).setFloat(key, data);
     }
 
     public static void writeCompoundStringToItemStack(ItemStack stack, String tag, String key, String data)

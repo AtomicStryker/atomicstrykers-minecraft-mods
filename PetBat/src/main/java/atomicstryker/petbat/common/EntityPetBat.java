@@ -233,10 +233,10 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 float damageDealt = prevHealth - livingTarget.getHealth();
                 if (damageDealt > 0)
                 {
-                    addBatExperience((int) damageDealt);
+                    addBatExperience((int) Math.max(1, damageDealt));
                     if (level > 2)
                     {
-                        this.heal(Math.max(damageDealt / 3, 1));
+                        heal(Math.max(damageDealt / 3, 1));
                     }
                 }
             }
@@ -245,7 +245,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 addBatExperience(damage);
                 if (level > 2)
                 {
-                    this.heal(Math.max(damage / 3, 1));
+                    heal(Math.max(damage / 3, 1));
                 }
             }
         }
