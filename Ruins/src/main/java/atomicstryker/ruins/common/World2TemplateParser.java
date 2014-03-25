@@ -184,6 +184,7 @@ public class World2TemplateParser extends Thread
         BlockData currentinstance;
         BlockData[][] currentLayer;
         blocker = 0;
+        boolean unique;
 
         for (int yi = y + 1; true; yi++)
         {
@@ -210,6 +211,7 @@ public class World2TemplateParser extends Thread
                     temp.block = world.getBlock(blockx, blocky, blockz);
                     temp.meta = world.getBlockMetadata(blockx, blocky, blockz);
                     temp.data = null;
+                    unique = true;
 
                     if (temp.block == Blocks.air || temp.equals(templateHelperBlock))
                     {
@@ -296,9 +298,14 @@ public class World2TemplateParser extends Thread
                         String specialType = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
                         temp.data = "Skull:" + skulltype + ":" + rot + ((specialType.equals("")) ? "" : ":" + specialType) + "-" + temp.meta;
                     }
+                    else
+                    {
+                        // boring id only block type
+                        unique = false;
+                    }
 
                     int indexInList = usedBlocks.indexOf(temp);
-                    if (indexInList == -1)
+                    if (indexInList == -1 || unique)
                     {
                         currentinstance = temp.copy();
                         usedBlocks.add(currentinstance);

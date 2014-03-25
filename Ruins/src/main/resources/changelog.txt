@@ -288,3 +288,6 @@ a: setAccessible now true
 + changed IInventory block syntax, 12.2 cant work unfortunately
 + fixed some errors in IInventory system
 + fixed some bugs with TileEntity blocks not rotating correctly
+
+12.4
++ fixed issue where Ingame Ruin Parser could not parse more than 1 instance of each special blocktype
