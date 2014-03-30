@@ -142,7 +142,7 @@ public class TowerStageItemManager
 	                result = new ItemStack((Item)itemID[curIndex], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
 	                //System.out.println("Stashed new damaged ItemStack, id "+itemID[curIndex]+", "+result.getItemName()+" in a BT chest.");
 	            }
-                if (itemID[curIndex] instanceof Block)
+	            else if (itemID[curIndex] instanceof Block)
                 {
 	                //System.out.println("Stashed block "+block.getLocalizedName()+" of id "+itemID[curIndex]);
 	                result = new ItemStack((Block)itemID[curIndex], minAmount[curIndex]+rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
