@@ -40,21 +40,21 @@ public class RuinTemplateRule
         debugPrinter = dpw;
         owner = r;
         excessiveDebugging = debug;
-        String[] items = rule.split(",");
-        int numblocks = items.length - 2;
+        String[] blockRules = rule.split(",");
+        int numblocks = blockRules.length - 2;
         if (numblocks < 1)
         {
             throw new Exception("No blockIDs specified for rule [" + rule + "] in template " + owner.getName());
         }
-        condition = Integer.parseInt(items[0]);
-        chance = Integer.parseInt(items[1]);
+        condition = Integer.parseInt(blockRules[0]);
+        chance = Integer.parseInt(blockRules[1]);
         blockIDs = new Block[numblocks];
         blockMDs = new int[numblocks];
         blockStrings = new String[numblocks];
         String[] data;
         for (int i = 0; i < numblocks; i++)
         {
-            data = items[i + 2].split("-");
+            data = blockRules[i + 2].split("-");
             if (data.length > 1) // has '-' in it, like "torch-5" or "planks-3"
             {
                 if (isNumber(data[0])) // torch-5
@@ -66,6 +66,7 @@ public class RuinTemplateRule
                 }
                 else
                 // planks-3 or ChestGenHook:strongholdLibrary:5-2
+                // special new case CommandBlock:/tp @p ~0 ~10 ~-1:@
                 {
                     blockIDs[i] = tryFindingBlockOfName(data[0]);
                     if (blockIDs[i] == Blocks.air)
@@ -73,21 +74,30 @@ public class RuinTemplateRule
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
                         blockIDs[i] = null;
                     }
-                    blockMDs[i] = Integer.parseInt(data[1]);
-                    blockStrings[i] = items[i + 2];
+                    
+                    try
+                    {
+                        blockMDs[i] = Integer.parseInt(data[1]);
+                    }
+                    catch (NumberFormatException ne)
+                    {
+                        blockMDs[i] = 0;
+                    }
+                    
+                    blockStrings[i] = blockRules[i + 2];
                 }
             }
             else
             // does not have metadata specified, aka "50"
             {
-                if (isNumber(items[i + 2]))
+                if (isNumber(blockRules[i + 2]))
                 {
                     System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
                     blockIDs[i] = Blocks.air;
                 }
                 else
                 {
-                    blockIDs[i] = tryFindingBlockOfName(items[i + 2]);
+                    blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
                     if (blockIDs[i] == Blocks.air)
                     {
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
@@ -95,7 +105,7 @@ public class RuinTemplateRule
                     }
                 }
                 blockMDs[i] = 0;
-                blockStrings[i] = items[i + 2];
+                blockStrings[i] = blockRules[i + 2];
             }
             
             if (excessiveDebugging)

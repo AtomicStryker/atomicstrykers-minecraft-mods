@@ -291,3 +291,6 @@ a: setAccessible now true
 
 12.4
 + fixed issue where Ingame Ruin Parser could not parse more than 1 instance of each special blocktype
+
+12.5
++ fixed issue where Ingame Ruin Parser could not parse negative coordinates in Command Blocks
