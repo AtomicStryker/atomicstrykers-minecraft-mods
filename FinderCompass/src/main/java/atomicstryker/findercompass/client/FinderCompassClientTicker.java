@@ -41,7 +41,7 @@ public class FinderCompassClientTicker
         mc = FMLClientHandler.instance().getClient();
         repeat = false;
         settingList = FinderCompassMod.instance.settingList;
-        currentSetting = settingList.get(0);
+        currentSetting = null;
 
         FMLCommonHandler.instance().bus().register(this);
     }
@@ -100,14 +100,27 @@ public class FinderCompassClientTicker
 
     public void switchSetting()
     {
-        currentSetting.onDisableThisConfig();
-
-        int nextIndex = settingList.indexOf(currentSetting) + 1;
-        if (nextIndex >= settingList.size())
+        if (settingList.isEmpty())
+        {
+            return;
+        }
+        
+        int nextIndex;
+        if (currentSetting == null)
         {
             nextIndex = 0;
         }
+        else
+        {
+            currentSetting.onDisableThisConfig();
 
+            nextIndex = settingList.indexOf(currentSetting) + 1;
+            if (nextIndex >= settingList.size())
+            {
+                nextIndex = 0;
+            }
+        }
+        
         currentSetting = settingList.get(nextIndex);
 
         if (mc.theWorld != null)

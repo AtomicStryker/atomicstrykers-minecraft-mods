@@ -19,12 +19,13 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2b")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2c")
 public class FinderCompassMod
 {
 
@@ -46,24 +47,7 @@ public class FinderCompassMod
         settingList = new ArrayList<CompassSetting>();
 
         compassConfig = evt.getSuggestedConfigurationFile();
-        String target = compassConfig.getAbsolutePath();
-        DefaultConfigFilePrinter configurator = new DefaultConfigFilePrinter();
-        File needleConfig = new File(target);
-        if (!needleConfig.exists())
-        {
-            configurator.writeDefaultFile(needleConfig);
-        }
-        try
-        {
-            configurator.parseConfig(new BufferedReader(new FileReader(needleConfig)), settingList);
-            System.out.println("Finder compass config fully parsed, loaded "+settingList.size()+" settings");
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-
-        Configuration itemConfig = new Configuration(new File(target.replace("FinderCompass", "FinderCompassItemConfig")));
+        Configuration itemConfig = new Configuration(new File(compassConfig.getAbsolutePath().replace("FinderCompass", "FinderCompassItemConfig")));
         itemConfig.load();
         itemEnabled = itemConfig.get(Configuration.CATEGORY_GENERAL, "isFinderCompassNewItem", false).getBoolean(false);
         itemConfig.save();
@@ -102,6 +86,27 @@ public class FinderCompassMod
         if (FinderCompassClientTicker.instance != null)
         {
             FinderCompassClientTicker.instance.onLoad();
+        }
+    }
+    
+    @EventHandler
+    public void onModsLoaded(FMLPostInitializationEvent event)
+    {
+        DefaultConfigFilePrinter configurator = new DefaultConfigFilePrinter();
+        File needleConfig = new File(compassConfig.getAbsolutePath());
+        if (!needleConfig.exists())
+        {
+            configurator.writeDefaultFile(needleConfig);
+        }
+        try
+        {
+            configurator.parseConfig(new BufferedReader(new FileReader(needleConfig)), settingList);
+            System.out.println("Finder compass config fully parsed, loaded "+settingList.size()+" settings");
+            FinderCompassClientTicker.instance.switchSetting();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
         }
     }
     

@@ -101,11 +101,13 @@ public class DefaultConfigFilePrinter
     public void parseConfig(BufferedReader buffreader, ArrayList<CompassSetting> settingList)
     {
         int curLine = 0;
+        CompassSetting currentSetting = null;
+
+        String buffer;
+        Block block;
+        boolean printBlocks = false;
         try
         {
-            CompassSetting currentSetting = null;
-            
-            String buffer;
             while ((buffer = buffreader.readLine()) != null)
             {
                 buffer = buffer.trim();
@@ -133,49 +135,73 @@ public class DefaultConfigFilePrinter
                     }
                     else
                     {
-                        String[] splitString = buffer.split(":");
-                        String blockID = splitString[0];
-                        int[] configInts = new int[9];
-                        configInts[0] = Integer.parseInt(splitString[1]);
-                        configInts[1] = Integer.parseInt(splitString[2]);
-                        configInts[2] = Integer.parseInt(splitString[3]);
-                        System.out.println("Finder Compass: loaded custom needle of id " + blockID + ", color [" + configInts[0] + "," + configInts[1] + "," + configInts[2] + "]");
-                        configInts[3] = Integer.parseInt(splitString[4]);
-                        configInts[4] = Integer.parseInt(splitString[5]);
-                        configInts[5] = Integer.parseInt(splitString[6]);
-                        configInts[6] = Integer.parseInt(splitString[7]);
-                        configInts[7] = Integer.parseInt(splitString[8]);
-                        if (splitString.length > 9)
+                        try
                         {
-                            configInts[8] = Integer.parseInt(splitString[9]);
+                            int prefixoffset = 0;
+                            String[] splitString = buffer.split(":");
+                            String blockID = splitString[0];
+                            if (blockID.equals("minecraft") || GameData.blockRegistry.getObject(blockID) == Blocks.air)
+                            {
+                                prefixoffset = 1;
+                                blockID = splitString[0]+":"+splitString[1];
+                            }
+                            
+                            int[] configInts = new int[9];
+                            configInts[0] = Integer.parseInt(splitString[prefixoffset+1]);
+                            configInts[1] = Integer.parseInt(splitString[prefixoffset+2]);
+                            configInts[2] = Integer.parseInt(splitString[prefixoffset+3]);
+                            System.out.println("Finder Compass: loaded custom needle of id " + blockID + ", color [" + configInts[0] + "," + configInts[1] + "," + configInts[2] + "]");
+                            configInts[3] = Integer.parseInt(splitString[prefixoffset+4]);
+                            configInts[4] = Integer.parseInt(splitString[prefixoffset+5]);
+                            configInts[5] = Integer.parseInt(splitString[prefixoffset+6]);
+                            configInts[6] = Integer.parseInt(splitString[prefixoffset+7]);
+                            configInts[7] = Integer.parseInt(splitString[prefixoffset+8]);
+                            if (splitString.length > prefixoffset+9)
+                            {
+                                configInts[8] = Integer.parseInt(splitString[prefixoffset+9]);
+                            }
+                            else
+                            {
+                                configInts[8] = 0;
+                            }
+                            System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
+                                    + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
+
+                            block = GameData.blockRegistry.getObject(blockID);
+                            if (block != Blocks.air)
+                            {
+                                CompassTargetData key = new CompassTargetData(block, configInts[8]);
+                                currentSetting.getCustomNeedles().put(key, configInts);
+                            }
+                            else
+                            {
+                                System.err.println("Finder Compass could not find a Block "+blockID+", skipping that entry...");
+                                printBlocks = true;
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            configInts[8] = 0;
-                        }
-                        System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
-                                + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
-                        
-                        Block block = GameData.blockRegistry.getObject(blockID);
-                        if (block != Blocks.air)
-                        {
-                            CompassTargetData key = new CompassTargetData(block, configInts[8]);
-                            currentSetting.getCustomNeedles().put(key, configInts);
-                        }
-                        else
-                        {
-                            System.err.println("Finder Compass could not find a Block "+blockID+", skipping that entry...");
+                            System.err.println("There was a problem parsing findercompass.cfg, parser failed in line " + curLine);
+                            System.err.println("line: "+buffer);
+                            ex.printStackTrace();
                         }
                     }
                 }
             }
-
             buffreader.close();
         }
-        catch (Exception ex)
+        catch (IOException e)
         {
-            System.err.println("There was a problem reading the findercompass.cfg, Parser bailed out in line " + curLine);
-            ex.printStackTrace();
+            e.printStackTrace();
+        }
+        
+        if (printBlocks)
+        {
+            System.err.println("For your Finder Compass ID convenience, following a dump of all currently registered block IDs:");
+            for (Object o : GameData.blockRegistry.getKeys())
+            {
+                System.out.println(o);
+            }
         }
     }
 }

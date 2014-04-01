@@ -1,3 +1,9 @@
+1.7.2c
+fixed Config Parser being unable to deal with prefixes
+fixed Config Parser running too early, being unable to find mod Blocks
+added block ID dump to console/log if you have 'failed' block IDs in your config
+improved behaviour when dealing with missing/partially broken config files
+
 1.7.2b
 fixed Compass Tick not being executed in remote multiplayer mode
 
