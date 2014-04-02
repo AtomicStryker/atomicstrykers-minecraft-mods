@@ -51,7 +51,7 @@ public class VillageCreationHandler implements IVillageCreationHandler, IVillage
     @Override
     public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int p1, int p2, int p3, int p4, int p5)
     {
-        ComponentVillageCemetery cemetery = ComponentVillageCemetery.func_74919_a(startPiece, pieces, random, p1, p2, p3, p4, p5);
+        ComponentVillageCemetery cemetery = ComponentVillageCemetery.build(startPiece, pieces, random, p1, p2, p3, p4, p5);
         return cemetery;
     }
 
