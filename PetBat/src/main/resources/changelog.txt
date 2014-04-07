@@ -1,0 +1,129 @@
+1.3.2
+fixed health conversion issue on stashing bats. Newly converted bats should retain all health
+
+1.3.1
+added wolf-like 'stay' command. Interact with your tamed sitting bat and it will stay.
+will prevent all take-off conditions except the perch block being broken
+
+1.3.0
+fixed packets to work on dedicated servers
+
+1.2.9
+update to mc 1.7.2
+now makes use of the lang file translation system for everything
+rewrote some background logic related to bat<->item conversion
+note cheated pet bats now 'start' with 0 health and need to be fed first
+
+1.2.8
+fixed Flute not being removed PRIOR to the bat returning (full inventory case)
+fixed Flute not being removed at all on automatic distance recalls
+if for some reason a Bat fails to return, the Flute is re-placed in the inventory instead
+a dying bat now lands at a players feet when his inventory is full
+bat health is now saved in the bat item directly, to avoid conversion bugs
+
+1.2.7
+Introduces bat flute, which is placed in a player's inventory upon owning a pet bat flying in the world.
+Using the bat flute removes it and recalls the bat to the player inventory.
+The Flute disappears upon being dropped. It is only given once per bat flights. The bat recalls to the tamer, not the flute holder.
+
+1.2.6 hotfix (not visible in version display)
+fixed weapons that double trigger damage code duping bat items
+
+1.2.6
+fixed xp and health considerations on EntityLivingBase instances
+added fallback xp and health calculation which ALWAYS works
+
+1.2.5
+update to mc 1.6.4
+
+1.2.4
+bugfixes related to bat health
+
+1.2.3
+completely scrapped "crafting" way of fixing up your beat down bat
+now to fix a bat simply drop it on the ground along with a pumpkin pie
+
+1.2.2
+update to mc 1.6.2
+
+1.2.1
+update to mc 1.6.1
+
+1.2.0
+added rudimentary pathfind raytrace to help getting stuck in ceilings
+disabled Pet Bats taking damage from wall hugging
+added configuration option to disable the into-inventory-teleport
+-> will teleport to the player's location instead
+
+1.1.9
+update to mc 1.5.2
+
+1.1.8
+fixed crafting registration to allow healcrafting of bats again
+thanks to Flugratte for pointing out the issue
+
+1.1.7
+update to mc 1.5.1
+
+1.1.6
+update to mc 1.5
+
+1.1.5
+overriding Entity Names now to fix mods like damage indicator
+may or may not break existing bat entities. turn them into items before upgrading!
+
+1.1.4
+rewrote Item-to-Bat transition, should work in more cases now
+that means the "I was cheated" bat wipe should occur less
+Bats can no longer use Dimension Portals (just pocket them)
+PetBat Manual now saves the "already read" state globally in the config file
+
+1.1.3
+hurting yourself will no longer bring the bats onto you
+
+1.1.2
+update to MC 1.4.6
+
+1.1.1
+life steal will no longer overheal the bat
+
+1.1.0
+added Dynamic Lights integration module
+if you have Dynamic Lights running, you can 'use' Glowstone dust
+on your bat to make it shine light for a time. Light Effect does
+not stay on the Bat when it turns into an Item for whatever reason,
+or when you quit the game.
+fixed UTF-8 encoding on GUI text .. again
+
+1.0.9
+changed Itemifying: If the Bat Item cannot be added to your inventory,
+the bat drops as Item wherever it is at the moment. Teleporting into
+your Inventory because of too great distance simply won't happen while
+your inventory is full.
+
+1.0.8
+update to Minecraft 1.4.4
+
+1.0.7
+likely covered all possible cases of bat duping now
+
+1.0.6
+fixed entity ID being chosen randomly, kinda
+
+1.0.5
+fixed manual inventory toss causing bat duping
+
+1.0.4
+fixed tiny typo wiping Bat XP on crafting
+
+1.0.3
+fixed tiny flight logic derp
+
+1.0.2
+fixed teleporting into inventory causing bat duping
+
+1.0.1
+GUI was being referenced on serverside, huehuehue
+
+1.0.0
+initial Release!

@@ -1,0 +1,10 @@
+A little info on how Items in the config work:
+
+	/*
+	 *  Example setting string: 75-0-50-1-4; 73-20-1-1
+	 *  Spawns Redstone(75) Item Damage 0 with 50 percent chance, at least 1, max 4
+	 *  Also Spawns Saddle(73) Item Damage 0 with 20 percent chance, at least 1, max 1
+	 *
+	 *  Since 1.4.1 you may also use unlocalized Names instead of numeric IDs,
+	 *  eg. replace "75" with "item.redStone" and "73" with "item.saddle"
+	 */

@@ -1,0 +1,142 @@
+1.3.8
+- cleaned old block/item exclusion code away
+
+1.3.7
+- fixed issue where continued blocks, when broken, lingered for a moment
+
+1.3.6
+- fixed packets to work on dedicated servers
+
+1.3.5
+- update to MC 1.7.2
+
+1.3.4
+- removed obsolete serverside transformer+code, should fix MCPC compatibility
+
+1.3.3(hotfix)
+- hotfixed logic derp resulting in minespeed being boosted quite a bit too much
+
+1.3.3
+- changed how the mod works on clientside fundamentally. now, will never under any circumstances
+  reduce or catch a players mine progress, will merely boost it if the bock registers as previously mined.
+
+1.3.2
+- added BlockEvent.BreakEvent api call to fix compatibility with .. things
+
+1.3.1
+- update to MC 1.6.4
+
+1.3.0b
+- fixed fast mining getting slowed down overmuch by multimine
+- ingame version remains the same, only client changed, 1.3.0 compatible
+
+1.3.0
+- update to MC 1.6.2
+
+1.2.9
+- update to MC 1.6.1
+
+1.2.8
+- update to MC 1.5.2
+
+1.2.7
+- update to MC 1.5.1
+
+1.2.6 (fix)
+- fixed crash in NetServerHandler
+
+1.2.6
+- update to MC 1.5
+
+1.2.5b (only client, fully compatible with 1.2.5)
+- crash fox MultiMineClient updateCloudTickReading
+
+1.2.5
+- crash fix onBlockMineFinishedDamagePlayerItem
+
+1.2.4
+- update to MC 1.4.6
+
+1.2.3
+- fixed issue with clients crashing when connecting to a server someone is mining on that moment
+
+1.2.2
+- fixed issue with dimension Ids preventing it from working 100% with Mystcraft, it does now.
+
+1.2.1
+- added vanilla harvest check to MultiMine, you can no longer mine successfully (drops) without the appropriate tool
+
+1.2.0
+- updated to Minecraft 1.4.4
+- fixed any Block Breaking happening showing as damaging your Item on your screen, now only your Blocks should show that
+
+1.1.9
+- worked around Mojang's new Block Damage timeout wipe
+
+1.1.8
+- and updated obfuscation for transformer to 1.4.2 aswell, derp me
+
+1.1.7
+- updated to MC 1.4.2 and Forge 6
+
+1.1.6
+- updated to MC 1.4 and Forge 5
+
+1.1.5
+- experimentally disabled server side block of vanilla BlockDig packets. Should fix all "phantom Block" bugs
+- im not sure about the side effects. Maybe nothing.
+
+1.1.4
+- updated config file to current FML scheme
+- changed additional block mining particles to really not fire on your own block
+- changed sound to "mining" instead of "breaking", no idea why vanilla copy doesnt like me
+
+1.1.3
+- fixed strange client NPE with ItemTool
+- added reduced block mining particles for other people digging
+
+1.1.2
+- fixed MultiMine blocking the "drop single item" button. Wtf is it doing in that packet
+- added Lily Pad (111) to the default excluded blocks
+
+1.1.1
+- fixed minor efficiency improvements which obviously crashed everything
+
+1.1.0
+- minor efficiency improvements for clientside
+- added networked excluded Item ID's List, adjust in config, server overrides
+- excluded Item IDs experience completely vanilla behaviour
+- added a bunch of not-really-mining Items as default (shears, hoes)
+
+1.0.9
+- fixed block initial regeneration time not resetting when mining it, resulting in regen-mining battles
+- fixed small logic derp, damaging player's dig item way too late and possibly crashing
+
+1.0.8
+- fixed no longer existant Blocks not being removed when Block Regen was disabled
+
+1.0.7
+- fixed MultiMine to disable itself in creative gamemode altogether
+
+1.0.6
+- added networked excluded Block ID's List, adjust in config, server overrides
+- excluded Block IDs experience completely vanilla behaviour
+- added a bunch of not-really-mineable Blocks by default (plants, buttons, levers, doors...)
+
+1.0.5
+- fixed crash related to dropping sand, fixed otherwise destroyed Blocks still displaying cracks until regenerated
+
+1.0.4
+- fixed dropped Blocks to have the correct meta/damage value
+
+1.0.3
+- fixed Multi Mine to work on dedicated servers
+
+1.0.2
+- re-added vanilla behaviour of Blockbreaking damaging your Item
+
+1.0.1
+- made FML CoreMod. Added Block Break "pop". Added Block regeneration. Added configuration about this.
+
+1.0.0
+- internal initial prototype

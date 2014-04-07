@@ -1,0 +1,173 @@
+#
+# This file contains the Block Rotation Mappings Ruins might need
+# <- lines starting with this symbol are considered comments and disregarded by the parser
+# empty lines are allowed.
+#
+# To enable the Rotation of new or custom Blocks in Minecraft, you need to put Mappings
+# for possible metadata occurences and the metadata after they have been rotated in a
+# direction in here.
+#
+#
+# Mappings are to follow this standard:
+# First, the block ID must be given by the GameData.blockRegistry key
+#
+#
+# If a multitude of Blocks share the same rotation logic, you can provide them all at once, seperated by semicoli.
+# see stairs below
+#
+# Any mappings below such a line are considered part of that BlockID until another BlockID is introduced.
+#
+# A mapping is a Direction EAST, SOUTH or WEST, followed by the unrotated metadata, followed by the resulting metadata.
+# These are seperated by '-'
+#
+# EAST-8-1
+#
+# That line means: if the Ruins Mod needs to rotate a Vine EAST, and the unrotated vine has metadata
+# 8, the new metadata should be 1.
+#
+# You need to map any and all possible Rotations, with three Directions that aren't NORTH (= no rotation) and a
+# Block that has 4 possible metadata values (such as Vines) that means you need to have 12 mappings.
+#
+# Other Blocks may have a lot more than that.
+#
+# Below, some mappings. Do not remove those! In the future, new mappings will be added in this file!
+#
+#
+
+# mc vanilla Stair Blocks
+# normal NESW: 0 2 1 3
+# inverted NESW: 4 6 5 7
+BlockID=oak_stairs;stone_stairs;brick_stairs;stone_brick_stairs;nether_brick_stairs;sandstone_stairs;spruce_stairs;birch_stairs;jungle_stairs;quartz_stairs
+
+EAST-0-2
+EAST-1-3
+EAST-2-1
+EAST-3-0
+EAST-4-6
+EAST-5-7
+EAST-6-5
+EAST-7-4
+
+SOUTH-0-1
+SOUTH-1-0
+SOUTH-2-3
+SOUTH-3-2
+SOUTH-4-5
+SOUTH-5-4
+SOUTH-6-7
+SOUTH-7-6
+
+WEST-0-3
+WEST-1-2
+WEST-2-0
+WEST-3-1
+WEST-4-7
+WEST-5-6
+WEST-6-4
+WEST-7-5
+
+# pistons, ladders, wall signs, furnaces, chests, dispensers, droppers, hoppers
+BlockID=sticky_piston;piston;ladder;wall_sign;furnace;chest;dispenser;dropper;hopper
+# DUNESW: 0 1 2 5 3 4
+# DUNESW: 8 9 10 13 11 12 (Extended Pistons, is lower value + 8)
+
+EAST-2-5
+EAST-5-3
+EAST-3-4
+EAST-4-2
+
+EAST-10-13
+EAST-13-11
+EAST-11-12
+EAST-12-10
+
+SOUTH-2-3
+SOUTH-5-4
+SOUTH-3-2
+SOUTH-4-5
+
+SOUTH-10-11
+SOUTH-13-12
+SOUTH-11-10
+SOUTH-12-13
+
+WEST-4-3
+WEST-5-2
+WEST-2-4
+WEST-3-5
+
+WEST-12-11
+WEST-13-10
+WEST-10-12
+WEST-11-13
+
+# Mushroom blocks, courtesy of Arrrg
+# They can point in all 8 directions and have center, inside, and stem parts.
+# inside Nw N Ne W center E Sw S Se stem: 0 1 2 3 4 5 6 7 8 9 10
+BlockID=brown_mushroom_block;red_mushroom_block
+
+EAST-0-0
+EAST-1-3
+EAST-2-6
+EAST-3-9
+EAST-4-2
+EAST-5-5
+EAST-6-8
+EAST-7-1
+EAST-8-4
+EAST-9-7
+EAST-10-10
+
+SOUTH-0-0
+SOUTH-1-9
+SOUTH-2-8
+SOUTH-3-7
+SOUTH-4-6
+SOUTH-5-5
+SOUTH-6-4
+SOUTH-7-3
+SOUTH-8-2
+SOUTH-9-1
+SOUTH-10-10
+
+WEST-0-0
+WEST-1-7
+WEST-2-4
+WEST-3-1
+WEST-4-8
+WEST-5-5
+WEST-6-2
+WEST-7-9
+WEST-8-6
+WEST-9-3
+WEST-10-10
+
+# Skulls, atleast wall mounted ones. floor mounted ones are constant 1
+# rotation for those is done via tileentity, codebased by Ruins
+# N E S W = 2 4 3 5
+BlockID=skull
+
+EAST-2-4
+EAST-4-3
+EAST-3-5
+EAST-5-2
+
+SOUTH-2-3
+SOUTH-4-5
+SOUTH-3-2
+SOUTH-5-4
+
+WEST-2-5
+WEST-4-2
+WEST-3-4
+WEST-5-3
+
+# Quartz Pillars
+# 0,1 alldirectional, 2 vertical, 3 north-south, 4 east-west
+BlockID=quartz_block
+
+EAST-3-4
+EAST-4-3
+
+WEST-3-4
+WEST-4-3

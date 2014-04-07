@@ -1,0 +1,90 @@
+1.7.2c
+fixed Config Parser being unable to deal with prefixes
+fixed Config Parser running too early, being unable to find mod Blocks
+added block ID dump to console/log if you have 'failed' block IDs in your config
+improved behaviour when dealing with missing/partially broken config files
+
+1.7.2b
+fixed Compass Tick not being executed in remote multiplayer mode
+
+1.7.2a
+fixed ConcurrentModificationException crash
+
+1.7.2
+updated for mc 1.7.2
+remember to delete the config for the new block names
+
+1.6.4X
+complete code overhaul, threw away ugly mc texture hack code
+harnessed the raw power of openGL, now drawing ONTOP of existing mc textures
++no more resolution/optifine issues, no more opengl error spam in console
++needles now independent from resolution, no more 1px sticks
++needles are now sexy non-opaque
++missing config file now autocreates omfg
++compass should start working right away without having to switch modes
+
+1.6.4
+updated to MC 1.6.4
+
+1.6.2B
+fixed compass not updating when not being held in hand
+
+1.6.2A
+fixed having to use the compass to load the texture
+fixed non-vanilla resolution support
+
+1.6.2
+finally figured out how to make it work in 1.6.2
+does not currently work on nonvanilla resolutions and i dont know why
+
+1.5.2C
+and more code for Optifine, yay
+holding needle length calculation together with duct tape at this point
+
+1.5.2B
+Finder Compass now has a texture file for each resolution at /mods/findercompass/textures/items/compass*.png
+With * being the texture size eg 16,32,64,128 and 256
+This was necessary because Optifine does not allow different texture sizes to be loaded at the same time
+
+1.5.2
+updated to MC 1.5.1
+
+1.5.1C
+fixed display with Optifine using a custom Item Renderer
+
+1.5.1B
+fixed crash upon MP server connecting
+
+1.5.1
+updated to MC 1.5.1 and the new MC Texture System
+Finder Compass now has a texture file at /mods/findercompass/textures/items/compass.png
+If you have a texture pack and want high-res Finder compass, it needs to override that file!!!
+Finder Compass now needs an Item ID (to setup a fake/real texture)
+if you so desire, it can also be an actual craftable Item (see new FinderCompassItemConfig.cfg)
+if the Item is enabled, the standard compass remains unchanged (server authority)
+the Item recipe is a compass in middle, plus diamonds on all 4 sides
+Finder Compass (Item or hack) uses an included 32x texture
+
+1.4.6d
+added possibility for servers to override the Finder Compass config of the connected clients
+to override clients, simply install your config on the server like you would on client
+
+1.4.6c
+reworked FML Hack. Made other hacks fall back to FML method instead of bugging out
+fixed Hack being tirelessly re-applied when failed or overwritten
+changed error messages to appear in the crash report instead of a blank screen
+
+1.4.6b
+added error screen for people who dont read instructions
+
+1.4.6a
+mode swapping on compass will no longer trigger with a target under cursor
+
+1.4.6
+update to mc 1.4.6
+
+1.4.4
+update to mc 1.4.4
+
+1.4.2
+starting an actual changelog for Finder Compass

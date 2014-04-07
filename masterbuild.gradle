@@ -1,0 +1,66 @@
+
+def zipfile = file( 'makezip' )
+if( zipfile.exists() ) {
+	defaultTasks 'makezip'
+}
+else {
+	defaultTasks 'build'
+}
+
+// each mod uses its project foldername
+def projname = projectDir.getName()
+
+def projectpath = projectDir.getAbsolutePath()
+
+// read versions from central workspace xml file
+def xmlproperties = new XmlSlurper().parse(file("../properties.xml"))
+
+version = xmlproperties.@version
+group= "atomicstryker."+projname
+archivesBaseName = projname
+
+minecraft {
+    version = xmlproperties.@mcversion
+	assetDir = "eclipse/assets"
+}
+
+// check for specified dependencies on other projects or jars
+def dfile = file( 'dependencies.xml' )
+if( dfile.exists() ) {
+	def xmldepends = new XmlSlurper().parse(dfile)
+	
+	dependencies {
+		xmldepends.project.each {
+			println 'Adding dependency on project ' + it.text()
+			compile files(projectpath+'/../'+it.text()+'/build/libs/'+it.text()+'-'+version+'.jar')
+		}
+	}
+}
+
+dependencies {
+	// also punch in anything in the forgegradle libs folder
+	compile fileTree(dir: projectpath+'/../../forgegradle/libs', include: '*.jar')
+}
+
+processResources
+{
+    // copy assets into artifact
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        // put mcversion in
+        expand 'mcversion':project.minecraft.version
+    }
+	from(sourceSets.main.java.srcDirs) {into('src')}
+}
+
+// check for provided manifest, use it if so
+def manifestfile = file( 'MANIFEST.MF' )
+if( manifestfile.exists() ) {
+    jar.manifest.from(manifestfile)
+}
+
+task makezip(type: Zip, dependsOn: 'build') {
+	from(libsDir) {into('mods')}
+	from(file("resources"))
+	from(file("../UpdateCheckerMod/build/libs")) {into('mods')}
+}

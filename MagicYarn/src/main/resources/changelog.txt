@@ -1,0 +1,61 @@
+1.1.2
+- fixed packets to work on dedicated servers
+
+1.1.1
+- fixed MP key not keeping track of pressed time correctly
+- added logo file
+
+1.1.0
+- updated for MC 1.7.2
+
+1.0.9
+- updated with newer AStar code from Minions
+
+1.0.8
+- updated for MC 1.6.4
+
+1.0.7
+- updated for MC 1.6.2
+
+1.0.6
+- updated for MC 1.6.1
+
+1.0.5
+- fixed crash when cutting a path to length zero
+
+1.0.4
+- updated for MC 1.5.2
+
+1.0.3
+- updated for MC 1.5.1
+
+1.0.2
+- updated for MC 1.5
+- added current AStar implementation
+
+1.0.1
+- added new feature: you can now see other players paths
+- only available if the server has the mod
+
+1.0.0 revision 2 (client only, cosmetic only)
+- changed chat message to fire once per server at max
+
+1.0.0
+- reset version number (NOW I'M SRS PEOPLE)
+- rewrote the mod to have proper client and server sides
+- the mod will still work while only the client has it
+- on a server with the mod installed it will not let you use it "for free"
+- 2 vanilla configurable buttons are added to access the function (as client)
+- default: "J" for the old path laying / finding and "K" for the new...
+- PLAYER FINDING!! Press the button to bring up a menu of players in your world
+- magic yarn will attempt to path you to the selected player
+- target player needs to be on the ground and reachable by foot for that to work
+
+1.4.6
+updated for MC 1.4.6
+
+1.4.4
+updated for MC 1.4.4
+
+1.4.2
+started changelog for Magic Yarn

@@ -1,0 +1,314 @@
+# BASICS
+# This file is designed to be copied into the mods/resources/ruins folder and be
+# edited to create a new template.  It is functional as-is; you can use it as
+# a placeholder for future templates after renaming it.
+#
+# Templates have a .tml extension and the mod will attempt to load any and
+# all files with that extension if it resides in the <minecraft root>/
+# mods/resources/ruins folder.  Whether it does so successfully or not can be
+# checked in the log file (<minecraft root>/ruins_log.txt).  The mod will also
+# load any templates found in the biome folders within
+# <minecraft root>/mods/resources/ruins.  A normal install should have 12 biome
+# folders.
+#
+# These template files are a simple text file; simply open them in your
+# favorite text editor to make changes or create new ones.
+#
+# There are three sections to each template file:
+# VARIABLES define how the template is generated.
+# BLOCK RULES define how the layers are generated.
+# LAYERS tells the mod how to place blocks using BLOCK RULES.
+#
+# You can specify a comment by placing a "#" character at the beginning of the
+# line.  You technically /don't/ have to do this, since the mod only looks for
+# particular line starts when loading a template, but I consider it good form 
+# because it increases readability and you prevent any errant line reads.
+
+
+# VARIABLES
+#
+# biomesToSpawnIn=<name1>,<name2>,<name3>...
+# Adds the Template being loaded (regardless which folder it is in) to a Ruins Biome
+# found in the Minecraft Biomelist so that <namex> matches the Biome's name.
+# If you don't know a Biome's name, find it's folder. The foldername equals the
+# Biome name. Case insensitive. A Template cannot be added to a Biome more than once.
+# The Template is still added to the corresponding folder it was loaded from (if not already in).
+# example: biomesToSpawnIn=forest,foresthills,taiga
+# Optional. You can use the folders as before, or use this to save space, or both.
+#
+# weight=<weight>
+# Weight is how much weight this template has during random generation.  When
+# the mod asks for a template to place it adds up the weights of all templates
+# that are currently loaded and generates a random number based off of that
+# total, then checks to see what template to load.  If the mod loads five
+# templates with weights 1, 5, 5, 10 and 10, the template with weight 10 has a
+# 10 in 31 chance of being generated, while the template with weight 1 has a 1
+# in 31 chance of being generated.  A template only has weight in its biome.
+# Defaults to 1.
+#
+# unique=<yes/no>
+# If this is set to 1:
+# If the template is generic, it can only ever be generated once per world.
+# If the template is biome-specific, it can only ever be generated once in the
+# biome per world (so you could duplicate it to other biome folders).
+# Defaults to 0 (no).
+#
+# embed_into_distance=<number of layers>
+# Specifies how many layers to embed into the target blocks.  This is useful
+# for creating basements or dungeons.
+# Defaults to 1.
+#
+# acceptable_target_blocks=<blockID>,<blockID>,<etc...>
+# This is a comma-delimited list of block IDs that this template can spawn on.
+# Only the top layer of blocks where the template will spawn are checked.
+# Defaults to no acceptable blocks.
+#
+# dimensions=<height>,<width>,<length>
+# Defines how big this template is.  Height is the number         n
+# of layers that are used, not the height that sticks out         n
+# above the ground.  Width is the north-south width, and       www*eee
+# length is the east-west width.  For reference, north in         s
+# the template is the top of the text file.                       s
+# All default to 0.
+#
+# allowable_overhang=<overhang>
+# Specifies the number of air blocks that can exist under this template when
+# building begins.  Only the target blocks are checked.  Later world generation
+# may change this so do not expect concrete results.
+# Defaults to 0.
+#
+# max_cut_in=<cut in>
+# Specifies the maximum height above the source block, within the build site,
+# that can be removed in order to level the site.  All blocks that are higher
+# than the source block will be removed.
+# Defaults to 0.
+#
+# cut_in_buffer=<cbuffer>
+# The distance around the build site that will also be leveled.  Values higher
+# than 5 will use 5, since the world would otherwise be mangled pretty badly.
+# Defaults to 0.
+#
+# max_leveling=<leveling>
+# Specifies the maximum depth below the source block, within the build site,
+# that will be filled with the source block in order to level the site.  All
+# clear space underneath the site will be filled.  If this is set to anything
+# greater than 0 allowable_overhang will be ignored.  Any filling will take
+# place before the site is built, preserving basement space.
+# Defaults to 0.
+#
+# leveling_buffer=<lbuffer>
+# The distance around the build site that will also be filled.  Values higher
+# than 5 will use 5, since the world would otherwise be mangled pretty badly.
+# Defaults to 0.
+#
+# preserve_water=<yes/no>
+# If set to 1 all site checking rules will treat water as air so that the ruin
+# can be generated beneath/in water.  Any rules that replace a block with air
+# will respect water and not replace it.  If set to 0, water is treated like 
+# any other block.
+# Defaults to 0/no.
+#
+# preserve_lava=<yes/no>
+# If set to 1 all site checking rules will treat lava as air so that the ruin
+# can be generated beneath/in lava.  Any rules that replace a block with air
+# will respect lava and not replace it.  If set to 0, lava is treated like 
+# any other block.
+# Defaults to 0/no.
+#
+# preserve_plants=<yes/no>
+# If set to 1 all site checking rules will treat trees, leaves, and cactus as
+# air so that the ruin can be generated in and around them.  Any rules that
+# replace a block with air will respect trees, leaves, and cactus and not
+# replace them.  If set to 0, trees, leaves, and cactus are treated like 
+# any other blocks.  Cactus adjacent to other blocks will break down, so you
+# may not actually see cactus in your structure.
+# Defaults to 0/no
+#
+# random_height_offset=<min>,<max>
+# Specifies block range in which the Ruin will be randomly shifted up or down
+# on an established valid location before actually being built.
+# Defaults to 0,0/no random shifting
+#
+# NOTE: When using preserve_water and preserve_lava it is advised that you
+# restrict the cut_in_buffer as much as possible, preferably to 0.  If it is
+# more than 0 you may get some unexpected fluid dynamics if the structure
+# does not spawn completely in water/lava.
+
+
+weight=5
+unique=0
+embed_into_distance=1
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,clay
+dimensions=4,7,5
+allowable_overhang=0
+max_cut_in=2
+cut_in_buffer=1
+max_leveling=2
+leveling_buffer=1
+preserve_water=0
+preserve_lava=0
+preserve_plants=0
+
+
+# BLOCK RULES
+# Each rule must be formatted carefully:
+# rule<number>=<condition>,<chance to appear>,<list of blocks>
+#
+# rule<number>
+# The mod does not care what you call these and will number the rules in the
+# order they are loaded (sequentially from 1), so long as the line start with
+# "rule".  I suggest using "rule#" as a mnemonic, such as "rule1", "rule2",
+# "rule12", etc...  Once the templates are loaded, the first rule in the list
+# becomes rule #1 for the purposes of building a layer, the second becomes rule
+# #2, and so on.
+#
+# The mod uses a special rule, 0, which defines the Air block with a 100% spawn
+# rate and no conditional.  You can use this rule in the layers to "blank out"
+# certain areas (providing space for mobs, for instance).
+#
+# <condition>
+# A conditional to the block being placed, aside from randomness.
+# 0 - The block always attempts to spawn.
+# 1 - There must be a block below it to attempt to spawn.
+# 2 - There must be an adjacent block at the same level for a spawn attempt.
+# 3 - There must be a block above this one in order for it to attempt to spawn.
+# 4 - There must NOT be a block below it to attempt to spawn.
+# 5 - There must NOT be an adjacent block at the same level for a spawn attempt.
+# 6 - There must NOT be a block above this one in order for it to attempt to spawn.
+#
+# Adjacent in this case is not diagonal, only along the cardinal directions.
+#
+# Adjacent blocks are processed after 0 and 1 conditionals have been placed,
+# and "under blocks" are processed after all other blocks have been placed.
+# Please note that these blocks are still processed in an order dependent on
+# the rotation of the site.  For a normal, north-facing site, the block rules
+# are processed for each line from the left and from the bottom template to the
+# top.
+#
+# <chance to appear>
+# The chance that this block will appear, out of 100, depending on whether the
+# condition above is met.
+#
+# <list of blocks>
+# A comma-delimited set of minecraft blockIDs.  This will determine what block
+# will actually spawn in the location.  Each blockID is given the same weight,
+# so you can skew the odds of a certain blockID appearing by adding it multiple
+# times.  You can specify block metadata by adding a "-<metadata>" after the
+# blockID.  For instance, to place a cobblestone stairs block ascending to the
+# east, use stone_stairs-3.  To place a wood half-block (slab), use stone_slab-2.
+#
+# You can find a list of blockIDs and commonly-used metadata via Google.
+# There is also one included, idmappings.txt
+#
+#
+# Example 1: rule1=0,100,0,cobblestone,mossy_cobblestone
+# This spawns either air, cobblestone, or a mossy cobblestone 100% of the time.
+#
+# Example 2: rule1=1,50,mossy_cobblestone
+# This spawns a mossy cobblestone 50% of the time but only if another block
+# is underneath it.
+#
+# Example 3: rule1=2,100,stone_slab-2,planks
+# This spawns either a stone slab or a plank block, but only if there is an
+# adjacent block on the same level.
+#
+# Example 4: rule1=0,100,torch-5
+# This spawns a torch standing on the ground.
+#
+# Example 5: rule1=0,25,MediumChest
+# This spawns a Medium Chest (see above) 25% of the time.
+#
+# Example 6: rule1=0,50,MobSpawner:Villager
+# This spawns a Mob Spawner with Mob Id "Villager" 50% of the time
+#
+#
+# Ruins 9.0 exposes minecraft ChestGenHook for your meddling. Usage:
+#
+# Example 7: rule1=0,100,ChestGenHook:dungeonChest:10
+# This spawns a chest and tells the Minecraft generator to fill it with "10" items of the "dungeonChest" preset.
+# This might include extremely powerful items added by mods.
+#
+#	here is the complete list (as of mc 1.4.7) of ChestGen presets:
+#   "mineshaftCorridor"; "pyramidDesertyChest"; "pyramidJungleChest"; "pyramidJungleDispenser"; "strongholdCorridor";
+#   "strongholdLibrary"; "strongholdCrossing"; "villageBlacksmith"; "bonusChest"; "dungeonChest";
+#
+#	As of 10.6, all chest rules can also append a metadata/rotation int similar to a chest block ID
+#	example: rule1=0,100,ChestGenHook:dungeonChest:10-5
+#	for a chest filled with dungeon loot and rotated to meta 5.
+#
+#
+# Ruins 10.3 adds Command Block Support. Usage:
+# Example 8: rule1=0,100,CommandBlock:command:sender
+# command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
+#
+# Ruins 12.1 adds Standing Signs. Usage:
+# Example 9: rule1=0,100,StandingSign:a|b|c|d-4
+# a,b,c,d are the 4 Strings/lines you can write on a sign. The metadata/rotation of the sign is affixed as usual.
+#
+# Ruins 12.2 adds IInventory block support. Usage: IInventory;<blockName>;<itemList>-<blockrotation>
+# where <blockName> is the registry name of the Block that sports an inventory
+# where <itemList> is a list of elements seperated by '+', each element is a block or item registry name
+# optionally followed by #stacksize OR #stacksize#metadata
+# Example 10: rule1=0,100,IInventory;chest;red_flower+arrow#10+wool#3#15-5
+# this spawns a chest rotated to 5, which will contain a single red flower, 10 arrows, and 3 wool of color red (meta 15)
+# Example 11: rule1=0,100,IInventory;dispenser;arrow#10+snowball#20+egg#3-1
+# this spawns a dispenser rotated to 1, with 10 arrows 20 snowballs and 3 eggs
+# you may use this for items added by mods. names not found in the registry will simply be skipped over.
+# you may also use this for container blocks added by mods. invalid anythings should be skipped.
+# the Ruins Parser will do this for you when you parse an IInventory block. Empty chests get hooked with dungeon loot
+# automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
+#
+
+
+rule1=0,100,preserveBlock
+rule2=0,80,brick_block,brick_block,dirt,stone,gravel
+rule3=0,100,brick_block
+
+
+# LAYERS
+# Each layer is a comma-delimited list of rules, one for each block.  There
+# must be as many layers as the height, and each layer must have "layer" before
+# the rules and end with "endlayer".  There are as many rows as the length, and
+# as many rules as the width.  If you want the block blanked out use 0, which
+# represents the Air-block rule.
+
+
+layer
+2,2,2,2,2
+2,1,1,1,2
+2,1,1,1,2
+2,1,1,1,2
+2,1,1,1,2
+2,1,1,1,2
+2,2,2,2,2
+endlayer
+
+layer
+3,3,3,3,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,3,3,3,3
+endlayer
+
+layer
+3,3,3,3,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,3,3,3,3
+endlayer
+
+layer
+3,3,3,3,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,0,0,0,3
+3,3,3,3,3
+endlayer

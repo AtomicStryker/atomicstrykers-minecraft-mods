@@ -1,0 +1,296 @@
+CHANGELOG:
+v1 - Initial Release
+
+v2 - Template File Release
++ Template files interface added, .minecraft/mods/resources/ruins/*.tml
+
+v3 - Options File Release
++ Mod options file, .minecraft/ruins.txt
++ Log file for errors, .minecraft/ruins_log.txt
++ Block Metadata support added
++ Template weights for randomization
++ Embed distance, allowing basements to be created
+
+v4 - ModLoader Release
++ Complete ModLoader v5 compatibility, no base classes modified
++ Random site rotation
+
+v5 - Biome-Specific Release
++ Templates can now spawn in the Nether
++ Templates can now spawn specific to a biome
++ Templates can now spawn in and around water and lava
++ Automatic terrain leveling and cutting
++ Added a new "under block" conditional to the templates
+
+v6 - 
++ Options per world
++ Added Unique flag (only generate once per world)
++ Unique ruins are retained between world loads
++ Added a .schematic converter (no documentation!)
++ Ruins now have a bounding box to prevent sloppy generation
++ Attempted to fix edge of world generation (we'll see)
+
+v7 -
++ changed folder structure: all ruin related files now base off the /mods/ folder, resources for example goes to /mods/resources
++ scrapped hardcoded and mismatching Biome Index in favor of a dynamic solution, directly accessing BiomeGenBase for all Biomes
++ added new and changed other folder names to match Notch Biome designations. Make sure your custom structures are in the new folder!
++ added SMP version (requires MLMP) - clients connecting to a server do not need to have the mod installed
++ added drag and drop batch file to schematic converter, made some Jungle Structures
++ added new plants to plant exlusion lists
++ added tons of unique Structures and Traps, courtesy of Arrrg http://www.minecraftforum.net/topic/293667-123-amco-arrrgs-minecraft-overhaul/
+
+v7.1 (server only) -
++ fixed file system problems
+
+v7.2 -
++ upped maximum amount of supported Biomes from 50 to 500
++ removed leading slashes from folder designators (no more absolute path enforcing)
+
+v7.2b -
++ fixed Array Length in RuinStats class to 500 aswell
+
+v7.3 -
++ ported from ModLoaderMP to Forge NetworkMod (Yes that DOES mean it now requires Forge)
++ updated Block metadata Handling to include: Brick/Stone/Netherbrick Stairs, TrapDoors
+
+v7.4 -
++ hopefully updated Template rotating metadata Handling to not screw up inverted Stairs
+
+v7.4B -
++ fixed inverted stairs metadata for reals this time
+
+v7.4C -
++ Added metadata rotation translator for BlockVines (106)
+
+v.7.4 for 1.3.1
++ compiled against Modloader 1.3.1, same file should work both client and server
+
+7.5 for 1.3.2
++ ported to FML. No longer supports ModLoader. Works both client and server.
+
+7.5B
++ purged Minecraft clientside only code remnants from Modfile
+
+7.6
++ changed World Savedir Finding method to be more robust
+
+7.7
++ update to MC 1.4 and Forge 5
+
+7.7 - im keeping the number, nobody used the first rev anyway
++ update to MC 1.4.2 and Forge 6
+
+7.8
++ made sure Ruins loads after ExtraBiomesXL if present
++ added implementation of ExtraBiomesXL API, now finds those Biomes
++ added creation of empty folders for Biomes you don't have templates for
+
+7.9
++ redid World Savedir Finder again, now uses Chunk Saving Location
+
+8.0
++ Update to Minecraft 1.4.4
+
+8.1
++ small bugfix to World Savedir locator
+
+8.2
++ screw it, using Reflection to get World Savedir now
+a: setAccessible now true
+
+8.3
++ fixed initialization problem preventing Extra Biomes to spawn stuff by default
++ made cavechunk's pack the default pack, props to him http://www.minecraftforum.net/user/973867-cavechunk/
+
+8.4
++ fixed crash when placing invalid chests via template
+
+8.5
++ added possibility to place custom Mob ID MobSpawners (only manually!)
+# Example 6: rule1=0,100,315-0'Villager
+# This spawns a custom Mob Spawner (315) with Mob Id "Villager" (and metadata 0) 100% of the time
+
+8.6
++ dumped the hardcoded 300-311 and 315 block IDs in favor of a string based system, see template_rules.txt
++ OLD TEMPLATES USING ANY OF THESE WILL NOT BE COMPATIBLE. DELETE YOUR OLD FOLDER AND CONVERT YOUR TEMPLATES
++ included templates are already converted
++ relevant part of template_rules.txt:
+
+#        /*
+#         * Conversion table from old Ruins 8.5 template style to new 8.6+ style
+#         * 
+#         * Just handling the part where you used to specify 'special' blocks
+#         * Full Example: "rule1=0,25,310" turns into "rule1=0,25,MediumChest"
+#         * 
+#         * 300 -> preserveBlock
+#         * 301 -> MobSpawner:Zombie
+#         * 302 -> MobSpawner:Skeleton
+#         * 303 -> MobSpawner:Spider
+#         * 304 -> MobSpawner:Creeper
+#         * 305 -> UprightMobSpawn
+#         * 306 -> EasyMobSpawn
+#         * 307 -> MediumMobSpawn
+#         * 308 -> HardMobSpawn
+#         * 309 -> EasyChest
+#         * 310 -> MediumChest
+#         * 311 -> HardChest
+#         * 315-0'Villager -> MobSpawner:Villager
+#         * 
+#         */
+# As of 8.6, you can also specify a Block Name instead of it's numeric ID! This should be
+# very useful to use Ruins with other Mods and changible Block IDs. Make sure to use the
+# absolute Blockname, not the translation! Example: "44-2" can also be written as "stoneSlab-2"
+
+8.7
++ update to MC 1.4.6
+
+8.8
++ synchronized World Generation Hook, also made sure the 0,0 chunk doesn't ever spawn anything
+
+8.9
++ unleashing the custom rotation config file! You should now be able to use any and all blocks
+  for your Ruins, if you make rotation mappings for them.
++ read /mods/resources/ruins/rotation_mappings.txt for information and examples
++ to facilitate the figuring out of block names and metadata, Ruins will now print out the
+  relevant information about a block ingame if you tap it with a "stick".
+  
+8.9 (second rev)
++ fixed tiny possible crash with empty lines in template parser. Old versions remain compatible.
+
+9.0
++ added option for chests filled with MC ChestGenHook loot (see template_rules.txt)
++ added a small chance (1/25) for dungeon loot to be put into "loot" chests
+
+9.1
++ forced biome folders to always-lowercase, maybe helps mod biome issues
++ (rename your old template folders to be all-lowercase)
+
+9.2
++ catches and logs invalid Block IDs when parsing templates, uses air blocks instead
+
+9.3
++ update to MC 1.5
+
+9.4
++ update to MC 1.5.1
+
+9.5
++ added fallback methods and error logging when using pre-8.6 style templates or invalid blocks
++ subsequently found and fixed errors in 2 default templates
+
+9.6
++ added generation for the End (Biome "sky")
++ added EnderCrystal entities for placement. Usage like spawners, keyphrase EnderCrystal
++ example: rule1=0,100,EnderCrystal
++ will turn target Block into Bedrock(!!!!) and an Ender Crystal ontop of it
+
+9.6 (second coming)
++ disabled spawning in Chunks at 0,0 and the 2 adjacent chunks altogether
+
+9.7
++ changed setBlock back to work without block update, allows update based traps again
++ added Mooshroom rotational mappings courtesy of Arrrg
++ added End structures courtesy of Arrrg
+
+9.8
++ added circular code check to prevent a reported StackOverFlow crash
+
+9.9
++ fixed Ruins to no longer disregard non-consecutive Biomes in the Biome array
+
+9.9 rev2 (same version)
++ fixed consecutive Biomes bug in 2 more places
+
+10.0
++ update to MC 1.5.2
+
+10.1
++ made Ruins logic distinctly and concurrently per-world and atomic, should fix server Dimension oddness
++ disabled Ruins excessive logging by default. You can re-enable it in ruins.txt in your world save directory
+
+10.1b
++ moved the recursive generator check back into the main mod from per-world logic, does not seem to catch with multimc
+
+10.2
++ added biomesToSpawnIn optional setting to template rules
++ added "generic" folder which is now supposed to contain the "common" templates instead of the /resources/ruins/ base folder
+
+10.2 rev2 (same version)
++ fixed "Ruins Mod determines ..." log spam
++ slightly improved world handling
+
+10.3
++ ninja'd Biome code change
++ added Command Block support, example: rule1=0,100,CommandBlock:command:sender
+
+10.4
++ update to MC 1.6.1
+
+10.5
++ update to MC 1.6.2
+
+10.6
++ changed Chest rules to allow metadata specification (optional)
++ added unique Floater and Underwater base templates, courtesy of Count_Chuckula
+
+10.7
++ update to MC 1.6.4
+
+10.8
++ added RuinPositionsFile.txt to each World save Ruins generates in. See file for details
++ added NOT conditionals to block rules
+
+10.9
++ moved all file parsing and writing into seperate threads of their own
++ changed NOT conditional block run sequence to match the normal rules
++ removed some console debug logging
++ additional templates by jsmith added
++ template reorganziation courtesy of Blue001
+
+11.0
++ some spawning logic changes by 4HeadTiger
++ overlapping check now via sweep n prune algorithm
++ added template-specific minimal distances and ruin minimum distances from each other
++ moved biome variable printout to logging, to be disabled as such when needed
+
+12.0
++ update to MC 1.7.2
++ all previous templates are incompatible, im afraid
++ i've subsequently dumped the schematic converter
++ the included templates have been updated to the new values, see credits file
++ many thanks to Saeldur for doing this
+
+12.1
++ added Ruins support for signs with text on them
++ added Ruins support for skulls/heads
++ fixed mappings: trapdoor, tripwire, repeater, comparator, furnace, chest,
++   dropper, wodden button, activator rail, quartz stairs, piston, dispenser,
++   cocoa, anvil, fence gate, end portal frame, all log types, quartz pillars
++ glorious rebirth of the template converter, now ingame admin command "/parseruin"
++   does not require the client to have Ruins installed
++   upon execution, saves the result template on the server(!) in the "templateparser" biome folder
++   converter supports custom mob spawners and command blocks, also custom signs
++   does not support chest content (is replaced by dungeon chestgenhook, 5 items)
++   converter has basic support for any block, even mod blocks, and their meta values
++   note for full support of mod block rotations you might have to add rotation mappings for them
++ also adds testing command "/testruin" which can be used to spawn any ruin template
++   any template is specified by "biomefolder/filename" (SERVERS FOLDER!)
++   or just "filename" when the template is located in the "templateparser" biome folder
++   you may also append an optional rotation digit [NESW = 0123] to test template rotation
+
+12.2
++ added Ruins support for any IInventory block with any Block/Item specs
++ see template_rules.txt for details and examples
++ Ruins ingame parser now supports reading and saving IInventory containers and contents
++ yes this does in fact include mod added chests and mod added items
+
+12.3
++ changed IInventory block syntax, 12.2 cant work unfortunately
++ fixed some errors in IInventory system
++ fixed some bugs with TileEntity blocks not rotating correctly
+
+12.4
++ fixed issue where Ingame Ruin Parser could not parse more than 1 instance of each special blocktype
+
+12.5
++ fixed issue where Ingame Ruin Parser could not parse negative coordinates in Command Blocks

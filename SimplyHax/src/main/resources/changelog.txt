@@ -1,0 +1,51 @@
+1.7.2a
+- flying module now just enables creative style flying instead of hacking movement
+- flying module blocks all fall damage at all times now
+- the config subsequently condenses to max speeds and the sprinting button
+- the sprinting button is now configured in the mc keys menu
+
+1.7.2
+-updated for MC 1.7.2
+
+1.6.4
+-updated for MC 1.6.4
+
+1.6.2b
+-fixed Simply Hax Flying fall death in special cases
+-the first fall after flying will now ALWAYS be completely negated
+-that means you can safely disable flying in midair and drop
+
+1.6.2
+-updated for MC 1.6.2
+
+1.6.1
+-updated for MC 1.6.1
+
+1.5.2B
+-added EntityList dump module for your custom Mobspawner needs
+
+1.5.2
+-updated for MC 1.5.2
+
+1.5.1B
+-readded configurable UP and DOWN keys. Using JUMP and SNEAK as settings uses the mc bindings instead.
+-added Item tracker and debug printout to Simply Hax Vision, useful to find unlocalized names
+
+1.5.1
+-updated for MC 1.5.1
+
+1.5
+-updated for MC 1.5
+
+1.4.6
+-updated to 1.4.6
+-fixed the bug where deactivating flying, falling,
+and reactivating before hitting the ground would yield fall damage
+-removed the manually definable buttons for flying up and down, now
+simply uses JUMP and SNEAK as set in minecraft
+
+1.4.5
+changed to be a FML Coremod to fix the damn falling bug
+
+1.4.4
+SimplyHax changelog, probably wont do much here.

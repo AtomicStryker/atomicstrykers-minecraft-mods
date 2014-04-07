@@ -1,0 +1,12 @@
+[
+{
+  "modid": "StalkerCreepers",
+  "name": "Stalker Creepers",
+  "description": "Creepers will stalk you. That means, not explode or announce their presence until you turn around.",
+  "mcversion": "${mcversion}",
+  "url": "http://www.minecraftforum.net/topic/1096447-",
+  "authors": [
+    "AtomicStryker"
+  ]
+}
+]
