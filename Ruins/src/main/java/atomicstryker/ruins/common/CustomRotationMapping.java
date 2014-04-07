@@ -171,7 +171,7 @@ public class CustomRotationMapping
     private Block tryFindingBlockOfName(String blockName)
     {
         // it returns Blocks.air when nothing is found, ok
-        return GameData.blockRegistry.getObject(blockName);
+        return GameData.getBlockRegistry().getObject(blockName);
     }
 
 }

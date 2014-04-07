@@ -293,9 +293,9 @@ public class MinionsCore
     @SuppressWarnings("unchecked")
     private void getViableTreeBlocks()
     {
-        for (String s : (Set<String>)GameData.blockRegistry.getKeys())
+        for (String s : (Set<String>)GameData.getBlockRegistry().getKeys())
         {
-            Block iter = GameData.blockRegistry.getObject(s);
+            Block iter = GameData.getBlockRegistry().getObject(s);
             if (iter instanceof BlockLog || iter.getLocalizedName().contains("log"))
             {
                 debugPrint("Minions found viable TreeBlock: "+iter);
@@ -722,7 +722,7 @@ public class MinionsCore
                         lineString = lineString.trim();
                         if (lineString.startsWith("registerBlockIDasTreeBlock:"))
                         {
-                            Block id = GameData.blockRegistry.getObject(lineString.substring(lineString.indexOf(":")+1));
+                            Block id = GameData.getBlockRegistry().getObject(lineString.substring(lineString.indexOf(":")+1));
                             if (id != Blocks.air)
                             {
                                 foundTreeBlocks.add(id);
@@ -731,7 +731,7 @@ public class MinionsCore
                         }
                         else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
                         {
-                            Block id = GameData.blockRegistry.getObject(lineString.substring(lineString.indexOf(":")+1));
+                            Block id = GameData.getBlockRegistry().getObject(lineString.substring(lineString.indexOf(":")+1));
                             if (id != Blocks.air)
                             {
                                 configWorthlessBlocks.add(id);

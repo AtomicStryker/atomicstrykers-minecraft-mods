@@ -79,7 +79,7 @@ public class RuinsMod
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
             event.entityPlayer.addChatComponentMessage(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.block.getLocalizedName(), GameData.blockRegistry.getNameForObject(event.block), event.metadata)));
+                    event.block.getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.block), event.metadata)));
         }
     }
 
@@ -94,7 +94,7 @@ public class RuinsMod
                 nextInfoTime = System.currentTimeMillis() + 1000l;
                 event.getPlayer().addChatComponentMessage(
                         new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.block.getLocalizedName(),
-                                GameData.blockRegistry.getNameForObject(event.block), event.blockMetadata)));
+                                GameData.getBlockRegistry().getNameForObject(event.block), event.blockMetadata)));
                 event.setCanceled(true);
             }
         }

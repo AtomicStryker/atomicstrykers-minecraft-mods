@@ -296,13 +296,13 @@ public class InfernalMobsCore
 
     private Object parseOrFind(String s)
     {
-        Item item = GameData.itemRegistry.getObject(s);
+        Item item = GameData.getItemRegistry().getObject(s);
         if (item != null)
         {
             return item;
         }
 
-        Block block = GameData.blockRegistry.getObject(s);
+        Block block = GameData.getBlockRegistry().getObject(s);
         if (block != Blocks.air)
         {
             return block;
