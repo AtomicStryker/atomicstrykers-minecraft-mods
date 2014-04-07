@@ -140,7 +140,7 @@ public class DefaultConfigFilePrinter
                             int prefixoffset = 0;
                             String[] splitString = buffer.split(":");
                             String blockID = splitString[0];
-                            if (blockID.equals("minecraft") || GameData.blockRegistry.getObject(blockID) == Blocks.air)
+                            if (blockID.equals("minecraft") || GameData.getBlockRegistry().getObject(blockID) == Blocks.air)
                             {
                                 prefixoffset = 1;
                                 blockID = splitString[0]+":"+splitString[1];
@@ -167,7 +167,7 @@ public class DefaultConfigFilePrinter
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
-                            block = GameData.blockRegistry.getObject(blockID);
+                            block = GameData.getBlockRegistry().getObject(blockID);
                             if (block != Blocks.air)
                             {
                                 CompassTargetData key = new CompassTargetData(block, configInts[8]);
@@ -198,7 +198,7 @@ public class DefaultConfigFilePrinter
         if (printBlocks)
         {
             System.err.println("For your Finder Compass ID convenience, following a dump of all currently registered block IDs:");
-            for (Object o : GameData.blockRegistry.getKeys())
+            for (Object o : GameData.getBlockRegistry().getKeys())
             {
                 System.out.println(o);
             }

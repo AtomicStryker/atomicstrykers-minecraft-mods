@@ -621,7 +621,7 @@ public class RuinTemplate implements RuinIBuildable
                     Block b;
                     for (int x = 0; x < check.length; x++)
                     {
-                        b = GameData.blockRegistry.getObject(check[x]);
+                        b = GameData.getBlockRegistry().getObject(check[x]);
                         if (b != Blocks.air)
                         {
                             acceptables.add(b);

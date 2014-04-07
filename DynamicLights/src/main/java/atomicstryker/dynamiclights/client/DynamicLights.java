@@ -273,7 +273,7 @@ public class DynamicLights
      */
     public static String getShortItemName(ItemStack item)
     {
-        String s = GameData.itemRegistry.getNameForObject(item.getItem());
+        String s = GameData.getItemRegistry().getNameForObject(item.getItem());
         if (s != null)
         {
             String[] split = s.split(":");

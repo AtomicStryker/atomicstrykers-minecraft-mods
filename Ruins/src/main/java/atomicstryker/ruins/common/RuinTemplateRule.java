@@ -125,7 +125,7 @@ public class RuinTemplateRule
     private Block cachedBlock;
     private Block tryFindingBlockOfName(String blockName)
     {
-        cachedBlock = GameData.blockRegistry.getObject(blockName);
+        cachedBlock = GameData.getBlockRegistry().getObject(blockName);
         debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
         return cachedBlock;
     }
@@ -652,7 +652,7 @@ public class RuinTemplateRule
     
     private Object tryFindingObject(String s)
     {
-        Item item = GameData.itemRegistry.getObject(s);
+        Item item = GameData.getItemRegistry().getObject(s);
         if (item != null)
         {
             if (item instanceof ItemBlock)
@@ -662,7 +662,7 @@ public class RuinTemplateRule
             return item;
         }
         
-        Block block = GameData.blockRegistry.getObject(s);
+        Block block = GameData.getBlockRegistry().getObject(s);
         if (block != Blocks.air)
         {
             return block;

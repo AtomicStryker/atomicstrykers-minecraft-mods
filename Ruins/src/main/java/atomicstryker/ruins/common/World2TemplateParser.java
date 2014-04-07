@@ -243,17 +243,17 @@ public class World2TemplateParser extends Thread
                             }
                         }
                         
-                        temp.data = "IInventory;"+GameData.blockRegistry.getNameForObject(temp.block)+";";
+                        temp.data = "IInventory;"+GameData.getBlockRegistry().getNameForObject(temp.block)+";";
                         for (ItemStack i : invItems)
                         {
                             String ident;
                             if (i.getItem() instanceof ItemBlock)
                             {
-                                ident = GameData.blockRegistry.getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
+                                ident = GameData.getBlockRegistry().getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
                             }
                             else
                             {
-                                ident = GameData.itemRegistry.getNameForObject(i.getItem());
+                                ident = GameData.getItemRegistry().getNameForObject(i.getItem());
                             }
                             if (ident != null)
                             {
@@ -453,7 +453,7 @@ public class World2TemplateParser extends Thread
         @Override
         public String toString()
         {
-            return (data != null) ? data : GameData.blockRegistry.getNameForObject(block) + "-" + meta;
+            return (data != null) ? data : GameData.getBlockRegistry().getNameForObject(block) + "-" + meta;
         }
 
         @Override
