@@ -1,3 +1,6 @@
+1.4.6
+- removed sound loading as it is unneeded since 172
+
 1.4.5
 - fixed stairs blocktypes
 - fixed tower collapse message being sent for nonexploding underground towers
