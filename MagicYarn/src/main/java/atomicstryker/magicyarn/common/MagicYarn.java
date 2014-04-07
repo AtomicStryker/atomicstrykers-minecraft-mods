@@ -22,7 +22,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.1.2")
+@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.1.3")
 public class MagicYarn implements IProxy
 {
     

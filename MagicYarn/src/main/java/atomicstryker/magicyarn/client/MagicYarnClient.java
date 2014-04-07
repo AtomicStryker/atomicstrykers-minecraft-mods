@@ -168,7 +168,11 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                             }
                         }
                         
-                        clientTicker.path = (ArrayList<AStarNode>) clientTicker.path.subList(0, idx);
+                        while (idx > 0)
+                        {
+                            clientTicker.path.remove(0);
+                            idx--;
+                        }
                     }
                     
                     if (clientTicker.showPath)
