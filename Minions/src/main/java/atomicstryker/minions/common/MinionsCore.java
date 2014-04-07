@@ -503,6 +503,7 @@ public class MinionsCore
     
     public void orderMinionToDrop(EntityPlayer playerEnt, EntityMinion minion)
     {
+        MinionsCore.debugPrint("Minion got drop order: "+minion);
         if (minion.riddenByEntity != null)
         {
             proxy.sendSoundToClients(minion, "minions:foryou");

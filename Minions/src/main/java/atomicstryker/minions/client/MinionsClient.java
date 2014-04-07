@@ -339,10 +339,12 @@ public class MinionsClient
             MinionsCore.debugPrint("OnMastersGloveRightClick hit entity "+target);
             if (target instanceof EntityAnimal || target instanceof EntityPlayer)
             {
+                MinionsCore.debugPrint("OnMastersGloveRightClick -> PickupEntPacket");
                 MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getCommandSenderName(), target.getEntityId()));
             }
             else if (target instanceof EntityMinion)
             {
+                MinionsCore.debugPrint("OnMastersGloveRightClick -> DropAllPacket");
                 MinionsCore.instance.networkHelper.sendPacketToServer(new DropAllPacket(playerEnt.getCommandSenderName(), target.getEntityId()));
             }
         }
