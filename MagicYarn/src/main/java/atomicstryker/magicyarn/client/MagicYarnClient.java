@@ -155,6 +155,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                     if (clientTicker.path != null && !clientTicker.path.isEmpty())
                     {
                         target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
+                        int idx = 0;
                         for (int i = 0; i < clientTicker.path.size(); i++)
                         {
                             if (clientTicker.path.get(i).equals(target))
@@ -162,14 +163,12 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                                 System.out.println("Magic Yarn being cut shorter!");
                                 world.playSound(player.posX, player.posY, player.posZ, "random.break", 1.0F, 1.0F, false);
                                 soundplayed = true;
-                                while (i > 0)
-                                {
-                                    clientTicker.path.remove(i);
-                                    i--;
-                                }
+                                idx = i;
                                 break;
                             }
                         }
+                        
+                        clientTicker.path = (ArrayList<AStarNode>) clientTicker.path.subList(0, idx);
                     }
                     
                     if (clientTicker.showPath)
