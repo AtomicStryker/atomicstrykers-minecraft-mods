@@ -52,7 +52,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     public boolean inventoryFull;
     public TileEntity returnChestOrInventory;
     private AS_PathEntity pathToWalkInputCache;
-    public ChunkCoordinates currentTarget;
+    public final ChunkCoordinates currentTarget;
     private int currentPathNotFoundCooldownTick;
     private int pathFindingFails;
     private int currentPathingStopCooldownTick;
@@ -90,7 +90,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         this.tasks.addTask(1, new MinionAIStalkAndGrab(this, this.moveSpeed));
         this.tasks.addTask(2, new MinionAIFollowMaster(this, this.moveSpeed, 10.0F, 2.0F));
         this.tasks.addTask(3, new MinionAIWander(this, this.moveSpeed));
-
+        
         inventory = new InventoryMinion(this);
         inventoryFull = false;
         currentPathNotFoundCooldownTick = 0;
@@ -115,6 +115,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         {
             System.err.println("Minions Minion "+this+" did not get a ForgeChunkManager ticket???");
         }
+        
+        currentTarget = new ChunkCoordinates();
     }
 
     public EntityMinion(World world, EntityPlayer playerEnt)
@@ -232,6 +234,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         master = worldObj.getPlayerEntityByName(getMasterUserName());
 
         MinionsCore.instance.minionLoadRegister(this);
+        
+        currentTarget.set((int)posX, (int)posY, (int)posZ);
     }
 
     public void performTeleportToTarget()
@@ -239,7 +243,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         if (currentTarget != null)
         {
             this.setPositionAndUpdate(currentTarget.posX + 0.5D, currentTarget.posY, currentTarget.posZ + 0.5D);
-            MinionsCore.proxy.playSoundAtEntity(this, "mob.endermen.portal", 0.5F, 1.0F);
+            MinionsCore.instance.sendSoundToClients(this, "mob.endermen.portal");
         }
     }
 
@@ -248,7 +252,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         if (master != null)
         {
             this.setPositionAndUpdate(master.posX + 1, master.posY, master.posZ + 1);
-            MinionsCore.proxy.playSoundAtEntity(this, "mob.endermen.portal", 0.5F, 1.0F);
+            MinionsCore.instance.sendSoundToClients(this, "mob.endermen.portal");
         }
     }
 
@@ -264,7 +268,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
      */
     public void orderMinionToMoveTo(AStarNode[] possibles, boolean allowDropping)
     {
-        currentTarget = new ChunkCoordinates(possibles[0].x, possibles[0].y, possibles[0].z);
+        currentTarget.set(possibles[0].x, possibles[0].y, possibles[0].z);
         pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), possibles, allowDropping);
     }
 
@@ -275,7 +279,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
      */
     public void orderMinionToMoveTo(int targetX, int targetY, int targetZ, boolean allowDropping)
     {
-        currentTarget = new ChunkCoordinates(targetX, targetY, targetZ);
+        currentTarget.set(targetX, targetY, targetZ);
         pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY), doubleToInt(this.posZ), targetX, targetY, targetZ, allowDropping);
         // System.out.println("Minion ordered to move to ["+targetX+"|"+targetY+"|"+targetZ+"]");
     }
@@ -523,7 +527,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     public void dropAllItemsToWorld()
     {
         blockItemPickUp();
-        MinionsCore.proxy.sendSoundToClients(this, "minions:foryou");
+        MinionsCore.instance.sendSoundToClients(this, "minions:foryou");
         if (master != null)
         {
             this.faceEntity(master, 180F, 180F);
@@ -589,7 +593,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                 workSpeed = 2.0F;
 
                 master.onCriticalHit(this);
-                MinionsCore.proxy.sendSoundToClients(this, "minions:minionsqueak");
+                MinionsCore.instance.sendSoundToClients(this, "minions:minionsqueak");
                 // worldObj.playSoundAtEntity(this, "minions:minionsqueak",
                 // 1.0F, 1.0F);
                 return true;

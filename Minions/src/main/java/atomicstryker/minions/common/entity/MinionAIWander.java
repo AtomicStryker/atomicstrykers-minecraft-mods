@@ -1,7 +1,8 @@
 package atomicstryker.minions.common.entity;
 
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.util.MathHelper;
+import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.util.Vec3;
 
 public class MinionAIWander extends EntityAIBase
 {
@@ -10,16 +11,14 @@ public class MinionAIWander extends EntityAIBase
     private double yPosition;
     private double zPosition;
     private float speed;
-    private long lastMoveTime;
-    private long currentTimeInterval;
+    private long nextMoveTime;
     private final long moveTimeIntervals = 10000L;
 
     public MinionAIWander(EntityMinion minion, float movespeed)
     {
         this.entity = minion;
         this.speed = movespeed;
-        this.setMutexBits(1);
-        lastMoveTime = System.currentTimeMillis();
+        nextMoveTime = System.currentTimeMillis();
     }
 
     /**
@@ -28,33 +27,26 @@ public class MinionAIWander extends EntityAIBase
     @Override
     public boolean shouldExecute()
     {
-        if (entity.getCurrentTask() == null
-        || entity.currentTarget == null
-        || !entity.getNavigator().noPath()
+        if (entity.getCurrentTask() != null
         || entity.riddenByEntity != null)
         {
             return false;
         }
-        else if (lastMoveTime+currentTimeInterval < System.currentTimeMillis())
+        else if (nextMoveTime < System.currentTimeMillis())
         {
-            float var5 = -99999.0F;
+            Vec3 vec3 = RandomPositionGenerator.findRandomTarget(this.entity, 6, 4);
 
-            for (int var6 = 0; var6 < 10; ++var6)
+            if (vec3 == null)
             {
-                int var7 = MathHelper.floor_double(entity.currentTarget.posX + (double)entity.getRNG().nextInt(7) - 6.0D);
-                int var8 = MathHelper.floor_double(entity.currentTarget.posY + (double)entity.getRNG().nextInt(4) - 3.0D);
-                int var9 = MathHelper.floor_double(entity.currentTarget.posZ + (double)entity.getRNG().nextInt(7) - 6.0D);
-                float var10 = entity.getBlockPathWeight(var7, var8, var9);
-                if (var10 > var5)
-                {
-                    var5 = var10;
-                    xPosition = var7;
-                    yPosition = var8;
-                    zPosition = var9;
-                    lastMoveTime = System.currentTimeMillis();
-                    currentTimeInterval = (long) (moveTimeIntervals * entity.getRNG().nextFloat()) + 2000L;
-                    return true;
-                }
+                return false;
+            }
+            else
+            {
+                this.xPosition = vec3.xCoord;
+                this.yPosition = vec3.yCoord;
+                this.zPosition = vec3.zCoord;
+                nextMoveTime = System.currentTimeMillis() + (long) (moveTimeIntervals * entity.getRNG().nextFloat());
+                return true;
             }
         }
         return false;
@@ -66,7 +58,7 @@ public class MinionAIWander extends EntityAIBase
     @Override
     public boolean continueExecuting()
     {
-        return !this.entity.getNavigator().noPath();
+        return entity.getCurrentTask() == null && !this.entity.getNavigator().noPath();
     }
 
     /**

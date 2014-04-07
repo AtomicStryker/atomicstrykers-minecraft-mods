@@ -1,11 +1,10 @@
 package atomicstryker.minions.client;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import atomicstryker.minions.common.CommonProxy;
+import atomicstryker.minions.common.IProxy;
 import atomicstryker.minions.common.entity.EntityMinion;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -15,7 +14,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-public class ClientProxy extends CommonProxy
+public class ClientProxy implements IProxy
 {
     
     private static MinionsClient client;
@@ -76,19 +75,4 @@ public class ClientProxy extends CommonProxy
     {
         client.onMastersGloveRightClick(itemstack, world, player);
     }
-    
-    @Override
-    public void sendSoundToClients(Entity ent, String string)
-    {
-        playSoundAtEntity(ent, string, 1f, 1f);
-    }
-    
-    @Override
-	public void playSoundAtEntity(Entity ent, String sound, float volume, float pitch)
-	{
-        if (!ent.isDead)
-        {
-            ent.worldObj.playSound(ent.posX, ent.posY, ent.posZ, sound, volume, pitch, false);
-        }
-	}
 }

@@ -51,7 +51,7 @@ public class EvilDeedPacket implements IPacket
                 player.addExperienceLevel(-MinionsCore.instance.evilDeedXPCost);
                 MinionsCore.instance.onMasterAddedEvil(player, soundLength);
                 player.addPotionEffect(new PotionEffect(Potion.blindness.id, soundLength * 30, 0));
-                MinionsCore.proxy.sendSoundToClients(player, sound);
+                MinionsCore.instance.sendSoundToClients(player, sound);
                 MinionsCore.debugPrint("player "+player+" just did evil deed "+sound);
             }
         }
