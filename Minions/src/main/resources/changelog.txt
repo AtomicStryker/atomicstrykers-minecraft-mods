@@ -1,3 +1,8 @@
+Update 1.8.9
+- fixed Drop command on Minions not working
+- fixed Sound system derping in local play
+- fixed Minions not using their wander AI
+
 Hotfix 1.8.8
 - fixed EntityAIFollowOwner to work on serverside
 

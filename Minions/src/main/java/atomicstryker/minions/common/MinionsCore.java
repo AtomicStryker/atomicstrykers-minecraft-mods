@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -20,6 +21,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.S29PacketSoundEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -78,11 +81,11 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.8")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.8.9")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
-    public static CommonProxy proxy;
+    public static IProxy proxy;
     
     @Instance(value = "AS_Minions")
     public static MinionsCore instance;
@@ -255,7 +258,7 @@ public class MinionsCore
                 FutureDeedEvent e = iter.next();
                 if (System.currentTimeMillis() >= e.targetTime)
                 {
-                    proxy.sendSoundToClients(e.player, e.sound);
+                    sendSoundToClients(e.player, e.sound);
                     if (e.staff)
                     {
                         e.player.inventory.addItemStackToInventory(new ItemStack(itemMastersStaff, 1, 0));
@@ -495,7 +498,7 @@ public class MinionsCore
             if (minion.riddenByEntity == null)
             {
                 minion.targetEntityToGrab = (EntityLivingBase) target;
-                proxy.sendSoundToClients(minion, "minions:grabanimalorder");
+                sendSoundToClients(minion, "minions:grabanimalorder");
                 break;
             }
         }
@@ -506,12 +509,12 @@ public class MinionsCore
         MinionsCore.debugPrint("Minion got drop order: "+minion);
         if (minion.riddenByEntity != null)
         {
-            proxy.sendSoundToClients(minion, "minions:foryou");
+            sendSoundToClients(minion, "minions:foryou");
             minion.riddenByEntity.mountEntity(null);
         }
         else if (minion.inventory.containsItems())
         {
-            proxy.sendSoundToClients(minion, "minions:foryou");
+            sendSoundToClients(minion, "minions:foryou");
             minion.dropAllItemsToWorld();
         }
     }
@@ -533,8 +536,9 @@ public class MinionsCore
             final EntityMinion minion = new EntityMinion(playerEnt.worldObj, playerEnt);
             minion.setPosition(x, y+1, z);
             playerEnt.worldObj.spawnEntityInWorld(minion);
-            MinionsCore.proxy.sendSoundToClients(minion, "minions:minionspawn");
+            sendSoundToClients(minion, "minions:minionspawn");
             offerMinionToMap(minion, playerEnt.getGameProfile().getName());
+            minion.currentTarget.set(x, y, z);
             //System.out.println("spawned missing minion for "+var3.getGameProfile().getName());
             return true;
         }
@@ -557,7 +561,7 @@ public class MinionsCore
         if (minions.length > 0)
         {
             runningJobList.add(new Minion_Job_TreeHarvest(Lists.newArrayList(minions), x, y, z));
-            proxy.sendSoundToClients(minions[0], "minions:ordertreecutting");
+            sendSoundToClients(minions[0], "minions:ordertreecutting");
         }
     }
     
@@ -575,7 +579,7 @@ public class MinionsCore
         if (minions.length > 0)
         {
             runningJobList.add(new Minion_Job_DigMineStairwell(Lists.newArrayList(minions), x, y-1, z));
-            proxy.sendSoundToClients(minions[0], "minions:ordermineshaft");
+            sendSoundToClients(minions[0], "minions:ordermineshaft");
         }        
     }
     
@@ -592,7 +596,7 @@ public class MinionsCore
                 }
                 
                 runningJobList.add(new Minion_Job_StripMine(minion, x, y-1, z));
-                proxy.sendSoundToClients(minions[0], "minions:randomorder");
+                sendSoundToClients(minions[0], "minions:randomorder");
                 break;
             }
         }
@@ -612,7 +616,7 @@ public class MinionsCore
             EntityMinion[] minions = getMinionsForMaster(playerEnt);
             if (minions.length > 0)
             {
-                proxy.sendSoundToClients(minions[0], "minions:randomorder");
+                sendSoundToClients(minions[0], "minions:randomorder");
                 for (EntityMinion minion : minions)
                 {
                     if (!sneaking)
@@ -634,7 +638,7 @@ public class MinionsCore
         
         if (minions.length > 0)
         {
-            proxy.sendSoundToClients(minions[0], "minions:randomorder");
+            sendSoundToClients(minions[0], "minions:randomorder");
             for (EntityMinion minion : minions)
             {
                 minion.giveTask(null, true);
@@ -652,7 +656,7 @@ public class MinionsCore
             
             if (minions.length > 0)
             {
-                proxy.sendSoundToClients(minions[0], "minions:randomorder");
+                sendSoundToClients(minions[0], "minions:randomorder");
                 for (EntityMinion minion : minions)
                 {
                     if (!minion.hasTask())
@@ -672,7 +676,7 @@ public class MinionsCore
         EntityMinion[] minions = getMinionsForMaster(playerEnt);
         if (minions.length > 0)
         {
-            proxy.sendSoundToClients(minions[0], "minions:orderfollowplayer");
+            sendSoundToClients(minions[0], "minions:orderfollowplayer");
             for (EntityMinion minion : minions)
             {
                 minion.giveTask(null, true);
@@ -703,7 +707,7 @@ public class MinionsCore
         
         // custom dig job
         runningJobList.add(new Minion_Job_DigByCoordinates(Lists.newArrayList(minions), x, y-1, z, XZsize, ySize));
-        proxy.playSoundAtEntity(playerEnt, "minions:randomorder", 1.0F, 1.0F);
+        sendSoundToClients(playerEnt, "minions:randomorder");
     }
     
     private void initializeSettingsFile(File settingsFile)
@@ -767,6 +771,19 @@ public class MinionsCore
     public final static String getPacketChannel()
     {
         return "AS_Minions";
+    }
+    
+    public void sendSoundToClients(Entity ent, String string)
+    {
+        MinionsCore.debugPrint("sendSoundToClients "+ent+", "+string);
+        if (!ent.worldObj.isRemote && MinecraftServer.getServer() != null)
+        {
+            MinecraftServer
+                    .getServer()
+                    .getConfigurationManager()
+                    .sendToAllNear(ent.posX, ent.posY, ent.posZ, 16D, ent.dimension,
+                            new S29PacketSoundEffect(string, ent.posX, ent.posY, ent.posZ, 1f, 1f));
+        }
     }
     
     public static void debugPrint(String s)

@@ -10,7 +10,6 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class SoundPacket implements IPacket
 {
-
     private String sound;
     private int dimension, entID;
 
@@ -41,7 +40,7 @@ public class SoundPacket implements IPacket
         Entity e = MinecraftServer.getServer().worldServerForDimension(dimension).getEntityByID(entID);
         if (e != null)
         {
-            MinionsCore.proxy.sendSoundToClients(e, sound);
+            MinionsCore.instance.sendSoundToClients(e, sound);
         }
     }
 }
