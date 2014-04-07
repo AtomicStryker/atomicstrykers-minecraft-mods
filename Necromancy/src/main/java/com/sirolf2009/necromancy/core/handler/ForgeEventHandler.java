@@ -1,7 +1,5 @@
 package com.sirolf2009.necromancy.core.handler;
 
-import java.util.Collections;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -14,10 +12,9 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.event.world.WorldEvent.PotentialSpawns;
 
 import com.sirolf2009.necromancy.Necromancy;
 import com.sirolf2009.necromancy.achievement.AchievementNecromancy;
@@ -27,6 +24,7 @@ import com.sirolf2009.necromancy.entity.EntityNightCrawler;
 import com.sirolf2009.necromancy.item.ItemGeneric;
 import com.sirolf2009.necromancy.item.ItemNecroSkull;
 import com.sirolf2009.necromancy.item.RegistryNecromancyItems;
+import com.sirolf2009.necromancy.lib.ConfigurationNecromancy;
 
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -35,39 +33,25 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 public class ForgeEventHandler
 {
     
-    private final SpawnListEntry nightCrawlerEntry = new SpawnListEntry(EntityNightCrawler.class, 10, 1, 2);
-    private final SpawnListEntry isaacEntry = new SpawnListEntry(EntityIsaacNormal.class, 5, 1, 1);
-    
     @SubscribeEvent
-    public void onPotentialSpawns(PotentialSpawns event)
+    public void onPotentialSpawns(SpecialSpawn event)
     {
-        boolean nightCrawler = false;
-        boolean isaac = false;
-
-        for (SpawnListEntry spawn : event.list)
+        if (event.entityLiving.getClass().equals(EntityZombie.class) || event.entityLiving.getClass().equals(EntitySkeleton.class))
         {
-            if (spawn.entityClass.equals(EntityZombie.class))
+            if (event.world.rand.nextInt(ConfigurationNecromancy.rarityNightCrawlers) == 0)
             {
-                nightCrawler = true;
+                event.setResult(Result.DENY);
+                EntityNightCrawler enc = new EntityNightCrawler(event.world);
+                enc.setPosition(event.x, event.y, event.z);
+                event.world.spawnEntityInWorld(enc);
             }
-            else if (spawn.entityClass.equals(EntitySkeleton.class))
+            else if (event.world.rand.nextInt(ConfigurationNecromancy.rarityIsaacs) == 0)
             {
-                isaac = true;
+                event.setResult(Result.DENY);
+                EntityIsaacNormal ein = new EntityIsaacNormal(event.world);
+                ein.setPosition(event.x, event.y, event.z);
+                event.world.spawnEntityInWorld(ein);
             }
-        }
-
-        if ((nightCrawler || isaac) && event.world.rand.nextInt(6) == 0)
-        {
-            if (nightCrawler)
-            {
-                event.list.add(nightCrawlerEntry);
-            }
-            if (isaac)
-            {
-                event.list.add(isaacEntry);
-            }
-            // maybe this will fix nightCrawlers and isaac overriding
-            Collections.shuffle(event.list);
         }
     }
     

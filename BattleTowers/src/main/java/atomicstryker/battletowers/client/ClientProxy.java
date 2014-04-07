@@ -1,6 +1,5 @@
 package atomicstryker.battletowers.client;
 
-import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.battletowers.common.AS_EntityGolem;
 import atomicstryker.battletowers.common.AS_EntityGolemFireball;
 import atomicstryker.battletowers.common.CommonProxy;
@@ -12,7 +11,6 @@ public class ClientProxy extends CommonProxy
     @Override
     public void preInit()
     {
-        MinecraftForge.EVENT_BUS.register(new BattleTowerSounds());
         FMLCommonHandler.instance().bus().register(new ClientTickHandler());
     }
     

@@ -1,3 +1,8 @@
+1.6.7
+- added new configuration options for Nightcrawler and Isaac spawn rates
+- instead of being added to vanilla spawns, they now outright replace actual Zombies/Skeletons
+- removed now-unneeded Access Transformers
+
 1.6.6
 - fixed Blood Block registration to use pre-existing entry if present
 
