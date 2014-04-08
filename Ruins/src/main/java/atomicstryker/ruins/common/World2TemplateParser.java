@@ -24,6 +24,9 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class World2TemplateParser extends Thread
 {
+    
+    private static final int SPAWN_RULE_EXISTSBELOW = 1;
+    private static final int SPAWN_RULE_EXISTSADJACENT = 2;
 
     /**
      * Block upon which the parser is started, is used to define the template
@@ -31,7 +34,7 @@ public class World2TemplateParser extends Thread
      * templates.
      */
     private final BlockData templateHelperBlock;
-    private final BlockData nothing = new BlockData(Blocks.air, 0, null);
+    private final BlockData nothing = new BlockData(Blocks.air, 0, null, 0);
 
     /**
      * Starting point for the template parse scan
@@ -100,7 +103,7 @@ public class World2TemplateParser extends Thread
         y = b;
         z = c;
         fileName = fName;
-        templateHelperBlock = new BlockData(world.getBlock(a, b, c), world.getBlockMetadata(a, b, c), null);
+        templateHelperBlock = new BlockData(world.getBlock(a, b, c), world.getBlockMetadata(a, b, c), null, 0);
         usedBlocks = new ArrayList<BlockData>();
         layerData = new ArrayList<BlockData[][]>();
     }
@@ -211,6 +214,7 @@ public class World2TemplateParser extends Thread
                     temp.block = world.getBlock(blockx, blocky, blockz);
                     temp.meta = world.getBlockMetadata(blockx, blocky, blockz);
                     temp.data = null;
+                    temp.spawnRule = 0;
                     unique = true;
 
                     if (temp.block == Blocks.air || temp.equals(templateHelperBlock))
@@ -230,6 +234,16 @@ public class World2TemplateParser extends Thread
                     if (temp.block == Blocks.mob_spawner)
                     {
                         temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).func_145881_a().getEntityNameToSpawn();
+                    }
+                    else if (temp.block == Blocks.torch || temp.block == Blocks.redstone_torch)
+                    {
+                        // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
+                        temp.spawnRule = temp.meta == 0 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
+                    }
+                    else if (temp.block == Blocks.wooden_button || temp.block == Blocks.stone_button)
+                    {
+                        // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
+                        temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
                     else if (te instanceof IInventory && !isIInventoryEmpty((IInventory)te))
                     {
@@ -284,11 +298,13 @@ public class World2TemplateParser extends Thread
                     {
                         TileEntitySign tes = (TileEntitySign) te;
                         temp.data = convertSignStrings("StandingSign:", tes) + "-" + temp.meta;
+                        temp.spawnRule = SPAWN_RULE_EXISTSBELOW;
                     }
                     else if (temp.block == Blocks.wall_sign)
                     {
                         TileEntitySign tes = (TileEntitySign) te;
                         temp.data = convertSignStrings("WallSign:", tes) + "-" + temp.meta;
+                        temp.spawnRule = SPAWN_RULE_EXISTSADJACENT;
                     }
                     else if (temp.block == Blocks.skull)
                     {
@@ -382,7 +398,7 @@ public class World2TemplateParser extends Thread
             int rulenum = 1;
             for (BlockData bd : usedBlocks)
             {
-                pw.println("rule" + rulenum + "=0,100," + bd.toString());
+                pw.println("rule" + rulenum + "=" + bd.toString());
                 rulenum++;
             }
 
@@ -432,17 +448,19 @@ public class World2TemplateParser extends Thread
         Block block;
         int meta;
         String data;
+        int spawnRule;
 
-        BlockData(Block b, int m, String d)
+        BlockData(Block b, int m, String d, int sr)
         {
             block = b;
             meta = m;
             data = d;
+            spawnRule = sr;
         }
 
         BlockData copy()
         {
-            return new BlockData(block, meta, data);
+            return new BlockData(block, meta, data, spawnRule);
         }
 
         boolean matchesBlock(World w, int x, int y, int z)
@@ -453,7 +471,7 @@ public class World2TemplateParser extends Thread
         @Override
         public String toString()
         {
-            return (data != null) ? data : GameData.getBlockRegistry().getNameForObject(block) + "-" + meta;
+            return spawnRule + ",100," + ((data != null) ? data : GameData.getBlockRegistry().getNameForObject(block) + "-" + meta);
         }
 
         @Override
