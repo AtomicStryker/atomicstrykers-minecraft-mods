@@ -294,3 +294,8 @@ a: setAccessible now true
 
 12.5
 + fixed issue where Ingame Ruin Parser could not parse negative coordinates in Command Blocks
+
+12.6
++ fixed several issues with special characters (Command Blocks, Mobspawners, Signs)
++ added logging and best-effort Entity Mapping to Mobspawner Entity IDs
++ improved ingame template parser for torches, buttons and signs, now setups delayed spawns correctly to fix "popping off"

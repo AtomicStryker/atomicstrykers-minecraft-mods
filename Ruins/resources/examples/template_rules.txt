@@ -219,8 +219,8 @@ preserve_plants=0
 # This spawns a Medium Chest (see above) 25% of the time.
 #
 # Example 6: rule1=0,50,MobSpawner:Villager
-# This spawns a Mob Spawner with Mob Id "Villager" 50% of the time
-#
+# This spawns a Mob Spawner with Entity Id "Villager" 50% of the time
+# Entity Id's are case sensitive! Mod added Mobs are allowed. Use a tool like Simply Hax to get correct Entity Id's
 #
 # Ruins 9.0 exposes minecraft ChestGenHook for your meddling. Usage:
 #

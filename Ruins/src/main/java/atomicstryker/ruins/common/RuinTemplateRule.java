@@ -1,10 +1,13 @@
 package atomicstryker.ruins.common;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Random;
 import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -48,71 +51,89 @@ public class RuinTemplateRule
         }
         condition = Integer.parseInt(blockRules[0]);
         chance = Integer.parseInt(blockRules[1]);
-        blockIDs = new Block[numblocks];
-        blockMDs = new int[numblocks];
-        blockStrings = new String[numblocks];
+
         String[] data;
-        for (int i = 0; i < numblocks; i++)
+        
+        // Command Block special case, contains basically any character that breaks this
+        if (blockRules[2].startsWith("CommandBlock:"))
         {
-            data = blockRules[i + 2].split("-");
-            if (data.length > 1) // has '-' in it, like "torch-5" or "planks-3"
+            blockIDs = new Block[1];
+            blockMDs = new int[1];
+            blockStrings = new String[1];
+            
+            blockIDs[0] = null;
+            blockMDs[0] = 0;
+            blockStrings[0] = rule.substring(rule.indexOf("C"));
+            debugPrinter.println("template " + owner.getName()+" contains Command Block: "+blockStrings[0]);
+        }
+        else
+        {
+            blockIDs = new Block[numblocks];
+            blockMDs = new int[numblocks];
+            blockStrings = new String[numblocks];
+            for (int i = 0; i < numblocks; i++)
             {
-                if (isNumber(data[0])) // torch-5
+                data = blockRules[i + 2].split("-");
+                if (data.length > 1) // has '-' in it, like "torch-5" or "planks-3"
                 {
-                    System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
-                    blockIDs[i] = Blocks.air;
-                    blockMDs[i] = Integer.parseInt(data[1]);
-                    blockStrings[i] = "";
+                    if (isNumber(data[0])) // torch-5
+                    {
+                        System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                        blockIDs[i] = Blocks.air;
+                        blockMDs[i] = 0;
+                        blockStrings[i] = "";
+                    }
+                    else
+                    // planks-3 or ChestGenHook:strongholdLibrary:5-2
+                    {
+                        blockIDs[i] = tryFindingBlockOfName(data[0]);
+                        if (blockIDs[i] == Blocks.air)
+                        {
+                            debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
+                            blockIDs[i] = null;
+                        }
+                        
+                        try
+                        {
+                            blockMDs[i] = Integer.parseInt(data[1]);
+                        }
+                        catch (NumberFormatException ne)
+                        {
+                            blockMDs[i] = 0;
+                        }
+                        
+                        blockStrings[i] = blockRules[i + 2];
+                    }
                 }
                 else
-                // planks-3 or ChestGenHook:strongholdLibrary:5-2
-                // special new case CommandBlock:/tp @p ~0 ~10 ~-1:@
+                // does not have metadata specified, aka "50"
                 {
-                    blockIDs[i] = tryFindingBlockOfName(data[0]);
-                    if (blockIDs[i] == Blocks.air)
+                    if (isNumber(blockRules[i + 2]))
                     {
-                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
-                        blockIDs[i] = null;
-                    }
-                    
-                    try
-                    {
-                        blockMDs[i] = Integer.parseInt(data[1]);
-                    }
-                    catch (NumberFormatException ne)
-                    {
+                        System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                        blockIDs[i] = Blocks.air;
                         blockMDs[i] = 0;
+                        blockStrings[i] = "";
                     }
-                    
+                    else
+                    {
+                        blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
+                        if (blockIDs[i] == Blocks.air)
+                        {
+                            debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
+                            blockIDs[i] = null;
+                        }
+                    }
+                    blockMDs[i] = 0;
                     blockStrings[i] = blockRules[i + 2];
                 }
-            }
-            else
-            // does not have metadata specified, aka "50"
-            {
-                if (isNumber(blockRules[i + 2]))
+                
+                if (excessiveDebugging)
                 {
-                    System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
-                    blockIDs[i] = Blocks.air;
+                    dpw.println("blockIDs["+i+"]: "+blockIDs[i]);
+                    dpw.println("blockMDs["+i+"]: "+blockMDs[i]);
+                    dpw.println("blockStrings["+i+"]: "+blockStrings[i]);
                 }
-                else
-                {
-                    blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
-                    if (blockIDs[i] == Blocks.air)
-                    {
-                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
-                        blockIDs[i] = null;
-                    }
-                }
-                blockMDs[i] = 0;
-                blockStrings[i] = blockRules[i + 2];
-            }
-            
-            if (excessiveDebugging)
-            {
-                dpw.println("blockIDs["+i+"]: "+blockIDs[i]);
-                dpw.println("blockMDs["+i+"]: "+blockMDs[i]);
-                dpw.println("blockStrings["+i+"]: "+blockStrings[i]);
             }
         }
     }
@@ -301,7 +322,7 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("MobSpawner:"))
         {
-            addCustomSpawner(world, x, y, z, dataString.split(":")[1]);
+            addCustomSpawner(world, x, y, z, dataString.substring(dataString.indexOf(":")+1));
         }
         else if (dataString.equals("UprightMobSpawn"))
         {
@@ -357,8 +378,8 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("CommandBlock:"))
         {
-            String[] s = dataString.split(":");
-            addCommandBlock(world, x, y, z, s[1], s[2]);
+            int lastIdx = dataString.lastIndexOf(":");
+            addCommandBlock(world, x, y, z, dataString.substring(13, lastIdx), dataString.substring(lastIdx+1, dataString.length()));
         }
         else if (dataString.startsWith("StandingSign:"))
         {
@@ -370,9 +391,12 @@ public class RuinTemplateRule
             }
             world.setBlock(x, y, z, Blocks.standing_sign, meta, 2);
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(x, y, z);
-            for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
+            if (tes != null && tes.signText != null)
             {
-                tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+                for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
+                {
+                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+                }
             }
         }
         else if (dataString.startsWith("WallSign:"))
@@ -385,9 +409,12 @@ public class RuinTemplateRule
             }
             world.setBlock(x, y, z, Blocks.wall_sign, meta, 3);
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(x, y, z);
-            for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
+            if (tes != null && tes.signText != null)
             {
-                tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+                for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
+                {
+                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+                }
             }
         }
         else if (dataString.startsWith("Skull:"))
@@ -431,12 +458,27 @@ public class RuinTemplateRule
         world.setBlock(x, y, z, Blocks.bedrock, 0, 2);
     }
 
+    @SuppressWarnings("unchecked")
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
         world.setBlock(x, y, z, Blocks.mob_spawner, 0, 2);
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getTileEntity(x, y, z);
         if (mobspawner != null)
         {
+            Entity test = EntityList.createEntityByName(id, world);
+            if (test == null)
+            {
+                System.err.println("Warning: Ruins Mod could not find an Entity ["+id+"] set for a Mob Spawner");
+                for (String entString : (Collection<String>)EntityList.classToStringMapping.values())
+                {
+                    if (entString.contains(id))
+                    {
+                        id = entString;
+                        System.err.println("Ruins Mod going close match ["+id+"]");
+                        break;
+                    }
+                }
+            }
             mobspawner.func_145881_a().setEntityName(id);
         }
     }
