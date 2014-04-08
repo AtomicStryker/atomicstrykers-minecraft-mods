@@ -1,3 +1,6 @@
+1.6.8
+- fixed InstantiationException preventing the Necromancy Graveyard from spawning in Villages
+
 1.6.7
 - added new configuration options for Nightcrawler and Isaac spawn rates
 - instead of being added to vanilla spawns, they now outright replace actual Zombies/Skeletons
