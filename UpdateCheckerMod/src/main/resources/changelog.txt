@@ -1,3 +1,6 @@
+1.1.5
+fixed multiple announcements for single mod bug
+
 1.1.4
 can now work for multiple mc versions at once from the same online versions file
 
