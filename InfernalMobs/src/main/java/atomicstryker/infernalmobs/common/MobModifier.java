@@ -149,6 +149,7 @@ public abstract class MobModifier
      */
     public boolean onDeath()
     {
+        attackTarget = null;
         if (nextMod != null)
         {
             return nextMod.onDeath();
@@ -174,13 +175,10 @@ public abstract class MobModifier
      */
     public void onSetAttackTarget(EntityLivingBase target)
     {
+        attackTarget = target;
         if (nextMod != null)
         {
             nextMod.onSetAttackTarget(target);
-        }
-        else if (target != null)
-        {
-            attackTarget = target;
         }
     }
 

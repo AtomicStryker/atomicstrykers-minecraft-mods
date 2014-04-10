@@ -53,6 +53,7 @@ import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
 import atomicstryker.infernalmobs.common.mods.MM_Weakness;
 import atomicstryker.infernalmobs.common.mods.MM_Webber;
 import atomicstryker.infernalmobs.common.mods.MM_Wither;
+import atomicstryker.infernalmobs.common.network.AirPacket;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.KnockBackPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
@@ -67,6 +68,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -137,7 +139,7 @@ public class InfernalMobsCore
         proxy.preInit();
         FMLCommonHandler.instance().bus().register(this);
 
-        networkHelper = new NetworkHelper("AS_IF", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class);
+        networkHelper = new NetworkHelper("AS_IF", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
     }
 
     @EventHandler
@@ -156,6 +158,13 @@ public class InfernalMobsCore
     {
         // lets use postInit so mod Blocks and Items are present
         loadConfig();
+    }
+    
+    @EventHandler
+    public void serverStarted(FMLServerStartingEvent evt)
+    {
+        evt.registerServerCommand(new InfernalCommandFindEntityClass());
+        evt.registerServerCommand(new InfernalCommandSpawnInfernal());
     }
 
     /**
@@ -757,6 +766,11 @@ public class InfernalMobsCore
     {
         networkHelper.sendPacketToServer(new HealthPacket(FMLClientHandler.instance().getClient().thePlayer.getGameProfile().getName(), mob
                 .getEntityId(), 0f, 0f));
+    }
+    
+    public void sendAirPacket(EntityPlayer player, int lastAir)
+    {
+        networkHelper.sendPacketToPlayer(new AirPacket(lastAir), player);
     }
 
     @SubscribeEvent

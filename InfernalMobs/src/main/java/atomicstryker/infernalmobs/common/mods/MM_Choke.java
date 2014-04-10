@@ -3,30 +3,38 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Choke extends MobModifier
 {
+    private EntityLivingBase lastTarget;
+    private int lastAir;
+    
     public MM_Choke(EntityLivingBase mob)
     {
+        super();
         this.modName = "Choke";
+        lastTarget = null;
+        lastAir = -999;
     }
 
     public MM_Choke(EntityLivingBase mob, MobModifier prevMod)
     {
-        this.modName = "Choke";
+        this(mob);
         this.nextMod = prevMod;
     }
-
-    EntityLivingBase lastTarget;
-    int lastAir;
-
+    
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
         if (getMobTarget() != lastTarget)
         {
             lastAir = -999;
+            if (lastTarget != null)
+            {
+                updateAir();
+            }
             lastTarget = getMobTarget();
         }
 
@@ -51,24 +59,46 @@ public class MM_Choke extends MobModifier
                         lastAir = 0;
                         lastTarget.attackEntityFrom(DamageSource.drown, 2.0F);
                     }
-                    lastTarget.setAir(lastAir);
+                    
+                    updateAir();
                 }
             }
         }
 
         return super.onUpdate(mob);
     }
-    
+
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getSourceOfDamage() == lastTarget && lastAir != -999)
+        if (lastTarget != null && source.getSourceOfDamage() == lastTarget && lastAir != -999)
         {
             lastAir += 60;
-            lastTarget.setAir(lastAir);
+            updateAir();
         }
         
         return damage;
+    }
+    
+    @Override
+    public boolean onDeath()
+    {
+        lastAir = -999;
+        if (lastTarget != null)
+        {
+            updateAir();
+            lastTarget = null;
+        }
+        return false;
+    }
+    
+    private void updateAir()
+    {
+        lastTarget.setAir(lastAir);
+        if (lastTarget instanceof EntityPlayer)
+        {
+            InfernalMobsCore.instance().sendAirPacket((EntityPlayer)lastTarget, lastAir);
+        }
     }
 
     @Override

@@ -1,7 +1,15 @@
 1.4.9
 - added new Modifier "Choke"
 - so you like breathing? Well, SUCKS TO BE YOU
-- attacks on the mob give momentary respiratory respite
+- attacks on the Choke mob give momentary respiratory respite
+- fixed what might have been a major issue on over-time mods not attacking when they should have
+- added 2 admin commands to infernal mobs
+- /feclass X returns all currently registered Entities containing X in their classname's
+- aka if you need an entity classname and only know its "Dark" something, /feclass Dark
+- /spawninfernal x y z ENTCLASS X spawns an Infernal Mob of class ENTCLASS at x,y,z with Modifiers X
+- example /spawninfernal -112 65 234 Zombie Bulwark Fiery Vengeance Choke Regen 1UP Sticky Rust Wither
+- your tears, they are delicious
+- this update has not been heavily tested yet. be abused at your own peril
 
 1.4.8
 - added new configuration variable maxOneShotDamage which limits how high infernally enhanced attacks 

@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.client;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -11,9 +12,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
@@ -37,6 +40,7 @@ public class InfernalMobsClient implements ISidedProxy
     private World lastWorld;
     private long nextPacketTime;
     private ConcurrentHashMap<EntityLivingBase, MobModifier> rareMobsClient;
+    private int airOverrideValue = -999;
     
     @Override
     public void preInit()
@@ -261,4 +265,39 @@ public class InfernalMobsClient implements ISidedProxy
         FMLClientHandler.instance().getClient().thePlayer.addVelocity(xv, yv, zv);
     }
 
+    @Override
+    public void onAirPacket(int air)
+    {
+        airOverrideValue = air;
+    }
+    
+    @SubscribeEvent
+    public void onTick(RenderGameOverlayEvent.Pre event)
+    {
+        if (event.type == RenderGameOverlayEvent.ElementType.AIR)
+        {
+            if (!mc.thePlayer.isInsideOfMaterial(Material.water) && airOverrideValue != -999)
+            {
+                final ScaledResolution res = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+                GL11.glEnable(GL11.GL_BLEND);
+                
+                int right_height = 39;
+                
+                final int left = res.getScaledWidth() / 2 + 91;
+                final int top = res.getScaledHeight() - right_height;
+                final int full = MathHelper.ceiling_double_int((double)(airOverrideValue - 2) * 10.0D / 300.0D);
+                final int partial = MathHelper.ceiling_double_int((double)airOverrideValue * 10.0D / 300.0D) - full;
+
+                for (int i = 0; i < full + partial; ++i)
+                {
+                    mc.ingameGUI.drawTexturedModalRect(left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
+                }
+                GL11.glDisable(GL11.GL_BLEND);
+            }
+            else
+            {
+                mc.thePlayer.setAir(airOverrideValue);
+            }
+        }
+    }
 }

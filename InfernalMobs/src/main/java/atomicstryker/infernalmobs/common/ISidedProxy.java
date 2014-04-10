@@ -19,4 +19,6 @@ public interface ISidedProxy
     public void onMobModsPacket(String stringData, int entID);
     
     public void onVelocityPacket(float xv, float yv, float zv);
+
+    public void onAirPacket(int air);
 }
