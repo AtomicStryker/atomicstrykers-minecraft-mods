@@ -69,6 +69,10 @@ translation.infernalmobs:prefix.deceiving= deceiving
 translation.infernalmobs:prefix.ensnaring= ensnaring 
 translation.infernalmobs:prefix.webbing= webbing 
 translation.infernalmobs:prefix.withering= withering 
+translation.infernalmobs:prefix.Sith Lord= Sith Lord 
+translation.infernalmobs:prefix.Dark Lord= Dark Lord 
+translation.infernalmobs:prefix.Darth= Darth 
+
 
 
 translation.infernalmobs:suffix.ofRecurrence= of Recurrence
@@ -141,6 +145,9 @@ translation.infernalmobs:suffix.theMutated= the Mutated
 translation.infernalmobs:suffix.theSpider= the Spider
 translation.infernalmobs:suffix.ofDarkSkulls= of Dark Skulls
 translation.infernalmobs:suffix.Doomskull= Doomskull
+translation.infernalmobs:suffix.ofBreathlessness= of Breathlessness
+translation.infernalmobs:suffix.theAnaerobic= the Anaerobic
+translation.infernalmobs:suffix.ofDeprivation= of Deprivation
 
 
 translation.infernalmobs:mod.1UP=1UP
@@ -148,6 +155,7 @@ translation.infernalmobs:mod.Alchemist=Alchemist
 translation.infernalmobs:mod.Berserk=Berserk
 translation.infernalmobs:mod.Blastoff=Blastoff
 translation.infernalmobs:mod.Bulwark=Bulwark
+translation.infernalmobs:mod.Choke=Choke
 translation.infernalmobs:mod.Cloaking=Cloaking
 translation.infernalmobs:mod.Darkness=Darkness
 translation.infernalmobs:mod.Ender=Ender

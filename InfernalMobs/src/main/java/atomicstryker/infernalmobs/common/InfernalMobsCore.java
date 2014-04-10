@@ -31,6 +31,7 @@ import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
 import atomicstryker.infernalmobs.common.mods.MM_Berserk;
 import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
 import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Choke;
 import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
 import atomicstryker.infernalmobs.common.mods.MM_Darkness;
 import atomicstryker.infernalmobs.common.mods.MM_Ender;
@@ -71,7 +72,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.8")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.9")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -171,6 +172,7 @@ public class InfernalMobsCore
         mobMods.add(MM_Berserk.class);
         mobMods.add(MM_Blastoff.class);
         mobMods.add(MM_Bulwark.class);
+        mobMods.add(MM_Choke.class);
         mobMods.add(MM_Cloaking.class);
         mobMods.add(MM_Darkness.class);
         mobMods.add(MM_Ender.class);
