@@ -1,0 +1,86 @@
+package atomicstryker.infernalmobs.common;
+
+import java.util.Collection;
+
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.EntityList;
+
+public class InfernalCommandFindEntityClass extends CommandBase
+{
+
+    @Override
+    public String getCommandName()
+    {
+        return "feclass";
+    }
+
+    @Override
+    public String getCommandUsage(ICommandSender sender)
+    {
+        return "/feclass X returns all currently registered Entities containing X in their classname's";
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void processCommand(ICommandSender sender, String[] args)
+    {
+        if (args.length == 0)
+        {
+            throw new WrongUsageException("Invalid Usage of FindEntityClass command", (Object)args);
+        }
+        else
+        {
+            String classname = args[0];
+            for (int i = 1; i < args.length; i++)
+            {
+                classname = classname + " " + args[i];
+            }
+            
+            String result = "Found Entity classes: ";
+            final Collection<String> classes = EntityList.classToStringMapping.values();
+            boolean found = false;
+            for (String entclass : classes)
+            {
+                if (entclass.toLowerCase().contains(classname.toLowerCase()))
+                {
+                    if (!found)
+                    {
+                        result += entclass;
+                        found = true;
+                    }
+                    else
+                    {
+                        result += (", " + entclass);
+                    }
+                }
+            }
+            
+            if (!found)
+            {
+                result += "Nothing found.";
+            }
+            
+            notifyAdmins(sender, result);
+        }
+    }
+    
+    @Override
+    public int getRequiredPermissionLevel()
+    {
+        return 2;
+    }
+
+    @Override
+    public int compareTo(Object o)
+    {
+        if (o instanceof ICommand)
+        {
+            return ((ICommand)o).getCommandName().compareTo(getCommandName());
+        }
+        return 0;
+    }
+
+}

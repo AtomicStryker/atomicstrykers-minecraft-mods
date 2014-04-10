@@ -88,4 +88,10 @@ public class InfernalMobsServer implements ISidedProxy
         // NOOP
     }
 
+    @Override
+    public void onAirPacket(int air)
+    {
+        // NOOP
+    }
+
 }
