@@ -17,7 +17,7 @@ public class RuinTemplate implements RuinIBuildable
 {
 
     private final String name;
-    private Block[] targets;
+    private Block[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 0, lbuffer = 0, cutIn = 0, cbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false, preservePlants = false, unique = false;
@@ -198,11 +198,27 @@ public class RuinTemplate implements RuinIBuildable
 
     public boolean isAcceptable(World world, int x, int y, int z)
     {
-        // checks if the square is acceptable for a ruin to be built upon
         Block id = world.getBlock(x, y, z);
-        for (int i = 0; i < targets.length; i++)
+        if (deniedSurfaces != null)
         {
-            if (id == targets[i])
+            for (Block b : deniedSurfaces)
+            {
+                if (id == b)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        if (acceptedSurfaces == null || acceptedSurfaces.length == 0)
+        {
+            return true;
+        }
+        
+        // checks if the square is acceptable for a ruin to be built upon
+        for (int i = 0; i < acceptedSurfaces.length; i++)
+        {
+            if (id == acceptedSurfaces[i])
             {
                 return true;
             }
@@ -610,28 +626,47 @@ public class RuinTemplate implements RuinIBuildable
             {
                 if (line.startsWith("acceptable_target_blocks"))
                 {
-                    HashSet<Block> acceptables = new HashSet<Block>();
                     String[] check = line.split("=");
-                    check = check[1].split(",");
-                    if (check.length < 1)
+                    if (check.length > 1)
                     {
-                        throw new Exception("No targets specified!");
-                    }
-                    
-                    Block b;
-                    for (int x = 0; x < check.length; x++)
-                    {
-                        b = GameData.getBlockRegistry().getObject(check[x]);
-                        if (b != Blocks.air)
+                        check = check[1].split(",");
+                        final HashSet<Block> acceptables = new HashSet<Block>();
+                        Block b;
+                        for (int x = 0; x < check.length; x++)
                         {
-                            acceptables.add(b);
+                            b = GameData.getBlockRegistry().getObject(check[x]);
+                            if (b != Blocks.air)
+                            {
+                                acceptables.add(b);
+                            }
                         }
+                        
+                        acceptedSurfaces = new Block[acceptables.size()];
+                        acceptedSurfaces = acceptables.toArray(acceptedSurfaces);
                     }
-                    
-                    targets = new Block[acceptables.size()];
-                    targets = acceptables.toArray(targets);
                 }
-                if (line.startsWith("dimensions"))
+                else if (line.startsWith("unacceptable_target_blocks"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        check = check[1].split(",");
+                        final HashSet<Block> inacceptables = new HashSet<Block>();
+                        Block b;
+                        for (int x = 0; x < check.length; x++)
+                        {
+                            b = GameData.getBlockRegistry().getObject(check[x]);
+                            if (b != Blocks.air)
+                            {
+                                inacceptables.add(b);
+                            }
+                        }
+                        
+                        deniedSurfaces = new Block[inacceptables.size()];
+                        deniedSurfaces = inacceptables.toArray(deniedSurfaces);
+                    }
+                }
+                else if (line.startsWith("dimensions"))
                 {
                     String[] check = line.split("=");
                     check = check[1].split(",");
@@ -721,7 +756,6 @@ public class RuinTemplate implements RuinIBuildable
                         preservePlants = true;
                     }
                 }
-
                 else if (line.startsWith("random_height_offset"))
                 {
                     /*

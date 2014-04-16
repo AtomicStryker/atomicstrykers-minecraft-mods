@@ -299,3 +299,9 @@ a: setAccessible now true
 + fixed several issues with special characters (Command Blocks, Mobspawners, Signs)
 + added logging and best-effort Entity Mapping to Mobspawner Entity IDs
 + improved ingame template parser for torches, buttons and signs, now setups delayed spawns correctly to fix "popping off"
+
+12.7
++ made acceptable_target_blocks optional, can also be left empty
++ such a template will accept any surface
++ also added optional unacceptable_target_blocks, works as complement to acceptable_target_blocks
++ changed template parser default to wildcard acceptable_target_blocks and just add water and lava to unacceptable_target_blocks

@@ -61,7 +61,12 @@
 # acceptable_target_blocks=<blockID>,<blockID>,<etc...>
 # This is a comma-delimited list of block IDs that this template can spawn on.
 # Only the top layer of blocks where the template will spawn are checked.
-# Defaults to no acceptable blocks.
+# Optional line. Defaults to accept any block.
+#
+# unacceptable_target_blocks=<blockID>,<blockID>,<etc...>
+# This is a comma-delimited list of block IDs that this template can NOT spawn on.
+# Only the top layer of blocks where the template will spawn are checked.
+# Optional line. Defaults to accept any block.
 #
 # dimensions=<height>,<width>,<length>
 # Defines how big this template is.  Height is the number         n
@@ -184,6 +189,8 @@ preserve_plants=0
 # the rotation of the site.  For a normal, north-facing site, the block rules
 # are processed for each line from the left and from the bottom template to the
 # top.
+#
+# DO NOT CHAIN CONDITIONS. That results in undefined behaviour.
 #
 # <chance to appear>
 # The chance that this block will appear, out of 100, depending on whether the

@@ -383,7 +383,8 @@ public class World2TemplateParser extends Thread
             
             pw.println("weight=1");
             pw.println("embed_into_distance=" + yPadding);
-            pw.println("acceptable_target_blocks=stone,grass,dirt,sand,gravel,snow_layer,clay");
+            pw.println("acceptable_target_blocks=");
+            pw.println("unacceptable_target_blocks=flowing_water,water,flowing_lava,lava");
             pw.println("dimensions=" + layerData.size() + "," + xLength + "," + zLength);
             pw.println("allowable_overhang=0");
             pw.println("max_cut_in=2");

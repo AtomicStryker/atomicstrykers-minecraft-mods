@@ -192,8 +192,8 @@ public class RuinGenerator
 
     private void createBuilding(World world, Random random, int x, int z, int minDistance, boolean Nether)
     {
-        int rotate = random.nextInt(4);
-        BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
+        final int rotate = random.nextInt(4);
+        final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
         int biomeID = biome.biomeID;
         int nextMinDistance = 0;
 
