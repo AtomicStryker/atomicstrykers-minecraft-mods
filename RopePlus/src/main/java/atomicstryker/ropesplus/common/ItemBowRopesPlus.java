@@ -98,7 +98,7 @@ public class ItemBowRopesPlus extends ItemBow
                 
                 if (!player.capabilities.isCreativeMode)
                 {
-                    player.inventory.consumeInventoryItem(mainInv[arrowSlot].getItem());
+                    player.inventory.consumeInventoryItem(arrowCandidate);
                     player.inventory.inventoryChanged = true;
                 }
                 
