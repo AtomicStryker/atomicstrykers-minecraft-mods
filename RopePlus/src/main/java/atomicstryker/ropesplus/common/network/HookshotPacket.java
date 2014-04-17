@@ -42,7 +42,7 @@ public class HookshotPacket implements IPacket
         {
             RopesPlusCore.proxy.setHasClientRopeOut(false);
             RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-            RopesPlusCore.proxy.setShouldHookShotPull(0f);
+            RopesPlusCore.proxy.setShouldRopeChangeState(0f);
             
             RopesPlusClient.onReleasedHookshot();
         }
@@ -50,7 +50,7 @@ public class HookshotPacket implements IPacket
         {
             RopesPlusCore.proxy.setHasClientRopeOut(true);
             RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
-            RopesPlusCore.proxy.setShouldHookShotPull(0f);
+            RopesPlusCore.proxy.setShouldRopeChangeState(0f);
             RopesPlusClient.onAffixedToHookShotRope(ropeEntID);
             RopesPlusClient.onHookshotHit(x, y, z);
         }

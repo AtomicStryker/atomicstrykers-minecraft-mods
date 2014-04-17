@@ -62,13 +62,13 @@ public class ClientProxy implements IProxy
     }
     
     @Override
-    public float getShouldHookShotPull()
+    public float getShouldRopeChangeState()
     {
         return pulledByHookShot;
     }
 
     @Override
-    public void setShouldHookShotPull(float f)
+    public void setShouldRopeChangeState(float f)
     {
         pulledByHookShot = f;
     }

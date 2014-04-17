@@ -30,13 +30,13 @@ public class CommonProxy implements IProxy
     }
     
     @Override
-    public float getShouldHookShotPull()
+    public float getShouldRopeChangeState()
     {
         return 0f;
     }
     
     @Override
-    public void setShouldHookShotPull(float f)
+    public void setShouldRopeChangeState(float f)
     {
         // NOOP
     }
