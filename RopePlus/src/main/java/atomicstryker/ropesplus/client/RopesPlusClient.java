@@ -328,11 +328,11 @@ public class RopesPlusClient
                 }
             }
 
-            if (RopesPlusCore.proxy.getShouldHookShotPull() >= 0f)
+            if (RopesPlusCore.proxy.getShouldRopeChangeState() >= 0f)
             {
                 if (mc.gameSettings.keyBindSneak.getIsKeyPressed())
                 {
-                    RopesPlusCore.proxy.setShouldHookShotPull(RopesPlusCore.proxy.getShouldHookShotPull() + 0.33f);
+                    RopesPlusCore.proxy.setShouldRopeChangeState(0.33f);
                 }
             }
 

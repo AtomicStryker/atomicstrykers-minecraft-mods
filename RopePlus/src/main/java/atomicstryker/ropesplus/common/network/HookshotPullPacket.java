@@ -41,7 +41,7 @@ public class HookshotPullPacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
-            RopesPlusCore.proxy.setShouldHookShotPull(-1f);
+            RopesPlusCore.proxy.setShouldRopeChangeState(-1f);
         }
         else
         {

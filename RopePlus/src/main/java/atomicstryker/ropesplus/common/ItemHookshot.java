@@ -65,7 +65,7 @@ public class ItemHookshot extends Item
                     RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
                 }
 
-                RopesPlusCore.proxy.setShouldHookShotPull(0f);
+                RopesPlusCore.proxy.setShouldRopeChangeState(0f);
                 entityplayer.swingItem();
             }
             else

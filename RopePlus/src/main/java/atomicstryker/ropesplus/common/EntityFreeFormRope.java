@@ -18,6 +18,12 @@ public class EntityFreeFormRope extends Entity
      */
     private final double SEGMENT_LENGTH = 0.5D;
     
+    private final Vec3 swingStartPoint;
+    private final Vec3 anchorLoc;
+    private final Vec3 playerLoc;
+    private final Vec3 playerToHookVec;
+    private final Vec3 rightVec;
+    
     private boolean hangsTaut;
     private EntityPlayer shooter;
     private double maxLength;
@@ -25,9 +31,9 @@ public class EntityFreeFormRope extends Entity
     private long nextSoundTime;
     private boolean jungleCall;
     
-    public EntityFreeFormRope(World par1World)
+    public EntityFreeFormRope(World world)
     {
-        super(par1World);
+        super(world);
         ignoreFrustumCheck = true;
         hangsTaut = true;
         shooter = null;
@@ -35,6 +41,11 @@ public class EntityFreeFormRope extends Entity
         inertiaSpeed = -1;
         nextSoundTime = 0;
         jungleCall = false;
+        swingStartPoint = Vec3.createVectorHelper(0, 0, 0);
+        anchorLoc = Vec3.createVectorHelper(0, 0, 0);
+        playerLoc = Vec3.createVectorHelper(0, 0, 0);
+        playerToHookVec = Vec3.createVectorHelper(0, 0, 0);
+        rightVec = Vec3.createVectorHelper(0, 0, 0);
     }
     
     @Override
@@ -181,7 +192,7 @@ public class EntityFreeFormRope extends Entity
         {
             RopesPlusCore.proxy.setHasClientRopeOut(false);
             RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-            RopesPlusCore.proxy.setShouldHookShotPull(0f);
+            RopesPlusCore.proxy.setShouldRopeChangeState(0f);
             RopesPlusCore.instance.setPlayerRope(shooter, null);
         }
         
@@ -211,7 +222,7 @@ public class EntityFreeFormRope extends Entity
                 setDead();
                 RopesPlusCore.proxy.setHasClientRopeOut(false);
                 RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-                RopesPlusCore.proxy.setShouldHookShotPull(0f);
+                RopesPlusCore.proxy.setShouldRopeChangeState(0f);
                 return;
             }
             
@@ -227,14 +238,14 @@ public class EntityFreeFormRope extends Entity
                     return;
                 }
 
-                if (RopesPlusCore.proxy.getShouldHookShotPull() < 0f)
+                if (RopesPlusCore.proxy.getShouldRopeChangeState() < 0f)
                 {
                     double distToEnd = shooter.getDistance(getEndX(), getEndY(), getEndZ());
                     if (distToEnd < 3D)
                     {
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
-                        RopesPlusCore.proxy.setShouldHookShotPull(0f);
+                        RopesPlusCore.proxy.setShouldRopeChangeState(0f);
                         RopesPlusCore.instance.networkHelper.sendPacketToServer(new HookshotPullPacket(shooter.getCommandSenderName(), getEntityId()));
                     }
                     else
@@ -247,67 +258,98 @@ public class EntityFreeFormRope extends Entity
                 }
                 else
                 {
-                    maxLength = Math.min(Settings_RopePlus.maxHookShotRopeLength, maxLength+RopesPlusCore.proxy.getShouldHookShotPull());
-                    RopesPlusCore.proxy.setShouldHookShotPull(0f); // maxLengh extended, reset state
-                    if (dist > maxLength)
+                    maxLength = Math.min(Settings_RopePlus.maxHookShotRopeLength, maxLength+RopesPlusCore.proxy.getShouldRopeChangeState());
+                    RopesPlusCore.proxy.setShouldRopeChangeState(0f); // maxLengh extended if applicable, reset state
+                    if (inertiaSpeed < 0 && !shooter.isCollidedVertically && shooter.motionY < -0.1)
                     {
-                        if (inertiaSpeed < 0)
+                        dist -= 1d;
+                        maxLength = dist;
+                    }
+                    
+                    if (dist >= maxLength)
+                    {
+                        if (shooter.isCollidedVertically)
                         {
-                            inertiaSpeed = getEntitySpeed(shooter);
+                            // hit ground, reset
+                            inertiaSpeed = -1;
+                        }
+                        else
+                        {
+                            final double heightFromAnchor = getEndY()-shooter.posY;
                             
-                            if (maxLength > 10 && getEndY()-shooter.posY < 5D)
+                            if (inertiaSpeed < 0)
                             {
-                                double adder = maxLength-10D;
-                                while (adder > 0)
+                                inertiaSpeed = getShooterSpeed() + (maxLength-heightFromAnchor)/10;
+                                
+                                swingStartPoint.xCoord = shooter.posX;
+                                swingStartPoint.yCoord = shooter.posY;
+                                swingStartPoint.zCoord = shooter.posZ;
+                                
+                                anchorLoc.xCoord = getEndX();
+                                anchorLoc.yCoord = getEndY();
+                                anchorLoc.zCoord = getEndZ();
+                            }
+                            
+                            if (System.currentTimeMillis() > nextSoundTime)
+                            {
+                                nextSoundTime = System.currentTimeMillis() + 3000l;
+                                
+                                if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
                                 {
-                                    inertiaSpeed *= 1.4;
-                                    adder -= 2D;
+                                    jungleCall = true;
+                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:jungleking"));
+                                }
+                                else
+                                {
+                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:ropetension"));
                                 }
                             }
-                        }
-                        
-                        if (System.currentTimeMillis() > nextSoundTime)
-                        {
-                            nextSoundTime = System.currentTimeMillis() + 3000l;
                             
-                            if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
+                            playerToHookVec.xCoord = getEndX()-shooter.posX;
+                            playerToHookVec.yCoord = heightFromAnchor;
+                            playerToHookVec.zCoord = getEndZ()-shooter.posZ;
+                            
+                            playerLoc.xCoord = shooter.posX;
+                            playerLoc.yCoord = shooter.posY;
+                            playerLoc.zCoord = shooter.posZ;
+                            
+                            rightVec.xCoord = playerToHookVec.xCoord;
+                            rightVec.zCoord = playerToHookVec.zCoord;
+                            
+                            double relativeEnergy = inertiaSpeed;
+                            
+                            boolean downSwing = distXZManhattan(swingStartPoint, playerLoc) < distXZManhattan(swingStartPoint, anchorLoc);
+                            // down swing
+                            if (downSwing)
                             {
-                                jungleCall = true;
-                                RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:jungleking"));
+                                rightVec.rotateAroundY(-90f);
                             }
+                            // up swing
                             else
                             {
-                                RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:ropetension"));
+                                rightVec.rotateAroundY(90f);
+                                
+                                // below anchor, apply potential energy reduction
+                                if (heightFromAnchor > 0)
+                                {
+                                    relativeEnergy *= heightFromAnchor/getRopeAbsLength();
+                                }
                             }
+                            
+                            final Vec3 tangent = playerToHookVec.crossProduct(rightVec).normalize();
+                            
+                            shooter.motionX = tangent.xCoord*relativeEnergy;
+                            shooter.motionY = tangent.yCoord*relativeEnergy;
+                            shooter.motionZ = tangent.zCoord*relativeEnergy;
+                            
+                            if (!downSwing && getShooterSpeed() < 0.1d)
+                            {
+                                // reset swing! start new one
+                                inertiaSpeed = -1;
+                            }
+                            
+                            shooter.fallDistance = 0;
                         }
-                        
-                        /*
-                         * If someone can write a beautiful smooth orthogonal swing curve, by all means do
-                         */
-                        
-                        Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
-                        playerToHookVec = playerToHookVec.normalize();
-                        Vec3 mergedVec = playerToHookVec.addVector(shooter.motionX, shooter.motionY, shooter.motionZ);
-                        mergedVec = mergedVec.normalize();
-                        Vec3 playerFacingVec = shooter.getLookVec();
-                        mergedVec.addVector(playerFacingVec.xCoord+shooter.motionX, playerFacingVec.yCoord, playerFacingVec.zCoord+shooter.motionZ);
-                        mergedVec = mergedVec.normalize();
-                        shooter.addVelocity(-shooter.motionX*0.5, -shooter.motionY*0.5, -shooter.motionZ*0.5);
-                        shooter.addVelocity(mergedVec.xCoord*0.5, mergedVec.yCoord*0.5, mergedVec.zCoord*0.5);
-
-                        while (getEntitySpeed(shooter) < inertiaSpeed)
-                        {
-                            shooter.motionX *= 1.1;
-                            shooter.motionY *= 1.1;
-                            shooter.motionZ *= 1.1;
-                        }
-                        
-                        /*
-                        Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
-                        Vec3 pthFlat = Vec3.createVectorHelper(playerToHookVec.xCoord, 0, playerToHookVec.zCoord);
-                        pthFlat.rotateAroundY(90f);
-                        Vec3 tang = playerToHookVec.crossProduct(pthFlat);
-                        */
                     }
                 }
             }
@@ -316,6 +358,13 @@ public class EntityFreeFormRope extends Entity
                 shooter.fallDistance = 0;
             }
         }
+    }
+    
+    private double distXZManhattan(Vec3 a, Vec3 b)
+    {
+        final double xd = a.xCoord-b.xCoord;
+        final double zd = a.zCoord-b.zCoord;
+        return xd*xd + zd*zd;
     }
     
     private boolean isTargetedBlockValid()
@@ -337,9 +386,9 @@ public class EntityFreeFormRope extends Entity
         return true;
     }
 
-    private double getEntitySpeed(Entity ent)
+    private double getShooterSpeed()
     {
-        return Math.sqrt(ent.motionX*ent.motionX+ent.motionY*ent.motionY+ent.motionZ*ent.motionZ);
+        return Math.sqrt(shooter.motionX*shooter.motionX+shooter.motionY*shooter.motionY+shooter.motionZ*shooter.motionZ);
     }
     
     /**

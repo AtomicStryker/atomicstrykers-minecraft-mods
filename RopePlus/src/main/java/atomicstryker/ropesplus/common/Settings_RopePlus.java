@@ -6,7 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 
 public class Settings_RopePlus
 {
-    public static int maxHookShotRopeLength;
+    public static double maxHookShotRopeLength;
     public static boolean disableBowHook = false;
 	
 	public static Configuration config;
@@ -17,7 +17,7 @@ public class Settings_RopePlus
 		config = new Configuration(suggested);
 		config.load();
 		
-		maxHookShotRopeLength = config.get(Configuration.CATEGORY_GENERAL, "max HookShot Rope Length", 50).getInt();
+		maxHookShotRopeLength = config.get(Configuration.CATEGORY_GENERAL, "max HookShot Rope Length", 50).getDouble(50d);
 		disableBowHook = config.get(Configuration.CATEGORY_GENERAL, "disableBowHook", false, "Set this true if you intend to use a conflicting archery mod").getBoolean(false);
 		
 		config.save();
