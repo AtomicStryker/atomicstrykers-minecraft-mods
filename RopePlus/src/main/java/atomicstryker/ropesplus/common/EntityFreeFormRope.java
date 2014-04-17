@@ -301,7 +301,13 @@ public class EntityFreeFormRope extends Entity
                             shooter.motionY *= 1.1;
                             shooter.motionZ *= 1.1;
                         }
-
+                        
+                        /*
+                        Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
+                        Vec3 pthFlat = Vec3.createVectorHelper(playerToHookVec.xCoord, 0, playerToHookVec.zCoord);
+                        pthFlat.rotateAroundY(90f);
+                        Vec3 tang = playerToHookVec.crossProduct(pthFlat);
+                        */
                     }
                 }
             }
@@ -382,7 +388,7 @@ public class EntityFreeFormRope extends Entity
         posZ = getStartZ()+(getEndZ()-getStartZ());
     }
     
-    private double getRopeAbsLength()
+    public double getRopeAbsLength()
     {
         return Math.sqrt((getEndX()-getStartX())*(getEndX()-getStartX()) + (getEndY()-getStartY())*(getEndY()-getStartY()) + (getEndZ()-getStartZ())*(getEndZ()-getStartZ()));
     }

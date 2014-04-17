@@ -45,7 +45,6 @@ public class RopesPlusClient
 
     private static EntityFreeFormRope onZipLine;
     private static float lastZipLineLength;
-    private static long timeNextZippingUpdate;
     private static int zipTicker;
     private static boolean wasZiplining;
 
@@ -74,7 +73,6 @@ public class RopesPlusClient
         countDownToArrowCount = 100;
         onZipLine = null;
         lastZipLineLength = 0;
-        timeNextZippingUpdate = 0;
         keysBlockedUntil = 0;
         toggleEnabled = true;
 
@@ -346,14 +344,13 @@ public class RopesPlusClient
                             .getEntityId(), lastZipLineLength));
                     onZipLine = null;
                 }
-                else if (System.currentTimeMillis() > timeNextZippingUpdate)
+                else
                 {
                     double startCoords[] = onZipLine.getCoordsAtRelativeLength(lastZipLineLength);
                     localPlayer.setPosition(startCoords[0], startCoords[1] - 0.2D, startCoords[2]);
                     localPlayer.setVelocity(0, 0, 0);
                     localPlayer.fallDistance = 0f;
-                    lastZipLineLength += 0.025;
-                    timeNextZippingUpdate = System.currentTimeMillis() + 50L;
+                    lastZipLineLength += 0.015;
 
                     if (++zipTicker == 10)
                     {
@@ -392,7 +389,6 @@ public class RopesPlusClient
             {
                 onZipLine = (EntityFreeFormRope) ent;
                 lastZipLineLength = 0;
-                timeNextZippingUpdate = System.currentTimeMillis();
                 wasZiplining = true;
             }
         }
