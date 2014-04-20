@@ -329,7 +329,7 @@ public class RuinsMod
         pw.println("#");
         pw.println("# specific_<biome name> is the chance, out of 100, that a ruin spawning in the");
         pw.println("#     specified biome will be chosen from the biome specific folder.  If not,");
-        pw.println("#     it will choose a generic ruin from the root ruin folder.");
+        pw.println("#     it will choose a generic ruin from the folder of the same name.");
         pw.println();
         pw.println("tries_per_chunk_normal=6");
         pw.println("chance_to_spawn_normal=10");
