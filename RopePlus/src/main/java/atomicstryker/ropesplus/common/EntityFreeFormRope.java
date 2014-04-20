@@ -338,9 +338,23 @@ public class EntityFreeFormRope extends Entity
                             
                             final Vec3 tangent = playerToHookVec.crossProduct(rightVec).normalize();
                             
+                            // option #1, just set ideal scaled motion
                             shooter.motionX = tangent.xCoord*relativeEnergy;
                             shooter.motionY = tangent.yCoord*relativeEnergy;
                             shooter.motionZ = tangent.zCoord*relativeEnergy;
+                            
+                            /*
+                            // option #2, merge motions, normalize, scale
+                            // buggy.
+                            tangent.xCoord += shooter.motionX;
+                            tangent.yCoord += shooter.motionY;
+                            tangent.zCoord += shooter.motionZ;
+                            tangent.normalize();
+                            shooter.motionX = tangent.xCoord * relativeEnergy;
+                            shooter.motionY = tangent.yCoord * relativeEnergy;
+                            shooter.motionZ = tangent.zCoord * relativeEnergy;
+                            */
+                            
                             
                             if (!downSwing && getShooterSpeed() < 0.1d)
                             {
