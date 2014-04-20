@@ -1,3 +1,8 @@
+RopesPlus 1.5.9
+- reworked Hookshot Ropeswing from horrible makeshift hacky solution
+  to theoretically perfect orthogonal curve which is still kinda buggy but looks nicer
+- changed zipline descent to be smoother
+
 RopesPlus 1.5.8
 - fixed bug where arrows did 0 damage
 - fixed bug where the vanilla arrow (+recipe) was overwritten
