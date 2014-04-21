@@ -79,7 +79,7 @@ public class ItemHookshot extends Item
                         double guessX = entityplayer.prevPosX + (entityplayer.posX - entityplayer.prevPosX);
                         double guessY = entityplayer.prevPosY + (entityplayer.posY - entityplayer.prevPosY) + 1.62D - (double) entityplayer.yOffset;
                         double guessZ = entityplayer.prevPosZ + (entityplayer.posZ - entityplayer.prevPosZ);
-                        Vec3 playerVec = world.getWorldVec3Pool().getVecFromPool(guessX, guessY, guessZ);
+                        final Vec3 playerVec = world.getWorldVec3Pool().getVecFromPool(guessX, guessY, guessZ);
                         float yawCos = MathHelper.cos(-guessYaw * 0.017453292F - (float) Math.PI);
                         float yawSin = MathHelper.sin(-guessYaw * 0.017453292F - (float) Math.PI);
                         float rotCos = -MathHelper.cos(-guessRot * 0.017453292F);
@@ -87,9 +87,9 @@ public class ItemHookshot extends Item
                         float viewX = yawSin * rotCos;
                         float viewZ = yawCos * rotCos;
                         double traceDistance = Settings_RopePlus.maxHookShotRopeLength;
-                        Vec3 aimVec =
+                        final Vec3 aimVec =
                                 playerVec.addVector((double) viewX * traceDistance, (double) viewY * traceDistance, (double) viewZ * traceDistance);
-                        MovingObjectPosition target = world.func_147447_a(playerVec, aimVec, false, false, false);
+                        final MovingObjectPosition target = world.func_147447_a(playerVec, aimVec, false, false, false);
 
                         if (target != null)
                         {

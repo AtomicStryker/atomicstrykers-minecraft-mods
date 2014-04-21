@@ -21,7 +21,7 @@ public class EntityFreeFormRope extends Entity
     private final Vec3 swingStartPoint;
     private final Vec3 anchorLoc;
     private final Vec3 playerLoc;
-    private final Vec3 playerToHookVec;
+    private final Vec3 playerToAnchorVec;
     private final Vec3 rightVec;
     
     private boolean hangsTaut;
@@ -44,7 +44,7 @@ public class EntityFreeFormRope extends Entity
         swingStartPoint = Vec3.createVectorHelper(0, 0, 0);
         anchorLoc = Vec3.createVectorHelper(0, 0, 0);
         playerLoc = Vec3.createVectorHelper(0, 0, 0);
-        playerToHookVec = Vec3.createVectorHelper(0, 0, 0);
+        playerToAnchorVec = Vec3.createVectorHelper(0, 0, 0);
         rightVec = Vec3.createVectorHelper(0, 0, 0);
     }
     
@@ -227,12 +227,15 @@ public class EntityFreeFormRope extends Entity
             }
             
             setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
-            double dist = getDistanceToEntity(shooter);
+            double dist = shooter.getDistance(getEndX(), getEndY(), getEndZ());
 
             if (worldObj.isRemote)
             {
                 if (RopesPlusCore.proxy.getShouldHookShotDisconnect())
                 {
+                    // add a jump motion
+                    shooter.playSound("random.pop", 1f, 1f);
+                    shooter.motionY += 0.42;
                     shooter = null;
                     RopesPlusCore.proxy.setShouldHookShotDisconnect(false);
                     return;
@@ -240,8 +243,7 @@ public class EntityFreeFormRope extends Entity
 
                 if (RopesPlusCore.proxy.getShouldRopeChangeState() < 0f)
                 {
-                    double distToEnd = shooter.getDistance(getEndX(), getEndY(), getEndZ());
-                    if (distToEnd < 3D)
+                    if (dist < 3D)
                     {
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
@@ -305,16 +307,23 @@ public class EntityFreeFormRope extends Entity
                                 }
                             }
                             
-                            playerToHookVec.xCoord = getEndX()-shooter.posX;
-                            playerToHookVec.yCoord = heightFromAnchor;
-                            playerToHookVec.zCoord = getEndZ()-shooter.posZ;
+                            // shorten the rope back to max length, set swinger position accordingly
+                            final Vec3 anchorToPlayerVec = worldObj.getWorldVec3Pool().getVecFromPool(shooter.posX-getEndX(), shooter.posY-getEndY(), shooter.posZ-getEndZ()).normalize();
+                            anchorToPlayerVec.xCoord *= maxLength;
+                            anchorToPlayerVec.yCoord *= maxLength;
+                            anchorToPlayerVec.zCoord *= maxLength;
+                            shooter.setPosition(anchorToPlayerVec.xCoord+getEndX(), anchorToPlayerVec.yCoord+getEndY(), anchorToPlayerVec.zCoord+getEndZ());
+                            
+                            playerToAnchorVec.xCoord = getEndX()-shooter.posX;
+                            playerToAnchorVec.yCoord = heightFromAnchor;
+                            playerToAnchorVec.zCoord = getEndZ()-shooter.posZ;
                             
                             playerLoc.xCoord = shooter.posX;
                             playerLoc.yCoord = shooter.posY;
                             playerLoc.zCoord = shooter.posZ;
                             
-                            rightVec.xCoord = playerToHookVec.xCoord;
-                            rightVec.zCoord = playerToHookVec.zCoord;
+                            rightVec.xCoord = playerToAnchorVec.xCoord;
+                            rightVec.zCoord = playerToAnchorVec.zCoord;
                             
                             double relativeEnergy = inertiaSpeed;
                             
@@ -328,15 +337,15 @@ public class EntityFreeFormRope extends Entity
                             else
                             {
                                 rightVec.rotateAroundY(90f);
-                                
-                                // below anchor, apply potential energy reduction
-                                if (heightFromAnchor > 0)
-                                {
-                                    relativeEnergy *= heightFromAnchor/getRopeAbsLength();
-                                }
                             }
                             
-                            final Vec3 tangent = playerToHookVec.crossProduct(rightVec).normalize();
+                            // below anchor, apply potential energy reduction
+                            if (heightFromAnchor > 0)
+                            {
+                                relativeEnergy *= heightFromAnchor/getRopeAbsLength();
+                            }
+                            
+                            final Vec3 tangent = playerToAnchorVec.crossProduct(rightVec).normalize();
                             
                             // option #1, just set ideal scaled motion
                             shooter.motionX = tangent.xCoord*relativeEnergy;
@@ -355,8 +364,7 @@ public class EntityFreeFormRope extends Entity
                             shooter.motionZ = tangent.zCoord * relativeEnergy;
                             */
                             
-                            
-                            if (!downSwing && getShooterSpeed() < 0.1d)
+                            if (!downSwing && relativeEnergy < 0.15)
                             {
                                 // reset swing! start new one
                                 inertiaSpeed = -1;
