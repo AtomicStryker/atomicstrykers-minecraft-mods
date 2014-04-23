@@ -20,9 +20,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -32,7 +34,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.6", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.7", dependencies = "required-after:DynamicLights")
 public class DroppedItemsLightSource
 {
     private Minecraft mcinstance;
@@ -41,6 +43,7 @@ public class DroppedItemsLightSource
     private ArrayList<EntityItemAdapter> trackedItems;
     private Thread thread;
     private boolean threadRunning;
+    private Configuration config;
     
     private ItemConfigHelper itemsMap;
     private ItemConfigHelper notWaterProofItems;
@@ -48,7 +51,22 @@ public class DroppedItemsLightSource
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
+        config = new Configuration(evt.getSuggestedConfigurationFile());
+        FMLCommonHandler.instance().bus().register(this);
+    }
+    
+    @EventHandler
+    public void load(FMLInitializationEvent evt)
+    {
+        mcinstance = FMLClientHandler.instance().getClient();
+        nextUpdate = System.currentTimeMillis();
+        trackedItems = new ArrayList<EntityItemAdapter>();
+        threadRunning = false;
+    }
+    
+    @EventHandler
+    public void modsLoaded(FMLPostInitializationEvent evt)
+    {
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
@@ -64,17 +82,6 @@ public class DroppedItemsLightSource
         notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
         
         config.save();
-        
-        FMLCommonHandler.instance().bus().register(this);
-    }
-    
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        mcinstance = FMLClientHandler.instance().getClient();
-        nextUpdate = System.currentTimeMillis();
-        trackedItems = new ArrayList<EntityItemAdapter>();
-        threadRunning = false;
     }
     
     @SuppressWarnings("unchecked")
@@ -99,7 +106,7 @@ public class DroppedItemsLightSource
     {
         if (stack != null)
         {
-            int r = itemsMap.retrieveValue(DynamicLights.getShortItemName(stack), stack.getItemDamage());
+            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
             return r < 0 ? 0 : r;
         }
         return 0;
@@ -172,7 +179,7 @@ public class DroppedItemsLightSource
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.retrieveValue(DynamicLights.getShortItemName(eI.getEntityItem()), eI.getEntityItem().getItemDamage()) == 1;
+            notWaterProof = notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(eI.getEntityItem()), eI.getEntityItem().getItemDamage()) == 1;
         }
         
         /**

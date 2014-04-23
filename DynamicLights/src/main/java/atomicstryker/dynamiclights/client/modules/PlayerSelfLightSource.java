@@ -16,9 +16,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -28,7 +30,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.2", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -37,11 +39,26 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     private boolean enabled;
     private ItemConfigHelper itemsMap;
     private ItemConfigHelper notWaterProofItems;
+    private Configuration config;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
+        config = new Configuration(evt.getSuggestedConfigurationFile());        
+        FMLCommonHandler.instance().bus().register(this);
+    }
+    
+    @EventHandler
+    public void load(FMLInitializationEvent evt)
+    {
+        lightLevel = 0;
+        enabled = false;
+        lastWorld = null;
+    }
+    
+    @EventHandler
+    public void modsLoaded(FMLPostInitializationEvent evt)
+    {
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,golden_horse_armor=15");
@@ -53,16 +70,6 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
         
         config.save();
-        
-        FMLCommonHandler.instance().bus().register(this);
-    }
-    
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        lightLevel = 0;
-        enabled = false;
-        lastWorld = null;
     }
     
     @SubscribeEvent
@@ -107,13 +114,13 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                 {
                     if (checkPlayerWater(thePlayer)
                     && item != null
-                    && notWaterProofItems.retrieveValue(DynamicLights.getShortItemName(item), item.getItemDamage()) == 1)
+                    && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(item.getItem()), item.getItemDamage()) == 1)
                     {
                         lightLevel = 0;
                         
                         for (ItemStack armor : thePlayer.inventory.armorInventory)
                         {
-                            if (armor != null && notWaterProofItems.retrieveValue(DynamicLights.getShortItemName(armor), item.getItemDamage()) == 0)
+                            if (armor != null && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(armor.getItem()), item.getItemDamage()) == 0)
                             {
                                 lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
                             }
@@ -149,7 +156,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     {
         if (stack != null)
         {
-            int r = itemsMap.retrieveValue(DynamicLights.getShortItemName(stack), stack.getItemDamage());
+            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
             return r < 0 ? 0 : r;
         }
         return 0;

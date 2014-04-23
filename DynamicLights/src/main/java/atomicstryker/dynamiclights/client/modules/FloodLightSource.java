@@ -16,10 +16,12 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -28,7 +30,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
  * Offers Dynamic Light functionality emulating portable or static Flood Lights
  *
  */
-@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.0", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.1", dependencies = "required-after:DynamicLights")
 public class FloodLightSource
 {
     private EntityPlayer thePlayer;
@@ -36,6 +38,7 @@ public class FloodLightSource
     private final PartialLightSource[] partialLights;
     private boolean enabled;
     private boolean simpleMode;
+    private Configuration config;
     
     public FloodLightSource()
     {
@@ -45,7 +48,13 @@ public class FloodLightSource
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
+        config = new Configuration(evt.getSuggestedConfigurationFile());        
+        FMLCommonHandler.instance().bus().register(this);
+    }
+    
+    @EventHandler
+    public void modsLoaded(FMLPostInitializationEvent evt)
+    {
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "FloodLightItems", "ender_eye");
@@ -55,8 +64,6 @@ public class FloodLightSource
         simpleMode = config.get(Configuration.CATEGORY_GENERAL, "simpleMode", true, "instead of simulating a cone of light (EXPENSIVE!!), simulates a single point light").getBoolean(true);
         
         config.save();
-        
-        FMLCommonHandler.instance().bus().register(this);
     }
     
     @SubscribeEvent
@@ -166,7 +173,7 @@ public class FloodLightSource
     {
         if (stack != null)
         {
-            int r = itemsMap.retrieveValue(DynamicLights.getShortItemName(stack), stack.getItemDamage());
+            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
             return r < 0 ? 0 : r;
         }
         return 0;

@@ -21,9 +21,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -33,7 +35,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.4", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.5", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -43,11 +45,27 @@ public class EntityLivingEquipmentLightSource
     private Thread thread;
     private boolean threadRunning;
     private HashMap<String, Integer> itemsMap;
+    private Configuration config;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
+        config = new Configuration(evt.getSuggestedConfigurationFile());        
+        FMLCommonHandler.instance().bus().register(this);
+    }
+    
+    @EventHandler
+    public void load(FMLInitializationEvent evt)
+    {
+        mcinstance = FMLClientHandler.instance().getClient();
+        nextUpdate = System.currentTimeMillis();
+        trackedEntities = new ArrayList<EntityLightAdapter>();
+        threadRunning = false;
+    }
+    
+    @EventHandler
+    public void modsLoaded(FMLPostInitializationEvent evt)
+    {
         config.load();
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
@@ -65,17 +83,6 @@ public class EntityLivingEquipmentLightSource
         }
         
         config.save();
-        
-        FMLCommonHandler.instance().bus().register(this);
-    }
-    
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        mcinstance = FMLClientHandler.instance().getClient();
-        nextUpdate = System.currentTimeMillis();
-        trackedEntities = new ArrayList<EntityLightAdapter>();
-        threadRunning = false;
     }
     
     @SuppressWarnings("unchecked")
@@ -137,7 +144,7 @@ public class EntityLivingEquipmentLightSource
     {
         if (stack != null)
         {
-            Integer i = itemsMap.get(DynamicLights.getShortItemName(stack));
+            Integer i = itemsMap.get(GameData.getItemRegistry().getNameForObject(stack.getItem()));
             if (i != null)
             {
                 return i;

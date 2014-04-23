@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
@@ -27,7 +26,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -40,7 +38,7 @@ import cpw.mods.fml.common.registry.GameData;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.2")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.3")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -265,20 +263,5 @@ public class DynamicLights
                 }
             }
         }
-    }
-    
-    /**
-     * Convenience Method because Trolljang
-     * Strips away any minecraft: or mod prefixes GameData applies to items
-     */
-    public static String getShortItemName(ItemStack item)
-    {
-        String s = GameData.getItemRegistry().getNameForObject(item.getItem());
-        if (s != null)
-        {
-            String[] split = s.split(":");
-            return split[split.length-1];
-        }
-        return "error";
     }
 }
