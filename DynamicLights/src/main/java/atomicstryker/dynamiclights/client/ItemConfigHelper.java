@@ -3,11 +3,6 @@ package atomicstryker.dynamiclights.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import cpw.mods.fml.common.registry.GameData;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-
 public class ItemConfigHelper
 {
     private final String SWILDCARD = "*";
@@ -23,15 +18,7 @@ public class ItemConfigHelper
             try
             {
                 String[] duo = s.split("=");
-                ItemData item = fromString(duo[0]);
-                if (item != null)
-                {
-                    dataMap.put(item, duo.length > 1 ? Integer.parseInt(duo[1]) : defaultValue);
-                }
-                else
-                {
-                    System.out.println("Failed to match String ["+s+"] to a Block or Item, skipping.");
-                }
+                dataMap.put(fromString(duo[0]), duo.length > 1 ? Integer.parseInt(duo[1]) : defaultValue);
             }
             catch (Exception e)
             {
@@ -68,30 +55,15 @@ public class ItemConfigHelper
     {
         String[] strings = s.split("-");
         int len = strings.length;
+        int sm = len > 1 ? catchWildcard(strings[len > 3 ? 2 : 1]) : WILDCARD;
+        int em = len > 2 ? catchWildcard(strings[len > 3 ? 3 : 2]) : sm;
         
-        if (tryFindingObject(strings[0]) != null)
+        if (!strings[0].contains(":"))
         {
-            int sm = len > 1 ? catchWildcard(strings[len > 3 ? 2 : 1]) : WILDCARD;
-            int em = len > 2 ? catchWildcard(strings[len > 3 ? 3 : 2]) : sm;
-            return new ItemData(strings[0], sm, em);
-        }
-        return null;
-    }
-    
-    private Object tryFindingObject(String s)
-    {
-        Item item = GameData.getItemRegistry().getObject(s);
-        if (item != null)
-        {
-            return item;
+            strings[0] = "minecraft:"+strings[0];
         }
         
-        Block block = GameData.getBlockRegistry().getObject(s);
-        if (block != Blocks.air)
-        {
-            return block;
-        }
-        return null;
+        return new ItemData(strings[0], sm, em);
     }
     
     private int catchWildcard(String s)
@@ -109,17 +81,17 @@ public class ItemConfigHelper
         final int startMeta;
         final int endMeta;
         
-        public ItemData(String name, int sm, int em)
+        public ItemData(String name, int startmetarange, int endmetarange)
         {
             nameOf = name;
-            startMeta = sm;
-            endMeta = em;
+            startMeta = startmetarange;
+            endMeta = endmetarange;
         }
         
         @Override
         public String toString()
         {
-            return nameOf+"-"+startMeta+"-"+endMeta;
+            return nameOf+" "+startMeta+" "+endMeta;
         }
         
         public boolean matches(String name, int meta)
