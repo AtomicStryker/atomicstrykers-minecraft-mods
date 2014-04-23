@@ -1,3 +1,6 @@
+1.4.9 hotfix
+- fixed player having unlimited breath unless chocked
+
 1.4.9
 - added new Modifier "Choke"
 - so you like breathing? Well, SUCKS TO BE YOU

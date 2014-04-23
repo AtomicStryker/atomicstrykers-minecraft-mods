@@ -294,10 +294,6 @@ public class InfernalMobsClient implements ISidedProxy
                 }
                 GL11.glDisable(GL11.GL_BLEND);
             }
-            else
-            {
-                mc.thePlayer.setAir(airOverrideValue);
-            }
         }
     }
 }
