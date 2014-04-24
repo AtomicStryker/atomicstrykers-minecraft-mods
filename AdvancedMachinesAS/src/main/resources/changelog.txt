@@ -1,3 +1,9 @@
+Version 1.0.8
+    - fixed to work with newest IC2 builds
+    
+Version 1.0.7
+    - updated to MC 1.7.2
+
 Version 1.0.6
 	- introduces the only advanced machine left i see being useful, the combined recycler
 	  it is made by cobbling together a rotary macerator, a centrifuge extractor,
