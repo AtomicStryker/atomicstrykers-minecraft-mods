@@ -1,10 +1,11 @@
 package atomicstryker.ic2.advancedmachines;
 
+import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerAdvancedMacerator extends ContainerAdvancedMachine
+public class ContainerAdvancedMacerator extends ContainerAdvancedMachine<TileEntityStandardMachine>
 {
     
     private final TileEntityAdvancedMacerator advMacerator;

@@ -1,5 +1,6 @@
 package atomicstryker.ic2.advancedmachines.client;
 
+import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -29,7 +30,7 @@ public class GuiRotaryMacerator extends GuiContainer
         this.fontRendererObj.drawString(StatCollector.translateToLocal("item.advancedmachines:rotaryMacerator.name"), 8, 6, 4210752);
         this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
         this.fontRendererObj.drawString("Speed:", 4, 36, 4210752);
-        this.fontRendererObj.drawString(((IAdvancedMachine)container.tileEntity).printFormattedData(), 10, 44, 4210752);
+        this.fontRendererObj.drawString(((IAdvancedMachine)container.base).printFormattedData(), 10, 44, 4210752);
     }
 
     @Override
@@ -41,8 +42,8 @@ public class GuiRotaryMacerator extends GuiContainer
         int k = (this.height - this.ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, this.xSize, this.ySize);
         
-        int chargeLevel = (int)(14.0F * this.container.tileEntity.getChargeLevel());
-        int progress = (int)(24.0F * this.container.tileEntity.getProgress());
+        int chargeLevel = (int)(14.0F * ((TileEntityStandardMachine)container.base).getChargeLevel());
+        int progress = (int)(24.0F * ((TileEntityStandardMachine)container.base).getProgress());
         
         if (chargeLevel > 0) drawTexturedModalRect(j + 56, k + 36 + 14 - chargeLevel, 176, 14 - chargeLevel, 14, chargeLevel);
         if (progress > 0) drawTexturedModalRect(j + 79, k + 34, 176, 14, progress + 1, 16);
