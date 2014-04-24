@@ -1,5 +1,6 @@
 package atomicstryker.ic2.advancedmachines.client;
 
+import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -54,15 +55,15 @@ public class AdvancedMachinesClient implements IProxy
             }
             else if (te instanceof TileEntityAdvancedExtractor)
             {
-                return new GuiCentrifugeExtractor(new ContainerAdvancedMachine(player, (TileEntityAdvancedExtractor) te), (TileEntityAdvancedExtractor) te);
+                return new GuiCentrifugeExtractor(new ContainerAdvancedMachine<TileEntityStandardMachine>(player, (TileEntityAdvancedExtractor) te), (TileEntityAdvancedExtractor) te);
             }
             else if (te instanceof TileEntityAdvancedCompressor)
             {
-                return new GuiSingularityCompressor(new ContainerAdvancedMachine(player, (TileEntityAdvancedCompressor) te), (TileEntityAdvancedCompressor) te);
+                return new GuiSingularityCompressor(new ContainerAdvancedMachine<TileEntityStandardMachine>(player, (TileEntityAdvancedCompressor) te), (TileEntityAdvancedCompressor) te);
             }
             else if (te instanceof TileEntityAdvancedRecycler)
             {
-                return new GuiCombinedRecycler(new ContainerAdvancedMachine(player, (TileEntityAdvancedRecycler) te), (TileEntityAdvancedRecycler) te);
+                return new GuiCombinedRecycler(new ContainerAdvancedMachine<TileEntityStandardMachine>(player, (TileEntityAdvancedRecycler) te), (TileEntityAdvancedRecycler) te);
             }
         }
 

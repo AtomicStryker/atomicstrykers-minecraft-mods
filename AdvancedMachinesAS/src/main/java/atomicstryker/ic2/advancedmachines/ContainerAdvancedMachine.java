@@ -6,13 +6,13 @@ import ic2.core.slot.SlotInvSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
 
-public class ContainerAdvancedMachine extends ContainerStandardMachine
+public class ContainerAdvancedMachine<T extends TileEntityStandardMachine> extends ContainerStandardMachine<T>
 {
     
     private final IAdvancedMachine advM;
     private int speedNetworked;
     
-    public ContainerAdvancedMachine(EntityPlayer entityPlayer, TileEntityStandardMachine tileEntity)
+    public ContainerAdvancedMachine(EntityPlayer entityPlayer, T tileEntity)
     {
         super(entityPlayer, tileEntity);
         advM = (IAdvancedMachine) tileEntity;
