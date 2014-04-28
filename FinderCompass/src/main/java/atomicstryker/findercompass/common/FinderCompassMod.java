@@ -25,7 +25,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2c")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2d")
 public class FinderCompassMod
 {
 
@@ -102,7 +102,11 @@ public class FinderCompassMod
         {
             configurator.parseConfig(new BufferedReader(new FileReader(needleConfig)), settingList);
             System.out.println("Finder compass config fully parsed, loaded "+settingList.size()+" settings");
-            FinderCompassClientTicker.instance.switchSetting();
+            
+            if (FinderCompassClientTicker.instance != null)
+            {
+                FinderCompassClientTicker.instance.switchSetting();
+            }
         }
         catch (FileNotFoundException e)
         {

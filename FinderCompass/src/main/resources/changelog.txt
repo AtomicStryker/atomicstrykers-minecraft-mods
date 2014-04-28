@@ -1,3 +1,6 @@
+1.7.2d
+fixed serverside crash on load
+
 1.7.2c
 fixed Config Parser being unable to deal with prefixes
 fixed Config Parser running too early, being unable to find mod Blocks
