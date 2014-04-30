@@ -305,3 +305,10 @@ a: setAccessible now true
 + such a template will accept any surface
 + also added optional unacceptable_target_blocks, works as complement to acceptable_target_blocks
 + changed template parser default to wildcard acceptable_target_blocks and just add water and lava to unacceptable_target_blocks
+
+12.8
++ added optional slot index number to IInventory lines in templates. Parser will save slots exactly as found.
++ complete rewrite of Building Site algorithm, better and hopefully faster
++   any and all sorts of plants should no longer block Ruins from spawning, at all
++   removed cut_in in favor of max_leveling (which now works both for holes and bumps) and defaults to 2 now
++   new recalculation of site surface should spawn Ruins in places previously found unfit

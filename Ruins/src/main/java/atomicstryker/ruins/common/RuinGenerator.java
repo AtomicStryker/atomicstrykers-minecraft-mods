@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -33,7 +34,7 @@ public class RuinGenerator
     {
         ruinsHandler = rh;
         stats = new RuinStats();
-        new LinkedList<RuinIBuildable>();
+        new LinkedList<RuinTemplate>();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
         sweptNPruned = new HashSet<RuinData>();
         ruinsDataFile = new File(rh.saveFolder, fileName);
@@ -203,7 +204,7 @@ public class RuinGenerator
         }
         stats.biomes[biomeID]++;
 
-        RuinIBuildable ruinTemplate = ruinsHandler.getTemplate(random, biomeID);
+        RuinTemplate ruinTemplate = ruinsHandler.getTemplate(random, biomeID);
         if (ruinTemplate == null)
         {
             biomeID = RuinsMod.BIOME_NONE;
@@ -255,8 +256,15 @@ public class RuinGenerator
                 }
             }
 
-            if (ruinTemplate.checkArea(world, x, y, z, rotate) && checkMinDistance(ruinTemplate.getRuinData(x, y, z, rotate)))
+            if (checkMinDistance(ruinTemplate.getRuinData(x, y, z, rotate)))
             {
+                y = ruinTemplate.checkArea(world, x, y, z, rotate);
+                if (y < 0)
+                {
+                    // System.out.println("checkArea fail");
+                    return;
+                }
+                
                 if (!ruinsHandler.disableLogging)
                 {
                     if (minDistance != 0)
@@ -290,7 +298,7 @@ public class RuinGenerator
             }
             else
             {
-                // System.out.println("Area check fail");
+                // System.out.println("Min Dist fail");
                 return;
             }
             if (Nether)
@@ -393,7 +401,7 @@ public class RuinGenerator
         return sweptNPruned;
     }
 
-    private boolean willOverlap(RuinIBuildable r, int x, int y, int z, int rotate)
+    private boolean willOverlap(RuinTemplate r, int x, int y, int z, int rotate)
     {
         RuinData current = r.getRuinData(x, y, z, rotate);
         for (RuinData rd : sweptAndPrunedSetColliding(current))
@@ -435,7 +443,7 @@ public class RuinGenerator
         return true;
     }
 
-    private int findSuitableY(World world, RuinIBuildable r, int x, int z, boolean Nether)
+    private int findSuitableY(World world, RuinTemplate r, int x, int z, boolean Nether)
     {
         if (Nether)
         {
@@ -449,17 +457,19 @@ public class RuinGenerator
                 // from the top. Find the first air block from the ceiling
                 for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
                 {
-                    if (world.getBlock(x, y, z) == Blocks.air)
+                    final Block b = world.getBlock(x, y, z);
+                    if (b == Blocks.air)
                     {
                         // now find the first non-air block from here
                         for (; y > -1; y--)
                         {
-                            if (!r.isAir(world.getBlock(x, y, z)))
+                            if (!r.isIgnoredBlock(world.getBlock(x, y, z), world, x, y, z))
                             {
-                                if (r.isAcceptable(world, x, y, z))
+                                if (r.isAcceptableSurface(b))
                                 {
                                     return y;
                                 }
+                                return -1;
                             }
                         }
                     }
@@ -470,12 +480,14 @@ public class RuinGenerator
                 // from the bottom. find the first air block from the floor
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++)
                 {
-                    if (!r.isAir(world.getBlock(x, y, z)))
+                    final Block b = world.getBlock(x, y, z);
+                    if (!r.isIgnoredBlock(b, world, x, y, z))
                     {
-                        if (r.isAcceptable(world, x, y - 1, z))
+                        if (r.isAcceptableSurface(b))
                         {
                             return y - 1;
                         }
+                        return -1;
                     }
                 }
             }
@@ -485,12 +497,13 @@ public class RuinGenerator
         {
             for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
             {
-                if (r.isAcceptable(world, x, y, z))
+                final Block b = world.getBlock(x, y, z);
+                if (!r.isIgnoredBlock(b, world, x, y, z))
                 {
-                    return y;
-                }
-                if (!r.isAir(world.getBlock(x, y, z)))
-                {
+                    if (r.isAcceptableSurface(b))
+                    {
+                        return y;
+                    }
                     return -1;
                 }
             }

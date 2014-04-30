@@ -34,11 +34,11 @@ public class RuinTemplateRule
     private final String[] blockStrings;
     private int chance = 100;
     private int condition = 0;
-    private final RuinIBuildable owner;
+    private final RuinTemplate owner;
     private final PrintWriter debugPrinter;
     private final boolean excessiveDebugging;
     
-    public RuinTemplateRule(PrintWriter dpw, RuinIBuildable r, final String rule, boolean debug) throws Exception
+    public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule, boolean debug) throws Exception
     {
         debugPrinter = dpw;
         owner = r;
@@ -138,7 +138,7 @@ public class RuinTemplateRule
         }
     }
     
-    public RuinTemplateRule(PrintWriter dpw, RuinIBuildable r, final String rule) throws Exception
+    public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule) throws Exception
     {
         this(dpw, r, rule, false);
     }
@@ -230,9 +230,9 @@ public class RuinTemplateRule
         }
     }
 
-    public boolean canReplace(Block blockID, Block targetBlock)
+    public boolean canReplace(Block blockID, Block targetBlock, World world, int x, int y, int z)
     {
-        if (owner.preserveBlock(targetBlock) && blockID == Blocks.air)
+        if (owner.preserveBlock(targetBlock, world, x, y, z) && blockID == Blocks.air)
         {
             return false;
         }
@@ -247,7 +247,7 @@ public class RuinTemplateRule
 
     private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isAir(world.getBlock(x, y - 1, z)))
+        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlock(x, y - 1, z), world, x, y - 1, z))
         {
             return;
         }
@@ -259,8 +259,8 @@ public class RuinTemplateRule
     {
         if ((condition <= 0 ? true : false) ^ (
         // Are -all- adjacent blocks air?
-                (owner.isAir(world.getBlock(x + 1, y, z))) && (owner.isAir(world.getBlock(x, y, z + 1)))
-                        && (owner.isAir(world.getBlock(x, y, z - 1))) && (owner.isAir(world.getBlock(x - 1, y, z)))))
+                (owner.isIgnoredBlock(world.getBlock(x + 1, y, z), world, x + 1, y, z)) && (owner.isIgnoredBlock(world.getBlock(x, y, z + 1), world, x, y, z + 1))
+                        && (owner.isIgnoredBlock(world.getBlock(x, y, z - 1), world, x, y, z - 1)) && (owner.isIgnoredBlock(world.getBlock(x - 1, y, z), world, x - 1, y, z))))
         {
             return;
         }
@@ -270,7 +270,7 @@ public class RuinTemplateRule
 
     private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isAir(world.getBlock(x, y + 1, z)))
+        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlock(x, y + 1, z), world, x, y + 1, z))
         {
             return;
         }
@@ -298,7 +298,7 @@ public class RuinTemplateRule
 
     private void placeBlock(World world, int blocknum, int x, int y, int z, int rotate)
     {
-        if (canReplace(blockIDs[blocknum], world.getBlock(x, y, z)))
+        if (canReplace(blockIDs[blocknum], world.getBlock(x, y, z), world, x, y, z))
         {
             if (rotate != RuinsMod.DIR_NORTH)
             {
@@ -660,6 +660,7 @@ public class RuinTemplateRule
             split = s.split("#");
             int itemStackSize = split.length > 1 ? Integer.valueOf(split[1]) : 1;
             int itemMeta = split.length > 2 ? Integer.valueOf(split[2]) : 0;
+            int targetslot = split.length > 3 ? Integer.valueOf(split[3]) : -1;
             o = tryFindingObject(split[0]);
             
             putItem = null;
@@ -674,18 +675,35 @@ public class RuinTemplateRule
             
             if (putItem != null)
             {
-                for (int slot = 0; slot < inv.getSizeInventory(); slot++)
+                if (targetslot != -1)
                 {
-                    slotItemPrev = inv.getStackInSlot(slot);
+                    slotItemPrev = inv.getStackInSlot(targetslot);
                     if (slotItemPrev == null)
                     {
-                        inv.setInventorySlotContents(slot, putItem);
+                        inv.setInventorySlotContents(targetslot, putItem);
                         break;
                     }
                     else if (slotItemPrev.isItemEqual(putItem))
                     {
                         slotItemPrev.stackSize += putItem.stackSize;
                         break;
+                    }
+                }
+                else
+                {
+                    for (int slot = 0; slot < inv.getSizeInventory(); slot++)
+                    {
+                        slotItemPrev = inv.getStackInSlot(slot);
+                        if (slotItemPrev == null)
+                        {
+                            inv.setInventorySlotContents(slot, putItem);
+                            break;
+                        }
+                        else if (slotItemPrev.isItemEqual(putItem))
+                        {
+                            slotItemPrev.stackSize += putItem.stackSize;
+                            break;
+                        }
                     }
                 }
             }

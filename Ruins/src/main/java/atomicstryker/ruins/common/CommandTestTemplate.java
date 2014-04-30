@@ -15,7 +15,7 @@ public class CommandTestTemplate extends CommandBase
 
     private EntityPlayer player;
 
-    public static RuinIBuildable parsedRuin;
+    public static RuinTemplate parsedRuin;
 
     @Override
     public String getCommandName()

@@ -4,12 +4,11 @@
 # a placeholder for future templates after renaming it.
 #
 # Templates have a .tml extension and the mod will attempt to load any and
-# all files with that extension if it resides in the <minecraft root>/
-# mods/resources/ruins folder.  Whether it does so successfully or not can be
-# checked in the log file (<minecraft root>/ruins_log.txt).  The mod will also
+# all files with that extension if they reside in the <minecraft root>/
+# mods/resources/ruins folder. Whether it does so successfully or not can be
+# checked in the log file (<minecraft root>/mods/ruins_log.txt). The mod will also
 # load any templates found in the biome folders within
-# <minecraft root>/mods/resources/ruins.  A normal install should have 12 biome
-# folders.
+# <minecraft root>/mods/resources/ruins.
 #
 # These template files are a simple text file; simply open them in your
 # favorite text editor to make changes or create new ones.
@@ -77,32 +76,20 @@
 # All default to 0.
 #
 # allowable_overhang=<overhang>
-# Specifies the number of air blocks that can exist under this template when
-# building begins.  Only the target blocks are checked.  Later world generation
-# may change this so do not expect concrete results.
-# Defaults to 0.
-#
-# max_cut_in=<cut in>
-# Specifies the maximum height above the source block, within the build site,
-# that can be removed in order to level the site.  All blocks that are higher
-# than the source block will be removed.
-# Defaults to 0.
-#
-# cut_in_buffer=<cbuffer>
-# The distance around the build site that will also be leveled.  Values higher
-# than 5 will use 5, since the world would otherwise be mangled pretty badly.
+# Specifies the allowed number of blocks in the potential build site that do not have
+# a surface within a reasonable distance, leaving the template "hanging" over an edge
 # Defaults to 0.
 #
 # max_leveling=<leveling>
-# Specifies the maximum depth below the source block, within the build site,
-# that will be filled with the source block in order to level the site.  All
-# clear space underneath the site will be filled.  If this is set to anything
-# greater than 0 allowable_overhang will be ignored.  Any filling will take
-# place before the site is built, preserving basement space.
-# Defaults to 0.
+# Specifies the maximum surface noise / height difference, within the build site,
+# that will be accepted when considering a potential build location.
+# The site will then be levelled prior to spawning the template.
+# If there is overhang allowed, also specifies how much "support" blocks are put
+# under the template when building it overlapping a surface edge.
+# Defaults to 2.
 #
 # leveling_buffer=<lbuffer>
-# The distance around the build site that will also be filled.  Values higher
+# The distance around the build site that will also be levelled.  Values higher
 # than 5 will use 5, since the world would otherwise be mangled pretty badly.
 # Defaults to 0.
 #
@@ -146,10 +133,8 @@ embed_into_distance=1
 acceptable_target_blocks=stone,grass,dirt,sand,gravel,clay
 dimensions=4,7,5
 allowable_overhang=0
-max_cut_in=2
-cut_in_buffer=1
 max_leveling=2
-leveling_buffer=1
+leveling_buffer=0
 preserve_water=0
 preserve_lava=0
 preserve_plants=0
@@ -255,7 +240,7 @@ preserve_plants=0
 # Ruins 12.2 adds IInventory block support. Usage: IInventory;<blockName>;<itemList>-<blockrotation>
 # where <blockName> is the registry name of the Block that sports an inventory
 # where <itemList> is a list of elements seperated by '+', each element is a block or item registry name
-# optionally followed by #stacksize OR #stacksize#metadata
+# optionally followed by #stacksize OR #stacksize#metadata OR #stacksize#metadata#inventoryslot
 # Example 10: rule1=0,100,IInventory;chest;red_flower+arrow#10+wool#3#15-5
 # this spawns a chest rotated to 5, which will contain a single red flower, 10 arrows, and 3 wool of color red (meta 15)
 # Example 11: rule1=0,100,IInventory;dispenser;arrow#10+snowball#20+egg#3-1
@@ -264,6 +249,7 @@ preserve_plants=0
 # you may also use this for container blocks added by mods. invalid anythings should be skipped.
 # the Ruins Parser will do this for you when you parse an IInventory block. Empty chests get hooked with dungeon loot
 # automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
+# if you specify the same slot index multiple times, only the first itemstack gets put in
 #
 
 

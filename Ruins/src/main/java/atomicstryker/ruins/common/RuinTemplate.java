@@ -9,17 +9,20 @@ import java.util.Iterator;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.IShearable;
 import cpw.mods.fml.common.registry.GameData;
 
-public class RuinTemplate implements RuinIBuildable
+public class RuinTemplate
 {
 
     private final String name;
     private Block[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1, randomOffMin = 0, randomOffMax = 0;
-    private int leveling = 0, lbuffer = 0, cutIn = 0, cbuffer = 0, w_off = 0, l_off = 0;
+    private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false, preservePlants = false, unique = false;
     private final ArrayList<RuinTemplateRule> rules;
     private final ArrayList<RuinTemplateLayer> layers;
@@ -86,7 +89,7 @@ public class RuinTemplate implements RuinIBuildable
 
     public int getMinDistance()
     {
-        return (width > length ? width : length) + (cbuffer > lbuffer ? cbuffer : lbuffer);
+        return (width > length ? width : length) + lbuffer;
     }
 
     public boolean isUnique()
@@ -94,7 +97,7 @@ public class RuinTemplate implements RuinIBuildable
         return unique;
     }
 
-    public boolean isAir(Block blockID)
+    public boolean isIgnoredBlock(Block blockID, World world, int x, int y, int z)
     {
         if (blockID == Blocks.air)
         {
@@ -105,60 +108,32 @@ public class RuinTemplate implements RuinIBuildable
         {
             return true;
         }
-        if (isPlant(blockID))
+        if (isPlant(blockID, world, x, y, z))
         {
             return true;
         }
 
-        return preserveBlock(blockID);
+        return preserveBlock(blockID, world, x, y, z);
     }
     
-    private boolean isPlant(Block blockID)
+    private boolean isPlant(Block blockID, World world, int x, int y, int z)
     {
-        if (blockID == Blocks.deadbush)
+        if (blockID instanceof BlockBush)
         {
             return true;
         }
-        if (blockID == Blocks.tallgrass)
+        if (blockID instanceof IPlantable || blockID instanceof IShearable)
         {
             return true;
         }
-        if (blockID == Blocks.yellow_flower)
-        {
-            return true;
-        }
-        if (blockID == Blocks.red_flower)
-        {
-            return true;
-        }
-        if (blockID == Blocks.brown_mushroom)
-        {
-            return true;
-        }
-        if (blockID == Blocks.red_mushroom)
-        {
-            return true;
-        }
-        if (blockID == Blocks.wheat)
-        {
-            return true;
-        }
-        if (blockID == Blocks.snow_layer)
-        {
-            return true;
-        }
-        if (blockID == Blocks.vine)
-        {
-            return true;
-        }
-        if (blockID == Blocks.waterlily)
+        if (blockID.isWood(world, x, y, z) || blockID.isLeaves(world, x, y, z))
         {
             return true;
         }
         return false;
     }
 
-    public boolean preserveBlock(Block blockID)
+    public boolean preserveBlock(Block blockID, World world, int x, int y, int z)
     {
         if (preserveWater)
         {
@@ -188,7 +163,7 @@ public class RuinTemplate implements RuinIBuildable
         }
         if (preservePlants)
         {
-            if (isPlant(blockID))
+            if (isPlant(blockID, world, x, y, z))
             {
                 return true;
             }
@@ -196,29 +171,24 @@ public class RuinTemplate implements RuinIBuildable
         return false;
     }
 
-    public boolean isAcceptable(World world, int x, int y, int z)
+    public boolean isAcceptableSurface(Block id)
     {
-        Block id = world.getBlock(x, y, z);
-        if (deniedSurfaces != null)
+        for (Block b : deniedSurfaces)
         {
-            for (Block b : deniedSurfaces)
+            if (id == b)
             {
-                if (id == b)
-                {
-                    return false;
-                }
+                return false;
             }
         }
         
-        if (acceptedSurfaces == null || acceptedSurfaces.length == 0)
+        if (acceptedSurfaces.length == 0)
         {
             return true;
         }
         
-        // checks if the square is acceptable for a ruin to be built upon
-        for (int i = 0; i < acceptedSurfaces.length; i++)
+        for (Block b : acceptedSurfaces)
         {
-            if (id == acceptedSurfaces[i])
+            if (id == b)
             {
                 return true;
             }
@@ -226,7 +196,7 @@ public class RuinTemplate implements RuinIBuildable
         return false;
     }
 
-    public boolean checkArea(World world, int xBase, int y, int zBase, int rotate)
+    public int checkArea(World world, int xBase, int y, int zBase, int rotate)
     {
         // setup some variable defaults (north/south)
         int x = xBase + w_off;
@@ -243,113 +213,100 @@ public class RuinTemplate implements RuinIBuildable
             xDim = length;
             zDim = width;
         }
-
-        // ensure we're not building on anything we don't like
-        for (int x1 = 0; x1 < xDim; x1++)
+        
+        // guess the top Y coordinate of the structure box, for checking top to bottom
+        final int topYguess = y + height - embed;
+        
+        // set a lowest height value at which surface search is aborted
+        final int minimalCheckedY = y - height - embed;
+        
+        // surface heights of the proposed site, -1 means 'out of range, consider overhang'
+        final int[][] heightMap = new int[xDim][zDim];
+        
+        Block curBlock;
+        final int lastX = x+xDim;
+        final int lastZ = z+zDim;
+        
+        for (int ix = x; ix < lastX; ix++)
         {
-            for (int z1 = 0; z1 < zDim; z1++)
+            for (int iz = z; iz < lastZ; iz++)
             {
-                if (!(isAir(world.getBlock(x + x1, y, z + z1)) || isAcceptable(world, x + x1, y, z + z1)))
+                // check guessed structure box top to bottom, find surface
+                boolean foundSurface = false;
+                for (int iy = topYguess; iy >= minimalCheckedY; iy--)
                 {
-                    // stats.BadBlockFails++;
-                    return false;
-                }
-            }
-        }
-
-        // now let's check the area around us based on the template options
-        if (leveling > 0)
-        {
-            /*
-             * using site leveling rather than overhang. Here we're really just
-             * checking for air at one greater than the maximum leveling
-             * distance, since we're just going to fill in everything else with
-             * the source block.
-             */
-            for (int x1 = (0 - lbuffer); x1 < (xDim + lbuffer * 2); x1++)
-            {
-                for (int z1 = (0 - lbuffer); z1 < (zDim + lbuffer * 2); z1++)
-                {
-                    if (isAir(world.getBlock(x + x1, y - (leveling + 1), z + z1)))
+                    curBlock = world.getBlock(ix, iy, iz);
+                    if (!isIgnoredBlock(curBlock, world, ix, iy, iz))
                     {
-                        // stats.LevelingFails++;
-                        return false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            /*
-             * if there's more than overhang air blocks under the ruins, ditch
-             * out.
-             */
-            int aircount = 0;
-            for (int x1 = 0; x1 < xDim; x1++)
-            {
-                for (int z1 = 0; z1 < zDim; z1++)
-                {
-                    if (world.getBlock(x + x1, y - 1, z + z1) == Blocks.air)
-                    {
-                        aircount++;
-                    }
-                    if (aircount > overhang)
-                    {
-                        // stats.OverhangFails++;
-                        return false;
-                    }
-                }
-            }
-        }
-
-        // now check for vertical clearance.
-        if (cutIn > 0)
-        {
-            /*
-             * since we're using cut in, we're only concerned with what's at the
-             * max cut in height. Everything else will be cleared out before we
-             * build.
-             */
-            int cutHeight = cutIn + 1;
-            for (int x1 = (0 - cbuffer); x1 < (xDim + 2 * cbuffer); x1++)
-            {
-                for (int z1 = (0 - cbuffer); z1 < (zDim + 2 * cbuffer); z1++)
-                {
-                    if (!isAir(world.getBlock(x + x1, y + cutHeight, z + z1)))
-                    {
-                        // stats.CutInFails++;
-                        return false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            // ensure we have air above the site.
-            int mod = height - embed;
-            for (int y1 = 1; y1 < mod; y1++)
-            {
-                for (int x1 = 0; x1 < xDim; x1++)
-                {
-                    for (int z1 = 0; z1 < zDim; z1++)
-                    {
-                        if (!isAir(world.getBlock(x + x1, y + y1, z + z1)))
+                        if (isAcceptableSurface(curBlock))
                         {
-                            // stats.NoAirAboveFails++;
-                            return false;
+                            heightMap[ix-x][iz-z] = iy;
+                            foundSurface = true;
+                            break;
+                        }
+                        else
+                        {
+                            // ran into unwanted surface? abort
+                            return -1;
                         }
                     }
+                }
+                if (!foundSurface)
+                {
+                    heightMap[ix-x][iz-z] = -1;
+                }
+            }
+        }
+        
+        // now compute a better y for the structure from the found surface heights
+        int sum = 0;
+        int vals = 0;
+        for (int[] row : heightMap)
+        {
+            for (int value : row)
+            {
+                if (value > 0)
+                {
+                    vals++;
+                    sum += value;
+                }
+            }
+        }
+        final int newY = vals > 0 ? (int) Math.ceil(sum/vals) : y;
+        if (newY > y)
+        {
+            // TODO if the structure box just moved up, should check the top end of the box again for new obstructions
+        }
+        
+        // check if the resulting levelling and overhang in the build site surface is acceptable
+        int localOverhang = overhang;
+        for (int[] row : heightMap)
+        {
+            for (int value : row)
+            {
+                if (value < 0)
+                {
+                    if (--localOverhang < 0)
+                    {
+                        // too much overhang, abort
+                        return -1;
+                    }
+                }
+                else if (Math.abs(newY - value) > leveling)
+                {
+                    // too much surface noise, abort
+                    return -1;
                 }
             }
         }
 
         // looks like a good spot!
-        return true;
+        return newY;
     }
 
     public RuinData getRuinData(int x, int y, int z, int rotate)
     {
-        int add = (cbuffer > lbuffer ? cbuffer : lbuffer);
+        int add = lbuffer;
         int xMin = 0, xMax = 0, zMin = 0, zMax = 0;
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
@@ -407,11 +364,7 @@ public class RuinTemplate implements RuinIBuildable
             zDim = length;
         }
 
-        // do any site cut-in and leveling needed
-        if (cutIn > 0)
-        {
-            cutInSite(world, xBase, y, zBase, eastwest);
-        }
+        // do any site leveling needed
         if (leveling > 0)
         {
             levelSite(world, world.getBlock(xBase, y, zBase), xBase, y, zBase, eastwest);
@@ -493,49 +446,6 @@ public class RuinTemplate implements RuinIBuildable
         }
     }
 
-    private void cutInSite(World world, int xBase, int y, int zBase, boolean eastwest)
-    {
-        /*
-         * remove blocks in and around the site as needed, up to the maximum
-         * height. setup some variable defaults (north/south)
-         */
-        int x = xBase + w_off - cbuffer;
-        int z = zBase + l_off - cbuffer;
-        int xDim = width + 2 * cbuffer;
-        int zDim = length + 2 * cbuffer;
-        int yDim = (cutIn > height) ? cutIn : height;
-
-        // how are we oriented?
-        if (eastwest)
-        {
-            // reorient for east/west rotation
-            x = xBase + l_off - cbuffer;
-            z = zBase + w_off - cbuffer;
-            xDim = length + 2 * cbuffer;
-            zDim = width + 2 * cbuffer;
-        }
-
-        /*
-         * this takes care of the embed code, since the y we get passed should
-         * never be offset.
-         */
-        y += 1;
-
-        for (int y1 = 0; y1 < yDim; y1++)
-        {
-            for (int x1 = 0; x1 < xDim; x1++)
-            {
-                for (int z1 = 0; z1 < zDim; z1++)
-                {
-                    if (!preserveBlock(world.getBlock(x + x1, y + y1, z + z1)))
-                    {
-                        world.setBlock(x + x1, y + y1, z + z1, Blocks.air, 0, 3);
-                    }
-                }
-            }
-        }
-    }
-
     private void levelSite(World world, Block fillBlockID, int xBase, int y, int zBase, boolean eastwest)
     {
         /*
@@ -546,8 +456,6 @@ public class RuinTemplate implements RuinIBuildable
         int z = zBase + l_off - lbuffer;
         int xDim = width + 2 * lbuffer;
         int zDim = length + 2 * lbuffer;
-        // adding one here for the for loop. should catch all.
-        int yDim = 0 - (leveling + 1);
 
         // how are we oriented?
         if (eastwest)
@@ -558,16 +466,28 @@ public class RuinTemplate implements RuinIBuildable
             xDim = length + 2 * lbuffer;
             zDim = width + 2 * lbuffer;
         }
-
-        for (int y1 = 0; y1 > yDim; y1--)
+        
+        final int lastX = x+xDim;
+        final int lastZ = z+zDim;
+        final int lastY = y+leveling;
+        for (int xi = x; xi < lastX; xi++)
         {
-            for (int x1 = 0; x1 < xDim; x1++)
+            for (int zi = z; zi < lastZ; zi++)
             {
-                for (int z1 = 0; z1 < zDim; z1++)
+                // fill holes
+                for (int yi = y-leveling; yi <= y; yi++)
                 {
-                    if (isAir(world.getBlock(x + x1, y + y1, z + z1)))
+                    if (isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
                     {
-                        world.setBlock(x + x1, y + y1, z + z1, fillBlockID, 0, 3);
+                        world.setBlock(xi, yi, zi, fillBlockID, 0, 3);
+                    }
+                }
+                // flatten bumps
+                for (int yi = y; yi <= lastY; yi++)
+                {
+                    if (!isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
+                    {
+                        world.setBlock(xi, yi, zi, Blocks.air, 0, 3);
                     }
                 }
             }
@@ -704,20 +624,6 @@ public class RuinTemplate implements RuinIBuildable
                     String[] check = line.split("=");
                     overhang = Integer.parseInt(check[1]);
                 }
-                else if (line.startsWith("max_cut_in"))
-                {
-                    String[] check = line.split("=");
-                    cutIn = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("cut_in_buffer"))
-                {
-                    String[] check = line.split("=");
-                    cbuffer = Integer.parseInt(check[1]);
-                    if (cbuffer > 5)
-                    {
-                        cbuffer = 5;
-                    }
-                }
                 else if (line.startsWith("max_leveling"))
                 {
                     String[] check = line.split("=");
@@ -769,6 +675,16 @@ public class RuinTemplate implements RuinIBuildable
                 }
             }
         }
+        
+        if (acceptedSurfaces == null)
+        {
+            acceptedSurfaces = new Block[0];
+        }
+        if (deniedSurfaces == null)
+        {
+            deniedSurfaces = new Block[0];
+        }
+        
         if (width % 2 == 1)
         {
             w_off = 0 - (width - 1) / 2;

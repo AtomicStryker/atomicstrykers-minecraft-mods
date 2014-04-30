@@ -248,19 +248,22 @@ public class World2TemplateParser extends Thread
                     else if (te instanceof IInventory && !isIInventoryEmpty((IInventory)te))
                     {
                         IInventory inventory = (IInventory) te;
-                        ArrayList<ItemStack> invItems = new ArrayList<ItemStack>();
+                        final ArrayList<ItemStack> invItems = new ArrayList<ItemStack>();
+                        final ArrayList<Integer> slots = new ArrayList<Integer>();
                         for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
                         {
                             if (inventory.getStackInSlot(slot) != null)
                             {
                                 invItems.add(inventory.getStackInSlot(slot));
+                                slots.add(slot);
                             }
                         }
                         
                         temp.data = "IInventory;"+GameData.getBlockRegistry().getNameForObject(temp.block)+";";
-                        for (ItemStack i : invItems)
+                        for (int index = 0; index < invItems.size(); index++)
                         {
-                            String ident;
+                            ItemStack i = invItems.get(index);
+                            String ident = null;
                             if (i.getItem() instanceof ItemBlock)
                             {
                                 ident = GameData.getBlockRegistry().getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
@@ -271,7 +274,7 @@ public class World2TemplateParser extends Thread
                             }
                             if (ident != null)
                             {
-                                temp.data = temp.data.concat(ident+"#"+i.stackSize+"#"+i.getItemDamage()+"+");
+                                temp.data = temp.data.concat(ident+"#"+i.stackSize+"#"+i.getItemDamage()+"#"+slots.get(index)+"+");
                             }
                         }
                         
@@ -387,10 +390,8 @@ public class World2TemplateParser extends Thread
             pw.println("unacceptable_target_blocks=flowing_water,water,flowing_lava,lava");
             pw.println("dimensions=" + layerData.size() + "," + xLength + "," + zLength);
             pw.println("allowable_overhang=0");
-            pw.println("max_cut_in=2");
-            pw.println("cut_in_buffer=1");
             pw.println("max_leveling=2");
-            pw.println("leveling_buffer=1");
+            pw.println("leveling_buffer=0");
             pw.println("preserve_water=0");
             pw.println("preserve_lava=0");
             pw.println("preserve_plants=0");
