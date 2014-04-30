@@ -16,7 +16,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 public class RuinHandler
 {
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
-    private final ArrayList<HashSet<RuinIBuildable>> templates = new ArrayList<HashSet<RuinIBuildable>>();
+    private final ArrayList<HashSet<RuinTemplate>> templates = new ArrayList<HashSet<RuinTemplate>>();
     private final ArrayList<Exclude> excluded = new ArrayList<Exclude>();
     protected int[][] vars;
 
@@ -53,7 +53,7 @@ public class RuinHandler
             // fill up the template arraylist
             for (int fill = 0; fill < biomeAmountPlusOne; fill++)
             {
-                templates.add(new HashSet<RuinIBuildable>());
+                templates.add(new HashSet<RuinTemplate>());
             }
 
             PrintWriter pw;
@@ -173,14 +173,14 @@ public class RuinHandler
         }
     }
 
-    public RuinIBuildable getTemplate(Random random, int biome)
+    public RuinTemplate getTemplate(Random random, int biome)
     {
         try
         {
             int rand = random.nextInt(vars[WEIGHT][biome]);
             int oldval = 0, increment = 0;
-            RuinIBuildable retval = null;
-            Iterator<RuinIBuildable> i = templates.get(biome).iterator();
+            RuinTemplate retval = null;
+            Iterator<RuinTemplate> i = templates.get(biome).iterator();
             while (i.hasNext())
             {
                 retval = i.next();
@@ -212,7 +212,7 @@ public class RuinHandler
         return true;
     }
 
-    public void removeTemplate(RuinIBuildable r, int biome)
+    public void removeTemplate(RuinTemplate r, int biome)
     {
         /*
          * removes a ruin from the specified biome, providing support for unique
@@ -232,8 +232,8 @@ public class RuinHandler
          * removes a ruin from the specified biome, providing support for unique
          * templates.
          */
-        Iterator<RuinIBuildable> i = templates.get(biome).iterator();
-        RuinIBuildable rem = null;
+        Iterator<RuinTemplate> i = templates.get(biome).iterator();
+        RuinTemplate rem = null;
         boolean found = false;
         while (i.hasNext())
         {
@@ -287,7 +287,7 @@ public class RuinHandler
 
     private void recalcBiomeWeight(int biome)
     {
-        Iterator<RuinIBuildable> i = templates.get(biome).iterator();
+        Iterator<RuinTemplate> i = templates.get(biome).iterator();
         vars[WEIGHT][biome] = 0;
         while (i.hasNext())
         {
@@ -398,8 +398,8 @@ public class RuinHandler
 
     private void addRuins(PrintWriter pw, File path, int biomeID) throws Exception
     {
-        HashSet<RuinIBuildable> targetList = templates.get(biomeID);
-        RuinIBuildable r;
+        HashSet<RuinTemplate> targetList = templates.get(biomeID);
+        RuinTemplate r;
         if (path.listFiles() != null)
         {
             for (File f : path.listFiles())
