@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -78,7 +81,12 @@ public class BlockTask_TreeChop extends BlockTask
     	for (int i = treeBlockList.size()-1; i >= 0; i--)
     	{
     		tempCoords = treeBlockList.get(i);
-    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+    		
+    		BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords.posX, tempCoords.posY, tempCoords.posZ);
+            if (!event.isCanceled())
+            {
+                worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+            }
     	}
     	
     	if (leaveBlockList.size() > 0)
@@ -90,8 +98,13 @@ public class BlockTask_TreeChop extends BlockTask
     	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
     	    	{
     	    		tempCoords = leaveBlockList.get(i);
-    	    		id.dropBlockAsItem(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
-    	    		worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+    	    		
+    	    		BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords.posX, tempCoords.posY, tempCoords.posZ);
+    	            if (!event.isCanceled())
+    	            {
+    	                id.dropBlockAsItem(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
+                        worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+    	            }
     	    	}
     		}
     	}

@@ -1,3 +1,7 @@
+Update 1.9.0
+- made minion block changes respect Forge's BlockEvent.BreakEvent
+-    this should allow permission managers to keep minions from changing locked areas
+
 Update 1.8.9
 - fixed Drop command on Minions not working
 - fixed Sound system derping in local play
