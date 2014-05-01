@@ -3,8 +3,11 @@ package atomicstryker.minions.common.jobmanager;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -88,10 +91,16 @@ public class BlockTask_MineBlock extends BlockTask
     	if (blockID != Blocks.air && blockID.getBlockHardness(worker.worldObj, posX, posY, posZ) >= 0F)
     	{
     	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-    		if (worker.worldObj.setBlock(posX, posY, posZ, Blocks.air, 0, 3))
-    		{
-    			putBlockHarvestInWorkerInventory(stackList);
-    		}
+    	    
+            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+                    (EntityPlayerMP) worker.master, posX, posY, posZ);
+            if (!event.isCanceled())
+            {
+                if (worker.worldObj.setBlock(posX, posY, posZ, Blocks.air, 0, 3))
+                {
+                    putBlockHarvestInWorkerInventory(stackList);
+                }
+            }
     	}
     }
     
@@ -116,10 +125,15 @@ public class BlockTask_MineBlock extends BlockTask
     	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
         if (checkBlockID == Blocks.sand || checkBlockID == Blocks.gravel)
         {
-            putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
-            
-            this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-            this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
+            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+                    (EntityPlayerMP) worker.master, x, y, z);
+            if (!event.isCanceled())
+            {
+                putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
+                
+                this.worker.inventory.consumeInventoryItem(Blocks.dirt);
+                this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
+            }
         }
 	}
     
@@ -147,18 +161,23 @@ public class BlockTask_MineBlock extends BlockTask
     	}
     	
     	if (replaceBlock)
-    	{    		
-        	if (checkBlockID != Blocks.air)
-        	{
-        	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-        		if (this.worker.worldObj.setBlock(x, y, z, Blocks.air, 0, 3))
-        		{
-        			putBlockHarvestInWorkerInventory(stackList);
-        		}
-        	}
-        	
-        	this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-        	this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
+    	{
+    	    BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+    	            (EntityPlayerMP) worker.master, x, y, z);
+            if (!event.isCanceled())
+            {
+                if (checkBlockID != Blocks.air)
+                {
+                    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
+                    if (this.worker.worldObj.setBlock(x, y, z, Blocks.air, 0, 3))
+                    {
+                        putBlockHarvestInWorkerInventory(stackList);
+                    }
+                }
+                
+                this.worker.inventory.consumeInventoryItem(Blocks.dirt);
+                this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
+            }
     	}
     }
 }
