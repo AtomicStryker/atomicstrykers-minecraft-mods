@@ -25,7 +25,7 @@ import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.5")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.6")
 public class AS_BattleTowersCore
 {
     
@@ -54,7 +54,6 @@ public class AS_BattleTowersCore
     public void preInit(FMLPreInitializationEvent event)
     {
         configuration = new Configuration(event.getSuggestedConfigurationFile(), false);
-        loadForgeConfig();
         
         proxy.preInit();
         
@@ -96,7 +95,7 @@ public class AS_BattleTowersCore
     @EventHandler
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
-        /* and this replaces modsLoaded(), all mods are loaded at this point, do inter-mod stuff here */
+        loadForgeConfig();
     }
     
     @EventHandler

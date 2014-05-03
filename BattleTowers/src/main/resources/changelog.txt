@@ -1,5 +1,6 @@
 1.4.6
 - removed sound loading as it is unneeded since 172
+- moved config parsing to postinit, fixes mod items not working for chests
 
 1.4.5
 - fixed stairs blocktypes
