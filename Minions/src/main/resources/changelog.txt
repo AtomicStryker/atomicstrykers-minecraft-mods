@@ -1,3 +1,6 @@
+Update 1.9.1
+- improved automatic tree block detection for tree chopping a bit
+
 Update 1.9.0
 - made minion block changes respect Forge's BlockEvent.BreakEvent
 -    this should allow permission managers to keep minions from changing locked areas
