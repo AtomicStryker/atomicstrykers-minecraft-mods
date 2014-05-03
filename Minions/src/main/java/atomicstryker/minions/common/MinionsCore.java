@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
+import net.minecraft.block.BlockOldLog;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -81,7 +82,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.9.0")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.9.1")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -299,7 +300,7 @@ public class MinionsCore
         for (String s : (Set<String>)GameData.getBlockRegistry().getKeys())
         {
             Block iter = GameData.getBlockRegistry().getObject(s);
-            if (iter instanceof BlockLog || iter.getLocalizedName().contains("log"))
+            if (iter instanceof BlockLog || iter instanceof BlockOldLog || iter.getLocalizedName().contains("log"))
             {
                 debugPrint("Minions found viable TreeBlock: "+iter);
                 foundTreeBlocks.add(iter);
