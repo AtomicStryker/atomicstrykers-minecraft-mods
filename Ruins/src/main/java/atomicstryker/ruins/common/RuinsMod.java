@@ -43,8 +43,8 @@ public class RuinsMod
 {
     public static final String modversion = "12.8";
     
-    public final static int FILE_TEMPLATE = 0, FILE_COMPLEX = 1;
-    public final static String TEMPLATE_EXT = "tml", COMPLEX_EXT = "cml";
+    public final static int FILE_TEMPLATE = 0;
+    public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
 
@@ -258,7 +258,7 @@ public class RuinsMod
         {
             File worlddir = getWorldSaveDir(world);
             worldHandle.ruins = new RuinHandler(worlddir);
-            worldHandle.generator = new RuinGenerator(worldHandle.ruins, world.getWorldInfo().getWorldName());
+            worldHandle.generator = new RuinGenerator(worldHandle.ruins, world);
         }
         catch (Exception e)
         {
@@ -340,8 +340,8 @@ public class RuinsMod
         pw.println("chance_for_site_nether=15");
         pw.println("disableRuinSpawnCoordsLogging=true");
         pw.println();
-        pw.println("templateInstancesMinDistance=75");
-        pw.println("anyRuinsMinDistance=0");
+        pw.println("templateInstancesMinDistance=150");
+        pw.println("anyRuinsMinDistance=64");
         pw.println();
         // print all the biomes!
         for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)

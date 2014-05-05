@@ -312,3 +312,7 @@ a: setAccessible now true
 +   any and all sorts of plants should no longer block Ruins from spawning, at all
 +   removed cut_in in favor of max_leveling (which now works both for holes and bumps) and defaults to 2 now
 +   new recalculation of site surface should spawn Ruins in places previously found unfit
++   allows setting leveling_buffer=-1 to prevent site leveling (for example for underground templates)
++ positions file now blocks an area around spawn by default
++ ruin spacing increased by default
++ complete revamp of default template set, mostly generic now. Moved others into "optional" and "obsolete" sets

@@ -29,24 +29,32 @@ public class RuinGenerator
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
     private final HashSet<RuinData> sweptNPruned;
     private File ruinsDataFile;
+    private final RuinData spawnPointBlock;
 
-    public RuinGenerator(RuinHandler rh, String worldName)
+    public RuinGenerator(RuinHandler rh, World world)
     {
         ruinsHandler = rh;
         stats = new RuinStats();
         new LinkedList<RuinTemplate>();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
+        
+        // lets create a banned area 2 chunks around the spawn
+        final int minX = world.getSpawnPoint().posX - 32;
+        final int minY = world.getSpawnPoint().posY - 32;
+        final int minZ = world.getSpawnPoint().posZ - 32;
+        spawnPointBlock = new RuinData(minX, minX+64, minY, minY+64, minZ, minZ+64, "SpawnPointBlock");
+        
         sweptNPruned = new HashSet<RuinData>();
         ruinsDataFile = new File(rh.saveFolder, fileName);
 
-        if (ruinsDataFile.getAbsolutePath().contains(worldName))
+        if (ruinsDataFile.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
         {
             Thread t = new LoadThread();
             t.start();
         }
         else
         {
-            System.err.println("Ruins attempted to load invalid worldname " + worldName + " posfile");
+            System.err.println("Ruins attempted to load invalid worldname " + world.getWorldInfo().getWorldName() + " posfile");
         }
     }
 
@@ -117,6 +125,9 @@ public class RuinGenerator
             if (!file.exists())
             {
                 file.createNewFile();
+                
+                // put it into the initial set
+                registeredRuins.add(spawnPointBlock);
             }
             int lineNumber = 1;
             BufferedReader br = new BufferedReader(new FileReader(file));

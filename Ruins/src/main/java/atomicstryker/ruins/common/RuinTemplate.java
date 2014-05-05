@@ -104,7 +104,7 @@ public class RuinTemplate
             return true;
         }
         // treat snow and most plants as air too
-        if (blockID == Blocks.web)
+        if (blockID == Blocks.snow || blockID == Blocks.web)
         {
             return true;
         }
@@ -365,7 +365,7 @@ public class RuinTemplate
         }
 
         // do any site leveling needed
-        if (leveling > 0)
+        if (leveling > 0 && lbuffer >= 0)
         {
             levelSite(world, world.getBlock(xBase, y, zBase), xBase, y, zBase, eastwest);
         }
@@ -483,7 +483,7 @@ public class RuinTemplate
                     }
                 }
                 // flatten bumps
-                for (int yi = y; yi <= lastY; yi++)
+                for (int yi = y+1; yi <= lastY; yi++)
                 {
                     if (!isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
                     {
