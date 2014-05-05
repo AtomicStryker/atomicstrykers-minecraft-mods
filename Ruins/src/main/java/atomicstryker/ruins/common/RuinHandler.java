@@ -437,10 +437,6 @@ public class RuinHandler
 
                         pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                         break;
-                    case RuinsMod.FILE_COMPLEX:
-                        r = null;
-                        pw.println("Successfully loaded complex " + f.getName() + " with no weight ");
-                        break;
                     default:
                         if (!f.isDirectory())
                         {
@@ -471,10 +467,6 @@ public class RuinHandler
         if (ext.equals(RuinsMod.TEMPLATE_EXT))
         {
             return RuinsMod.FILE_TEMPLATE;
-        }
-        if (ext.equals(RuinsMod.COMPLEX_EXT))
-        {
-            return RuinsMod.FILE_COMPLEX;
         }
         return -1;
     }
