@@ -74,7 +74,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.4.9")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.0")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
