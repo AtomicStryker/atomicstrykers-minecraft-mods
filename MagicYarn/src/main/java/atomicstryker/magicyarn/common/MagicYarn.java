@@ -3,6 +3,7 @@ package atomicstryker.magicyarn.common;
 import java.io.File;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -66,9 +67,9 @@ public class MagicYarn implements IProxy
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (!event.world.isRemote && event.entity instanceof EntityPlayer)
+        if (!event.world.isRemote && event.entity instanceof EntityPlayerMP)
         {
-            networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayer) event.entity);
+            networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.entity);
         }
     }
 
