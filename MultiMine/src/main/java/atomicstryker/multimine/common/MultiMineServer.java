@@ -197,7 +197,7 @@ public class MultiMineServer
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        EntityPlayer player = event.player;
+        EntityPlayerMP player = (EntityPlayerMP) event.player;
         int dimension = player.worldObj.provider.dimensionId;
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
 
@@ -245,7 +245,7 @@ public class MultiMineServer
      * @param block
      *            PartiallyMinedBlock instance
      */
-    private void sendPartiallyMinedBlockToPlayer(EntityPlayer p, PartiallyMinedBlock block)
+    private void sendPartiallyMinedBlockToPlayer(EntityPlayerMP p, PartiallyMinedBlock block)
     {
         MultiMine.instance().networkHelper.sendPacketToPlayer(
                 new PartialBlockPacket("server", block.getX(), block.getY(), block.getZ(), block.getProgress()), p);
