@@ -6,6 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
@@ -39,7 +40,7 @@ public class BlockZipLineAnchor extends BlockContainer
         if (teAnchor.getHasZipLine() && !entityPlayer.worldObj.isRemote)
         {
             RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new ZiplinePacket("server", teAnchor.getZipLineEntity().getEntityId(), 0f),
-                    entityPlayer);
+                    (EntityPlayerMP) entityPlayer);
             entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:zipline", 1.0F,
                     1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
             return true;
@@ -71,7 +72,7 @@ public class BlockZipLineAnchor extends BlockContainer
                                     entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.instance.itemHookShot);
                                 }
 
-                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(-1, 0, 0, 0), entityPlayer);
+                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(-1, 0, 0, 0), (EntityPlayerMP) entityPlayer);
 
                                 rope.setDead();
                                 entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:ropetension", 1.0F, 1.0F / (entityPlayer.getRNG()

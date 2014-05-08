@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -228,7 +229,7 @@ public class RopesPlusCore
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        networkHelper.sendPacketToPlayer(new RopeBowSettingPacket(Settings_RopePlus.disableBowHook), event.player);
+        networkHelper.sendPacketToPlayer(new RopeBowSettingPacket(Settings_RopePlus.disableBowHook), (EntityPlayerMP) event.player);
     }
 
     private Item makeItem(EntityArrow303 entityarrow303, Configuration config, EntityArrow303 baseArrow)
