@@ -52,9 +52,9 @@ public class KenshiroServer
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (event.entity instanceof EntityPlayer)
+        if (event.entity instanceof EntityPlayerMP)
         {
-            KenshiroMod.instance().networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayer) event.entity);
+            KenshiroMod.instance().networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.entity);
         }
     }
 
