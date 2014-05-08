@@ -18,7 +18,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
@@ -746,12 +746,12 @@ public class InfernalMobsCore
         return list.get(mob.worldObj.rand.nextInt(list.size())).copy();
     }
 
-    public void sendVelocityPacket(EntityPlayer target, float xVel, float yVel, float zVel)
+    public void sendVelocityPacket(EntityPlayerMP target, float xVel, float yVel, float zVel)
     {
         networkHelper.sendPacketToPlayer(new VelocityPacket(xVel, yVel, zVel), target);
     }
 
-    public void sendKnockBackPacket(EntityPlayer target, float xVel, float zVel)
+    public void sendKnockBackPacket(EntityPlayerMP target, float xVel, float zVel)
     {
         networkHelper.sendPacketToPlayer(new KnockBackPacket(xVel, zVel), target);
     }
@@ -768,7 +768,7 @@ public class InfernalMobsCore
                 .getEntityId(), 0f, 0f));
     }
     
-    public void sendAirPacket(EntityPlayer player, int lastAir)
+    public void sendAirPacket(EntityPlayerMP player, int lastAir)
     {
         networkHelper.sendPacketToPlayer(new AirPacket(lastAir), player);
     }

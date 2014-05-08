@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
@@ -95,9 +96,9 @@ public class MM_Choke extends MobModifier
     private void updateAir()
     {
         lastTarget.setAir(lastAir);
-        if (lastTarget instanceof EntityPlayer)
+        if (lastTarget instanceof EntityPlayerMP)
         {
-            InfernalMobsCore.instance().sendAirPacket((EntityPlayer)lastTarget, lastAir);
+            InfernalMobsCore.instance().sendAirPacket((EntityPlayerMP)lastTarget, lastAir);
         }
     }
 

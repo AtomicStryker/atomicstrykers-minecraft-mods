@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
@@ -76,13 +77,13 @@ public class MM_Gravity extends MobModifier
             
             mob.worldObj.playSoundAtEntity(mob, "mob.irongolem.throw", 1.0F, (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
             
-            if (mob.worldObj.isRemote || !(target instanceof EntityPlayer))
+            if (mob.worldObj.isRemote || !(target instanceof EntityPlayerMP))
             {
                 knockBack(target, diffX, diffZ);
             }
             else
             {
-                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayer) target, (float)diffX, (float)diffZ);
+                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayerMP) target, (float)diffX, (float)diffZ);
             }
         }
     }

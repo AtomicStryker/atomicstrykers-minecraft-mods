@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.util.EnumMap;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
@@ -89,7 +89,7 @@ public class NetworkHelper
      * @param packet
      * @param player
      */
-    public void sendPacketToPlayer(IPacket packet, EntityPlayer player)
+    public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isServer())
         {
