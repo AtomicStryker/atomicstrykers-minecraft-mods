@@ -3,6 +3,7 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
@@ -73,8 +74,7 @@ public class AS_BattleTowersCore
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        System.out.println("BTSERVER registered ServerConnectionFromClientEvent, sending packet");
-        networkHelper.sendPacketToPlayer(new LoginPacket(), event.player);
+        networkHelper.sendPacketToPlayer(new LoginPacket(), (EntityPlayerMP) event.player);
     }
     
     @EventHandler
