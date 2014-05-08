@@ -17,6 +17,7 @@ import net.minecraft.block.BlockOldLog;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -194,9 +195,9 @@ public class MinionsCore
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (!event.world.isRemote && event.entity instanceof EntityPlayer)
+        if (!event.world.isRemote && event.entity instanceof EntityPlayerMP)
         {
-            EntityPlayer p = (EntityPlayer) event.entity;
+            EntityPlayerMP p = (EntityPlayerMP) event.entity;
             networkHelper.sendPacketToPlayer(new RequestXPSettingPacket(evilDeedXPCost), p);
             
             MinionsCore.instance.prepareMinionHolder(p.getGameProfile().getName());
@@ -686,7 +687,7 @@ public class MinionsCore
         }
     }
     
-    public void unSummonPlayersMinions(EntityPlayer playerEnt)
+    public void unSummonPlayersMinions(EntityPlayerMP playerEnt)
     {
         System.out.println("Minions: unSummonPlayersMinions called by "+playerEnt);
         for (EntityMinion minion : getMinionsForMaster(playerEnt))
