@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.common.mods;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
@@ -59,13 +60,13 @@ public class MM_Blastoff extends MobModifier
             nextAbilityUse = time+coolDown;
             mob.worldObj.playSoundAtEntity(mob, "mob.slimeattack", 1.0F, (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
             
-            if (target.worldObj.isRemote || !(target instanceof EntityPlayer))
+            if (target.worldObj.isRemote || !(target instanceof EntityPlayerMP))
             {
                 target.addVelocity(0, 1.1D, 0);
             }
             else
             {
-                InfernalMobsCore.instance().sendVelocityPacket((EntityPlayer)target, 0f, 1.1f, 0f);
+                InfernalMobsCore.instance().sendVelocityPacket((EntityPlayerMP)target, 0f, 1.1f, 0f);
             }
         }
     }
