@@ -332,8 +332,8 @@ public class RuinsMod
         pw.println("#     it will choose a generic ruin from the folder of the same name.");
         pw.println();
         pw.println("tries_per_chunk_normal=6");
-        pw.println("chance_to_spawn_normal=10");
-        pw.println("chance_for_site_normal=15");
+        pw.println("chance_to_spawn_normal=10.0");
+        pw.println("chance_for_site_normal=15.0");
         pw.println();
         pw.println("tries_per_chunk_nether=6");
         pw.println("chance_to_spawn_nether=10");
