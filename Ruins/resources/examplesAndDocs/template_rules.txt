@@ -159,13 +159,13 @@ preserve_plants=0
 #
 # <condition>
 # A conditional to the block being placed, aside from randomness.
-# 0 - The block always attempts to spawn.
-# 1 - There must be a block below it to attempt to spawn.
-# 2 - There must be an adjacent block at the same level for a spawn attempt.
-# 3 - There must be a block above this one in order for it to attempt to spawn.
-# 4 - There must NOT be a block below it to attempt to spawn.
-# 5 - There must NOT be an adjacent block at the same level for a spawn attempt.
-# 6 - There must NOT be a block above this one in order for it to attempt to spawn.
+# 0 = Normal, spawns first
+# ±1 = Checks block under, spawns delayed
+# ±2 = Checks block adjacent, spawns delayed
+# ±3 = Checks block above, spawns last
+# 7 = Spawns last
+# Where the negative cases for 1,2,3 denote NOT. In other words, 2 means the block will only spawn 
+# if there is a block next to it, while -2 will NOT spawn if there are any blocks next to it.
 #
 # Adjacent in this case is not diagonal, only along the cardinal directions.
 #
