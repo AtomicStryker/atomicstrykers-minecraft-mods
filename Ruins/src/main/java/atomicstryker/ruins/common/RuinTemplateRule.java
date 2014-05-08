@@ -365,7 +365,14 @@ public class RuinTemplateRule
             {
                 Block b = (Block) o;
                 // need to strip meta '-x' value if present
-                addIInventoryBlock(world, random, x, y, z, b, s[2].split("-")[0], rotateMetadata(b, blockMDs[blocknum], rotate));
+                if (s[2].charAt(s[2].length()-2) == '-')
+                {
+                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].length()-3), rotateMetadata(b, blockMDs[blocknum], rotate));
+                }
+                else
+                {
+                    addIInventoryBlock(world, random, x, y, z, b, s[2], rotateMetadata(b, blockMDs[blocknum], rotate));
+                }
             }
             else
             {
@@ -640,6 +647,10 @@ public class RuinTemplateRule
         TileEntity te = world.getTileEntity(x, y, z);
         if (te instanceof IInventory)
         {
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("About to construct IInventory, itemData ["+itemData+"]");
+            }
             handleIInventory((IInventory) te, itemData);
         }
         else
@@ -653,15 +664,17 @@ public class RuinTemplateRule
         ItemStack putItem;
         ItemStack slotItemPrev;
         String[] itemStrings = itemData.split(Pattern.quote("+"));
-        String[] split;
+        String[] hashsplit;
         Object o;
-        for (String s : itemStrings)
+        System.out.println("itemStrings length: "+itemStrings.length);
+        for (String itemstring : itemStrings)
         {
-            split = s.split("#");
-            int itemStackSize = split.length > 1 ? Integer.valueOf(split[1]) : 1;
-            int itemMeta = split.length > 2 ? Integer.valueOf(split[2]) : 0;
-            int targetslot = split.length > 3 ? Integer.valueOf(split[3]) : -1;
-            o = tryFindingObject(split[0]);
+            System.out.println("itemString: "+itemstring);
+            hashsplit = itemstring.split("#");
+            int itemStackSize = hashsplit.length > 1 ? Integer.valueOf(hashsplit[1]) : 1;
+            int itemMeta = hashsplit.length > 2 ? Integer.valueOf(hashsplit[2]) : 0;
+            int targetslot = hashsplit.length > 3 ? Integer.valueOf(hashsplit[3]) : -1;
+            o = tryFindingObject(hashsplit[0]);
             
             putItem = null;
             if (o instanceof Block)
@@ -681,12 +694,19 @@ public class RuinTemplateRule
                     if (slotItemPrev == null)
                     {
                         inv.setInventorySlotContents(targetslot, putItem);
-                        break;
+                        continue;
                     }
                     else if (slotItemPrev.isItemEqual(putItem))
                     {
-                        slotItemPrev.stackSize += putItem.stackSize;
-                        break;
+                        int freeSize = slotItemPrev.getMaxStackSize() - slotItemPrev.stackSize;
+                        if (freeSize >= putItem.stackSize)
+                        {
+                            slotItemPrev.stackSize += putItem.stackSize;
+                        }
+                        else
+                        {
+                            slotItemPrev.stackSize += freeSize;
+                        }
                     }
                 }
                 else
@@ -701,8 +721,18 @@ public class RuinTemplateRule
                         }
                         else if (slotItemPrev.isItemEqual(putItem))
                         {
-                            slotItemPrev.stackSize += putItem.stackSize;
-                            break;
+                            int freeSize = slotItemPrev.getMaxStackSize() - slotItemPrev.stackSize;
+                            if (freeSize >= putItem.stackSize)
+                            {
+                                slotItemPrev.stackSize += putItem.stackSize;
+                                break;
+                            }
+                            else
+                            {
+                                slotItemPrev.stackSize += freeSize;
+                                putItem.stackSize -= freeSize;
+                                continue;
+                            }
                         }
                     }
                 }
