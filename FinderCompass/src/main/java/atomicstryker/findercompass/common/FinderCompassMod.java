@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
@@ -71,7 +72,7 @@ public class FinderCompassMod
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        networkHelper.sendPacketToPlayer(new HandshakePacket(), event.player);
+        networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.player);
     }
 
     @EventHandler
