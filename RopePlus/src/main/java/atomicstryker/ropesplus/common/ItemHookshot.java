@@ -3,6 +3,7 @@ package atomicstryker.ropesplus.common;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -104,7 +105,7 @@ public class ItemHookshot extends Item
 
                                 RopesPlusCore.instance.setPlayerRope(entityplayer, ropeEnt);
                                 RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(ropeEnt.getEntityId(), target.blockX,
-                                        target.blockY, target.blockZ), entityplayer);
+                                        target.blockY, target.blockZ), (EntityPlayerMP) entityplayer);
 
                                 entityplayer.worldObj.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F,
                                         1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
@@ -142,7 +143,7 @@ public class ItemHookshot extends Item
                 && RopesPlusCore.instance.getPlayerRope(entityplayer).isEntityAlive())
         {
             // activate hook pull on clientside
-            RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPullPacket("server", -1), entityplayer);
+            RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPullPacket("server", -1), (EntityPlayerMP) entityplayer);
             world.playSoundAtEntity(entityplayer, "ropesplus:hookshotpull", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
         }
     }

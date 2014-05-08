@@ -3,6 +3,7 @@ package atomicstryker.ropesplus.common;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -50,7 +51,7 @@ public class ItemGrapplingHook extends Item
         {
         	//System.out.println("recalling serverside hook!");
         	RopesPlusCore.instance.getGrapplingHookMap().get(entityplayer).recallHook(entityplayer);
-        	RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new GrapplingHookPacket(false), entityplayer);
+        	RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new GrapplingHookPacket(false), (EntityPlayerMP) entityplayer);
         	RopesPlusCore.instance.getGrapplingHookMap().remove(entityplayer);
         }
 		else
@@ -62,7 +63,7 @@ public class ItemGrapplingHook extends Item
             	EntityGrapplingHook newhook = new EntityGrapplingHook(world, entityplayer);
                 world.spawnEntityInWorld(newhook);
                 RopesPlusCore.instance.getGrapplingHookMap().put(entityplayer, newhook);
-                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new GrapplingHookPacket(true), entityplayer);
+                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new GrapplingHookPacket(true), (EntityPlayerMP) entityplayer);
             }
             entityplayer.swingItem();
         }
