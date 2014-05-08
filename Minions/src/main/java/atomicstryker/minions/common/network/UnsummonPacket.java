@@ -2,7 +2,7 @@ package atomicstryker.minions.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
@@ -44,7 +44,7 @@ public class UnsummonPacket implements IPacket
         else
         {
             user = ByteBufUtils.readUTF8String(bytes);
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
             if (player != null)
             {
                 MinionsCore.instance.unSummonPlayersMinions(player);
