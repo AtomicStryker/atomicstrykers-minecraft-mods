@@ -1,3 +1,8 @@
+1.3.9
+- added block/item exclusion config fitting the new mod function style (server only)
+- "unknown" items and blocks are automatically added to the config upon first use
+- restart is needed to load changed config values into ingame cache
+
 1.3.8
 - cleaned old block/item exclusion code away
 

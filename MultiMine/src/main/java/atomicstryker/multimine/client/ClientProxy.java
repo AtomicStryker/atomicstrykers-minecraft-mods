@@ -9,5 +9,4 @@ public class ClientProxy extends CommonProxy
     {
         new MultiMineClient();
     }
-
 }

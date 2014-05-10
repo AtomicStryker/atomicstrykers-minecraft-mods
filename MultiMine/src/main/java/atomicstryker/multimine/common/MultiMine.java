@@ -15,7 +15,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.8")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.3.9")
 public class MultiMine
 {
     @Instance("AS_MultiMine")
@@ -26,6 +26,7 @@ public class MultiMine
     private long blockRegenInterval;
 
     public boolean debugMode;
+    public Configuration config;
     
     @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
     public static CommonProxy proxy;
@@ -37,7 +38,7 @@ public class MultiMine
     {
         networkHelper = new NetworkHelper("AS_MM", PartialBlockPacket.class, PartialBlockRemovalPacket.class);
         
-        Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
+        config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
         blockRegenEnabled = config.get("general", "Block Regeneration Enabled", true).getBoolean(true);
