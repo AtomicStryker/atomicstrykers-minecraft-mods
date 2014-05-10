@@ -23,7 +23,7 @@ public class MultiMineClient
     private static MultiMineClient instance;
     private static Minecraft mc;
     private static EntityPlayer thePlayer;
-    private PartiallyMinedBlock[] partiallyMinedBlocksArray;
+    private final PartiallyMinedBlock[] partiallyMinedBlocksArray;
     private Map<Integer, DestroyBlockProgress> vanillaDestroyBlockProgressMap;
     private int arrayOverWriteIndex;
     private int curBlockX;
@@ -183,7 +183,7 @@ public class MultiMineClient
         updateCloudTickReading();
         
         int dimension = thePlayer.dimension;
-        PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, dimension, progress);
+        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, dimension, progress);
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
@@ -196,15 +196,17 @@ public class MultiMineClient
             }
             else if (newBlock.equals(iterBlock))
             {
+                boolean notClientsBlock = false;
                 // if other guy's progress advances, render digging
                 if (iterBlock.getProgress() < progress
                 && (iterBlock.getX() != curBlockX || iterBlock.getY() != curBlockY || iterBlock.getZ() != curBlockZ))
                 {
                     renderBlockDigParticles(x, y, z);
+                    notClientsBlock = true;
                 }
                 
                 iterBlock.setProgress(progress);
-                DestroyBlockProgress newDestroyBP = new DestroyBlockProgress(0 ,iterBlock.getX(), iterBlock.getY(), iterBlock.getZ());
+                final DestroyBlockProgress newDestroyBP = new DestroyBlockProgress(0 ,iterBlock.getX(), iterBlock.getY(), iterBlock.getZ());
                 newDestroyBP.setPartialBlockDamage(iterBlock.getProgress());
                 newDestroyBP.setCloudUpdateTick(lastCloudTickReading);
                 vanillaDestroyBlockProgressMap.put(i, newDestroyBP);
@@ -215,11 +217,11 @@ public class MultiMineClient
                     World w = player.worldObj;
                     w.destroyBlockInWorldPartially(player.getEntityId(), x, y, z, -1);
                     
-                    Block block = w.getBlock(x, y, z);
+                    final Block block = w.getBlock(x, y, z);
                     if (block != Blocks.air)
                     {
                         int meta = w.getBlockMetadata(x, y, z);
-                        if (block.removedByPlayer(w, player, x, y, z))
+                        if (!notClientsBlock && block.removedByPlayer(w, player, x, y, z))
                         {
                             block.onBlockDestroyedByPlayer(w, x, y, z, meta);
                             block.harvestBlock(w, player, x, y, z, meta);
