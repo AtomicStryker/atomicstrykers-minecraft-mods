@@ -1,6 +1,7 @@
 package atomicstryker.petbat.common;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -20,6 +21,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import atomicstryker.petbat.common.network.BatNamePacket;
 import atomicstryker.petbat.common.network.NetworkHelper;
@@ -34,7 +36,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.2")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.3")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -323,6 +325,20 @@ public class PetBatMod implements IProxy
             else if (id == itemBatFlute) // bat flutes cannot be dropped. ever.
             {
                 event.setCanceled(true);
+            }
+        }
+    }
+    
+    @SubscribeEvent
+    public void onPlayerDropsEvent(PlayerDropsEvent event)
+    {
+        // iterate drops, remove all batflutes
+        final Iterator<EntityItem> iter = event.drops.iterator();
+        while (iter.hasNext())
+        {
+            if (iter.next().getEntityItem().getItem() == itemBatFlute)
+            {
+                iter.remove();
             }
         }
     }

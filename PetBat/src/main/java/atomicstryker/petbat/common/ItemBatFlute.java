@@ -1,7 +1,6 @@
 package atomicstryker.petbat.common;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,7 +15,6 @@ public class ItemBatFlute extends Item
         super();
         maxStackSize = 1;
         setMaxDamage(0);
-        setCreativeTab(CreativeTabs.tabCombat);
     }
     
     @Override
@@ -35,20 +33,24 @@ public class ItemBatFlute extends Item
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
     {
         EntityPetBat bat;
-        String batname = itemStack.stackTagCompound.getString("batName");
-        for (int i = 0; i < world.loadedEntityList.size(); i++)
+        if (itemStack.stackTagCompound != null)
         {
-            if (world.loadedEntityList.get(i) instanceof EntityPetBat)
+            String batname = itemStack.stackTagCompound.getString("batName");
+            for (int i = 0; i < world.loadedEntityList.size(); i++)
             {
-                bat = (EntityPetBat) world.loadedEntityList.get(i);
-                if (bat.getDisplayName().equals(batname))
+                if (world.loadedEntityList.get(i) instanceof EntityPetBat)
                 {
-                    bat.recallToOwner();
-                    itemStack.stackSize = 0;
+                    bat = (EntityPetBat) world.loadedEntityList.get(i);
+                    if (bat.getDisplayName().equals(batname))
+                    {
+                        bat.recallToOwner();
+                        itemStack.stackSize = 0;
+                    }
                 }
             }
+            return itemStack;
         }
-        return itemStack;
+        return null;
     }
     
     @Override
