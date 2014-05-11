@@ -1,0 +1,22 @@
+tile.blockRopeCenter.name=Seil
+tile.blockZiplineAnchor.name=Seilrutschenanker
+
+item.itemGrapplingHook.name=Enterhaken
+item.itemHookshot.name=Hakenwerfer
+item.HookshotCartridge.name=Hakenwerfer-Kartusche
+item.bowRopesPlus.name=[feuert Ropes+ Pfeil]
+
+item.DirtArrow.name=Erdpfeil
+item.SeedArrow.name=Saatpfeil
+item.PenetratingArrow.name=Durchschlagender Pfeil
+item.SlimeArrow.name=Schleimpfeil
+item.RedstonetorchArrow.name=Rotsteinpfeil
+item.RopeArrow.name=Seil-Pfeil
+item.FrostArrow.name=Frostpfeil
+item.FireArrow.name=Feuerpfeil
+item.ConfusingArrow.name=Verwirrungspfeil
+item.ExplodingArrow.name=Explosionspfeil
+item.TorchArrow.name=Fackelpfeil
+item.WarpArrow.name=Transporterpfeil
+
+translation.ropesplus:hookshotnotarget=Unzulaessiges Ziel fuer Hakenwerfer
