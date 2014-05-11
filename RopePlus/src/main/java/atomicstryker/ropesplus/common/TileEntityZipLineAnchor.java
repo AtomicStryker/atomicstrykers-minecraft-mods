@@ -84,13 +84,18 @@ public class TileEntityZipLineAnchor extends TileEntity
                 trySpawningRope();
             }
         }
+        else if (ropeEnt != null)
+        {
+            ropeEnt.setDead();
+            ropeEnt = null;
+        }
     }
     
     private void trySpawningRope()
     {
         if (targetY > 0)
         {
-            if (worldObj.getBlock(targetX, targetY, targetZ).isOpaqueCube())
+            if (worldObj.getBlock(targetX, targetY, targetZ).isNormalCube())
             {                
                 ropeEnt = new EntityFreeFormRope(worldObj);
                 ropeEnt.setStartCoordinates(xCoord+0.5D, yCoord, zCoord+0.5D);
@@ -100,8 +105,13 @@ public class TileEntityZipLineAnchor extends TileEntity
             }
             else if (!isInvalid())
             {
-                System.out.printf("zipline target coords [%d|%d|%d] are not an opaque block!!\n", targetX, targetY, targetZ);
-                invalidate();
+                System.err.printf("zipline target coords [%d|%d|%d] not an opaque block: %s\n", targetX, targetY, targetZ, worldObj.getBlock(targetX, targetY, targetZ));
+                targetY = -1;
+                if (ropeEnt != null)
+                {
+                    ropeEnt.setDead();
+                    ropeEnt = null;
+                }
             }
         }
     }
