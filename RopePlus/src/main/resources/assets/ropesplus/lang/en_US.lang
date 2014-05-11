@@ -1,5 +1,7 @@
 tile.blockRopeCenter.name=Rope
 tile.blockZiplineAnchor.name=Zipline Anchor
+tile.blockRopeWall.name=Wall Rope
+tile.blockGrHk.name=Legendary Grappling Hook
 
 item.itemGrapplingHook.name=Grappling Hook
 item.itemHookshot.name=Hook Shot
@@ -20,3 +22,14 @@ item.TorchArrow.name=Torch Arrow
 item.WarpArrow.name=Warp Arrow
 
 translation.ropesplus:hookshotnotarget=No valid target for Hookshot
+
+translation.ropesplus:SwapArrowsForward=Swap Arrows Forward
+translation.ropesplus:SwapArrowsBackward=Swap Arrows Backward
+translation.ropesplus:ToggleArrows=Toggle Ropes+ Arrows
+
+translation.ropesplus:OnScreenHintA=Swap arrows with 
+translation.ropesplus:OnScreenHintB=, toggle with 
+
+translation.ropesplus:ZiplineFailA=Zipline target Block
+translation.ropesplus:ZiplineFailB=not opaque!
+translation.ropesplus:ZiplineFailC=Newton says you can't Zipline upwards, sorry...

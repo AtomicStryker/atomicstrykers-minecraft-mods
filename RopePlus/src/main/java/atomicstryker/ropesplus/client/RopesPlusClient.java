@@ -9,6 +9,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -76,9 +77,9 @@ public class RopesPlusClient
         keysBlockedUntil = 0;
         toggleEnabled = true;
 
-        swapForward = new KeyBinding("SwapArrowsForward", Keyboard.KEY_COMMA, "key.categories.gameplay");
-        swapBackward = new KeyBinding("SwapArrowsBackward", Keyboard.KEY_PERIOD, "key.categories.gameplay");
-        keyToggle = new KeyBinding("ToggleArrows", Keyboard.KEY_APOSTROPHE, "key.categories.gameplay");
+        swapForward = new KeyBinding(StatCollector.translateToLocal("translation.ropesplus:SwapArrowsForward"), Keyboard.KEY_COMMA, "key.categories.gameplay");
+        swapBackward = new KeyBinding(StatCollector.translateToLocal("translation.ropesplus:SwapArrowsBackward"), Keyboard.KEY_PERIOD, "key.categories.gameplay");
+        keyToggle = new KeyBinding(StatCollector.translateToLocal("translation.ropesplus:ToggleArrows"), Keyboard.KEY_APOSTROPHE, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(swapForward);
         ClientRegistry.registerKeyBinding(swapBackward);
         ClientRegistry.registerKeyBinding(keyToggle);
@@ -289,8 +290,8 @@ public class RopesPlusClient
                     mc.fontRenderer.drawStringWithShadow(s, guiStringX, guiStringY, 0x2F96EB);
                     mc.fontRenderer
                             .drawStringWithShadow(
-                                    "Swap arrows with " + Keyboard.getKeyName(swapForward.getKeyCode()) + ", "
-                                            + Keyboard.getKeyName(swapBackward.getKeyCode()) + ", toggle with "
+                                    StatCollector.translateToLocal("translation.ropesplus:OnScreenHintA") + Keyboard.getKeyName(swapForward.getKeyCode()) + ", "
+                                            + Keyboard.getKeyName(swapBackward.getKeyCode()) + StatCollector.translateToLocal("translation.ropesplus:OnScreenHintB")
                                             + Keyboard.getKeyName(keyToggle.getKeyCode()), guiStringX, guiStringY + 10, 0xffffff);
                 }
 

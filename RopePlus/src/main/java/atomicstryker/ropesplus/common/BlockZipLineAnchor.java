@@ -11,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.network.HookshotPacket;
 import atomicstryker.ropesplus.common.network.ZiplinePacket;
@@ -35,55 +36,59 @@ public class BlockZipLineAnchor extends BlockContainer
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float xOffset, float yOffset, float zOffset)
     {
-        TileEntityZipLineAnchor teAnchor = (TileEntityZipLineAnchor) world.getTileEntity(x, y, z);
-
-        if (teAnchor.getHasZipLine() && !entityPlayer.worldObj.isRemote)
+        if (!world.isRemote)
         {
-            RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new ZiplinePacket("server", teAnchor.getZipLineEntity().getEntityId(), 0f),
-                    (EntityPlayerMP) entityPlayer);
-            entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:zipline", 1.0F,
-                    1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
-            return true;
-        }
-        else
-        {
-            for (Object o : world.loadedEntityList)
+            TileEntityZipLineAnchor teAnchor = (TileEntityZipLineAnchor) world.getTileEntity(x, y, z);
+            if (teAnchor.getHasZipLine())
             {
-                if (o instanceof EntityFreeFormRope)
+                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new ZiplinePacket("server", teAnchor.getZipLineEntity().getEntityId(), 0f),
+                        (EntityPlayerMP) entityPlayer);
+                entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:zipline", 1.0F,
+                        1.0F / (entityPlayer.getRNG().nextFloat() * 0.1F + 0.95F));
+                return true;
+            }
+            else
+            {
+                for (Object o : world.loadedEntityList)
                 {
-                    EntityFreeFormRope rope = (EntityFreeFormRope) o;
-                    if (rope.getShooter() != null && rope.getShooter().equals(entityPlayer))
+                    if (o instanceof EntityFreeFormRope)
                     {
-                        if (rope.getEndY() > y)
+                        EntityFreeFormRope rope = (EntityFreeFormRope) o;
+                        if (rope.getShooter() != null && rope.getShooter().equals(entityPlayer))
                         {
-                            entityPlayer.addChatMessage(new ChatComponentText("Newton says you can't Zipline upwards, sorry..."));
-                            break;
-                        }
-                        else
-                        {
-                            int targetX = MathHelper.floor_double(rope.getEndX());
-                            int targetY = MathHelper.floor_double(rope.getEndY());
-                            int targetZ = MathHelper.floor_double(rope.getEndZ());
-                            if (world.getBlock(targetX, targetY, targetZ).isOpaqueCube())
+                            if (rope.getEndY() > y)
                             {
-                                teAnchor.setTargetCoordinates(targetX, targetY, targetZ);
-                                if (!entityPlayer.capabilities.isCreativeMode)
-                                {
-                                    entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.instance.itemHookShot);
-                                }
-
-                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(-1, 0, 0, 0), (EntityPlayerMP) entityPlayer);
-
-                                rope.setDead();
-                                entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:ropetension", 1.0F, 1.0F / (entityPlayer.getRNG()
-                                        .nextFloat() * 0.1F + 0.95F));
-                                return true;
+                                entityPlayer.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("translation.ropesplus:ZiplineFailC")));
+                                break;
                             }
                             else
                             {
-                                entityPlayer.addChatComponentMessage(new ChatComponentText("Zipline target Block [" + targetX + "|" + targetY + "|"
-                                        + targetZ + "] not opaque!"));
-                                break;
+                                int targetX = MathHelper.floor_double(rope.getEndX());
+                                int targetY = MathHelper.floor_double(rope.getEndY()+0.5);
+                                int targetZ = MathHelper.floor_double(rope.getEndZ());
+                                if (world.getBlock(targetX, targetY, targetZ).isNormalCube())
+                                {
+                                    teAnchor.setTargetCoordinates(targetX, targetY, targetZ);
+                                    if (!entityPlayer.capabilities.isCreativeMode)
+                                    {
+                                        entityPlayer.inventory.consumeInventoryItem(RopesPlusCore.instance.itemHookShot);
+                                    }
+
+                                    RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(-1, 0, 0, 0), (EntityPlayerMP) entityPlayer);
+
+                                    rope.setDead();
+                                    entityPlayer.worldObj.playSoundAtEntity(entityPlayer, "ropesplus:ropetension", 1.0F, 1.0F / (entityPlayer.getRNG()
+                                            .nextFloat() * 0.1F + 0.95F));
+                                    return true;
+                                }
+                                else
+                                {
+                                    final String s =
+                                            String.format("%s [%d|%d|%d] %s", StatCollector.translateToLocal("translation.ropesplus:ZiplineFailA"),
+                                                    targetX, targetY, targetZ, StatCollector.translateToLocal("translation.ropesplus:ZiplineFailB"));
+                                    entityPlayer.addChatComponentMessage(new ChatComponentText(s));
+                                    break;
+                                }
                             }
                         }
                     }

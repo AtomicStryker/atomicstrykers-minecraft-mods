@@ -1,3 +1,8 @@
+RopesPlus 1.6.1
+- added a bunch of translations, thanks to comrade VeryBigBro for russian
+- fixed Zipline Ropes entering Schroedinger's state when invalidated
+- fixed Zipline Ropes not being removed when anchor or target block broke
+
 RopesPlus 1.6.0
 - further improvements on ropeswing
 - rope no longer magically expands midswing

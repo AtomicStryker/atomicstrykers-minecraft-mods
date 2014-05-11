@@ -1,7 +1,5 @@
 package atomicstryker.ropesplus.common;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -204,8 +202,12 @@ public class EntityFreeFormRope extends Entity
     {
         super.onUpdate();
         
-        if (!isTargetedBlockValid())
+        final int endX = MathHelper.floor_double(getEndX());
+        final int endY = MathHelper.floor_double(getEndY()) + (shooter == null ? -1 : 0);
+        final int endZ = MathHelper.floor_double(getEndZ());
+        if (!worldObj.getBlock(endX, endY, endZ).isNormalCube())
         {
+            System.out.printf("%d %d %d is not normal cube, it is %s\n", endX, endY, endZ, worldObj.getBlock(endX, endY, endZ));
             this.setDead();
             return;
         }
@@ -227,7 +229,8 @@ public class EntityFreeFormRope extends Entity
             }
             
             setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
-            double dist = shooter.getDistance(getEndX(), getEndY(), getEndZ());
+            Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
+            double dist = playerToHookVec.lengthVector();
 
             if (worldObj.isRemote)
             {
@@ -252,7 +255,6 @@ public class EntityFreeFormRope extends Entity
                     }
                     else
                     {
-                        Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
                         playerToHookVec = playerToHookVec.normalize();
                         shooter.addVelocity(-shooter.motionX*0.5, -shooter.motionY*0.5, -shooter.motionZ*0.5);
                         shooter.addVelocity(playerToHookVec.xCoord*0.5, playerToHookVec.yCoord*0.5, playerToHookVec.zCoord*0.5);
@@ -380,6 +382,20 @@ public class EntityFreeFormRope extends Entity
                 shooter.fallDistance = 0;
             }
         }
+        else // shooter == null
+        {
+            int startX = MathHelper.floor_double(getStartX());
+            int startY = MathHelper.floor_double(getStartY());
+            int startZ = MathHelper.floor_double(getStartZ());
+            if (worldObj.getBlock(startX, startY, startZ) != RopesPlusCore.instance.blockZipLineAnchor)
+            {
+                System.out.printf("[%d,%d,%d] is not anchor: %s\n", startX, startY, startZ, worldObj.getBlock(startX, startY, startZ));
+                setDead();
+                return;
+            }
+        }
+        
+        updateEntPos();
     }
     
     private double distXZManhattan(Vec3 a, Vec3 b)
@@ -387,25 +403,6 @@ public class EntityFreeFormRope extends Entity
         final double xd = a.xCoord-b.xCoord;
         final double zd = a.zCoord-b.zCoord;
         return xd*xd + zd*zd;
-    }
-    
-    private boolean isTargetedBlockValid()
-    {
-        int x = MathHelper.floor_double(getEndX());
-        int y = MathHelper.floor_double(getEndY()+0.5D);
-        int z = MathHelper.floor_double(getEndZ());
-        Block b = worldObj.getBlock(x, y, z);
-        Block b2 = worldObj.getBlock(x, y+1, z);
-        
-        if (!(b.isNormalCube()
-        || b2.isNormalCube()
-        || b.getMaterial() == Material.leaves
-        || b2.getMaterial() == Material.leaves))
-        {
-            return false;
-        };
-        
-        return true;
     }
 
     private double getShooterSpeed()
