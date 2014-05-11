@@ -433,12 +433,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         if (!fluteOut && owner != null && !worldObj.isRemote)
         {
             boolean found = false;
-            Item itemID = PetBatMod.instance().itemBatFlute;
-            for (ItemStack item : owner.inventory.mainInventory)
+            final Item fluteItem = PetBatMod.instance().itemBatFlute;
+            for (ItemStack inventoryItem : owner.inventory.mainInventory)
             {
-                if (item != null && item.getItem() == itemID && item.stackTagCompound != null)
+                if (inventoryItem != null && inventoryItem.getItem() == fluteItem && inventoryItem.stackTagCompound != null)
                 {
-                    if (item.stackTagCompound.getString("batName").equals(petName))
+                    if (inventoryItem.stackTagCompound.getString("batName").equals(petName))
                     {
                         found = true;
                         break;
@@ -447,7 +447,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             }
             if (!found)
             {
-                ItemStack newflute = new ItemStack(itemID, 1, 0);
+                ItemStack newflute = new ItemStack(fluteItem, 1, 0);
                 newflute.stackTagCompound = new NBTTagCompound();
                 newflute.stackTagCompound.setString("batName", petName);
                 if (owner.inventory.addItemStackToInventory(newflute))
