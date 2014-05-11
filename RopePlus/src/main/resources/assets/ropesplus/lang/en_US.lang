@@ -18,3 +18,5 @@ item.ConfusingArrow.name=Confusing Arrow
 item.ExplodingArrow.name=Exploding Arrow
 item.TorchArrow.name=Torch Arrow
 item.WarpArrow.name=Warp Arrow
+
+translation.ropesplus:hookshotnotarget=No valid target for Hookshot

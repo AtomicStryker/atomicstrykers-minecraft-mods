@@ -1,0 +1,22 @@
+tile.blockRopeCenter.name=Верёвка
+tile.blockZiplineAnchor.name=Канатный якорь
+
+item.itemGrapplingHook.name=Абордажная кошка
+tile.blockGrHk.name=Абордажная кошка
+tile.blockRopeWall.name=Верёвка
+item.itemHookshot.name=Стреляющий крюк
+item.HookshotCartridge.name=Картридж для стреляющего крюка
+item.bowRopesPlus.name=[Запуск стрелы Ropes+]
+
+item.DirtArrow.name=Земляная стрела
+item.SeedArrow.name=Семенная стрела
+item.PenetratingArrow.name=Проникающая Arrow
+item.SlimeArrow.name=Слизневая стрела
+item.RedstonetorchArrow.name=Красная стрела
+item.RopeArrow.name=Стрела с верёвкой
+item.FrostArrow.name=Замораживающая стрела
+item.FireArrow.name=Огненная стрела
+item.ConfusingArrow.name=Запутывающий стрела
+item.ExplodingArrow.name=Взрывающаяся стрела
+item.TorchArrow.name=Стрела с факелом
+item.WarpArrow.name=Телепортирующая стрела

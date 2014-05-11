@@ -11,6 +11,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -119,7 +120,7 @@ public class ItemHookshot extends Item
                         else
                         {
                             RopesPlusCore.instance.setPlayerRope(entityplayer, null);
-                            entityplayer.addChatComponentMessage(new ChatComponentText("No target for Hookshot"));
+                            entityplayer.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("hookshotnotarget")));
                         }
                     }
                     else
