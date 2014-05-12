@@ -33,3 +33,5 @@ translation.ropesplus:OnScreenHintB=wechseln, abschalten mit
 translation.ropesplus:ZiplineFailA=Seilrutschenziel
 translation.ropesplus:ZiplineFailB=nicht solide!
 translation.ropesplus:ZiplineFailC=Newton verbietet es!
+
+translation.ropesplus:BowCacheFail=Ropes+ Fehler, konnte Bogen nicht wiederherstellen
