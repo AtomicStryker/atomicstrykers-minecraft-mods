@@ -33,3 +33,5 @@ translation.ropesplus:OnScreenHintB=, toggle with
 translation.ropesplus:ZiplineFailA=Zipline target Block
 translation.ropesplus:ZiplineFailB=not opaque!
 translation.ropesplus:ZiplineFailC=Newton says you can't Zipline upwards, sorry...
+
+translation.ropesplus:BowCacheFail=Ropes+ failed to retrieve original firing item

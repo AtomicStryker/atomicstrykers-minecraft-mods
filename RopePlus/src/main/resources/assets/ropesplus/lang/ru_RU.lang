@@ -1,22 +1,35 @@
 tile.blockRopeCenter.name=Верёвка
 tile.blockZiplineAnchor.name=Канатный якорь
+tile.blockRopeWall.name=Настенная верёвка
+tile.blockGrHk.name=Легендарная абордажная кошка
 
 item.itemGrapplingHook.name=Абордажная кошка
-tile.blockGrHk.name=Абордажная кошка
-tile.blockRopeWall.name=Верёвка
 item.itemHookshot.name=Стреляющий крюк
 item.HookshotCartridge.name=Картридж для стреляющего крюка
 item.bowRopesPlus.name=[Запуск стрелы Ropes+]
 
 item.DirtArrow.name=Земляная стрела
 item.SeedArrow.name=Семенная стрела
-item.PenetratingArrow.name=Проникающая Arrow
+item.PenetratingArrow.name=Проникающая стрела
 item.SlimeArrow.name=Слизневая стрела
 item.RedstonetorchArrow.name=Красная стрела
 item.RopeArrow.name=Стрела с верёвкой
 item.FrostArrow.name=Замораживающая стрела
 item.FireArrow.name=Огненная стрела
-item.ConfusingArrow.name=Запутывающий стрела
+item.ConfusingArrow.name=Запутывающая стрела
 item.ExplodingArrow.name=Взрывающаяся стрела
 item.TorchArrow.name=Стрела с факелом
 item.WarpArrow.name=Телепортирующая стрела
+
+translation.ropesplus:hookshotnotarget=Нет доступной цели для стреляющего крюка
+
+translation.ropesplus:SwapArrowsForward=Следующая стрела
+translation.ropesplus:SwapArrowsBackward=Предыдущая стрела
+translation.ropesplus:ToggleArrows=Включить стрелы Ropes+
+
+translation.ropesplus:OnScreenHintA=Меняйте стрелы с помощью
+translation.ropesplus:OnScreenHintB=, вкл./выкл. стрелы с помощью 
+
+translation.ropesplus:ZiplineFailA=Целевой блок канатного якоря
+translation.ropesplus:ZiplineFailB=not opaque!
+translation.ropesplus:ZiplineFailC=Ньютон говорит, что Вы не сможете установить канат, идущий вверх, извините...

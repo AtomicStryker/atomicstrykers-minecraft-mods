@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
@@ -36,9 +37,9 @@ public class ItemBowRopesPlus extends ItemBow
     {
 	    heldTicksBuffer = heldTicks;
         // get vanilla bow
-        ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
-	    
-        ItemStack[] mainInv = player.inventory.mainInventory;
+        final ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
+        final ItemStack[] mainInv = player.inventory.mainInventory;
+        
     	int arrowSlot = RopesPlusCore.instance.selectedSlot(player);
     	if (arrowSlot != -1)
     	{
@@ -50,7 +51,7 @@ public class ItemBowRopesPlus extends ItemBow
 
                 if ((double)bowChargeRatio < 0.1D)
                 {
-                    mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
+                    mainInv[player.inventory.currentItem] = vanillaBow;
                     return;
                 }
 
@@ -67,7 +68,7 @@ public class ItemBowRopesPlus extends ItemBow
                 }
                 if(entityarrow303 == null)
                 {
-                    mainInv[player.inventory.currentItem] = RopesPlusBowController.getVanillaBowForPlayer(player);
+                    mainInv[player.inventory.currentItem] = vanillaBow;
                     return;
                 }
                 
@@ -108,17 +109,18 @@ public class ItemBowRopesPlus extends ItemBow
                 }
             }
     	}
+    	
+        if (vanillaBow != null)
+        {
+            vanillaBow.damageItem(1, player);
+        }
+        else if (!world.isRemote)
+        {
+            player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("translation.ropesplus:BowCacheFail")));
+        }
         
         // put vanilla bow back in hands, do damage etc
         mainInv[player.inventory.currentItem] = vanillaBow;
-		if (vanillaBow != null)
-		{
-			mainInv[player.inventory.currentItem].damageItem(1, player);
-		}
-		else if (!world.isRemote)
-		{
-		    player.addChatComponentMessage(new ChatComponentText("Do not cheat yourself a RopesPlusBow! Use the vanilla bow!"));
-		}
     }
 	
 	@Override

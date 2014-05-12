@@ -11,26 +11,28 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class RopesPlusBowController
 {
-    private static HashMap<EntityPlayer, ItemStack> vanillaBows = new HashMap<EntityPlayer, ItemStack>();
+    private static HashMap<String, ItemStack> vanillaBows = new HashMap<String, ItemStack>();
     
     @SubscribeEvent
     public void onArrowNock(ArrowNockEvent event)
     {
+        final EntityPlayer player = event.entityPlayer;
+        final ItemStack firingBow = player.getCurrentEquippedItem();
         if (!Settings_RopePlus.disableBowHook
-        && event.entityPlayer.getCurrentEquippedItem().getItem() != RopesPlusCore.instance.bowRopesPlus)
+        && firingBow.getItem() != RopesPlusCore.instance.bowRopesPlus)
         {
-            int slot = RopesPlusCore.instance.selectedSlot(event.entityPlayer);
+            int slot = RopesPlusCore.instance.selectedSlot(player);
             if (slot != -1)
             {
-                ItemStack selected = event.entityPlayer.inventory.mainInventory[slot];
+                final ItemStack selected = player.inventory.mainInventory[slot];
                 if (selected != null
                 && selected.getItem() instanceof ItemArrow303
                 && ((ItemArrow303)selected.getItem()).arrow.tip != Items.flint)
                 {
-                    vanillaBows.put(event.entityPlayer, event.entityPlayer.getCurrentEquippedItem());
-                    ItemStack replacementBow = new ItemStack(RopesPlusCore.instance.bowRopesPlus);
+                    vanillaBows.put(player.getCommandSenderName(), firingBow.copy());
+                    final ItemStack replacementBow = new ItemStack(RopesPlusCore.instance.bowRopesPlus);
                     event.result = replacementBow;
-                    event.entityPlayer.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
+                    player.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
                     event.setCanceled(true);
                 }
             }
@@ -39,6 +41,6 @@ public class RopesPlusBowController
     
     public static ItemStack getVanillaBowForPlayer(EntityPlayer player)
     {
-        return vanillaBows.get(player);
+        return vanillaBows.get(player.getCommandSenderName());
     }
 }
