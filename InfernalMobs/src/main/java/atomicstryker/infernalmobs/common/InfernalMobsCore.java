@@ -74,7 +74,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.0")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.1")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -334,7 +334,7 @@ public class InfernalMobsCore
         {
             if (!getIsRareEntity(entity))
             {
-                if ((entity instanceof EntityMob || entity instanceof IMob) && instance.checkEntityClassAllowed(entity)
+                if ((entity instanceof EntityMob || (entity instanceof EntityLivingBase && entity instanceof IMob)) && instance.checkEntityClassAllowed(entity)
                         && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
                     MobModifier mod = instance.createMobModifiers(entity);
@@ -673,10 +673,8 @@ public class InfernalMobsCore
     private void dropRandomEnchantedItems(EntityLivingBase mob, MobModifier mods)
     {
         int modStr = mods.getModSize();
-        int prefix = (modStr <= 5) ? 0 : (modStr <= 10) ? 1 : 2; // 0 for elite,
-                                                                 // 1 for ultra,
-                                                                 // 2 for
-                                                                 // infernal
+        /* 0 for elite, 1 for ultra, 2 for infernal */
+        int prefix = (modStr <= 5) ? 0 : (modStr <= 10) ? 1 : 2;
         while (modStr > 0)
         {
             ItemStack itemStack = getRandomItem(mob, prefix);
@@ -697,7 +695,6 @@ public class InfernalMobsCore
                         // itemStack, item.getItemEnchantability());
                     }
                 }
-
                 EntityItem itemEnt = new EntityItem(mob.worldObj, mob.posX, mob.posY, mob.posZ, itemStack);
                 mob.worldObj.spawnEntityInWorld(itemEnt);
                 modStr -= 5;

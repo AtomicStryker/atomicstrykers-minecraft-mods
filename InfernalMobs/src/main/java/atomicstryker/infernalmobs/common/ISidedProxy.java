@@ -12,11 +12,11 @@ public interface ISidedProxy
     
     public ConcurrentHashMap<EntityLivingBase, MobModifier> getRareMobs();
     
-    public void onHealthPacket(String stringData, int entID, float health, float maxhealth);
+    public void onHealthPacketForClient(String stringData, int entID, float health, float maxhealth);
     
     public void onKnockBackPacket(float xv, float zv);
     
-    public void onMobModsPacket(String stringData, int entID);
+    public void onMobModsPacketToClient(String stringData, int entID);
     
     public void onVelocityPacket(float xv, float yv, float zv);
 

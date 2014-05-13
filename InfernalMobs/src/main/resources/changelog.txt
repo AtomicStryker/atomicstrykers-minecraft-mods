@@ -1,3 +1,11 @@
+1.5.1
+- fixed rare classcast problems leading to crashes
+- fixed central proxy not distinguishing client/server properly
+  this fixes subsequent issues with infernal mobs not gaining health
+  and healthbars not working
+- added target caching to GUI infernal healthbar
+  if you stop having an infernal in your sights, the display will remain for 3 seconds
+
 1.5.0
 - fixed possible crash with player packets
 

@@ -11,6 +11,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -42,6 +43,9 @@ public class InfernalMobsClient implements ISidedProxy
     private ConcurrentHashMap<EntityLivingBase, MobModifier> rareMobsClient;
     private int airOverrideValue = -999;
     
+    private long healthBarRetainTime;
+    private EntityLivingBase retainedTarget;
+    
     @Override
     public void preInit()
     {
@@ -57,14 +61,19 @@ public class InfernalMobsClient implements ISidedProxy
         
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
         MinecraftForge.EVENT_BUS.register(this);
+        
+        healthBarRetainTime = 0;
+        retainedTarget = null;
     }
     
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event)
     {
-        if (mc.thePlayer != null && event.entity instanceof EntityMob)
+        if (event.world.isRemote && mc.thePlayer != null
+                && (event.entity instanceof EntityMob || (event.entity instanceof EntityLivingBase && event.entity instanceof IMob)))
         {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.getGameProfile().getName(), event.entity.getEntityId()));
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.getGameProfile().getName(), event.entity
+                    .getEntityId(), (byte) 0));
         }
     }
 
@@ -85,6 +94,13 @@ public class InfernalMobsClient implements ISidedProxy
         }
 
         Entity ent = getEntityCrosshairOver(renderTick, mc);
+        boolean retained = false;
+        
+        if (ent == null && System.currentTimeMillis() < healthBarRetainTime)
+        {
+            ent = retainedTarget;
+            retained = true;
+        }
 
         if (ent != null && ent instanceof EntityLivingBase)
         {
@@ -132,6 +148,13 @@ public class InfernalMobsClient implements ISidedProxy
 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(Gui.icons);
+                
+                if (!retained)
+                {
+                    retainedTarget = target;
+                    healthBarRetainTime = System.currentTimeMillis() + 3000l;
+                }
+                
             }
         }
     }
@@ -234,7 +257,7 @@ public class InfernalMobsClient implements ISidedProxy
     }
 
     @Override
-    public void onHealthPacket(String stringData, int entID, float health, float maxhealth)
+    public void onHealthPacketForClient(String stringData, int entID, float health, float maxhealth)
     {
         Entity ent = FMLClientHandler.instance().getClient().theWorld.getEntityByID(entID);
         if (ent != null && ent instanceof EntityLivingBase)
@@ -242,6 +265,7 @@ public class InfernalMobsClient implements ISidedProxy
             MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) ent);
             if (mod != null)
             {
+                //System.out.printf("health packet [%f of %f] for %s\n", health, maxhealth, ent);
                 mod.setActualHealth(health, maxhealth);
             }
         }
@@ -254,7 +278,7 @@ public class InfernalMobsClient implements ISidedProxy
     }
 
     @Override
-    public void onMobModsPacket(String stringData, int entID)
+    public void onMobModsPacketToClient(String stringData, int entID)
     {
         InfernalMobsCore.instance().addRemoteEntityModifiers(FMLClientHandler.instance().getClient().theWorld, entID, stringData);
     }
