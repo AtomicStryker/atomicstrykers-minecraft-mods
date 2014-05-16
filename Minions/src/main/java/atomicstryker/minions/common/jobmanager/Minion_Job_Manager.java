@@ -156,6 +156,7 @@ public abstract class Minion_Job_Manager
     public void setWorkerFree(EntityMinion input)
     {
     	input.giveTask(null, false);
+    	input.setWorking(false);
     	workerList.remove(input);
     	
     	if (workerList.isEmpty())
