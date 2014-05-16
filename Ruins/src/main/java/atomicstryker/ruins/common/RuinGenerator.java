@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -27,8 +26,8 @@ public class RuinGenerator
     private int NumTries = 0, LastNumTries = 0;
     private final int WORLD_MAX_HEIGHT = 256;
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
-    private final HashSet<RuinData> sweptNPruned;
     private File ruinsDataFile;
+    private File ruinsDataFileWriting;
     private final RuinData spawnPointBlock;
 
     public RuinGenerator(RuinHandler rh, World world)
@@ -44,8 +43,8 @@ public class RuinGenerator
         final int minZ = world.getSpawnPoint().posZ - 32;
         spawnPointBlock = new RuinData(minX, minX+64, minY, minY+64, minZ, minZ+64, "SpawnPointBlock");
         
-        sweptNPruned = new HashSet<RuinData>();
         ruinsDataFile = new File(rh.saveFolder, fileName);
+        ruinsDataFileWriting = new File(rh.saveFolder, fileName+"_writing");
 
         if (ruinsDataFile.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
         {
@@ -82,14 +81,14 @@ public class RuinGenerator
         @Override
         public void run()
         {
-            if (ruinsDataFile.exists())
+            if (ruinsDataFileWriting.exists())
             {
-                ruinsDataFile.delete();
+                ruinsDataFileWriting.delete();
             }
 
             try
             {
-                PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(ruinsDataFile)));
+                PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(ruinsDataFileWriting)));
                 pw.println("# Ruins data management file. Below, you see all data accumulated by AtomicStrykers Ruins during the last run of this World.");
                 pw.println("# Data is noted as follows: Each line stands for one successfull Ruin spawn. Data syntax is:");
                 pw.println("# xMin yMin zMin xMax yMax zMax templateName");
@@ -110,6 +109,12 @@ public class RuinGenerator
                 pw.flush();
                 pw.close();
                 // System.out.println("Ruins Positions flushed, entries "+registeredRuins.size());
+                
+                if (ruinsDataFile.exists())
+                {
+                    ruinsDataFile.delete();
+                }
+                ruinsDataFileWriting.renameTo(ruinsDataFile);
             }
             catch (IOException e)
             {
@@ -293,19 +298,6 @@ public class RuinGenerator
                 ruinTemplate.doBuild(world, random, x, y, z, rotate);
                 registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
                 nextMinDistance = ruinTemplate.getMinDistance();
-                if (ruinTemplate.isUnique())
-                {
-                    ruinsHandler.removeTemplate(ruinTemplate, biomeID);
-                    try
-                    {
-                        ruinsHandler.writeExclusions(ruinsHandler.saveFolder);
-                    }
-                    catch (Exception e)
-                    {
-                        System.err.println("Could not write exclusions for world: " + ruinsHandler.saveFolder);
-                        e.printStackTrace();
-                    }
-                }
             }
             else
             {
@@ -374,50 +366,13 @@ public class RuinGenerator
     {
         return random.nextInt(8) - random.nextInt(8) + (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
     }
-    
-    /**
-     * Executes a Sweep n Prune algorithm by only putting RuinData sets with at all possible collisions
-     * into a subset, which then is to be used instead of the full RuinData set for collision detection
-     * 
-     * @param collider RuinData instance to find possible collisions for
-     * @return reference to reused sweptNPruned HashSet
-     */
-    private HashSet<RuinData> sweptAndPrunedSetColliding(RuinData collider)
-    {
-        sweptNPruned.clear();
-        RuinData other = registeredRuins.floor(collider);
-        while (other != null && collider.collisionLowerBoundsPossible(other))
-        {
-            if (sweptNPruned.add(other))
-            {
-                other = registeredRuins.lower(other);
-            }
-            else
-            {
-                break;
-            }
-        }
-        other = registeredRuins.ceiling(collider);
-        while (other != null && collider.collisionHigherBoundsPossible(other))
-        {
-            if (sweptNPruned.add(other))
-            {
-                other = registeredRuins.higher(other);
-            }
-            else
-            {
-                break;
-            }
-        }
-        return sweptNPruned;
-    }
 
     private boolean willOverlap(RuinTemplate r, int x, int y, int z, int rotate)
     {
-        RuinData current = r.getRuinData(x, y, z, rotate);
-        for (RuinData rd : sweptAndPrunedSetColliding(current))
+        final RuinData current = r.getRuinData(x, y, z, rotate);
+        for (RuinData rd : registeredRuins)
         {
-            if (rd.collides(current))
+            if (rd.intersectsWith(current))
             {
                 return true;
             }

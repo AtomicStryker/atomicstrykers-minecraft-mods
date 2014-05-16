@@ -316,3 +316,8 @@ a: setAccessible now true
 + positions file now blocks an area around spawn by default
 + ruin spacing increased by default
 + complete revamp of default template set, mostly generic now. Moved others into "optional" and "obsolete" sets
+
+12.9
++ premature optimization probably made the collision detector not work ... brute force it is
++ added world chunk logging to detect IWorldGenerator.generate being called multiple times
++ scrapped "unique" template setting because it never quite worked right. Use templateInstancesMinDistance

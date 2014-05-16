@@ -33,17 +33,17 @@ public class RuinData implements Comparable<RuinData>
         yMid = (yMin+yMax)/2;
         zMid = (zMin+zMax)/2;
     }
-
-    public boolean collides(RuinData check)
+    
+    public boolean intersectsWith(RuinData check)
     {
-        if (((check.xMin >= xMin) && (check.xMin <= xMax)) || ((check.xMax >= xMin) && (check.xMax <= xMax))
-                || ((check.zMin >= zMin) && (check.zMin <= zMax)) || ((check.zMax >= zMin) && (check.zMax <= zMax)))
+        if ((check.xMin >= xMin && check.xMin <= xMax) || (check.xMax >= xMin && check.xMax <= xMax) || (check.zMin >= zMin && check.zMin <= zMax)
+                || (check.zMax >= zMin && check.zMax <= zMax))
         {
             return check.yMin >= yMin && check.yMax <= yMax;
         }
         return false;
     }
-
+    
     public boolean collisionLowerBoundsPossible(RuinData check)
     {
         return check.xMin >= xMin || check.zMin >= zMin || check.yMin >= yMin;
