@@ -23,7 +23,7 @@ public class RuinTemplate
     private Block[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
-    private boolean preserveWater = false, preserveLava = false, preservePlants = false, unique = false;
+    private boolean preserveWater = false, preserveLava = false, preservePlants = false;
     private final ArrayList<RuinTemplateRule> rules;
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
@@ -90,11 +90,6 @@ public class RuinTemplate
     public int getMinDistance()
     {
         return (width > length ? width : length) + lbuffer;
-    }
-
-    public boolean isUnique()
-    {
-        return unique;
     }
 
     public boolean isIgnoredBlock(Block blockID, World world, int x, int y, int z)
@@ -605,14 +600,6 @@ public class RuinTemplate
                 {
                     String[] check = line.split("=");
                     weight = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("unique"))
-                {
-                    String[] check = line.split("=");
-                    if (Integer.parseInt(check[1]) == 1)
-                    {
-                        unique = true;
-                    }
                 }
                 else if (line.startsWith("embed_into_distance"))
                 {

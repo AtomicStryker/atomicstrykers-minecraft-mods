@@ -41,7 +41,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "12.8";
+    public static final String modversion = "12.9";
     
     public final static int FILE_TEMPLATE = 0;
     public final static String TEMPLATE_EXT = "tml";
@@ -115,34 +115,32 @@ public class RuinsMod
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
         {
-            if (Math.abs(chunkX) < 3 && Math.abs(chunkZ) < 3)
-            {
-                return; // the 0,0 bug is really annoying. SLEDGEHAMMER FIX!
-            }
-
             if (world.isRemote)
             {
                 return;
             }
-
+            
             int[] tuple = { chunkX, chunkZ };
             if (currentlyGenerating.contains(tuple))
             {
-                System.out.printf("Ruins Mod caught recursive generator call at chunk [%d|%d]", chunkX, chunkZ);
+                System.err.printf("Ruins Mod caught recursive generator call at chunk [%d|%d]", chunkX, chunkZ);
             }
             else
             {
-                currentlyGenerating.add(tuple);
-                if (world.provider instanceof WorldProviderHell)
+                if (!getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
                 {
-                    generateNether(world, random, chunkX * 16, chunkZ * 16);
+                    currentlyGenerating.add(tuple);
+                    if (world.provider instanceof WorldProviderHell)
+                    {
+                        generateNether(world, random, chunkX * 16, chunkZ * 16);
+                    }
+                    else
+                    // normal world
+                    {
+                        generateSurface(world, random, chunkX * 16, chunkZ * 16);
+                    }
+                    currentlyGenerating.remove(tuple);
                 }
-                else
-                // normal world
-                {
-                    generateSurface(world, random, chunkX * 16, chunkZ * 16);
-                }
-                currentlyGenerating.remove(tuple);
             }
         }
     }
@@ -175,6 +173,7 @@ public class RuinsMod
     {
         RuinHandler ruins;
         RuinGenerator generator;
+        ChunkLoggerData chunkLogger;
     }
 
     private WorldHandle getWorldHandle(World world)
@@ -185,7 +184,7 @@ public class RuinsMod
             if (!generatorMap.containsKey(world.provider.dimensionId))
             {
                 wh = new WorldHandle();
-                createHandler(wh, world);
+                initWorldHandle(wh, world);
                 generatorMap.put(world.provider.dimensionId, wh);
             }
             else
@@ -251,7 +250,7 @@ public class RuinsMod
         return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
     }
 
-    private void createHandler(WorldHandle worldHandle, World world)
+    private void initWorldHandle(WorldHandle worldHandle, World world)
     {
         // load in defaults
         try
@@ -259,6 +258,13 @@ public class RuinsMod
             File worlddir = getWorldSaveDir(world);
             worldHandle.ruins = new RuinHandler(worlddir);
             worldHandle.generator = new RuinGenerator(worldHandle.ruins, world);
+            
+            worldHandle.chunkLogger = (ChunkLoggerData) world.perWorldStorage.loadData(ChunkLoggerData.class, "ruinschunklogger");
+            if (worldHandle.chunkLogger == null)
+            {
+                worldHandle.chunkLogger = new ChunkLoggerData("ruinschunklogger");
+                world.perWorldStorage.setData("ruinschunklogger", worldHandle.chunkLogger);
+            }
         }
         catch (Exception e)
         {
@@ -340,7 +346,7 @@ public class RuinsMod
         pw.println("chance_for_site_nether=15");
         pw.println("disableRuinSpawnCoordsLogging=true");
         pw.println();
-        pw.println("templateInstancesMinDistance=150");
+        pw.println("templateInstancesMinDistance=256");
         pw.println("anyRuinsMinDistance=64");
         pw.println();
         // print all the biomes!
