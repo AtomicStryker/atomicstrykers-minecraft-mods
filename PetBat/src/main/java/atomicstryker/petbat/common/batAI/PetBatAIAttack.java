@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
@@ -43,6 +44,16 @@ public class PetBatAIAttack extends EntityAIBase
     @Override
     public boolean continueExecuting()
     {
+        if (entityTarget instanceof EntityPlayer)
+        {
+            EntityPlayer p = (EntityPlayer) entityTarget;
+            if (entityTarget.getCommandSenderName().equals(petBat.getOwnerName()) && p.getHealth() < p.getMaxHealth()/2)
+            {
+                petBat.recallToOwner();
+                return false;
+            }
+        }
+        
         if (entityTarget != null && entityTarget.isEntityAlive())
         {
             return true;   
@@ -69,11 +80,12 @@ public class PetBatAIAttack extends EntityAIBase
     public void updateTask()
     {
         petBat.getLookHelper().setLookPositionWithEntity(entityTarget, 30.0F, 30.0F);
-        
+
         attackTick = Math.max(attackTick - 1, 0);
-        
-        double var1 = (double)(petBat.width * 2.0F * petBat.width * 2.0F);
-        if (petBat.getDistanceSq(entityTarget.posX, entityTarget.boundingBox.maxY, entityTarget.posZ) <= var1)
+
+        double maxReach = (double) (petBat.width * petBat.width * 5.0D);
+        if (petBat.getDistanceSq(entityTarget.posX, entityTarget.boundingBox.maxY, entityTarget.posZ) <= maxReach
+                || (entityTarget.getBoundingBox() != null && petBat.getBoundingBox().intersectsWith(entityTarget.getBoundingBox())))
         {
             if (entityTarget instanceof EntityItem)
             {
@@ -84,14 +96,14 @@ public class PetBatAIAttack extends EntityAIBase
                 else if (attackTick == 1)
                 {
                     entityTarget.setDead();
-                    displayEatingEffects(((EntityItem)entityTarget).getEntityItem(), 16);
+                    displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 16);
                     petBat.worldObj.playSoundAtEntity(petBat, "random.burp", 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
                 else if (attackTick % 3 == 0)
                 {
-                    displayEatingEffects(((EntityItem)entityTarget).getEntityItem(), 5);
+                    displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 5);
                 }
             }
             else
@@ -100,7 +112,7 @@ public class PetBatAIAttack extends EntityAIBase
                 {
                     attackTick = 20;
                     petBat.attackEntityAsMob(entityTarget);
-                    
+
                     double xKnock = entityTarget.posX - petBat.posX;
                     double zKnock = entityTarget.posZ - petBat.posZ;
                     for (; xKnock * xKnock + zKnock * zKnock < 1.0E-4D; zKnock = (Math.random() - Math.random()) * 0.01D)
