@@ -21,7 +21,7 @@ public class RuinTemplate
 
     private final String name;
     private Block[] acceptedSurfaces, deniedSurfaces;
-    private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 1, randomOffMin = 0, randomOffMax = 0;
+    private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false, preservePlants = false;
     private final ArrayList<RuinTemplateRule> rules;
@@ -320,7 +320,7 @@ public class RuinTemplate
         return new RuinData(xMin, xMax, y, y + height, zMin, zMax, name);
     }
 
-    public void doBuild(World world, Random random, int xBase, int y, int zBase, int rotate)
+    public void doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate)
     {
         /*
          * we need to shift the base coordinates and take care of any rotations
@@ -330,7 +330,10 @@ public class RuinTemplate
         boolean eastwest;
         RuinTemplateLayer curlayer;
         RuinTemplateRule curRule;
-
+        
+        // height sanity check
+        final int y = Math.max(Math.min(yBase, world.getActualHeight()-height), 8);
+        
         // initialize all these variables
         ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
         ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
