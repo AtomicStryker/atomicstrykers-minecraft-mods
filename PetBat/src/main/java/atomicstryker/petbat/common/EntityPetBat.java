@@ -174,21 +174,13 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         {
             return true;
         }
-
-        if (!this.worldObj.isRemote)
+        if (!worldObj.isRemote)
         {
             if (getIsBatHanging())
             {
                 setIsBatHanging(false);
             }
-
-            if (source.getEntity() != null && source.getEntity() == owner && !this.isDead)
-            {
-                recallToOwner();
-                return true;
-            }
         }
-
         return super.attackEntityFrom(source, amount);
     }
 

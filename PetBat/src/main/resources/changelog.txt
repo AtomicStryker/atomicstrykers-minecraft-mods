@@ -1,3 +1,11 @@
+1.3.4
+fixed Bat beating resulting in Item wear
+fixed Bats being unable to hit oversized enemy types
+introducing bat brawl: when attacking your bat with anything but your free hand, it will start attacking you
+you can use this to get xp for your bat without danger to it or yourself
+the bat will cease attacking and return to inventory if the owner player drops below half health
+should you hit a bat by accident during a fight, being hit by or attacking a mob will get it's targeting off you
+
 1.3.3
 fixed Batflute appearing in Creative (removed tab assignment)
 fixed Batflute crashing when used and no NBT data was attached to it (cheated ones)

@@ -20,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -36,7 +37,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.3")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.4")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -236,6 +237,20 @@ public class PetBatMod implements IProxy
             {
                 new GlisterBatAdapter((EntityPetBat) event.target);
                 p.inventory.consumeInventoryItem(GLISTER_ITEM_ID);
+            }
+        }
+    }
+    
+    @SubscribeEvent
+    public void onPlayerAttacksEntity(AttackEntityEvent event)
+    {
+        if (event.target instanceof EntityPetBat)
+        {
+            EntityPetBat bat = (EntityPetBat) event.target;
+            if (bat.getOwnerName().equals(event.entityPlayer.getCommandSenderName()) && event.entityPlayer.getCurrentEquippedItem() == null)
+            {
+                bat.recallToOwner();
+                event.setCanceled(true);
             }
         }
     }
