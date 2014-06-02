@@ -321,3 +321,5 @@ a: setAccessible now true
 + premature optimization probably made the collision detector not work ... brute force it is
 + added world chunk logging to detect IWorldGenerator.generate being called multiple times
 + scrapped "unique" template setting because it never quite worked right. Use templateInstancesMinDistance
++ added sanity checking to height values. Ruins bounds can now only be set starting height 8 and fitting below max world height
++ added optional coordinates to testruin command, can be called from server console with coordinates
