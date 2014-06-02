@@ -26,9 +26,9 @@ public class CommandTestTemplate extends CommandBase
     @Override
     public String getCommandUsage(ICommandSender var1)
     {
-        return "/testruin TEMPLATENAME manually spawns the target Ruin of the templateparser folder";
+        return "/testruin TEMPLATENAME [ROTATION X Y Z] manually spawns the target Ruin of the templateparser folder, [] optional";
     }
-    
+
     @Override
     public int getRequiredPermissionLevel()
     {
@@ -45,60 +45,70 @@ public class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    execBuild(RuinsMod.DIR_NORTH);
+                    execBuild(RuinsMod.DIR_NORTH, MathHelper.floor_double(player.posX + .5), MathHelper.floor_double(player.posY - .5),
+                            MathHelper.floor_double(player.posZ + .5));
                 }
                 else
                 {
-                    player.addChatMessage(new ChatComponentText("You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
+                    player.addChatMessage(new ChatComponentText(
+                            "You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
                     player = null;
                 }
             }
             else
             {
-                String target = args[0];
-                if (!target.contains("/"))
-                {
-                    target = "templateparser/" + target;
-                }
-                
-                File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + target + ".tml");
-                if (file.exists() && file.canWrite())
-                {
-                    try
-                    {                        
-                        parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
-                        execBuild((args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    sender.addChatMessage(new ChatComponentText("Could not open/write file "+file));
-                }
+                tryBuild(sender, args, MathHelper.floor_double(player.posX + .5), MathHelper.floor_double(player.posY - .5), MathHelper.floor_double(player.posZ + .5));
+            }
+        }
+        else if (args.length > 4)
+        {
+            tryBuild(sender, args, Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+        }
+        else
+        {
+            sender.addChatMessage(new ChatComponentText("Command is only available for ingame player entities, or with coordinates specified"));
+        }
+    }
+    
+    private void tryBuild(ICommandSender sender, String[] args, int x, int y, int z)
+    {
+        String target = args[0];
+        if (!target.contains("/"))
+        {
+            target = "templateparser/" + target;
+        }
+
+        File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + target + ".tml");
+        if (file.exists() && file.canWrite())
+        {
+            try
+            {
+                parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
+                execBuild((args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH, x, y, z);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
             }
         }
         else
         {
-            sender.addChatMessage(new ChatComponentText("Command is only available for ingame player entities."));
+            sender.addChatMessage(new ChatComponentText("Could not open/write file " + file));
         }
     }
-    
-    private void execBuild(int rotation)
+
+    private void execBuild(int rotation, int x, int y, int z)
     {
-        parsedRuin.doBuild(player.worldObj, player.getRNG(), MathHelper.floor_double(player.posX + .5),
-                MathHelper.floor_double(player.posY - .5), MathHelper.floor_double(player.posZ + .5), rotation);
+        parsedRuin.doBuild(player.worldObj, player.getRNG(), x, y, z, rotation);
         parsedRuin = null;
     }
-    
+
     @Override
     public int compareTo(Object o)
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getCommandName().compareTo(getCommandName());
+            return ((ICommand) o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }
