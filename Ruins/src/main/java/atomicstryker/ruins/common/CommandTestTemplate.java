@@ -9,6 +9,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
 
 public class CommandTestTemplate extends CommandBase
 {
@@ -84,7 +85,16 @@ public class CommandTestTemplate extends CommandBase
             try
             {
                 parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
-                execBuild((args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH, x, y, z);
+                int rotation = (args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH;
+                
+                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true)))
+                {
+                    sender.addChatMessage(new ChatComponentText("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                }
+                else
+                {
+                    execBuild(rotation, x, y, z);
+                }
             }
             catch (Exception e)
             {

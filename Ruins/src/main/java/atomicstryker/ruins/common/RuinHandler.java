@@ -90,8 +90,7 @@ public class RuinHandler
                 return;
             }
 
-            File templPath = new File(basedir, "resources");
-            templPath = new File(templPath, "ruins");
+            final File templPath = new File(basedir, "resources/ruins");
             if (!templPath.exists())
             {
                 System.out.println("Could not access the resources path for the ruins templates, file doesn't exist!");
@@ -180,7 +179,7 @@ public class RuinHandler
             int rand = random.nextInt(vars[WEIGHT][biome]);
             int oldval = 0, increment = 0;
             RuinTemplate retval = null;
-            Iterator<RuinTemplate> i = templates.get(biome).iterator();
+            final Iterator<RuinTemplate> i = templates.get(biome).iterator();
             while (i.hasNext())
             {
                 retval = i.next();
@@ -201,29 +200,7 @@ public class RuinHandler
 
     public boolean useGeneric(Random random, int biome)
     {
-        if (biome == RuinsMod.BIOME_NONE)
-        {
-            return true;
-        }
-        if (random.nextInt(100) + 1 < vars[CHANCE][biome])
-        {
-            return false;
-        }
-        return true;
-    }
-
-    public void removeTemplate(RuinTemplate r, int biome)
-    {
-        /*
-         * removes a ruin from the specified biome, providing support for unique
-         * templates.
-         */
-        if (templates.get(biome).contains(r))
-        {
-            templates.get(biome).remove(r);
-            excluded.add(new Exclude(r.getName(), biome));
-            recalcBiomeWeight(biome);
-        }
+        return biome == RuinsMod.BIOME_NONE || random.nextInt(100) + 1 >= vars[CHANCE][biome];
     }
 
     public void removeTemplate(String name, int biome)
@@ -232,7 +209,7 @@ public class RuinHandler
          * removes a ruin from the specified biome, providing support for unique
          * templates.
          */
-        Iterator<RuinTemplate> i = templates.get(biome).iterator();
+        final Iterator<RuinTemplate> i = templates.get(biome).iterator();
         RuinTemplate rem = null;
         boolean found = false;
         while (i.hasNext())
@@ -254,9 +231,9 @@ public class RuinHandler
 
     public void writeExclusions(File dir) throws Exception
     {
-        File file = new File(dir, "excl.txt");
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-        Iterator<Exclude> i = excluded.iterator();
+        final File file = new File(dir, "excl.txt");
+        final PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+        final Iterator<Exclude> i = excluded.iterator();
         while (i.hasNext())
         {
             pw.println(i.next().toString());
@@ -287,7 +264,7 @@ public class RuinHandler
 
     private void recalcBiomeWeight(int biome)
     {
-        Iterator<RuinTemplate> i = templates.get(biome).iterator();
+        final Iterator<RuinTemplate> i = templates.get(biome).iterator();
         vars[WEIGHT][biome] = 0;
         while (i.hasNext())
         {
@@ -297,12 +274,12 @@ public class RuinHandler
 
     private void readGlobalOptions(File dir) throws Exception
     {
-        File file = new File(dir, "ruins.txt");
+        final File file = new File(dir, "ruins.txt");
         if (!file.exists())
         {
             RuinsMod.copyGlobalOptionsTo(dir);
         }
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        final BufferedReader br = new BufferedReader(new FileReader(file));
         String read = br.readLine();
         String[] check;
         while (read != null)
@@ -377,8 +354,8 @@ public class RuinHandler
 
     private void readExclusions(File dir, PrintWriter pw) throws Exception
     {
-        File file = new File(dir, "excl.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        final File file = new File(dir, "excl.txt");
+        final BufferedReader br = new BufferedReader(new FileReader(file));
         String read = br.readLine();
         String[] check;
         while (read != null)
@@ -398,7 +375,7 @@ public class RuinHandler
 
     private void addRuins(PrintWriter pw, File path, int biomeID) throws Exception
     {
-        HashSet<RuinTemplate> targetList = templates.get(biomeID);
+        final HashSet<RuinTemplate> targetList = templates.get(biomeID);
         RuinTemplate r;
         if (path.listFiles() != null)
         {

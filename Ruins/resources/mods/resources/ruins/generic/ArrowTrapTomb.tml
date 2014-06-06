@@ -14,7 +14,7 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=1
 
-rule1=0,100,minecraft:preserveBlock
+rule1=0,100,preserveBlock
 rule2=0,100,minecraft:stonebrick-0
 rule3=0,100,minecraft:stonebrick-3
 rule4=0,100,minecraft:stone-0
