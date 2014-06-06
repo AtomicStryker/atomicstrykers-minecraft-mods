@@ -2,7 +2,7 @@ package atomicstryker.ruins.common;
 
 public class RuinData implements Comparable<RuinData>
 {
-    private final int xMin, xMax, yMin, yMax, zMin, zMax, xMid, yMid, zMid;
+    public final int xMin, xMax, yMin, yMax, zMin, zMax, xMid, yMid, zMid;
     public final String name;
 
     public RuinData(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax, String n)

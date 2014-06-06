@@ -23,7 +23,7 @@ public class RuinTemplate
     private Block[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
-    private boolean preserveWater = false, preserveLava = false, preservePlants = false;
+    private boolean preserveWater = false, preserveLava = false;
     private final ArrayList<RuinTemplateRule> rules;
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
@@ -113,19 +113,8 @@ public class RuinTemplate
     
     private boolean isPlant(Block blockID, World world, int x, int y, int z)
     {
-        if (blockID instanceof BlockBush)
-        {
-            return true;
-        }
-        if (blockID instanceof IPlantable || blockID instanceof IShearable)
-        {
-            return true;
-        }
-        if (blockID.isWood(world, x, y, z) || blockID.isLeaves(world, x, y, z))
-        {
-            return true;
-        }
-        return false;
+        return blockID instanceof IShearable || blockID instanceof BlockBush || blockID instanceof IPlantable || blockID.isLeaves(world, x, y, z)
+                || blockID.isWood(world, x, y, z);
     }
 
     public boolean preserveBlock(Block blockID, World world, int x, int y, int z)
@@ -152,13 +141,6 @@ public class RuinTemplate
                 return true;
             }
             if (blockID == Blocks.lava)
-            {
-                return true;
-            }
-        }
-        if (preservePlants)
-        {
-            if (isPlant(blockID, world, x, y, z))
             {
                 return true;
             }
@@ -335,9 +317,9 @@ public class RuinTemplate
         final int y = Math.max(Math.min(yBase, world.getActualHeight()-height), 8);
         
         // initialize all these variables
-        ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
-        ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
-        Iterator<RuinTemplateLayer> i = layers.iterator();
+        final ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
+        final ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
+        final Iterator<RuinTemplateLayer> i = layers.iterator();
 
         // Offset the ruin vertically by a specified random range.
         // int y_off = 1 - embed;
@@ -396,7 +378,6 @@ public class RuinTemplate
                         rulenum = curlayer.getRuleAt(x1, z1);
                         break;
                     }
-
                     curRule = rules.get(rulenum);
                     if (curRule.runLater())
                     {
@@ -502,8 +483,9 @@ public class RuinTemplate
         rules.add(new RuinRuleAir(debugPrinter, this, ""));
 
         // now get the rest of the data
-        Iterator<String> i = lines.iterator();
+        final Iterator<String> i = lines.iterator();
         String line;
+        int ruleCount = -1;
         while (i.hasNext())
         {
             line = i.next();
@@ -511,6 +493,7 @@ public class RuinTemplate
             {
                 if (line.startsWith("layer"))
                 {
+                    ruleCount = rules.size();
                     // add in data until we reach the end of the layer
                     ArrayList<String> layerlines = new ArrayList<String>();
                     line = i.next();
@@ -522,12 +505,19 @@ public class RuinTemplate
                         }
                         line = i.next();
                     }
-                    layers.add(new RuinTemplateLayer(layerlines, width, length));
+                    layers.add(new RuinTemplateLayer(layerlines, width, length, ruleCount));
                 }
                 else if (line.startsWith("rule"))
                 {
-                    String[] parts = line.split("=");
-                    rules.add(new RuinTemplateRule(debugPrinter, this, parts[1], debugging));
+                    if (ruleCount != -1)
+                    {
+                        throw new Exception("Template file problem: A Rule was defined after a layer! Define all rules before the first layer!");
+                    }
+                    else
+                    {
+                        String[] parts = line.split("=");
+                        rules.add(new RuinTemplateRule(debugPrinter, this, parts[1], debugging));
+                    }
                 }
             }
         }
@@ -642,14 +632,6 @@ public class RuinTemplate
                     if (Integer.parseInt(check[1]) == 1)
                     {
                         preserveLava = true;
-                    }
-                }
-                else if (line.startsWith("preserve_plants"))
-                {
-                    String[] check = line.split("=");
-                    if (Integer.parseInt(check[1]) == 1)
-                    {
-                        preservePlants = true;
                     }
                 }
                 else if (line.startsWith("random_height_offset"))

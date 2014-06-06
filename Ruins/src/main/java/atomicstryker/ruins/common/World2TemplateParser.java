@@ -187,8 +187,7 @@ public class World2TemplateParser extends Thread
         BlockData currentinstance;
         BlockData[][] currentLayer;
         blocker = 0;
-        boolean unique;
-
+        
         for (int yi = y + 1; true; yi++)
         {
             currentLayer = new BlockData[xLength][zLength];
@@ -215,7 +214,6 @@ public class World2TemplateParser extends Thread
                     temp.meta = world.getBlockMetadata(blockx, blocky, blockz);
                     temp.data = null;
                     temp.spawnRule = 0;
-                    unique = true;
 
                     if (temp.block == Blocks.air || temp.equals(templateHelperBlock))
                     {
@@ -317,14 +315,9 @@ public class World2TemplateParser extends Thread
                         String specialType = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
                         temp.data = "Skull:" + skulltype + ":" + rot + ((specialType.equals("")) ? "" : ":" + specialType) + "-" + temp.meta;
                     }
-                    else
-                    {
-                        // boring id only block type
-                        unique = false;
-                    }
 
                     int indexInList = usedBlocks.indexOf(temp);
-                    if (indexInList == -1 || unique)
+                    if (indexInList == -1)
                     {
                         currentinstance = temp.copy();
                         usedBlocks.add(currentinstance);
@@ -394,7 +387,6 @@ public class World2TemplateParser extends Thread
             pw.println("leveling_buffer=0");
             pw.println("preserve_water=0");
             pw.println("preserve_lava=0");
-            pw.println("preserve_plants=0");
             pw.println();
 
             int rulenum = 1;
@@ -481,9 +473,9 @@ public class World2TemplateParser extends Thread
         {
             if (data != null)
             {
-                return data.hashCode();
+                return data.hashCode() + meta;
             }
-            return block.getUnlocalizedName().hashCode() & meta;
+            return block.getUnlocalizedName().hashCode() + meta;
         }
 
         @Override
@@ -491,16 +483,7 @@ public class World2TemplateParser extends Thread
         {
             if (o instanceof BlockData)
             {
-                BlockData b = (BlockData) o;
-                if (b.data != null)
-                {
-                    if (data != null)
-                    {
-                        return b.data.equals(data);
-                    }
-                    return false;
-                }
-                return b.block == block && b.meta == meta;
+                return ((BlockData)o).toString().equals(this.toString());
             }
             return false;
         }

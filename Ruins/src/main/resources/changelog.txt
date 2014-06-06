@@ -323,3 +323,10 @@ a: setAccessible now true
 + scrapped "unique" template setting because it never quite worked right. Use templateInstancesMinDistance
 + added sanity checking to height values. Ruins bounds can now only be set starting height 8 and fitting below max world height
 + added optional coordinates to testruin command, can be called from server console with coordinates
+
+13.0 (the shipwreck spam update)
++ adds forge event EventRuinTemplateSpawn
++ adds server command /undoruin which lets you restore the building site of the last /testruin command
++ fixed small issue where templateparser would create unnecessary duplicate rules
++ fixed the underwater shipwreck templates up a bit, added one more
++ minor optimizations, improvements to logging broken templates

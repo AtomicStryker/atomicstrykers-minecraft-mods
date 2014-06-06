@@ -41,7 +41,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "12.9";
+    public static final String modversion = "13.0";
     
     public final static int FILE_TEMPLATE = 0;
     public final static String TEMPLATE_EXT = "tml";
@@ -67,6 +67,7 @@ public class RuinsMod
     {
         evt.registerServerCommand(new CommandParseTemplate());
         evt.registerServerCommand(new CommandTestTemplate());
+        evt.registerServerCommand(new CommandUndo());
     }
 
     private long nextInfoTime;

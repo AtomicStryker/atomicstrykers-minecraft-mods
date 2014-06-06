@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.MinecraftForge;
 
 public class RuinGenerator
 {
@@ -23,12 +24,14 @@ public class RuinGenerator
 
     private final RuinHandler ruinsHandler;
     private final RuinStats stats;
-    private int NumTries = 0, LastNumTries = 0;
+    private int numTries = 0, LastNumTries = 0;
     private final int WORLD_MAX_HEIGHT = 256;
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
     private File ruinsDataFile;
     private File ruinsDataFileWriting;
     private final RuinData spawnPointBlock;
+    private final float minDistTemplate;
+    private final float minDistRuins;
 
     public RuinGenerator(RuinHandler rh, World world)
     {
@@ -36,6 +39,8 @@ public class RuinGenerator
         stats = new RuinStats();
         new LinkedList<RuinTemplate>();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
+        minDistTemplate = ruinsHandler.templateInstancesMinDistance * ruinsHandler.templateInstancesMinDistance;
+        minDistRuins = ruinsHandler.anyRuinsMinDistance * ruinsHandler.anyRuinsMinDistance;
         
         // lets create a banned area 2 chunks around the spawn
         final int minX = world.getSpawnPoint().posX - 32;
@@ -48,8 +53,7 @@ public class RuinGenerator
 
         if (ruinsDataFile.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
         {
-            Thread t = new LoadThread();
-            t.start();
+            new LoadThread().start();
         }
         else
         {
@@ -166,22 +170,11 @@ public class RuinGenerator
 
     public boolean generateNormal(World world, Random random, int xBase, int j, int zBase)
     {
-        // here we're generating 5 chunks behind normal.
-        // This should hopefully solve the "wanderer" problem with edge chunks.
-
         for (int c = 0; c < ruinsHandler.triesPerChunkNormal; c++)
         {
             if (random.nextFloat() * 100 < ruinsHandler.chanceToSpawnNormal)
             {
-                /*
-                 * ditch the y coord, we'll be coming down from the top,
-                 * checking for a suitable square to start.
-                 */
-                int xMod = random.nextInt(16);
-                int zMod = random.nextInt(16);
-                int x = xBase + xMod;
-                int z = zBase + zMod;
-                createBuilding(world, random, x, z, 0, false);
+                createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), 0, false);
             }
         }
         return true;
@@ -193,21 +186,15 @@ public class RuinGenerator
         {
             if (random.nextFloat() * 100 < ruinsHandler.chanceToSpawnNether)
             {
-                /*
-                 * ditch the y coord, we'll be coming down from the top,
-                 * checking for a suitable square to start.
-                 */
-                int xMod = (random.nextInt(2) == 1 ? random.nextInt(16) : 0 - random.nextInt(16));
-                int zMod = (random.nextInt(2) == 1 ? random.nextInt(16) : 0 - random.nextInt(16));
-                int x = xBase + xMod;
-                int z = zBase + zMod;
-                createBuilding(world, random, x, z, 0, true);
+                int xMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
+                int zMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
+                createBuilding(world, random, xBase + xMod, zBase + zMod, 0, true);
             }
         }
         return true;
     }
 
-    private void createBuilding(World world, Random random, int x, int z, int minDistance, boolean Nether)
+    private void createBuilding(World world, Random random, int x, int z, int minDistance, boolean nether)
     {
         final int rotate = random.nextInt(4);
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
@@ -219,7 +206,7 @@ public class RuinGenerator
             biomeID = RuinsMod.BIOME_NONE;
         }
         stats.biomes[biomeID]++;
-
+        
         RuinTemplate ruinTemplate = ruinsHandler.getTemplate(random, biomeID);
         if (ruinTemplate == null)
         {
@@ -231,19 +218,18 @@ public class RuinGenerator
                 return;
             }
         }
-
-        NumTries++;
+        numTries++;
 
         if (minDistance != 0)
         {
-            stats.SiteTries++;
+            stats.siteTries++;
             // tweak the x and z from the Min Distance, minding the bounding box
             minDistance += random.nextInt(3) + ruinTemplate.getMinDistance();
             x += (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
             z += (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
         }
-
-        int y = findSuitableY(world, ruinTemplate, x, z, Nether);
+        
+        int y = findSuitableY(world, ruinTemplate, x, z, nether);
         if (y > 0)
         {
             if (willOverlap(ruinTemplate, x, y, z, rotate))
@@ -277,7 +263,13 @@ public class RuinGenerator
                 y = ruinTemplate.checkArea(world, x, y, z, rotate);
                 if (y < 0)
                 {
+                    stats.LevelingFails++;
                     // System.out.println("checkArea fail");
+                    return;
+                }
+                
+                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, y, z, rotate, false)))
+                {
                     return;
                 }
                 
@@ -302,9 +294,10 @@ public class RuinGenerator
             else
             {
                 // System.out.println("Min Dist fail");
+                stats.BoundingBoxFails++;
                 return;
             }
-            if (Nether)
+            if (nether)
             {
                 if (random.nextFloat() * 100 < ruinsHandler.chanceForSiteNether)
                 {
@@ -322,11 +315,12 @@ public class RuinGenerator
         else
         {
             // System.out.println("y fail");
+            stats.LevelingFails++;
         }
 
-        if (NumTries > (LastNumTries + 1000))
+        if (numTries > (LastNumTries + 1000))
         {
-            LastNumTries = NumTries;
+            LastNumTries = numTries;
             printStats();
         }
     }
@@ -341,23 +335,21 @@ public class RuinGenerator
             System.out.println("Current Stats:");
             System.out.println("    Total Tries:                 " + total);
             System.out.println("    Number Created:              " + stats.NumCreated);
-            System.out.println("    Site Tries:                  " + stats.SiteTries);
+            System.out.println("    Site Tries:                  " + stats.siteTries);
             System.out.println("    Within Another Bounding Box: " + stats.BoundingBoxFails);
             System.out.println("    Bad Blocks:                  " + stats.BadBlockFails);
             System.out.println("    No Leveling:                 " + stats.LevelingFails);
             System.out.println("    No Cut-In:                   " + stats.CutInFails);
 
-            for (int i = 0; i < stats.biomes.length; i++)
+            for (int i = 0; i < RuinsMod.BIOME_NONE; i++)
             {
                 if (stats.biomes[i] != 0)
                 {
-                    if (i != RuinsMod.BIOME_NONE)
-                        System.out.println(BiomeGenBase.getBiomeGenArray()[i].biomeName + ": " + stats.biomes[i] + " Biome building attempts");
-                    else
-                        System.out.println("Any-Biome: " + stats.biomes[i] + " building attempts");
+                    System.out.println(BiomeGenBase.getBiomeGenArray()[i].biomeName + ": " + stats.biomes[i] + " Biome building attempts");
                 }
             }
-
+            System.out.println("Any-Biome: " + stats.biomes[RuinsMod.BIOME_NONE] + " building attempts");
+            
             System.out.println();
         }
     }
@@ -382,12 +374,7 @@ public class RuinGenerator
     
     private boolean checkMinDistance(RuinData ruinData)
     {
-        // refuse Ruins spawning too close to each other
-        float minDistTemplate = ruinsHandler.templateInstancesMinDistance;
-        minDistTemplate = minDistTemplate*minDistTemplate; // square it
-        float minDistRuins = ruinsHandler.anyRuinsMinDistance;
-        minDistRuins = minDistRuins*minDistRuins; //squared
-        
+        // refuse Ruins spawning too close to each other        
         for (RuinData r : registeredRuins)
         {
             if (r.name.equals(ruinData.name))
@@ -409,9 +396,26 @@ public class RuinGenerator
         return true;
     }
 
-    private int findSuitableY(World world, RuinTemplate r, int x, int z, boolean Nether)
+    private int findSuitableY(World world, RuinTemplate r, int x, int z, boolean nether)
     {
-        if (Nether)
+        if (!nether)
+        {
+            for (int y = WORLD_MAX_HEIGHT - 1; y > 7; y--)
+            {
+                final Block b = world.getBlock(x, y, z);
+                if (r.isIgnoredBlock(b, world, x, y, z))
+                {
+                    continue;
+                }
+                
+                if (r.isAcceptableSurface(b))
+                {
+                    return y;
+                }
+                return -1;
+            }
+        }
+        else
         {
             /*
              * The Nether has an entirely different topography so we'll use two
@@ -455,22 +459,6 @@ public class RuinGenerator
                         }
                         return -1;
                     }
-                }
-            }
-            return -1;
-        }
-        else
-        {
-            for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
-            {
-                final Block b = world.getBlock(x, y, z);
-                if (!r.isIgnoredBlock(b, world, x, y, z))
-                {
-                    if (r.isAcceptableSurface(b))
-                    {
-                        return y;
-                    }
-                    return -1;
                 }
             }
         }
