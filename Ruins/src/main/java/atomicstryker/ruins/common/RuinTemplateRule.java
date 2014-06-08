@@ -365,9 +365,9 @@ public class RuinTemplateRule
             {
                 Block b = (Block) o;
                 // need to strip meta '-x' value if present
-                if (s[2].charAt(s[2].length()-2) == '-')
+                if (s[2].lastIndexOf("-") > s[2].length()-5)
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].length()-3), rotateMetadata(b, blockMDs[blocknum], rotate));
+                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")-1), rotateMetadata(b, blockMDs[blocknum], rotate));
                 }
                 else
                 {
@@ -666,10 +666,10 @@ public class RuinTemplateRule
         String[] itemStrings = itemData.split(Pattern.quote("+"));
         String[] hashsplit;
         Object o;
-        System.out.println("itemStrings length: "+itemStrings.length);
+        debugPrinter.println("itemStrings length: "+itemStrings.length);
         for (String itemstring : itemStrings)
         {
-            System.out.println("itemString: "+itemstring);
+            debugPrinter.println("itemString: "+itemstring);
             hashsplit = itemstring.split("#");
             int itemStackSize = hashsplit.length > 1 ? Integer.valueOf(hashsplit[1]) : 1;
             int itemMeta = hashsplit.length > 2 ? Integer.valueOf(hashsplit[2]) : 0;
