@@ -1,7 +1,9 @@
 package atomicstryker.battletowers.common.network;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.util.EnumMap;
 
@@ -39,7 +41,7 @@ public class NetworkHelper
     @SafeVarargs
     public NetworkHelper(String channelName, Class<? extends IPacket> ... handledPacketClasses)
     {
-        EnumMap<Side, FMLEmbeddedChannel> channelPair = NetworkRegistry.INSTANCE.newChannel(channelName, new ChannelHandler(handledPacketClasses));
+        EnumMap<Side, FMLEmbeddedChannel> channelPair = NetworkRegistry.INSTANCE.newChannel(channelName, new ChannelCodec(handledPacketClasses), new ChannelHandler());
         clientOutboundChannel = channelPair.get(Side.CLIENT);
         serverOutboundChannel = channelPair.get(Side.SERVER);
     }
@@ -77,8 +79,11 @@ public class NetworkHelper
      */
     public void sendPacketToServer(IPacket packet)
     {
-        clientOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
-        clientOutboundChannel.writeOutbound(packet);
+        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        {
+            clientOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
+            clientOutboundChannel.writeOutbound(packet);
+        }
     }
     
     /**
@@ -140,13 +145,13 @@ public class NetworkHelper
     }
     
     /**
-     * Internal ChannelHandler, automatic discrimination and data forwarding
+     * Internal Channel Codec, automatic discrimination and data forwarding
      */
-    private class ChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket>
+    private class ChannelCodec extends FMLIndexedMessageToMessageCodec<IPacket>
     {
         
         @SafeVarargs
-        public ChannelHandler(Class<? extends IPacket> ... handledPacketClasses)
+        public ChannelCodec(Class<? extends IPacket> ... handledPacketClasses)
         {
             for (int i = 0; i < handledPacketClasses.length; i++)
             {
@@ -166,6 +171,18 @@ public class NetworkHelper
             msg.readBytes(ctx, bytes);
         }
         
+    }
+    
+    @Sharable
+    public class ChannelHandler extends SimpleChannelInboundHandler<IPacket>
+    {
+        public ChannelHandler() {}
+        
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, IPacket msg) throws Exception
+        {
+            // NOOP, just to prevent memory leaks
+        }
     }
     
 }

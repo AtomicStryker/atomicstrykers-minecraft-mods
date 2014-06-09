@@ -1,3 +1,6 @@
+RopesPlus 1.6.2
+- added Channel Handler which does nothing so FML would stop complaining about Packets
+
 RopesPlus 1.6.1
 - added a bunch of translations, thanks to comrade VeryBigBro for russian
 - fixed Zipline Ropes entering Schroedinger's state when invalidated

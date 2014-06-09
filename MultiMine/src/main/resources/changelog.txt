@@ -1,3 +1,6 @@
+1.4.0
+- added Channel Handler which does nothing so FML would stop complaining about Packets
+
 1.3.9
 - added block/item exclusion config fitting the new mod function style (server only)
 - "unknown" items and blocks are automatically added to the config upon first use

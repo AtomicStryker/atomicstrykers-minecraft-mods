@@ -27,7 +27,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 
-@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.1.9")
+@Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.2.0")
 public class KenshiroMod
 {
     @SidedProxy(clientSide = "atomicstryker.kenshiro.client.ClientProxy", serverSide = "atomicstryker.kenshiro.common.CommonProxy")
