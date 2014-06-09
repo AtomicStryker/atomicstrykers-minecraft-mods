@@ -336,3 +336,5 @@ a: setAccessible now true
 + added feature to automatically execute and delete command blocks upon a player coming near (64 block)
 +   to use, just take your rulex=0,100,CommandBlock:/summon Villager... and prefix "RUINSTRIGGER " to the command line
 +   example: rulex=0,100,CommandBlock:RUINSTRIGGER /summon Villager...
++ by the power of regex, fixed all Ruins templates which had torches without late spawning rules - no more popped off torches
++ Standard blocks in Ruins templates are now set without update, and the entire site updated after. Should help spawning lag a bit.
