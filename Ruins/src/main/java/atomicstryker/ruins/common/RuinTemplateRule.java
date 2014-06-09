@@ -304,13 +304,13 @@ public class RuinTemplateRule
             if (rotate != RuinsMod.DIR_NORTH)
             {
                 int metadata = rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate);
-                world.setBlock(x, y, z, blockIDs[blocknum], metadata, 2);
-                world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
+                world.setBlock(x, y, z, blockIDs[blocknum], metadata, 0);
+                world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
             }
             else
             {
-                world.setBlock(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 2);
-                world.setBlockMetadataWithNotify(x, y, z, blockMDs[blocknum], 2);
+                world.setBlock(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 0);
+                world.setBlockMetadataWithNotify(x, y, z, blockMDs[blocknum], 0);
             }
         }
     }
