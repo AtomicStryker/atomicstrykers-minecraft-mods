@@ -320,11 +320,7 @@ public class RuinTemplate
         final ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
         final ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
         final Iterator<RuinTemplateLayer> i = layers.iterator();
-
-        // Offset the ruin vertically by a specified random range.
-        // int y_off = 1 - embed;
-        // If this causes problems (it's a pretty cheap hack), then just put the
-        // old line back.
+        
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
 
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
@@ -382,20 +378,12 @@ public class RuinTemplate
                     if (curRule.runLater())
                     {
                         laterun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        // We can omit the if test, but it might be useful
-                        // later, or if the behavior breaks something
-                        // if ((curRule.condition <= 0 ? 0 - curRule.condition :
-                        // curRule.condition) > 3) {
-                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
+                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 0);
                     }
                     else if (curRule.runLast())
                     {
                         lastrun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        // We can omit the if test, but it might be useful
-                        // later, or if the behavior breaks something
-                        // if ((curRule.condition <= 0 ? 0 - curRule.condition :
-                        // curRule.condition) > 3) {
-                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 3); // }
+                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 0);
                     }
                     else
                     {
@@ -407,9 +395,20 @@ public class RuinTemplate
             // we're done with this layer
             y_off++;
         }
-
+        
         // get the late runs and finish up
         doLateRuns(world, random, laterun, lastrun);
+        
+        for (int x1 = 0; x1 < xDim; x1++)
+        {
+            for (int z1 = 0; z1 < zDim; z1++)
+            {
+                for (int y1 = 0; y1 < layers.size(); y1++)
+                {
+                    world.markBlockForUpdate(x+x1, y+y1, z+z1);
+                }
+            }
+        }
     }
 
     private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun)
