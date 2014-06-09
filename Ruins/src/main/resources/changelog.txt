@@ -333,3 +333,6 @@ a: setAccessible now true
 
 13.1 (Command Blocks Rising: Revengeance)
 + Command Block relative coordinates now automatically get rotated when their template is
++ added feature to automatically execute and delete command blocks upon a player coming near (64 block)
++   to use, just take your rulex=0,100,CommandBlock:/summon Villager... and prefix "RUINSTRIGGER " to the command line
++   example: rulex=0,100,CommandBlock:RUINSTRIGGER /summon Villager...

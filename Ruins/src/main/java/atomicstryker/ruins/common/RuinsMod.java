@@ -12,8 +12,10 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderHell;
@@ -23,6 +25,7 @@ import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -41,7 +44,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "13.0";
+    public static final String modversion = "13.1";
     
     public final static int FILE_TEMPLATE = 0;
     public final static String TEMPLATE_EXT = "tml";
@@ -108,6 +111,38 @@ public class RuinsMod
         if (wh != null)
         {
             wh.generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
+        }
+    }
+    
+    @SubscribeEvent
+    public void onEntityEnteringChunk(EntityEvent.EnteringChunk event)
+    {
+        if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote)
+        {
+            TileEntityCommandBlock tecb;
+            final double x = event.entity.posX;
+            final double y = event.entity.posY;
+            final double z = event.entity.posZ;
+            for (Object teo : event.entity.worldObj.loadedTileEntityList)
+            {
+                if (teo instanceof TileEntityCommandBlock)
+                {
+                    tecb = (TileEntityCommandBlock) teo;
+                    if (tecb.getDistanceFrom(x, y, z) < 4096.0) //square dist!
+                    {
+                        if (tecb.func_145993_a().func_145753_i().startsWith("RUINSTRIGGER "))
+                        {
+                            // strip prefix from command
+                            tecb.func_145993_a().func_145752_a(tecb.func_145993_a().func_145753_i().substring(13));
+                            // call command block execution
+                            tecb.func_145993_a().func_145755_a(event.entity.worldObj);
+                            // kill block
+                            System.out.printf("Ruins executed and killed Command Block at [%d|%d|%d]\n", tecb.xCoord, tecb.yCoord, tecb.zCoord);
+                            event.entity.worldObj.setBlockToAir(tecb.xCoord, tecb.yCoord, tecb.zCoord);
+                        }
+                    }
+                }
+            }
         }
     }
 
