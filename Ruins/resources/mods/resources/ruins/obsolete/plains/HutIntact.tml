@@ -26,10 +26,10 @@ rule7=0,100,stone_brick_stairs
 rule8=0,100,stone_brick_stairs-1
 rule9=0,100,glass
 rule10=0,100,stonebrick-2
-rule11=0,100,torch-3
+rule11=2,100,torch-3
 rule12=0,100,lapis_block
-rule13=0,100,torch-4
-rule14=0,100,torch-1
+rule13=2,100,torch-4
+rule14=2,100,torch-1
 rule15=0,100,lever-11
 rule16=0,100,unlit_redstone_torch-5
 

@@ -30,8 +30,8 @@ rule11=0,100,stone_slab-2
 rule12=0,100,stone_slab-10
 rule13=0,100,fence
 rule14=0,100,wooden_door-1
-rule15=0,100,torch-3
-rule16=0,100,torch-4
+rule15=2,100,torch-3
+rule16=2,100,torch-4
 
 
 layer

@@ -22,10 +22,10 @@ rule6=0,100,stone_stairs-3
 rule7=0,100,stone_slab-3
 rule8=0,100,stone_stairs-1
 rule9=0,100,stone_stairs
-rule10=0,100,torch-4
-rule11=0,100,torch-2
-rule12=0,100,torch-1
-rule13=0,100,torch-3
+rule10=2,100,torch-4
+rule11=2,100,torch-2
+rule12=2,100,torch-1
+rule13=2,100,torch-3
 rule14=0,100,stone_stairs-2
 rule15=0,10,cobblestone,mossy_cobblestone
 

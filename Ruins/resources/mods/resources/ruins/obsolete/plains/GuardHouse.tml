@@ -18,8 +18,8 @@ preserve_plants=0
 rule1=0,100,cobblestone
 rule2=0,100,planks
 rule3=0,100,preserveBlock
-rule4=0,100,torch-3
-rule5=0,100,torch-5
+rule4=2,100,torch-3
+rule5=2,100,torch-5
 
 layer
 3,3,3,3,3,3,3,3,3

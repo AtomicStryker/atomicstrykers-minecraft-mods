@@ -22,8 +22,8 @@ rule3=0,100,stone_slab-1
 rule4=0,100,water
 rule5=0,100,fence
 rule6=0,100,sandstone
-rule7=0,100,torch-1
-rule8=0,100,torch-2
+rule7=2,100,torch-1
+rule8=2,100,torch-2
 
 
 layer

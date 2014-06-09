@@ -18,7 +18,7 @@ preserve_plants=1
 
 rule1=0,100,preserveBlock
 rule2=0,100,stone_slab-3
-rule3=0,100,torch
+rule3=1,100,torch
 rule4=0,100,cobblestone,mossy_cobblestone,mossy_cobblestone
 rule5=0,100,log
 rule6=0,100,stone_stairs-0

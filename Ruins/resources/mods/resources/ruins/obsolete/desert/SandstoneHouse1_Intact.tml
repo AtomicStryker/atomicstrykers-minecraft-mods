@@ -37,7 +37,7 @@ rule18=0,100,wooden_door-8
 rule19=0,100,diamond_ore
 rule20=0,100,gold_ore
 rule21=0,100,redstone_ore
-rule22=0,100,torch-4
+rule22=2,100,torch-4
 rule23=0,100,double_stone_slab-1
 
 

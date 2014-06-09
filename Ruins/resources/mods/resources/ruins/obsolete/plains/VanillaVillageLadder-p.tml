@@ -16,7 +16,7 @@ rule1=0,100,cobblestone
 rule2=0,100,planks
 rule3=0,100,ladder-5
 rule4=0,100,glass_pane
-rule5=0,100,torch-2
+rule5=2,100,torch-2
 rule6=0,100,log
 rule7=0,100,fence
 

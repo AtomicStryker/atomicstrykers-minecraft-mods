@@ -21,8 +21,8 @@ rule2=0,100,sandstone
 rule3=0,100,stone_slab-1
 rule4=0,100,wooden_door-3
 rule5=0,100,iron_bars
-rule6=0,100,torch-3
-rule7=0,100,torch-4
+rule6=2,100,torch-3
+rule7=2,100,torch-4
 rule8=0,100,wooden_door-8
 rule9=0,100,stone_slab-9
 
