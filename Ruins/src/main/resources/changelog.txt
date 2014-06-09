@@ -330,3 +330,6 @@ a: setAccessible now true
 + fixed small issue where templateparser would create unnecessary duplicate rules
 + fixed the underwater shipwreck templates up a bit, added one more
 + minor optimizations, improvements to logging broken templates
+
+13.1 (Command Blocks Rising: Revengeance)
++ Command Block relative coordinates now automatically get rotated when their template is

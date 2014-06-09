@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
@@ -386,7 +387,7 @@ public class RuinTemplateRule
         else if (dataString.startsWith("CommandBlock:"))
         {
             int lastIdx = dataString.lastIndexOf(":");
-            addCommandBlock(world, x, y, z, dataString.substring(13, lastIdx), dataString.substring(lastIdx+1, dataString.length()));
+            addCommandBlock(world, x, y, z, dataString.substring(13, lastIdx), dataString.substring(lastIdx+1, dataString.length()), rotate);
         }
         else if (dataString.startsWith("StandingSign:"))
         {
@@ -760,15 +761,67 @@ public class RuinTemplateRule
         return null;
     }
 
-    private void addCommandBlock(World world, int x, int y, int z, String command, String sender)
+    private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int rotate)
     {
         world.setBlock(x, y, z, Blocks.command_block, 0, 2);
+        command = findAndRotateRelativeCommandBlockCoords(command, rotate);
         TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(x, y, z);
         if (tecb != null)
         {
             tecb.func_145993_a().func_145752_a(command);
             tecb.func_145993_a().func_145754_b(sender);
         }
+    }
+
+    private String findAndRotateRelativeCommandBlockCoords(String command, int rotate)
+    {
+        if (rotate != RuinsMod.DIR_NORTH)
+        {
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("About to parse command block command [" + command + "] for relative coordinates and try to rotate them");
+            }
+            final Pattern coordinates = Pattern.compile("~(-?\\d*) (~?-?\\d*) ~(-?\\d*)");
+            final Matcher coordinateMatcher = coordinates.matcher(command);
+            final StringBuffer stringBuffer = new StringBuffer();
+            // find each coordinate triple with at least x and z relative (with
+            // tilde), save xz in groups
+            while (coordinateMatcher.find())
+            {
+                if (excessiveDebugging)
+                {
+                    debugPrinter.println("Found contained coordinate triple: "+coordinateMatcher.group());
+                }
+                if (rotate == RuinsMod.DIR_EAST)
+                {
+                    // z multiplied with -1 becomes x, x becomes z
+                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s",
+                            (Integer.parseInt(coordinateMatcher.group(3)) * -1), coordinateMatcher.group(2), coordinateMatcher.group(1)));
+                }
+                else if (rotate == RuinsMod.DIR_WEST)
+                {
+                    // x multiplied with -1 becomes z, z becomes x
+                    coordinateMatcher.appendReplacement(
+                            stringBuffer,
+                            String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2),
+                                    Integer.parseInt(coordinateMatcher.group(1)) * -1));
+                }
+                else
+                {
+                    // case DIR_SOUTH, just swap x and z numbers
+                    coordinateMatcher.appendReplacement(stringBuffer,
+                            String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2), coordinateMatcher.group(1)));
+                }
+            }
+            coordinateMatcher.appendTail(stringBuffer);
+            final String result = stringBuffer.toString();
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("Command Block command with rotated coords: [" + result + "]");
+            }
+            return result;
+        }
+        return command;
     }
 
     private ItemStack getNormalStack(Random random)
