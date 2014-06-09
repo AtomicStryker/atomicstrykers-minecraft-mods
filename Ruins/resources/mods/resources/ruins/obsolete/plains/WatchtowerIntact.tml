@@ -25,15 +25,15 @@ rule6=0,100,stone_stairs-1
 rule7=0,100,ladder-4
 rule8=0,100,planks
 rule9=0,100,furnace-5
-rule10=0,100,torch-2
-rule11=0,100,torch-3
-rule12=0,100,torch-4
-rule13=0,100,torch-1
+rule10=2,100,torch-2
+rule11=2,100,torch-3
+rule12=2,100,torch-4
+rule13=2,100,torch-1
 rule14=0,100,glass
 rule15=0,100,stone_stairs-3
 rule16=0,100,stone_stairs
 rule17=0,100,stone_stairs-2
-rule18=0,100,torch-5
+rule18=2,100,torch-5
 
 
 layer

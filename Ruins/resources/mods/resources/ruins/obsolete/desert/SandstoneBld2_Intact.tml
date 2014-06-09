@@ -23,9 +23,9 @@ rule4=0,100,stone_slab-1
 rule5=0,100,sandstone
 rule6=0,100,wooden_door-2
 rule7=0,100,iron_bars
-rule8=0,100,torch-1
+rule8=2,100,torch-1
 rule9=0,100,wooden_door-8
-rule10=0,100,torch-2
+rule10=2,100,torch-2
 
 
 layer

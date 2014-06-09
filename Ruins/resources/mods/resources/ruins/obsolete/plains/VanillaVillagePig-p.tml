@@ -27,8 +27,8 @@ rule12=0,100,glass_pane
 rule13=0,100,wooden_pressure_plate
 rule14=0,100,wooden_door-8
 rule15=0,100,oak_stairs
-rule16=0,100,torch-2
-rule17=0,100,torch-1
+rule16=2,100,torch-2
+rule17=2,100,torch-1
 
 
 layer

@@ -25,8 +25,8 @@ rule6=0,100,wooden_door-1
 rule7=0,100,wooden_door-9
 rule8=0,100,wooden_door-8
 rule9=0,100,iron_bars
-rule10=0,100,torch-4
-rule11=0,100,torch-3
+rule10=2,100,torch-4
+rule11=2,100,torch-3
 
 
 layer
