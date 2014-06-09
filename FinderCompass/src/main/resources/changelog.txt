@@ -1,3 +1,6 @@
+1.7.2e
+added Channel Handler which does nothing so FML would stop complaining about Packets
+
 1.7.2d
 fixed serverside crash on load
 

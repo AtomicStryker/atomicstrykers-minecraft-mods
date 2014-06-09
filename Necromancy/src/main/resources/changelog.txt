@@ -1,3 +1,6 @@
+1.6.9
+- added Channel Handler which does nothing so FML would stop complaining about Packets
+
 1.6.8
 - fixed InstantiationException preventing the Necromancy Graveyard from spawning in Villages
 

@@ -1,3 +1,6 @@
+1.3.5
+added Channel Handler which does nothing so FML would stop complaining about Packets
+
 1.3.4
 fixed Bat beating resulting in Item wear
 fixed Bats being unable to hit oversized enemy types

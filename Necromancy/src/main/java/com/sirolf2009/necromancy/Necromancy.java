@@ -45,7 +45,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
-@Mod(modid = ReferenceNecromancy.MOD_ID, name = ReferenceNecromancy.MOD_NAME, version = "1.6.8", dependencies = "required-after:Forge@10.12.0.1034")
+@Mod(modid = ReferenceNecromancy.MOD_ID, name = ReferenceNecromancy.MOD_NAME, version = "1.6.9", dependencies = "required-after:Forge@10.12.0.1034")
 public class Necromancy
 {
 

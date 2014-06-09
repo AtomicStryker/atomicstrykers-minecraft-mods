@@ -24,9 +24,10 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2d")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2e")
 public class FinderCompassMod
 {
 
@@ -41,6 +42,7 @@ public class FinderCompassMod
     public File compassConfig;
     
     public NetworkHelper networkHelper;
+    public SimpleNetworkWrapper networkWrapper;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)

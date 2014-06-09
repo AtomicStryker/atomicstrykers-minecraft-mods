@@ -12,17 +12,25 @@ import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class HandshakePacket implements IPacket
 {
 
     private byte[] configByteArray;
+    private byte fromClient;
+    
+    public HandshakePacket() {}
+    
+    public HandshakePacket(boolean sentFromClient)
+    {
+        fromClient = (byte) (sentFromClient ? 1 : 0);
+    }
 
     @Override
     public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
+        bytes.writeByte(fromClient);
+        if (fromClient == 0)
         {
             File config = FinderCompassMod.instance.compassConfig;
             configByteArray = new byte[(int)config.length()];
@@ -44,7 +52,8 @@ public class HandshakePacket implements IPacket
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        fromClient = bytes.readByte();
+        if (fromClient != 0)
         {
             FinderCompassLogic.serverHasFinderCompass = true;
             short len = bytes.readShort();
