@@ -315,7 +315,7 @@ public class RopesPlusClient
                         if (!toggleEnabled)
                         {
                             lastSelectedSlot = selectedSlot;
-                            selectedSlot = -1;
+                            selectedSlot = 0;
                             toggleEnabled = true;
                             sendPacketToUpdateArrowChoice();
                             toggleEnabled = false;
