@@ -740,7 +740,7 @@ public class InfernalMobsCore
     private ItemStack getRandomItem(EntityLivingBase mob, int prefix)
     {
         ArrayList<ItemStack> list = (prefix == 0) ? instance.dropIdListElite : (prefix == 1) ? instance.dropIdListUltra : instance.dropIdListInfernal;
-        return list.get(mob.worldObj.rand.nextInt(list.size())).copy();
+        return list.size() > 0 ? list.get(mob.worldObj.rand.nextInt(list.size())).copy() : null;
     }
 
     public void sendVelocityPacket(EntityPlayerMP target, float xVel, float yVel, float zVel)

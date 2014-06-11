@@ -50,12 +50,12 @@ public class InfernalMobsClient implements ISidedProxy
     public void preInit()
     {
         FMLCommonHandler.instance().bus().register(this);
+        mc = FMLClientHandler.instance().getClient();
     }
 
     @Override
     public void load()
     {
-        mc = FMLClientHandler.instance().getClient();
         nextPacketTime = 0;
         rareMobsClient = new ConcurrentHashMap<EntityLivingBase, MobModifier>();
         
