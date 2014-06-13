@@ -338,3 +338,8 @@ a: setAccessible now true
 +   example: rulex=0,100,CommandBlock:RUINSTRIGGER /summon Villager...
 + by the power of regex, fixed all Ruins templates which had torches without late spawning rules - no more popped off torches
 + Standard blocks in Ruins templates are now set without update, and the entire site updated after. Should help spawning lag a bit.
+
+13.2
++ fixed Command block relative coordinate rotation up a bit (was included in previous hotfix)
++ changed Template Parser to fail if a block/rule cannot be mapped
++   if you are using mod blocks in a template, and the mod is not installed, the template wont attempt to spawn
