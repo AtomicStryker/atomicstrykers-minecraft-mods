@@ -377,50 +377,37 @@ public class RuinHandler
     {
         final HashSet<RuinTemplate> targetList = templates.get(biomeID);
         RuinTemplate r;
+        String candidate;
+        BiomeGenBase bgb;
         if (path.listFiles() != null)
         {
             for (File f : path.listFiles())
             {
                 try
                 {
-                    switch (checkFileType(f.getName()))
+                    r = new RuinTemplate(pw, f.getCanonicalPath(), f.getName());
+                    targetList.add(r);
+                    for (String biomeName : ((RuinTemplate) r).getBiomesToSpawnIn())
                     {
-                    case RuinsMod.FILE_TEMPLATE:
-                        r = new RuinTemplate(pw, f.getCanonicalPath(), f.getName());
-                        targetList.add(r);
-
-                        String candidate;
-                        BiomeGenBase bgb;
-                        for (String biomeName : ((RuinTemplate) r).getBiomesToSpawnIn())
+                        for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
                         {
-                            for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
+                            bgb = BiomeGenBase.getBiomeGenArray()[x];
+                            if (bgb != null)
                             {
-                                bgb = BiomeGenBase.getBiomeGenArray()[x];
-                                if (bgb != null)
+                                candidate = bgb.biomeName.toLowerCase();
+                                if (candidate.equals(biomeName))
                                 {
-                                    candidate = bgb.biomeName.toLowerCase();
-                                    if (candidate.equals(biomeName))
+                                    if (bgb.biomeID != biomeID)
                                     {
-                                        if (bgb.biomeID != biomeID)
-                                        {
-                                            templates.get(x).add(r);
-                                            pw.println("template " + f.getName() + "also registered for Biome " + bgb.biomeName);
-                                        }
-                                        break;
+                                        templates.get(x).add(r);
+                                        pw.println("template " + f.getName() + "also registered for Biome " + bgb.biomeName);
                                     }
+                                    break;
                                 }
                             }
                         }
-
-                        pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
-                        break;
-                    default:
-                        if (!f.isDirectory())
-                        {
-                            pw.println("Ignoring unknown file type: " + f.getName());
-                        }
-                        break;
                     }
+                    pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                 }
                 catch (Exception e)
                 {
@@ -435,17 +422,6 @@ public class RuinHandler
             pw.println("Did not find any Building data for " + path + ", creating empty folder for it: " + (path.mkdir() ? "success" : "failed"));
         }
         pw.flush();
-    }
-
-    private static int checkFileType(String s)
-    {
-        int mid = s.lastIndexOf(".");
-        String ext = s.substring(mid + 1, s.length());
-        if (ext.equals(RuinsMod.TEMPLATE_EXT))
-        {
-            return RuinsMod.FILE_TEMPLATE;
-        }
-        return -1;
     }
 
     private class Exclude

@@ -87,11 +87,15 @@ public class RuinTemplateRule
                     else
                     // planks-3 or ChestGenHook:strongholdLibrary:5-2
                     {
+                        blockStrings[i] = blockRules[i + 2];
                         blockIDs[i] = tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == Blocks.air)
                         {
-                            debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
                             blockIDs[i] = null;
+                            if (!isKnownSpecialRule(blockStrings[i]))
+                            {
+                                throw new Exception("Rule [" + rule + "] in template " + owner.getName()+" can absolutely not be mapped to anything known");
+                            }
                         }
                         
                         try
@@ -102,8 +106,6 @@ public class RuinTemplateRule
                         {
                             blockMDs[i] = 0;
                         }
-                        
-                        blockStrings[i] = blockRules[i + 2];
                     }
                 }
                 else
@@ -314,8 +316,77 @@ public class RuinTemplateRule
             }
         }
     }
+    
+    private boolean isKnownSpecialRule(final String dataString)
+    {
+        if (dataString.equals("preserveBlock") || dataString.equals("air"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("MobSpawner:"))
+        {
+            return true;
+        }
+        else if (dataString.equals("UprightMobSpawn"))
+        {
+            return true;
+        }
+        else if (dataString.equals("EasyMobSpawn"))
+        {
+            return true;
+        }
+        else if (dataString.equals("MediumMobSpawn"))
+        {
+            return true;
+        }
+        else if (dataString.equals("HardMobSpawn"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("EasyChest"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("MediumChest"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("HardChest"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("ChestGenHook:"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("IInventory;"))
+        {
+            return tryFindingObject(dataString.split(";")[1]) instanceof Block;
+        }
+        else if (dataString.equals("EnderCrystal"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("CommandBlock:"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("StandingSign:"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("WallSign:"))
+        {
+            return true;
+        }
+        else if (dataString.startsWith("Skull:"))
+        {
+            return true;
+        }
+        return false;
+    }
 
-    public void doSpecialBlock(World world, Random random, int x, int y, int z, int blocknum, int rotate, final String dataString)
+    private void doSpecialBlock(World world, Random random, int x, int y, int z, int blocknum, int rotate, final String dataString)
     {
         if (dataString.equals("preserveBlock") || dataString.equals("air"))
         {
@@ -377,7 +448,7 @@ public class RuinTemplateRule
             }
             else
             {
-                System.err.println("Ruins Mod could not determine what block to spawn for [" + s[1] + "] in Ruin template: " + owner.getName());
+                System.err.println("Ruins Mod could not determine what IInventory block to spawn for [" + s[1] + "] in Ruin template: " + owner.getName());
             }
         }
         else if (dataString.equals("EnderCrystal"))
