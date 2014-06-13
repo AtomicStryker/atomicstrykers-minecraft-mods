@@ -781,11 +781,11 @@ public class RuinTemplateRule
             {
                 debugPrinter.println("About to parse command block command [" + command + "] for relative coordinates and try to rotate them");
             }
+            /* regex pattern to find each coordinate triple with at least x and z relative (with tilde), save xz numbers and y in groups */
             final Pattern coordinates = Pattern.compile("~(-?\\d*) (~?-?\\d*) ~(-?\\d*)");
             final Matcher coordinateMatcher = coordinates.matcher(command);
             final StringBuffer stringBuffer = new StringBuffer();
-            // find each coordinate triple with at least x and z relative (with
-            // tilde), save xz in groups
+            /* for each pattern match do */
             while (coordinateMatcher.find())
             {
                 if (excessiveDebugging)
@@ -796,7 +796,7 @@ public class RuinTemplateRule
                 {
                     // z multiplied with -1 becomes x, x becomes z
                     coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s",
-                            (Integer.parseInt(coordinateMatcher.group(3)) * -1), coordinateMatcher.group(2), coordinateMatcher.group(1)));
+                            (tryToInvert(coordinateMatcher.group(3))), coordinateMatcher.group(2), coordinateMatcher.group(1)));
                 }
                 else if (rotate == RuinsMod.DIR_WEST)
                 {
@@ -804,7 +804,7 @@ public class RuinTemplateRule
                     coordinateMatcher.appendReplacement(
                             stringBuffer,
                             String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2),
-                                    Integer.parseInt(coordinateMatcher.group(1)) * -1));
+                                    tryToInvert(coordinateMatcher.group(1))));
                 }
                 else
                 {
@@ -813,6 +813,7 @@ public class RuinTemplateRule
                             String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2), coordinateMatcher.group(1)));
                 }
             }
+            /* rebuild the pattern with the changes. we have the technology. we can make it better */
             coordinateMatcher.appendTail(stringBuffer);
             final String result = stringBuffer.toString();
             if (excessiveDebugging)
@@ -822,6 +823,20 @@ public class RuinTemplateRule
             return result;
         }
         return command;
+    }
+    
+    /**
+     * Possible inputs are "", "x", "-x" with int x
+     * @param maybeNumber input string
+     * @return "-input" or "" if not applicable
+     */
+    private String tryToInvert(String maybeNumber)
+    {
+        if (!maybeNumber.isEmpty())
+        {
+            return Integer.toString(Integer.parseInt(maybeNumber) * -1);
+        }
+        return "";
     }
 
     private ItemStack getNormalStack(Random random)
