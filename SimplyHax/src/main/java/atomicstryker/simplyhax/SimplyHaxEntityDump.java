@@ -14,6 +14,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 public class SimplyHaxEntityDump
 {
 	
+    private boolean dumped = false;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -24,12 +26,17 @@ public class SimplyHaxEntityDump
     @SubscribeEvent
     public void onWorldStart(WorldEvent.Load event)
     {
-        System.out.println("Simply Hax Entity Dump following, these are the exact Mobspawner names");
-        Entry<String, Class<?>> e;
-        for (Object o : EntityList.stringToClassMapping.entrySet())
+        if (!dumped)
         {
-            e = (Entry<String, Class<?>>) o;
-            System.out.printf("[%s] maps to [%s]\n", e.getKey(), e.getValue().getName());
+            dumped = true;
+            System.out.println("Simply Hax Entity Dump following, these are the exact Mobspawner names");
+            Entry<String, Class<?>> e;
+            for (Object o : EntityList.stringToClassMapping.entrySet())
+            {
+                e = (Entry<String, Class<?>>) o;
+                System.out.printf("[%s] maps to [%s]\n", e.getKey(), e.getValue().getName());
+                
+            }
         }
     }
 
