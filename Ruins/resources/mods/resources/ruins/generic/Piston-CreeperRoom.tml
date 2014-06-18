@@ -1,5 +1,4 @@
 weight=1
-unique=1
 embed_into_distance=10
 unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
 dimensions=12,17,14
