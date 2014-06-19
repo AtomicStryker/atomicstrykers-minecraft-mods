@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -37,7 +36,6 @@ public class RuinGenerator
     {
         ruinsHandler = rh;
         stats = new RuinStats();
-        new LinkedList<RuinTemplate>();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
         minDistTemplate = ruinsHandler.templateInstancesMinDistance * ruinsHandler.templateInstancesMinDistance;
         minDistRuins = ruinsHandler.anyRuinsMinDistance * ruinsHandler.anyRuinsMinDistance;
@@ -199,7 +197,6 @@ public class RuinGenerator
         final int rotate = random.nextInt(4);
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
         int biomeID = biome.biomeID;
-        int nextMinDistance = 0;
 
         if (ruinsHandler.useGeneric(random, biomeID))
         {
@@ -289,27 +286,12 @@ public class RuinGenerator
 
                 ruinTemplate.doBuild(world, random, x, y, z, rotate);
                 registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
-                nextMinDistance = ruinTemplate.getMinDistance();
             }
             else
             {
                 // System.out.println("Min Dist fail");
                 stats.BoundingBoxFails++;
                 return;
-            }
-            if (nether)
-            {
-                if (random.nextFloat() * 100 < ruinsHandler.chanceForSiteNether)
-                {
-                    createBuilding(world, random, x, z, nextMinDistance, true);
-                }
-            }
-            else
-            {
-                if (random.nextFloat() * 100 < ruinsHandler.chanceForSiteNormal)
-                {
-                    createBuilding(world, random, x, z, nextMinDistance, false);
-                }
             }
         }
         else

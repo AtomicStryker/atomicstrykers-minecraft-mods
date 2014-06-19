@@ -61,15 +61,6 @@ public class ChunkLoggerData extends WorldSavedData
         {
             if (chunkX == xCoords.get(i) && chunkZ == zCoords.get(i))
             {
-                try
-                {
-                    throw new Exception("Ruins caught IWorldGenerator.generate on already generated coordinates, stacktrace:");
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                
                 return true;
             }
         }

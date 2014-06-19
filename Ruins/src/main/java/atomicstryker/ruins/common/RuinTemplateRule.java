@@ -79,7 +79,7 @@ public class RuinTemplateRule
                 {
                     if (isNumber(data[0])) // torch-5
                     {
-                        System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
                         blockIDs[i] = Blocks.air;
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
@@ -113,7 +113,7 @@ public class RuinTemplateRule
                 {
                     if (isNumber(blockRules[i + 2]))
                     {
-                        System.err.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
                         blockIDs[i] = Blocks.air;
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
@@ -123,7 +123,7 @@ public class RuinTemplateRule
                         blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
                         if (blockIDs[i] == Blocks.air)
                         {
-                            debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
+                            //debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
                             blockIDs[i] = null;
                         }
                     }
@@ -150,7 +150,7 @@ public class RuinTemplateRule
     private Block tryFindingBlockOfName(String blockName)
     {
         cachedBlock = GameData.getBlockRegistry().getObject(blockName);
-        debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
+        // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
         return cachedBlock;
     }
 
