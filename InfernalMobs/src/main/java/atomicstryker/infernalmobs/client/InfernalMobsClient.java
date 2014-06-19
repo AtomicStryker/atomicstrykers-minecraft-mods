@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.util.AxisAlignedBB;
@@ -86,14 +87,16 @@ public class InfernalMobsClient implements ISidedProxy
         }
     }
 
-    private void renderBossOverlay(float renderTick, Minecraft mc)
+    @SubscribeEvent
+    public void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event)
     {
-        if (InfernalMobsCore.instance().getIsHealthBarDisabled())
+        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || 
+                event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || BossStatus.bossName != null)
         {
             return;
         }
 
-        Entity ent = getEntityCrosshairOver(renderTick, mc);
+        Entity ent = getEntityCrosshairOver(event.partialTicks, mc);
         boolean retained = false;
         
         if (ent == null && System.currentTimeMillis() < healthBarRetainTime)
@@ -234,8 +237,6 @@ public class InfernalMobsClient implements ISidedProxy
     {
         if (mc.theWorld == null || (mc.currentScreen != null && mc.currentScreen.doesGuiPauseGame()))
             return;
-
-        renderBossOverlay(tick.renderTickTime, mc);
 
         /* client reset in case of swapping worlds */
         if (mc.theWorld != lastWorld)
