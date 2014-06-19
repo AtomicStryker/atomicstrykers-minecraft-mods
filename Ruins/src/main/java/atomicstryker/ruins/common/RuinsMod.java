@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -37,6 +38,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -44,7 +46,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "13.2";
+    public static final String modversion = "13.3";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -52,7 +54,13 @@ public class RuinsMod
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
     private ConcurrentLinkedQueue<int[]> currentlyGenerating;
-
+    
+    @NetworkCheckHandler
+    public boolean checkModLists(Map<String,String> modList, Side side)
+    {
+        return true;
+    }
+    
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {

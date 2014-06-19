@@ -343,3 +343,9 @@ a: setAccessible now true
 + fixed Command block relative coordinate rotation up a bit (was included in previous hotfix)
 + changed Template Parser to fail if a block/rule cannot be mapped
 +   if you are using mod blocks in a template, and the mod is not installed, the template wont attempt to spawn
++ changed Template parsing to read extended Piston heads as delayed spawning Blocks, similar to torches
+
+13.3 (King of imaginary paper)
++ removed some old superfluous code, some unnecessary logging and warnings
++ refactored logging to print less useless data and some more useful things
++ why didn't anybody tell me Ruins demanded clients have it installed since some forge update?! fixed

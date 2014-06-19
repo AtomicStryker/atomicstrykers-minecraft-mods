@@ -21,7 +21,7 @@ public class RuinHandler
     protected int[][] vars;
 
     protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
-    protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10, chanceForSiteNormal = 15, chanceForSiteNether = 15;
+    protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
 
     public boolean loaded;
     public boolean disableLogging;
@@ -29,11 +29,14 @@ public class RuinHandler
     
     public float templateInstancesMinDistance = 75f;
     public float anyRuinsMinDistance = 0f;
+    
+    private int templateCount;
 
     public RuinHandler(File worldPath)
     {
         saveFolder = worldPath;
         loaded = false;
+        templateCount = 0;
         new LoaderThread().start();
     }
 
@@ -103,7 +106,7 @@ public class RuinHandler
             try
             {
                 // load in the generic templates
-                pw.println("Loading the generic ruins templates...");
+                // pw.println("Loading the generic ruins templates...");
                 addRuins(pw, new File(templPath, "generic"), RuinsMod.BIOME_NONE);
                 vars[COUNT][RuinsMod.BIOME_NONE] = templates.get(RuinsMod.BIOME_NONE).size();
                 recalcBiomeWeight(RuinsMod.BIOME_NONE);
@@ -126,7 +129,7 @@ public class RuinHandler
                     try
                     {
                         loadSpecificTemplates(pw, templPath, bgb.biomeID, bgb.biomeName);
-                        pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
+                        // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
                     }
                     catch (Exception e)
                     {
@@ -158,7 +161,7 @@ public class RuinHandler
             {
                 pw.println();
                 pw.println("Loading options from: " + saveFolder.getCanonicalPath());
-                readGlobalOptions(saveFolder);
+                readPerWorldOptions(saveFolder, pw);
             }
             catch (Exception e)
             {
@@ -166,7 +169,7 @@ public class RuinHandler
             }
 
             loaded = true;
-            pw.println("Ruins mod loaded.");
+            pw.println("Ruins mod loaded successfully for world "+saveFolder+", template files: "+templateCount);
             pw.flush();
             pw.close();
         }
@@ -244,9 +247,8 @@ public class RuinHandler
 
     private void loadSpecificTemplates(PrintWriter pw, File dir, int biome, String bname) throws Exception
     {
-        pw.println();
         bname = bname.toLowerCase();
-        pw.println("Loading the " + bname + " ruins templates...");
+        // pw.println("Loading the " + bname + " ruins templates...");
         pw.flush();
         File path_biome = new File(dir, bname);
         addRuins(pw, path_biome, biome);
@@ -272,7 +274,7 @@ public class RuinHandler
         }
     }
 
-    private void readGlobalOptions(File dir) throws Exception
+    private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception
     {
         final File file = new File(dir, "ruins.txt");
         if (!file.exists())
@@ -288,14 +290,12 @@ public class RuinHandler
             if (check[0].equals("tries_per_chunk_normal"))
             {
                 triesPerChunkNormal = Integer.parseInt(check[1]);
+                ruinsLog.println("tries_per_chunk_normal = "+triesPerChunkNormal);
             }
             if (check[0].equals("chance_to_spawn_normal"))
             {
                 chanceToSpawnNormal = Float.parseFloat(check[1]);
-            }
-            if (check[0].equals("chance_for_site_normal"))
-            {
-                chanceForSiteNormal = Float.parseFloat(check[1]);
+                ruinsLog.println("chance_to_spawn_normal = "+chanceToSpawnNormal);
             }
             if (check[0].equals("tries_per_chunk_nether"))
             {
@@ -305,10 +305,6 @@ public class RuinHandler
             {
                 chanceToSpawnNether = Float.parseFloat(check[1]);
             }
-            if (check[0].equals("chance_for_site_nether"))
-            {
-                chanceForSiteNether = Float.parseFloat(check[1]);
-            }
             if (check[0].equals("disableRuinSpawnCoordsLogging"))
             {
                 disableLogging = Boolean.parseBoolean(check[1]);
@@ -316,10 +312,12 @@ public class RuinHandler
             if (check[0].equals("templateInstancesMinDistance"))
             {
                 templateInstancesMinDistance = Float.parseFloat(check[1]);
+                ruinsLog.println("templateInstancesMinDistance = "+templateInstancesMinDistance);
             }
             if (check[0].equals("anyRuinsMinDistance"))
             {
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
+                ruinsLog.println("anyRuinsMinDistance = "+anyRuinsMinDistance);
             }
 
             if (read.startsWith("specific_"))
@@ -332,10 +330,6 @@ public class RuinHandler
                     if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(check[0]))
                     {
                         vars[CHANCE][i] = Integer.parseInt(check[1]);
-                        if (!disableLogging)
-                        {
-                            System.out.println("Parsed config line [" + read + "], vars[CHANCE][" + i + "] set to " + Integer.parseInt(check[1]));
-                        }
                         found = true;
                         break;
                     }
@@ -400,14 +394,15 @@ public class RuinHandler
                                     if (bgb.biomeID != biomeID)
                                     {
                                         templates.get(x).add(r);
-                                        pw.println("template " + f.getName() + "also registered for Biome " + bgb.biomeName);
+                                        // pw.println("template " + f.getName() + "also registered for Biome " + bgb.biomeName);
                                     }
                                     break;
                                 }
                             }
                         }
                     }
-                    pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
+                    // pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
+                    templateCount++;
                 }
                 catch (Exception e)
                 {
