@@ -1,5 +1,7 @@
 package atomicstryker.dynamiclights.client.modules;
 
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +18,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
+import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -28,9 +32,18 @@ import cpw.mods.fml.common.registry.GameData;
  *
  * Offers Dynamic Light functionality to the Player Entity itself.
  * Handheld Items and Armor can give off Light through this Module.
+ * 
+ * With version 1.1.3 and later you can also use FMLIntercomms to use this 
+ * and have the player shine light. Like so:
+ * 
+ * FMLInterModComms.sendRuntimeMessage(sourceMod, "DynamicLights_thePlayer", "forceplayerlighton", "");
+ * FMLInterModComms.sendRuntimeMessage(sourceMod, "DynamicLights_thePlayer", "forceplayerlightoff", "");
+ * 
+ * Note you have to track this yourself. Dynamic Lights will accept and obey, but not recover should you
+ * get stuck in the on or off state inside your own code. It will not revert to off on its own.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.2", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.3", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -40,6 +53,8 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     private ItemConfigHelper itemsMap;
     private ItemConfigHelper notWaterProofItems;
     private Configuration config;
+    
+    public boolean fmlOverrideEnable;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
@@ -90,52 +105,85 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         
         if (thePlayer != null && thePlayer.isEntityAlive() && !DynamicLights.globalLightsOff())
         {
-            int prevLight = lightLevel;
-            
-            ItemStack item = thePlayer.getCurrentEquippedItem();
-            lightLevel = getLightFromItemStack(item);
-            
-            for (ItemStack armor : thePlayer.inventory.armorInventory)
+            List<IMCMessage> messages = FMLInterModComms.fetchRuntimeMessages(this);
+            if (messages.size() > 0)
             {
-                lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
-            }
-            
-            if (prevLight != 0 && lightLevel != prevLight)
-            {
-                lightLevel = 0;
-            }
-            else
-            {
-                if (thePlayer.isBurning())
+                // just get the last one
+                IMCMessage imcMessage = messages.get(messages.size()-1);
+                if (imcMessage.key.equalsIgnoreCase("forceplayerlighton"))
                 {
-                    lightLevel = 15;
-                }
-                else
-                {
-                    if (checkPlayerWater(thePlayer)
-                    && item != null
-                    && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(item.getItem()), item.getItemDamage()) == 1)
+                    if (!fmlOverrideEnable)
                     {
-                        lightLevel = 0;
-                        
-                        for (ItemStack armor : thePlayer.inventory.armorInventory)
+                        fmlOverrideEnable = true;
+                        if (!enabled)
                         {
-                            if (armor != null && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(armor.getItem()), item.getItemDamage()) == 0)
-                            {
-                                lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
-                            }
+                            lightLevel = 15;
+                            enableLight();
+                        }
+                    }
+                }
+                else if (imcMessage.key.equalsIgnoreCase("forceplayerlightoff"))
+                {
+                    if (fmlOverrideEnable)
+                    {
+                        fmlOverrideEnable = false;
+                        if (enabled)
+                        {
+                            disableLight();
                         }
                     }
                 }
             }
             
-            if (!enabled && lightLevel > 0)
+            if (!fmlOverrideEnable)
             {
-                enableLight();
-            }
-            else if (enabled && lightLevel < 1)
-            {
-                disableLight();
+                int prevLight = lightLevel;
+                
+                ItemStack item = thePlayer.getCurrentEquippedItem();
+                lightLevel = getLightFromItemStack(item);
+                
+                for (ItemStack armor : thePlayer.inventory.armorInventory)
+                {
+                    lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
+                }
+                
+                if (prevLight != 0 && lightLevel != prevLight)
+                {
+                    lightLevel = 0;
+                }
+                else
+                {
+                    if (thePlayer.isBurning())
+                    {
+                        lightLevel = 15;
+                    }
+                    else
+                    {
+                        if (checkPlayerWater(thePlayer)
+                        && item != null
+                        && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(item.getItem()), item.getItemDamage()) == 1)
+                        {
+                            lightLevel = 0;
+                            
+                            for (ItemStack armor : thePlayer.inventory.armorInventory)
+                            {
+                                if (armor != null && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(armor.getItem()), item.getItemDamage()) == 0)
+                                {
+                                    lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (!enabled && lightLevel > 0)
+                {
+                    enableLight();
+                }
+                else if (enabled && lightLevel < 1)
+                {
+                    disableLight();
+                }
             }
         }
     }
@@ -170,8 +218,11 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     
     private void disableLight()
     {
-        DynamicLights.removeLightSource(this);
-        enabled = false;
+        if (!fmlOverrideEnable)
+        {
+            DynamicLights.removeLightSource(this);
+            enabled = false;
+        }
     }
 
     @Override
