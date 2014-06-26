@@ -29,16 +29,12 @@ public class RuinGenerator
     private File ruinsDataFile;
     private File ruinsDataFileWriting;
     private final RuinData spawnPointBlock;
-    private final float minDistTemplate;
-    private final float minDistRuins;
 
     public RuinGenerator(RuinHandler rh, World world)
     {
         ruinsHandler = rh;
         stats = new RuinStats();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
-        minDistTemplate = ruinsHandler.templateInstancesMinDistance * ruinsHandler.templateInstancesMinDistance;
-        minDistRuins = ruinsHandler.anyRuinsMinDistance * ruinsHandler.anyRuinsMinDistance;
         
         // lets create a banned area 2 chunks around the spawn
         final int minX = world.getSpawnPoint().posX - 32;
@@ -193,7 +189,7 @@ public class RuinGenerator
     }
 
     private void createBuilding(World world, Random random, int x, int z, int minDistance, boolean nether)
-    {
+    {        
         final int rotate = random.nextInt(4);
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
         int biomeID = biome.biomeID;
@@ -361,14 +357,14 @@ public class RuinGenerator
         {
             if (r.name.equals(ruinData.name))
             {
-                if (r.getDistanceSqTo(ruinData) < minDistTemplate)
+                if (r.getDistanceSqTo(ruinData) < ruinsHandler.templateInstancesMinDistance * ruinsHandler.templateInstancesMinDistance)
                 {
                     return false;
                 }
             }
             else
             {
-                if (r.getDistanceSqTo(ruinData) < minDistRuins)
+                if (r.getDistanceSqTo(ruinData) < ruinsHandler.anyRuinsMinDistance * ruinsHandler.anyRuinsMinDistance)
                 {
                     return false;
                 }
