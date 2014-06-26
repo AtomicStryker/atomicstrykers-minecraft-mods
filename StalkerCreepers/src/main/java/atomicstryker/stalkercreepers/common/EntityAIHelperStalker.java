@@ -13,7 +13,7 @@ public class EntityAIHelperStalker
         if (stalker == null || seer == null) return true;
         
         Vec3 visionVec = seer.getLook(1.0F).normalize();
-        Vec3 targetVec = seer.worldObj.getWorldVec3Pool().getVecFromPool(stalker.posX - seer.posX,
+        Vec3 targetVec = Vec3.createVectorHelper(stalker.posX - seer.posX,
                                             stalker.boundingBox.minY + (double)(stalker.height / 2.0F) - (seer.posY + (double)seer.getEyeHeight()),
                                             stalker.posZ - seer.posZ);
         targetVec = targetVec.normalize();

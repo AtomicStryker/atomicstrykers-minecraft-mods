@@ -81,7 +81,7 @@ public class ItemHookshot extends Item
                         double guessX = entityplayer.prevPosX + (entityplayer.posX - entityplayer.prevPosX);
                         double guessY = entityplayer.prevPosY + (entityplayer.posY - entityplayer.prevPosY) + 1.62D - (double) entityplayer.yOffset;
                         double guessZ = entityplayer.prevPosZ + (entityplayer.posZ - entityplayer.prevPosZ);
-                        final Vec3 playerVec = world.getWorldVec3Pool().getVecFromPool(guessX, guessY, guessZ);
+                        final Vec3 playerVec = Vec3.createVectorHelper(guessX, guessY, guessZ);
                         float yawCos = MathHelper.cos(-guessYaw * 0.017453292F - (float) Math.PI);
                         float yawSin = MathHelper.sin(-guessYaw * 0.017453292F - (float) Math.PI);
                         float rotCos = -MathHelper.cos(-guessRot * 0.017453292F);

@@ -213,14 +213,14 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         }
         
         // calculate entity hit
-        Vec3 currentPosVec = worldObj.getWorldVec3Pool().getVecFromPool(posX, posY, posZ);
-        Vec3 nextPosVec = worldObj.getWorldVec3Pool().getVecFromPool(posX + motionX, posY + motionY, posZ + motionZ);
+        Vec3 currentPosVec = Vec3.createVectorHelper(posX, posY, posZ);
+        Vec3 nextPosVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
         MovingObjectPosition collisionPosition = worldObj.func_147447_a(currentPosVec, nextPosVec, true, false, false);
-        currentPosVec = worldObj.getWorldVec3Pool().getVecFromPool(posX, posY, posZ);
-        nextPosVec = worldObj.getWorldVec3Pool().getVecFromPool(posX + motionX, posY + motionY, posZ + motionZ);
+        currentPosVec = Vec3.createVectorHelper(posX, posY, posZ);
+        nextPosVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
         if (collisionPosition != null)
         {
-            nextPosVec = worldObj.getWorldVec3Pool().getVecFromPool(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
+            nextPosVec = Vec3.createVectorHelper(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
         
         EntityLivingBase entityHit = null;
