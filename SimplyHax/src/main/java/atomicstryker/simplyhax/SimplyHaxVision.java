@@ -81,7 +81,8 @@ public class SimplyHaxVision
                     item = mcinstance.thePlayer.getCurrentEquippedItem();
                     if (item != null)
                     {
-                        System.out.println("Player swapped Item to ["+item.getUnlocalizedName()+"]");
+                        System.out.printf("[SimplyHaxVision] %s swapped Item, now: [%s] damage: %d\n", 
+                                mcinstance.thePlayer.getCommandSenderName(), item.getUnlocalizedName(), item.getItemDamage());
                     }
                 }
             }
