@@ -218,8 +218,8 @@ public class PetBatAIFlying extends EntityAIBase
             y = petBat.getLastOwnerY() + rand.nextInt(6) - 2 + BAT_OWNER_FOLLOW_Y_OFFSET;
             z = petBat.getLastOwnerZ() + rand.nextInt(7) - rand.nextInt(7);
 
-            orig = petBat.worldObj.getWorldVec3Pool().getVecFromPool(petBat.posX, petBat.posY, petBat.posZ);
-            dest = petBat.worldObj.getWorldVec3Pool().getVecFromPool(x + 0.5D, y + 0.5D, z + 0.5D);
+            orig = Vec3.createVectorHelper(petBat.posX, petBat.posY, petBat.posZ);
+            dest = Vec3.createVectorHelper(x + 0.5D, y + 0.5D, z + 0.5D);
             movingobjectposition = petBat.worldObj.func_147447_a(orig, dest, false, true, false);
             if (movingobjectposition == null) // no collision detected, path is
                                               // free

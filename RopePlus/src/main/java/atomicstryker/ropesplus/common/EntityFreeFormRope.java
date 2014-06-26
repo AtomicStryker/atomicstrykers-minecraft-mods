@@ -229,7 +229,7 @@ public class EntityFreeFormRope extends Entity
             }
             
             setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
-            Vec3 playerToHookVec = worldObj.getWorldVec3Pool().getVecFromPool(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
+            Vec3 playerToHookVec = Vec3.createVectorHelper(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
             double dist = playerToHookVec.lengthVector();
 
             if (worldObj.isRemote)
@@ -310,7 +310,7 @@ public class EntityFreeFormRope extends Entity
                             }
                             
                             // shorten the rope back to max length, set swinger position accordingly
-                            final Vec3 anchorToPlayerVec = worldObj.getWorldVec3Pool().getVecFromPool(shooter.posX-getEndX(), shooter.posY-getEndY(), shooter.posZ-getEndZ()).normalize();
+                            final Vec3 anchorToPlayerVec = Vec3.createVectorHelper(shooter.posX-getEndX(), shooter.posY-getEndY(), shooter.posZ-getEndZ()).normalize();
                             anchorToPlayerVec.xCoord *= maxLength;
                             anchorToPlayerVec.yCoord *= maxLength;
                             anchorToPlayerVec.zCoord *= maxLength;

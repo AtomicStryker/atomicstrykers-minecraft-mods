@@ -75,8 +75,7 @@ public class EntityAIScareEntities extends EntityAIBase
             if (entity.getDistanceToEntity(target) < scaringRange)
             {
                 Vec3 var2 =
-                        RandomPositionGenerator.findRandomTargetBlockAwayFrom((EntityCreature) target, 16, 7, entity.worldObj.getWorldVec3Pool()
-                                .getVecFromPool(entity.posX, entity.posY, entity.posZ));
+                        RandomPositionGenerator.findRandomTargetBlockAwayFrom((EntityCreature) target, 16, 7, Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ));
                 if (var2 != null && entity.getDistanceSq(var2.xCoord, var2.yCoord, var2.zCoord) >= entity.getDistanceSqToEntity(target))
                 {
                     pathEntity = pathFinderTarget.getPathToXYZ(var2.xCoord, var2.yCoord, var2.zCoord);

@@ -129,10 +129,10 @@ public class PetBatAIAttack extends EntityAIBase
     {
         for (int var3 = 0; var3 < power; ++var3)
         {
-            Vec3 var4 = petBat.worldObj.getWorldVec3Pool().getVecFromPool(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+            Vec3 var4 = Vec3.createVectorHelper(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
             var4.rotateAroundX(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var4.rotateAroundY(-petBat.rotationYaw * (float)Math.PI / 180.0F);
-            Vec3 var5 = petBat.worldObj.getWorldVec3Pool().getVecFromPool(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.3D, (double)(-petBat.getRNG().nextFloat()) * 0.6D - 0.3D, 0.6D);
+            Vec3 var5 = Vec3.createVectorHelper(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.3D, (double)(-petBat.getRNG().nextFloat()) * 0.6D - 0.3D, 0.6D);
             var5.rotateAroundX(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var5.rotateAroundY(-petBat.rotationYaw * (float)Math.PI / 180.0F);
             var5 = var5.addVector(petBat.posX, petBat.posY + (double)petBat.getEyeHeight(), petBat.posZ);

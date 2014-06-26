@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.EntityProjectileBase;
 
@@ -70,8 +71,8 @@ public class EntityArrow303 extends EntityProjectileBase
 
     private boolean isInSight(Entity entity)
     {
-        MovingObjectPosition mop = worldObj.rayTraceBlocks(worldObj.getWorldVec3Pool().getVecFromPool(posX, posY, posZ),
-                worldObj.getWorldVec3Pool().getVecFromPool(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ));
+        MovingObjectPosition mop = worldObj.rayTraceBlocks(Vec3.createVectorHelper(posX, posY, posZ),
+                Vec3.createVectorHelper(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ));
         return  mop == null || (mop.typeOfHit == MovingObjectType.BLOCK && worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ).getLightOpacity() == 255);
     }
     
