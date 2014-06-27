@@ -45,7 +45,7 @@ public class HookshotPullPacket implements IPacket
         }
         else
         {
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (player != null)
             {
                 Entity target = player.worldObj.getEntityByID(hookID);

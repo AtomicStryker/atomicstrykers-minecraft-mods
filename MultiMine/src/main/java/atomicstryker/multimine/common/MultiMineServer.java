@@ -130,7 +130,7 @@ public class MultiMineServer
                     
                     if (block != Blocks.air)
                     {
-                        if (block.removedByPlayer(player.worldObj, player, x, y, z))
+                        if (block.removedByPlayer(player.worldObj, player, x, y, z, true))
                         {
                             final BlockEvent.BreakEvent event =
                                     ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);

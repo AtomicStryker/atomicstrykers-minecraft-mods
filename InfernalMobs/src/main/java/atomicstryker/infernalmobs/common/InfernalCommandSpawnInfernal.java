@@ -1,5 +1,8 @@
 package atomicstryker.infernalmobs.common;
 
+import org.apache.logging.log4j.Level;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -51,7 +54,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                 
                 InfernalMobsCore.proxy.getRareMobs().remove(mob);
                 InfernalMobsCore.instance().addEntityModifiersByString(mob, modifier);
-                notifyAdmins(sender, "Spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated(), (Object)args);
+                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName() + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated());
             }
             catch (Exception e)
             {

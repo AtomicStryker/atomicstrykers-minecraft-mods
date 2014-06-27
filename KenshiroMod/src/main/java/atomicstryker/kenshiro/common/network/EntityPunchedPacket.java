@@ -52,7 +52,7 @@ public class EntityPunchedPacket implements IPacket
         }
         else
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (p != null)
             {
                 KenshiroServer.instance().onClientPunchedEntity(p, p.worldObj, entID);

@@ -2,6 +2,9 @@ package atomicstryker.infernalmobs.common;
 
 import java.util.Collection;
 
+import org.apache.logging.log4j.Level;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -63,7 +66,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
                 result += "Nothing found.";
             }
             
-            notifyAdmins(sender, result);
+            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName()+ ": " + result);
         }
     }
     

@@ -61,7 +61,7 @@ public class HasMinionsPacket implements IPacket
             for (int i = 0; i < len; i++) chars[i] = bytes.readChar();
             username = String.valueOf(chars);
             
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (p != null)
             {
                 hasMinions = MinionsCore.instance.hasPlayerMinions(p) ? 1 : 0;
