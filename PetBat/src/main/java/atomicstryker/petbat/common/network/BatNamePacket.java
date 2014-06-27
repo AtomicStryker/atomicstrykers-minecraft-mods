@@ -36,7 +36,7 @@ public class BatNamePacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         batName = ByteBufUtils.readUTF8String(bytes);
-        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
         if (p != null)
         {
             if (p.getCurrentEquippedItem() != null && p.getCurrentEquippedItem().getItem() == PetBatMod.instance().itemPocketedBat)

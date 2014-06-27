@@ -43,7 +43,7 @@ public class HaxPacket implements IPacket
         else
         {
             user = ByteBufUtils.readUTF8String(bytes);
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
             if (player != null)
             {
                 player.addExperience(200);

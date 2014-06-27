@@ -151,7 +151,7 @@ public class EntityTeddy extends EntityTameable
     @Override
     public boolean interact(EntityPlayer par1EntityPlayer)
     {
-        setOwner(par1EntityPlayer.getCommandSenderName());
+        func_152115_b(par1EntityPlayer.getCommandSenderName());
 
         switch (entityState)
         {
@@ -188,7 +188,7 @@ public class EntityTeddy extends EntityTameable
     @Override
     public EntityLivingBase getOwner()
     {
-        return worldObj.getPlayerEntityByName(getOwnerName());
+        return worldObj.getPlayerEntityByName(func_152113_b());
     }
 
 }

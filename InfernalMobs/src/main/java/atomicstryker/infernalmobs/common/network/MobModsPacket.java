@@ -53,7 +53,7 @@ public class MobModsPacket implements IPacket
         else
         {
             // else we are on serverside
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(stringData);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(stringData);
             if (p != null)
             {
                 Entity ent = p.worldObj.getEntityByID(entID);

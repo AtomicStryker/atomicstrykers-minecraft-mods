@@ -44,7 +44,7 @@ public class UnsummonPacket implements IPacket
         else
         {
             user = ByteBufUtils.readUTF8String(bytes);
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
             if (player != null)
             {
                 MinionsCore.instance.unSummonPlayersMinions(player);

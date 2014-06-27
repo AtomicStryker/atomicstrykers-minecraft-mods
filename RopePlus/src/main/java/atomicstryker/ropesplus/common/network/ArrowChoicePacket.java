@@ -36,7 +36,7 @@ public class ArrowChoicePacket implements IPacket
         username = ByteBufUtils.readUTF8String(bytes);
         arrowSlot = bytes.readInt();
         
-        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
         if (player != null)
         {
             RopesPlusCore.instance.setselectedSlot(player, arrowSlot);

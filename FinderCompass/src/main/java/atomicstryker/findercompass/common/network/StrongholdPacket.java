@@ -75,7 +75,7 @@ public class StrongholdPacket implements IPacket
         }
         else // server received stronghold request
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (p != null)
             {
                 ChunkPosition result = p.worldObj.findClosestStructure("stronghold", (int) p.posX, (int) p.posY, (int) p.posZ);

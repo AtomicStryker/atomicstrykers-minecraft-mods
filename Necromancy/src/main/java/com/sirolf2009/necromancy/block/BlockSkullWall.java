@@ -11,7 +11,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.MovingObjectPosition;
@@ -83,11 +82,6 @@ public class BlockSkullWall extends BlockContainer
 
             if (tileentityskull == null)
                 return drops;
-            if (tileentityskull.func_145904_a() == 3 && tileentityskull.func_145907_c() != null && tileentityskull.func_145907_c().length() > 0)
-            {
-                itemstack.setTagCompound(new NBTTagCompound());
-                itemstack.getTagCompound().setString("SkullOwner", tileentityskull.func_145907_c());
-            }
             drops.add(itemstack);
         }
         return drops;
