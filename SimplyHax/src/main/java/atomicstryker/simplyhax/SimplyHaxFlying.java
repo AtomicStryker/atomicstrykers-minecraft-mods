@@ -26,7 +26,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.7.2a")
+@Mod(modid = "SimplyHaxFlying", name = "Simply Hax Flying", version = "1.7.10")
 public class SimplyHaxFlying
 {
 
