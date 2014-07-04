@@ -6,9 +6,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
 import cpw.mods.fml.common.network.FMLOutboundHandler;
@@ -32,6 +32,13 @@ public class NetworkHelper
     private final FMLEmbeddedChannel clientOutboundChannel;
     private final FMLEmbeddedChannel serverOutboundChannel;
     
+    private final HashSet<Class<? extends IPacket>> registeredClasses;
+    
+    /**
+     * Set true when helper is about to send a packet, remains true until packet is out
+     */
+    private boolean isCurrentlySendingSemaphor;
+    
     /**
      * Creates an instance of the NetworkHelper with included channels for client and server communication.
      * Automatically registers the necessary channels and discriminators for the supplied Packet classes.
@@ -44,6 +51,12 @@ public class NetworkHelper
         EnumMap<Side, FMLEmbeddedChannel> channelPair = NetworkRegistry.INSTANCE.newChannel(channelName, new ChannelCodec(handledPacketClasses), new ChannelHandler());
         clientOutboundChannel = channelPair.get(Side.CLIENT);
         serverOutboundChannel = channelPair.get(Side.SERVER);
+        
+        registeredClasses = new HashSet<Class<? extends IPacket>>(handledPacketClasses.length);
+        for (Class<? extends IPacket> c : handledPacketClasses)
+        {
+            registeredClasses.add(c);
+        }
     }
     
     /**
@@ -79,13 +92,12 @@ public class NetworkHelper
      */
     public void sendPacketToServer(IPacket packet)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            clientOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
-            clientOutboundChannel.writeOutbound(packet);
-        }
+        checkClassAndSync(packet.getClass());
+        clientOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
+        clientOutboundChannel.writeOutbound(packet);
+        isCurrentlySendingSemaphor = false;
     }
-    
+
     /**
      * Sends the supplied Packet from the server to the chosen Player
      * @param packet
@@ -93,12 +105,11 @@ public class NetworkHelper
      */
     public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-        {
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
-            serverOutboundChannel.writeOutbound(packet);
-        }
+        checkClassAndSync(packet.getClass());
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
+        serverOutboundChannel.writeOutbound(packet);
+        isCurrentlySendingSemaphor = false;
     }
     
     /**
@@ -107,11 +118,10 @@ public class NetworkHelper
      */
     public void sendPacketToAllPlayers(IPacket packet)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-        {
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALL);
-            serverOutboundChannel.writeOutbound(packet);
-        }
+        checkClassAndSync(packet.getClass());
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALL);
+        serverOutboundChannel.writeOutbound(packet);
+        isCurrentlySendingSemaphor = false;
     }
     
     /**
@@ -121,12 +131,11 @@ public class NetworkHelper
      */
     public void sendPacketToAllAroundPoint(IPacket packet, TargetPoint tp)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-        {
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(tp);
-            serverOutboundChannel.writeOutbound(packet);
-        }
+        checkClassAndSync(packet.getClass());
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(tp);
+        serverOutboundChannel.writeOutbound(packet);
+        isCurrentlySendingSemaphor = false;
     }
     
     /**
@@ -136,12 +145,29 @@ public class NetworkHelper
      */
     public void sendPacketToAllInDimension(IPacket packet, int dimension)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
+        checkClassAndSync(packet.getClass());
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DIMENSION);
+        serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(dimension);
+        serverOutboundChannel.writeOutbound(packet);
+        isCurrentlySendingSemaphor = false;
+    }
+    
+    /**
+     * Since the crash that happens if we dont do this is complete garbage
+     */
+    private void checkClassAndSync(Class<? extends IPacket> clazz)
+    {
+        if (!registeredClasses.contains(clazz))
         {
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DIMENSION);
-            serverOutboundChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(dimension);
-            serverOutboundChannel.writeOutbound(packet);
+            throw new RuntimeException("NetworkHelper got unknown Packet type "+clazz+" to send, critical error");
         }
+        
+        // prevent concurrent packet sending
+        while (isCurrentlySendingSemaphor)
+        {
+            Thread.yield();
+        }
+        isCurrentlySendingSemaphor = true;
     }
     
     /**
