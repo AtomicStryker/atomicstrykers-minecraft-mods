@@ -1,3 +1,6 @@
+Version 1.0.9
+    - updated to MC 1.7.10
+
 Version 1.0.8
     - fixed to work with newest IC2 builds
     
