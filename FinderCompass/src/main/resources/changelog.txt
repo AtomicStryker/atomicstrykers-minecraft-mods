@@ -1,3 +1,7 @@
+1.7.10
+updated for mc 1.7.10
+server now allows client without it to connect
+
 1.7.2e
 added Channel Handler which does nothing so FML would stop complaining about Packets
 
