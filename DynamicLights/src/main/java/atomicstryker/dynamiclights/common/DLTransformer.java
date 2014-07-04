@@ -30,10 +30,20 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class DLTransformer implements IClassTransformer
 {
     
-    private String classNameWorld = "afn";
-    private String blockAccessJava = "afx";
+    /* net/minecraft/World */
+    private String classNameWorld = "ahb";
+    
+    /* net/minecraft/world/IBlockAccess */
+    private String blockAccessJava = "ahl";
+    
+    /* net/minecraft/block/Block */
+    private String blockJava = "aji";
+    
+    /* net/minecraft/World.computeLightValue */
     private String computeLightValueMethodName = "a";
-    private String targetMethodDesc = "(IIILafz;)I";
+    
+    /* (IIILnet/minecraft/world/EnumSkyBlock;)I */
+    private String targetMethodDesc = "(IIILahn;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -41,22 +51,23 @@ public class DLTransformer implements IClassTransformer
         //System.out.println("transforming: "+name);
         if (name.equals(classNameWorld))
         {
-            return handleWorldTransform(bytes);
+            return handleWorldTransform(bytes, true);
         }
         else if (name.equals("net.minecraft.world.World")) // MCP testing
         {
+            blockJava = "net/minecraft/block/Block";
             blockAccessJava = "net/minecraft/world/IBlockAccess";
             computeLightValueMethodName = "computeLightValue";
             targetMethodDesc = "(IIILnet/minecraft/world/EnumSkyBlock;)I";
-            return handleWorldTransform(bytes);
+            return handleWorldTransform(bytes, false);
         }
         
         return bytes;
     }
     
-    private byte[] handleWorldTransform(byte[] bytes)
+    private byte[] handleWorldTransform(byte[] bytes, boolean obf)
     {
-        System.out.println("**************** Dynamic Lights transform running on World *********************** ");
+        System.out.println("**************** Dynamic Lights transform running on World, obf: "+obf+" *********************** ");
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(classNode, 0);
@@ -121,7 +132,7 @@ public class DLTransformer implements IClassTransformer
                 toInject.add(new VarInsnNode(ILOAD, 1));
                 toInject.add(new VarInsnNode(ILOAD, 2));
                 toInject.add(new VarInsnNode(ILOAD, 3));
-                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";Lnet/minecraft/block/Block;III)I"));
+                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";L"+blockJava+";III)I"));
                 if (replacing)
                 {
                     toInject.add(new VarInsnNode(ISTORE, 6));
