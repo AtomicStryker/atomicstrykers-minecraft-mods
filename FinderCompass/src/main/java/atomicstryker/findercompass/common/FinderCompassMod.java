@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -24,10 +25,12 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.2e")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.10")
 public class FinderCompassMod
 {
 
@@ -43,6 +46,12 @@ public class FinderCompassMod
     
     public NetworkHelper networkHelper;
     public SimpleNetworkWrapper networkWrapper;
+    
+    @NetworkCheckHandler
+    public boolean checkModLists(Map<String,String> modList, Side side)
+    {
+        return true;
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
