@@ -350,3 +350,6 @@ a: setAccessible now true
 + refactored logging to print less useless data and some more useful things
 + why didn't anybody tell me Ruins demanded clients have it installed since some forge update?! fixed
 +  HOTFIX: handler was reading min template distances before file parser had gottem to them
+
+13.4
++ updated to mc 1.7.10
