@@ -125,6 +125,7 @@ public class PetBatMod implements IProxy
     
     public NetworkHelper networkHelper;
     
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {        

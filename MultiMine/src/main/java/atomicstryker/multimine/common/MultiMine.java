@@ -33,6 +33,7 @@ public class MultiMine
     
     public NetworkHelper networkHelper;
     
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
