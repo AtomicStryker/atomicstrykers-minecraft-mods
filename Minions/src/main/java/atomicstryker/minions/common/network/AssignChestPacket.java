@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class AssignChestPacket implements IPacket
@@ -32,40 +31,26 @@ public class AssignChestPacket implements IPacket
     @Override
     public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-        {
-
-        }
-        else
-        {
-            ByteBufUtils.writeUTF8String(bytes, user);
-            bytes.writeBoolean(sneak);
-            bytes.writeInt(x);
-            bytes.writeInt(y);
-            bytes.writeInt(z);
-        }
+        ByteBufUtils.writeUTF8String(bytes, user);
+        bytes.writeBoolean(sneak);
+        bytes.writeInt(x);
+        bytes.writeInt(y);
+        bytes.writeInt(z);
     }
 
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        user = ByteBufUtils.readUTF8String(bytes);
+        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+        if (player != null)
         {
-
-        }
-        else
-        {
-            user = ByteBufUtils.readUTF8String(bytes);
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
-            if (player != null)
-            {
-                sneak = bytes.readBoolean();
-                x = bytes.readInt();
-                y = bytes.readInt();
-                z = bytes.readInt();
-                
-                MinionsCore.instance.orderMinionsToChestBlock(player, sneak, x, y, z);
-            }
+            sneak = bytes.readBoolean();
+            x = bytes.readInt();
+            y = bytes.readInt();
+            z = bytes.readInt();
+            
+            MinionsCore.instance.orderMinionsToChestBlock(player, sneak, x, y, z);
         }
     }
 
