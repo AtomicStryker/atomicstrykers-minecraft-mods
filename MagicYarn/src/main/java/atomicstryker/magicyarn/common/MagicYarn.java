@@ -37,6 +37,7 @@ public class MagicYarn implements IProxy
     
 	public static Item magicYarn;
 	
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {

@@ -122,6 +122,7 @@ public class InfernalMobsCore
 
     private double maxDamage;
 
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {

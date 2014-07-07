@@ -92,6 +92,7 @@ public class RopesPlusCore
     private boolean zipLinesEnabled;
     private boolean grapplingEnabled;
 
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
