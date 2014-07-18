@@ -4,6 +4,8 @@ package atomicstryker.ic2.advancedmachines;
 import ic2.api.item.IC2Items;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.Recipes;
+import ic2.core.block.machine.ContainerOreWashing;
+import ic2.core.block.machine.tileentity.TileEntityOreWashing;
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.0.8", dependencies = "required-after:IC2@2.1.470")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.1.0", dependencies = "required-after:IC2@2.1.478")
 public class ModAdvancedMachines implements IGuiHandler, IProxy
 {
     
@@ -45,6 +47,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
     private ItemStack stackSingularityCompressor;
     private ItemStack stackCentrifugeExtractor;
     private ItemStack stackCombinedRecycler;
+    private ItemStack stackRotaryOreWasher;
     
     public int maxMachineSpeedUpFactor;
     public int maxMachineSpeedUpTicks;
@@ -65,6 +68,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         stackSingularityCompressor = new ItemStack(blockAdvancedMachine, 1, 1);
         stackCentrifugeExtractor = new ItemStack(blockAdvancedMachine, 1, 2);
         stackCombinedRecycler = new ItemStack(blockAdvancedMachine, 1, 3);
+        stackRotaryOreWasher = new ItemStack(blockAdvancedMachine, 1, 4);
         
         maxMachineSpeedUpFactor = config.get(Configuration.CATEGORY_GENERAL, "maxMachineSpeedUpFactor", 10, "Advanced Machines will reach X times the speed of normal machines").getInt(10);
         maxMachineSpeedUpTicks = config.get(Configuration.CATEGORY_GENERAL, "maxMachineSpeedUpTicks", 10000, "Advanced Machines will take X ingame ticks to reach max speed").getInt(10000);
@@ -78,6 +82,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         GameRegistry.registerTileEntity(TileEntityAdvancedCompressor.class, "Singularity Compressor");
         GameRegistry.registerTileEntity(TileEntityAdvancedExtractor.class, "Centrifuge Extractor");
         GameRegistry.registerTileEntity(TileEntityAdvancedRecycler.class, "Combined Recycler");
+        GameRegistry.registerTileEntity(TileEntityAdvancedOreWasher.class, "Rotary Ore Washer");
         
         NetworkRegistry.INSTANCE.registerGuiHandler(this, this);
         
@@ -97,6 +102,9 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
                 Character.valueOf('M'), IC2Items.getItem("macerator"),
                 Character.valueOf('A'), IC2Items.getItem("advancedMachine")});
         }
+        
+        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.netherrack)), new NBTTagCompound(), new ItemStack(Blocks.netherrack));
+        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.quartz_ore)), new NBTTagCompound(), new ItemStack(Blocks.quartz_ore));
         
         if (config.get(Configuration.CATEGORY_GENERAL, "Singularity Compressor Enabled", true).getBoolean(true))
         {
@@ -131,8 +139,16 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
                 Character.valueOf('R'), IC2Items.getItem("recycler")});
         }
         
-        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.netherrack)), new NBTTagCompound(), new ItemStack(Blocks.netherrack));
-        Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.quartz_ore)), new NBTTagCompound(), new ItemStack(Blocks.quartz_ore));
+        if (config.get(Configuration.CATEGORY_GENERAL, "Rotary Ore Washer Enabled", true).getBoolean(true))
+        {
+            GameRegistry.addRecipe(stackRotaryOreWasher,
+                    new Object[] {"CRC", "PWP", "PAP",
+                Character.valueOf('C'), IC2Items.getItem("coil"),
+                Character.valueOf('R'), IC2Items.getItem("elemotor"),
+                Character.valueOf('P'), IC2Items.getItem("plateiron"),
+                Character.valueOf('W'), IC2Items.getItem("orewashingplant"),
+                Character.valueOf('A'), IC2Items.getItem("advancedMachine")});
+        }
         
         config.save();
     }
@@ -177,6 +193,10 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
             if (tesm instanceof TileEntityAdvancedMacerator)
             {
                 return new ContainerAdvancedMacerator(player, (TileEntityAdvancedMacerator) tesm);
+            }
+            else if (tesm instanceof TileEntityAdvancedOreWasher)
+            {
+                return new ContainerOreWashing(player, (TileEntityOreWashing) tesm);
             }
             
             return new ContainerAdvancedMachine<TileEntityStandardMachine>(player, tesm);

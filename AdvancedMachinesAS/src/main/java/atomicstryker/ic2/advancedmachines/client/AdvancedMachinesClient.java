@@ -1,5 +1,7 @@
 package atomicstryker.ic2.advancedmachines.client;
 
+import ic2.core.block.machine.ContainerOreWashing;
+import ic2.core.block.machine.tileentity.TileEntityOreWashing;
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +12,7 @@ import atomicstryker.ic2.advancedmachines.IProxy;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedCompressor;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedExtractor;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedMacerator;
+import atomicstryker.ic2.advancedmachines.TileEntityAdvancedOreWasher;
 import atomicstryker.ic2.advancedmachines.TileEntityAdvancedRecycler;
 
 public class AdvancedMachinesClient implements IProxy
@@ -64,6 +67,10 @@ public class AdvancedMachinesClient implements IProxy
             else if (te instanceof TileEntityAdvancedRecycler)
             {
                 return new GuiCombinedRecycler(new ContainerAdvancedMachine<TileEntityStandardMachine>(player, (TileEntityAdvancedRecycler) te), (TileEntityAdvancedRecycler) te);
+            }
+            else if (te instanceof TileEntityAdvancedOreWasher)
+            {
+                return new GuiRotaryOreWasher(new ContainerOreWashing(player, (TileEntityOreWashing) te), (TileEntityOreWashing) te);
             }
         }
 
