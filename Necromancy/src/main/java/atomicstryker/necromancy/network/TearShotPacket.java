@@ -40,7 +40,7 @@ public class TearShotPacket implements IPacket
         user = ByteBufUtils.readUTF8String(bytes);
         blood = bytes.readBoolean();
         
-        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
         if (player != null)
         {
             EntityTear tear = blood ? new EntityTearBlood(player.worldObj, player) : new EntityTear(player.worldObj, player);

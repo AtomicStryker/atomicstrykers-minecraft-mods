@@ -47,7 +47,7 @@ public class BlockPunchedPacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isServer())
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (p != null)
             {
                 KenshiroServer.instance().onClientPunchedBlock(p, x, y, z);

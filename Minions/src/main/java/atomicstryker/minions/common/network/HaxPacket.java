@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class HaxPacket implements IPacket
@@ -23,31 +22,17 @@ public class HaxPacket implements IPacket
     @Override
     public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-        {
-            
-        }
-        else
-        {
-            ByteBufUtils.writeUTF8String(bytes, user);
-        }
+        ByteBufUtils.writeUTF8String(bytes, user);
     }
 
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        user = ByteBufUtils.readUTF8String(bytes);
+        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+        if (player != null)
         {
-            
-        }
-        else
-        {
-            user = ByteBufUtils.readUTF8String(bytes);
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
-            if (player != null)
-            {
-                player.addExperience(200);
-            }
+            player.addExperience(200);
         }
     }
 

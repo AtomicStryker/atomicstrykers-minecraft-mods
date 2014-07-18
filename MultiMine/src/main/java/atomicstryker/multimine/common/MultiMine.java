@@ -15,7 +15,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.4.0")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.4.1")
 public class MultiMine
 {
     @Instance("AS_MultiMine")
@@ -33,6 +33,7 @@ public class MultiMine
     
     public NetworkHelper networkHelper;
     
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {

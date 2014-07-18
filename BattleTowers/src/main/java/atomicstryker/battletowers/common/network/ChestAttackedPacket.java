@@ -44,7 +44,7 @@ public class ChestAttackedPacket implements IPacket
         playerName = String.valueOf(chars);
         golemEntityID = bytes.readInt();
         
-        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(playerName);
+        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
         if (p != null)
         {
             Entity e = p.worldObj.getEntityByID(golemEntityID);

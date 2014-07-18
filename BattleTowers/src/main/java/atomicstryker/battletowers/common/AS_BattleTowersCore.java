@@ -26,7 +26,7 @@ import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.7")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.8")
 public class AS_BattleTowersCore
 {
     

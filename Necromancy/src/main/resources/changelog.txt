@@ -1,3 +1,6 @@
+1.7.0
+- updated to mc 1.7.10
+
 1.6.9
 - added Channel Handler which does nothing so FML would stop complaining about Packets
 

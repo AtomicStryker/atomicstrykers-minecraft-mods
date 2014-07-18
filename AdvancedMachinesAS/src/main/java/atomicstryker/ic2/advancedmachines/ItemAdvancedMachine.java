@@ -45,6 +45,8 @@ public class ItemAdvancedMachine extends ItemBlock
                 return "item.advancedmachines:centrifugeExtractor";
             case 3:
                 return "item.advancedmachines:combinedRecycler";
+            case 4:
+                return "item.advancedmachines:rotaryOreWasher";
             default:
                 return null;
         }
@@ -58,5 +60,6 @@ public class ItemAdvancedMachine extends ItemBlock
         par3List.add(new ItemStack(par1, 1, 1));
         par3List.add(new ItemStack(par1, 1, 2));
         par3List.add(new ItemStack(par1, 1, 3));
+        par3List.add(new ItemStack(par1, 1, 4));
     }
 }

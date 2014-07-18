@@ -68,7 +68,7 @@ public class KenshiroServer
             if (!event.isCanceled())
             {
                 int meta = player.worldObj.getBlockMetadata(x, y, z);
-                if (block.removedByPlayer(player.worldObj, player, x, y, z))
+                if (block.removedByPlayer(player.worldObj, player, x, y, z, true))
                 {
                     block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
                     block.harvestBlock(player.worldObj, player, x, y, z, meta);

@@ -81,7 +81,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
         this(par1World);
         setBodyParts(bodypart);
         setTamed(true);
-        setOwner(owner);
+        func_152115_b(owner);
     }
 
     @Override
@@ -349,7 +349,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
                     return false;
                 }
             }
-            else if (riddenByEntity == null && player.getCommandSenderName().equals(getOwnerName()))
+            else if (riddenByEntity == null && player.getCommandSenderName().equals(func_152113_b()))
             {
                 ISaddleAble mob = (ISaddleAble) NecroEntityRegistry.registeredEntities.get(torso[0].name);
                 player.mountEntity(this);
@@ -373,7 +373,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
 
             if (riddenByEntity == null)
             {
-                if (player.getCommandSenderName().equalsIgnoreCase(getOwnerName()))
+                if (player.getCommandSenderName().equalsIgnoreCase(func_152113_b()))
                 {
                     aiSit.setSitting(!this.isSitting());
                     isJumping = false;
@@ -385,7 +385,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
                 }
                 else
                 {
-                    player.addChatMessage(new ChatComponentText("<Minion> I obey only " + getOwnerName()));
+                    player.addChatMessage(new ChatComponentText("<Minion> I obey only " + func_152113_b()));
                 }
             }
         }
@@ -549,7 +549,7 @@ public class EntityMinion extends EntityTameable implements IRangedAttackMob
     @Override
     public EntityLivingBase getOwner()
     {
-        return worldObj.getPlayerEntityByName(getOwnerName());
+        return worldObj.getPlayerEntityByName(func_152113_b());
     }
 
     @Override

@@ -83,7 +83,7 @@ import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.9.2")
+@Mod(modid = "AS_Minions", name = "Minions", version = "1.9.4")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -132,6 +132,7 @@ public class MinionsCore
         delayedDeedEvents = new ArrayList<FutureDeedEvent>();
     }
 
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

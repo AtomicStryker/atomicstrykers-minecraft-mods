@@ -68,7 +68,7 @@ public class LightningPacket implements IPacket
         }
         else
         {
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
             if (player != null)
             {                
                 if (MinionsCore.instance.hasPlayerWillPower(player))

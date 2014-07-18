@@ -1,3 +1,6 @@
+1.5.4
+- updated to mc 1.7.10
+
 1.5.3
 - moved infernal mobs overlay rendering into an overlay render event
 - also disabled infernal mob overlay when a bossfight is on
