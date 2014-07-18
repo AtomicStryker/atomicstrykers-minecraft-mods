@@ -3,6 +3,7 @@ package atomicstryker.ic2.advancedmachines;
 import ic2.api.recipe.RecipeOutput;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
+import ic2.core.item.ItemUpgradeModule;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -183,6 +184,23 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
     public void setOverclockRates(TileEntityStandardMachine te)
     {
         te.energyConsume *= mod.machinePowerDrawFactor;
+        
+        int overclockers = 0;
+        for (int i = 0; i < te.upgradeSlot.size(); i++)
+        {
+            ItemStack stack = te.upgradeSlot.get(i);
+            if (stack != null)
+            {
+                if (stack.getItem() instanceof ItemUpgradeModule && stack.getItemDamage() == 0)
+                {
+                    overclockers += stack.stackSize;
+                }
+            }
+        }
+        if (overclockers > 6)
+        {
+            te.getWorldObj().createExplosion(null, te.xCoord+0.5f, te.yCoord, te.zCoord+0.5f, 3f, true);
+        }
     }
 
     @Override
