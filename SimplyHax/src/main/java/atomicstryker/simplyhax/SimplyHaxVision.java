@@ -28,7 +28,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.7.2")
+@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.7.10")
 public class SimplyHaxVision
 {
 	private final static String modname = "Vision";
@@ -59,7 +59,7 @@ public class SimplyHaxVision
         {
             if (mcinstance != FMLClientHandler.instance().getClient())
             {
-                InitSettings();
+                initSettings();
                 mcinstance = FMLClientHandler.instance().getClient();
                 setupRenderer();
             }
@@ -100,7 +100,7 @@ public class SimplyHaxVision
     private static void obliqueNearPlaneClip(float f, float f1, float f2, float f3)
     {	
         float af[] = new float[16];
-        FloatBuffer floatbuffer = makeBuffer(16);
+        FloatBuffer floatbuffer = ByteBuffer.allocateDirect(af.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
         GL11.glGetFloat(2983 /*GL_PROJECTION_MATRIX*/, floatbuffer);
         floatbuffer.get(af).rewind();
         float f4 = (sgn(f) + af[8]) / af[0];
@@ -116,6 +116,11 @@ public class SimplyHaxVision
         GL11.glMatrixMode(5889 /*GL_PROJECTION*/);
         GL11.glLoadMatrix(floatbuffer);
         GL11.glMatrixMode(5888 /*GL_MODELVIEW0_ARB*/);
+    }
+    
+    private static float sgn(float f)
+    {
+        return f<0f ? -1f : (f>0f ? 1f : 0f);
     }
 	
 	private void setupRenderer()
@@ -150,7 +155,7 @@ public class SimplyHaxVision
         }
     }
 	
-	public static void InitSettings()
+	public static void initSettings()
 	{
 		Properties properties = new Properties();
 		
@@ -208,15 +213,5 @@ public class SimplyHaxVision
 	private boolean IsMenuOpen()
 	{
 		return mcinstance.currentScreen != null;
-	}
-	
-    private static FloatBuffer makeBuffer(int length)
-	{
-		return ByteBuffer.allocateDirect(length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-	}
-	
-    private static float sgn(float f)
-	{
-		return f<0f ? -1f : (f>0f ? 1f : 0f);
 	}
 }
