@@ -1,6 +1,6 @@
 package atomicstryker.ic2.advancedmachines;
 
-import ic2.core.block.machine.ContainerStandardMachine;
+import ic2.core.block.machine.container.ContainerStandardMachine;
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 import ic2.core.slot.SlotInvSlot;
 import net.minecraft.entity.player.EntityPlayer;
