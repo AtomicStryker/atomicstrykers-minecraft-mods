@@ -10,7 +10,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = "SimplyHaxEntityDump", name = "Simply Hax Entity Dump", version = "1.6.3")
+@Mod(modid = "SimplyHaxEntityDump", name = "Simply Hax Entity Dump", version = "1.7.10")
 public class SimplyHaxEntityDump
 {
 	

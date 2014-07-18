@@ -140,7 +140,7 @@ public class SimplyHaxFlying
     @SubscribeEvent
     public void onFall(LivingFallEvent event)
     {
-        if (event.entity == player)
+        if (event.entity instanceof EntityPlayer)
         {
             event.setCanceled(true);
         }

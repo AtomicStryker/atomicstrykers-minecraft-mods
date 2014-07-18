@@ -1,5 +1,6 @@
 1.7.10
 - updated for MC 1.7.10
+- removed superfluous coremode stuff, code cleanup
 
 1.7.2a
 - flying module now just enables creative style flying instead of hacking movement
