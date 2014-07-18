@@ -33,7 +33,7 @@ public class SoundPacket implements IPacket
         user = ByteBufUtils.readUTF8String(bytes);
         sound = ByteBufUtils.readUTF8String(bytes);
         
-        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
         if (player != null)
         {
             player.worldObj.playSoundAtEntity(player, sound, 1f, 1f);

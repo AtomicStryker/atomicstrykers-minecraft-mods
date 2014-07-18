@@ -55,7 +55,7 @@ public class PartialBlockPacket implements IPacket
         }
         else
         {
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
             if (player != null)
             {
                 MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);

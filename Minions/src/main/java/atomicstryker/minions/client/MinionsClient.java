@@ -45,7 +45,6 @@ import atomicstryker.minions.common.network.LightningPacket;
 import atomicstryker.minions.common.network.MinionSpawnPacket;
 import atomicstryker.minions.common.network.MovetoPacket;
 import atomicstryker.minions.common.network.PickupEntPacket;
-import atomicstryker.minions.common.network.RequestXPSettingPacket;
 import atomicstryker.minions.common.network.SoundPacket;
 import atomicstryker.minions.common.network.StripminePacket;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -454,11 +453,6 @@ public class MinionsClient
     public static void onMastersGloveRightClickHeld(ItemStack var1, World var2, EntityPlayer var3)
     {
         MinionsCore.instance.networkHelper.sendPacketToServer(new FollowPacket(var3.getCommandSenderName()));
-    }
-    
-    public static void requestXPSettingFromServer()
-    {
-        MinionsCore.instance.networkHelper.sendPacketToServer(new RequestXPSettingPacket(MinionsCore.instance.evilDeedXPCost));
     }
 
     public static void onChangedXPSetting()

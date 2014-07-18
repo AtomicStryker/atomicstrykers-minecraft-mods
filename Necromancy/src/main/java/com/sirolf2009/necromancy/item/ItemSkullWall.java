@@ -82,14 +82,7 @@ public class ItemSkullWall extends Item
 
                 if (tileentity != null && tileentity instanceof TileEntitySkull)
                 {
-                    String s = "";
-
-                    if (par1ItemStack.hasTagCompound() && par1ItemStack.getTagCompound().hasKey("SkullOwner"))
-                    {
-                        s = par1ItemStack.getTagCompound().getString("SkullOwner");
-                    }
-
-                    ((TileEntitySkull) tileentity).func_145905_a(par1ItemStack.getItemDamage(), s);
+                    ((TileEntitySkull) tileentity).func_152107_a(par1ItemStack.getItemDamage());
                     ((TileEntitySkull) tileentity).func_145903_a(i1);
                     ((BlockSkull) Blocks.skull).func_149965_a(par3World, par4, par5, par6, (TileEntitySkull) tileentity);
                 }

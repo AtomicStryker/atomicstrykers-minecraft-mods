@@ -39,19 +39,22 @@ public class ItemMastersStaff extends Item
     @Override
     public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityPlayer player, int ticksHeld)
     {
-        int ticksLeftFromMax = this.getMaxItemUseDuration(itemstack) - ticksHeld;
-        float pointStrength = (float) ticksLeftFromMax / 20.0F;
-        pointStrength = (pointStrength * pointStrength + pointStrength * 2.0F) / 3.0F;
+        if (world.isRemote)
+        {
+            int ticksLeftFromMax = this.getMaxItemUseDuration(itemstack) - ticksHeld;
+            float pointStrength = (float) ticksLeftFromMax / 20.0F;
+            pointStrength = (pointStrength * pointStrength + pointStrength * 2.0F) / 3.0F;
 
-        if (pointStrength > 1.0F)
-        {
-            // full power!
-            MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, player);
-        }
-        else
-        {
-            // shorter tap
-            MinionsCore.proxy.onMastersGloveRightClick(itemstack, world, player);
+            if (pointStrength > 1.0F)
+            {
+                // full power!
+                MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, player);
+            }
+            else
+            {
+                // shorter tap
+                MinionsCore.proxy.onMastersGloveRightClick(itemstack, world, player);
+            }
         }
     }
 

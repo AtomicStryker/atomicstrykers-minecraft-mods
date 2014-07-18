@@ -36,7 +36,7 @@ public class DropAllPacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         targetID = bytes.readInt();
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
         if (player != null)
         {
             Entity target = player.worldObj.getEntityByID(targetID);

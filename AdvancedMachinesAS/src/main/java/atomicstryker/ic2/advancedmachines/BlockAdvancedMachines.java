@@ -43,7 +43,7 @@ public class BlockAdvancedMachines extends BlockContainer
     @Override
     public void registerBlockIcons(IIconRegister par1IconRegister)
     {
-        iconBuffer = new IIcon[4][12]; // 4 machines, 6 sides each, in ON and OFF states
+        iconBuffer = new IIcon[5][12]; // 5 machines, 6 sides each, in ON and OFF states
 
         // meta 0, macerator
         // first the 6 sides in OFF state
@@ -108,6 +108,22 @@ public class BlockAdvancedMachines extends BlockContainer
         iconBuffer[3][9] = par1IconRegister.registerIcon("advancedmachines:frontRecyclerON"); // east
         iconBuffer[3][10] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // south
         iconBuffer[3][11] = par1IconRegister.registerIcon("advancedmachines:sideplate"); // west
+        
+        // meta 4, orewasher
+        // first the 6 sides in OFF state
+        iconBuffer[4][0] = par1IconRegister.registerIcon("advancedmachines:bottom32"); // bottom
+        iconBuffer[4][1] = par1IconRegister.registerIcon("advancedmachines:topOreWasher"); // top
+        iconBuffer[4][2] = par1IconRegister.registerIcon("advancedmachines:sideOreWasherOFF"); // north
+        iconBuffer[4][3] = par1IconRegister.registerIcon("advancedmachines:frontOreWasherOFF"); // east
+        iconBuffer[4][4] = par1IconRegister.registerIcon("advancedmachines:sideOreWasherOFF"); // south
+        iconBuffer[4][5] = par1IconRegister.registerIcon("advancedmachines:back32"); // west
+        // then the 6 sides in ON state
+        iconBuffer[4][6] = par1IconRegister.registerIcon("advancedmachines:bottom32"); // bottom
+        iconBuffer[4][7] = par1IconRegister.registerIcon("advancedmachines:topOreWasher"); // top
+        iconBuffer[4][8] = par1IconRegister.registerIcon("advancedmachines:sideOreWasherOFF"); // north
+        iconBuffer[4][9] = par1IconRegister.registerIcon("advancedmachines:frontOreWasherOFF"); // east
+        iconBuffer[4][10] = par1IconRegister.registerIcon("advancedmachines:sideOreWasherOFF"); // south
+        iconBuffer[4][11] = par1IconRegister.registerIcon("advancedmachines:back32"); // west
     }
 
     @Override
@@ -148,6 +164,8 @@ public class BlockAdvancedMachines extends BlockContainer
             return new TileEntityAdvancedExtractor();
         case 3:
             return new TileEntityAdvancedRecycler();
+        case 4:
+            return new TileEntityAdvancedOreWasher();
         default:
             return null;
         }

@@ -1,3 +1,9 @@
+Update 1.9.4
+- cleaned up packet code nonsense, fixes possible internal server issues
+
+Update 1.9.3
+- updated to mc 1.7.10
+
 Update 1.9.2
 - added Channel Handler which does nothing so FML would stop complaining about Packets
 

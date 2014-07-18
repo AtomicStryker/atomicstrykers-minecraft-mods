@@ -45,7 +45,7 @@ public class AnimationPacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isServer())
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (p != null)
             {
                 for (EntityPlayerMP po : (ArrayList<EntityPlayerMP>)MinecraftServer.getServer().getConfigurationManager().playerEntityList)

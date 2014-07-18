@@ -48,7 +48,7 @@ public class ZiplinePacket implements IPacket
         }
         else
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
             if (p != null)
             {
                 Entity target = p.worldObj.getEntityByID(ziplineEntID);

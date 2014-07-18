@@ -43,7 +43,7 @@ public class EvilDeedPacket implements IPacket
         sound = ByteBufUtils.readUTF8String(bytes);
         soundLength = bytes.readInt();
 
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(user);
+        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
         if (player != null)
         {
             if (player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)

@@ -221,7 +221,7 @@ public class MultiMineClient
                     if (block != Blocks.air)
                     {
                         int meta = w.getBlockMetadata(x, y, z);
-                        if (!notClientsBlock && block.removedByPlayer(w, player, x, y, z))
+                        if (!notClientsBlock && block.removedByPlayer(w, player, x, y, z, true))
                         {
                             block.onBlockDestroyedByPlayer(w, x, y, z, meta);
                             block.harvestBlock(w, player, x, y, z, meta);

@@ -1,5 +1,8 @@
 package atomicstryker.battletowers.common;
 
+import org.apache.logging.log4j.Level;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
@@ -37,7 +40,7 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
                 TowerPosition tp = WorldGenHandler.deleteNearestTower(icommandsender.getEntityWorld(), x, z);
                 if (tp != null)
                 {
-                    notifyAdmins(icommandsender, "Battletower deleted: "+tp.toString(), (Object)astring);
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": Battletower deleted: "+tp.toString());
                     for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, AxisAlignedBB.getBoundingBox(tp.x-10, 0.0D, tp.z-10, tp.x+10, 255, tp.z+10)))
                     {
                         ((Entity) o).setDead();
@@ -46,7 +49,7 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
                 }
                 else
                 {
-                    notifyAdmins(icommandsender, "no Battletower deleted, no valid target", (Object)astring);
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName()+ ": no Battletower deleted, no valid target");
                 }
             }
             catch (Exception e)

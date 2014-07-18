@@ -119,7 +119,7 @@ public class InfernalMobsClient implements ISidedProxy
                 EntityLivingBase target = (EntityLivingBase) ent;
                 String buffer = mod.getEntityDisplayName(target);
 
-                ScaledResolution resolution = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+                ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
                 int screenwidth = resolution.getScaledWidth();
                 FontRenderer fontR = mc.fontRenderer;
 
@@ -303,7 +303,7 @@ public class InfernalMobsClient implements ISidedProxy
         {
             if (!mc.thePlayer.isInsideOfMaterial(Material.water) && airOverrideValue != -999)
             {
-                final ScaledResolution res = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+                final ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
                 GL11.glEnable(GL11.GL_BLEND);
                 
                 int right_height = 39;

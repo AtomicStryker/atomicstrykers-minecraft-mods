@@ -37,7 +37,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.5")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.6")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -125,6 +125,7 @@ public class PetBatMod implements IProxy
     
     public NetworkHelper networkHelper;
     
+    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {        
