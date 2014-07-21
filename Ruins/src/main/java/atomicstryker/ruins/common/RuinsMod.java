@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -130,6 +131,7 @@ public class RuinsMod
             final double x = event.entity.posX;
             final double y = event.entity.posY;
             final double z = event.entity.posZ;
+            ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<TileEntityCommandBlock>();
             for (Object teo : event.entity.worldObj.loadedTileEntityList)
             {
                 if (teo instanceof TileEntityCommandBlock)
@@ -143,12 +145,17 @@ public class RuinsMod
                             tecb.func_145993_a().func_145752_a(tecb.func_145993_a().func_145753_i().substring(13));
                             // call command block execution
                             tecb.func_145993_a().func_145755_a(event.entity.worldObj);
-                            // kill block
-                            System.out.printf("Ruins executed and killed Command Block at [%d|%d|%d]\n", tecb.xCoord, tecb.yCoord, tecb.zCoord);
-                            event.entity.worldObj.setBlockToAir(tecb.xCoord, tecb.yCoord, tecb.zCoord);
+                            tecblistToDelete.add(tecb);
                         }
                     }
                 }
+            }
+            
+            for (TileEntityCommandBlock tecb2 : tecblistToDelete)
+            {
+                // kill block
+                System.out.printf("Ruins executed and killed Command Block at [%d|%d|%d]\n", tecb2.xCoord, tecb2.yCoord, tecb2.zCoord);
+                event.entity.worldObj.setBlockToAir(tecb2.xCoord, tecb2.yCoord, tecb2.zCoord);
             }
         }
     }
