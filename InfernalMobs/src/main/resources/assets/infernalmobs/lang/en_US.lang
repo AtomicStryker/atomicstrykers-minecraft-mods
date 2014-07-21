@@ -177,3 +177,9 @@ translation.infernalmobs:mod.Vengeance=Vengeance
 translation.infernalmobs:mod.Weakness=Weakness
 translation.infernalmobs:mod.Webber=Webber
 translation.infernalmobs:mod.Wither=Wither
+
+translation.infernalmobs:entity.Creeper=Creeper
+translation.infernalmobs:entity.Zombie=Zombie
+translation.infernalmobs:entity.Skeleton=Skeleton
+translation.infernalmobs:entity.Spider=Spider
+translation.infernalmobs:entity.Enderman=Enderman
