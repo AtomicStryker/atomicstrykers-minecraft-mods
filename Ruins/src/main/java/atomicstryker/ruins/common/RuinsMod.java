@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -132,7 +133,9 @@ public class RuinsMod
             final double y = event.entity.posY;
             final double z = event.entity.posZ;
             ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<TileEntityCommandBlock>();
-            for (Object teo : event.entity.worldObj.loadedTileEntityList)
+            @SuppressWarnings("unchecked")
+            ArrayList<Object> telist = new ArrayList<Object>((List<Object>)event.entity.worldObj.loadedTileEntityList);
+            for (Object teo : telist)
             {
                 if (teo instanceof TileEntityCommandBlock)
                 {
