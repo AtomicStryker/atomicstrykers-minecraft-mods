@@ -416,6 +416,15 @@ public abstract class MobModifier
             {
                 buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
             }
+            buffer = buffer.replaceFirst("Entity", "");
+            
+            String entLoc = "translation.infernalmobs:entity."+buffer;
+            String entTrans = StatCollector.translateToLocal(entLoc);
+            if (!entLoc.equals(entTrans))
+            {
+                buffer = entTrans;
+            }
+            
             int size = getModSize();
             
             int randomMod = target.getRNG().nextInt(getModSize());
@@ -436,23 +445,17 @@ public abstract class MobModifier
             String prefix = size <= 5 ? EnumChatFormatting.AQUA+StatCollector.translateToLocal("translation.infernalmobs:rareClass") 
                     : size <= 10 ? EnumChatFormatting.YELLOW+StatCollector.translateToLocal("translation.infernalmobs:ultraClass") 
                             : EnumChatFormatting.GOLD+StatCollector.translateToLocal("translation.infernalmobs:infernalClass");
-            if (buffer.startsWith("Entity"))
-            {
-                buffer = buffer.replaceFirst("Entity", prefix+modprefix);
-            }
-            else
-            {
-                buffer = prefix+modprefix+buffer;
-            }
+
+            buffer = prefix+modprefix+buffer;
             
             if (size > 1)
             {
                 mod = mod.nextMod != null ? mod.nextMod : this;
                 if (mod.getModNameSuffix() != null)
                 {
-                    String pick = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
-                    pick = StatCollector.translateToLocal("translation.infernalmobs:suffix."+pick);
-                    buffer = buffer+pick;
+                    String pickedSuffix = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
+                    pickedSuffix = StatCollector.translateToLocal("translation.infernalmobs:suffix."+pickedSuffix);
+                    buffer = buffer+pickedSuffix;
                 }
             }
             

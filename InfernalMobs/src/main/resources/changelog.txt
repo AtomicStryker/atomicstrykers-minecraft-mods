@@ -1,3 +1,8 @@
+1.5.5
+- added simple entity names to attempted translations
+- example: if you want "Creeper" translated to "Schleicher" put this in the lang file:
+- translation.infernalmobs:entity.Creeper=Schleicher
+
 1.5.4
 - updated to mc 1.7.10
 
