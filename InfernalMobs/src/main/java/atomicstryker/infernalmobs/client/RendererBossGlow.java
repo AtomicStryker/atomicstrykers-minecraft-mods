@@ -1,12 +1,15 @@
 package atomicstryker.infernalmobs.client;
 
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.common.MobModifier;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class RendererBossGlow
 {
@@ -35,7 +38,8 @@ public class RendererBossGlow
         double var11 = viewEnt.lastTickPosZ + (viewEnt.posZ - viewEnt.lastTickPosZ) * (double)renderTick;
         f.setPosition(var7, var9, var11);
         
-        for (EntityLivingBase ent : InfernalMobsCore.proxy.getRareMobs().keySet())
+        Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+        for (EntityLivingBase ent : mobsmap.keySet())
         {
             if (ent.isInRangeToRenderDist(curPos.distanceTo(ent.getPosition(1.0f)))
             && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.boundingBox))

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -73,7 +74,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.5")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.6")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -625,16 +626,8 @@ public class InfernalMobsCore
      */
     public void checkRareListForObsoletes(World lastWorld)
     {
-        ArrayList<EntityLivingBase> toRemove = new ArrayList<EntityLivingBase>();
-        for (EntityLivingBase ent : proxy.getRareMobs().keySet())
-        {
-            if (ent.worldObj != lastWorld)
-            {
-                toRemove.add(ent);
-            }
-        }
-
-        for (EntityLivingBase ent : toRemove)
+        Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+        for (EntityLivingBase ent : mobsmap.keySet())
         {
             proxy.getRareMobs().remove(ent);
         }
@@ -782,7 +775,8 @@ public class InfernalMobsCore
         if (System.currentTimeMillis() > nextExistCheckTime)
         {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            for (Entity mob : proxy.getRareMobs().keySet())
+            Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+            for (EntityLivingBase mob : mobsmap.keySet())
             {
                 if (mob.isDead || !mob.worldObj.loadedEntityList.contains(mob))
                 {
