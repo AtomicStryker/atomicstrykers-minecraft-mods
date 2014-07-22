@@ -1,4 +1,7 @@
 
+// specify jdk level
+sourceCompatibility = 1.6
+
 def zipfile = file( 'makezip' )
 if( zipfile.exists() ) {
 	defaultTasks 'makezip'
@@ -21,7 +24,7 @@ archivesBaseName = projname
 
 minecraft {
     version = xmlproperties.@mcversion
-	assetDir = "eclipse/assets"
+	runDir = "eclipse/assets"
 }
 
 // check for specified dependencies on other projects or jars
