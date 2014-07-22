@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentData;
@@ -619,16 +619,8 @@ public class InfernalMobsCore
      */
     public void checkRareListForObsoletes(World lastWorld)
     {
-        ArrayList<EntityLivingBase> toRemove = new ArrayList<EntityLivingBase>();
-        for (EntityLivingBase ent : proxy.getRareMobs().keySet())
-        {
-            if (ent.worldObj != lastWorld)
-            {
-                toRemove.add(ent);
-            }
-        }
-
-        for (EntityLivingBase ent : toRemove)
+        Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+        for (EntityLivingBase ent : mobsmap.keySet())
         {
             proxy.getRareMobs().remove(ent);
         }
@@ -775,9 +767,9 @@ public class InfernalMobsCore
     {
         if (System.currentTimeMillis() > nextExistCheckTime)
         {
-            Set<EntityLivingBase> temp = proxy.getRareMobs().keySet();
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            for (Entity mob : temp)
+            Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+            for (EntityLivingBase mob : mobsmap.keySet())
             {
                 if (!mob.worldObj.loadedEntityList.contains(mob))
                 {
