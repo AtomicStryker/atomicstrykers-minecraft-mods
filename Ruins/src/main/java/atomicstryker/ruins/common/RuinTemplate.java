@@ -405,7 +405,11 @@ public class RuinTemplate
             {
                 for (int y1 = 0; y1 < layers.size(); y1++)
                 {
-                    world.markBlockForUpdate(x+x1, y+y1, z+z1);
+                    int xv = x+x1;
+                    int yv = y+y1;
+                    int zv = z+z1;
+                    world.markBlockForUpdate(xv, yv, zv);
+                    world.notifyBlockChange(xv, yv, zv, world.getBlock(xv, yv, zv));
                 }
             }
         }

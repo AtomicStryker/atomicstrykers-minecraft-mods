@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentData;
@@ -547,6 +546,10 @@ public class InfernalMobsCore
                 mod.onSpawningComplete(entity);
                 mod.setHealthAlreadyHacked(entity);
             }
+            else
+            {
+                System.err.println("Infernal Mobs error, could not instantiate modifier "+savedMods);
+            }
         }
     }
 
@@ -581,8 +584,10 @@ public class InfernalMobsCore
                 {
                     e.printStackTrace();
                 }
+                
+                System.out.println("Checking "+nextMod.modName+" against "+modName);
 
-                if (nextMod.modName.equals(modName))
+                if (nextMod != null && nextMod.modName.equals(modName))
                 {
                     /*
                      * Only actually keep the new linked instance if it's what
@@ -776,11 +781,10 @@ public class InfernalMobsCore
     {
         if (System.currentTimeMillis() > nextExistCheckTime)
         {
-            Set<EntityLivingBase> temp = proxy.getRareMobs().keySet();
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            for (Entity mob : temp)
+            for (Entity mob : proxy.getRareMobs().keySet())
             {
-                if (!mob.worldObj.loadedEntityList.contains(mob))
+                if (mob.isDead || !mob.worldObj.loadedEntityList.contains(mob))
                 {
                     // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.getEntityId()+" from rareMobs");
                     removeEntFromElites((EntityLivingBase) mob);

@@ -23,7 +23,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
     @Override
     public String getCommandUsage(ICommandSender sender)
     {
-        return "/spawninfernal x y z ENTCLASS X spawns an Infernal Mob of class ENTCLASS at x,y,z with Modifiers X";
+        return "/spawninfernal x y z ENTCLASS X spawns an Infernal Mob of class ENTCLASS at x, y, z with Modifiers X";
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -32,33 +32,51 @@ public class InfernalCommandSpawnInfernal extends CommandBase
     {
         if (args.length < 5)
         {
-            throw new WrongUsageException("Invalid Usage of SpawnInfernal command", (Object)args);
+            throw new WrongUsageException("Invalid Usage of SpawnInfernal command, too few arguments", (Object)args);
         }
         else
         {
             try
             {
-                final int x = Integer.valueOf(args[0]);
-                final int y = Integer.valueOf(args[1]);
-                final int z = Integer.valueOf(args[2]);
+                final int x = (args[0].equals("~")) ? sender.getPlayerCoordinates().posX : Integer.valueOf(args[0]);
+                final int y = (args[1].equals("~")) ? sender.getPlayerCoordinates().posY : Integer.valueOf(args[1]);
+                final int z = (args[2].equals("~")) ? sender.getPlayerCoordinates().posZ : Integer.valueOf(args[2]);
                 String modifier = args[4];
                 for (int i = 5; i < args.length; i++)
                 {
                     modifier = modifier + " " + args[i];
                 }
                 
-                final Class<? extends EntityLivingBase> entClass = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(args[3]);;
-                EntityLivingBase mob = entClass.getConstructor(World.class).newInstance(sender.getEntityWorld());
-                mob.setPosition(x+0.5, y+0.5, z+0.5);
-                sender.getEntityWorld().spawnEntityInWorld(mob);
-                
-                InfernalMobsCore.proxy.getRareMobs().remove(mob);
-                InfernalMobsCore.instance().addEntityModifiersByString(mob, modifier);
-                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName() + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated());
+                final Class<? extends EntityLivingBase> entClass = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(args[3]);
+                if (entClass != null)
+                {
+                    EntityLivingBase mob = entClass.getConstructor(World.class).newInstance(sender.getEntityWorld());
+                    mob.setPosition(x+0.5, y+0.5, z+0.5);
+                    sender.getEntityWorld().spawnEntityInWorld(mob);
+                    
+                    InfernalMobsCore.proxy.getRareMobs().remove(mob);
+                    InfernalMobsCore.instance().addEntityModifiersByString(mob, modifier);
+                    MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
+                    if (mod != null)
+                    {
+                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName() 
+                                + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() 
+                                + " at [" + x + "|" + y + "|" + z + "]");
+                    }
+                    else
+                    {
+                        throw new WrongUsageException("Error adding Infernal Modifier "+modifier+" to mob "+mob);
+                    }
+                }
+                else
+                {
+                    throw new WrongUsageException("Invalid SpawnInfernal command, no Entity ["+args[3]+"] known");
+                }
             }
             catch (Exception e)
             {
-                throw new WrongUsageException("Invalid Usage of SpawnInfernal command", (Object)args);
+                e.printStackTrace();
+                throw new WrongUsageException("Problem executing SpawnInfernal command, stacktrace printed...");
             }
         }
     }
