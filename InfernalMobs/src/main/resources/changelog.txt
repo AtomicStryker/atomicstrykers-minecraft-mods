@@ -1,3 +1,8 @@
+1.5.6
+- added support for "~" in /spawninfernal command
+- improved responses to invalid/errored /spawninfernal commands
+- fixed gradle introducing a java 8 dependency by the backdoor
+
 1.5.5
 - added simple entity names to attempted translations
 - example: if you want "Creeper" translated to "Schleicher" put this in the lang file:
