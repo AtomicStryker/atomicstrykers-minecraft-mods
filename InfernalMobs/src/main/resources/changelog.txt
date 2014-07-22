@@ -1,3 +1,7 @@
+#hotfix 1.5.6
+- gradle still adding java 8 dependency. WELL F*** YOU TOO
+- sidestepping the issue by forcing a map typecast
+
 1.5.6
 - added support for "~" in /spawninfernal command
 - improved responses to invalid/errored /spawninfernal commands

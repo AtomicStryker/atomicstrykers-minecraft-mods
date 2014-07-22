@@ -1,7 +1,4 @@
 
-// specify jdk level
-sourceCompatibility = 1.6
-
 def zipfile = file( 'makezip' )
 if( zipfile.exists() ) {
 	defaultTasks 'makezip'
