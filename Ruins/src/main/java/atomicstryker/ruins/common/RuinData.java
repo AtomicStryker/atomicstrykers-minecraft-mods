@@ -36,27 +36,81 @@ public class RuinData implements Comparable<RuinData>
     
     public boolean intersectsWith(RuinData check)
     {
-        if ((check.xMin >= xMin && check.xMin <= xMax) || (check.xMax >= xMin && check.xMax <= xMax) || (check.zMin >= zMin && check.zMin <= zMax)
-                || (check.zMax >= zMin && check.zMax <= zMax))
+        if ((check.xMin >= xMin && check.xMin <= xMax) // check xMin inside this x
+        || (check.xMax >= xMin && check.xMax <= xMax) // check xMax inside this x
+        || (check.zMin >= zMin && check.zMin <= zMax) // check zMin inside this z
+        || (check.zMax >= zMin && check.zMax <= zMax)) // check zMax inside this z
         {
-            return check.yMin >= yMin && check.yMax <= yMax;
+            return (check.yMin >= yMin && check.yMin <= yMax) // check yMin inside this y
+                || (check.yMax >= yMin && check.yMax <= yMax); // check yMax inside this y
         }
         return false;
     }
     
-    public boolean collisionLowerBoundsPossible(RuinData check)
+    /**
+     * finds the minimum distance between the 2 bounding boxes
+     * BRUTE FORCE, minus anything further than 512 blocks center to center
+     * @param r other box
+     * @return lowest distance found
+     */
+    public double getClosestDistanceBetweenBounds(RuinData r)
     {
-        return check.xMin >= xMin || check.zMin >= zMin || check.yMin >= yMin;
-    }
-
-    public boolean collisionHigherBoundsPossible(RuinData check)
-    {
-        return check.xMax <= xMax || check.zMax <= zMax || check.zMax <= yMax;
-    }
-    
-    public float getDistanceSqTo(RuinData r)
-    {
-        return (r.xMid-xMid)*(r.xMid-xMid)+(r.yMid-yMid)*(r.yMid-yMid)+(r.zMid-zMid)*(r.zMid-zMid);
+        int midToMid = ((xMid-r.xMid)*(xMid-r.xMid)) + ((yMid-r.yMid)*(yMid-r.yMid)) + ((zMid-r.zMid)*(zMid-r.zMid));
+        if (midToMid > 262144)
+        {
+            return Math.sqrt(midToMid);
+        }
+        
+        double[][] vertices = {
+                { xMin, yMin, zMin },
+                { xMin, yMin, zMax },
+                { xMax, yMin, zMax },
+                { xMax, yMin, zMin },
+                { xMin, yMax, zMin },
+                { xMin, yMax, zMax },
+                { xMax, yMax, zMax },
+                { xMax, yMax, zMin },
+                { xMin, yMin, zMid },
+                { xMid, yMin, zMax },
+                { xMax, yMin, zMid },
+                { xMid, yMin, zMin },
+                { xMin, yMax, zMid },
+                { xMid, yMax, zMax },
+                { xMax, yMax, zMid },
+                { xMid, yMax, zMin },
+                };
+        double[][] verticesOther = {
+                { r.xMin, r.yMin, r.zMin },
+                { r.xMin, r.yMin, r.zMax },
+                { r.xMax, r.yMin, r.zMax },
+                { r.xMax, r.yMin, r.zMin },
+                { r.xMin, r.yMax, r.zMin },
+                { r.xMin, r.yMax, r.zMax },
+                { r.xMax, r.yMax, r.zMax },
+                { r.xMax, r.yMax, r.zMin },
+                { r.xMin, r.yMin, r.zMid },
+                { r.xMid, r.yMin, r.zMax },
+                { r.xMax, r.yMin, r.zMid },
+                { r.xMid, r.yMin, r.zMin },
+                { r.xMin, r.yMax, r.zMid },
+                { r.xMid, r.yMax, r.zMax },
+                { r.xMax, r.yMax, r.zMid },
+                { r.xMid, r.yMax, r.zMin },
+                };
+        
+        double lowest = 99999d;
+        for (double[] v : vertices)
+        {
+            for (double[] vO : verticesOther)
+            {
+                double vx = (v[0]-vO[0]) * (v[0]-vO[0]);
+                double vy = (v[1]-vO[1]) * (v[1]-vO[1]);
+                double vz = (v[2]-vO[2]) * (v[2]-vO[2]);
+                lowest = Math.min(lowest, Math.sqrt(vx+vy+vz));
+            }
+        }
+        
+        return lowest;
     }
 
     @Override
