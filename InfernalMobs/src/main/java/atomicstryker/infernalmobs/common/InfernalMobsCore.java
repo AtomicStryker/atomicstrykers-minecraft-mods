@@ -585,8 +585,6 @@ public class InfernalMobsCore
                 {
                     e.printStackTrace();
                 }
-                
-                System.out.println("Checking "+nextMod.modName+" against "+modName);
 
                 if (nextMod != null && nextMod.modName.equals(modName))
                 {
