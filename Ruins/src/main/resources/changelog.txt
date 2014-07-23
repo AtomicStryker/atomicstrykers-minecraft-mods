@@ -353,3 +353,6 @@ a: setAccessible now true
 
 13.4
 + updated to mc 1.7.10
+
+13.5
++ changed distance finding algorithm for detecting nearby ruins, should work better for huge templates and close distances

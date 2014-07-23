@@ -355,22 +355,12 @@ public class RuinGenerator
         // refuse Ruins spawning too close to each other        
         for (RuinData r : registeredRuins)
         {
-            if (r.name.equals(ruinData.name))
+            double closestToRuin = r.getClosestDistanceBetweenBounds(ruinData);
+            if (closestToRuin < (r.name.equals(ruinData.name) ? ruinsHandler.templateInstancesMinDistance : ruinsHandler.anyRuinsMinDistance))
             {
-                if (r.getDistanceSqTo(ruinData) < ruinsHandler.templateInstancesMinDistance * ruinsHandler.templateInstancesMinDistance)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (r.getDistanceSqTo(ruinData) < ruinsHandler.anyRuinsMinDistance * ruinsHandler.anyRuinsMinDistance)
-                {
-                    return false;
-                }
+                return false;
             }
         }
-        
         return true;
     }
 
