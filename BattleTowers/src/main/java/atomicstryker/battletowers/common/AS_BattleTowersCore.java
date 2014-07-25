@@ -17,7 +17,6 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -26,7 +25,7 @@ import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.7")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.8")
 public class AS_BattleTowersCore
 {
     
@@ -55,6 +54,7 @@ public class AS_BattleTowersCore
     public void preInit(FMLPreInitializationEvent event)
     {
         configuration = new Configuration(event.getSuggestedConfigurationFile(), false);
+        loadForgeConfig();
         
         proxy.preInit();
         
@@ -90,12 +90,6 @@ public class AS_BattleTowersCore
         towerDestroyers = new HashSet<AS_TowerDestroyer>();
         
         GameRegistry.registerWorldGenerator(new WorldGenHandler(), 0);
-    }
-    
-    @EventHandler
-    public void modsLoaded(FMLPostInitializationEvent evt)
-    {
-        loadForgeConfig();
     }
     
     @EventHandler
