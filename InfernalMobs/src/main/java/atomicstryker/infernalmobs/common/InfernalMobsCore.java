@@ -617,23 +617,6 @@ public class InfernalMobsCore
     }
 
     /**
-     * Used on World/Server/Savegame change to clear the Boss HashMap of old
-     * World Entities
-     * 
-     * @param lastWorld
-     */
-    public void checkRareListForObsoletes(World lastWorld)
-    {
-        Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
-        for (EntityLivingBase ent : mobsmap.keySet())
-        {
-            proxy.getRareMobs().remove(ent);
-        }
-
-        loadConfig();
-    }
-
-    /**
      * Used by the client side to answer to a server packet carrying the Entity
      * ID and mod string
      * 
