@@ -356,3 +356,7 @@ a: setAccessible now true
 
 13.5
 + changed distance finding algorithm for detecting nearby ruins, should work better for huge templates and close distances
+
+13.6
++ removed obsolete and fairly expansive bounding boxes overlap check (since there is a min distance check anyway)
++ fixed problems with Ruins event, split it into 2: pre and post event
