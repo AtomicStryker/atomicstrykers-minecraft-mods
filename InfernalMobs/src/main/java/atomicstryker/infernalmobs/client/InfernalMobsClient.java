@@ -246,7 +246,7 @@ public class InfernalMobsClient implements ISidedProxy
 
             if (!newGame)
             {
-                InfernalMobsCore.instance().checkRareListForObsoletes(lastWorld);
+                InfernalMobsCore.proxy.getRareMobs().clear();
             }
         }
     }
