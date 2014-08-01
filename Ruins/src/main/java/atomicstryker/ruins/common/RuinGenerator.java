@@ -225,32 +225,6 @@ public class RuinGenerator
         int y = findSuitableY(world, ruinTemplate, x, z, nether);
         if (y > 0)
         {
-            if (willOverlap(ruinTemplate, x, y, z, rotate))
-            {
-                // try again.
-                int xTemp = getRandomAdjustment(random, x, minDistance);
-                int zTemp = getRandomAdjustment(random, z, minDistance);
-                if (willOverlap(ruinTemplate, xTemp, y, zTemp, rotate))
-                {
-                    // last chance
-                    xTemp = getRandomAdjustment(random, x, minDistance);
-                    zTemp = getRandomAdjustment(random, z, minDistance);
-                    if (willOverlap(ruinTemplate, xTemp, y, zTemp, rotate))
-                    {
-                        stats.BoundingBoxFails++;
-                        // System.out.println("Bounding Box fail "+stats.BoundingBoxFails);
-                        return;
-                    }
-                    x = xTemp;
-                    z = zTemp;
-                }
-                else
-                {
-                    x = xTemp;
-                    z = zTemp;
-                }
-            }
-
             if (checkMinDistance(ruinTemplate.getRuinData(x, y, z, rotate)))
             {
                 y = ruinTemplate.checkArea(world, x, y, z, rotate);
@@ -261,7 +235,7 @@ public class RuinGenerator
                     return;
                 }
                 
-                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, y, z, rotate, false)))
+                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, y, z, rotate, false, true)))
                 {
                     return;
                 }
@@ -280,13 +254,14 @@ public class RuinGenerator
                 }
                 stats.NumCreated++;
 
-                ruinTemplate.doBuild(world, random, x, y, z, rotate);
+                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate);
                 registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
+                MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, finalY, z, rotate, false, false));
             }
             else
             {
                 // System.out.println("Min Dist fail");
-                stats.BoundingBoxFails++;
+                stats.minDistFails++;
                 return;
             }
         }
@@ -308,13 +283,12 @@ public class RuinGenerator
         if (!ruinsHandler.disableLogging)
         {
             int total =
-                    stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails
-                            + stats.BoundingBoxFails;
+                    stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails;
             System.out.println("Current Stats:");
             System.out.println("    Total Tries:                 " + total);
             System.out.println("    Number Created:              " + stats.NumCreated);
             System.out.println("    Site Tries:                  " + stats.siteTries);
-            System.out.println("    Within Another Bounding Box: " + stats.BoundingBoxFails);
+            System.out.println("    Min Dist fail:               " + stats.minDistFails);
             System.out.println("    Bad Blocks:                  " + stats.BadBlockFails);
             System.out.println("    No Leveling:                 " + stats.LevelingFails);
             System.out.println("    No Cut-In:                   " + stats.CutInFails);
@@ -330,24 +304,6 @@ public class RuinGenerator
             
             System.out.println();
         }
-    }
-
-    private int getRandomAdjustment(Random random, int base, int minDistance)
-    {
-        return random.nextInt(8) - random.nextInt(8) + (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
-    }
-
-    private boolean willOverlap(RuinTemplate r, int x, int y, int z, int rotate)
-    {
-        final RuinData current = r.getRuinData(x, y, z, rotate);
-        for (RuinData rd : registeredRuins)
-        {
-            if (rd.intersectsWith(current))
-            {
-                return true;
-            }
-        }
-        return false;
     }
     
     private boolean checkMinDistance(RuinData ruinData)

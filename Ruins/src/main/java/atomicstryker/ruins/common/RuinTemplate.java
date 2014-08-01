@@ -252,7 +252,7 @@ public class RuinTemplate
         final int newY = vals > 0 ? (int) Math.ceil(sum/vals) : y;
         if (newY > y)
         {
-            // TODO if the structure box just moved up, should check the top end of the box again for new obstructions
+            // TODO if the structure box just moved up, should check the top end of the box again for new obstructions?
         }
         
         // check if the resulting levelling and overhang in the build site surface is acceptable
@@ -302,7 +302,10 @@ public class RuinTemplate
         return new RuinData(xMin, xMax, y, y + height, zMin, zMax, name);
     }
 
-    public void doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate)
+    /**
+     * @return the finalized y value of the embedded template
+     */
+    public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate)
     {
         /*
          * we need to shift the base coordinates and take care of any rotations
@@ -322,6 +325,7 @@ public class RuinTemplate
         final Iterator<RuinTemplateLayer> i = layers.iterator();
         
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
+        int yReturn = y_off;
 
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
@@ -413,6 +417,8 @@ public class RuinTemplate
                 }
             }
         }
+        
+        return yReturn;
     }
 
     private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun)
