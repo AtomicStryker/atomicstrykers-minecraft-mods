@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Random;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -20,12 +20,12 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.battletowers.common.AS_WorldGenTower.TowerTypes;
 import cpw.mods.fml.common.IWorldGenerator;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class WorldGenHandler implements IWorldGenerator
 {
@@ -35,7 +35,7 @@ public class WorldGenHandler implements IWorldGenerator
     private final static WorldGenHandler instance = new WorldGenHandler();
     private HashMap<String, Boolean> biomesMap;
     private HashMap<String, Boolean> providerMap;
-    private final static HashSet<TowerPosition> towerPositions = new HashSet<TowerPosition>();
+    private final static ConcurrentSkipListSet<TowerPosition> towerPositions = new ConcurrentSkipListSet<TowerPosition>();
     private static World lastWorld;
     private final AS_WorldGenTower generator;
     
