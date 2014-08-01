@@ -15,8 +15,8 @@ public class CommandTestTemplate extends CommandBase
 {
 
     private EntityPlayer player;
-
     public static RuinTemplate parsedRuin;
+    private int lastFinalY;
 
     @Override
     public String getCommandName()
@@ -87,13 +87,14 @@ public class CommandTestTemplate extends CommandBase
                 parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
                 int rotation = (args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH;
                 
-                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true)))
+                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
                 {
                     sender.addChatMessage(new ChatComponentText("EventRuinTemplateSpawn returned as cancelled, not building that."));
                 }
                 else
                 {
                     execBuild(rotation, x, y, z);
+                    MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, lastFinalY, z, rotation, true, false));
                 }
             }
             catch (Exception e)
@@ -109,7 +110,7 @@ public class CommandTestTemplate extends CommandBase
 
     private void execBuild(int rotation, int x, int y, int z)
     {
-        parsedRuin.doBuild(player.worldObj, player.getRNG(), x, y, z, rotation);
+        lastFinalY = parsedRuin.doBuild(player.worldObj, player.getRNG(), x, y, z, rotation);
         parsedRuin = null;
     }
 
