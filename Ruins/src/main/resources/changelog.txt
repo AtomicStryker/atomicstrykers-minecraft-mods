@@ -350,3 +350,20 @@ a: setAccessible now true
 + refactored logging to print less useless data and some more useful things
 + why didn't anybody tell me Ruins demanded clients have it installed since some forge update?! fixed
 +  HOTFIX: handler was reading min template distances before file parser had gottem to them
+
+13.4
++ updated to mc 1.7.10
+
+13.5
++ changed distance finding algorithm for detecting nearby ruins, should work better for huge templates and close distances
+
+13.6
++ removed obsolete and fairly expansive bounding boxes overlap check (since there is a min distance check anyway)
++ fixed problems with Ruins event, split it into 2: pre and post event
+
+13.7
++ added allowedDimensions line to per-world ruins config file, does what the name implies
++ refactored a bunch of things, made code cleaner
+
+13.7a
++ reverted a refactoring change that apparently was needed after all

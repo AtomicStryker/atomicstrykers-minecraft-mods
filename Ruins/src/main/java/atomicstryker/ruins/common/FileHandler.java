@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.world.biome.BiomeGenBase;
 
 public class FileHandler
@@ -68,7 +67,7 @@ public class FileHandler
             File basedir = null;
             try
             {
-                basedir = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFile(""), "mods");
+                basedir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
             }
             catch (Exception e)
             {
@@ -468,7 +467,7 @@ public class FileHandler
         {
             return;
         }
-        File basedir = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
+        File basedir = RuinsMod.getMinecraftBaseDir();
         basedir = new File(basedir, "mods");
         File basefile = new File(basedir, "ruins.txt");
         if (!basefile.exists())
