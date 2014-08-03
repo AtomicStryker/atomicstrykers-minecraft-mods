@@ -26,6 +26,7 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
@@ -41,7 +42,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "13.7";
+    public static final String modversion = "13.7a";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -64,7 +65,7 @@ public class RuinsMod
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
 
-        new CustomRotationMapping(new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFile(""), "mods/resources/ruins"));
+        new CustomRotationMapping(new File(getMinecraftBaseDir(), "mods/resources/ruins"));
     }
 
     @EventHandler
@@ -275,6 +276,15 @@ public class RuinsMod
         }
 
         return null;
+    }
+
+    public static File getMinecraftBaseDir()
+    {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+        {
+            return FMLClientHandler.instance().getClient().mcDataDir;
+        }
+        return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
     }
 
     public static int getBiomeFromName(String name)
