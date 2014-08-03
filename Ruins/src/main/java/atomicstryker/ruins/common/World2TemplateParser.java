@@ -19,7 +19,6 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
@@ -158,7 +157,7 @@ public class World2TemplateParser extends Thread
             player.addChatMessage(new ChatComponentText("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size()
                     + ", xlen: " + xLength + ", zlen: " + zLength));
 
-            File templateFile = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFile(""), "mods/resources/ruins/templateparser/" + fileName + ".tml");
+            File templateFile = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/templateparser/" + fileName + ".tml");
             toFile(templateFile);
 
             if (!failed)
