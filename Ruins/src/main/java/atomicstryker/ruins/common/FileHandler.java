@@ -3,17 +3,21 @@ package atomicstryker.ruins.common;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public class RuinHandler
+public class FileHandler
 {
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
     private final ArrayList<HashSet<RuinTemplate>> templates = new ArrayList<HashSet<RuinTemplate>>();
@@ -22,6 +26,7 @@ public class RuinHandler
 
     protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
     protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
+    private int[] allowedDimensions = {-1, 0, 1};
 
     public boolean loaded;
     public boolean disableLogging;
@@ -32,7 +37,7 @@ public class RuinHandler
     
     private int templateCount;
 
-    public RuinHandler(File worldPath)
+    public FileHandler(File worldPath)
     {
         saveFolder = worldPath;
         loaded = false;
@@ -63,8 +68,7 @@ public class RuinHandler
             File basedir = null;
             try
             {
-                basedir = RuinsMod.getMinecraftBaseDir();
-                basedir = new File(basedir, "mods");
+                basedir = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFile(""), "mods");
             }
             catch (Exception e)
             {
@@ -279,7 +283,7 @@ public class RuinHandler
         final File file = new File(dir, "ruins.txt");
         if (!file.exists())
         {
-            RuinsMod.copyGlobalOptionsTo(dir);
+            copyGlobalOptionsTo(dir);
         }
         final BufferedReader br = new BufferedReader(new FileReader(file));
         String read = br.readLine();
@@ -318,6 +322,15 @@ public class RuinHandler
             {
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
                 ruinsLog.println("anyRuinsMinDistance = "+anyRuinsMinDistance);
+            }
+            if (check[0].equals("allowedDimensions"))
+            {
+                String[] ints = check[1].split(",");
+                allowedDimensions = new int[ints.length];
+                for (int i = 0; i < ints.length; i++)
+                {
+                    allowedDimensions[i] = Integer.parseInt(ints[i]);
+                }
             }
 
             if (read.startsWith("specific_"))
@@ -418,6 +431,18 @@ public class RuinHandler
         }
         pw.flush();
     }
+    
+    public boolean allowsDimension(int dimensionId)
+    {
+        for (int i : allowedDimensions)
+        {
+            if (i == dimensionId)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private class Exclude
     {
@@ -435,4 +460,96 @@ public class RuinHandler
             return "excl=" + biome + ";" + name;
         }
     }
+    
+    private void copyGlobalOptionsTo(File dir) throws Exception
+    {
+        File copyfile = new File(dir, "ruins.txt");
+        if (copyfile.exists())
+        {
+            return;
+        }
+        File basedir = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
+        basedir = new File(basedir, "mods");
+        File basefile = new File(basedir, "ruins.txt");
+        if (!basefile.exists())
+        {
+            createDefaultGlobalOptions(basedir);
+        }
+        FileInputStream fis = new FileInputStream(basefile);
+        FileOutputStream fos = new FileOutputStream(copyfile);
+        FileChannel in = fis.getChannel();
+        FileChannel out = fos.getChannel();
+        try
+        {
+            in.transferTo(0, in.size(), out);
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        finally
+        {
+            if (in != null)
+            {
+                in.close();
+                fis.close();
+            }
+            if (out != null)
+            {
+                out.close();
+                fos.close();
+            }
+        }
+    }
+
+    private void createDefaultGlobalOptions(File dir) throws Exception
+    {
+        File file = new File(dir, "ruins.txt");
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+        pw.println("# Global Options for the Ruins mod");
+        pw.println("#");
+        pw.println("# tries_per_chunk is the number of times, per chunk, that the generator will");
+        pw.println("#     attempt to create a ruin.");
+        pw.println("#");
+        pw.println("# chance_to_spawn is the chance, out of 100, that a ruin will be generated per");
+        pw.println("#     try in this chunk.  This may still fail if the ruin does not have a");
+        pw.println("#     suitable place to generate.");
+        pw.println("#");
+        pw.println("# chance_for_site is the chance, out of 100, that another ruin will attempt to");
+        pw.println("#     spawn nearby if a ruin was already successfully spawned.  This bypasses");
+        pw.println("#     the normal tries per chunk, so if this chance is set high you may end up");
+        pw.println("#     with a lot of ruins even with a low tries per chunk and chance to spawn.");
+        pw.println("#");
+        pw.println("# specific_<biome name> is the chance, out of 100, that a ruin spawning in the");
+        pw.println("#     specified biome will be chosen from the biome specific folder.  If not,");
+        pw.println("#     it will choose a generic ruin from the folder of the same name.");
+        pw.println();
+        pw.println("tries_per_chunk_normal=6");
+        pw.println("chance_to_spawn_normal=10.0");
+        pw.println("chance_for_site_normal=15.0");
+        pw.println();
+        pw.println("tries_per_chunk_nether=6");
+        pw.println("chance_to_spawn_nether=10");
+        pw.println("chance_for_site_nether=15");
+        pw.println("disableRuinSpawnCoordsLogging=true");
+        pw.println();
+        pw.println("# minimum distance a template must have from instances of itself");
+        pw.println("templateInstancesMinDistance=256");
+        pw.println("# minimum distance a template must have from any other template");
+        pw.println("anyRuinsMinDistance=64");
+        pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
+        pw.println("allowedDimensions=0,1,-1");
+        pw.println();
+        // print all the biomes!
+        for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
+        {
+            if (BiomeGenBase.getBiomeGenArray()[i] != null)
+            {
+                pw.println("specific_" + BiomeGenBase.getBiomeGenArray()[i].biomeName + "=75");
+            }
+        }
+        pw.flush();
+        pw.close();
+    }
+    
 }
