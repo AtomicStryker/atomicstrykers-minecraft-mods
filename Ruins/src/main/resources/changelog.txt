@@ -360,3 +360,7 @@ a: setAccessible now true
 13.6
 + removed obsolete and fairly expansive bounding boxes overlap check (since there is a min distance check anyway)
 + fixed problems with Ruins event, split it into 2: pre and post event
+
+13.7
++ added allowedDimensions line to per-world ruins config file, does what the name implies
++ refactored a bunch of things, made code cleaner

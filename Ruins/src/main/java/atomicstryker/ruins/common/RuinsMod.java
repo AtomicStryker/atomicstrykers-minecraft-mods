@@ -1,13 +1,7 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +26,6 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
@@ -48,7 +41,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "13.6";
+    public static final String modversion = "13.7";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -71,7 +64,7 @@ public class RuinsMod
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
 
-        new CustomRotationMapping(new File(getMinecraftBaseDir(), "mods/resources/ruins"));
+        new CustomRotationMapping(new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFile(""), "mods/resources/ruins"));
     }
 
     @EventHandler
@@ -180,19 +173,23 @@ public class RuinsMod
             }
             else
             {
-                if (!getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
+                WorldHandle wh = getWorldHandle(world);
+                if (wh != null)
                 {
-                    currentlyGenerating.add(tuple);
-                    if (world.provider instanceof WorldProviderHell)
+                    if (wh.fileHandle.allowsDimension(world.provider.dimensionId) && !getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
                     {
-                        generateNether(world, random, chunkX * 16, chunkZ * 16);
+                        currentlyGenerating.add(tuple);
+                        if (world.provider instanceof WorldProviderHell)
+                        {
+                            generateNether(world, random, chunkX * 16, chunkZ * 16);
+                        }
+                        else
+                        // normal world
+                        {
+                            generateSurface(world, random, chunkX * 16, chunkZ * 16);
+                        }
+                        currentlyGenerating.remove(tuple);
                     }
-                    else
-                    // normal world
-                    {
-                        generateSurface(world, random, chunkX * 16, chunkZ * 16);
-                    }
-                    currentlyGenerating.remove(tuple);
                 }
             }
         }
@@ -201,9 +198,9 @@ public class RuinsMod
     private void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
         WorldHandle wh = getWorldHandle(world);
-        if (wh.ruins != null)
+        if (wh.fileHandle != null)
         {
-            for (; !wh.ruins.loaded; Thread.yield())
+            for (; !wh.fileHandle.loaded; Thread.yield())
             {
             }
             wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
@@ -213,9 +210,9 @@ public class RuinsMod
     private void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
         WorldHandle wh = getWorldHandle(world);
-        if (wh.ruins != null)
+        if (wh.fileHandle != null)
         {
-            for (; !wh.ruins.loaded; Thread.yield())
+            for (; !wh.fileHandle.loaded; Thread.yield())
             {
             }
             wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
@@ -224,7 +221,7 @@ public class RuinsMod
 
     private class WorldHandle
     {
-        RuinHandler ruins;
+        FileHandler fileHandle;
         RuinGenerator generator;
         ChunkLoggerData chunkLogger;
     }
@@ -293,24 +290,14 @@ public class RuinsMod
         return -1;
     }
 
-    public static File getMinecraftBaseDir()
-    {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-        {
-            return FMLClientHandler.instance().getClient().mcDataDir;
-        }
-
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
-    }
-
     private void initWorldHandle(WorldHandle worldHandle, World world)
     {
         // load in defaults
         try
         {
             File worlddir = getWorldSaveDir(world);
-            worldHandle.ruins = new RuinHandler(worlddir);
-            worldHandle.generator = new RuinGenerator(worldHandle.ruins, world);
+            worldHandle.fileHandle = new FileHandler(worlddir);
+            worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
             
             worldHandle.chunkLogger = (ChunkLoggerData) world.perWorldStorage.loadData(ChunkLoggerData.class, "ruinschunklogger");
             if (worldHandle.chunkLogger == null)
@@ -327,90 +314,4 @@ public class RuinsMod
         }
     }
 
-    public static void copyGlobalOptionsTo(File dir) throws Exception
-    {
-        File copyfile = new File(dir, "ruins.txt");
-        if (copyfile.exists())
-        {
-            return;
-        }
-        File basedir = getMinecraftBaseDir();
-        basedir = new File(basedir, "mods");
-        File basefile = new File(basedir, "ruins.txt");
-        if (!basefile.exists())
-        {
-            createDefaultGlobalOptions(basedir);
-        }
-        FileInputStream fis = new FileInputStream(basefile);
-        FileOutputStream fos = new FileOutputStream(copyfile);
-        FileChannel in = fis.getChannel();
-        FileChannel out = fos.getChannel();
-        try
-        {
-            in.transferTo(0, in.size(), out);
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
-        finally
-        {
-            if (in != null)
-            {
-                in.close();
-                fis.close();
-            }
-            if (out != null)
-            {
-                out.close();
-                fos.close();
-            }
-        }
-    }
-
-    private static void createDefaultGlobalOptions(File dir) throws Exception
-    {
-        File file = new File(dir, "ruins.txt");
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-        pw.println("# Global Options for the Ruins mod");
-        pw.println("#");
-        pw.println("# tries_per_chunk is the number of times, per chunk, that the generator will");
-        pw.println("#     attempt to create a ruin.");
-        pw.println("#");
-        pw.println("# chance_to_spawn is the chance, out of 100, that a ruin will be generated per");
-        pw.println("#     try in this chunk.  This may still fail if the ruin does not have a");
-        pw.println("#     suitable place to generate.");
-        pw.println("#");
-        pw.println("# chance_for_site is the chance, out of 100, that another ruin will attempt to");
-        pw.println("#     spawn nearby if a ruin was already successfully spawned.  This bypasses");
-        pw.println("#     the normal tries per chunk, so if this chance is set high you may end up");
-        pw.println("#     with a lot of ruins even with a low tries per chunk and chance to spawn.");
-        pw.println("#");
-        pw.println("# specific_<biome name> is the chance, out of 100, that a ruin spawning in the");
-        pw.println("#     specified biome will be chosen from the biome specific folder.  If not,");
-        pw.println("#     it will choose a generic ruin from the folder of the same name.");
-        pw.println();
-        pw.println("tries_per_chunk_normal=6");
-        pw.println("chance_to_spawn_normal=10.0");
-        pw.println("chance_for_site_normal=15.0");
-        pw.println();
-        pw.println("tries_per_chunk_nether=6");
-        pw.println("chance_to_spawn_nether=10");
-        pw.println("chance_for_site_nether=15");
-        pw.println("disableRuinSpawnCoordsLogging=true");
-        pw.println();
-        pw.println("templateInstancesMinDistance=256");
-        pw.println("anyRuinsMinDistance=64");
-        pw.println();
-        // print all the biomes!
-        for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
-        {
-            if (BiomeGenBase.getBiomeGenArray()[i] != null)
-            {
-                pw.println("specific_" + BiomeGenBase.getBiomeGenArray()[i].biomeName + "=75");
-            }
-        }
-        pw.flush();
-        pw.close();
-    }
 }
