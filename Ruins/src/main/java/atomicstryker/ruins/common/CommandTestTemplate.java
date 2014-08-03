@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import java.io.File;
 import java.io.PrintWriter;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -79,7 +80,7 @@ public class CommandTestTemplate extends CommandBase
             target = "templateparser/" + target;
         }
 
-        File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + target + ".tml");
+        File file = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFile(""), "mods/resources/ruins/" + target + ".tml");
         if (file.exists() && file.canWrite())
         {
             try
