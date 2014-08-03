@@ -21,7 +21,7 @@ public class RuinGenerator
 
     private final static String fileName = "RuinsPositionsFile.txt";
 
-    private final RuinHandler ruinsHandler;
+    private final FileHandler fileHandler;
     private final RuinStats stats;
     private int numTries = 0, LastNumTries = 0;
     private final int WORLD_MAX_HEIGHT = 256;
@@ -30,9 +30,9 @@ public class RuinGenerator
     private File ruinsDataFileWriting;
     private final RuinData spawnPointBlock;
 
-    public RuinGenerator(RuinHandler rh, World world)
+    public RuinGenerator(FileHandler rh, World world)
     {
-        ruinsHandler = rh;
+        fileHandler = rh;
         stats = new RuinStats();
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
         
@@ -164,9 +164,9 @@ public class RuinGenerator
 
     public boolean generateNormal(World world, Random random, int xBase, int j, int zBase)
     {
-        for (int c = 0; c < ruinsHandler.triesPerChunkNormal; c++)
+        for (int c = 0; c < fileHandler.triesPerChunkNormal; c++)
         {
-            if (random.nextFloat() * 100 < ruinsHandler.chanceToSpawnNormal)
+            if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNormal)
             {
                 createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), 0, false);
             }
@@ -176,9 +176,9 @@ public class RuinGenerator
 
     public boolean generateNether(World world, Random random, int xBase, int j, int zBase)
     {
-        for (int c = 0; c < ruinsHandler.triesPerChunkNether; c++)
+        for (int c = 0; c < fileHandler.triesPerChunkNether; c++)
         {
-            if (random.nextFloat() * 100 < ruinsHandler.chanceToSpawnNether)
+            if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNether)
             {
                 int xMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
                 int zMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
@@ -194,17 +194,17 @@ public class RuinGenerator
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
         int biomeID = biome.biomeID;
 
-        if (ruinsHandler.useGeneric(random, biomeID))
+        if (fileHandler.useGeneric(random, biomeID))
         {
             biomeID = RuinsMod.BIOME_NONE;
         }
         stats.biomes[biomeID]++;
         
-        RuinTemplate ruinTemplate = ruinsHandler.getTemplate(random, biomeID);
+        RuinTemplate ruinTemplate = fileHandler.getTemplate(random, biomeID);
         if (ruinTemplate == null)
         {
             biomeID = RuinsMod.BIOME_NONE;
-            ruinTemplate = ruinsHandler.getTemplate(random, biomeID);
+            ruinTemplate = fileHandler.getTemplate(random, biomeID);
 
             if (ruinTemplate == null)
             {
@@ -240,7 +240,7 @@ public class RuinGenerator
                     return;
                 }
                 
-                if (!ruinsHandler.disableLogging)
+                if (!fileHandler.disableLogging)
                 {
                     if (minDistance != 0)
                     {
@@ -280,7 +280,7 @@ public class RuinGenerator
 
     private void printStats()
     {
-        if (!ruinsHandler.disableLogging)
+        if (!fileHandler.disableLogging)
         {
             int total =
                     stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails;
@@ -312,7 +312,7 @@ public class RuinGenerator
         for (RuinData r : registeredRuins)
         {
             double closestToRuin = r.getClosestDistanceBetweenBounds(ruinData);
-            if (closestToRuin < (r.name.equals(ruinData.name) ? ruinsHandler.templateInstancesMinDistance : ruinsHandler.anyRuinsMinDistance))
+            if (closestToRuin < (r.name.equals(ruinData.name) ? fileHandler.templateInstancesMinDistance : fileHandler.anyRuinsMinDistance))
             {
                 return false;
             }
