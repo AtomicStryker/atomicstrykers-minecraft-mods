@@ -325,7 +325,7 @@ public class RuinTemplate
         final Iterator<RuinTemplateLayer> i = layers.iterator();
         
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
-        int yReturn = y_off;
+        int yReturn = y + y_off;
 
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
