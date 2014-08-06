@@ -168,7 +168,7 @@ public class RuinGenerator
         {
             if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNormal)
             {
-                createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), 0, false);
+                createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), false);
             }
         }
         return true;
@@ -182,13 +182,13 @@ public class RuinGenerator
             {
                 int xMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
                 int zMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
-                createBuilding(world, random, xBase + xMod, zBase + zMod, 0, true);
+                createBuilding(world, random, xBase + xMod, zBase + zMod, true);
             }
         }
         return true;
     }
 
-    private void createBuilding(World world, Random random, int x, int z, int minDistance, boolean nether)
+    private void createBuilding(World world, Random random, int x, int z, boolean nether)
     {        
         final int rotate = random.nextInt(4);
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
@@ -212,20 +212,11 @@ public class RuinGenerator
             }
         }
         numTries++;
-
-        if (minDistance != 0)
-        {
-            stats.siteTries++;
-            // tweak the x and z from the Min Distance, minding the bounding box
-            minDistance += random.nextInt(3) + ruinTemplate.getMinDistance();
-            x += (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
-            z += (random.nextInt(2) == 1 ? 0 - minDistance : minDistance);
-        }
         
         int y = findSuitableY(world, ruinTemplate, x, z, nether);
         if (y > 0)
         {
-            if (checkMinDistance(ruinTemplate.getRuinData(x, y, z, rotate)))
+            if (checkMinDistance(ruinTemplate, ruinTemplate.getRuinData(x, y, z, rotate)))
             {
                 y = ruinTemplate.checkArea(world, x, y, z, rotate);
                 if (y < 0)
@@ -242,15 +233,7 @@ public class RuinGenerator
                 
                 if (!fileHandler.disableLogging)
                 {
-                    if (minDistance != 0)
-                    {
-                        System.out.printf("Creating ruin %s of Biome %s as part of a site at [%d|%d|%d]\n", ruinTemplate.getName(), biome.biomeName,
-                                x, y, z);
-                    }
-                    else
-                    {
-                        System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.biomeName, x, y, z);
-                    }
+                    System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.biomeName, x, y, z);
                 }
                 stats.NumCreated++;
 
@@ -306,13 +289,15 @@ public class RuinGenerator
         }
     }
     
-    private boolean checkMinDistance(RuinData ruinData)
+    private boolean checkMinDistance(RuinTemplate ruinTemplate, RuinData ruinData)
     {
-        // refuse Ruins spawning too close to each other        
+        float uniqueMinDist = (ruinTemplate.uniqueMinDistance == 0) ? fileHandler.templateInstancesMinDistance : ruinTemplate.uniqueMinDistance;
+        
+        // refuse Ruins spawning too close to each other
         for (RuinData r : registeredRuins)
         {
             double closestToRuin = r.getClosestDistanceBetweenBounds(ruinData);
-            if (closestToRuin < (r.name.equals(ruinData.name) ? fileHandler.templateInstancesMinDistance : fileHandler.anyRuinsMinDistance))
+            if (closestToRuin < (r.name.equals(ruinData.name) ? uniqueMinDist : fileHandler.anyRuinsMinDistance))
             {
                 return false;
             }

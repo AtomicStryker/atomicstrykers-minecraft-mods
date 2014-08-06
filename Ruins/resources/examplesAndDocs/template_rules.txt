@@ -126,6 +126,10 @@
 # restrict the cut_in_buffer as much as possible, preferably to 0.  If it is
 # more than 0 you may get some unexpected fluid dynamics if the structure
 # does not spawn completely in water/lava.
+#
+# Ruins 13.8 adds optional variable "uniqueMinDistance" which overrides global templateInstancesMinDistance
+# uniqueMinDistance=1500
+# defaults to 0. values of 0 are handled as if no value was specified at all.
 
 
 weight=5
@@ -252,7 +256,6 @@ preserve_plants=0
 # automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
 # if you specify the same slot index multiple times, only the first itemstack gets put in
 #
-
 
 rule1=0,100,preserveBlock
 rule2=0,80,brick_block,brick_block,dirt,stone,gravel

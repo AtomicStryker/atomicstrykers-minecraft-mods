@@ -367,3 +367,6 @@ a: setAccessible now true
 
 13.7a
 + reverted a refactoring change that apparently was needed after all
+
+13.8
++ added optional template variable "uniqueMinDistance" which overrides global templateInstancesMinDistance
