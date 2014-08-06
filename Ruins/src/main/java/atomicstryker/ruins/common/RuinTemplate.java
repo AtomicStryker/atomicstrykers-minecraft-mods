@@ -23,6 +23,7 @@ public class RuinTemplate
     private Block[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
+    public int uniqueMinDistance = 0;
     private boolean preserveWater = false, preserveLava = false;
     private final ArrayList<RuinTemplateRule> rules;
     private final ArrayList<RuinTemplateLayer> layers;
@@ -653,6 +654,11 @@ public class RuinTemplate
                     String[] bounds = check[1].split(",");
                     randomOffMin = Integer.parseInt(bounds[0]);
                     randomOffMax = Math.max(randomOffMin, Integer.parseInt(bounds[1]));
+                }
+                else if (line.startsWith("uniqueMinDistance"))
+                {
+                    String[] check = line.split("=");
+                    uniqueMinDistance = Integer.parseInt(check[1]);
                 }
             }
         }

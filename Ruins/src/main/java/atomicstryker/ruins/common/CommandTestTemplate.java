@@ -87,14 +87,21 @@ public class CommandTestTemplate extends CommandBase
                 parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
                 int rotation = (args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH;
                 
-                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
+                if (parsedRuin != null)
                 {
-                    sender.addChatMessage(new ChatComponentText("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
+                    {
+                        sender.addChatMessage(new ChatComponentText("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                    }
+                    else
+                    {
+                        execBuild(rotation, x, y, z);
+                        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, lastFinalY, z, rotation, true, false));
+                    }
                 }
                 else
                 {
-                    execBuild(rotation, x, y, z);
-                    MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, lastFinalY, z, rotation, true, false));
+                    sender.addChatMessage(new ChatComponentText("Could not parse Ruin of file " + file));
                 }
             }
             catch (Exception e)

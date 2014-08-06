@@ -42,7 +42,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "13.7a";
+    public static final String modversion = "13.8";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -182,12 +182,12 @@ public class RuinsMod
                         currentlyGenerating.add(tuple);
                         if (world.provider instanceof WorldProviderHell)
                         {
-                            generateNether(world, random, chunkX * 16, chunkZ * 16);
+                            generateNether(world, random, tuple[0] * 16, tuple[1] * 16);
                         }
                         else
                         // normal world
                         {
-                            generateSurface(world, random, chunkX * 16, chunkZ * 16);
+                            generateSurface(world, random, tuple[0] * 16, tuple[1] * 16);
                         }
                         currentlyGenerating.remove(tuple);
                     }
