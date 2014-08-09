@@ -88,6 +88,13 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
     {
         super.updateEntity();
         advLogic.updateEntity(this);
+        
+        // is second output is not empty but primary is, swap output slot contents
+        if (!advLogic.getOutputSlots().get(1).isEmpty() && advLogic.getOutputSlots().get(0).isEmpty())
+        {
+            advLogic.getOutputSlots().get(0).put(advLogic.getOutputSlots().get(1).get());
+            advLogic.getOutputSlots().get(1).put(null);
+        }
     }
     
     @Override
