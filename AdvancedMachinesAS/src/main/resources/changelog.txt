@@ -1,3 +1,7 @@
+Version 1.1.2
+    - updated (and requires) IC 2.2.575
+    - Advanced Machines using Fluid now actually require it to work
+
 Version 1.1.1
     - Macerator now swaps second output slot with first if the first got emptied
 
