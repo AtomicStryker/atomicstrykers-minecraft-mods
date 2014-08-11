@@ -1,6 +1,7 @@
 package atomicstryker.ic2.advancedmachines;
 
 import ic2.api.recipe.RecipeOutput;
+import ic2.core.block.TileEntityLiquidTankStandardMaschine;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.machine.tileentity.TileEntityStandardMachine;
 import ic2.core.item.ItemUpgradeModule;
@@ -109,6 +110,15 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
         if (!canStash)
         {
             ic2Output = null;
+        }
+        
+        if (ic2Output != null && te instanceof TileEntityLiquidTankStandardMaschine)
+        {
+            if (ic2Output.metadata != null
+            && ic2Output.metadata.getInteger("amount") > ((TileEntityLiquidTankStandardMaschine) te).getFluidTank().getFluidAmount())
+            {
+                ic2Output = null;
+            }
         }
 
         if (ic2Output != null)
