@@ -31,7 +31,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameData;
 
 public class MultiMineServer
 {
@@ -177,7 +177,7 @@ public class MultiMineServer
 
     private boolean isBlockBanned(Block block, int meta)
     {
-        final String ident = GameRegistry.findUniqueIdentifierFor(block).toString()+"-"+meta;
+        final String ident = GameData.getBlockRegistry().getNameForObject(block).toString()+"-"+meta;
         Boolean result = blacklistedBlocksAndTools.get(ident);
         if (result != null)
         {
@@ -200,7 +200,7 @@ public class MultiMineServer
             return false;
         }
         
-        final String ident = GameRegistry.findUniqueIdentifierFor(item.getItem()).toString()+"-"+item.getItemDamage();
+        final String ident = GameData.getItemRegistry().getNameForObject(item.getItem()).toString()+"-"+item.getItemDamage();
         Boolean result = blacklistedBlocksAndTools.get(ident);
         if (result != null)
         {
