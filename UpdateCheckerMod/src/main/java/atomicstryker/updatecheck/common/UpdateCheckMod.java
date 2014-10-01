@@ -84,7 +84,7 @@ public class UpdateCheckMod
                         }
                         else
                         {
-                            System.out.println(curMod.getName() + " was found up to date by Update Checker");
+                            // System.out.println(curMod.getName() + " was found up to date by Update Checker");
                         }
                     }
                 }
