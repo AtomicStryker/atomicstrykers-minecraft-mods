@@ -1,3 +1,6 @@
+1.5.7
+- fixes stalling issue when item droplist is empty
+
 #hotfix 1.5.6
 - gradle still adding java 8 dependency. WELL F*** YOU TOO
 - sidestepping the issue by forcing a map typecast

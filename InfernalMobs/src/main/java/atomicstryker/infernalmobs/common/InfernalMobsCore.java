@@ -74,7 +74,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.6")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.7")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -678,6 +678,11 @@ public class InfernalMobsCore
                 EntityItem itemEnt = new EntityItem(mob.worldObj, mob.posX, mob.posY, mob.posZ, itemStack);
                 mob.worldObj.spawnEntityInWorld(itemEnt);
                 modStr -= 5;
+            }
+            else
+            {
+                // fixes issue with empty drop lists
+                modStr--;
             }
         }
     }
