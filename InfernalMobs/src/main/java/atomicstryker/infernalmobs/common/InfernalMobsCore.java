@@ -691,6 +691,10 @@ public class InfernalMobsCore
                 mob.worldObj.spawnEntityInWorld(itemEnt);
                 modStr -= 5;
             }
+            else
+            {
+            	modStr--;
+            }
         }
     }
 
