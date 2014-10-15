@@ -1,7 +1,6 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
+import atomicstryker.dynamiclights.client.ItemConfigHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -35,7 +35,7 @@ import cpw.mods.fml.common.registry.GameData;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.5", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.6", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -44,7 +44,7 @@ public class EntityLivingEquipmentLightSource
     private ArrayList<EntityLightAdapter> trackedEntities;
     private Thread thread;
     private boolean threadRunning;
-    private HashMap<String, Integer> itemsMap;
+    private ItemConfigHelper itemsMap;
     private Configuration config;
     
     @EventHandler
@@ -72,15 +72,9 @@ public class EntityLivingEquipmentLightSource
         updateI.comment = "Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        itemsMap = new HashMap<String, Integer>();
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch:15,lit_pumpkin:12,glowstone_dust:10,lit_pumpkin:15,lava_bucket:15,redstone_torch:10,redstone:10,golden_helmet:14");
         itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
-        String[] tokens = itemsList.getString().split(",");
-        for (String pair : tokens)
-        {
-            String[] values = pair.split(":");
-            itemsMap.put(values[0], Integer.valueOf(values[1]));
-        }
+        itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         config.save();
     }
@@ -144,11 +138,8 @@ public class EntityLivingEquipmentLightSource
     {
         if (stack != null)
         {
-            Integer i = itemsMap.get(GameData.getItemRegistry().getNameForObject(stack.getItem()));
-            if (i != null)
-            {
-                return i;
-            }
+            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
+            return r < 0 ? 0 : r;
         }
         return 0;
     }
