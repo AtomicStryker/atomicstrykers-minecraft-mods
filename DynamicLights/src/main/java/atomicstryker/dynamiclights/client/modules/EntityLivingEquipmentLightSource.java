@@ -35,7 +35,7 @@ import cpw.mods.fml.common.registry.GameData;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.6", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.7", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -72,7 +72,7 @@ public class EntityLivingEquipmentLightSource
         updateI.comment = "Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch:15,lit_pumpkin:12,glowstone_dust:10,lit_pumpkin:15,lava_bucket:15,redstone_torch:10,redstone:10,golden_helmet:14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
         itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         

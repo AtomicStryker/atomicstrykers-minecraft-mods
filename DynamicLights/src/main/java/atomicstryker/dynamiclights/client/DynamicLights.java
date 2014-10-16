@@ -38,7 +38,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.6")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.7")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -68,6 +68,7 @@ public class DynamicLights
      * The Keybinding instance to monitor
      */
     private KeyBinding toggleButton;
+    private long nextKeyTriggerTime;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
@@ -76,6 +77,7 @@ public class DynamicLights
         mcinstance = FMLClientHandler.instance().getClient();
         worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();
         FMLCommonHandler.instance().bus().register(this);
+        nextKeyTriggerTime = System.currentTimeMillis();
     }
     
     @EventHandler
@@ -107,8 +109,9 @@ public class DynamicLights
                 }
             }
             
-            if (mcinstance.currentScreen == null && toggleButton.getIsKeyPressed())
+            if (mcinstance.currentScreen == null && toggleButton.getIsKeyPressed() && System.currentTimeMillis() >= nextKeyTriggerTime)
             {
+                nextKeyTriggerTime = System.currentTimeMillis() + 1000l;
                 globalLightsOff = !globalLightsOff;
                 mcinstance.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
                 
