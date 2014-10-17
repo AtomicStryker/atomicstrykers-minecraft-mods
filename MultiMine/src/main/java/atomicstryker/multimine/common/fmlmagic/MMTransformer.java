@@ -123,7 +123,29 @@ public class MMTransformer implements IClassTransformer
                         
                         // stash an object ref for the final putfield on the stack
                         toInject.add(new VarInsnNode(ALOAD, 0));
-                        toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false));
+                        
+                        try
+                        {
+                            try
+                            {
+                                AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
+                                        INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;");
+                                toInject.add(node);
+                            }
+                            catch (NoSuchMethodException e)
+                            {
+                                AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
+                                        INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false);
+                                toInject.add(node);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            System.out.println("Multi Mine ASM transform failed T_T");
+                            return bytes;
+                        }
+                        
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new FieldInsnNode(GETFIELD, getPlayerControllerClassName(), getCurBlockXName(), "I"));
                         toInject.add(new VarInsnNode(ALOAD, 0));
@@ -132,7 +154,29 @@ public class MMTransformer implements IClassTransformer
                         toInject.add(new FieldInsnNode(GETFIELD, getPlayerControllerClassName(), getCurBlockZName(), "I"));
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new FieldInsnNode(GETFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
-                        toInject.add(new MethodInsnNode(INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "eventPlayerDamageBlock", "(IIIF)F", false));
+                        
+                        try
+                        {
+                            try
+                            {
+                                AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
+                                        INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "eventPlayerDamageBlock", "(IIIF)F");
+                                toInject.add(node);
+                            }
+                            catch (NoSuchMethodException e)
+                            {
+                                AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
+                                        INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "eventPlayerDamageBlock", "(IIIF)F", false);
+                                toInject.add(node);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            System.out.println("Multi Mine ASM transform failed T_T");
+                            return bytes;
+                        }
+                        
                         toInject.add(new FieldInsnNode(PUTFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
                         toInject.add(lmm1Node);
 
