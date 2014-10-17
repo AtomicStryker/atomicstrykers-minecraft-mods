@@ -110,7 +110,29 @@ public class SCTransformer implements IClassTransformer
                                
                 toInject.add(new VarInsnNode(ALOAD, 0));
                 toInject.add(new FieldInsnNode(GETFIELD, entityAICreeperSwellJavaClassNameO, swellingCreeperFieldNameO, "L"+entityCreeperJavaClassNameO+";"));
-                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassNameO+";)Z", false));
+                
+                try
+                {
+                    try
+                    {
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
+                                INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassNameO+";)Z");
+                        toInject.add(node);
+                    }
+                    catch (NoSuchMethodException e)
+                    {
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
+                                INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassNameO+";)Z", false);
+                        toInject.add(node);
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Stalker Creepers ASM transform failed T_T");
+                    return bytes;
+                }
+                
                 toInject.add(new JumpInsnNode(IFNE, exitLabelNode));
                 toInject.add(new InsnNode(ICONST_0));
                 toInject.add(new InsnNode(IRETURN));
@@ -170,7 +192,29 @@ public class SCTransformer implements IClassTransformer
                                 
                 toInject.add(new VarInsnNode(ALOAD, 0));
                 toInject.add(new FieldInsnNode(GETFIELD, entityAICreeperSwellJavaClassName, swellingCreeperFieldName, "L"+entityCreeperJavaClassName+";"));
-                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassName+";)Z", false));
+                
+                try
+                {
+                    try
+                    {
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
+                                INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassName+";)Z");
+                        toInject.add(node);
+                    }
+                    catch (NoSuchMethodException e)
+                    {
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
+                                INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassName+";)Z", false);
+                        toInject.add(node);
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Stalker Creepers ASM transform failed T_T");
+                    return bytes;
+                }
+                
                 toInject.add(new JumpInsnNode(IFNE, exitLabelNode));
                 toInject.add(new InsnNode(ICONST_0));
                 toInject.add(new InsnNode(IRETURN));

@@ -132,7 +132,29 @@ public class DLTransformer implements IClassTransformer
                 toInject.add(new VarInsnNode(ILOAD, 1));
                 toInject.add(new VarInsnNode(ILOAD, 2));
                 toInject.add(new VarInsnNode(ILOAD, 3));
-                toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";L"+blockJava+";III)I", false));
+                
+                try
+                {
+                    try
+                    {
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
+                                INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";L"+blockJava+";III)I");
+                        toInject.add(node);
+                    }
+                    catch (NoSuchMethodException e)
+                    {
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
+                                INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";L"+blockJava+";III)I", false);
+                        toInject.add(node);
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Dynamic Lights ASM transform failed T_T");
+                    return bytes;
+                }
+                
                 if (replacing)
                 {
                     toInject.add(new VarInsnNode(ISTORE, 6));
