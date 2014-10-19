@@ -5,6 +5,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Poisonous extends MobModifier
@@ -24,7 +25,8 @@ public class MM_Poisonous extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityLivingBase))
+        && (source.getEntity() instanceof EntityLivingBase)
+        && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity()))
         {
             EntityLivingBase ent = (EntityLivingBase)source.getEntity();
             if (!ent.isPotionActive(Potion.poison)
@@ -41,6 +43,7 @@ public class MM_Poisonous extends MobModifier
     public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
     {
         if (entity != null
+        && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity)
         && !entity.isPotionActive(Potion.poison))
         {
             entity.addPotionEffect(new PotionEffect(Potion.poison.id, 120, 0));

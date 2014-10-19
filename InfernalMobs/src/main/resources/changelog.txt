@@ -1,3 +1,7 @@
+1.5.8
+- ongoing efforts to fix other peoples mods for them ._.
+- infernal mobs will now never apply potion effects to fakeplayer entities
+
 1.5.7
 - fixes stalling issue when item droplist is empty
 

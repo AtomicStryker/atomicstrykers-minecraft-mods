@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.FakePlayer;
 import atomicstryker.infernalmobs.common.mods.MM_1UP;
 import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
 import atomicstryker.infernalmobs.common.mods.MM_Berserk;
@@ -74,7 +75,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.7")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.8")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -786,6 +787,11 @@ public class InfernalMobsCore
     public float getLimitedDamage(float test)
     {
         return (float) Math.min(test, maxDamage);
+    }
+
+    public boolean getIsEntityAllowedTarget(Entity entity)
+    {
+        return !(entity instanceof FakePlayer);
     }
 
 }
