@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Quicksand extends MobModifier
@@ -24,6 +25,7 @@ public class MM_Quicksand extends MobModifier
     public boolean onUpdate(EntityLivingBase mob)
     {
         if (getMobTarget() != null
+        && InfernalMobsCore.instance().getIsEntityAllowedTarget(getMobTarget())
         && mob.canEntityBeSeen(getMobTarget())
         && ++ticker == 50)
         {

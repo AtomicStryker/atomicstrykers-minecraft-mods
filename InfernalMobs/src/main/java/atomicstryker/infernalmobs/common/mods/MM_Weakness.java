@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Weakness extends MobModifier
@@ -23,7 +24,8 @@ public class MM_Weakness extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityLivingBase))
+        && (source.getEntity() instanceof EntityLivingBase)
+        && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity()))
         {
             ((EntityLivingBase)source.getEntity()).addPotionEffect(new PotionEffect(Potion.weakness.id, 120, 0));
         }
@@ -34,7 +36,8 @@ public class MM_Weakness extends MobModifier
     @Override
     public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
     {
-        if (entity != null)
+        if (entity != null
+        && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity))
         {
             entity.addPotionEffect(new PotionEffect(Potion.weakness.id, 120, 0));
         }
