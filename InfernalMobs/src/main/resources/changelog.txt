@@ -1,3 +1,6 @@
+1.5.9
+- and neither will infernal mobs send packets to fake player entities
+
 1.5.8
 - ongoing efforts to fix other peoples mods for them ._.
 - infernal mobs will now never apply potion effects to fakeplayer entities
