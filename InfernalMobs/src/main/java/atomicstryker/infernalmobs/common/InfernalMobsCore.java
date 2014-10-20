@@ -75,7 +75,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.8")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.9")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -731,12 +731,18 @@ public class InfernalMobsCore
 
     public void sendVelocityPacket(EntityPlayerMP target, float xVel, float yVel, float zVel)
     {
-        networkHelper.sendPacketToPlayer(new VelocityPacket(xVel, yVel, zVel), target);
+        if (getIsEntityAllowedTarget(target))
+        {
+            networkHelper.sendPacketToPlayer(new VelocityPacket(xVel, yVel, zVel), target);
+        }
     }
 
     public void sendKnockBackPacket(EntityPlayerMP target, float xVel, float zVel)
     {
-        networkHelper.sendPacketToPlayer(new KnockBackPacket(xVel, zVel), target);
+        if (getIsEntityAllowedTarget(target))
+        {
+            networkHelper.sendPacketToPlayer(new KnockBackPacket(xVel, zVel), target);
+        }
     }
 
     public void sendHealthPacket(EntityLivingBase mob, float health)
@@ -751,9 +757,12 @@ public class InfernalMobsCore
                 .getEntityId(), 0f, 0f));
     }
     
-    public void sendAirPacket(EntityPlayerMP player, int lastAir)
+    public void sendAirPacket(EntityPlayerMP target, int lastAir)
     {
-        networkHelper.sendPacketToPlayer(new AirPacket(lastAir), player);
+        if (getIsEntityAllowedTarget(target))
+        {
+            networkHelper.sendPacketToPlayer(new AirPacket(lastAir), target);
+        }
     }
 
     @SubscribeEvent
