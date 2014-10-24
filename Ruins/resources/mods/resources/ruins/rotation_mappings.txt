@@ -37,7 +37,7 @@
 # mc vanilla Stair Blocks
 # normal NESW: 0 2 1 3
 # inverted NESW: 4 6 5 7
-BlockID=oak_stairs;stone_stairs;brick_stairs;stone_brick_stairs;nether_brick_stairs;sandstone_stairs;spruce_stairs;birch_stairs;jungle_stairs;quartz_stairs
+BlockID=oak_stairs;stone_stairs;brick_stairs;stone_brick_stairs;nether_brick_stairs;sandstone_stairs;spruce_stairs;birch_stairs;jungle_stairs;quartz_stairs;dark_oak_stairs;acacia_stairs
 
 EAST-0-2
 EAST-1-3
@@ -67,7 +67,7 @@ WEST-6-4
 WEST-7-5
 
 # pistons, ladders, wall signs, furnaces, chests, dispensers, droppers, hoppers
-BlockID=sticky_piston;piston;ladder;wall_sign;furnace;chest;dispenser;dropper;hopper
+BlockID=sticky_piston;piston;ladder;wall_sign;furnace;chest;dispenser;dropper;hopper;trapped_chest
 # DUNESW: 0 1 2 5 3 4
 # DUNESW: 8 9 10 13 11 12 (Extended Pistons, is lower value + 8)
 
@@ -171,6 +171,17 @@ EAST-4-3
 
 WEST-3-4
 WEST-4-3
+
+# Hay bale/block (using log logic); added 2014-10-23 by Jordan_Greywolf 
+# 4 = Hay_Block: E/W
+# 8 = Hay_Block: N/S
+BlockID=hay_block
+
+EAST-4-8
+EAST-8-4
+
+WEST-4-8
+WEST-8-4
 
 # Pixelmon mod, provided by shadowsyllvet http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/1282339-1-7-10-ruins-structure-spawning-system?comment=1992
 BlockID=pixelmon:PC Block;pixelmon:PokeHealer;pixelmon:Fossil Machine Block;pixelmon:Moltres Shrine;pixelmon:Zapdos Shrine;pixelmon:Articuno Shrine
