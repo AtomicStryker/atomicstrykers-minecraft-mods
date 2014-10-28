@@ -30,6 +30,7 @@ public class RuinTemplate
     private final HashSet<String> biomes;
     private final PrintWriter debugPrinter;
     private final boolean debugging;
+    private boolean preventRotation;
     
     public RuinTemplate(PrintWriter out, String filename, String simpleName, boolean debug) throws Exception
     {
@@ -327,6 +328,12 @@ public class RuinTemplate
         
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
         int yReturn = y + y_off;
+        
+        // override rotation wishes if its locked by template
+        if (preventRotation)
+        {
+            rotate = RuinsMod.DIR_NORTH;
+        }
 
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
@@ -404,17 +411,17 @@ public class RuinTemplate
         // get the late runs and finish up
         doLateRuns(world, random, laterun, lastrun);
         
+        int xv, yv, zv;
         for (int x1 = 0; x1 < xDim; x1++)
         {
             for (int z1 = 0; z1 < zDim; z1++)
             {
-                for (int y1 = 0; y1 < layers.size(); y1++)
+                for (int y1 = 0; y1 <= layers.size(); y1++)
                 {
-                    int xv = x+x1;
-                    int yv = y+y1;
-                    int zv = z+z1;
+                    xv = x+x1;
+                    yv = y+y1;
+                    zv = z+z1;
                     world.markBlockForUpdate(xv, yv, zv);
-                    world.notifyBlockChange(xv, yv, zv, world.getBlock(xv, yv, zv));
                 }
             }
         }
@@ -659,6 +666,10 @@ public class RuinTemplate
                 {
                     String[] check = line.split("=");
                     uniqueMinDistance = Integer.parseInt(check[1]);
+                }
+                else if (line.startsWith("preventRotation"))
+                {
+                    preventRotation = Integer.parseInt(line.split("=")[1]) == 1;
                 }
             }
         }

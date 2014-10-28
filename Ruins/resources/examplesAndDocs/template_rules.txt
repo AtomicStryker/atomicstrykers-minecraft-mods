@@ -130,6 +130,10 @@
 # Ruins 13.8 adds optional variable "uniqueMinDistance" which overrides global templateInstancesMinDistance
 # uniqueMinDistance=1500
 # defaults to 0. values of 0 are handled as if no value was specified at all.
+#
+# Ruins 13.9 adds optional variable "preventRotation" which keeps a template in the specified direction
+# preventRotation=1
+# defaults to 0. values of 0 are handled as if no value was specified at all.
 
 
 weight=5

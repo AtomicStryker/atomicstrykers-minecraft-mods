@@ -48,6 +48,7 @@ public class CommandTestTemplate extends CommandBase
                 {
                     execBuild(RuinsMod.DIR_NORTH, MathHelper.floor_double(player.posX + .5), MathHelper.floor_double(player.posY - .5),
                             MathHelper.floor_double(player.posZ + .5));
+                    parsedRuin = null;
                 }
                 else
                 {
@@ -97,6 +98,7 @@ public class CommandTestTemplate extends CommandBase
                     {
                         execBuild(rotation, x, y, z);
                         MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, lastFinalY, z, rotation, true, false));
+                        parsedRuin = null;
                     }
                 }
                 else
@@ -118,7 +120,6 @@ public class CommandTestTemplate extends CommandBase
     private void execBuild(int rotation, int x, int y, int z)
     {
         lastFinalY = parsedRuin.doBuild(player.worldObj, player.getRNG(), x, y, z, rotation);
-        parsedRuin = null;
     }
 
     @Override
