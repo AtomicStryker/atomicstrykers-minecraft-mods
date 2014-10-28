@@ -236,7 +236,7 @@ public class World2TemplateParser extends Thread
                     else if (temp.block == Blocks.torch || temp.block == Blocks.redstone_torch)
                     {
                         // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
-                        temp.spawnRule = temp.meta == 0 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
+                        temp.spawnRule = (temp.meta == 0 || temp.meta == 5) ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
                     else if (temp.block == Blocks.piston_head || temp.block == Blocks.piston_extension)
                     {

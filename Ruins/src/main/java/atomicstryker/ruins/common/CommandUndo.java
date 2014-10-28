@@ -31,7 +31,7 @@ public class CommandUndo extends CommandBase
     {
         if (event.testingRuin)
         {
-            final RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
+            RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
             xBase = data.xMin;
             yBase = data.yMin;
             zBase = data.zMin;

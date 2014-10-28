@@ -370,3 +370,9 @@ a: setAccessible now true
 
 13.8
 + added optional template variable "uniqueMinDistance" which overrides global templateInstancesMinDistance
+
+13.9
++ template parser now also saves minecraft:torch-5 with the EXISTS_BELOW(1) rule
++ fixed event bug related to testing templates
++ fixed template spawning not marking the topmost layer for a world block update (invisible oddness)
++ added optional template variable 'preventRotation=1', which when set prevents a template from being rotated
