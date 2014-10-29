@@ -15,7 +15,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.4.2")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.4.3")
 public class MultiMine
 {
     @Instance("AS_MultiMine")
