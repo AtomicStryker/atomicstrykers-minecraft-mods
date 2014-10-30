@@ -8,13 +8,12 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 public class CommandTestTemplate extends CommandBase
 {
 
-    private EntityPlayer player;
     public static RuinTemplate parsedRuin;
     private int lastFinalY;
 
@@ -27,7 +26,7 @@ public class CommandTestTemplate extends CommandBase
     @Override
     public String getCommandUsage(ICommandSender var1)
     {
-        return "/testruin TEMPLATENAME [ROTATION X Y Z] manually spawns the target Ruin of the templateparser folder, [] optional";
+        return "/testruin TEMPLATENAME [X Y Z ROTATION] manually spawns the target Ruin of the templateparser folder, [] optional";
     }
 
     @Override
@@ -39,15 +38,18 @@ public class CommandTestTemplate extends CommandBase
     @Override
     public void processCommand(ICommandSender sender, String[] args)
     {
-        player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
-        if (player != null)
+        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
+        int xpos, ypos, zpos;
+        xpos = sender.getPlayerCoordinates().posX;
+        ypos = sender.getPlayerCoordinates().posY;
+        zpos = sender.getPlayerCoordinates().posZ;
+        if (player != null && args.length < 4)
         {
             if (args.length < 1)
             {
                 if (parsedRuin != null)
                 {
-                    execBuild(RuinsMod.DIR_NORTH, MathHelper.floor_double(player.posX + .5), MathHelper.floor_double(player.posY - .5),
-                            MathHelper.floor_double(player.posZ + .5));
+                    execBuild(sender.getEntityWorld(), RuinsMod.DIR_NORTH, xpos, ypos, zpos);
                     parsedRuin = null;
                 }
                 else
@@ -59,12 +61,12 @@ public class CommandTestTemplate extends CommandBase
             }
             else
             {
-                tryBuild(sender, args, MathHelper.floor_double(player.posX + .5), MathHelper.floor_double(player.posY - .5), MathHelper.floor_double(player.posZ + .5));
+                tryBuild(sender, args, xpos, ypos, zpos);
             }
         }
-        else if (args.length > 4)
+        else if (args.length >= 4)
         {
-            tryBuild(sender, args, Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+            tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), (int)func_110666_a(sender, ypos, args[2]), (int)func_110666_a(sender, zpos, args[3]));
         }
         else
         {
@@ -86,7 +88,7 @@ public class CommandTestTemplate extends CommandBase
             try
             {
                 parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
-                int rotation = (args.length > 1) ? Integer.parseInt(args[1]) : RuinsMod.DIR_NORTH;
+                int rotation = (args.length > 4) ? Integer.parseInt(args[4]) : RuinsMod.DIR_NORTH;
                 
                 if (parsedRuin != null)
                 {
@@ -96,7 +98,7 @@ public class CommandTestTemplate extends CommandBase
                     }
                     else
                     {
-                        execBuild(rotation, x, y, z);
+                        execBuild(sender.getEntityWorld(), rotation, x, y, z);
                         MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, lastFinalY, z, rotation, true, false));
                         parsedRuin = null;
                     }
@@ -117,9 +119,9 @@ public class CommandTestTemplate extends CommandBase
         }
     }
 
-    private void execBuild(int rotation, int x, int y, int z)
+    private void execBuild(World world, int rotation, int x, int y, int z)
     {
-        lastFinalY = parsedRuin.doBuild(player.worldObj, player.getRNG(), x, y, z, rotation);
+        lastFinalY = parsedRuin.doBuild(world, world.rand, x, y, z, rotation);
     }
 
     @Override

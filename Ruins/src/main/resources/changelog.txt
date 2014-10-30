@@ -376,3 +376,9 @@ a: setAccessible now true
 + fixed event bug related to testing templates
 + fixed template spawning not marking the topmost layer for a world block update (invisible oddness)
 + added optional template variable 'preventRotation=1', which when set prevents a template from being rotated
+
+14.0
++ changed /testruin syntax to /testruin TEMPLATENAME [X Y Z [ROTATION]] - it was: /testruin TEMPLATENAME [ROTATION X Y Z]
++ improved /testruin to accept relative coordinates aka "~x"
++ improved /testruin to work when used by command blocks
++ added server command documentation to readme
