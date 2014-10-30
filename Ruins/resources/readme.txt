@@ -3,7 +3,7 @@ Mod Name: Ruins
 Authors:
 Creator: Justin Bengtson (d00dv4d3r) 
 - updated to 1.1 by kolt666
-- kept and developed since 1.2.3 by AtomicStryker
+- kept and developed since Minecraft 1.2.3 by AtomicStryker
 
 Version: see changelog in mod file
 License: http://atomicstryker.net/about.html
@@ -30,6 +30,20 @@ For instance, if you have five templates for a specific biome with weights 10, 1
 A template with a weight of 1 has a 1 in 31 chance of spawning under those weight conditions.
 
 Please see the template_rules.txt file for more information on creating templates for this mod.  The file is set up so that you can simply copy it to the mods/resources/ruins folder and being editing it.
+
+
+SERVER COMMANDS ADDED BY RUINS
+
+/parseruin TEMPLATENAME
+see https://www.youtube.com/watch?v=E9cNolY_LsQ for a in-depth explanation
+tldw: make a one-block plate the width and thickness of the template from one block which is not part of the template. build template on top. use command, give filename. break one block of plate.
+for advanced features such as basements consult template_rules.txt
+
+/testruin TEMPLATENAME [X Y Z [ROTATION]]
+[] parts are optional each. TEMPLATENAME is either a filename in the "templateparser" biome folder or a folder and a template filename aka ocean/lighthouse
+testruin can be called exactly once without any arguments after successfully parsing a template in order to immediatly test that template
+rotation is 0 for 'none', 1 for EAST 'one to the right', 2 for SOUTH 'two to the right', 3 for WEST 'three to the right'
+testruin supports minecraft relative coordinates, and can be called by command blocks
 
 
 BIOME SPECIFIC FEATURES
