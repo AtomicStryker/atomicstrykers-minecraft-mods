@@ -20,7 +20,7 @@ public class RuinRuleAir extends RuinTemplateRule
         // This will preserve blocks correctly.
         if (canReplace(Blocks.air, world.getBlock(x, y, z), world, x, y ,z))
         {
-            world.setBlock(x, y, z, Blocks.air, 0, 3);
+            world.setBlock(x, y, z, Blocks.air, 0, 0);
         }
     }
 

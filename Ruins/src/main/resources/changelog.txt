@@ -382,3 +382,10 @@ a: setAccessible now true
 + improved /testruin to accept relative coordinates aka "~x"
 + improved /testruin to work when used by command blocks
 + added server command documentation to readme
+
+14.1
++ consolidated template spawning: now no rule will call block updates before spawning is finished. might fix redstone/piston bugs
++ fixed oddness in /testruin always spawning one y too high (this is for all coordinate types!)
++ fixed Skull Blocks being broken, unfortunately this means the syntax changed
++ from Skull:skulltype:rotation[:playername]-meta to Skull:skulltype:rotation[:uuid-playername]-meta
++ i dont think you can find out uuid by yourself, so use the template parser to get player heads

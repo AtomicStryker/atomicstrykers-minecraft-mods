@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,9 @@ import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
+
+import com.mojang.authlib.GameProfile;
+
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
@@ -100,7 +104,7 @@ public class RuinTemplateRule
                         
                         try
                         {
-                            blockMDs[i] = Integer.parseInt(data[1]);
+                            blockMDs[i] = Integer.parseInt(data[data.length-1]);
                         }
                         catch (NumberFormatException ne)
                         {
@@ -468,7 +472,7 @@ public class RuinTemplateRule
             {
                 meta = rotateMetadata(Blocks.standing_sign, blockMDs[blocknum], rotate);
             }
-            world.setBlock(x, y, z, Blocks.standing_sign, meta, 2);
+            world.setBlock(x, y, z, Blocks.standing_sign, meta, 0);
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(x, y, z);
             if (tes != null && tes.signText != null)
             {
@@ -486,7 +490,7 @@ public class RuinTemplateRule
             {
                 meta = rotateMetadata(Blocks.wall_sign, blockMDs[blocknum], rotate);
             }
-            world.setBlock(x, y, z, Blocks.wall_sign, meta, 3);
+            world.setBlock(x, y, z, Blocks.wall_sign, meta, 0);
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(x, y, z);
             if (tes != null && tes.signText != null)
             {
@@ -498,15 +502,23 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("Skull:"))
         {
-            world.setBlock(x, y, z, Blocks.skull, rotateFloorSkull(blockMDs[blocknum], rotate), 2);
+            // standard case Skull:2:8-3
+            world.setBlock(x, y, z, Blocks.skull, rotateFloorSkull(blockMDs[blocknum], rotate), 0);
             String[] splits = dataString.split(":");
             TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(x, y, z);
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
-            int prevrot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
-            ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.standing_sign, prevrot, rotate), 1);
-            if (splits.length > 3 && !splits[3].startsWith("-"))
+            int rot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
+            ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.standing_sign, rot, rotate), 1);
+            
+            // is a player head saved?
+            // looks like Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
+            if (splits.length > 3)
             {
-                ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, splits[3], 2);
+                // split segment like this: 1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
+                String[] moresplits = splits[3].split("-");
+                UUID id = UUID.fromString(moresplits[0]+"-"+moresplits[1]+"-"+moresplits[2]+"-"+moresplits[3]+"-"+moresplits[4]);
+                GameProfile playerprofile = new GameProfile(id, moresplits[5]);
+                ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, playerprofile, 2);
             }
         }
         else
@@ -534,13 +546,13 @@ public class RuinTemplateRule
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
         world.spawnEntityInWorld(entityendercrystal);
-        world.setBlock(x, y, z, Blocks.bedrock, 0, 2);
+        world.setBlock(x, y, z, Blocks.bedrock, 0, 0);
     }
 
     @SuppressWarnings("unchecked")
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
-        world.setBlock(x, y, z, Blocks.mob_spawner, 0, 2);
+        world.setBlock(x, y, z, Blocks.mob_spawner, 0, 0);
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getTileEntity(x, y, z);
         if (mobspawner != null)
         {
@@ -631,7 +643,7 @@ public class RuinTemplateRule
 
     private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 3);
+        world.setBlock(x, y, z, Blocks.chest, meta, 0);
         world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
         if (chest != null)
@@ -650,7 +662,7 @@ public class RuinTemplateRule
 
     private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 3);
+        world.setBlock(x, y, z, Blocks.chest, meta, 0);
         world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
         if (chest != null)
@@ -676,7 +688,7 @@ public class RuinTemplateRule
 
     private void addHardChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 3);
+        world.setBlock(x, y, z, Blocks.chest, meta, 0);
         world.setBlockMetadataWithNotify(x, y, z, meta, 3);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
         if (chest != null)
@@ -702,8 +714,8 @@ public class RuinTemplateRule
 
     private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int items, int meta)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 3);
-        world.setBlockMetadataWithNotify(x, y, z, meta, 3);
+        world.setBlock(x, y, z, Blocks.chest, meta, 0);
+        world.setBlockMetadataWithNotify(x, y, z, meta, 0);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
         if (chest != null)
         {
@@ -714,8 +726,8 @@ public class RuinTemplateRule
     
     private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemData, int rotateMetadata)
     {
-        world.setBlock(x, y, z, block, rotateMetadata, 3);
-        world.setBlockMetadataWithNotify(x, y, z, rotateMetadata, 3);
+        world.setBlock(x, y, z, block, rotateMetadata, 0);
+        world.setBlockMetadataWithNotify(x, y, z, rotateMetadata, 0);
         TileEntity te = world.getTileEntity(x, y, z);
         if (te instanceof IInventory)
         {
@@ -834,7 +846,7 @@ public class RuinTemplateRule
 
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int rotate)
     {
-        world.setBlock(x, y, z, Blocks.command_block, 0, 2);
+        world.setBlock(x, y, z, Blocks.command_block, 0, 0);
         command = findAndRotateRelativeCommandBlockCoords(command, rotate);
         TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(x, y, z);
         if (tecb != null)
