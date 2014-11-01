@@ -49,7 +49,7 @@ public class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    execBuild(sender.getEntityWorld(), RuinsMod.DIR_NORTH, xpos, ypos, zpos);
+                    execBuild(sender.getEntityWorld(), RuinsMod.DIR_NORTH, xpos, ypos-1, zpos);
                     parsedRuin = null;
                 }
                 else
@@ -61,12 +61,12 @@ public class CommandTestTemplate extends CommandBase
             }
             else
             {
-                tryBuild(sender, args, xpos, ypos, zpos);
+                tryBuild(sender, args, xpos, ypos-1, zpos);
             }
         }
         else if (args.length >= 4)
         {
-            tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), (int)func_110666_a(sender, ypos, args[2]), (int)func_110666_a(sender, zpos, args[3]));
+            tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), (int)func_110666_a(sender, ypos, args[2])-1, (int)func_110666_a(sender, zpos, args[3]));
         }
         else
         {

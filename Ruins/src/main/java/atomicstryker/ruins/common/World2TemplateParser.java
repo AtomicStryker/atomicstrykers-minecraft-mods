@@ -19,6 +19,9 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
+
+import com.mojang.authlib.GameProfile;
+
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
@@ -316,7 +319,12 @@ public class World2TemplateParser extends Thread
                         TileEntitySkull tes = (TileEntitySkull) te;
                         int skulltype = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 0);
                         int rot = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 1);
-                        String specialType = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
+                        String specialType = "";
+                        GameProfile playerhead = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
+                        if (playerhead != null)
+                        {
+                            specialType = playerhead.getId().toString()+"-"+playerhead.getName();
+                        }
                         temp.data = "Skull:" + skulltype + ":" + rot + ((specialType.equals("")) ? "" : ":" + specialType) + "-" + temp.meta;
                     }
 

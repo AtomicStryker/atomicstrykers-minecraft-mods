@@ -30,7 +30,7 @@ public class RuinTemplate
     private final HashSet<String> biomes;
     private final PrintWriter debugPrinter;
     private final boolean debugging;
-    private boolean preventRotation;
+    private boolean preventRotation = false;
     
     public RuinTemplate(PrintWriter out, String filename, String simpleName, boolean debug) throws Exception
     {
