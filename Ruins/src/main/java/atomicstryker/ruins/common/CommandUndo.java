@@ -29,7 +29,7 @@ public class CommandUndo extends CommandBase
     @SubscribeEvent
     public void onSpawningRuin(EventRuinTemplateSpawn event)
     {
-        if (event.testingRuin)
+        if (event.testingRuin && event.isPrePhase)
         {
             RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
             xBase = data.xMin;

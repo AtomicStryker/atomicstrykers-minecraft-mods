@@ -389,3 +389,9 @@ a: setAccessible now true
 + fixed Skull Blocks being broken, unfortunately this means the syntax changed
 + from Skull:skulltype:rotation[:playername]-meta to Skull:skulltype:rotation[:uuid-playername]-meta
 + i dont think you can find out uuid by yourself, so use the template parser to get player heads
+
+14.2
++ improved undo command to only save ruin sites BEFORE actually spawning ruins
++ /testruin now also allows to replace the specified y coordinate with "_", which signals Ruins to find a suitable y for given x,z
++ with exactly the same behaviour (flying, underground...) a randomly spawning template would display
++ this y specification may NOT be combined with "~", aka "_~2" will NOT work
