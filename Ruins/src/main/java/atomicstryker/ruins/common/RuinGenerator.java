@@ -18,13 +18,12 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class RuinGenerator
 {
-
+    public static final int WORLD_MAX_HEIGHT = 256;
     private final static String fileName = "RuinsPositionsFile.txt";
 
     private final FileHandler fileHandler;
     private final RuinStats stats;
     private int numTries = 0, LastNumTries = 0;
-    private final int WORLD_MAX_HEIGHT = 256;
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
     private File ruinsDataFile;
     private File ruinsDataFileWriting;

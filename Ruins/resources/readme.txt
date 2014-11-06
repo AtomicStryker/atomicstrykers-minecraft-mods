@@ -44,6 +44,7 @@ for advanced features such as basements consult template_rules.txt
 testruin can be called exactly once without any arguments after successfully parsing a template in order to immediatly test that template
 rotation is 0 for 'none', 1 for EAST 'one to the right', 2 for SOUTH 'two to the right', 3 for WEST 'three to the right'
 testruin supports minecraft relative coordinates, and can be called by command blocks
+testruin also supports using '_' instead of a relative or absolute y coordinate, which will let ruins find a suitable y using its spawner algorithm for given x,z
 
 
 BIOME SPECIFIC FEATURES

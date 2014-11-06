@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import java.io.File;
 import java.io.PrintWriter;
 
+import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -66,7 +67,14 @@ public class CommandTestTemplate extends CommandBase
         }
         else if (args.length >= 4)
         {
-            tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), (int)func_110666_a(sender, ypos, args[2])-1, (int)func_110666_a(sender, zpos, args[3]));
+            if (args[2].equals("_"))
+            {
+                tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), -1, (int)func_110666_a(sender, zpos, args[3]));
+            }
+            else
+            {
+                tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), (int)func_110666_a(sender, ypos, args[2])-1, (int)func_110666_a(sender, zpos, args[3]));
+            }
         }
         else
         {
@@ -92,6 +100,25 @@ public class CommandTestTemplate extends CommandBase
                 
                 if (parsedRuin != null)
                 {
+                    if (y < 0)
+                    {
+                        for (y = RuinGenerator.WORLD_MAX_HEIGHT - 1; y > 7; y--)
+                        {
+                            final Block b = sender.getEntityWorld().getBlock(x, y, z);
+                            if (parsedRuin.isIgnoredBlock(b, sender.getEntityWorld(), x, y, z))
+                            {
+                                continue;
+                            }
+                            
+                            if (parsedRuin.isAcceptableSurface(b))
+                            {
+                                break;
+                            }
+                            sender.addChatMessage(new ChatComponentText("Could not find acceptable Y coordinate"));
+                            return;
+                        }
+                    }
+                    
                     if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
                     {
                         sender.addChatMessage(new ChatComponentText("EventRuinTemplateSpawn returned as cancelled, not building that."));
