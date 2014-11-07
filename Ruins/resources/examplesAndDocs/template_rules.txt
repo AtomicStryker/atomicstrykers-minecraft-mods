@@ -45,13 +45,6 @@
 # in 31 chance of being generated.  A template only has weight in its biome.
 # Defaults to 1.
 #
-# unique=<yes/no>
-# If this is set to 1:
-# If the template is generic, it can only ever be generated once per world.
-# If the template is biome-specific, it can only ever be generated once in the
-# biome per world (so you could duplicate it to other biome folders).
-# Defaults to 0 (no).
-#
 # embed_into_distance=<number of layers>
 # Specifies how many layers to embed into the target blocks.  This is useful
 # for creating basements or dungeons.
@@ -137,7 +130,6 @@
 
 
 weight=5
-unique=0
 embed_into_distance=1
 acceptable_target_blocks=stone,grass,dirt,sand,gravel,clay
 dimensions=4,7,5
