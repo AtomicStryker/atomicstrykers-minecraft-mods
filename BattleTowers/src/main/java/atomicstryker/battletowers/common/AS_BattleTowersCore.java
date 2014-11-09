@@ -17,6 +17,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -25,7 +26,7 @@ import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.4.9")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.5.1")
 public class AS_BattleTowersCore
 {
     
@@ -93,27 +94,9 @@ public class AS_BattleTowersCore
     }
     
     @EventHandler
-    public void serverStarted(FMLServerStartingEvent evt)
-    {
-        evt.registerServerCommand(new CommandSpawnBattleTower());
-        evt.registerServerCommand(new CommandDeleteBattleTower());
-        evt.registerServerCommand(new CommandRegenerateBattleTower());
-        evt.registerServerCommand(new CommandRegenerateAllBattleTowers());
-        evt.registerServerCommand(new CommandDeleteAllBattleTowers());
-    }
-    
-    public void loadForgeConfig()
+    public void modsLoaded(FMLPostInitializationEvent evt)
     {
         configuration.load();
-        minDistanceFromSpawn = configuration.get("MainOptions", "Minimum Distance of Battletowers from Spawn", 96).getInt();
-        minDistanceBetweenTowers = Integer.parseInt(configuration.get("MainOptions", "Minimum Distance between 2 BattleTowers", 196).getString());
-        towerDestroyerEnabled = Integer.parseInt(configuration.get("MainOptions", "Tower Destroying Enabled", 1).getString());
-        itemGenerateAttemptsPerFloor = configuration.get("BattleTowerChestItems", "Item Generations per Floor", "7").getInt();
-        chanceTowerIsUnderGround = configuration.get("MainOptions", "chanceTowerIsUnderGround", 15).getInt();
-        noGolemExplosions = configuration.get("MainOptions", "noGolemExplosions", false).getBoolean(false);
-        towerFallDestroysMobSpawners = configuration.get("MainOptions", "towerFallDestroysMobSpawners", false, "Destroy all Mob Spawners in Tower Area upon Tower Fall?").getBoolean(false);
-        golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();
-        
         configuration.addCustomCategoryComment("BattleTowerChestItems", "Syntax for each Item entry is 'Name-Meta-Spawnchance-minAmount-maxAmount', entries are seperated by ';'");
         
         // stick-0-50-5-6 sticks
@@ -176,7 +159,30 @@ public class AS_BattleTowersCore
         // redstone-0-75-5-5 redstone dust
         // gold_ingot-0-75-8-8 gold ingot
         floorItemManagers[9] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Top Floor", "ender_pearl-0-50-2-2;diamond-0-70-2-2;redstone-0-75-5-5;gold_ingot-0-90-8-8").getString());
-        
+        configuration.save();
+    }
+    
+    @EventHandler
+    public void serverStarted(FMLServerStartingEvent evt)
+    {
+        evt.registerServerCommand(new CommandSpawnBattleTower());
+        evt.registerServerCommand(new CommandDeleteBattleTower());
+        evt.registerServerCommand(new CommandRegenerateBattleTower());
+        evt.registerServerCommand(new CommandRegenerateAllBattleTowers());
+        evt.registerServerCommand(new CommandDeleteAllBattleTowers());
+    }
+    
+    public void loadForgeConfig()
+    {
+        configuration.load();
+        minDistanceFromSpawn = configuration.get("MainOptions", "Minimum Distance of Battletowers from Spawn", 96).getInt();
+        minDistanceBetweenTowers = Integer.parseInt(configuration.get("MainOptions", "Minimum Distance between 2 BattleTowers", 196).getString());
+        towerDestroyerEnabled = Integer.parseInt(configuration.get("MainOptions", "Tower Destroying Enabled", 1).getString());
+        itemGenerateAttemptsPerFloor = configuration.get("BattleTowerChestItems", "Item Generations per Floor", "7").getInt();
+        chanceTowerIsUnderGround = configuration.get("MainOptions", "chanceTowerIsUnderGround", 15).getInt();
+        noGolemExplosions = configuration.get("MainOptions", "noGolemExplosions", false).getBoolean(false);
+        towerFallDestroysMobSpawners = configuration.get("MainOptions", "towerFallDestroysMobSpawners", false, "Destroy all Mob Spawners in Tower Area upon Tower Fall?").getBoolean(false);
+        golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();        
         configuration.save();
     }
     
