@@ -173,6 +173,9 @@ public class WorldGenHandler implements IWorldGenerator
     
     public static TowerStageItemManager getTowerStageManagerForFloor(int floor, Random rand)
     {
+        // wait for load if it hasnt happened yet
+        while (AS_BattleTowersCore.instance.floorItemManagers == null) {}
+        
         floor--; // subtract 1 to match the floors to the array
         
         if (floor >= AS_BattleTowersCore.instance.floorItemManagers.length)
@@ -216,7 +219,7 @@ public class WorldGenHandler implements IWorldGenerator
         return new TowerPosition(xActual, 0, zActual, 0, false);
     }
     
-    public class TowerPosition
+    public class TowerPosition implements Comparable<TowerPosition>
     {
         int x;
         int y;
@@ -260,6 +263,12 @@ public class WorldGenHandler implements IWorldGenerator
         public int hashCode()
         {
             return x + z << 8 + y << 16;
+        }
+
+        @Override
+        public int compareTo(TowerPosition o)
+        {
+            return o.x < x ? 1 : o.x > x ? -1 : o.z < z ? 1 : o.z > z ? -1 : 0;
         }
     }
     

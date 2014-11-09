@@ -1,3 +1,9 @@
+1.5.1
+- added Comparable Interface to Towerposition class (some java version demands it?)
+
+1.5.0
+- fixed issue with tower items being parsed before all mods *should* have finished loading
+
 1.4.9
 - moved config loading to preinit from modsloaded
 
