@@ -127,7 +127,21 @@
 # Ruins 13.9 adds optional variable "preventRotation" which keeps a template in the specified direction
 # preventRotation=1
 # defaults to 0. values of 0 are handled as if no value was specified at all.
-
+#
+# Ruins 14.3 adds the optional repeatable variable "adjoining_template" which lets you spawn adjacent templates
+# these will not be checked for minimal distances against ANY other ruins, make sure your spacings are big enough
+# these will also not be checked for circular dependencies, you build an infinite loop, you wait it out
+# these will be checked against the rules the template itself contains
+# Ruins will use its spawning algorithm to determine a fitting y coordinate to the xz you provide
+# adjoining templates will be randomly rotated, you can disable this in their templates if you want
+# syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
+# <template> is the full filepath relative to the resources/ruins folder, so, working like /testruin
+# <relativeX> and <relativeZ> are the relative coords from the host x,z spawnpoint to the adjoining x,z
+# <allowedYdifference> states how much the computed adjoining template height may absolutely differ before aborting
+# <spawnchance> is optional and does what the name implies, [0-100] values allowed
+#
+# Example: adjoining_template=generic/MoaiHead;-25;10;25;33
+#
 
 weight=5
 embed_into_distance=1
@@ -233,6 +247,7 @@ preserve_plants=0
 # Ruins 10.3 adds Command Block Support. Usage:
 # Example 8: rule1=0,100,CommandBlock:command:sender
 # command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
+# you can provide several alternative command blocks seperated by commata, however you may not mix command blocks and other blocks in one rule
 #
 # Ruins 12.1 adds Standing Signs. Usage:
 # Example 9: rule1=0,100,StandingSign:a|b|c|d-4
@@ -251,6 +266,13 @@ preserve_plants=0
 # the Ruins Parser will do this for you when you parse an IInventory block. Empty chests get hooked with dungeon loot
 # automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
 # if you specify the same slot index multiple times, only the first itemstack gets put in
+#
+# Ruins 14.3 adds the -addbonemeal flag to use on IGrowable blocks such as saplings or most plants
+# simply append -addbonemeal to a block which is an IGrowable (and only those!)
+# note this overrides certain checks done before hand application of bonemeal, such as darkness checks for shrooms
+# also note /undo does NOT take growing things into account when cleaning up your shenanigans
+# below example is for oak and dark oak saplings
+# Example 12: rule1=0,100,0,sapling-addbonemeal,sapling-5-addbonemeal
 #
 
 rule1=0,100,preserveBlock

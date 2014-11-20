@@ -1,6 +1,7 @@
 package atomicstryker.ruins.common;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -10,10 +11,12 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
+import net.minecraft.block.IGrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.registry.GameData;
 
 public class RuinTemplate
@@ -31,6 +34,17 @@ public class RuinTemplate
     private final PrintWriter debugPrinter;
     private final boolean debugging;
     private boolean preventRotation = false;
+    private final ArrayList<Integer> bonemealMarkers;
+    private final ArrayList<AdjoiningTemplateData> adjoiningTemplates;
+    
+    private class AdjoiningTemplateData
+    {
+        RuinTemplate adjoiningTemplate;
+        int relativeX;
+        int acceptableY;
+        int relativeZ;
+        float spawnchance;
+    }
     
     public RuinTemplate(PrintWriter out, String filename, String simpleName, boolean debug) throws Exception
     {
@@ -42,6 +56,9 @@ public class RuinTemplate
         rules = new ArrayList<RuinTemplateRule>();
         layers = new ArrayList<RuinTemplateLayer>();
         biomes = new HashSet<String>();
+        bonemealMarkers = new ArrayList<Integer>();
+        adjoiningTemplates = new ArrayList<AdjoiningTemplateData>();
+        
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String read = br.readLine();
         while (read != null)
@@ -174,17 +191,27 @@ public class RuinTemplate
         }
         return false;
     }
-
+    
     public int checkArea(World world, int xBase, int y, int zBase, int rotate)
+    {
+        return checkArea(world, xBase, y, zBase, rotate, 0);
+    }
+
+    public int checkArea(World world, int xBase, int y, int zBase, int rotate, int additionalYRangeChecked)
     {
         // setup some variable defaults (north/south)
         int x = xBase + w_off;
         int z = zBase + l_off;
         int xDim = width;
         int zDim = length;
-
+        
+        // override rotation wishes if its locked by template
+        if (preventRotation)
+        {
+            rotate = RuinsMod.DIR_NORTH;
+        }
         // how are we oriented?
-        if (rotate == RuinsMod.DIR_EAST || rotate == RuinsMod.DIR_WEST)
+        else if (rotate == RuinsMod.DIR_EAST || rotate == RuinsMod.DIR_WEST)
         {
             // reorient for east/west rotation
             x = xBase + l_off;
@@ -194,10 +221,10 @@ public class RuinTemplate
         }
         
         // guess the top Y coordinate of the structure box, for checking top to bottom
-        final int topYguess = y + height - embed;
+        final int topYguess = y + height - embed + additionalYRangeChecked;
         
         // set a lowest height value at which surface search is aborted
-        final int minimalCheckedY = y - height - embed;
+        final int minimalCheckedY = y - height - embed - additionalYRangeChecked;
         
         // surface heights of the proposed site, -1 means 'out of range, consider overhang'
         final int[][] heightMap = new int[xDim][zDim];
@@ -423,6 +450,63 @@ public class RuinTemplate
                     zv = z+z1;
                     world.markBlockForUpdate(xv, yv, zv);
                 }
+            }
+        }
+        
+        for (int b = 0; b < bonemealMarkers.size(); b+=3)
+        {
+            int xi = bonemealMarkers.get(b);
+            int yi = bonemealMarkers.get(b+1);
+            int zi = bonemealMarkers.get(b+2);
+            Block growable = world.getBlock(xi, yi, zi);
+            debugPrinter.printf("Now considering bonemeal flag at [%d|%d|%d], block: %s\n", xi, yi, zi, growable);
+            // verbatim rip of ItemDye.applyBonemeal method
+            if (growable instanceof IGrowable)
+            {
+                IGrowable igrowable = (IGrowable)growable;
+                if (igrowable.func_149851_a(world, xi, yi, zi, world.isRemote))
+                {
+                    igrowable.func_149853_b(world, world.rand, xi, yi, zi);
+                    debugPrinter.printf("Applied bonemeal at [%d|%d|%d], block: %s\n", xi, yi, zi, growable);
+                }
+                else
+                {
+                    debugPrinter.printf("... but first, CAN_STILL_GROW, Bonemeal boolean was negative\n");
+                }
+            }
+        }
+        bonemealMarkers.clear();
+        
+        // TODO test this
+        for (AdjoiningTemplateData ad : adjoiningTemplates)
+        {
+            debugPrinter.printf("Considering to spawn adjoining %s of Ruin %s...\n", ad.adjoiningTemplate.getName(), getName());
+            float randres = (world.rand.nextFloat() * 100);
+            if (randres < ad.spawnchance)
+            {
+                int newrot = world.rand.nextInt(4);
+                int targetX = xBase+ad.relativeX;
+                int targetZ = zBase+ad.relativeZ;
+                int targetY = ad.adjoiningTemplate.checkArea(world, targetX, y, targetZ, newrot, ad.acceptableY);
+                if (targetY > 0 && Math.abs(y-targetY) <= ad.acceptableY)
+                {
+                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, targetY, targetZ, newrot, false, true)))
+                    {
+                        debugPrinter.printf("Forge Event came back negative, no spawn\n");
+                        continue;
+                    }
+                    debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
+                    int finalY = ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot);
+                    MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, finalY, targetZ, newrot, false, false));
+                }
+                else
+                {
+                    debugPrinter.printf("Adjoining area around [%d|%d|%d] was rejected, targetY:%d, diff:%d\n", targetX, y, targetZ, targetY, Math.abs(y-targetY));
+                }
+            }
+            else
+            {
+                debugPrinter.printf("Spawnchance [%.2f] too low. Random got [%.2f], no spawn\n", ad.spawnchance, randres);
             }
         }
         
@@ -671,6 +755,28 @@ public class RuinTemplate
                 {
                     preventRotation = Integer.parseInt(line.split("=")[1]) == 1;
                 }
+                else if (line.startsWith("adjoining_template"))
+                {
+                    // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
+                    String[] vals = line.split("=")[1].split(";");
+                    
+                    File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + vals[0] + ".tml");
+                    if (file.exists() && file.canRead())
+                    {
+                        RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
+                        if (adjTempl != null)
+                        {
+                            AdjoiningTemplateData data = new AdjoiningTemplateData();
+                            data.adjoiningTemplate = adjTempl;
+                            data.relativeX = Integer.parseInt(vals[1]);
+                            data.acceptableY = Integer.parseInt(vals[2]);
+                            data.relativeZ = Integer.parseInt(vals[3]);
+                            data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+                            
+                            adjoiningTemplates.add(data);
+                        }
+                    }
+                }
             }
         }
         
@@ -699,6 +805,16 @@ public class RuinTemplate
         {
             l_off = 0 - length / 2;
         }
+    }
+    
+    /**
+     * Marks coordinates to be applied bonemeal to after spawning has finished and a block update was pushed
+     */
+    public void markBlockForBonemeal(int x, int y, int z)
+    {
+        bonemealMarkers.add(x);
+        bonemealMarkers.add(y);
+        bonemealMarkers.add(z);
     }
 
 }

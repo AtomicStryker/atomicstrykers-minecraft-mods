@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -37,11 +38,19 @@ public class RuinTemplateRule
     private final Block[] blockIDs;
     private final int[] blockMDs;
     private final String[] blockStrings;
+    private final SpecialFlags[] specialFlags;
     private int chance = 100;
     private int condition = 0;
     private final RuinTemplate owner;
     private final PrintWriter debugPrinter;
     private final boolean excessiveDebugging;
+    
+    // just leave the field null for NONE
+    public enum SpecialFlags
+    {
+        COMMANDBLOCK,
+        ADDBONEMEAL
+    }
     
     public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule, boolean debug) throws Exception
     {
@@ -62,20 +71,28 @@ public class RuinTemplateRule
         // Command Block special case, contains basically any character that breaks this
         if (blockRules[2].startsWith("CommandBlock:"))
         {
-            blockIDs = new Block[1];
-            blockMDs = new int[1];
-            blockStrings = new String[1];
-            
-            blockIDs[0] = null;
-            blockMDs[0] = 0;
-            blockStrings[0] = rule.substring(rule.indexOf("C"));
-            debugPrinter.println("template " + owner.getName()+" contains Command Block: "+blockStrings[0]);
+            String[] commandrules = rule.split("CommandBlock:");
+            int count = commandrules.length-1; // -1 because there is a prefix part we ignore
+            blockIDs = new Block[count];
+            blockMDs = new int[count];
+            blockStrings = new String[count];
+            specialFlags = new SpecialFlags[count];
+            for (int i = 0; i < count; i++)
+            {
+                blockIDs[i] = null;
+                blockMDs[i] = 0;
+                specialFlags[i] = SpecialFlags.COMMANDBLOCK;
+                // readd the splitout string for the parsing, offset by 1 because of the prefix string
+                blockStrings[i] = "CommandBlock:" + commandrules[i+1];
+                debugPrinter.println("template " + owner.getName()+" contains Command Block: "+blockStrings[i]);
+            }
         }
         else
         {
             blockIDs = new Block[numblocks];
             blockMDs = new int[numblocks];
             blockStrings = new String[numblocks];
+            specialFlags = new SpecialFlags[numblocks];
             for (int i = 0; i < numblocks; i++)
             {
                 data = blockRules[i + 2].split("-");
@@ -93,7 +110,7 @@ public class RuinTemplateRule
                     {
                         blockStrings[i] = blockRules[i + 2];
                         blockIDs[i] = tryFindingBlockOfName(data[0]);
-                        if (blockIDs[i] == Blocks.air)
+                        if (blockIDs[i] == Blocks.air && !data[0].equals("air"))
                         {
                             blockIDs[i] = null;
                             if (!isKnownSpecialRule(blockStrings[i]))
@@ -102,13 +119,31 @@ public class RuinTemplateRule
                             }
                         }
                         
-                        try
+                        if (blockIDs[i] instanceof IGrowable)
                         {
-                            blockMDs[i] = Integer.parseInt(data[data.length-1]);
+                            if (data[data.length-1].equals("addbonemeal"))
+                            {
+                                specialFlags[i] = SpecialFlags.ADDBONEMEAL;
+                                try
+                                {
+                                    blockMDs[i] = Integer.parseInt(data[data.length-2]);
+                                }
+                                catch (NumberFormatException ne)
+                                {
+                                    blockMDs[i] = 0;
+                                }
+                            }
                         }
-                        catch (NumberFormatException ne)
+                        else
                         {
-                            blockMDs[i] = 0;
+                            try
+                            {
+                                blockMDs[i] = Integer.parseInt(data[data.length-1]);
+                            }
+                            catch (NumberFormatException ne)
+                            {
+                                blockMDs[i] = 0;
+                            }
                         }
                     }
                 }
@@ -137,9 +172,7 @@ public class RuinTemplateRule
                 
                 if (excessiveDebugging)
                 {
-                    dpw.println("blockIDs["+i+"]: "+blockIDs[i]);
-                    dpw.println("blockMDs["+i+"]: "+blockMDs[i]);
-                    dpw.println("blockStrings["+i+"]: "+blockStrings[i]);
+                    dpw.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s]\n", i+1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i]);
                 }
             }
         }
@@ -307,16 +340,20 @@ public class RuinTemplateRule
     {
         if (canReplace(blockIDs[blocknum], world.getBlock(x, y, z), world, x, y, z))
         {
-            if (rotate != RuinsMod.DIR_NORTH)
+            int metadata = rotate != RuinsMod.DIR_NORTH ? rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate) : blockMDs[blocknum];
+            world.setBlock(x, y, z, blockIDs[blocknum], metadata, 0);
+            world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
+            
+            if (specialFlags[blocknum] != null)
             {
-                int metadata = rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate);
-                world.setBlock(x, y, z, blockIDs[blocknum], metadata, 0);
-                world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
-            }
-            else
-            {
-                world.setBlock(x, y, z, blockIDs[blocknum], blockMDs[blocknum], 0);
-                world.setBlockMetadataWithNotify(x, y, z, blockMDs[blocknum], 0);
+                switch (specialFlags[blocknum])
+                {
+                    case ADDBONEMEAL:
+                        owner.markBlockForBonemeal(x, y, z);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -459,7 +496,7 @@ public class RuinTemplateRule
         {
             spawnEnderCrystal(world, x, y, z);
         }
-        else if (dataString.startsWith("CommandBlock:"))
+        else if (specialFlags[blocknum] == SpecialFlags.COMMANDBLOCK)
         {
             int lastIdx = dataString.lastIndexOf(":");
             addCommandBlock(world, x, y, z, dataString.substring(13, lastIdx), dataString.substring(lastIdx+1, dataString.length()), rotate);
