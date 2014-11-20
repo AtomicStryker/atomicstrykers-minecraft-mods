@@ -1,5 +1,6 @@
 package atomicstryker.ruins.common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -17,9 +18,15 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 public class CommandUndo extends CommandBase
 {
     
-    private static Block[][][] blockArray;
-    private static int[][][] metaArray;
-    private static int xBase, yBase, zBase;
+    private static ArrayList<TemplateArea> savedLocations = new ArrayList<TemplateArea>();
+    private static RuinTemplate runningTemplateSpawn;
+    
+    private class TemplateArea
+    {
+        Block[][][] blockArray;
+        int[][][] metaArray;
+        int xBase, yBase, zBase;
+    }
     
     public CommandUndo()
     {
@@ -29,24 +36,54 @@ public class CommandUndo extends CommandBase
     @SubscribeEvent
     public void onSpawningRuin(EventRuinTemplateSpawn event)
     {
-        if (event.testingRuin && event.isPrePhase)
+        if (event.testingRuin || runningTemplateSpawn != null)
         {
-            RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
-            xBase = data.xMin;
-            yBase = data.yMin;
-            zBase = data.zMin;
-            blockArray = new Block[data.xMax - data.xMin + 1][data.yMax - data.yMin + 1][data.zMax - data.zMin + 1];
-            metaArray = new int[data.xMax - data.xMin + 1][data.yMax - data.yMin + 1][data.zMax - data.zMin + 1];
-            for (int x = 0; x < blockArray.length; x++)
+            if (event.isPrePhase)
             {
-                for (int y = 0; y < blockArray[0].length; y++)
+                // firing the first template event, adjacents may or may not come
+                if (runningTemplateSpawn == null)
                 {
-                    for (int z = 0; z < blockArray[0][0].length; z++)
+                    runningTemplateSpawn = event.template;
+                    // flush the last locations
+                    savedLocations.clear();
+                }
+                else
+                {
+                    System.out.println("Ruins undo command caught adjacent template, saving it too..");
+                }
+                
+                RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
+                TemplateArea ta = new TemplateArea();
+                ta.xBase = data.xMin;
+                ta.yBase = data.yMin;
+                ta.zBase = data.zMin;
+                ta.blockArray = new Block[data.xMax - data.xMin + 1][data.yMax - data.yMin + 1][data.zMax - data.zMin + 1];
+                ta.metaArray = new int[data.xMax - data.xMin + 1][data.yMax - data.yMin + 1][data.zMax - data.zMin + 1];
+                for (int x = 0; x < ta.blockArray.length; x++)
+                {
+                    for (int y = 0; y < ta.blockArray[0].length; y++)
                     {
-                        blockArray[x][y][z] = event.world.getBlock(xBase+x, yBase+y, zBase+z);
-                        metaArray[x][y][z] = event.world.getBlockMetadata(xBase+x, yBase+y, zBase+z);
+                        for (int z = 0; z < ta.blockArray[0][0].length; z++)
+                        {
+                            ta.blockArray[x][y][z] = event.world.getBlock(ta.xBase+x, ta.yBase+y, ta.zBase+z);
+                            ta.metaArray[x][y][z] = event.world.getBlockMetadata(ta.xBase+x, ta.yBase+y, ta.zBase+z);
+                        }
                     }
                 }
+                savedLocations.add(ta);
+                
+                if (savedLocations.size() > 100)
+                {
+                    // safety overflow valve in case something goes wrong
+                    savedLocations.clear();
+                    runningTemplateSpawn = null;
+                }
+            }
+            else if (runningTemplateSpawn == event.template)
+            {
+                // finished spawning all adjacents, post event of initial template firing
+                runningTemplateSpawn = null;
+                // since this is null the savedLocations will be cleared then the next spawn occurs
             }
         }
     }
@@ -76,32 +113,34 @@ public class CommandUndo extends CommandBase
         World w = sender.getEntityWorld();
         if (w != null)
         {
-            if (blockArray != null)
+            if (savedLocations.isEmpty())
             {
-                for (int x = 0; x < blockArray.length; x++)
-                {
-                    for (int y = 0; y < blockArray[0].length; y++)
-                    {
-                        for (int z = 0; z < blockArray[0][0].length; z++)
-                        {
-                            w.setBlock(xBase+x, yBase+y, zBase+z, blockArray[x][y][z], metaArray[x][y][z], 2);
-                        }
-                    }
-                }
-                
-                // kill off the resulting entityItems instances
-                for (Entity e : (List<Entity>) w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xBase - 1, yBase - 1,
-                        zBase - 1, xBase + blockArray.length + 1, yBase + blockArray[0].length + 1, zBase + blockArray[0][0].length + 1)))
-                {
-                    e.setDead();
-                }
-                
-                // reset cache
-                blockArray = null;
+                sender.addChatMessage(new ChatComponentText("There is nothing cached to be undone..."));
             }
             else
             {
-                sender.addChatMessage(new ChatComponentText("There is nothing cached to be undone..."));
+                for (TemplateArea ta : savedLocations)
+                {
+                    for (int x = 0; x < ta.blockArray.length; x++)
+                    {
+                        for (int y = 0; y < ta.blockArray[0].length; y++)
+                        {
+                            for (int z = 0; z < ta.blockArray[0][0].length; z++)
+                            {
+                                w.setBlock(ta.xBase+x, ta.yBase+y, ta.zBase+z, ta.blockArray[x][y][z], ta.metaArray[x][y][z], 2);
+                            }
+                        }
+                    }
+                    
+                    // kill off the resulting entityItems instances
+                    for (Entity e : (List<Entity>) w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(ta.xBase - 1, ta.yBase - 1,
+                            ta.zBase - 1, ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1)))
+                    {
+                        e.setDead();
+                    }
+                }
+                sender.addChatMessage(new ChatComponentText("Cleared away "+savedLocations.size()+" template sites."));
+                savedLocations.clear();
             }
         }
         else

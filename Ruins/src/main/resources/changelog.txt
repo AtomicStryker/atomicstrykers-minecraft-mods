@@ -395,3 +395,12 @@ a: setAccessible now true
 + /testruin now also allows to replace the specified y coordinate with "_", which signals Ruins to find a suitable y for given x,z
 + with exactly the same behaviour (flying, underground...) a randomly spawning template would display
 + this y specification may NOT be combined with "~", aka "_~2" will NOT work
+
+14.3
++ fixed "air" not being accepted as valid block input
++ fixed command block rule to accept multiple command blocks as alternatives
++ note you cannot mix a command block rule with non-command-blocks unfortunately. command block syntax is too unforeseeable
++ added optional bonemeal flag to IGrowable block rules. just append "-addbonemeal" to an existing plant ruleblock
++ added adjoining_template functionality, see doc for details
++ /undo supports the removal of everything a template with adjoining templates spawned
++ see 143test and adjtest in the templateparser directory for how adjoining_template works
