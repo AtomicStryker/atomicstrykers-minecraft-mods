@@ -351,7 +351,7 @@ public class RuinTemplate
         // initialize all these variables
         final ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
         final ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
-        final Iterator<RuinTemplateLayer> i = layers.iterator();
+        final Iterator<RuinTemplateLayer> layeriter = layers.iterator();
         
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
         int yReturn = y + y_off;
@@ -387,9 +387,9 @@ public class RuinTemplate
 
         int rulenum;
         // the main loop
-        while (i.hasNext())
+        while (layeriter.hasNext())
         {
-            curlayer = i.next();
+            curlayer = layeriter.next();
             for (int x1 = 0; x1 < xDim; x1++)
             {
                 for (int z1 = 0; z1 < zDim; z1++)
@@ -397,16 +397,12 @@ public class RuinTemplate
                     switch (rotate)
                     {
                     case RuinsMod.DIR_EAST:
-                        // rulenum = curlayer.getRuleAt( z1, length - ( x1 + 1 )
-                        // );
                         rulenum = curlayer.getRuleAt(z1, xDim - (x1 + 1));
                         break;
                     case RuinsMod.DIR_SOUTH:
                         rulenum = curlayer.getRuleAt(xDim - (x1 + 1), zDim - (z1 + 1));
                         break;
                     case RuinsMod.DIR_WEST:
-                        // rulenum = curlayer.getRuleAt( width - ( z1 + 1 ), x1
-                        // );
                         rulenum = curlayer.getRuleAt(zDim - (z1 + 1), x1);
                         break;
                     default:
@@ -417,12 +413,12 @@ public class RuinTemplate
                     if (curRule.runLater())
                     {
                         laterun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 0);
+                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 2);
                     }
                     else if (curRule.runLast())
                     {
                         lastrun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 0);
+                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 2);
                     }
                     else
                     {
@@ -559,7 +555,7 @@ public class RuinTemplate
                 {
                     if (isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
                     {
-                        world.setBlock(xi, yi, zi, fillBlockID, 0, 3);
+                        world.setBlock(xi, yi, zi, fillBlockID, 0, 2);
                     }
                 }
                 // flatten bumps
@@ -567,7 +563,7 @@ public class RuinTemplate
                 {
                     if (!isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
                     {
-                        world.setBlock(xi, yi, zi, Blocks.air, 0, 3);
+                        world.setBlock(xi, yi, zi, Blocks.air, 0, 2);
                     }
                 }
             }
@@ -579,10 +575,9 @@ public class RuinTemplate
         // first get the variables.
         parseVariables(lines);
 
-        // the first rule added will always be the air block rule.
-        // rules.add( new RuinTemplateRule( "0,100,0" ) );
+        // the first rule added will always be the preserve block rule.
         rules.add(new RuinRuleAir(debugPrinter, this, ""));
-
+        
         // now get the rest of the data
         final Iterator<String> i = lines.iterator();
         String line;
