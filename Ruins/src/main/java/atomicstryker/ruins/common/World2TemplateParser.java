@@ -421,7 +421,7 @@ public class World2TemplateParser extends Thread
                     {
                         /*
                          * since 'nothing' is not contained, it returns -1 + 1 =
-                         * 0, which is the default air rule
+                         * 0, which is the default preserveBlock rule
                          */
                         pw.print(usedBlocks.indexOf(layer[i][j2]) + 1);
 
@@ -445,7 +445,8 @@ public class World2TemplateParser extends Thread
         {
             e.printStackTrace();
             failed = true;
-            player.addChatMessage(new ChatComponentText("Something broke! See logfile for exception message and get it to AtomicStryker."));
+            player.addChatMessage(new ChatComponentText("Something broke! See server logfile for exception message and get it to AtomicStryker."));
+            player.addChatMessage(new ChatComponentText("First line of stacktrace: "+e.getMessage()));
         }
     }
 
