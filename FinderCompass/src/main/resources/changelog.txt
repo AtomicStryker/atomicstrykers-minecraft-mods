@@ -1,3 +1,6 @@
+1.7.10a
+fixed problem making the stronghold needle point in a wrong direction
+
 1.7.10
 updated for mc 1.7.10
 server now allows client without it to connect
