@@ -1,3 +1,6 @@
+1.7.1
+- fixed null usageexample string in minion command, possibly crashing servers(?)
+
 1.7.0
 - updated to mc 1.7.10
 

@@ -20,6 +20,12 @@ public class CommandMinion extends CommandBase
     {
         return "minion";
     }
+    
+    @Override
+    public String getCommandUsage(ICommandSender icommandsender)
+    {
+        return "/minion [set [aggressive|passive]|friend <name>|enemy <name>]";
+    }
 
     @Override
     public void processCommand(ICommandSender var1, String[] var2)
@@ -98,12 +104,6 @@ public class CommandMinion extends CommandBase
     private String[] getPlayers()
     {
         return MinecraftServer.getServer().getAllUsernames();
-    }
-
-    @Override
-    public String getCommandUsage(ICommandSender icommandsender)
-    {
-        return null;
     }
 
     @Override
