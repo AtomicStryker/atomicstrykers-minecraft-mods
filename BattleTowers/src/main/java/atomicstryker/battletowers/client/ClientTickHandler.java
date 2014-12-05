@@ -7,15 +7,16 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import atomicstryker.battletowers.common.AS_BattleTowersCore;
 import atomicstryker.battletowers.common.AS_EntityGolem;
 import atomicstryker.battletowers.common.network.ChestAttackedPacket;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class ClientTickHandler
 {
@@ -31,7 +32,7 @@ public class ClientTickHandler
         if (mc.currentScreen != null
         && mc.currentScreen instanceof GuiChest)
         {
-            List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(mc.thePlayer.posX - 8D, mc.thePlayer.posY - 8D, mc.thePlayer.posZ - 8D, mc.thePlayer.posX + 8D, mc.thePlayer.posY + 8D, mc.thePlayer.posZ + 8D));
+            List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.fromBounds(mc.thePlayer.posX - 8D, mc.thePlayer.posY - 8D, mc.thePlayer.posZ - 8D, mc.thePlayer.posX + 8D, mc.thePlayer.posY + 8D, mc.thePlayer.posZ + 8D));
             if (!ents.isEmpty())
             {
                 for (int i = ents.size() - 1; i >= 0; i--)
@@ -56,13 +57,13 @@ public class ClientTickHandler
         {
             playerTarget = mc.objectMouseOver;
 
-            int x = playerTarget.blockX;
-            int y = playerTarget.blockY;
-            int z = playerTarget.blockZ;
+            int x = playerTarget.getBlockPos().getX();
+            int y = playerTarget.getBlockPos().getY();
+            int z = playerTarget.getBlockPos().getZ();
 
-            if (mc.theWorld.getBlock(x, y, z) == Blocks.chest)
+            if (mc.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.chest)
             {
-                List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.getBoundingBox(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
+                List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, AxisAlignedBB.fromBounds(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
                 if (!ents.isEmpty())
                 {
                     for (int i = ents.size() - 1; i >= 0; i--)
@@ -96,7 +97,7 @@ public class ClientTickHandler
                                 else
                                 {
                                     golem.setAwake();
-                                    golem.setTarget(mc.thePlayer);
+                                    golem.setAttackTarget(mc.thePlayer);
                                 }
                             }
 

@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -23,9 +23,9 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import atomicstryker.battletowers.common.AS_WorldGenTower.TowerTypes;
-import cpw.mods.fml.common.IWorldGenerator;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class WorldGenHandler implements IWorldGenerator
 {
@@ -64,7 +64,7 @@ public class WorldGenHandler implements IWorldGenerator
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
     {        
-        BiomeGenBase target = world.getBiomeGenForCoords(chunkX, chunkZ);
+        BiomeGenBase target = world.getBiomeGenForCoords(new BlockPos(chunkX, 0, chunkZ));
         if (target != BiomeGenBase.hell
         && getIsBiomeAllowed(target)
         && getIsChunkProviderAllowed(chunkProvider))
@@ -166,7 +166,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             h++;
         }
-        while (world.getBlock(x, h, z) != Blocks.air);
+        while (world.getBlockState(new BlockPos(x, h, z)).getBlock() != Blocks.air);
         
         return h-1;
     }
@@ -192,8 +192,8 @@ public class WorldGenHandler implements IWorldGenerator
     
     private TowerPosition canTowerSpawnAt(World world, int xActual, int zActual)
     {
-        ChunkCoordinates spawn = world.getSpawnPoint();
-        if (Math.sqrt((spawn.posX - xActual)*(spawn.posX - xActual) + (spawn.posZ - zActual)*(spawn.posZ - zActual)) < AS_BattleTowersCore.instance.minDistanceFromSpawn)
+        BlockPos spawn = world.getSpawnPoint();
+        if (Math.sqrt((spawn.getX() - xActual)*(spawn.getX() - xActual) + (spawn.getZ() - zActual)*(spawn.getZ() - zActual)) < AS_BattleTowersCore.instance.minDistanceFromSpawn)
         {
             return null;
         }

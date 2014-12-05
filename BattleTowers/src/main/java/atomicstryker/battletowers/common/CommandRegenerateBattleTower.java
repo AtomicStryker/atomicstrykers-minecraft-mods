@@ -1,19 +1,21 @@
 package atomicstryker.battletowers.common;
 
-import org.apache.logging.log4j.Level;
-
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import org.apache.logging.log4j.Level;
+
 import atomicstryker.battletowers.common.WorldGenHandler.TowerPosition;
 
 public class CommandRegenerateBattleTower extends CommandBattleTowers
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "regeneratebattletower";
     }
@@ -25,7 +27,7 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
     }
 
     @Override
-    public void processCommand(ICommandSender icommandsender, String[] astring)
+    public void execute(ICommandSender icommandsender, String[] astring) throws CommandException
     {
         if (astring.length < 2)
         {
@@ -40,8 +42,8 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
                 TowerPosition tp = WorldGenHandler.deleteNearestTower(icommandsender.getEntityWorld(), x, z);
                 if (tp != null)
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": Battletower regenerated: "+tp.toString());
-                    for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, AxisAlignedBB.getBoundingBox(tp.x-10, 0.0D, tp.z-10, tp.x+10, 255, tp.z+10)))
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower regenerated: "+tp.toString());
+                    for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, AxisAlignedBB.fromBounds(tp.x-10, 0.0D, tp.z-10, tp.x+10, 255, tp.z+10)))
                     {
                         ((Entity) o).setDead();
                         break;
@@ -51,7 +53,7 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
                 }
                 else
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": no Battletower regenerated, no valid target");
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": no Battletower regenerated, no valid target");
                 }
             }
             catch (Exception e)

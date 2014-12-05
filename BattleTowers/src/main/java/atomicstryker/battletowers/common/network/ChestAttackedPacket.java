@@ -1,12 +1,12 @@
 package atomicstryker.battletowers.common.network;
 
-import atomicstryker.battletowers.common.AS_EntityGolem;
-import atomicstryker.battletowers.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import atomicstryker.battletowers.common.AS_EntityGolem;
+import atomicstryker.battletowers.common.network.NetworkHelper.IPacket;
 
 public class ChestAttackedPacket implements IPacket
 {
@@ -44,7 +44,7 @@ public class ChestAttackedPacket implements IPacket
         playerName = String.valueOf(chars);
         golemEntityID = bytes.readInt();
         
-        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(playerName);
         if (p != null)
         {
             Entity e = p.worldObj.getEntityByID(golemEntityID);
@@ -52,7 +52,7 @@ public class ChestAttackedPacket implements IPacket
             {
                 AS_EntityGolem golem = (AS_EntityGolem) e;
                 golem.setAwake();
-                golem.setTarget(p);
+                golem.setAttackTarget(p);
             }
         }
     }
