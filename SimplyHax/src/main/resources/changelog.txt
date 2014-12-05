@@ -1,3 +1,6 @@
+1.8
+- updated for MC 1.8
+
 1.7.10
 - updated for MC 1.7.10
 - removed superfluous coremode stuff, code cleanup

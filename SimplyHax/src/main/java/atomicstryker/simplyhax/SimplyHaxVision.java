@@ -15,20 +15,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-
-@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.7.10")
+@Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.8")
 public class SimplyHaxVision
 {
 	private final static String modname = "Vision";
@@ -82,7 +81,7 @@ public class SimplyHaxVision
                     if (item != null)
                     {
                         System.out.printf("[SimplyHaxVision] %s swapped Item, now: [%s] damage: %d\n", 
-                                mcinstance.thePlayer.getCommandSenderName(), item.getUnlocalizedName(), item.getItemDamage());
+                                mcinstance.thePlayer.getDisplayNameString(), item.getUnlocalizedName(), item.getItemDamage());
                     }
                 }
             }
