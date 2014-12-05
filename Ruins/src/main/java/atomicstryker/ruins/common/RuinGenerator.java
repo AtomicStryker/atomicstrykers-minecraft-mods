@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,9 +37,9 @@ public class RuinGenerator
         registeredRuins = new ConcurrentSkipListSet<RuinData>();
         
         // lets create a banned area 2 chunks around the spawn
-        final int minX = world.getSpawnPoint().posX - 32;
-        final int minY = world.getSpawnPoint().posY - 32;
-        final int minZ = world.getSpawnPoint().posZ - 32;
+        final int minX = world.getSpawnPoint().getX() - 32;
+        final int minY = world.getSpawnPoint().getY() - 32;
+        final int minZ = world.getSpawnPoint().getZ() - 32;
         spawnPointBlock = new RuinData(minX, minX+64, minY, minY+64, minZ, minZ+64, "SpawnPointBlock");
         
         ruinsDataFile = new File(rh.saveFolder, fileName);
@@ -190,7 +191,7 @@ public class RuinGenerator
     private void createBuilding(World world, Random random, int x, int z, boolean nether)
     {        
         final int rotate = random.nextInt(4);
-        final BiomeGenBase biome = world.getBiomeGenForCoordsBody(x, z);
+        final BiomeGenBase biome = world.getBiomeGenForCoordsBody(new BlockPos(x, 0, z));
         int biomeID = biome.biomeID;
 
         if (fileHandler.useGeneric(random, biomeID))
@@ -310,7 +311,7 @@ public class RuinGenerator
         {
             for (int y = WORLD_MAX_HEIGHT - 1; y > 7; y--)
             {
-                final Block b = world.getBlock(x, y, z);
+                final Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
                 if (r.isIgnoredBlock(b, world, x, y, z))
                 {
                     continue;
@@ -335,13 +336,13 @@ public class RuinGenerator
                 // from the top. Find the first air block from the ceiling
                 for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
                 {
-                    final Block b = world.getBlock(x, y, z);
+                    final Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
                     if (b == Blocks.air)
                     {
                         // now find the first non-air block from here
                         for (; y > -1; y--)
                         {
-                            if (!r.isIgnoredBlock(world.getBlock(x, y, z), world, x, y, z))
+                            if (!r.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y, z))
                             {
                                 if (r.isAcceptableSurface(b))
                                 {
@@ -358,7 +359,7 @@ public class RuinGenerator
                 // from the bottom. find the first air block from the floor
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++)
                 {
-                    final Block b = world.getBlock(x, y, z);
+                    final Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
                     if (!r.isIgnoredBlock(b, world, x, y, z))
                     {
                         if (r.isAcceptableSurface(b))

@@ -12,12 +12,14 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameData;
 
 public class RuinTemplate
 {
@@ -132,8 +134,8 @@ public class RuinTemplate
     
     private boolean isPlant(Block blockID, World world, int x, int y, int z)
     {
-        return blockID instanceof IShearable || blockID instanceof BlockBush || blockID instanceof IPlantable || blockID.isLeaves(world, x, y, z)
-                || blockID.isWood(world, x, y, z);
+        return blockID instanceof IShearable || blockID instanceof BlockBush || blockID instanceof IPlantable || blockID.isLeaves(world, new BlockPos(x, y, z))
+                || blockID.isWood(world, new BlockPos(x, y, z));
     }
 
     public boolean preserveBlock(Block blockID, World world, int x, int y, int z)
@@ -241,7 +243,7 @@ public class RuinTemplate
                 boolean foundSurface = false;
                 for (int iy = topYguess; iy >= minimalCheckedY; iy--)
                 {
-                    curBlock = world.getBlock(ix, iy, iz);
+                    curBlock = world.getBlockState(new BlockPos(ix, iy, iz)).getBlock();
                     if (!isIgnoredBlock(curBlock, world, ix, iy, iz))
                     {
                         if (isAcceptableSurface(curBlock))
@@ -382,7 +384,7 @@ public class RuinTemplate
         // do any site leveling needed
         if (leveling > 0 && lbuffer >= 0)
         {
-            levelSite(world, world.getBlock(xBase, y, zBase), xBase, y, zBase, eastwest);
+            levelSite(world, world.getBlockState(new BlockPos(xBase, y, zBase)).getBlock(), xBase, y, zBase, eastwest);
         }
 
         int rulenum;
@@ -413,12 +415,12 @@ public class RuinTemplate
                     if (curRule.runLater())
                     {
                         laterun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 2);
+                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.air.getDefaultState(), 2);
                     }
                     else if (curRule.runLast())
                     {
                         lastrun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlock(x + x1, y + y_off, z + z1, Blocks.air, 0, 2);
+                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.air.getDefaultState(), 2);
                     }
                     else
                     {
@@ -444,7 +446,7 @@ public class RuinTemplate
                     xv = x+x1;
                     yv = y+y1;
                     zv = z+z1;
-                    world.markBlockForUpdate(xv, yv, zv);
+                    world.markBlockForUpdate(new BlockPos(xv, yv, zv));
                 }
             }
         }
@@ -454,15 +456,17 @@ public class RuinTemplate
             int xi = bonemealMarkers.get(b);
             int yi = bonemealMarkers.get(b+1);
             int zi = bonemealMarkers.get(b+2);
-            Block growable = world.getBlock(xi, yi, zi);
+            IBlockState state = world.getBlockState(new BlockPos(xi, yi, zi));
+            Block growable = state.getBlock();
             debugPrinter.printf("Now considering bonemeal flag at [%d|%d|%d], block: %s\n", xi, yi, zi, growable);
             // verbatim rip of ItemDye.applyBonemeal method
             if (growable instanceof IGrowable)
             {
                 IGrowable igrowable = (IGrowable)growable;
-                if (igrowable.func_149851_a(world, xi, yi, zi, world.isRemote))
+                BlockPos pos = new BlockPos(xi, yi, zi);
+                if (igrowable.canGrow(world, pos, state, world.isRemote))
                 {
-                    igrowable.func_149853_b(world, world.rand, xi, yi, zi);
+                    igrowable.grow(world, world.rand, pos, state);
                     debugPrinter.printf("Applied bonemeal at [%d|%d|%d], block: %s\n", xi, yi, zi, growable);
                 }
                 else
@@ -553,17 +557,19 @@ public class RuinTemplate
                 // fill holes
                 for (int yi = y-leveling; yi <= y; yi++)
                 {
-                    if (isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
+                	BlockPos pos = new BlockPos(xi, yi, zi);
+                    if (isIgnoredBlock(world.getBlockState(pos).getBlock(), world, xi, yi, zi))
                     {
-                        world.setBlock(xi, yi, zi, fillBlockID, 0, 2);
+                        world.setBlockState(pos, fillBlockID.getDefaultState(), 2);
                     }
                 }
                 // flatten bumps
                 for (int yi = y+1; yi <= lastY; yi++)
                 {
-                    if (!isIgnoredBlock(world.getBlock(xi, yi, zi), world, xi, yi, zi))
+                	BlockPos pos = new BlockPos(xi, yi, zi);
+                    if (!isIgnoredBlock(world.getBlockState(pos).getBlock(), world, xi, yi, zi))
                     {
-                        world.setBlock(xi, yi, zi, Blocks.air, 0, 2);
+                        world.setBlockState(pos, Blocks.air.getDefaultState(), 2);
                     }
                 }
             }

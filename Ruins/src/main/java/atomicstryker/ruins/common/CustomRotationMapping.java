@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeMap;
 
-import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.fml.common.registry.GameData;
 
 /**
  * Class to save and retrieve custom Rotational Mappings into. A rotation is

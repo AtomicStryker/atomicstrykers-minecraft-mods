@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityCommandBlock;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderHell;
@@ -26,23 +27,23 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.IWorldGenerator;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.NetworkCheckHandler;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "14.4";
+    public static final String modversion = "14.5";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -86,7 +87,7 @@ public class RuinsMod
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
             event.entityPlayer.addChatComponentMessage(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.block.getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.block), event.metadata)));
+                    event.state.getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.state.getBlock()), event.state.getBlock().getMetaFromState(event.state))));
         }
     }
 
@@ -100,8 +101,8 @@ public class RuinsMod
             {
                 nextInfoTime = System.currentTimeMillis() + 1000l;
                 event.getPlayer().addChatComponentMessage(
-                        new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.block.getLocalizedName(),
-                                GameData.getBlockRegistry().getNameForObject(event.block), event.blockMetadata)));
+                        new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.state.getBlock().getLocalizedName(),
+                                GameData.getBlockRegistry().getNameForObject(event.state.getBlock()), event.state.getBlock().getMetaFromState(event.state))));
                 event.setCanceled(true);
             }
         }
@@ -134,14 +135,14 @@ public class RuinsMod
                 if (teo instanceof TileEntityCommandBlock)
                 {
                     tecb = (TileEntityCommandBlock) teo;
-                    if (tecb.getDistanceFrom(x, y, z) < 4096.0) //square dist!
+                    if (tecb.getDistanceSq(x, y, z) < 4096.0) //square dist!
                     {
-                        if (tecb.func_145993_a().func_145753_i().startsWith("RUINSTRIGGER "))
+                        if (tecb.getCommandBlockLogic().getCustomName().startsWith("RUINSTRIGGER "))
                         {
                             // strip prefix from command
-                            tecb.func_145993_a().func_145752_a(tecb.func_145993_a().func_145753_i().substring(13));
+                            tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCustomName().substring(13)));
                             // call command block execution
-                            tecb.func_145993_a().func_145755_a(event.entity.worldObj);
+                            tecb.getCommandBlockLogic().trigger(event.entity.worldObj);
                             tecblistToDelete.add(tecb);
                         }
                     }
@@ -151,8 +152,9 @@ public class RuinsMod
             for (TileEntityCommandBlock tecb2 : tecblistToDelete)
             {
                 // kill block
-                System.out.printf("Ruins executed and killed Command Block at [%d|%d|%d]\n", tecb2.xCoord, tecb2.yCoord, tecb2.zCoord);
-                event.entity.worldObj.setBlockToAir(tecb2.xCoord, tecb2.yCoord, tecb2.zCoord);
+            	BlockPos pos = tecb2.getPos();
+                System.out.printf("Ruins executed and killed Command Block at [%s]\n", pos);
+                event.entity.worldObj.setBlockToAir(pos);
             }
         }
     }
@@ -177,7 +179,7 @@ public class RuinsMod
                 WorldHandle wh = getWorldHandle(world);
                 if (wh != null)
                 {
-                    if (wh.fileHandle.allowsDimension(world.provider.dimensionId) && !getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
+                    if (wh.fileHandle.allowsDimension(world.provider.getDimensionId()) && !getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
                     {
                         currentlyGenerating.add(tuple);
                         if (world.provider instanceof WorldProviderHell)
@@ -232,15 +234,15 @@ public class RuinsMod
         WorldHandle wh = null;
         if (!world.isRemote)
         {
-            if (!generatorMap.containsKey(world.provider.dimensionId))
+            if (!generatorMap.containsKey(world.provider.getDimensionId()))
             {
                 wh = new WorldHandle();
                 initWorldHandle(wh, world);
-                generatorMap.put(world.provider.dimensionId, wh);
+                generatorMap.put(world.provider.getDimensionId(), wh);
             }
             else
             {
-                wh = generatorMap.get(world.provider.dimensionId);
+                wh = generatorMap.get(world.provider.getDimensionId());
             }
         }
 
@@ -309,11 +311,11 @@ public class RuinsMod
             worldHandle.fileHandle = new FileHandler(worlddir);
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
             
-            worldHandle.chunkLogger = (ChunkLoggerData) world.perWorldStorage.loadData(ChunkLoggerData.class, "ruinschunklogger");
+            worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().loadData(ChunkLoggerData.class, "ruinschunklogger");
             if (worldHandle.chunkLogger == null)
             {
                 worldHandle.chunkLogger = new ChunkLoggerData("ruinschunklogger");
-                world.perWorldStorage.setData("ruinschunklogger", worldHandle.chunkLogger);
+                world.getPerWorldStorage().setData("ruinschunklogger", worldHandle.chunkLogger);
             }
         }
         catch (Exception e)

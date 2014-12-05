@@ -408,3 +408,6 @@ a: setAccessible now true
 + fixed "air" not being processed when preservable blocks were present
 + internal changes. report bugs with old templates!
 + fixed ruin spawning not necessarily causing a clientside block update
+
+14.5
++ updated to MC 1.8, no changes to template format (yet)

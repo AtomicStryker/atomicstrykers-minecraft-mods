@@ -1,8 +1,8 @@
 package atomicstryker.ruins.common;
 
-import cpw.mods.fml.common.eventhandler.Cancelable;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
 /**
  * Executed before and after a Ruins template is created in the world by the Worldgen Hook.
