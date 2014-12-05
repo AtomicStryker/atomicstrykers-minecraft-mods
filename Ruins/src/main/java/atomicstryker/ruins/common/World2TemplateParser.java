@@ -4,9 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -17,13 +19,14 @@ import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import com.mojang.authlib.GameProfile;
-
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class World2TemplateParser extends Thread
 {
@@ -106,7 +109,8 @@ public class World2TemplateParser extends Thread
         y = b;
         z = c;
         fileName = fName;
-        templateHelperBlock = new BlockData(world.getBlock(a, b, c), world.getBlockMetadata(a, b, c), null, 0);
+        IBlockState state = world.getBlockState(new BlockPos(a, b, c));
+        templateHelperBlock = new BlockData(state.getBlock(), state.getBlock().getMetaFromState(state), null, 0);
         usedBlocks = new ArrayList<BlockData>();
         layerData = new ArrayList<BlockData[][]>();
     }
@@ -212,9 +216,10 @@ public class World2TemplateParser extends Thread
                     blockx = xi + lowestX;
                     blocky = yi;
                     blockz = zi + lowestZ;
-
-                    temp.block = world.getBlock(blockx, blocky, blockz);
-                    temp.meta = world.getBlockMetadata(blockx, blocky, blockz);
+                    
+                    IBlockState state = world.getBlockState(new BlockPos(blockx, blocky, blockz));
+                    temp.block = state.getBlock();
+                    temp.meta = temp.block.getMetaFromState(state);
                     temp.data = null;
                     temp.spawnRule = 0;
 
@@ -230,11 +235,18 @@ public class World2TemplateParser extends Thread
                     }
                     highestY = yi;
                     
-                    TileEntity te = world.getTileEntity(blockx, blocky, blockz);
+                    TileEntity te = world.getTileEntity(new BlockPos(new BlockPos(blockx, blocky, blockz)));
                     /* handle special blocks */
                     if (temp.block == Blocks.mob_spawner)
                     {
-                        temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).func_145881_a().getEntityNameToSpawn();
+                    	try
+                        {
+                            Field f = ((TileEntityMobSpawner) te).getSpawnerBaseLogic().getClass().getDeclaredFields()[1];
+                            f.setAccessible(true);
+                            temp.data = (String) f.get(((TileEntityMobSpawner) te).getSpawnerBaseLogic());
+                        }
+                        catch (Exception e) {}
+                        // TODO temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).getSpawnerBaseLogic().getEntityNameToSpawn();
                     }
                     else if (temp.block == Blocks.torch || temp.block == Blocks.redstone_torch)
                     {
@@ -267,19 +279,19 @@ public class World2TemplateParser extends Thread
                         temp.data = "IInventory;"+GameData.getBlockRegistry().getNameForObject(temp.block)+";";
                         for (int index = 0; index < invItems.size(); index++)
                         {
-                            ItemStack i = invItems.get(index);
+                            ItemStack stack = invItems.get(index);
                             String ident = null;
-                            if (i.getItem() instanceof ItemBlock)
+                            if (stack.getItem() instanceof ItemBlock)
                             {
-                                ident = GameData.getBlockRegistry().getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
+                                ident = ((ResourceLocation)GameData.getBlockRegistry().getNameForObject(((ItemBlock)stack.getItem().getContainerItem()))).toString();
                             }
                             else
                             {
-                                ident = GameData.getItemRegistry().getNameForObject(i.getItem());
+                                ident = ((ResourceLocation)GameData.getItemRegistry().getNameForObject(stack.getItem())).toString();;
                             }
                             if (ident != null)
                             {
-                                temp.data = temp.data.concat(ident+"#"+i.stackSize+"#"+i.getItemDamage()+"#"+slots.get(index)+"+");
+                                temp.data = temp.data.concat(ident+"#"+stack.stackSize+"#"+stack.getItemDamage()+"#"+slots.get(index)+"+");
                             }
                         }
                         
@@ -300,7 +312,7 @@ public class World2TemplateParser extends Thread
                     else if (temp.block == Blocks.command_block)
                     {
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
-                        temp.data = "CommandBlock:" + tec.func_145993_a().func_145753_i() + ":" + tec.func_145993_a().getCommandSenderName();
+                        temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCustomName() + ":" + tec.getCommandBlockLogic().getName();
                     }
                     else if (temp.block == Blocks.standing_sign)
                     {
@@ -358,13 +370,13 @@ public class World2TemplateParser extends Thread
 
     private String convertSignStrings(String prefix, TileEntitySign sign)
     {
-        String a = sign.signText[0];
+        String a = sign.signText[0].getUnformattedTextForChat();
         if (a.equals("")) a = "null";
-        String b = sign.signText[1];
+        String b = sign.signText[1].getUnformattedTextForChat();
         if (b.equals("")) b = "null";
-        String c = sign.signText[2];
+        String c = sign.signText[2].getUnformattedTextForChat();
         if (c.equals("")) c = "null";
-        String d = sign.signText[3];
+        String d = sign.signText[3].getUnformattedTextForChat();
         if (d.equals("")) d = "null";
         String result = prefix+a+":"+b+":"+c+":"+d;
         return result;
@@ -386,7 +398,7 @@ public class World2TemplateParser extends Thread
             
             pw.println();
             pw.println("# Created by Ruins mod version "+RuinsMod.modversion+" Ingame Parser");
-            pw.println("# authoring Player: "+player.getCommandSenderName());
+            pw.println("# authoring Player: "+player.getName());
             pw.println();
             
             pw.println("weight=1");
@@ -472,7 +484,8 @@ public class World2TemplateParser extends Thread
 
         boolean matchesBlock(World w, int x, int y, int z)
         {
-            return w.getBlock(x, y, z) == block && meta == w.getBlockMetadata(x, y, z);
+        	IBlockState state = w.getBlockState(new BlockPos(x, y, z));
+            return state.getBlock() == block && meta == block.getMetaFromState(state);
         }
 
         @Override

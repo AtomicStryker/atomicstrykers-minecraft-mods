@@ -24,14 +24,15 @@ import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import com.mojang.authlib.GameProfile;
-
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class RuinTemplateRule
 {
@@ -284,7 +285,7 @@ public class RuinTemplateRule
 
     private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlock(x, y - 1, z), world, x, y - 1, z))
+        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y - 1, z)).getBlock(), world, x, y - 1, z))
         {
             return;
         }
@@ -296,8 +297,10 @@ public class RuinTemplateRule
     {
         if ((condition <= 0 ? true : false) ^ (
         // Are -all- adjacent blocks air?
-                (owner.isIgnoredBlock(world.getBlock(x + 1, y, z), world, x + 1, y, z)) && (owner.isIgnoredBlock(world.getBlock(x, y, z + 1), world, x, y, z + 1))
-                        && (owner.isIgnoredBlock(world.getBlock(x, y, z - 1), world, x, y, z - 1)) && (owner.isIgnoredBlock(world.getBlock(x - 1, y, z), world, x - 1, y, z))))
+                (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x + 1, y, z)).getBlock(), world, x + 1, y, z)) 
+                && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z + 1)).getBlock(), world, x, y, z + 1))
+                && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z - 1)).getBlock(), world, x, y, z - 1)) 
+                && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x - 1, y, z)).getBlock(), world, x - 1, y, z))))
         {
             return;
         }
@@ -307,7 +310,7 @@ public class RuinTemplateRule
 
     private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlock(x, y + 1, z), world, x, y + 1, z))
+        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y + 1, z)).getBlock(), world, x, y + 1, z))
         {
             return;
         }
@@ -336,8 +339,7 @@ public class RuinTemplateRule
     private void placeBlock(World world, int blocknum, int x, int y, int z, int rotate)
     {
         int metadata = rotate != RuinsMod.DIR_NORTH ? rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate) : blockMDs[blocknum];
-        world.setBlock(x, y, z, blockIDs[blocknum], metadata, 2);
-        world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
+        world.setBlockState(new BlockPos(x, y, z), blockIDs[blocknum].getStateFromMeta(metadata), 2);
         
         if (specialFlags[blocknum] != null)
         {
@@ -503,13 +505,13 @@ public class RuinTemplateRule
             {
                 meta = rotateMetadata(Blocks.standing_sign, blockMDs[blocknum], rotate);
             }
-            world.setBlock(x, y, z, Blocks.standing_sign, meta, 2);
-            TileEntitySign tes = (TileEntitySign) world.getTileEntity(x, y, z);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.standing_sign.getStateFromMeta(meta), 2);
+            TileEntitySign tes = (TileEntitySign) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             if (tes != null && tes.signText != null)
             {
                 for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
                 {
-                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new ChatComponentText("") : new ChatComponentText(splits[i+1].split("-")[0]);
                 }
             }
         }
@@ -521,22 +523,22 @@ public class RuinTemplateRule
             {
                 meta = rotateMetadata(Blocks.wall_sign, blockMDs[blocknum], rotate);
             }
-            world.setBlock(x, y, z, Blocks.wall_sign, meta, 2);
-            TileEntitySign tes = (TileEntitySign) world.getTileEntity(x, y, z);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.wall_sign.getStateFromMeta(meta), 2);
+            TileEntitySign tes = (TileEntitySign) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             if (tes != null && tes.signText != null)
             {
                 for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
                 {
-                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? "" : splits[i+1].split("-")[0];
+                	tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new ChatComponentText("") : new ChatComponentText(splits[i+1].split("-")[0]);
                 }
             }
         }
         else if (dataString.startsWith("Skull:"))
         {
             // standard case Skull:2:8-3
-            world.setBlock(x, y, z, Blocks.skull, rotateFloorSkull(blockMDs[blocknum], rotate), 2);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.skull.getStateFromMeta(rotateFloorSkull(blockMDs[blocknum], rotate)), 2);
             String[] splits = dataString.split(":");
-            TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(x, y, z);
+            TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
             int rot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.standing_sign, rot, rotate), 1);
@@ -577,14 +579,14 @@ public class RuinTemplateRule
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
         world.spawnEntityInWorld(entityendercrystal);
-        world.setBlock(x, y, z, Blocks.bedrock, 0, 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.bedrock.getDefaultState(), 2);
     }
 
     @SuppressWarnings("unchecked")
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
-        world.setBlock(x, y, z, Blocks.mob_spawner, 0, 2);
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getTileEntity(x, y, z);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.mob_spawner.getDefaultState(), 2);
+        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (mobspawner != null)
         {
             Entity test = EntityList.createEntityByName(id, world);
@@ -601,7 +603,7 @@ public class RuinTemplateRule
                     }
                 }
             }
-            mobspawner.func_145881_a().setEntityName(id);
+            mobspawner.getSpawnerBaseLogic().setEntityName(id);
         }
     }
 
@@ -674,9 +676,8 @@ public class RuinTemplateRule
 
     private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 2);
-        world.setBlockMetadataWithNotify(x, y, z, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
             ItemStack stack = null;
@@ -693,9 +694,8 @@ public class RuinTemplateRule
 
     private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 2);
-        world.setBlockMetadataWithNotify(x, y, z, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
             ItemStack stack = null;
@@ -719,9 +719,8 @@ public class RuinTemplateRule
 
     private void addHardChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 2);
-        world.setBlockMetadataWithNotify(x, y, z, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
             ItemStack stack = null;
@@ -745,9 +744,8 @@ public class RuinTemplateRule
 
     private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int items, int meta)
     {
-        world.setBlock(x, y, z, Blocks.chest, meta, 2);
-        world.setBlockMetadataWithNotify(x, y, z, meta, 2);
-        TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
             ChestGenHooks info = ChestGenHooks.getInfo(gen);
@@ -757,9 +755,8 @@ public class RuinTemplateRule
     
     private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemData, int rotateMetadata)
     {
-        world.setBlock(x, y, z, block, rotateMetadata, 2);
-        world.setBlockMetadataWithNotify(x, y, z, rotateMetadata, 2);
-        TileEntity te = world.getTileEntity(x, y, z);
+        world.setBlockState(new BlockPos(x, y, z), block.getStateFromMeta(rotateMetadata), 2);
+        TileEntity te = world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (te instanceof IInventory)
         {
             if (excessiveDebugging)
@@ -862,7 +859,7 @@ public class RuinTemplateRule
         {
             if (item instanceof ItemBlock)
             {
-                return ((ItemBlock)item).field_150939_a;
+                return ((ItemBlock)item).block;
             }
             return item;
         }
@@ -877,13 +874,13 @@ public class RuinTemplateRule
 
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int rotate)
     {
-        world.setBlock(x, y, z, Blocks.command_block, 0, 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.command_block.getDefaultState(), 2);
         command = findAndRotateRelativeCommandBlockCoords(command, rotate);
-        TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(x, y, z);
+        TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (tecb != null)
         {
-            tecb.func_145993_a().func_145752_a(command);
-            tecb.func_145993_a().func_145754_b(sender);
+            tecb.getCommandBlockLogic().setCommand(command);
+            tecb.getCommandBlockLogic().setName(sender);
         }
     }
 
@@ -1207,7 +1204,7 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.wooden_door || blockID == Blocks.iron_door)
+        else if (blockID == Blocks.dark_oak_door || blockID == Blocks.iron_door)
         {
             // doors
             if (metadata - 8 >= 0)
@@ -1874,7 +1871,7 @@ public class RuinTemplateRule
          * Least significant 2 bits cover rotation, rest is data
          * (connected to:) N E S W -> 2 3 0 1
          */
-        if (blockID == Blocks.tripwire_hook || blockID == Blocks.fence_gate || blockID == Blocks.end_portal_frame)
+        if (blockID == Blocks.tripwire_hook || blockID == Blocks.dark_oak_fence_gate || blockID == Blocks.end_portal_frame)
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;

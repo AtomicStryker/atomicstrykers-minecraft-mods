@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CommandParseTemplate extends CommandBase
 {
@@ -25,14 +25,14 @@ public class CommandParseTemplate extends CommandBase
     {
         if (event.getPlayer() == player)
         {
-            new World2TemplateParser(player, event.x, event.y, event.z, templateName).start();
+            new World2TemplateParser(player, event.pos.getX(), event.pos.getY(), event.pos.getZ(), templateName).start();
             player = null;
             event.setCanceled(true);
         }
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "parseruin";
     }
@@ -50,9 +50,9 @@ public class CommandParseTemplate extends CommandBase
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(ICommandSender sender, String[] args)
     {
-        player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
+        player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
         if (player != null)
         {
             if (args.length != 1)
@@ -78,7 +78,7 @@ public class CommandParseTemplate extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getCommandName().compareTo(getCommandName());
+            return ((ICommand)o).getName().compareTo(getName());
         }
         return 0;
     }

@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CommandUndo extends CommandBase
 {
@@ -59,14 +61,16 @@ public class CommandUndo extends CommandBase
                 ta.zBase = data.zMin;
                 ta.blockArray = new Block[data.xMax - data.xMin + 1][data.yMax - data.yMin + 1][data.zMax - data.zMin + 1];
                 ta.metaArray = new int[data.xMax - data.xMin + 1][data.yMax - data.yMin + 1][data.zMax - data.zMin + 1];
+                IBlockState bstate;
                 for (int x = 0; x < ta.blockArray.length; x++)
                 {
                     for (int y = 0; y < ta.blockArray[0].length; y++)
                     {
                         for (int z = 0; z < ta.blockArray[0][0].length; z++)
                         {
-                            ta.blockArray[x][y][z] = event.world.getBlock(ta.xBase+x, ta.yBase+y, ta.zBase+z);
-                            ta.metaArray[x][y][z] = event.world.getBlockMetadata(ta.xBase+x, ta.yBase+y, ta.zBase+z);
+                        	bstate = event.world.getBlockState(new BlockPos(ta.xBase+x, ta.yBase+y, ta.zBase+z));
+                            ta.blockArray[x][y][z] = bstate.getBlock();
+                            ta.metaArray[x][y][z] = ta.blockArray[x][y][z].getMetaFromState(bstate);
                         }
                     }
                 }
@@ -89,7 +93,7 @@ public class CommandUndo extends CommandBase
     }
     
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "undoruin";
     }
@@ -108,7 +112,7 @@ public class CommandUndo extends CommandBase
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(ICommandSender sender, String[] args)
     {
         World w = sender.getEntityWorld();
         if (w != null)
@@ -127,13 +131,13 @@ public class CommandUndo extends CommandBase
                         {
                             for (int z = 0; z < ta.blockArray[0][0].length; z++)
                             {
-                                w.setBlock(ta.xBase+x, ta.yBase+y, ta.zBase+z, ta.blockArray[x][y][z], ta.metaArray[x][y][z], 2);
+                                w.setBlockState(new BlockPos(ta.xBase+x, ta.yBase+y, ta.zBase+z), ta.blockArray[x][y][z].getStateFromMeta(ta.metaArray[x][y][z]), 2);
                             }
                         }
                     }
                     
                     // kill off the resulting entityItems instances
-                    for (Entity e : (List<Entity>) w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(ta.xBase - 1, ta.yBase - 1,
+                    for (Entity e : (List<Entity>) w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.fromBounds(ta.xBase - 1, ta.yBase - 1,
                             ta.zBase - 1, ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1)))
                     {
                         e.setDead();
@@ -154,7 +158,7 @@ public class CommandUndo extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand) o).getCommandName().compareTo(getCommandName());
+            return ((ICommand) o).getName().compareTo(getName());
         }
         return 0;
     }

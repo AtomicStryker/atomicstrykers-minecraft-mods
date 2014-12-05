@@ -7,7 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,7 +21,7 @@ public class CommandTestTemplate extends CommandBase
     private int lastFinalY;
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "testruin";
     }
@@ -37,13 +39,13 @@ public class CommandTestTemplate extends CommandBase
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(ICommandSender sender, String[] args)
     {
-        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
+        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
         int xpos, ypos, zpos;
-        xpos = sender.getPlayerCoordinates().posX;
-        ypos = sender.getPlayerCoordinates().posY;
-        zpos = sender.getPlayerCoordinates().posZ;
+        xpos = sender.getPosition().getX();
+        ypos = sender.getPosition().getY();
+        zpos = sender.getPosition().getZ();
         if (player != null && args.length < 4)
         {
             if (args.length < 1)
@@ -67,14 +69,24 @@ public class CommandTestTemplate extends CommandBase
         }
         else if (args.length >= 4)
         {
-            if (args[2].equals("_"))
-            {
-                tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), -1, (int)func_110666_a(sender, zpos, args[3]));
-            }
-            else
-            {
-                tryBuild(sender, args, (int)func_110666_a(sender, xpos, args[1]), (int)func_110666_a(sender, ypos, args[2])-1, (int)func_110666_a(sender, zpos, args[3]));
-            }
+        	try
+        	{
+                if (args[2].equals("_"))
+                {
+                    tryBuild(sender, args, (int)func_175769_b(xpos, args[1], -30000000, 30000000, false), -1, 
+                    		(int)func_175769_b(zpos, args[3], -30000000, 30000000, false));
+                }
+                else
+                {
+                    tryBuild(sender, args, (int)func_175769_b(xpos, args[1], -30000000, 30000000, false), 
+                    		(int)func_175769_b(ypos, args[2], -30000000, 30000000, false)-1, 
+                    		(int)func_175769_b(zpos, args[3], -30000000, 30000000, false));
+                }
+        	}
+        	catch (NumberInvalidException e)
+        	{
+        		sender.addChatMessage(new ChatComponentText("Invalid coordinates specified"));
+			}
         }
         else
         {
@@ -104,7 +116,7 @@ public class CommandTestTemplate extends CommandBase
                     {
                         for (y = RuinGenerator.WORLD_MAX_HEIGHT - 1; y > 7; y--)
                         {
-                            final Block b = sender.getEntityWorld().getBlock(x, y, z);
+                            final Block b = sender.getEntityWorld().getBlockState(new BlockPos(x, y, z)).getBlock();
                             if (parsedRuin.isIgnoredBlock(b, sender.getEntityWorld(), x, y, z))
                             {
                                 continue;
@@ -156,7 +168,7 @@ public class CommandTestTemplate extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand) o).getCommandName().compareTo(getCommandName());
+            return ((ICommand) o).getName().compareTo(getName());
         }
         return 0;
     }
