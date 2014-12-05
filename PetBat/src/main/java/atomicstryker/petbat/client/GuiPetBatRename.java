@@ -1,5 +1,7 @@
 package atomicstryker.petbat.client;
 
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -34,11 +36,11 @@ public class GuiPetBatRename extends GuiScreen
         petBatItemStack = stack;
         screenTitle = StatCollector.translateToLocal("translation.PetBat:gui_title");
 
-        xp = stack.stackTagCompound != null ? stack.stackTagCompound.getCompoundTag("petbatmod").getInteger("BatXP") : 0;
+        xp = stack.getTagCompound() != null ? stack.getTagCompound().getCompoundTag("petbatmod").getInteger("BatXP") : 0;
         xpToNext = PetBatMod.instance().getMissingExperienceToNextLevel(xp);
         level = PetBatMod.instance().getLevelFromExperience(xp);
         maxHealth = 16d + (level * 2);
-        health = stack.stackTagCompound != null ? stack.stackTagCompound.getCompoundTag("petbatmod").getFloat("health") : 0;
+        health = stack.getTagCompound() != null ? stack.getTagCompound().getCompoundTag("petbatmod").getFloat("health") : 0;
         attackStrength = 1 + level;
         levelTitle = PetBatMod.instance().getLevelTitle(level);
         levelDesc = PetBatMod.instance().getLevelDescription(level);
@@ -49,7 +51,7 @@ public class GuiPetBatRename extends GuiScreen
     {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        textfield = new GuiTextField(fontRendererObj, this.width / 2 - 75, 60, 150, 20);
+        textfield = new GuiTextField(0, fontRendererObj, this.width / 2 - 75, 60, 150, 20);
         textfield.setTextColor(-1);
         textfield.setMaxStringLength(30);
         textfield.setFocused(true);
@@ -64,13 +66,13 @@ public class GuiPetBatRename extends GuiScreen
     }
 
     @Override
-    protected void keyTyped(char par1, int par2)
+    protected void keyTyped(char par1, int par2) throws IOException
     {
         if (textfield.textboxKeyTyped(par1, par2))
         {
             if (!textfield.getText().equals(""))
             {
-                PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getMinecraft().thePlayer.getCommandSenderName(),
+                PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getMinecraft().thePlayer.getName(),
                         textfield.getText()));
             }
         }
@@ -81,7 +83,7 @@ public class GuiPetBatRename extends GuiScreen
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3)
+    protected void mouseClicked(int par1, int par2, int par3) throws IOException
     {
         super.mouseClicked(par1, par2, par3);
         this.textfield.mouseClicked(par1, par2, par3);

@@ -2,7 +2,8 @@ package atomicstryker.simplyhax;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.entity.Entity;
 
 public class SimplyHaxVisionRenderer extends RenderGlobal
 {
@@ -11,23 +12,16 @@ public class SimplyHaxVisionRenderer extends RenderGlobal
     {
         super(minecraft);
     }
-
-    /*
-    public void callSuper(float f)
-    {
-        super.renderClouds(f);
-    }
-    */
-
+    
     @Override
-    public void renderClouds(float f)
+    public void renderClouds(float p_174976_1_, int p_174976_2_)
     {
     }
-
+    
     @Override
-    public int sortAndRender(EntityLivingBase entityliving, int i, double d)
+    public void renderEntities(Entity ent, ICamera cam, float f)
     {
         SimplyHaxVision.preRender();
-        return super.sortAndRender(entityliving, i, d);
+        super.renderEntities(ent, cam, f);
     }
 }

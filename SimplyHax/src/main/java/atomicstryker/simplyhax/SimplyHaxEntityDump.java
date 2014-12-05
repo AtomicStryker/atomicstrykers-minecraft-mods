@@ -4,13 +4,13 @@ import java.util.Map.Entry;
 
 import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod(modid = "SimplyHaxEntityDump", name = "Simply Hax Entity Dump", version = "1.7.10")
+@Mod(modid = "SimplyHaxEntityDump", name = "Simply Hax Entity Dump", version = "1.8")
 public class SimplyHaxEntityDump
 {
 	
