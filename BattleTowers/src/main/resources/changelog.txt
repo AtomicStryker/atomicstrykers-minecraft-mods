@@ -1,3 +1,6 @@
+1.5.2
+- updated to mc 1.8
+
 1.5.1
 - added Comparable Interface to Towerposition class (some java version demands it?)
 

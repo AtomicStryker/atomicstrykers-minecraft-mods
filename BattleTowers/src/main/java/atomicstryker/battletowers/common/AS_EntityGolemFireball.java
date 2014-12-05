@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -38,7 +39,6 @@ public class AS_EntityGolemFireball extends Entity
         this(world);
         
         shooterEntity = entityliving;
-        yOffset = 0.0F;
         motionX = motionY = motionZ = 0.0D;
         diffX += rand.nextGaussian() * 0.4D;
         diffY += rand.nextGaussian() * 0.4D;
@@ -56,17 +56,17 @@ public class AS_EntityGolemFireball extends Entity
         super.onUpdate();
         this.setFire(1);
         
-        Vec3 curVec = Vec3.createVectorHelper(posX, posY, posZ);
-        Vec3 nextVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        Vec3 curVec = new Vec3(posX, posY, posZ);
+        Vec3 nextVec = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
         MovingObjectPosition collisionPosition = worldObj.rayTraceBlocks(curVec, nextVec);
-        curVec = Vec3.createVectorHelper(posX, posY, posZ);
-        nextVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        curVec = new Vec3(posX, posY, posZ);
+        nextVec = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
         if(collisionPosition != null)
         {
-            nextVec = Vec3.createVectorHelper(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
+            nextVec = new Vec3(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
         Entity hitEntity = null;
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double minDist = 0.0D;
         for(int index = 0; index < list.size(); index++)
         {
@@ -75,7 +75,7 @@ public class AS_EntityGolemFireball extends Entity
             {
                 continue;
             }
-            AxisAlignedBB axisalignedbb = ent.boundingBox.expand( 0.3F,  0.3F,  0.3F);
+            AxisAlignedBB axisalignedbb = ent.getBoundingBox().expand( 0.3F,  0.3F,  0.3F);
             MovingObjectPosition entCollision = axisalignedbb.calculateIntercept(curVec, nextVec);
             if(entCollision == null)
             {
@@ -122,7 +122,7 @@ public class AS_EntityGolemFireball extends Entity
             for(int k = 0; k < 4; k++)
             {
                 float f3 = 0.25F;
-                worldObj.spawnParticle("bubble", posX - motionX * (double)f3, posY - motionY * (double)f3, posZ - motionZ * (double)f3, motionX, motionY, motionZ);
+                worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * (double)f3, posY - motionY * (double)f3, posZ - motionZ * (double)f3, motionX, motionY, motionZ);
             }
 
             f1 = 0.8F;
@@ -133,7 +133,7 @@ public class AS_EntityGolemFireball extends Entity
         motionX *= f1;
         motionY *= f1;
         motionZ *= f1;
-        worldObj.spawnParticle("smoke", posX, posY + 0.5D, posZ, 0.0D, 0.0D, 0.0D);
+        worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY + 0.5D, posZ, 0.0D, 0.0D, 0.0D);
         setPosition(posX, posY, posZ);
     }
 

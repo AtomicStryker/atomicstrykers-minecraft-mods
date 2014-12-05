@@ -3,7 +3,8 @@ package atomicstryker.battletowers.common;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -25,13 +26,13 @@ public class AS_TowerDestroyer
 	private final long perFloorExplosionDelay = 5000L;
 	private boolean deleteMe = false;
 
-    public AS_TowerDestroyer(World worldObj, ChunkCoordinates coords, long time, Entity golemkiller)
+    public AS_TowerDestroyer(World worldObj, BlockPos coords, long time, Entity golemkiller)
     {
 		this.world = worldObj;
 		this.player = golemkiller;
-		this.xGolem = coords.posX;
-		this.yGolem = coords.posY;
-		this.zGolem = coords.posZ;
+		this.xGolem = coords.getX();
+		this.yGolem = coords.getY();
+		this.zGolem = coords.getZ();
 		this.triggerTime = time;
 		this.lastExplosionSoundTime = time;
 		
@@ -101,10 +102,10 @@ public class AS_TowerDestroyer
 	            {
 	                for(int yIterator = yGolem; yIterator >= minYdeletion; yIterator--) // go down the tower
 	                {
-	                    if(world.getBlock(xIterator, yIterator, zIterator) == spawnerid)
+	                    if(world.getBlockState(new BlockPos(xIterator, yIterator, zIterator)).getBlock() == spawnerid)
 	                    {
 	                        // destroy all present mobspawners
-	                        world.setBlock(xIterator, yIterator, zIterator, Blocks.air, 0, 3);
+	                        world.setBlockToAir(new BlockPos(xIterator, yIterator, zIterator));
 	                    }
 	                }
 	            }
@@ -136,9 +137,9 @@ public class AS_TowerDestroyer
 			{
 				for(int yIterator = 1; yIterator < 9; yIterator++) // do Y 8 blocks high
 				{
-					if(world.getBlock(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator) != Blocks.air)
+					if(world.getBlockState(new BlockPos(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator)).getBlock() != Blocks.air)
 					{
-						world.setBlock(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator, Blocks.air, 0 ,3);
+						world.setBlockToAir(new BlockPos(xGolem+xIterator, ytemp+yIterator, zGolem+zIterator));
 					}
 				}
 			}
@@ -185,22 +186,22 @@ public class AS_TowerDestroyer
 		{
     		case 0:
     		{
-    		    world.spawnParticle("explode", (d + i * 1.0D) / 2D, (d1 + j * 1.0D) / 2D, (d2 + k * 1.0D) / 2D, d3, d4, d5);
+    		    world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (d + i * 1.0D) / 2D, (d1 + j * 1.0D) / 2D, (d2 + k * 1.0D) / 2D, d3, d4, d5);
     		    break;
     		}
     		case 1:
     		{
-    		    world.spawnParticle("smoke", d, d1, d2, d3, d4, d5);
+    		    world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d, d1, d2, d3, d4, d5);
     		    break;
     		}
     		case 2:
     		{
-    		    world.spawnParticle("lava", d, d1, d2, 0.0D, 0.0D, 0.0D);
+    		    world.spawnParticle(EnumParticleTypes.LAVA, d, d1, d2, 0.0D, 0.0D, 0.0D);
     		    break;
     		}
     		case 4:
     		{
-    		    world.spawnParticle("largesmoke", (double)i + Math.random(), (double)j + 1.2D, (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
+    		    world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, (double)i + Math.random(), (double)j + 1.2D, (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
     		    break;
     		}
 		}

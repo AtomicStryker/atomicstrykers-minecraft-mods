@@ -1,15 +1,15 @@
 package atomicstryker.battletowers.common;
 
-import org.apache.logging.log4j.Level;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.ICommandSender;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import org.apache.logging.log4j.Level;
 
 public class CommandDeleteAllBattleTowers extends CommandBattleTowers
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "deleteallbattletowers";
     }
@@ -21,10 +21,10 @@ public class CommandDeleteAllBattleTowers extends CommandBattleTowers
     }
 
     @Override
-    public void processCommand(ICommandSender icommandsender, String[] astring)
+    public void execute(ICommandSender icommandsender, String[] astring)
     {
         WorldGenHandler.deleteAllTowers(icommandsender.getEntityWorld(), false);
-        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName()+": All Battletowers deleted");
+        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName()+": All Battletowers deleted");
     }
 
 }

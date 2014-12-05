@@ -16,12 +16,14 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+
+import com.google.common.base.Predicate;
 
 public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnData
 {
@@ -57,8 +59,17 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         tasks.addTask(1, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0d, true));
         tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-        targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
+        targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, true, new AttackSelector()));
     }
+    
+    private static final class AttackSelector implements Predicate<Entity>
+    {
+		@Override
+		public boolean apply(Entity input)
+		{
+			return true;
+		}
+    };
 
     public AS_EntityGolem(World world, int i)
     {
@@ -78,18 +89,12 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     
     
     @Override
-    protected void updateEntityActionState()
+	public void onLivingUpdate()
     {
         if (!this.getIsDormant())
         {
-            super.updateEntityActionState();
+            super.onLivingUpdate();
         }
-    }
-    
-    @Override
-    protected boolean isAIEnabled()
-    {
-        return true;
     }
 
 	@Override
@@ -153,7 +158,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         && damageSource.getEntity() instanceof EntityLivingBase)
         {
             setAwake();
-            setTarget(damageSource.getEntity());
+            setAttackTarget((EntityLivingBase) damageSource.getEntity());
         }
         
         return super.attackEntityFrom(damageSource, amount);
@@ -189,9 +194,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             {
                 entityDropItem(new ItemStack(Blocks.clay, 1), 0f);
             }
-			if(getEntityToAttack() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50)
+			if(getAttackTarget() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50)
 			{
-				AS_BattleTowersCore.onBattleTowerDestroyed(new AS_TowerDestroyer(worldObj, new ChunkCoordinates(towerX, towerY, towerZ), System.currentTimeMillis(), getEntityToAttack()));
+				AS_BattleTowersCore.onBattleTowerDestroyed(new AS_TowerDestroyer(worldObj, new BlockPos(towerX, towerY, towerZ), System.currentTimeMillis(), getAttackTarget()));
 			}
         }
         worldObj.setEntityState(this, (byte)3);
@@ -215,7 +220,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     {
         if(!this.getIsDormant())
         {		
-			if(getEntityToAttack() == null || !getEntityToAttack().isEntityAlive())
+			if(getAttackTarget() == null || !getAttackTarget().isEntityAlive())
             {
 			    setHealth(getMaxHealth());
                 rageCounter = 125;
@@ -239,11 +244,11 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                     setHealth(getHealth() + 20);
                 }
 
-				if (!worldObj.isRemote && (this.posY - getEntityToAttack().posY) > 0.3D)
+				if (!worldObj.isRemote && (this.posY - getAttackTarget().posY) > 0.3D)
 				{
 				    if (AS_BattleTowersCore.instance.noGolemExplosions)
 				    {
-				        getEntityToAttack().attackEntityFrom(DamageSource.causeMobDamage(this), 3.5f);
+				    	getAttackTarget().attackEntityFrom(DamageSource.causeMobDamage(this), 3.5f);
 				    }
 				    else
 				    {
@@ -269,12 +274,12 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                 if(entityplayer != null && canEntityBeSeen(entityplayer))
                 {
                     setAwake();
-                    setTarget(entityplayer);
+                    setAttackTarget(entityplayer);
                     rageCounter = 175;
                 }
             }
         }
-		else if (getEntityToAttack() != null)
+		else if (getAttackTarget() != null)
         {
 			if (towerY == -1)
 			{
@@ -283,11 +288,11 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 			    towerZ = (int)posZ;
 			}
 
-			boolean targetNearby = (getEntityToAttack().getDistanceSqToEntity(this) < 6F*6F);
+			boolean targetNearby = (getAttackTarget().getDistanceSqToEntity(this) < 6F*6F);
 
             if(!targetNearby
 			|| explosionAttack == 1
-			|| (targetNearby && ((this.posY - getEntityToAttack().posY) > 0.3D)))
+			|| (targetNearby && ((this.posY - getAttackTarget().posY) > 0.3D)))
             {
                 rageCounter-=2;
                 //System.out.println("Golem losing patience: "+rageCounter);
@@ -318,9 +323,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 	{
         if (!worldObj.isRemote)
         {
-            double diffX = getEntityToAttack().posX - posX;
-            double diffY = (getEntityToAttack().boundingBox.minY + (double)(getEntityToAttack().height / 2.0F)) - (posY + (double)(height * 0.8D));
-            double diffZ = getEntityToAttack().posZ - posZ;
+            double diffX = getAttackTarget().posX - posX;
+            double diffY = (getAttackTarget().getBoundingBox().minY + (double)(getAttackTarget().height / 2.0F)) - (posY + (double)(height * 0.8D));
+            double diffZ = getAttackTarget().posZ - posZ;
             
             renderYawOffset = rotationYaw = (-(float)Math.atan2(diffX, diffZ) * 180F) / (float)Math.PI;
             
