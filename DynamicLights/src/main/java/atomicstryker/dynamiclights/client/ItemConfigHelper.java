@@ -3,6 +3,8 @@ package atomicstryker.dynamiclights.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.util.ResourceLocation;
+
 public class ItemConfigHelper
 {
     private final String SWILDCARD = "*";
@@ -28,10 +30,11 @@ public class ItemConfigHelper
         }
     }
     
-    public int retrieveValue(String name, int meta)
+    public int retrieveValue(Object loc, int meta)
     {
-        if (name != null)
+        if (loc != null)
         {
+        	String name = ((ResourceLocation)loc).toString();
             for (ItemData item : dataMap.keySet())
             {
                 if (item.matches(name, meta))

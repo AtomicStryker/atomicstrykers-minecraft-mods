@@ -4,24 +4,25 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.registry.GameData;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -30,7 +31,7 @@ import cpw.mods.fml.common.registry.GameData;
  * Offers Dynamic Light functionality emulating portable or static Flood Lights
  *
  */
-@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.2", dependencies = "required-after:DynamicLights")
 public class FloodLightSource
 {
     private EntityPlayer thePlayer;
@@ -101,21 +102,22 @@ public class FloodLightSource
     
     private void handleLight(PartialLightSource source, int light, float yawRot, float pitchRot)
     {
-        Vec3 pos = thePlayer.getPosition(1.0f);
+        Vec3 posvec = thePlayer.getLook(1.0f);
         thePlayer.rotationPitch += pitchRot;
         thePlayer.rotationYaw += yawRot;
         Vec3 look = thePlayer.getLook(1.0f);
         thePlayer.rotationPitch -= pitchRot;
         thePlayer.rotationYaw -= yawRot;
-        look = pos.addVector(look.xCoord * 16d, look.yCoord * 16d, look.zCoord * 16d);
-        MovingObjectPosition mop = thePlayer.worldObj.rayTraceBlocks(pos, look);
+        look = posvec.addVector(look.xCoord * 16d, look.yCoord * 16d, look.zCoord * 16d);
+        MovingObjectPosition mop = thePlayer.worldObj.rayTraceBlocks(posvec, look);
         if (mop != null)
         {
-            int dist = (int) Math.round(thePlayer.getDistance(mop.blockX+0.5d, mop.blockY+0.5d, mop.blockZ+0.5d));
+        	BlockPos pos = mop.getBlockPos();
+            int dist = (int) Math.round(thePlayer.getDistance(pos.getX()+0.5d, pos.getY()+0.5d, pos.getZ()+0.5d));
             source.lightLevel = light - dist;
-            source.entity.posX = mop.blockX+0.5d;
-            source.entity.posY = mop.blockY+0.5d;
-            source.entity.posZ = mop.blockZ+0.5d;
+            source.entity.posX = pos.getX()+0.5d;
+            source.entity.posY = pos.getY()+0.5d;
+            source.entity.posZ = pos.getZ()+0.5d;
         }
         else
         {

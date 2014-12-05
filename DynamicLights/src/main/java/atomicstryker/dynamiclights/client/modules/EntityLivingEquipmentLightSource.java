@@ -13,19 +13,19 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.registry.GameData;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -35,7 +35,7 @@ import cpw.mods.fml.common.registry.GameData;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.8", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -127,9 +127,9 @@ public class EntityLivingEquipmentLightSource
     private int getMobEquipMaxLight(EntityLivingBase ent)
     {
         int light = getLightFromItemStack(ent.getEquipmentInSlot(0));
-        for (int i = 1; i < ent.getLastActiveItems().length; i++)
+        for (int i = 1; i < 5; i++) // 5 is the magic inventory size for mc
         {
-            light = Math.max(light, getLightFromItemStack(ent.getLastActiveItems()[i]));
+            light = Math.max(light, getLightFromItemStack(ent.getEquipmentInSlot(i)));
         }
         return light;
     }

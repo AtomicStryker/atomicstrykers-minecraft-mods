@@ -1,8 +1,6 @@
 package atomicstryker.dynamiclights.common;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.ISTORE;
 
@@ -14,7 +12,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -31,19 +28,16 @@ public class DLTransformer implements IClassTransformer
 {
     
     /* net/minecraft/World */
-    private String classNameWorld = "ahb";
+    private String classNameWorld = "aqu";
+      
+    /* (Lnet/minecraft/util/BlockPos;Lnet/minecraft/world/EnumSkyBlock;)I */
+    private String targetMethodDesc = "(Ldt;Larf;)I";
     
-    /* net/minecraft/world/IBlockAccess */
-    private String blockAccessJava = "ahl";
-    
-    /* net/minecraft/block/Block */
-    private String blockJava = "aji";
-    
-    /* net/minecraft/World.computeLightValue */
+    /* net/minecraft/World.getRawLight / func_175638_a */
     private String computeLightValueMethodName = "a";
     
-    /* (IIILnet/minecraft/world/EnumSkyBlock;)I */
-    private String targetMethodDesc = "(IIILahn;)I";
+    /* (Lnet/minecraft/block/Block;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I */
+    private String goalInvokeDesc = "(Latr;Lard;Ldt;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -55,10 +49,9 @@ public class DLTransformer implements IClassTransformer
         }
         else if (name.equals("net.minecraft.world.World")) // MCP testing
         {
-            blockJava = "net/minecraft/block/Block";
-            blockAccessJava = "net/minecraft/world/IBlockAccess";
-            computeLightValueMethodName = "computeLightValue";
-            targetMethodDesc = "(IIILnet/minecraft/world/EnumSkyBlock;)I";
+            computeLightValueMethodName = "func_175638_a"; // getRawLight once mapped
+            targetMethodDesc = "(Lnet/minecraft/util/BlockPos;Lnet/minecraft/world/EnumSkyBlock;)I";
+            goalInvokeDesc = "(Lnet/minecraft/block/Block;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I";
             return handleWorldTransform(bytes, false);
         }
         
@@ -80,90 +73,69 @@ public class DLTransformer implements IClassTransformer
             if (m.name.equals(computeLightValueMethodName)
             && m.desc.equals(targetMethodDesc))
             {
-                System.out.println("In target method! Patching!");
+                System.out.println("In target method "+computeLightValueMethodName+", Patching!");
+                
+                /* before patch:
+			       0: aload_2       
+			       1: getstatic     #136                // Field net/minecraft/world/EnumSkyBlock.SKY:Lnet/minecraft/world/EnumSkyBlock;
+			       4: if_acmpne     18
+			       7: aload_0       
+			       8: aload_1       
+			       9: invokevirtual #160                // Method isAgainstSky:(Lnet/minecraft/util/BlockPos;)Z
+			      12: ifeq          18
+			      15: bipush        15
+			      17: ireturn       
+			      18: aload_0       
+			      19: aload_1       
+			      20: invokevirtual #80                 // Method getBlockState:(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+			      23: invokeinterface #81,  1           // InterfaceMethod net/minecraft/block/state/IBlockState.getBlock:()Lnet/minecraft/block/Block;
+			      28: astore_3      
+			      29: aload_3       
+			      30: aload_0       
+			      31: aload_1       
+			      32: invokevirtual #486                // Method net/minecraft/block/Block.getLightValue:(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
+			      35: istore        4
+			      [... many more...]
+                 */
                 
                 AbstractInsnNode targetNode = null;
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
-                boolean deleting = false;
-                boolean replacing = false;
+                
                 while (iter.hasNext())
                 {
+                	// check all nodes
                     targetNode = (AbstractInsnNode) iter.next();
                     
-                    if (targetNode instanceof VarInsnNode)
+                    // find the first ASTORE node, we delete from there on
+                    if (targetNode.getOpcode() == ASTORE)
                     {
-                        VarInsnNode vNode = (VarInsnNode) targetNode;
-                        if (vNode.var == 6)
-                        {
-                            if (vNode.getOpcode() == ASTORE)
-                            {
-                                System.out.println("Bytecode ASTORE 6 case!");
-                                deleting = true;
-                                continue;
-                            }
-                            else if (vNode.getOpcode() == ISTORE)
-                            {
-                                System.out.println("Bytecode ISTORE 6 case!");
-                                replacing = true;
-                                targetNode = (AbstractInsnNode) iter.next();
-                                break;
-                            }
-                        }
-                        
-                        if (vNode.var == 7 && deleting)
-                        {
-                            break;
-                        }
-                    }
-                    
-                    if (deleting)
-                    {
-                        System.out.println("Removing "+targetNode);
-                        iter.remove();
+                    	VarInsnNode astore = (VarInsnNode) targetNode;
+                    	System.out.println("Found ASTORE Node, is saving in var: "+astore.var);
+                    	
+                    	// go until ISTORE is hit
+                    	while (targetNode.getOpcode() != ISTORE)
+                    	{
+                    		if (targetNode instanceof MethodInsnNode)
+                    		{
+                    			MethodInsnNode mNode = (MethodInsnNode) targetNode;
+                    			System.out.printf("opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
+                    			// change invokevirtual to invokestatic
+                    			mNode.setOpcode(INVOKESTATIC);
+                    			// change owner
+                    			mNode.owner = "atomicstryker/dynamiclights/client/DynamicLights";
+                    			// change name
+                    			mNode.name = "getLightValue";
+                    			// change desc
+                    			mNode.desc = goalInvokeDesc;
+                    			System.out.printf("opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
+                    		}
+                    		targetNode = iter.next();
+                    		System.out.printf("Node %s, opcode %d\n", targetNode, targetNode.getOpcode());
+                    	}
+                    	break;
                     }
                 }
                 
-                // make new instruction list
-                InsnList toInject = new InsnList();
-                
-                // argument mapping! 0 is World, 5 is block, 123 are xyz
-                toInject.add(new VarInsnNode(ALOAD, 0));
-                toInject.add(new VarInsnNode(ALOAD, 5));
-                toInject.add(new VarInsnNode(ILOAD, 1));
-                toInject.add(new VarInsnNode(ILOAD, 2));
-                toInject.add(new VarInsnNode(ILOAD, 3));
-                
-                try
-                {
-                    try
-                    {
-                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
-                                INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";L"+blockJava+";III)I");
-                        toInject.add(node);
-                    }
-                    catch (NoSuchMethodException e)
-                    {
-                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
-                                INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", "(L"+blockAccessJava+";L"+blockJava+";III)I", false);
-                        toInject.add(node);
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                    System.out.println("Dynamic Lights ASM transform failed T_T");
-                    return bytes;
-                }
-                
-                if (replacing)
-                {
-                    toInject.add(new VarInsnNode(ISTORE, 6));
-                }
-                
-                // inject new instruction list into method instruction list
-                m.instructions.insertBefore(targetNode, toInject);
-                
-                System.out.println("Patching Complete!");
                 break;
             }
         }

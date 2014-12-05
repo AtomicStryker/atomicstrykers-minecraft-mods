@@ -2,7 +2,7 @@ package atomicstryker.dynamiclights.common;
 
 import java.util.Map;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 public class DLFMLCorePlugin implements IFMLLoadingPlugin
 {
