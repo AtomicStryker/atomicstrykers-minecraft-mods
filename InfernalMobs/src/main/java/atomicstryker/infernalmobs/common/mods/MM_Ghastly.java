@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityLargeFireball;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import atomicstryker.infernalmobs.common.MobModifier;
 
@@ -30,7 +31,7 @@ public class MM_Ghastly extends MobModifier
         if (time > nextAbilityUse)
         {
             nextAbilityUse = time+coolDown;
-            tryAbility(mob, mob.worldObj.getClosestVulnerablePlayerToEntity(mob, 12f));
+            tryAbility(mob, mob.worldObj.getClosestPlayerToEntity(mob, 12f));
         }
         return super.onUpdate(mob);
     }
@@ -45,11 +46,11 @@ public class MM_Ghastly extends MobModifier
         if (mob.getDistanceToEntity(target) > MIN_DISTANCE)
         {
             double diffX = target.posX - mob.posX;
-            double diffY = target.boundingBox.minY + (double)(target.height / 2.0F) - (mob.posY + (double)(mob.height / 2.0F));
+            double diffY = target.getBoundingBox().minY + (double)(target.height / 2.0F) - (mob.posY + (double)(mob.height / 2.0F));
             double diffZ = target.posZ - mob.posZ;
             mob.renderYawOffset = mob.rotationYaw = -((float)Math.atan2(diffX, diffZ)) * 180.0F / (float)Math.PI;
 
-            mob.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1008, (int)mob.posX, (int)mob.posY, (int)mob.posZ, 0);
+            mob.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1008, new BlockPos((int)mob.posX, (int)mob.posY, (int)mob.posZ), 0);
             EntityLargeFireball entFB = new EntityLargeFireball(mob.worldObj, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
             Vec3 mobLook = mob.getLook(1.0F);

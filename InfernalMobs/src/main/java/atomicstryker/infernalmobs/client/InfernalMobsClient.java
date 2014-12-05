@@ -21,6 +21,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -30,10 +34,6 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.mods.MM_Gravity;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class InfernalMobsClient implements ISidedProxy
 {
@@ -121,7 +121,7 @@ public class InfernalMobsClient implements ISidedProxy
 
                 ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
                 int screenwidth = resolution.getScaledWidth();
-                FontRenderer fontR = mc.fontRenderer;
+                FontRenderer fontR = mc.fontRendererObj;
 
                 GuiIngame gui = mc.ingameGUI;
                 short lifeBarLength = 182;
@@ -166,21 +166,21 @@ public class InfernalMobsClient implements ISidedProxy
     {
         Entity returnedEntity = null;
 
-        if (mc.renderViewEntity != null)
+        if (mc.getRenderViewEntity() != null)
         {
             if (mc.theWorld != null)
             {
                 double reachDistance = NAME_VISION_DISTANCE;
-                final MovingObjectPosition mopos = mc.renderViewEntity.rayTrace(reachDistance, renderTick);
+                final MovingObjectPosition mopos = mc.getRenderViewEntity().rayTrace(reachDistance, renderTick);
                 double reachDist2 = reachDistance;
-                final Vec3 viewEntPositionVec = mc.renderViewEntity.getPosition(renderTick);
+                final Vec3 viewEntPositionVec = mc.getRenderViewEntity().getPositionVector();
 
                 if (mopos != null)
                 {
-                    reachDist2 = mopos.hitVec.distanceTo(viewEntPositionVec);
+                    reachDist2 = mopos.hitVec.squareDistanceTo(viewEntPositionVec);
                 }
 
-                final Vec3 viewEntityLookVec = mc.renderViewEntity.getLook(renderTick);
+                final Vec3 viewEntityLookVec = mc.getRenderViewEntity().getLook(renderTick);
                 final Vec3 actualReachVector =
                         viewEntPositionVec.addVector(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
                                 viewEntityLookVec.zCoord * reachDistance);
@@ -189,8 +189,8 @@ public class InfernalMobsClient implements ISidedProxy
                 Entity iterEnt;
                 Entity pointedEntity = null;
                 for (Object obj : mc.theWorld.getEntitiesWithinAABBExcludingEntity(
-                        mc.renderViewEntity,
-                        mc.renderViewEntity.boundingBox.addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
+                        mc.getRenderViewEntity(),
+                        mc.getRenderViewEntity().getBoundingBox().addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
                                 viewEntityLookVec.zCoord * reachDistance).expand((double) expandBBvalue, (double) expandBBvalue,
                                 (double) expandBBvalue)))
                 {
@@ -198,7 +198,7 @@ public class InfernalMobsClient implements ISidedProxy
                     if (iterEnt.canBeCollidedWith())
                     {
                         float entBorderSize = iterEnt.getCollisionBorderSize();
-                        AxisAlignedBB entHitBox = iterEnt.boundingBox.expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
+                        AxisAlignedBB entHitBox = iterEnt.getBoundingBox().expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
                         MovingObjectPosition interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
 
                         if (entHitBox.isVecInside(viewEntPositionVec))

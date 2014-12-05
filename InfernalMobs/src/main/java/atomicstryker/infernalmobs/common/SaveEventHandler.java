@@ -1,24 +1,28 @@
 package atomicstryker.infernalmobs.common;
 
+import java.util.Iterator;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.chunk.Chunk;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class SaveEventHandler
 {
 
-    @SubscribeEvent
+    @SuppressWarnings("rawtypes")
+	@SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event)
     {
         Chunk chunk = event.getChunk();
         Entity newEnt;
-        for (int i = 0; i < chunk.entityLists.length; i++)
+        for (int i = 0; i < chunk.getEntityLists().length; i++)
         {
-            for (int j = 0; j < chunk.entityLists[i].size(); j++)
-            {
-                newEnt = (Entity) chunk.entityLists[i].get(j);
+        	Iterator iter = chunk.getEntityLists()[i].iterator();
+        	while (iter.hasNext())
+        	{
+        		newEnt = (Entity) iter.next();
                 if (newEnt instanceof EntityLivingBase)
                 {
                     /*
@@ -30,20 +34,22 @@ public class SaveEventHandler
                         InfernalMobsCore.removeEntFromElites((EntityLivingBase) newEnt);
                     }
                 }
-            }
+        	}
         }
     }
 
-    @SubscribeEvent
+    @SuppressWarnings("rawtypes")
+	@SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load event)
     {
         Chunk chunk = event.getChunk();
         Entity newEnt;
-        for (int i = 0; i < chunk.entityLists.length; i++)
+        for (int i = 0; i < chunk.getEntityLists().length; i++)
         {
-            for (int j = 0; j < chunk.entityLists[i].size(); j++)
-            {
-                newEnt = (Entity) chunk.entityLists[i].get(j);
+        	Iterator iter = chunk.getEntityLists()[i].iterator();
+        	while (iter.hasNext())
+        	{
+        		newEnt = (Entity) iter.next();
                 if (newEnt instanceof EntityLivingBase)
                 {
                     String savedMods = newEnt.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());

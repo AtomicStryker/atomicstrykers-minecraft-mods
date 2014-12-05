@@ -3,7 +3,9 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
@@ -43,7 +45,7 @@ public class MM_Ender extends MobModifier
     private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity)
     {
         Vec3 vector =
-                Vec3.createVectorHelper(mob.posX - par1Entity.posX, mob.boundingBox.minY + (double) (mob.height / 2.0F) - par1Entity.posY
+                new Vec3(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double) (mob.height / 2.0F) - par1Entity.posY
                         + (double) par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 16.0D;
@@ -67,36 +69,33 @@ public class MM_Ender extends MobModifier
         int z = MathHelper.floor_double(mob.posZ);
         Block blockID;
 
-        if (mob.worldObj.blockExists(x, y, z))
+        boolean hitGround = false;
+        while (!hitGround && y < 96)
         {
-            boolean hitGround = false;
-            while (!hitGround && y < 96)
+            blockID = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+            if (blockID.getMaterial().blocksMovement())
             {
-                blockID = mob.worldObj.getBlock(x, y - 1, z);
-                if (blockID.getMaterial().blocksMovement())
-                {
-                    hitGround = true;
-                }
-                else
-                {
-                    --mob.posY;
-                    --y;
-                }
-            }
-
-            if (hitGround)
-            {
-                mob.setPosition(mob.posX, mob.posY, mob.posZ);
-
-                if (mob.worldObj.getCollidingBoundingBoxes(mob, mob.boundingBox).isEmpty() && !mob.worldObj.isAnyLiquid(mob.boundingBox))
-                {
-                    success = true;
-                }
+                hitGround = true;
             }
             else
             {
-                return false;
+                --mob.posY;
+                --y;
             }
+        }
+
+        if (hitGround)
+        {
+            mob.setPosition(mob.posX, mob.posY, mob.posZ);
+
+            if (mob.worldObj.getCollidingBoundingBoxes(mob, mob.getBoundingBox()).isEmpty() && !mob.worldObj.isAnyLiquid(mob.getBoundingBox()))
+            {
+                success = true;
+            }
+        }
+        else
+        {
+            return false;
         }
 
         if (!success)
@@ -116,7 +115,7 @@ public class MM_Ender extends MobModifier
                 double var24 = oldX + (mob.posX - oldX) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
                 double var26 = oldY + (mob.posY - oldY) * var19 + mob.worldObj.rand.nextDouble() * (double) mob.height;
                 double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
-                mob.worldObj.spawnParticle("portal", var24, var26, var28, (double) var21, (double) var22, (double) var23);
+                mob.worldObj.spawnParticle(EnumParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
             }
 
             mob.worldObj.playSoundEffect(oldX, oldY, oldZ, "mob.endermen.portal", 1.0F, 1.0F);

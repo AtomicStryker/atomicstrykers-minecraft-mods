@@ -1,11 +1,11 @@
 package atomicstryker.infernalmobs.common.network;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
@@ -53,7 +53,7 @@ public class MobModsPacket implements IPacket
         else
         {
             // else we are on serverside
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(stringData);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(stringData);
             if (p != null)
             {
                 Entity ent = p.worldObj.getEntityByID(entID);

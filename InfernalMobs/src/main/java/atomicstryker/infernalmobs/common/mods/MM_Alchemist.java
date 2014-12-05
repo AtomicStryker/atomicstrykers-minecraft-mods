@@ -30,7 +30,7 @@ public class MM_Alchemist extends MobModifier
         if (time > nextAbilityUse)
         {
             nextAbilityUse = time+coolDown;
-            tryAbility(mob, mob.worldObj.getClosestVulnerablePlayerToEntity(mob, 12f));
+            tryAbility(mob, mob.worldObj.getClosestPlayerToEntity(mob, 12f));
         }
         return super.onUpdate(mob);
     }

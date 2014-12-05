@@ -2,20 +2,21 @@ package atomicstryker.infernalmobs.common;
 
 import java.util.Collection;
 
-import org.apache.logging.log4j.Level;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import org.apache.logging.log4j.Level;
 
 public class InfernalCommandFindEntityClass extends CommandBase
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "feclass";
     }
@@ -28,7 +29,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length == 0)
         {
@@ -66,7 +67,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
                 result += "Nothing found.";
             }
             
-            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName()+ ": " + result);
+            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName()+ ": " + result);
         }
     }
     
@@ -81,7 +82,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getCommandName().compareTo(getCommandName());
+            return ((ICommand)o).getName().compareTo(getName());
         }
         return 0;
     }
