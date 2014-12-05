@@ -22,6 +22,7 @@ archivesBaseName = projname
 minecraft {
     version = xmlproperties.@mcversion
 	runDir = "eclipse/assets"
+    mappings = xmlproperties.@mcpversion
 }
 
 // check for specified dependencies on other projects or jars
