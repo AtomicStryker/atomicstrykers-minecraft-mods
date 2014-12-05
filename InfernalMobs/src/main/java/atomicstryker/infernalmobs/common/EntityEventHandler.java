@@ -20,7 +20,7 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.world.ChunkEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EntityEventHandler
 {
@@ -262,7 +262,7 @@ public class EntityEventHandler
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
             if (mod != null)
             {
-                mod.onDropItems(event.entityLiving, event.source, event.drops, event.lootingLevel, event.recentlyHit, event.specialDropValue);
+                mod.onDropItems(event.entityLiving, event.source, event.drops, event.lootingLevel, event.recentlyHit, event.lootingLevel);
                 InfernalMobsCore.removeEntFromElites(event.entityLiving);
             }
         }

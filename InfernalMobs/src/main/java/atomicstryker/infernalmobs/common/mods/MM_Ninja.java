@@ -3,7 +3,9 @@ package atomicstryker.infernalmobs.common.mods;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
@@ -44,7 +46,7 @@ public class MM_Ninja extends MobModifier
     
     private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity)
     {
-        Vec3 vector = Vec3.createVectorHelper(mob.posX - par1Entity.posX, mob.boundingBox.minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
+        Vec3 vector = new Vec3(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 8.0D;
         double destX = mob.posX + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;
@@ -66,34 +68,31 @@ public class MM_Ninja extends MobModifier
         int z = MathHelper.floor_double(mob.posZ);
         Block blockID;
 
-        if (mob.worldObj.blockExists(x, y, z))
+        boolean hitGround = false;
+        while (!hitGround && y < 96)
         {
-            boolean hitGround = false;
-            while (!hitGround && y < 96)
+            blockID = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+            if (blockID.getMaterial().blocksMovement())
             {
-                blockID = mob.worldObj.getBlock(x, y - 1, z);
-                if (blockID.getMaterial().blocksMovement())
-                {
-                    hitGround = true;
-                }
-                else
-                {
-                    ++mob.posY;
-                    ++y;
-                }
-            }
-
-            if (hitGround)
-            {
-                mob.setPosition(mob.posX, mob.posY, mob.posZ);
-                
-                mob.worldObj.playSoundEffect(oldX, oldY, oldZ, "random.explode", 2.0F, (1.0F + (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
-                mob.worldObj.spawnParticle("hugeexplosion", oldX, oldY, oldZ, 0D, 0D, 0D);
+                hitGround = true;
             }
             else
             {
-                return false;
+                ++mob.posY;
+                ++y;
             }
+        }
+
+        if (hitGround)
+        {
+            mob.setPosition(mob.posX, mob.posY, mob.posZ);
+            
+            mob.worldObj.playSoundEffect(oldX, oldY, oldZ, "random.explode", 2.0F, (1.0F + (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+            mob.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, oldX, oldY, oldZ, 0D, 0D, 0D);
+        }
+        else
+        {
+            return false;
         }
         return true;
     }

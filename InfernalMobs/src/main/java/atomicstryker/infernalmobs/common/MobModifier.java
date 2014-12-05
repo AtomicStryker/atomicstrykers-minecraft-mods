@@ -1,6 +1,6 @@
 package atomicstryker.infernalmobs.common;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -161,7 +161,7 @@ public abstract class MobModifier
     /**
      * Passes the loot drop event to the modifier list
      */
-    public void onDropItems(EntityLivingBase moddedMob, DamageSource killSource, ArrayList<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
+    public void onDropItems(EntityLivingBase moddedMob, DamageSource killSource, List<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
     {
         if (recentlyHit)
         {
@@ -262,7 +262,7 @@ public abstract class MobModifier
         {
             if (attackTarget == null)
             {
-                attackTarget = mob.worldObj.getClosestVulnerablePlayerToEntity(mob, 7.5f);
+                attackTarget = mob.worldObj.getClosestPlayerToEntity(mob, 7.5f);
             }
             
             if (attackTarget != null)

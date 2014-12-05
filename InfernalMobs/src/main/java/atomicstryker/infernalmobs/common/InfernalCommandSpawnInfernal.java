@@ -1,21 +1,22 @@
 package atomicstryker.infernalmobs.common;
 
-import org.apache.logging.log4j.Level;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import org.apache.logging.log4j.Level;
 
 public class InfernalCommandSpawnInfernal extends CommandBase
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "spawninfernal";
     }
@@ -28,7 +29,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
 
     @SuppressWarnings({ "unchecked" })
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 5)
         {
@@ -38,9 +39,9 @@ public class InfernalCommandSpawnInfernal extends CommandBase
         {
             try
             {
-                final int x = (args[0].equals("~")) ? sender.getPlayerCoordinates().posX : Integer.valueOf(args[0]);
-                final int y = (args[1].equals("~")) ? sender.getPlayerCoordinates().posY : Integer.valueOf(args[1]);
-                final int z = (args[2].equals("~")) ? sender.getPlayerCoordinates().posZ : Integer.valueOf(args[2]);
+                final int x = (args[0].equals("~")) ? sender.getCommandSenderEntity().getPosition().getX() : Integer.valueOf(args[0]);
+                final int y = (args[1].equals("~")) ? sender.getCommandSenderEntity().getPosition().getY() : Integer.valueOf(args[1]);
+                final int z = (args[2].equals("~")) ? sender.getCommandSenderEntity().getPosition().getZ() : Integer.valueOf(args[2]);
                 String modifier = args[4];
                 for (int i = 5; i < args.length; i++)
                 {
@@ -59,7 +60,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                     MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
                     if (mod != null)
                     {
-                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName() 
+                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName() 
                                 + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() 
                                 + " at [" + x + "|" + y + "|" + z + "]");
                     }
@@ -92,7 +93,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getCommandName().compareTo(getCommandName());
+            return ((ICommand)o).getName().compareTo(getName());
         }
         return 0;
     }
