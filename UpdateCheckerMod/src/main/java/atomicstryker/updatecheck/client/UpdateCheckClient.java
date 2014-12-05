@@ -1,7 +1,7 @@
 package atomicstryker.updatecheck.client;
 
 import net.minecraft.util.ChatComponentText;
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import atomicstryker.updatecheck.common.IProxy;
 
 public class UpdateCheckClient implements IProxy
