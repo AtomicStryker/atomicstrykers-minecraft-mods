@@ -138,13 +138,16 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
     
     public void operateOnce(TileEntityStandardMachine te, RecipeOutput output, List<ItemStack> processResult)
     {
-        te.inputSlot.consume();
-        for (InvSlotOutput slot : getOutputSlots())
+        if (!te.inputSlot.isEmpty())
         {
-            if (slot.canAdd(processResult))
+            te.inputSlot.consume();
+            for (InvSlotOutput slot : getOutputSlots())
             {
-                slot.add(processResult);
-                break;
+                if (slot.canAdd(processResult))
+                {
+                    slot.add(processResult);
+                    break;
+                }
             }
         }
     }
