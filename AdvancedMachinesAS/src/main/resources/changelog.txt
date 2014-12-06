@@ -1,3 +1,7 @@
+Version 1.1.3
+    - updated (and requires) IC 2.2.654
+    - fixed "consume from empty slot" error
+
 Version 1.1.2
     - updated (and requires) IC 2.2.575
     - Advanced Machines using Fluid now actually require it to work
