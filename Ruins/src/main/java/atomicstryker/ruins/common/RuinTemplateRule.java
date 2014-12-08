@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -26,6 +27,7 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
@@ -748,8 +750,11 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            ChestGenHooks info = ChestGenHooks.getInfo(gen);
-            WeightedRandomChestContent.generateChestContents(random, info.getItems(random), chest, items);
+            List<WeightedRandomChestContent> list = ChestGenHooks.getInfo(gen).getItems(random);
+            if (WeightedRandom.getTotalWeight(list) > 0)
+            {
+            	WeightedRandomChestContent.generateChestContents(random, list, chest, items);
+            }
         }
     }
     
