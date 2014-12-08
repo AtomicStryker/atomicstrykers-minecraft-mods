@@ -2,7 +2,7 @@ package atomicstryker.multimine.common.fmlmagic;
 
 import java.util.Map;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 // for testing, add to cpw.mods.fml.relauncher.RelaunchLibraryManager.rootPlugins
 

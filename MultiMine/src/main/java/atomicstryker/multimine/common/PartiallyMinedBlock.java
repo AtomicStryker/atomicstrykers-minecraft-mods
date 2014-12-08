@@ -1,36 +1,24 @@
 package atomicstryker.multimine.common;
 
+import net.minecraft.util.BlockPos;
+
 public class PartiallyMinedBlock
 {
-    private final int x;
-    private final int y;
-    private final int z;
+    private final BlockPos pos;
     private final int dimension;
     private int progress;
     private long lastTimeMined;
     
     public PartiallyMinedBlock(int x, int y, int z, int dimension, int progress)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.pos = new BlockPos(x, y, z);
         this.dimension = dimension;
         this.progress = progress;
     }
 
-    public int getX()
+    public BlockPos getPos()
     {
-        return x;
-    }
-    
-    public int getY()
-    {
-        return y;
-    }
-    
-    public int getZ()
-    {
-        return z;
+    	return pos;
     }
     
     public int getDimension()
@@ -74,12 +62,7 @@ public class PartiallyMinedBlock
         if (o instanceof PartiallyMinedBlock)
         {
             PartiallyMinedBlock p = (PartiallyMinedBlock) o;
-            if (p.getX() == x
-            && p.getY() == y
-            && p.getZ() == z)
-            {
-                return true;
-            }
+            return p.getPos().equals(getPos());
         }
         
         return false;
@@ -88,6 +71,6 @@ public class PartiallyMinedBlock
     @Override
     public int hashCode()
     {
-        return x*8123 + y + z*2546;
+        return pos.hashCode();
     }
 }

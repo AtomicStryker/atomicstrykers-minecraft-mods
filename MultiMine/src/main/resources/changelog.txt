@@ -1,3 +1,6 @@
+1.4.4
+- updated to mc 1.8
+
 1.4.3
 - fixed logic screwup allowing blocks to be broken despite permission feedback not to do it
 
