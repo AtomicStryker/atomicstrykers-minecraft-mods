@@ -66,7 +66,7 @@ public class AS_EntityGolemFireball extends Entity
             nextVec = new Vec3(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
         Entity hitEntity = null;
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double minDist = 0.0D;
         for(int index = 0; index < list.size(); index++)
         {
@@ -75,7 +75,7 @@ public class AS_EntityGolemFireball extends Entity
             {
                 continue;
             }
-            AxisAlignedBB axisalignedbb = ent.getBoundingBox().expand( 0.3F,  0.3F,  0.3F);
+            AxisAlignedBB axisalignedbb = ent.getEntityBoundingBox().expand( 0.3F,  0.3F,  0.3F);
             MovingObjectPosition entCollision = axisalignedbb.calculateIntercept(curVec, nextVec);
             if(entCollision == null)
             {
