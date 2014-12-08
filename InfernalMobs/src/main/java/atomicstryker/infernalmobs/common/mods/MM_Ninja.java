@@ -46,7 +46,7 @@ public class MM_Ninja extends MobModifier
     
     private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity)
     {
-        Vec3 vector = new Vec3(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
+        Vec3 vector = new Vec3(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 8.0D;
         double destX = mob.posX + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;

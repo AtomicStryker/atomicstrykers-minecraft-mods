@@ -46,7 +46,7 @@ public class MM_Ghastly extends MobModifier
         if (mob.getDistanceToEntity(target) > MIN_DISTANCE)
         {
             double diffX = target.posX - mob.posX;
-            double diffY = target.getBoundingBox().minY + (double)(target.height / 2.0F) - (mob.posY + (double)(mob.height / 2.0F));
+            double diffY = target.getEntityBoundingBox().minY + (double)(target.height / 2.0F) - (mob.posY + (double)(mob.height / 2.0F));
             double diffZ = target.posZ - mob.posZ;
             mob.renderYawOffset = mob.rotationYaw = -((float)Math.atan2(diffX, diffZ)) * 180.0F / (float)Math.PI;
 

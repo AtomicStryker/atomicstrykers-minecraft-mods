@@ -43,7 +43,7 @@ public class RendererBossGlow
         for (EntityLivingBase ent : mobsmap.keySet())
         {
             if (ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVector()))
-            && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.getBoundingBox()))
+            && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.getEntityBoundingBox()))
             && ent.isEntityAlive())
             {
                 mc.renderGlobal.spawnParticle(EnumParticleTypes.SPELL_MOB.getParticleID(),

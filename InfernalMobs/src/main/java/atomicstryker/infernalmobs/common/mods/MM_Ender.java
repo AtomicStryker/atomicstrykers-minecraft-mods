@@ -45,7 +45,7 @@ public class MM_Ender extends MobModifier
     private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity)
     {
         Vec3 vector =
-                new Vec3(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double) (mob.height / 2.0F) - par1Entity.posY
+                new Vec3(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double) (mob.height / 2.0F) - par1Entity.posY
                         + (double) par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 16.0D;
@@ -88,7 +88,7 @@ public class MM_Ender extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
 
-            if (mob.worldObj.getCollidingBoundingBoxes(mob, mob.getBoundingBox()).isEmpty() && !mob.worldObj.isAnyLiquid(mob.getBoundingBox()))
+            if (mob.worldObj.getCollidingBoundingBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.worldObj.isAnyLiquid(mob.getEntityBoundingBox()))
             {
                 success = true;
             }
