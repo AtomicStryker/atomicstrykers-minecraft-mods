@@ -65,12 +65,12 @@ public class UpdateCheckMod
                     {
                         if (!Loader.instance().getMCVersionString().equals(tokens[1].trim()))
                         {
-                            System.out.println("Now reading data segment for mismatching mcversion: " + tokens[1].trim());
+                            //System.out.println("Now reading data segment for mismatching mcversion: " + tokens[1].trim());
                             inCorrectMCVersionArea = false;
                         }
                         else
                         {
-                            System.out.println("Your mcversion is: " + tokens[1].trim() + " and matches the next Update Checker data segment");
+                            //System.out.println("Your mcversion is: " + tokens[1].trim() + " and matches the next Update Checker data segment");
                             inCorrectMCVersionArea = true;
                         }
                     }
