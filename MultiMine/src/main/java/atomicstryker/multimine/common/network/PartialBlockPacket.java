@@ -4,11 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.MultiMineServer;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class PartialBlockPacket implements IPacket
 {
@@ -49,13 +48,13 @@ public class PartialBlockPacket implements IPacket
         z = bytes.readInt();
         value = bytes.readInt();
         
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        if (user.equals("server"))
         {
             MultiMineClient.instance().onServerSentPartialBlockData(x, y, z, value);
         }
         else
         {
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
             if (player != null)
             {
                 MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);

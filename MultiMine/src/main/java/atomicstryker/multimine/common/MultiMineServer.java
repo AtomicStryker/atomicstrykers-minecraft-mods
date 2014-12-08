@@ -9,29 +9,29 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.common.registry.GameData;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.common.registry.GameData;
 
 public class MultiMineServer
 {
@@ -94,9 +94,10 @@ public class MultiMineServer
         int dimension = player.dimension;
         MultiMine.instance().debugPrint("multi mine client sent progress packet from dimension " + dim + ", server says its dimension " + dimension);
         
-        final Block block = player.worldObj.getBlock(x, y, z);
-        final int meta = player.worldObj.getBlockMetadata(x, y, z);
-        if (isItemBanned(player.getCurrentEquippedItem()) || isBlockBanned(block, meta))
+        final BlockPos pos = new BlockPos(x, y, z);
+        final IBlockState state = player.worldObj.getBlockState(pos);
+        final Block block = state.getBlock();
+        if (isItemBanned(player.getCurrentEquippedItem()) || isBlockBanned(block, block.getMetaFromState(state)))
         {
             return;
         }
@@ -126,24 +127,24 @@ public class MultiMineServer
                 {
                     MultiMine.instance().debugPrint("Server finishing partial block at: ["+x+"|"+y+"|"+z+"]");
                     // and if its done, destroy the world block
-                    player.worldObj.destroyBlockInWorldPartially(player.getEntityId(), x, y, z, -1);
+                    player.worldObj.sendBlockBreakProgress(player.getEntityId(), pos, -1);
                     
                     if (block != Blocks.air)
                     {
-                        final BlockEvent.BreakEvent event =
-                                ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
-                        if (!event.isCanceled())
+                        final int event =
+                                ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, pos);
+                        if (event != -1)
                         {
-                            if (block.removedByPlayer(player.worldObj, player, x, y, z, true))
+                            if (block.removedByPlayer(player.worldObj, pos, player, true))
                             {
-                                block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
+                                block.onBlockDestroyedByPlayer(player.worldObj, pos, state);
                                 onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
-                                if (block.canHarvestBlock(player, meta))
+                                if (block.canHarvestBlock(player.worldObj, pos, player))
                                 {
-                                    block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                                    block.harvestBlock(player.worldObj, player, pos, state, player.worldObj.getTileEntity(pos));
                                 }
                                 
-                                final S23PacketBlockChange packet = new S23PacketBlockChange(x, y, z, player.worldObj);
+                                final S23PacketBlockChange packet = new S23PacketBlockChange(player.worldObj, pos);
                                 FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager()
                                         .sendPacketToAllPlayersInDimension(packet, player.dimension);
                             }
@@ -236,7 +237,7 @@ public class MultiMineServer
         final ItemStack itemStack = player.getCurrentEquippedItem();
         if (itemStack != null)
         {
-            itemStack.func_150999_a(player.worldObj, blockID, x, y, z, player);
+            itemStack.onBlockDestroyed(player.worldObj, blockID, new BlockPos(x, y, z), player);
 
             if (itemStack.stackSize == 0)
             {
@@ -254,15 +255,15 @@ public class MultiMineServer
      */
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block)
     {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockRemovalPacket(block.getX(), block.getY(), block.getZ()),
-                new TargetPoint(block.getDimension(), block.getX(), block.getY(), block.getZ(), 30D));
+        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockRemovalPacket(block.getPos()),
+                new TargetPoint(block.getDimension(), block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 30D));
     }
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
-        int dimension = player.worldObj.provider.dimensionId;
+        int dimension = player.worldObj.provider.getDimensionId();
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
         if (partiallyMinedBlocks != null)
         {
@@ -296,8 +297,8 @@ public class MultiMineServer
      */
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block)
     {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getX(), block.getY(), block.getZ(),
-                block.getProgress()), new TargetPoint(block.getDimension(), block.getX(), block.getY(), block.getZ(), 32D));
+        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(),
+                block.getProgress()), new TargetPoint(block.getDimension(), block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D));
     }
 
     /**
@@ -311,7 +312,7 @@ public class MultiMineServer
     private void sendPartiallyMinedBlockToPlayer(EntityPlayerMP p, PartiallyMinedBlock block)
     {
         MultiMine.instance().networkHelper.sendPacketToPlayer(
-                new PartialBlockPacket("server", block.getX(), block.getY(), block.getZ(), block.getProgress()), p);
+                new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress()), p);
     }
 
     /**
@@ -379,7 +380,7 @@ public class MultiMineServer
      */
     private boolean isBlockGone(PartiallyMinedBlock block)
     {
-        return serverInstance.worldServerForDimension(block.getDimension()).getBlock(block.getX(), block.getY(), block.getZ()) == Blocks.air;
+        return serverInstance.worldServerForDimension(block.getDimension()).isAirBlock(block.getPos());
     }
 
     /**
