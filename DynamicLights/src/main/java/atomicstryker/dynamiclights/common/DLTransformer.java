@@ -100,34 +100,29 @@ public class DLTransformer implements IClassTransformer
                 
                 AbstractInsnNode targetNode = null;
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
-                
+                boolean found = false;
                 while (iter.hasNext())
                 {
                 	// check all nodes
                     targetNode = (AbstractInsnNode) iter.next();
                     
-                    // find the first ASTORE node, we delete from there on
+                    // find the first ASTORE node, it stores the Block reference for the Block.getLightValue call
                     if (targetNode.getOpcode() == ASTORE)
                     {
                     	VarInsnNode astore = (VarInsnNode) targetNode;
-                    	System.out.println("Found ASTORE Node, is saving in var: "+astore.var);
+                    	System.out.println("Found ASTORE Node, is writing variable number: "+astore.var);
                     	
-                    	// go until ISTORE is hit
+                    	// go further until ISTORE is hit
                     	while (targetNode.getOpcode() != ISTORE)
                     	{
                     		if (targetNode instanceof MethodInsnNode)
                     		{
                     			MethodInsnNode mNode = (MethodInsnNode) targetNode;
-                    			System.out.printf("opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
-                    			// change invokevirtual to invokestatic
-                    			mNode.setOpcode(INVOKESTATIC);
-                    			// change owner
-                    			mNode.owner = "atomicstryker/dynamiclights/client/DynamicLights";
-                    			// change name
-                    			mNode.name = "getLightValue";
-                    			// change desc
-                    			mNode.desc = goalInvokeDesc;
-                    			System.out.printf("opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
+                    			System.out.printf("found target node, opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
+                    			found = true;
+                    			iter.remove();
+                    			targetNode = iter.next(); // select next node as target
+                    			break;
                     		}
                     		targetNode = iter.next();
                     		System.out.printf("Node %s, opcode %d\n", targetNode, targetNode.getOpcode());
@@ -136,6 +131,11 @@ public class DLTransformer implements IClassTransformer
                     }
                 }
                 
+                if (found)
+                {
+                	// now write our replacement before the target node
+                	m.instructions.insertBefore(targetNode, new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", goalInvokeDesc, false));
+                }
                 break;
             }
         }
