@@ -63,7 +63,7 @@ public class DLTransformer implements IClassTransformer
         System.out.println("**************** Dynamic Lights transform running on World, obf: "+obf+" *********************** ");
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
-        classReader.accept(classNode, 0);
+        classReader.accept(classNode, ClassReader.SKIP_FRAMES); // SKIP_FRAMES to avoid ASM bug present here
         
         // find method to inject into
         Iterator<MethodNode> methods = classNode.methods.iterator();
@@ -140,7 +140,7 @@ public class DLTransformer implements IClassTransformer
             }
         }
         
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(writer);
         return writer.toByteArray();
     }
