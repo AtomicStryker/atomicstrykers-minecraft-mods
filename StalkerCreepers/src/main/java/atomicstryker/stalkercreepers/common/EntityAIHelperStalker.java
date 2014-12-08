@@ -14,7 +14,7 @@ public class EntityAIHelperStalker
         
         Vec3 visionVec = seer.getLook(1.0F).normalize();
         Vec3 targetVec = new Vec3(stalker.posX - seer.posX,
-                                            stalker.getBoundingBox().minY + (double)(stalker.height / 2.0F) - (seer.posY + (double)seer.getEyeHeight()),
+                                            stalker.getEntityBoundingBox().minY + (double)(stalker.height / 2.0F) - (seer.posY + (double)seer.getEyeHeight()),
                                             stalker.posZ - seer.posZ);
         targetVec = targetVec.normalize();
         double dotProduct = visionVec.dotProduct(targetVec);
