@@ -190,7 +190,7 @@ public class InfernalMobsClient implements ISidedProxy
                 Entity pointedEntity = null;
                 for (Object obj : mc.theWorld.getEntitiesWithinAABBExcludingEntity(
                         mc.getRenderViewEntity(),
-                        mc.getRenderViewEntity().getBoundingBox().addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
+                        mc.getRenderViewEntity().getEntityBoundingBox().addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
                                 viewEntityLookVec.zCoord * reachDistance).expand((double) expandBBvalue, (double) expandBBvalue,
                                 (double) expandBBvalue)))
                 {
@@ -198,7 +198,7 @@ public class InfernalMobsClient implements ISidedProxy
                     if (iterEnt.canBeCollidedWith())
                     {
                         float entBorderSize = iterEnt.getCollisionBorderSize();
-                        AxisAlignedBB entHitBox = iterEnt.getBoundingBox().expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
+                        AxisAlignedBB entHitBox = iterEnt.getEntityBoundingBox().expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
                         MovingObjectPosition interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
 
                         if (entHitBox.isVecInside(viewEntPositionVec))
