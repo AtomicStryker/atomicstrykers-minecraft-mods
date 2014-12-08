@@ -324,7 +324,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         if (!worldObj.isRemote)
         {
             double diffX = getAttackTarget().posX - posX;
-            double diffY = (getAttackTarget().getBoundingBox().minY + (double)(getAttackTarget().height / 2.0F)) - (posY + (double)(height * 0.8D));
+            double diffY = (getAttackTarget().getEntityBoundingBox().minY + (double)(getAttackTarget().height / 2.0F)) - (posY + (double)(height * 0.8D));
             double diffZ = getAttackTarget().posZ - posZ;
             
             renderYawOffset = rotationYaw = (-(float)Math.atan2(diffX, diffZ) * 180F) / (float)Math.PI;
