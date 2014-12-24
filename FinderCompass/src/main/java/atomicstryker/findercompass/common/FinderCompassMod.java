@@ -30,7 +30,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.10a")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.10b")
 public class FinderCompassMod
 {
 
@@ -84,7 +84,7 @@ public class FinderCompassMod
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.player);
+        networkHelper.sendPacketToPlayer(new HandshakePacket("server"), (EntityPlayerMP) event.player);
     }
 
     @EventHandler

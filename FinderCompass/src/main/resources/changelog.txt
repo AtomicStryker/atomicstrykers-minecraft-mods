@@ -1,3 +1,6 @@
+1.7.10b
+fixed problem preventing server-client interactions from working
+
 1.7.10a
 fixed problem making the stronghold needle point in a wrong direction
 

@@ -12,25 +12,26 @@ import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
+import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class HandshakePacket implements IPacket
 {
 
     private byte[] configByteArray;
-    private byte fromClient;
+    private String username;
     
     public HandshakePacket() {}
     
-    public HandshakePacket(boolean sentFromClient)
+    public HandshakePacket(String user)
     {
-        fromClient = (byte) (sentFromClient ? 1 : 0);
+        username = user;
     }
 
     @Override
     public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        bytes.writeByte(fromClient);
-        if (fromClient == 0)
+        ByteBufUtils.writeUTF8String(bytes, username);
+        if (username.equals("server"))
         {
             File config = FinderCompassMod.instance.compassConfig;
             configByteArray = new byte[(int)config.length()];
@@ -52,22 +53,14 @@ public class HandshakePacket implements IPacket
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-        fromClient = bytes.readByte();
-        if (fromClient != 0)
+        username = ByteBufUtils.readUTF8String(bytes);
+        if (username.equals("server"))
         {
             FinderCompassLogic.serverHasFinderCompass = true;
             short len = bytes.readShort();
             configByteArray = new byte[len];
             bytes.readBytes(configByteArray);
             FinderCompassClientTicker.instance.inputOverrideConfig(new DataInputStream(new ByteArrayInputStream(configByteArray)));
-        }
-        else
-        {
-            File config = FinderCompassMod.instance.compassConfig;
-            if (config != null && config.exists())
-            {
-                ctx.channel().writeAndFlush(this);
-            }
         }
     }
 
