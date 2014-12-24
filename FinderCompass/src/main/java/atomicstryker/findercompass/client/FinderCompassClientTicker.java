@@ -12,11 +12,11 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import atomicstryker.findercompass.common.network.HandshakePacket;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -50,6 +50,7 @@ public class FinderCompassClientTicker
     {
         COMPASS_ITEM_ID = Items.compass;
         MinecraftForgeClient.registerItemRenderer(FinderCompassMod.instance.compass, new CompassCustomRenderer());
+        MinecraftForge.EVENT_BUS.register(this);
         if (!FinderCompassMod.instance.itemEnabled)
         {
             MinecraftForgeClient.registerItemRenderer(COMPASS_ITEM_ID, new CompassCustomRenderer());
@@ -60,8 +61,9 @@ public class FinderCompassClientTicker
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event)
     {
-        FinderCompassLogic.serverHasFinderCompass = false;
-        FinderCompassMod.instance.networkHelper.sendPacketToServer(new HandshakePacket());
+        // System.out.println("Finder Compass onWorldLoad: "+event.world);
+        // FinderCompassLogic.serverHasFinderCompass = false;
+        // FinderCompassMod.instance.networkHelper.sendPacketToServer(new HandshakePacket(mc.thePlayer.getCommandSenderName()));
     }
 
     @SubscribeEvent

@@ -30,6 +30,7 @@ public class StrongholdPacket implements IPacket
         y = b;
         z = c;
         username = "";
+        System.out.println("Finder Compass server responding for Stronghold");
     }
     
     /**
@@ -40,6 +41,7 @@ public class StrongholdPacket implements IPacket
     {
         x = y = z = 0;
         username = s;
+        System.out.println("Finder Compass client asking for Stronghold");
     }
 
     @Override
@@ -66,6 +68,7 @@ public class StrongholdPacket implements IPacket
         char[] chars = new char[len];
         for (int i = 0; i < len; i++) chars[i] = bytes.readChar();
         username = String.valueOf(chars);
+        System.out.println("Finder Compass packet received, user: "+username+", x: "+x+", z: "+z);
         
         if (username.equals("")) // client received stronghold answer
         {
