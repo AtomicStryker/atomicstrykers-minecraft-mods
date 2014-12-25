@@ -119,8 +119,8 @@ public class RuinTemplate
         {
             return true;
         }
-        // treat snow and most plants as air too
-        if (blockID == Blocks.snow || blockID == Blocks.web)
+        // treat thin snow and most plants as air too
+        if (blockID == Blocks.snow_layer || blockID == Blocks.web)
         {
             return true;
         }
