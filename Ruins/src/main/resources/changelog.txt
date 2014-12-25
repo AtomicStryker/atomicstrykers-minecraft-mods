@@ -412,3 +412,6 @@ a: setAccessible now true
 14.5
 + updated to MC 1.8, no changes to template format (yet)
 + hotfixed issue with chest generation
+
+14.6
++ fixed snow / snow_layer typo
