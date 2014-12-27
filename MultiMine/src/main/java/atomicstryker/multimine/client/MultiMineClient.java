@@ -159,8 +159,7 @@ public class MultiMineClient
                     new PositionedSoundRecord(
                             new ResourceLocation(block.stepSound.getBreakSound()), 
                             (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getFrequency() * 0.8F, x+0.5f, y+0.5f, z+0.5f));
-            //mc.effectRenderer.addBlockDestroyEffects(x, y, z, block, blockMeta);
-            mc.effectRenderer.func_180533_a(new BlockPos(x, y, z), state);
+            mc.effectRenderer.addBlockDestroyEffects(new BlockPos(x, y, z), state);
         }
     }
 
