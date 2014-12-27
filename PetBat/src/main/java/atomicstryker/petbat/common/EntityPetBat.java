@@ -1,6 +1,7 @@
 package atomicstryker.petbat.common;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,19 +12,21 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import atomicstryker.petbat.common.batAI.PetBatAIAttack;
 import atomicstryker.petbat.common.batAI.PetBatAIFindSittingSpot;
 import atomicstryker.petbat.common.batAI.PetBatAIFlying;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpawnData
 {
@@ -38,7 +41,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     private int lastOwnerY;
     private int lastOwnerZ;
 
-    private ChunkCoordinates hangSpot;
+    private BlockPos hangSpot;
 
     public EntityPetBat(World par1World)
     {
@@ -93,13 +96,20 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         return ownerName;
     }
-
+    
+    @Override
+    public Team getTeam()
+    {
+    	return worldObj.getScoreboard().getPlayersTeam(ownerName);
+    }
+    
     /**
      * Used by PetBat Renderer to display Bat Name
      */
-    public String getDisplayName()
+    @Override
+    public IChatComponent getDisplayName()
     {
-        return petName;
+        return new ChatComponentText(petName);
     }
 
     public EntityPlayer getOwnerEntity()
@@ -144,12 +154,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         return foodAttackTarget;
     }
 
-    public void setHangingSpot(ChunkCoordinates coords)
+    public void setHangingSpot(BlockPos coords)
     {
         hangSpot = coords;
     }
 
-    public ChunkCoordinates getHangingSpot()
+    public BlockPos getHangingSpot()
     {
         return hangSpot;
     }
@@ -192,7 +202,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public boolean interact(EntityPlayer player)
     {
-        if (getIsBatHanging() && player.getCommandSenderName() == ownerName)
+        if (getIsBatHanging() && player.getName() == ownerName)
         {
             setIsBatStaying(!getIsBatStaying());
             player.addChatMessage(new ChatComponentText(petName + ": " + 
@@ -373,15 +383,6 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     /**
-     * Returns true if the newer Entity AI code should be run
-     */
-    @Override
-    protected boolean isAIEnabled()
-    {
-        return true;
-    }
-
-    /**
      * Called to update the entity's position/logic.
      */
     @Override
@@ -404,7 +405,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         if (isRecalled)
         {
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
-            if (batstack != null)
+            if (batstack != null && owner != null)
             {
                 ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
@@ -428,9 +429,9 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             final Item fluteItem = PetBatMod.instance().itemBatFlute;
             for (ItemStack inventoryItem : owner.inventory.mainInventory)
             {
-                if (inventoryItem != null && inventoryItem.getItem() == fluteItem && inventoryItem.stackTagCompound != null)
+                if (inventoryItem != null && inventoryItem.getItem() == fluteItem && inventoryItem.getTagCompound() != null)
                 {
-                    if (inventoryItem.stackTagCompound.getString("batName").equals(petName))
+                    if (inventoryItem.getTagCompound().getString("batName").equals(petName))
                     {
                         found = true;
                         break;
@@ -440,8 +441,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             if (!found)
             {
                 ItemStack newflute = new ItemStack(fluteItem, 1, 0);
-                newflute.stackTagCompound = new NBTTagCompound();
-                newflute.stackTagCompound.setString("batName", petName);
+                newflute.setTagCompound(new NBTTagCompound());
+                newflute.getTagCompound().setString("batName", petName);
                 if (owner.inventory.addItemStackToInventory(newflute))
                 {
                     fluteOut = true;
@@ -463,12 +464,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    protected void fall(float par1)
+    public void fall(float distance, float damageMultiplier)
     {
     }
-
+    
     @Override
-    protected void updateFallState(double par1, boolean par3)
+    protected void updateFallState(double distance, boolean onground, Block block, BlockPos pos)
     {
     }
 
@@ -511,7 +512,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         return petName;
     }

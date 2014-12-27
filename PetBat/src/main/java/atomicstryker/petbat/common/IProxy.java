@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 
 public interface IProxy
 {
-    public void onModPreInitLoad();
+    public void onModInit();
 
     public void displayGui(ItemStack itemStack);
 }

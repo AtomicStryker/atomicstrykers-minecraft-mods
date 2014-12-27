@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -24,20 +24,21 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import atomicstryker.petbat.common.network.BatNamePacket;
 import atomicstryker.petbat.common.network.NetworkHelper;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.6")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.7")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -125,7 +126,6 @@ public class PetBatMod implements IProxy
     
     public NetworkHelper networkHelper;
     
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {        
@@ -158,10 +158,14 @@ public class PetBatMod implements IProxy
         
         MinecraftForge.EVENT_BUS.register(this);
         
-        proxy.onModPreInitLoad();
-        
         entityBatFlightCoords = EntityBat.class.getDeclaredFields()[0];
         entityBatFlightCoords.setAccessible(true);
+    }
+    
+    @EventHandler
+    public void init(FMLInitializationEvent event)
+    {
+    	proxy.onModInit();
     }
     
     @EventHandler
@@ -185,8 +189,8 @@ public class PetBatMod implements IProxy
         if (item != null && item.getItem() == TAME_ITEM_ID)
         {
             @SuppressWarnings("unchecked")
-            List<Entity> entityList = p.worldObj.getEntitiesWithinAABBExcludingEntity(p, p.boundingBox.expand(10D, 10D, 10D));
-            ChunkCoordinates coords = new ChunkCoordinates((int)(p.posX+0.5D), (int)(p.posY+1.5D), (int)(p.posZ+0.5D));
+            List<Entity> entityList = p.worldObj.getEntitiesWithinAABBExcludingEntity(p, p.getEntityBoundingBox().expand(10D, 10D, 10D));
+            BlockPos coords = new BlockPos((int)(p.posX+0.5D), (int)(p.posY+1.5D), (int)(p.posZ+0.5D));
             for (Entity ent : entityList)
             {
                 if (ent instanceof EntityBat)
@@ -248,7 +252,7 @@ public class PetBatMod implements IProxy
         if (event.target instanceof EntityPetBat)
         {
             EntityPetBat bat = (EntityPetBat) event.target;
-            if (bat.getOwnerName().equals(event.entityPlayer.getCommandSenderName()) && event.entityPlayer.getCurrentEquippedItem() == null)
+            if (bat.getOwnerName().equals(event.entityPlayer.getName()) && event.entityPlayer.getCurrentEquippedItem() == null)
             {
                 bat.recallToOwner();
                 event.setCanceled(true);
@@ -284,7 +288,7 @@ public class PetBatMod implements IProxy
                 {
                     // bat is inert. see if it was tossed onto pumpkin pie for revival
                     
-                    final List nearEnts = itemDropped.worldObj.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.boundingBox.expand(8D, 8D, 8D));
+                    final List nearEnts = itemDropped.worldObj.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.getEntityBoundingBox().expand(8D, 8D, 8D));
                     for (Object o : nearEnts)
                     {
                         if (o instanceof EntityItem)
@@ -309,7 +313,7 @@ public class PetBatMod implements IProxy
             }
             else if (id == TAME_ITEM_ID)
             {
-                final List nearEnts = itemDropped.worldObj.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.boundingBox.expand(8D, 8D, 8D));
+                final List nearEnts = itemDropped.worldObj.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.getEntityBoundingBox().expand(8D, 8D, 8D));
                 for (Object o : nearEnts)
                 {
                     if (o instanceof EntityPetBat)
@@ -374,13 +378,13 @@ public class PetBatMod implements IProxy
             }
         }
     }
-
-    @Override
-    public void onModPreInitLoad()
-    {
-        // NOOP, Proxy only relevant on client
-    }
-
+    
+	@Override
+	public void onModInit()
+	{
+		// NOOP
+	}
+	
     @Override
     public void displayGui(ItemStack itemStack)
     {
@@ -394,7 +398,7 @@ public class PetBatMod implements IProxy
             ItemStack item = player.inventory.mainInventory[i];
             if (item != null && item.getItem() == itemBatFlute)
             {
-                if (item.stackTagCompound.getString("batName").equals(petName))
+                if (item.getTagCompound().getString("batName").equals(petName))
                 {
                     player.inventory.setInventorySlotContents(i, null);
                     return item;
@@ -403,4 +407,5 @@ public class PetBatMod implements IProxy
         }
         return null;
     }
+
 }
