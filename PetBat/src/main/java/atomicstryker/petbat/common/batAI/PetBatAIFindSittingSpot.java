@@ -1,7 +1,7 @@
 package atomicstryker.petbat.common.batAI;
 
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import atomicstryker.petbat.common.EntityPetBat;
 
@@ -132,7 +132,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                         break;
                     }
                     
-                    if (w.isAirBlock(curX, y, curZ) && w.isAirBlock(curX, y-1, curZ) && w.getBlock(curX, y+1, curZ).isNormalCube())
+                    if (w.isAirBlock(new BlockPos(curX, y, curZ)) && w.isAirBlock(new BlockPos(curX, y-1, curZ)) && w.getBlockState(new BlockPos(curX, y+1, curZ)).getBlock().isNormalCube())
                     {
                         foundSpot(curX, y, curZ);
                         return;
@@ -227,7 +227,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
         private void foundSpot(int x, int y, int z)
         {
             isSearching = false;
-            petBat.setHangingSpot(new ChunkCoordinates(x, y, z));
+            petBat.setHangingSpot(new BlockPos(x, y, z));
         }
     }
 }

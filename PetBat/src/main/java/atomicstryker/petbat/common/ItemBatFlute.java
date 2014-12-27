@@ -1,6 +1,5 @@
 package atomicstryker.petbat.common;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,12 +17,6 @@ public class ItemBatFlute extends Item
     }
     
     @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("petbat:batflute");
-    }
-    
-    @Override
     public boolean getShareTag()
     {
         return true;
@@ -33,15 +26,15 @@ public class ItemBatFlute extends Item
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
     {
         EntityPetBat bat;
-        if (itemStack.stackTagCompound != null)
+        if (itemStack.getTagCompound() != null)
         {
-            String batname = itemStack.stackTagCompound.getString("batName");
+            String batname = itemStack.getTagCompound().getString("batName");
             for (int i = 0; i < world.loadedEntityList.size(); i++)
             {
                 if (world.loadedEntityList.get(i) instanceof EntityPetBat)
                 {
                     bat = (EntityPetBat) world.loadedEntityList.get(i);
-                    if (bat.getDisplayName().equals(batname))
+                    if (bat.getName().equals(batname))
                     {
                         bat.recallToOwner();
                         itemStack.stackSize = 0;
@@ -53,10 +46,11 @@ public class ItemBatFlute extends Item
         return null;
     }
     
+
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        String batname = itemStack.stackTagCompound != null ? (": " + itemStack.stackTagCompound.getString("batName")) : ": unassigned";
+        String batname = itemStack.getTagCompound() != null ? (": " + itemStack.getTagCompound().getString("batName")) : ": unassigned";
         return EnumChatFormatting.GOLD + super.getItemStackDisplayName(itemStack) + batname;
     }
     

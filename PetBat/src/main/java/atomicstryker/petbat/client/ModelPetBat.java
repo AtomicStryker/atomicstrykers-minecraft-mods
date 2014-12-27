@@ -2,14 +2,13 @@ package atomicstryker.petbat.client;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import atomicstryker.petbat.common.EntityPetBat;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
-public class ModelPetBat extends ModelBase
+public class ModelPetBat extends ModelBase implements LayerRenderer
 {
     private ModelRenderer batHead;
     private ModelRenderer batBody;
@@ -92,4 +91,15 @@ public class ModelPetBat extends ModelBase
         this.batHead.render(par7);
         this.batBody.render(par7);
     }
+
+    @Override
+    public void doRenderLayer(EntityLivingBase ent, float limbSwing, float prevLimbSwing, float partialTicks, float x, float y, float z, float smallConst)
+    {
+    }
+
+	@Override
+	public boolean shouldCombineTextures()
+	{
+		return false;
+	}
 }

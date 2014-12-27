@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
 import atomicstryker.petbat.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class BatNamePacket implements IPacket
 {
@@ -36,7 +36,7 @@ public class BatNamePacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         batName = ByteBufUtils.readUTF8String(bytes);
-        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
         if (p != null)
         {
             if (p.getCurrentEquippedItem() != null && p.getCurrentEquippedItem().getItem() == PetBatMod.instance().itemPocketedBat)

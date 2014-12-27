@@ -5,7 +5,7 @@ import java.util.Random;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -22,7 +22,7 @@ public class PetBatAIFlying extends EntityAIBase
     private final double OWNER_DISTANCE_TO_TELEPORT = 400D;
 
     private final EntityPetBat petBat;
-    private ChunkCoordinates currentFlightTarget;
+    private BlockPos currentFlightTarget;
     private Random rand;
     private long nextOwnerCheckTime;
     private long sittingSpotAbortTime;
@@ -94,7 +94,7 @@ public class PetBatAIFlying extends EntityAIBase
                     ItemStack batstack = ItemPocketedPetBat.fromBatEntity(petBat);
                     if (batstack != null)
                     {
-                        ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(petBat.getOwnerEntity(), petBat.getDisplayName());
+                        ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(petBat.getOwnerEntity(), petBat.getName());
                         if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
                         {
                             petBat.worldObj.playSoundAtEntity(petBat.getOwnerEntity(), "mob.slime.big", 1F, 1F);
@@ -119,14 +119,14 @@ public class PetBatAIFlying extends EntityAIBase
 
             // target invalid or no free block
             if (currentFlightTarget != null
-                    && (!petBat.worldObj.isAirBlock(currentFlightTarget.posX, currentFlightTarget.posY, currentFlightTarget.posZ) || currentFlightTarget.posY < 1))
+                    && (!petBat.worldObj.isAirBlock(currentFlightTarget) || currentFlightTarget.getY() < 1))
             {
                 currentFlightTarget = null;
             }
 
             // finding a new target, randomly
             if (currentFlightTarget == null || rand.nextInt(30) == 0
-                    || currentFlightTarget.getDistanceSquared((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ) < 4.0F)
+                    || currentFlightTarget.distanceSq(petBat.posX, petBat.posY, petBat.posZ) < 4.0F)
             {
                 currentFlightTarget = getRandomFlightCoordinates();
             }
@@ -140,7 +140,7 @@ public class PetBatAIFlying extends EntityAIBase
                 sittingSpotAbortTime = System.currentTimeMillis() + SITTINGSPOT_REACHTIME;
             }
 
-            if (currentFlightTarget.getDistanceSquared((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ) < 2F)
+            if (currentFlightTarget.distanceSq(petBat.posX, petBat.posY, petBat.posZ) < 2F)
             {
                 land();
             }
@@ -165,9 +165,9 @@ public class PetBatAIFlying extends EntityAIBase
             else if (currentFlightTarget != null)
             {
                 // go for ChunkCoords flight target!
-                diffX = (double) currentFlightTarget.posX + 0.5D - petBat.posX;
-                diffY = (double) currentFlightTarget.posY + 0.1D - petBat.posY;
-                diffZ = (double) currentFlightTarget.posZ + 0.5D - petBat.posZ;
+                diffX = (double) currentFlightTarget.getX() + 0.5D - petBat.posX;
+                diffY = (double) currentFlightTarget.getY() + 0.1D - petBat.posY;
+                diffZ = (double) currentFlightTarget.getZ() + 0.5D - petBat.posZ;
             }
             else
             {
@@ -191,7 +191,7 @@ public class PetBatAIFlying extends EntityAIBase
         petBat.rotationYaw += var8;
     }
 
-    private ChunkCoordinates getRandomFlightCoordinates()
+    private BlockPos getRandomFlightCoordinates()
     {
         if (petBat.getOwnerEntity() != null)
         {
@@ -218,9 +218,9 @@ public class PetBatAIFlying extends EntityAIBase
             y = petBat.getLastOwnerY() + rand.nextInt(6) - 2 + BAT_OWNER_FOLLOW_Y_OFFSET;
             z = petBat.getLastOwnerZ() + rand.nextInt(7) - rand.nextInt(7);
 
-            orig = Vec3.createVectorHelper(petBat.posX, petBat.posY, petBat.posZ);
-            dest = Vec3.createVectorHelper(x + 0.5D, y + 0.5D, z + 0.5D);
-            movingobjectposition = petBat.worldObj.func_147447_a(orig, dest, false, true, false);
+            orig = new Vec3(petBat.posX, petBat.posY, petBat.posZ);
+            dest = new Vec3(x + 0.5D, y + 0.5D, z + 0.5D);
+            movingobjectposition = petBat.worldObj.rayTraceBlocks(orig, dest, false, true, false);
             if (movingobjectposition == null) // no collision detected, path is
                                               // free
             {
@@ -228,7 +228,7 @@ public class PetBatAIFlying extends EntityAIBase
             }
         }
 
-        return new ChunkCoordinates(x, y, z);
+        return new BlockPos(x, y, z);
     }
 
     private void lookForOwnerEntity()
@@ -243,8 +243,9 @@ public class PetBatAIFlying extends EntityAIBase
     private void checkTakeOffConditions()
     {
         // block it was hanging from is no more
-        if (!petBat.worldObj.getBlock(MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ))
-                .isNormalCube())
+        if (!petBat.worldObj.getBlockState(new BlockPos(
+        		MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ))
+        ).getBlock().isNormalCube())
         {
             takeOff();
         }
@@ -274,7 +275,7 @@ public class PetBatAIFlying extends EntityAIBase
     private void land()
     {
         sittingSpotAbortTime = -1L;
-        petBat.setPosition(currentFlightTarget.posX + 0.5D, currentFlightTarget.posY + 0.5D, currentFlightTarget.posZ + 0.5D);
+        petBat.setPosition(currentFlightTarget.getX() + 0.5D, currentFlightTarget.getY() + 0.5D, currentFlightTarget.getZ() + 0.5D);
         petBat.setIsBatHanging(true);
     }
 
@@ -282,6 +283,6 @@ public class PetBatAIFlying extends EntityAIBase
     {
         petBat.setIsBatHanging(false);
         petBat.setPosition(petBat.posX, petBat.posY - 1D, petBat.posZ);
-        petBat.worldObj.playAuxSFXAtEntity((EntityPlayer) null, 1015, (int) petBat.posX, (int) petBat.posY, (int) petBat.posZ, 0);
+        petBat.worldObj.playAuxSFXAtEntity((EntityPlayer) null, 1015, new BlockPos((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ), 0);
     }
 }
