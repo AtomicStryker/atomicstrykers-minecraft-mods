@@ -617,8 +617,8 @@ public class RuinTemplate
                     }
                     else
                     {
-                        String[] parts = line.split("=");
-                        rules.add(new RuinTemplateRule(debugPrinter, this, parts[1], debugging));
+                        String rulestring = line.substring(line.indexOf('=')+1);
+                        rules.add(new RuinTemplateRule(debugPrinter, this, rulestring, debugging));
                     }
                 }
             }
