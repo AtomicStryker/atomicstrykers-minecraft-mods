@@ -86,8 +86,8 @@ public class RuinTemplateRule
                 blockMDs[i] = 0;
                 specialFlags[i] = SpecialFlags.COMMANDBLOCK;
                 // readd the splitout string for the parsing, offset by 1 because of the prefix string
-                blockStrings[i] = "CommandBlock:" + commandrules[i+1];
-                debugPrinter.println("template " + owner.getName()+" contains Command Block: "+blockStrings[i]);
+                blockStrings[i] = commandrules[i+1];
+                debugPrinter.println("template " + owner.getName()+" contains Command Block command: "+blockStrings[i]);
             }
         }
         // not command blocks
@@ -497,7 +497,19 @@ public class RuinTemplateRule
         else if (specialFlags[blocknum] == SpecialFlags.COMMANDBLOCK)
         {
             int lastIdx = dataString.lastIndexOf(":");
-            addCommandBlock(world, x, y, z, dataString.substring(13, lastIdx), dataString.substring(lastIdx+1, dataString.length()), rotate);
+            String sender;
+            String command;
+            if (lastIdx < 0)
+            {
+                command = dataString;
+                sender = "@";
+            }
+            else
+            {
+                command = dataString.substring(0, lastIdx);
+                sender = dataString.substring(lastIdx+1, dataString.length());
+            }
+            addCommandBlock(world, x, y, z, command, sender, rotate);
         }
         else if (dataString.startsWith("StandingSign:"))
         {

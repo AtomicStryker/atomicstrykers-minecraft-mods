@@ -415,3 +415,6 @@ a: setAccessible now true
 
 14.6
 + fixed snow / snow_layer typo
+
+14.7
++ fixed some more command block parsing errors
