@@ -9,10 +9,10 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
@@ -129,7 +129,7 @@ public class MultiMineServer
                     // and if its done, destroy the world block
                     player.worldObj.sendBlockBreakProgress(player.getEntityId(), pos, -1);
                     
-                    if (block != Blocks.air)
+                    if (block.getMaterial() != Material.air)
                     {
                         final int event =
                                 ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, pos);

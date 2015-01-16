@@ -15,7 +15,7 @@ import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.4.4")
+@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.4.5")
 public class MultiMine
 {
     @Instance("AS_MultiMine")
