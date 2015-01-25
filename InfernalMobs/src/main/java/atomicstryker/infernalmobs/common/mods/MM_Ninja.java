@@ -34,6 +34,7 @@ public class MM_Ninja extends MobModifier
         if (time > nextAbilityUse
         && source.getEntity() != null
         && source.getEntity() != mob
+        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())
         && teleportToEntity(mob, source.getEntity()))
         {
             nextAbilityUse = time+coolDown;

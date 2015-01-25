@@ -31,7 +31,11 @@ public class MM_Ender extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         long time = System.currentTimeMillis();
-        if (time > nextAbilityUse && source.getEntity() != null && source.getEntity() != mob && teleportToEntity(mob, source.getEntity()))
+        if (time > nextAbilityUse
+        && source.getEntity() != null
+        && source.getEntity() != mob
+        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())
+        && teleportToEntity(mob, source.getEntity()))
         {
             nextAbilityUse = time + coolDown;
             source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
