@@ -75,7 +75,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.5.9")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.0")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -95,6 +95,9 @@ public class InfernalMobsCore
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
     private double modHealthFactor;
+    
+    private Entity infCheckA;
+    private Entity infCheckB;
 
     @Instance("InfernalMobs")
     private static InfernalMobsCore instance;
@@ -766,7 +769,7 @@ public class InfernalMobsCore
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.RenderTickEvent tick)
+    public void onTick(TickEvent.WorldTickEvent tick)
     {
         if (System.currentTimeMillis() > nextExistCheckTime)
         {
@@ -780,6 +783,12 @@ public class InfernalMobsCore
                     removeEntFromElites((EntityLivingBase) mob);
                 }
             }
+        }
+        
+        if (!tick.world.isRemote)
+        {
+            infCheckA = null;
+            infCheckB = null;   
         }
     }
 
@@ -801,6 +810,21 @@ public class InfernalMobsCore
     public boolean getIsEntityAllowedTarget(Entity entity)
     {
         return !(entity instanceof FakePlayer);
+    }
+    
+    /**
+     * By caching the last reflection pairing we make sure it doesn't trigger more than once (reflections battling each other, infinite loop, crash)
+     * @return true when inf loop is suspected, false otherwise
+     */
+    public boolean isInfiniteLoop(EntityLivingBase mob, Entity entity)
+    {
+        if ((mob == infCheckA && entity == infCheckB) || (mob == infCheckB && entity == infCheckA))
+        {
+            return true;
+        }
+        infCheckA = mob;
+        infCheckB = entity;
+        return false;
     }
 
 }
