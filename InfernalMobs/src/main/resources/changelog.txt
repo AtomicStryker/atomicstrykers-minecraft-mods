@@ -1,3 +1,8 @@
+1.6.1
+- fixed reflecting modifiers causing infinite loops when meeting other damage reflecting entities
+- changed update tick from client render to world tick
+- added IT translation, courtesy of CapoFantasma97 of MCF
+
 1.6.0
 - updated for mc 1.8
 
