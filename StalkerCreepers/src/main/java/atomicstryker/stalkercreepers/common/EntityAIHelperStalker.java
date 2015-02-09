@@ -10,7 +10,7 @@ public class EntityAIHelperStalker
     {
         EntityLivingBase seer = stalker.getAttackTarget();
         
-        if (stalker == null || seer == null) return true;
+        if (stalker == null || seer == null || stalker.getEntityBoundingBox() == null) return true;
         
         Vec3 visionVec = seer.getLook(1.0F).normalize();
         Vec3 targetVec = new Vec3(stalker.posX - seer.posX,
