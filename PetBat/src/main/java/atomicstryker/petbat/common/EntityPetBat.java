@@ -202,7 +202,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public boolean interact(EntityPlayer player)
     {
-        if (getIsBatHanging() && player.getName() == ownerName)
+        if (getIsBatHanging() && player.getCommandSenderName() == ownerName)
         {
             setIsBatStaying(!getIsBatStaying());
             player.addChatMessage(new ChatComponentText(petName + ": " + 
@@ -512,7 +512,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public String getName()
+    public String getCommandSenderName()
     {
         return petName;
     }
