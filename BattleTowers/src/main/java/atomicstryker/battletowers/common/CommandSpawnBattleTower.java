@@ -11,7 +11,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
 {
 
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "spawnbattletower";
     }
@@ -23,7 +23,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
     }
 
     @Override
-    public void execute(ICommandSender icommandsender, String[] astring) throws CommandException
+    public void processCommand(ICommandSender icommandsender, String[] astring) throws CommandException
     {
         if (astring.length < 5)
         {
@@ -39,7 +39,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
                 int type = Integer.valueOf(astring[3]);
                 boolean underground = Boolean.valueOf(astring[4]);
                 WorldGenHandler.generateTower(icommandsender.getEntityWorld(), x, y, z, type, underground);
-                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower spawned");
+                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": Battletower spawned");
             }
             catch (Exception e)
             {
