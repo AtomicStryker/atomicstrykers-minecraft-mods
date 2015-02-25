@@ -48,7 +48,7 @@ public class PetBatAIAttack extends EntityAIBase
         if (entityTarget instanceof EntityPlayer)
         {
             EntityPlayer p = (EntityPlayer) entityTarget;
-            if (entityTarget.getName().equals(petBat.getOwnerName()) && p.getHealth() < p.getMaxHealth()/2)
+            if (entityTarget.getCommandSenderName().equals(petBat.getOwnerName()) && p.getHealth() < p.getMaxHealth()/2)
             {
                 petBat.recallToOwner();
                 return false;

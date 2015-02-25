@@ -252,7 +252,7 @@ public class PetBatMod implements IProxy
         if (event.target instanceof EntityPetBat)
         {
             EntityPetBat bat = (EntityPetBat) event.target;
-            if (bat.getOwnerName().equals(event.entityPlayer.getName()) && event.entityPlayer.getCurrentEquippedItem() == null)
+            if (bat.getOwnerName().equals(event.entityPlayer.getCommandSenderName()) && event.entityPlayer.getCurrentEquippedItem() == null)
             {
                 bat.recallToOwner();
                 event.setCanceled(true);
