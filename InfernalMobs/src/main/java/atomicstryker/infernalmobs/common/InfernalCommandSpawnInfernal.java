@@ -16,7 +16,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
 {
 
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "spawninfernal";
     }
@@ -29,7 +29,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
 
     @SuppressWarnings({ "unchecked" })
     @Override
-    public void execute(ICommandSender sender, String[] args) throws CommandException
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 5)
         {
@@ -60,7 +60,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                     MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
                     if (mod != null)
                     {
-                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName() 
+                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName() 
                                 + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() 
                                 + " at [" + x + "|" + y + "|" + z + "]");
                     }
@@ -93,7 +93,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getName().compareTo(getName());
+            return ((ICommand)o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }

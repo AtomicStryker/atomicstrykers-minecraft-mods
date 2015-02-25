@@ -16,7 +16,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
 {
 
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "feclass";
     }
@@ -29,7 +29,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
 
     @SuppressWarnings("unchecked")
     @Override
-    public void execute(ICommandSender sender, String[] args) throws CommandException
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length == 0)
         {
@@ -67,7 +67,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
                 result += "Nothing found.";
             }
             
-            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName()+ ": " + result);
+            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName()+ ": " + result);
         }
     }
     
@@ -82,7 +82,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getName().compareTo(getName());
+            return ((ICommand)o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }
