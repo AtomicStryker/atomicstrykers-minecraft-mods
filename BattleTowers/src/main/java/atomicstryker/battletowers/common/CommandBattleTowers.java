@@ -17,7 +17,7 @@ public abstract class CommandBattleTowers extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getName().compareTo(getName());
+            return ((ICommand)o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }

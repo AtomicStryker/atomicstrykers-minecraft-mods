@@ -9,7 +9,7 @@ public class CommandRegenerateAllBattleTowers extends CommandBattleTowers
 {
 
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "regenerateallbattletowers";
     }
@@ -21,10 +21,10 @@ public class CommandRegenerateAllBattleTowers extends CommandBattleTowers
     }
 
     @Override
-    public void execute(ICommandSender icommandsender, String[] astring)
+    public void processCommand(ICommandSender icommandsender, String[] astring)
     {
         WorldGenHandler.deleteAllTowers(icommandsender.getEntityWorld(), true);
-        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletowers regenerated");
+        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": Battletowers regenerated");
     }
 
 }
