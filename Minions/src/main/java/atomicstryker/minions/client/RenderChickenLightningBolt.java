@@ -14,13 +14,13 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt.Segment;
 import atomicstryker.minions.common.codechicken.Vector3;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class RenderChickenLightningBolt
 {
@@ -30,7 +30,7 @@ public class RenderChickenLightningBolt
     
 	private static Vector3 getRelativeViewVector(Vector3 pos)
 	{
-		Entity renderentity = Minecraft.getMinecraft().renderViewEntity;
+		Entity renderentity = Minecraft.getMinecraft().getRenderViewEntity();
     	return new Vector3((float)renderentity.posX - pos.x, (float)renderentity.posY + renderentity.getEyeHeight() - pos.y, (float)renderentity.posZ - pos.z);
 	}
 	
@@ -46,27 +46,27 @@ public class RenderChickenLightningBolt
 		
 		GL11.glTranslated(-interpPosX, -interpPosY, -interpPosZ);
 		
-		Tessellator tessellator = Tessellator.instance;
+		Tessellator tessellator = Tessellator.getInstance();
 		
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texO);
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(0xF000F0);
+		tessellator.getWorldRenderer().startDrawingQuads();
+		tessellator.getWorldRenderer().setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
-			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.rotationX, ActiveRenderInfo.rotationXZ, ActiveRenderInfo.rotationZ, ActiveRenderInfo.rotationXY, 0);
+			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.getRotationX(), ActiveRenderInfo.getRotationXZ(), ActiveRenderInfo.getRotationZ(), ActiveRenderInfo.getRotationXY(), 0);
 		}
         tessellator.draw();
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texI);
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(0xF000F0);
+		tessellator.getWorldRenderer().startDrawingQuads();
+		tessellator.getWorldRenderer().setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
-			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.rotationX, ActiveRenderInfo.rotationXZ, ActiveRenderInfo.rotationZ, ActiveRenderInfo.rotationXY, 1);
+			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.getRotationX(), ActiveRenderInfo.getRotationXZ(), ActiveRenderInfo.getRotationZ(), ActiveRenderInfo.getRotationXY(), 1);
 		}
         tessellator.draw();
 		
@@ -114,31 +114,31 @@ public class RenderChickenLightningBolt
         	Vector3 startvec = rendersegment.startpoint.point;
         	Vector3 endvec = rendersegment.endpoint.point;
         	
-            tessellator.setColorRGBA_F(1, 1, 1, mainalpha * rendersegment.light);
+            tessellator.getWorldRenderer().setColorRGBA_F(1, 1, 1, mainalpha * rendersegment.light);
             
-            tessellator.addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
-            tessellator.addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
-            tessellator.addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
-            tessellator.addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+            tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
+            tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
+            tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+            tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
             
             if(rendersegment.next == null)
             {
             	Vector3 roundend = rendersegment.endpoint.point.copy().add(rendersegment.diff.copy().normalize().multiply(width));
             	                
-                tessellator.addVertexWithUV(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z, 0, 0);
-                tessellator.addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
-                tessellator.addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
-                tessellator.addVertexWithUV(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z, 0, 1);
+                tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z, 0, 0);
+                tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
+                tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+                tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z, 0, 1);
             }
             
             if(rendersegment.prev == null)
             {
             	Vector3 roundend = rendersegment.startpoint.point.copy().subtract(rendersegment.diff.copy().normalize().multiply(width));
             	                
-                tessellator.addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
-                tessellator.addVertexWithUV(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z, 0, 0);
-                tessellator.addVertexWithUV(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z, 0, 1);
-                tessellator.addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+                tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
+                tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z, 0, 0);
+                tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z, 0, 1);
+                tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
             }
         }
 	}

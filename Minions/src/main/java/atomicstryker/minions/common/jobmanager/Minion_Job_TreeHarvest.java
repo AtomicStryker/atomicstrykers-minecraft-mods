@@ -3,7 +3,7 @@ package atomicstryker.minions.common.jobmanager;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import atomicstryker.minions.common.entity.EntityMinion;
 
@@ -84,7 +84,7 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     	super.onJobFinished();
     }
     
-	public void onFoundTreeBase(int ix, int iy, int iz, ArrayList<ChunkCoordinates> treeBlockList, ArrayList<ChunkCoordinates> leaveBlockList)
+	public void onFoundTreeBase(int ix, int iy, int iz, ArrayList<BlockPos> treeBlockList, ArrayList<BlockPos> leaveBlockList)
 	{		
 		BlockTask_TreeChop newJob = new BlockTask_TreeChop(this, null, ix, iy, iz, treeBlockList, leaveBlockList);
 		if (!this.jobQueue.contains(newJob))

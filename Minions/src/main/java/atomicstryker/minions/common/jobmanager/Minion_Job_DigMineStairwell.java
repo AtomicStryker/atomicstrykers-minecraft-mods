@@ -24,9 +24,9 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     public Minion_Job_DigMineStairwell(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
     	super(minions, ix, iy, iz);
-    	startX = this.pointOfOrigin.posX;
-    	startY = this.pointOfOrigin.posY;
-    	startZ = this.pointOfOrigin.posZ;
+    	startX = this.pointOfOrigin.getX();
+    	startY = this.pointOfOrigin.getY();
+    	startZ = this.pointOfOrigin.getZ();
     }
     
     @Override

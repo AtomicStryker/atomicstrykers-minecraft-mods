@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.astarpathing.AStarStatic;
@@ -57,9 +58,9 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	
     	this.worldObj = m.worldObj;
     	
-    	startX = this.pointOfOrigin.posX;
-    	startY = this.pointOfOrigin.posY;
-    	startZ = this.pointOfOrigin.posZ;
+    	startX = this.pointOfOrigin.getX();
+    	startY = this.pointOfOrigin.getY();
+    	startZ = this.pointOfOrigin.getZ();
     	xZtoDig = ixzSize;
     	ytoDig = iySize;
     	
@@ -153,7 +154,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     		if (hasJobs)
     		{    			
     			BlockTask job = this.jobQueue.get(0);
-    			if (worldObj.getBlock(job.posX, job.posY, job.posZ) == Blocks.air
+    			if (worldObj.getBlockState(new BlockPos(job.posX, job.posY, job.posZ)).getBlock() == Blocks.air
     			&& job instanceof BlockTask_MineBlock
     			&& ((BlockTask_MineBlock)job).disableDangerCheck)
     			{
@@ -221,7 +222,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 
 			i--;
 			//System.out.println("Now checking: ["+x+"|"+y+"|"+z+"]");
-			if (worldObj.getBlock(x, y, z) != Blocks.air)
+			if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.air)
 			{
 				BlockTask_MineBlock mineTask = new BlockTask_MineBlock(this, null, x, y, z);
 				if (!blocksToMine.contains(mineTask))
@@ -449,7 +450,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
             			&& zFin <= maxZ
             			&& yFin <= maxY)
             			{
-            				if (worldObj.getBlock(xFin, yFin, zFin) != Blocks.air)
+            				if (worldObj.getBlockState(new BlockPos(xFin, yFin, zFin)).getBlock() != Blocks.air)
             				{
                 				mineTask = new BlockTask_MineBlock(this, null, xFin, yFin, zFin, true);
                         		if (blocksToMine.contains(mineTask) && !jobQueue.contains(mineTask))

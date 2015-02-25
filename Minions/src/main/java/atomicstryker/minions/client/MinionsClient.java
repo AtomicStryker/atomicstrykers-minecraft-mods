@@ -14,12 +14,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -47,10 +53,6 @@ import atomicstryker.minions.common.network.MovetoPacket;
 import atomicstryker.minions.common.network.PickupEntPacket;
 import atomicstryker.minions.common.network.SoundPacket;
 import atomicstryker.minions.common.network.StripminePacket;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class MinionsClient
 {
@@ -161,9 +163,9 @@ public class MinionsClient
             }
             else if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK)
             {
-                int x = mc.objectMouseOver.blockX;
-                int y = mc.objectMouseOver.blockY;
-                int z = mc.objectMouseOver.blockZ;
+                int x = mc.objectMouseOver.getBlockPos().getX();
+                int y = mc.objectMouseOver.getBlockPos().getY();
+                int z = mc.objectMouseOver.getBlockPos().getZ();
                 
                 int bossX = MathHelper.floor_double(mc.thePlayer.posX);
                 int bossZ = MathHelper.floor_double(mc.thePlayer.posZ);
@@ -228,7 +230,7 @@ public class MinionsClient
                 if (MinionsCore.instance.hasPlayerWillPower(mc.thePlayer))
                 {
                     lastStaffLightningBoltTime = System.currentTimeMillis();
-                    EntityLivingBase p = mc.renderViewEntity;
+                    Entity p = mc.getRenderViewEntity();
                     MovingObjectPosition pos = p.rayTrace(10, renderTick);
                     if (pos != null)
                     {
@@ -249,7 +251,7 @@ public class MinionsClient
                 }
             }
             
-            if (menuKey.getIsKeyPressed())
+            if (menuKey.isKeyDown())
             {
                 mc.displayGuiScreen(new GuiMinionMenu());
             }
@@ -322,8 +324,8 @@ public class MinionsClient
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
         // this raytrace does not hit entities since 1.7!
-        MovingObjectPosition targetObjectMouseOver = mcinstance.renderViewEntity.rayTrace(30.0D, 1.0F);
-        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.getGameProfile().getName());
+        MovingObjectPosition targetObjectMouseOver = mcinstance.getRenderViewEntity().rayTrace(30.0D, 1.0F);
+        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.getGameProfile().getCommandSenderName());
         MinionsCore.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getCommandSenderName());
         
         if (targetObjectMouseOver == null)
@@ -349,9 +351,9 @@ public class MinionsClient
         }
         else if (targetObjectMouseOver.typeOfHit == MovingObjectType.BLOCK)
         {
-            int x = targetObjectMouseOver.blockX;
-            int y = targetObjectMouseOver.blockY +1;
-            int z = targetObjectMouseOver.blockZ;
+            int x = targetObjectMouseOver.getBlockPos().getX();
+            int y = targetObjectMouseOver.getBlockPos().getY() +1;
+            int z = targetObjectMouseOver.getBlockPos().getZ();
             
             MinionsCore.debugPrint("OnMastersGloveRightClick coordinate mode, ["+x+"|"+y+"|"+z+"]");
 
@@ -364,11 +366,11 @@ public class MinionsClient
             if (!hasAllMinionsSMPOverride)
             {
                 MinionsCore.instance.networkHelper.sendPacketToServer(new MinionSpawnPacket(playerEnt.getCommandSenderName(), x, y, z));
-                playerEnt.worldObj.spawnParticle("hugeexplosion", x, y, z, 0.0D, 0.0D, 0.0D);
+                playerEnt.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y, z, 0.0D, 0.0D, 0.0D);
                 return;
             }
 
-            Block ID = worldObj.getBlock(x, y, z);
+            Block ID = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
             TileEntity chestOrInventoryBlock;
 
             if (MinionsCore.instance.foundTreeBlocks.contains(ID))
@@ -423,7 +425,7 @@ public class MinionsClient
                     }
                 }
             }
-            else if ((chestOrInventoryBlock = worldObj.getTileEntity(x, y-1, z)) != null
+            else if ((chestOrInventoryBlock = worldObj.getTileEntity(new BlockPos(x, y-1, z))) != null
                     && chestOrInventoryBlock instanceof IInventory
                     && ((IInventory)chestOrInventoryBlock).getSizeInventory() >= 24)
             {
@@ -443,7 +445,7 @@ public class MinionsClient
                     MinionsCore.instance.networkHelper.sendPacketToServer(new MovetoPacket(playerEnt.getCommandSenderName(), x, y, z));
                 }
             }
-            else if (MinionsCore.instance.isBlockValueable(worldObj.getBlock(x, y-1, z)))
+            else if (MinionsCore.instance.isBlockValueable(worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock()))
             {
                 MinionsCore.instance.networkHelper.sendPacketToServer(new DigOreVeinPacket(playerEnt.getCommandSenderName(), x, y, z));
             }

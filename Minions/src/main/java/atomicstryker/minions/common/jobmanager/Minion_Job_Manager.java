@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 
@@ -26,7 +26,7 @@ public abstract class Minion_Job_Manager
 	/**
 	 * XYZ coordinates of where the player 'placed' the job
 	 */
-	public final ChunkCoordinates pointOfOrigin;
+	public BlockPos pointOfOrigin;
 	
 	/**
 	 * Contains all Blocktasks the Job needs done in ascending order. Once all are finished, the job is done.
@@ -55,7 +55,6 @@ public abstract class Minion_Job_Manager
         jobQueue = new ArrayList<BlockTask>();
         hasJobStarted = false;
         masterName = null;
-        pointOfOrigin = new ChunkCoordinates();
         isFinished = false;
 	}
 	
@@ -83,13 +82,13 @@ public abstract class Minion_Job_Manager
     public Minion_Job_Manager(int ix, int iy, int iz)
     {
         this();
-        pointOfOrigin.set(ix, iy, iz);
+        pointOfOrigin = new BlockPos(ix, iy, iz);
     }
 	
     public Minion_Job_Manager(Collection<EntityMinion> minions, int ix, int iy, int iz)
     {
         this(minions);
-    	pointOfOrigin.set(ix, iy, iz);
+        pointOfOrigin = new BlockPos(ix, iy, iz);
     }
     
     /**

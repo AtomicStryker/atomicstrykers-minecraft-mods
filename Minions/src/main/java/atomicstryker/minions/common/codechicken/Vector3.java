@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
 public class Vector3
@@ -38,6 +39,13 @@ public class Vector3
         z = vec.z;
     }
 
+    public Vector3(BlockPos pos)
+    {
+        x = pos.getX();
+        y = pos.getY();
+        z = pos.getZ();
+    }
+
     public Vector3 copy()
     {
     	return new Vector3(this);
@@ -50,17 +58,17 @@ public class Vector3
     
     public static Vector3 fromEntityCenter(Entity e)
 	{
-    	return new Vector3(e.posX, e.posY - e.yOffset + e.height/2, e.posZ);
+    	return new Vector3(e.posX, e.posY - e.getYOffset() + e.height/2, e.posZ);
 	}
 
 	public static Vector3 fromTileEntity(TileEntity e)
 	{
-		return new Vector3(e.xCoord, e.yCoord, e.zCoord);
+		return new Vector3(e.getPos());
 	}
 	
 	public static Vector3 fromTileEntityCenter(TileEntity e)
 	{
-		return new Vector3(e.xCoord + 0.5, e.yCoord + 0.5, e.zCoord + 0.5);
+		return new Vector3(e.getPos().add(0.5, 0.5, 0.5));
 	}
 
 	public static Vector3 fromVec3(Vec3 vec)
@@ -219,7 +227,7 @@ public class Vector3
 
 	public Vec3 toVec3D()
 	{
-		return Vec3.createVectorHelper(x, y, z);
+		return new Vec3(x, y, z);
 	}
 
 	public double angle(Vector3 vec)

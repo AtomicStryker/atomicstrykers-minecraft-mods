@@ -3,18 +3,19 @@ package atomicstryker.minions.client;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
-
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Minion Render Class, allows displaying of a Minion Description and it's item
@@ -23,18 +24,19 @@ import atomicstryker.minions.common.entity.EntityMinion;
  * @author AtomicStryker
  */
 
+@SuppressWarnings("deprecation")
 public class RenderMinion extends RenderLiving
 {
 	private ModelMinion model;
 	private ResourceLocation tex = new ResourceLocation("minions", "textures/model/AS_EntityMinion.png");
 	
+    @SuppressWarnings("unchecked")
     public RenderMinion(ModelBase var1, float var2)
     {
-		super(var1, var2);
+		super(Minecraft.getMinecraft().getRenderManager(), var1, var2);
 		
 		this.model = (ModelMinion) var1;
-		this.setRenderPassModel(var1);
-		this.setRenderManager(RenderManager.instance);
+		this.layerRenderers.add(new CustomHeldItem(model.bipedRightArm));
 	}
 
     @Override
@@ -50,7 +52,8 @@ public class RenderMinion extends RenderLiving
             GL11.glTranslatef(0.0F, 0.3125F, 0.0F);
         }
     }
-
+    
+    /*
     @Override
     protected void renderEquippedItems(EntityLivingBase var1, float var2)
     {
@@ -88,38 +91,63 @@ public class RenderMinion extends RenderLiving
                 GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
             }
 
-            this.renderManager.itemRenderer.renderItem(var1, heldItem, 0);
+            Minecraft.getMinecraft().getItemRenderer().renderItem(var1, heldItem, ItemCameraTransforms.TransformType.THIRD_PERSON);
 
             GL11.glPopMatrix();
         }
     }
-
-    @Override
-    protected void passSpecialRender(EntityLivingBase var1, double var2, double var4, double var6)
-    {
-        this.renderMinionName((EntityMinion)var1, var2, var4, var6);
-    }
-
-    private void renderMinionName(EntityMinion var1, double var2, double var4, double var6)
-    {
-        if (Minecraft.isGuiEnabled() && var1 != this.renderManager.livingPlayer)
-        {
-            float var10 = var1.getDistanceToEntity(this.renderManager.livingPlayer);
-            float var11 = 12.0F;
-            if (var10 < var11)
-            {
-                String var12 = var1.getDisplayName();
-                if (var12 != null)
-                {
-                    this.func_147906_a(var1, var12, var2, var4 - 0.825D, var6, 64);
-                }
-            }
-        }
-    }
+    */
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity)
     {
         return tex;
+    }
+    
+    private class CustomHeldItem implements LayerRenderer
+    {
+        
+        private final ModelRenderer rightArm;
+        
+        private CustomHeldItem(ModelRenderer ra)
+        {
+            rightArm = ra;
+        }
+        
+        @Override
+        public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
+        {
+            ItemStack itemstack = entitylivingbaseIn.getHeldItem();
+
+            if (itemstack != null)
+            {
+                GlStateManager.pushMatrix();
+                
+                rightArm.postRender(0.0625F);
+                GlStateManager.translate(-0.0625F, 0.4375F, 0.0625F);
+
+                Item item = itemstack.getItem();
+                Minecraft minecraft = Minecraft.getMinecraft();
+
+                if (item instanceof ItemBlock && Block.getBlockFromItem(item).getRenderType() == 2)
+                {
+                    GlStateManager.translate(0.0F, 0.1875F, -0.3125F);
+                    GlStateManager.rotate(20.0F, 1.0F, 0.0F, 0.0F);
+                    GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+                    float f8 = 0.375F;
+                    GlStateManager.scale(-f8, -f8, f8);
+                }
+
+                minecraft.getItemRenderer().renderItem(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON);
+                GlStateManager.popMatrix();
+            }
+        }
+
+        @Override
+        public boolean shouldCombineTextures()
+        {
+            return false;
+        }
+        
     }
 }

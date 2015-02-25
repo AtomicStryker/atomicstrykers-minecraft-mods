@@ -3,7 +3,7 @@ package atomicstryker.minions.common.jobmanager;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 
@@ -16,14 +16,14 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class BlockTask_MineOreVein extends BlockTask_MineBlock
 {
-    private HashSet<ChunkCoordinates> oreVeinBlocks;
+    private HashSet<BlockPos> oreVeinBlocks;
 	
     public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
     }
     
-    public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, HashSet<ChunkCoordinates> moreBlocks, int ix, int iy, int iz)
+    public BlockTask_MineOreVein(Minion_Job_Manager boss, EntityMinion input, HashSet<BlockPos> moreBlocks, int ix, int iy, int iz)
     {
     	super(boss, input, ix, iy, iz);
     	oreVeinBlocks = moreBlocks;
@@ -42,7 +42,7 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
 
     	if (oreVeinBlocks == null)
     	{
-    		oreVeinBlocks = new HashSet<ChunkCoordinates>();
+    		oreVeinBlocks = new HashSet<BlockPos>();
     	}
     	checkAdjacentBlocks();
     }
@@ -64,17 +64,17 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     {
     	if (oreVeinBlocks == null)
     	{
-    		oreVeinBlocks = new HashSet<ChunkCoordinates>();
+    		oreVeinBlocks = new HashSet<BlockPos>();
     	}
     	
-    	ChunkCoordinates check = new ChunkCoordinates(posX, posY, posZ);
+    	BlockPos check = new BlockPos(posX, posY, posZ);
 		oreVeinBlocks.remove(check);
-		ChunkCoordinates[] arr = new ChunkCoordinates[1];
+		BlockPos[] arr = new BlockPos[1];
 		arr = oreVeinBlocks.toArray(arr);
 		if (arr.length > 0 && arr[0] != null)
 		{
 			check = arr[0];
-			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.posX, check.posY, check.posZ);
+			BlockTask_MineOreVein next = new BlockTask_MineOreVein(boss, worker, oreVeinBlocks, check.getX(), check.getY(), check.getZ());
 			worker.giveTask(next, true);
 		}
 		else
@@ -96,15 +96,15 @@ public class BlockTask_MineOreVein extends BlockTask_MineBlock
     
     private void checkBlockForVein(int x, int y, int z)
     {
-    	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
+    	Block checkBlockID = worker.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
     	if (!MinionsCore.instance.isBlockValueable(checkBlockID))
     	{
     		return;
     	}
 
-    	if (checkBlockID == this.blockID)
+    	if (checkBlockID == this.blockState.getBlock())
     	{
-    		oreVeinBlocks.add(new ChunkCoordinates(x, y, z));
+    		oreVeinBlocks.add(new BlockPos(x, y, z));
     	}
     }
 }

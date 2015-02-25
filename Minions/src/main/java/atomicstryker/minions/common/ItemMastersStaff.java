@@ -1,6 +1,5 @@
 package atomicstryker.minions.common;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -8,8 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Minion control Item class. Nothing to see here really.
@@ -27,13 +24,6 @@ public class ItemMastersStaff extends Item
         this.maxStackSize = 1;
         
         this.setCreativeTab(CreativeTabs.tabCombat);
-    }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister par1IconRegister)
-    {
-        this.itemIcon = par1IconRegister.registerIcon("minions:masterstaff");
     }
 
     @Override
@@ -59,12 +49,6 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public ItemStack onEaten(ItemStack var1, World var2, EntityPlayer var3)
-    {
-        return var1;
-    }
-
-    @Override
     public int getMaxItemUseDuration(ItemStack var1)
     {
         return 72000;
@@ -73,7 +57,7 @@ public class ItemMastersStaff extends Item
     @Override
     public EnumAction getItemUseAction(ItemStack var1)
     {
-        return EnumAction.block;
+        return EnumAction.BLOCK;
     }
 
     @Override

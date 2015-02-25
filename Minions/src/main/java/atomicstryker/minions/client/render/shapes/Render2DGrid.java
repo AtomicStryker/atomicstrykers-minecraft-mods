@@ -41,14 +41,14 @@ public class Render2DGrid {
         for (LineInfo tempColor : color.getColors()) {
             tempColor.prepareRender();
 
-            Tessellator.instance.startDrawing(GL11.GL_LINE_LOOP);
+            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINE_LOOP);
             tempColor.prepareColor();
             for (PointRectangle point : points) {
                 if (point != null) {
-                	Tessellator.instance.addVertex(point.getPoint().getX() + 0.5, height, point.getPoint().getY() + 0.5);
+                	Tessellator.getInstance().getWorldRenderer().addVertex(point.getPoint().getX() + 0.5, height, point.getPoint().getY() + 0.5);
                 }
             }
-            Tessellator.instance.draw();
+            Tessellator.getInstance().draw();
         }
     }
 }

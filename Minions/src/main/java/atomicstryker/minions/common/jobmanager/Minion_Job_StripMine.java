@@ -3,10 +3,10 @@ package atomicstryker.minions.common.jobmanager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 
@@ -56,9 +56,9 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 
         worldObj = m.worldObj;
 
-        startX = this.pointOfOrigin.posX;
-        startY = this.pointOfOrigin.posY;
-        startZ = this.pointOfOrigin.posZ;
+        startX = this.pointOfOrigin.getX();
+        startY = this.pointOfOrigin.getY();
+        startZ = this.pointOfOrigin.getZ();
 
         Entity boss = m.master;
         int bossX = MathHelper.floor_double(boss.posX);
@@ -148,13 +148,13 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 
         if (currentSegment > 0 && currentSegment%7 == 0)
         {
-            if (worldObj.getLightBrightness(nextX, startY, nextZ) < 10F)
+            if (worldObj.getLightBrightness(new BlockPos(nextX, startY, nextZ)) < 10F)
             {
-                BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worldObj, worldObj.getWorldInfo().getGameType(), 
-                        (EntityPlayerMP) workerList.get(0).master, nextX-2*xDirection, startY, nextZ-2*zDirection);
-                if (!event.isCanceled())
+                int event = ForgeHooks.onBlockBreakEvent(worldObj, worldObj.getWorldInfo().getGameType(), 
+                        (EntityPlayerMP) workerList.get(0).master, new BlockPos(nextX-2*xDirection, startY, nextZ-2*zDirection));
+                if (event != -1)
                 {
-                    worldObj.setBlock(nextX-2*xDirection, startY, nextZ-2*zDirection, Blocks.torch, 0, 3);
+                    worldObj.setBlockState(new BlockPos(nextX-2*xDirection,  startY,  nextZ-2*zDirection),  Blocks.torch.getStateFromMeta( 0));
                 }
             }
         }
@@ -162,7 +162,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         // check previous segment floor for having been dug away
         for (int len = 0; len < 4; len++)
         {
-            if (worldObj.getBlock(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len)) == Blocks.air)
+            if (worldObj.isAirBlock(new BlockPos(nextX-(xDirection*len), startY-1, nextZ-(zDirection*len))))
             {
                 jobQueue.add(new BlockTask_ReplaceBlock(this, null, nextX-(xDirection*len), startY-1, nextZ-(zDirection*len), Blocks.dirt, 0));
             }
@@ -197,7 +197,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
 
     private void checkBlockValuables(int x, int y, int z)
     {
-        if (MinionsCore.instance.isBlockValueable(worldObj.getBlock(x, y, z)))
+        if (MinionsCore.instance.isBlockValueable(worldObj.getBlockState(new BlockPos(x, y, z)).getBlock()))
         {
             BlockTask_MineOreVein minetask = new BlockTask_MineOreVein(this, null, x, y, z);
             if (minetask.posY > startY)

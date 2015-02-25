@@ -7,9 +7,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class PickupEntPacket implements IPacket
 {
@@ -37,7 +37,7 @@ public class PickupEntPacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         targetID = bytes.readInt();
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
         if (player != null)
         {
             Entity target = player.worldObj.getEntityByID(targetID);
