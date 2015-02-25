@@ -1,13 +1,14 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -19,8 +20,7 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class BlockTask_MineBlock extends BlockTask
 {
-    public Block blockID;
-    public int blockmetadata;
+    public IBlockState blockState;
     public boolean disableDangerCheck;
 	
     /**
@@ -61,16 +61,12 @@ public class BlockTask_MineBlock extends BlockTask
     {
     	super.onReachedTaskBlock();
     	
-    	this.blockID = worker.worldObj.getBlock(posX, posY, posZ);
+    	blockState = worker.worldObj.getBlockState(pos);
     	//if (blockID > 13) System.out.println("Reached Block["+blockID+"], name "+Block.blocksList[blockID].getBlockName());
     	
-    	if (blockID == Blocks.air)
+    	if (blockState.getBlock() == Blocks.air)
     	{
     		this.onFinishedTask();
-    	}
-    	else
-    	{
-        	this.blockmetadata = worker.worldObj.getBlockMetadata(posX, posY, posZ);
     	}
     }
     
@@ -87,16 +83,16 @@ public class BlockTask_MineBlock extends BlockTask
     	
     	checkDangers();
     	
-    	this.blockID = worker.worldObj.getBlock(posX, posY, posZ); // check against interference mining
-    	if (blockID != Blocks.air && blockID.getBlockHardness(worker.worldObj, posX, posY, posZ) >= 0F)
+    	blockState = worker.worldObj.getBlockState(pos); // check against interference mining
+    	if (blockState.getBlock() != Blocks.air && blockState.getBlock().getBlockHardness(worker.worldObj, pos) >= 0F)
     	{
-    	    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
+    	    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
     	    
-            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
-                    (EntityPlayerMP) worker.master, posX, posY, posZ);
-            if (!event.isCanceled())
+            int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+                    (EntityPlayerMP) worker.master, pos);
+            if (event != -1)
             {
-                if (worker.worldObj.setBlock(posX, posY, posZ, Blocks.air, 0, 3))
+                if (worker.worldObj.setBlockToAir(pos))
                 {
                     putBlockHarvestInWorkerInventory(stackList);
                 }
@@ -122,17 +118,17 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForCaveIn(int x, int y, int z)
     {
-    	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
+    	Block checkBlockID = worker.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
         if (checkBlockID == Blocks.sand || checkBlockID == Blocks.gravel)
         {
-            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
-                    (EntityPlayerMP) worker.master, x, y, z);
-            if (!event.isCanceled())
+            int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+                    (EntityPlayerMP) worker.master, pos);
+            if (event != -1)
             {
                 putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
                 
                 this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-                this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
+                this.worker.worldObj.setBlockState(pos, Blocks.dirt.getDefaultState(), 3);
             }
         }
 	}
@@ -144,7 +140,7 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForDanger(int x, int y, int z, boolean putFloor)
     {
-    	Block checkBlockID = worker.worldObj.getBlock(x, y, z);
+    	Block checkBlockID = worker.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
     	boolean replaceBlock = false;
     	
     	if (checkBlockID == Blocks.air)
@@ -156,27 +152,26 @@ public class BlockTask_MineBlock extends BlockTask
     	}
     	else if (!checkBlockID.getMaterial().isSolid() && checkBlockID != Blocks.torch)
     	{
-    		worker.worldObj.getBlockMetadata(x, y, z);
     		replaceBlock = true;
     	}
     	
     	if (replaceBlock)
     	{
-    	    BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
-    	            (EntityPlayerMP) worker.master, x, y, z);
-            if (!event.isCanceled())
+    	    int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+    	            (EntityPlayerMP) worker.master, pos);
+            if (event != -1)
             {
                 if (checkBlockID != Blocks.air)
                 {
-                    ArrayList<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-                    if (this.worker.worldObj.setBlock(x, y, z, Blocks.air, 0, 3))
+                    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
+                    if (this.worker.worldObj.setBlockToAir(pos))
                     {
                         putBlockHarvestInWorkerInventory(stackList);
                     }
                 }
                 
                 this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-                this.worker.worldObj.setBlock(x, y, z, Blocks.dirt, 0, 3);
+                this.worker.worldObj.setBlockState(pos, Blocks.dirt.getDefaultState(), 3);
             }
     	}
     }

@@ -36,16 +36,16 @@ public class Render2DBox {
         for (LineInfo tempColor : color.getColors()) {
             tempColor.prepareRender();
 
-            Tessellator.instance.startDrawing(GL11.GL_LINES);
+            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINES);
             tempColor.prepareColor();
 
             for (PointRectangle point : points) {
                 if (point != null) {
-                	Tessellator.instance.addVertex(point.getPoint().getX() + 0.5, min + off, point.getPoint().getY() + 0.5);
-                	Tessellator.instance.addVertex(point.getPoint().getX() + 0.5, max + 1 + off, point.getPoint().getY() + 0.5);
+                	Tessellator.getInstance().getWorldRenderer().addVertex(point.getPoint().getX() + 0.5, min + off, point.getPoint().getY() + 0.5);
+                	Tessellator.getInstance().getWorldRenderer().addVertex(point.getPoint().getX() + 0.5, max + 1 + off, point.getPoint().getY() + 0.5);
                 }
             }
-            Tessellator.instance.draw();
+            Tessellator.getInstance().draw();
         }
     }
 }

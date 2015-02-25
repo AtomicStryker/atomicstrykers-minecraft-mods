@@ -6,9 +6,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class EvilDeedPacket implements IPacket
 {
@@ -43,7 +43,7 @@ public class EvilDeedPacket implements IPacket
         sound = ByteBufUtils.readUTF8String(bytes);
         soundLength = bytes.readInt();
 
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
         if (player != null)
         {
             if (player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)

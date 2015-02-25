@@ -38,40 +38,40 @@ public class Render3DBox {
             tempColor.prepareRender();
 
             // Draw bottom face
-            Tessellator.instance.startDrawing(GL11.GL_LINE_LOOP);
+            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINE_LOOP);
             tempColor.prepareColor();
-            Tessellator.instance.addVertex(x1, y1, z1);
-            Tessellator.instance.addVertex(x2, y1, z1);
-            Tessellator.instance.addVertex(x2, y1, z2);
-            Tessellator.instance.addVertex(x1, y1, z2);
-            Tessellator.instance.draw();
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z2);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z2);
+            Tessellator.getInstance().draw();
 
             // Draw top face
-            Tessellator.instance.startDrawing(GL11.GL_LINE_LOOP);
+            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINE_LOOP);
             tempColor.prepareColor();
-            Tessellator.instance.addVertex(x1, y2, z1);
-            Tessellator.instance.addVertex(x2, y2, z1);
-            Tessellator.instance.addVertex(x2, y2, z2);
-            Tessellator.instance.addVertex(x1, y2, z2);
-            Tessellator.instance.draw();
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z2);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z2);
+            Tessellator.getInstance().draw();
 
             // Draw join top and bottom faces
-            Tessellator.instance.startDrawing(GL11.GL_LINES);
+            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINES);
             tempColor.prepareColor();
 
-            Tessellator.instance.addVertex(x1, y1, z1);
-            Tessellator.instance.addVertex(x1, y2, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z1);
 
-            Tessellator.instance.addVertex(x2, y1, z1);
-            Tessellator.instance.addVertex(x2, y2, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z1);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z1);
 
-            Tessellator.instance.addVertex(x2, y1, z2);
-            Tessellator.instance.addVertex(x2, y2, z2);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z2);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z2);
 
-            Tessellator.instance.addVertex(x1, y1, z2);
-            Tessellator.instance.addVertex(x1, y2, z2);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z2);
+            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z2);
 
-            Tessellator.instance.draw();
+            Tessellator.getInstance().draw();
         }
     }
 }

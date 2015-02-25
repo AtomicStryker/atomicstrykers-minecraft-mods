@@ -190,12 +190,10 @@ public class ChickenLightningBolt
 		particleMaxAge = fadetime + rand.nextInt(fadetime) - (fadetime / 2);
 		particleAge = -(int)(length*speed);
 		
-		boundingBox = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
-		boundingBox.setBB(AxisAlignedBB.getBoundingBox(
-				Math.min(start.x, end.x), Math.min(start.y, end.y), Math.min(start.z, end.z), 
-				Math.max(start.x, end.x), Math.max(start.y, end.y), Math.max(start.z, end.z))
-				.expand(length / 2, length / 2, length / 2));
-		
+		boundingBox = AxisAlignedBB.fromBounds(
+                Math.min(start.x, end.x), Math.min(start.y, end.y), Math.min(start.z, end.z), 
+                Math.max(start.x, end.x), Math.max(start.y, end.y), Math.max(start.z, end.z))
+                .expand(length / 2, length / 2, length / 2);
 		segments.add(new Segment(start, end));
 	}
 	
@@ -305,14 +303,14 @@ public class ChickenLightningBolt
 		
 		if(mop.typeOfHit == MovingObjectType.BLOCK)
 		{
-			Block blockID = world.getBlock(mop.blockX, mop.blockY, mop.blockZ);
+			Block blockID = world.getBlockState(mop.getBlockPos()).getBlock();
 			
 			if(blockID == Blocks.air)
 			{
 				return prevresistance;
 			}
 			
-			return prevresistance + (blockID.getExplosionResistance(source, world, mop.blockX, mop.blockY, mop.blockZ, mop.blockX+0.5d, mop.blockY+0.5d, mop.blockZ+0.5d) + 0.3F);
+			return prevresistance + (blockID.getExplosionResistance(source));
 		}
 		else
 		{
@@ -329,7 +327,7 @@ public class ChickenLightningBolt
 		{
 			Entity entity = entitylist.get(i);
 			if(entity instanceof EntityLivingBase && 
-					(entity.boundingBox.isVecInside(start3D) || entity.boundingBox.isVecInside(end3D)))
+					(entity.getEntityBoundingBox().isVecInside(start3D) || entity.getEntityBoundingBox().isVecInside(end3D)))
 			{
 				if(entity instanceof EntityPlayer)
 				{

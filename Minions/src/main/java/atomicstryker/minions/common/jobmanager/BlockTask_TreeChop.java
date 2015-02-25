@@ -1,15 +1,15 @@
 package atomicstryker.minions.common.jobmanager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -21,10 +21,10 @@ import atomicstryker.minions.common.entity.EntityMinion;
 
 public class BlockTask_TreeChop extends BlockTask
 {
-    private final ArrayList<ChunkCoordinates> treeBlockList;
-    private final ArrayList<ChunkCoordinates> leaveBlockList;
+    private final ArrayList<BlockPos> treeBlockList;
+    private final ArrayList<BlockPos> leaveBlockList;
 	
-    public BlockTask_TreeChop(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, ArrayList<ChunkCoordinates> treeBlocks, ArrayList<ChunkCoordinates> leaveBlocks)
+    public BlockTask_TreeChop(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, ArrayList<BlockPos> treeBlocks, ArrayList<BlockPos> leaveBlocks)
     {
     	super(boss, input, ix, iy, iz);
     	
@@ -58,17 +58,17 @@ public class BlockTask_TreeChop extends BlockTask
     
     private void placeWoodInMinionInventory(EntityMinion output)
     {
-        ChunkCoordinates c;
+        BlockPos c;
         for (int i = 0; i < treeBlockList.size(); i++)
         {
             c = treeBlockList.get(i);
-            ArrayList<ItemStack> stacks = getItemStacksFromWorldBlock(output.worldObj, c.posX, c.posY, c.posZ);
+            List<ItemStack> stacks = getItemStacksFromWorldBlock(output.worldObj, c.getX(), c.getY(), c.getZ());
             for (ItemStack stack : stacks)
             {
                 if (!output.inventory.addItemStackToInventory(stack))
                 {
                     EntityItem item = new EntityItem(output.worldObj, output.posX, output.posY - 0.30000001192092896D + (double)output.getEyeHeight(), output.posZ, stack);
-                    item.delayBeforeCanPickup = 40;
+                    item.setPickupDelay(40);
                     output.worldObj.spawnEntityInWorld(item);
                 }
             }
@@ -77,33 +77,33 @@ public class BlockTask_TreeChop extends BlockTask
     
     private void chopTree()
     {
-    	ChunkCoordinates tempCoords;
+    	BlockPos tempCoords;
     	for (int i = treeBlockList.size()-1; i >= 0; i--)
     	{
     		tempCoords = treeBlockList.get(i);
     		
-    		BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords.posX, tempCoords.posY, tempCoords.posZ);
-            if (!event.isCanceled())
+    		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
+            if (event != -1)
             {
-                worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+                worker.worldObj.setBlockState(new BlockPos(tempCoords),  Blocks.air.getStateFromMeta( 0));
             }
     	}
     	
     	if (leaveBlockList.size() > 0)
     	{
     		tempCoords = leaveBlockList.get(0);
-    		Block id = worker.worldObj.getBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ);
+    		Block id = worker.worldObj.getBlockState(new BlockPos(tempCoords)).getBlock();
     		if (id != Blocks.air)
     		{
     	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
     	    	{
     	    		tempCoords = leaveBlockList.get(i);
     	    		
-    	    		BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords.posX, tempCoords.posY, tempCoords.posZ);
-    	            if (!event.isCanceled())
+    	    		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
+    	            if (event != -1)
     	            {
-    	                id.dropBlockAsItem(worker.worldObj, tempCoords.posX, tempCoords.posY, tempCoords.posZ, worker.worldObj.getBlockMetadata(tempCoords.posX, tempCoords.posY, tempCoords.posZ), 0);
-                        worker.worldObj.setBlock(tempCoords.posX, tempCoords.posY, tempCoords.posZ, Blocks.air, 0, 3);
+    	                id.dropBlockAsItem(worker.worldObj, tempCoords, worker.worldObj.getBlockState(tempCoords), 0);
+                        worker.worldObj.setBlockToAir(tempCoords);
     	            }
     	    	}
     		}

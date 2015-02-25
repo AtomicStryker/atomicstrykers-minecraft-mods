@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S29PacketSoundEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
@@ -36,6 +37,20 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
 import atomicstryker.minions.common.jobmanager.BlockTask_MineOreVein;
@@ -67,29 +82,14 @@ import atomicstryker.minions.common.network.UnsummonPacket;
 
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-
-@Mod(modid = "AS_Minions", name = "Minions", version = "1.9.4")
+@Mod(modid = "minions", name = "Minions", version = "1.9.5")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
     public static IProxy proxy;
     
-    @Instance(value = "AS_Minions")
+    @Instance(value = "minions")
     public static MinionsCore instance;
     
     public NetworkHelper networkHelper;
@@ -132,7 +132,6 @@ public class MinionsCore
         delayedDeedEvents = new ArrayList<FutureDeedEvent>();
     }
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -235,12 +234,12 @@ public class MinionsCore
                 if (System.currentTimeMillis() > firstBootTime + 3000L)
                 {
                     hasBooted = true;
-                    commitStorage = (EvilCommitCount) tick.world.perWorldStorage.loadData(EvilCommitCount.class, "minionsCommits");
+                    commitStorage = (EvilCommitCount) tick.world.getPerWorldStorage().loadData(EvilCommitCount.class, "minionsCommits");
                     debugPrint("Minions loaded evil commit storage: "+commitStorage);
                     if (commitStorage == null)
                     {
                         commitStorage = new EvilCommitCount("minionsCommits");
-                        tick.world.perWorldStorage.setData("minionsCommits", commitStorage);
+                        tick.world.getPerWorldStorage().setData("minionsCommits", commitStorage);
                         debugPrint("Minions stored new evil commit storage: "+commitStorage);
                     }
                 }
@@ -299,9 +298,10 @@ public class MinionsCore
     @SuppressWarnings("unchecked")
     private void getViableTreeBlocks()
     {
-        for (String s : (Set<String>)GameData.getBlockRegistry().getKeys())
+        Iterator<Block> iterator = GameData.getBlockRegistry().iterator();
+        while (iterator.hasNext())
         {
-            Block iter = GameData.getBlockRegistry().getObject(s);
+            Block iter = iterator.next();
             if (iter instanceof BlockLog || iter instanceof BlockOldLog || iter.getLocalizedName().contains("log"))
             {
                 debugPrint("Minions found viable TreeBlock: "+iter);
@@ -541,7 +541,7 @@ public class MinionsCore
             playerEnt.worldObj.spawnEntityInWorld(minion);
             sendSoundToClients(minion, "minions:minionspawn");
             offerMinionToMap(minion, playerEnt.getGameProfile().getName());
-            minion.currentTarget.set(x, y, z);
+            minion.currentTarget = new BlockPos(x, y, z);
             //System.out.println("spawned missing minion for "+var3.getGameProfile().getName());
             return true;
         }
@@ -608,7 +608,7 @@ public class MinionsCore
     public void orderMinionsToChestBlock(EntityPlayer playerEnt, boolean sneaking, int x, int y, int z)
     { 
         TileEntity chestOrInventoryBlock;
-        if ((chestOrInventoryBlock = playerEnt.worldObj.getTileEntity(x, y-1, z)) != null
+        if ((chestOrInventoryBlock = playerEnt.worldObj.getTileEntity(new BlockPos(x, y-1, z))) != null
                 && chestOrInventoryBlock instanceof IInventory)
         {
             if (!sneaking)
@@ -652,7 +652,7 @@ public class MinionsCore
     
     public void orderMinionsToMineOre(EntityPlayer playerEnt, int x, int y, int z)
     {        
-        if (isBlockValueable(playerEnt.worldObj.getBlock(x, y-1, z)))
+        if (isBlockValueable(playerEnt.worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock()))
         {
             EntityMinion[] minions = getMinionsForMaster(playerEnt);
             cancelRunningJobsForMaster(playerEnt.getGameProfile().getName());
@@ -812,7 +812,7 @@ public class MinionsCore
         public void readFromNBT(NBTTagCompound tags)
         {
             debugPrint("EvilCommitCount readFromNBT");
-            for(String s : (Set<String>)tags.func_150296_c())
+            for(String s : (Set<String>)tags.getKeySet())
             {
                 debugPrint("loaded master "+s+" with commitcount "+tags.getInteger(s));
                 masterCommits.put(s, tags.getInteger(s));

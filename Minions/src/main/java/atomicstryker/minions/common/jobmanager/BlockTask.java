@@ -1,13 +1,16 @@
 package atomicstryker.minions.common.jobmanager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.astarpathing.AStarNode;
@@ -28,6 +31,7 @@ public abstract class BlockTask
     public final int posX;
     public final int posY;
     public final int posZ;
+    public final BlockPos pos;
     private boolean startedTask;
     protected EntityMinion worker;
     protected double accessRangeSq;
@@ -62,6 +66,7 @@ public abstract class BlockTask
         this.posX = ix;
         this.posY = iy;
         this.posZ = iz;
+        pos = new BlockPos(ix, iy, iz);
         startedTask = false;
         accessRangeSq = 9.0D;
         taskDurationMillis = 1000L;
@@ -137,10 +142,10 @@ public abstract class BlockTask
         if (isWorking())
         {
             worker.faceBlock(posX, posY, posZ);
-            worker.getDataWatcher().updateObject(12, Integer.valueOf(1));
-            worker.getDataWatcher().updateObject(13, Integer.valueOf(posX));
-            worker.getDataWatcher().updateObject(14, Integer.valueOf(posY));
-            worker.getDataWatcher().updateObject(15, Integer.valueOf(posZ));
+            worker.getDataWatcher().updateObject(16, Integer.valueOf(1));
+            worker.getDataWatcher().updateObject(17, Integer.valueOf(posX));
+            worker.getDataWatcher().updateObject(18, Integer.valueOf(posY));
+            worker.getDataWatcher().updateObject(19, Integer.valueOf(posZ));
         }
 
         if (!workerReachedBlock)
@@ -178,9 +183,9 @@ public abstract class BlockTask
         workerReachedBlock = true;
         timeBlockReached = System.currentTimeMillis();
         this.worker.setWorking(true);
-        this.worker.setPathToEntity(null);
+        //this.worker.setPathToEntity(null);
 
-        worker.adaptItem(worker.worldObj.getBlock(posX, posY, posZ).getMaterial());
+        worker.adaptItem(worker.worldObj.getBlockState(new BlockPos(posX, posY, posZ)).getBlock().getMaterial());
     }
 
     /**
@@ -261,9 +266,9 @@ public abstract class BlockTask
      * Figures out what ItemStack would result from breaking a Block in the
      * World
      */
-    protected ArrayList<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
+    protected List<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
     {
-        Block block = world.getBlock(i, j, k);
+        Block block = world.getBlockState(new BlockPos(i, j, k)).getBlock();
         Material m = block.getMaterial();
         
         if (block == Blocks.air || m == Material.water || m == Material.lava || m == Material.leaves || m == Material.plants)
@@ -271,10 +276,12 @@ public abstract class BlockTask
             return new ArrayList<ItemStack>();
         }
         
-        return block.getDrops(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
+        BlockPos pos = new BlockPos(i, j, k);
+        IBlockState state = world.getBlockState(pos);
+        return block.getDrops(world, pos, state, state.getBlock().getMetaFromState(state));
     }
 
-    protected void putBlockHarvestInWorkerInventory(ArrayList<ItemStack> stackList)
+    protected void putBlockHarvestInWorkerInventory(List<ItemStack> stackList)
     {
         if (stackList != null)
         {

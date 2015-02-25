@@ -2,6 +2,7 @@ package atomicstryker.minions.common.entity;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import atomicstryker.minions.common.MinionsCore;
 
@@ -13,7 +14,6 @@ public class MinionAIFollowMaster extends EntityAIBase
     private final PathNavigate petPathfinder;
     private final float maxDist;
     private final float minDist;
-    private boolean isAvoidingWater;
 
     private int updateTicker;
     private final double followRangeSq;
@@ -56,8 +56,6 @@ public class MinionAIFollowMaster extends EntityAIBase
     public void startExecuting()
     {
         this.updateTicker = 0;
-        this.isAvoidingWater = this.theMinion.getNavigator().getAvoidsWater();
-        this.theMinion.getNavigator().setAvoidsWater(false);
         theMinion.setWorking(false);
     }
 
@@ -68,7 +66,6 @@ public class MinionAIFollowMaster extends EntityAIBase
     public void resetTask()
     {
         this.petPathfinder.clearPathEntity();
-        this.theMinion.getNavigator().setAvoidsWater(this.isAvoidingWater);
     }
 
     /**
@@ -91,16 +88,16 @@ public class MinionAIFollowMaster extends EntityAIBase
                     {
                         int x = MathHelper.floor_double(theMinion.master.posX) - 2;
                         int z = MathHelper.floor_double(theMinion.master.posZ) - 2;
-                        int y = MathHelper.floor_double(theMinion.master.boundingBox.minY);
+                        int y = MathHelper.floor_double(theMinion.master.getEntityBoundingBox().minY);
 
                         for (int xIter = 0; xIter <= 4; ++xIter)
                         {
                             for (int zIter = 0; zIter <= 4; ++zIter)
                             {
                                 if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3)
-                                        && theMinion.worldObj.getBlock(x + xIter, y - 1, z + zIter).isNormalCube()
-                                        && !theMinion.worldObj.getBlock(x + xIter, y, z + zIter).isNormalCube()
-                                        && !theMinion.worldObj.getBlock(x + xIter, y + 1, z + zIter).isNormalCube())
+                                        && theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y - 1, z + zIter)).getBlock().isNormalCube()
+                                        && !theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y, z + zIter)).getBlock().isNormalCube()
+                                        && !theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y + 1, z + zIter)).getBlock().isNormalCube())
                                 {
                                     theMinion.setLocationAndAngles((double) (x + xIter) + 0.5D, (double) y, (double) (z + zIter) + 0.5D,
                                             theMinion.rotationYaw, theMinion.rotationPitch);

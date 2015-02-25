@@ -33,10 +33,8 @@ public class ModelMinion extends ModelBiped
         this.heldItemRight = 0;
         this.isSneak = false;
         this.aimedBow = false;
-        this.bipedCloak = new ModelRenderer(this, 0, 0);
-        this.bipedCloak.showModel = false;
-        this.bipedEars = new ModelRenderer(this, 24, 0);
-        this.bipedEars.showModel = false;
+        this.bipedHeadwear = new ModelRenderer(this, 24, 0);
+        this.bipedHeadwear.showModel = false;
         this.bipedHeadwear = new ModelRenderer(this, 32, 0);
 		this.bipedHeadwear.showModel = false;
 

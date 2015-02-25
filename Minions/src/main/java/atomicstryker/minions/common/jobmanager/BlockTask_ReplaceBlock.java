@@ -2,8 +2,8 @@ package atomicstryker.minions.common.jobmanager;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent;
 import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
@@ -29,10 +29,10 @@ public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
     {
     	super.onFinishedTask();
     	
-    	BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, posX, posY, posZ);
-        if (!event.isCanceled())
+    	int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, new BlockPos(posX, posY, posZ));
+        if (event != -1)
         {
-            worker.worldObj.setBlock(posX, posY, posZ, blockToPlace, metaToPlace, 3);
+            worker.worldObj.setBlockState(new BlockPos(posX,  posY,  posZ),  blockToPlace.getStateFromMeta( metaToPlace));
         }
     }
 }

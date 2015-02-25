@@ -6,14 +6,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class LightningPacket implements IPacket
 {
@@ -68,7 +68,7 @@ public class LightningPacket implements IPacket
         }
         else
         {
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
             if (player != null)
             {                
                 if (MinionsCore.instance.hasPlayerWillPower(player))

@@ -4,9 +4,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class SoundPacket implements IPacket
 {
