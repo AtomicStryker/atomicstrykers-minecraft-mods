@@ -116,7 +116,7 @@ public class MultiMineClient
                 // case block change, check one last time for partial mining
                 while (blockCompletion >= lastBlockCompletion+0.1f)
                 {
-                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
+                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
                     lastBlockCompletion += 0.1f;
                 }
                 
@@ -132,7 +132,7 @@ public class MultiMineClient
                 // case same block, and mining has progressed
                 while (blockCompletion >= lastBlockCompletion+0.1f)
                 {
-                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
+                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
                     MultiMine.instance().debugPrint("Sent one 10% block progress packet to server...");
                     lastBlockCompletion += 0.1f;
                 }
