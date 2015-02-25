@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityCritFX;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarPathPlanner;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ClientTickHandler
 {
@@ -50,19 +49,21 @@ public class ClientTickHandler
             {
                 if (path != null)
                 {
-                    EntityFX efx = null;
+                    //EntityFX efx = null;
                     for (AStarNode temp : path)
                     {
                         if (temp.parent != null)
-                        {                        
-                            efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                        {
+                            mcinstance.effectRenderer.spawnEffectParticle(EnumParticleTypes.CRIT_MAGIC.getParticleID(), temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                                    (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75, 0);
+                            /*efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
                                     (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
                             efx.setRBGColorF(efx.getRedColorF(), 0, efx.getBlueColorF());
                             //efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
                             if (efx != null)
                             {
                                 mcinstance.effectRenderer.addEffect(efx);
-                            }
+                            }*/
                         }
                     }
                     
@@ -72,21 +73,23 @@ public class ClientTickHandler
                         for (String user : otherPaths.keySet())
                         {
                             AStarNode[] nodes = otherPaths.get(user);
-                            float r = colors[colorindex][0];
-                            float g = colors[colorindex][1];
-                            float b = colors[colorindex][2];
+                            //float r = colors[colorindex][0];
+                            //float g = colors[colorindex][1];
+                            //float b = colors[colorindex][2];
                             for (AStarNode temp : nodes)
                             {
                                 if (temp.parent != null)
-                                {                        
-                                    efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                                {
+                                    mcinstance.effectRenderer.spawnEffectParticle(EnumParticleTypes.CRIT_MAGIC.getParticleID(), temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
+                                            (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75, 0);
+                                    /*efx = new EntityCritFX(mcinstance.theWorld, temp.x+0.5D, temp.y+0.5D, temp.z+0.5D,
                                             (temp.parent.x - temp.x)*0.75, ((temp.parent.y - temp.y)*0.5)+0.2, (temp.parent.z - temp.z)*0.75);
                                     efx.setRBGColorF(r, g, b);
                                     //efx.setParticleTextureIndex(efx.getParticleTextureIndex() + 1);
                                     if (efx != null)
                                     {
                                         mcinstance.effectRenderer.addEffect(efx);
-                                    }
+                                    }*/
                                 }
                             }
                             colorindex++;

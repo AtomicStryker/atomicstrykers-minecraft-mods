@@ -11,23 +11,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import atomicstryker.magicyarn.common.network.HandshakePacket;
 import atomicstryker.magicyarn.common.network.NetworkHelper;
 import atomicstryker.magicyarn.common.network.PathPacket;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "MagicYarn", name = "Magic Yarn", version = "1.1.5")
+@Mod(modid = "magicyarn", name = "Magic Yarn", version = "1.1.6")
 public class MagicYarn implements IProxy
 {
     
-    @Instance("MagicYarn")
+    @Instance("magicyarn")
     public static MagicYarn instance;
     
     public NetworkHelper networkHelper;
@@ -35,16 +35,15 @@ public class MagicYarn implements IProxy
     @SidedProxy(clientSide = "atomicstryker.magicyarn.client.MagicYarnClient", serverSide = "atomicstryker.magicyarn.common.MagicYarn")
     public static IProxy proxy;
     
-	public static Item magicYarn;
+	public Item magicYarn;
 	
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
         networkHelper = new NetworkHelper("AS_MY", HandshakePacket.class, PathPacket.class);
         
-        magicYarn = (new ItemMagicYarn()).setUnlocalizedName("magic_yarn");
-        GameRegistry.registerItem(magicYarn, "magic_yarn");
+        magicYarn = new ItemMagicYarn().setUnlocalizedName("magicyarn");
+        GameRegistry.registerItem(magicYarn, "magicyarn");
         
         proxy.preInit(evt.getSuggestedConfigurationFile());
         
@@ -60,6 +59,8 @@ public class MagicYarn implements IProxy
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
+        proxy.init();
+        
         GameRegistry.addRecipe(new ItemStack(magicYarn, 1), new Object[]{
             "###", "#X#", "###", Character.valueOf('X'), Items.compass, Character.valueOf('#'), Blocks.wool
         });
@@ -76,6 +77,12 @@ public class MagicYarn implements IProxy
 
     @Override
     public void onPlayerUsedYarn(World world, EntityPlayer player, float timeButtonHeld)
+    {
+        // NOOP
+    }
+
+    @Override
+    public void init()
     {
         // NOOP
     }

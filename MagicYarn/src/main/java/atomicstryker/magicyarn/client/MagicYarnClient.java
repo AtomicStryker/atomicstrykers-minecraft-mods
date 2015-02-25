@@ -7,16 +7,17 @@ import java.io.File;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
 import atomicstryker.magicyarn.common.MagicYarn;
 import atomicstryker.magicyarn.common.network.PathPacket;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class MagicYarnClient implements IProxy, IAStarPathedEntity
 {
@@ -73,13 +74,13 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                 clientTicker.path.addAll(0, given);
             }
             
-            mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.levelup", 1.0F, 1.0F, false);
+            mcinstance.theWorld.playSoundAtEntity(mcinstance.thePlayer, "random.levelup", 1.0F, 1.0F);
             
             sendPathToServer(mcinstance.thePlayer.getGameProfile().getName(), clientTicker.path);
         }
         else if (!noSound)
         {
-            mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.drr", 1.0F, 1.0F, false);
+            mcinstance.theWorld.playSoundAtEntity(mcinstance.thePlayer, "random.bowhit", 1.0F, 1.0F);
         }
     }
 
@@ -105,7 +106,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
     @Override
     public void onNoPathAvailable()
     {
-        mcinstance.theWorld.playSound(mcinstance.thePlayer.posX, mcinstance.thePlayer.posY, mcinstance.thePlayer.posZ, "random.drr", 1.0F, 1.0F, false);
+        mcinstance.theWorld.playSoundAtEntity(mcinstance.thePlayer, "random.bowhit", 1.0F, 1.0F);
     }
     
     private void resetPaths()
@@ -144,7 +145,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                 origin.parent = null;
                 if (target == null && clientTicker.path == null) // first target
                 {                   
-                    target = new AStarNode((int)Math.floor(player.posX), (int)player.posY-1, (int)Math.floor(player.posZ), 0, null);
+                    target = new AStarNode((int)Math.floor(player.posX), (int)player.posY, (int)Math.floor(player.posZ), 0, null);
                     System.out.println("Magic Yarn Target set from null to ["+target.x+"|"+target.y+"|"+target.z+"]");
 
                     clientTicker.plannerInstance.getPath(origin.x, origin.y, origin.z, target.x, target.y, target.z, false);
@@ -154,14 +155,14 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                     boolean soundplayed = false;
                     if (clientTicker.path != null && !clientTicker.path.isEmpty())
                     {
-                        target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
+                        target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY), (int)Math.floor(player.posZ), 0, null);
                         int idx = 0;
                         for (int i = 0; i < clientTicker.path.size(); i++)
                         {
                             if (clientTicker.path.get(i).equals(target))
                             {
                                 System.out.println("Magic Yarn being cut shorter!");
-                                world.playSound(player.posX, player.posY, player.posZ, "random.break", 1.0F, 1.0F, false);
+                                world.playSoundAtEntity(player, "random.break", 1.0F, 1.0F);
                                 soundplayed = true;
                                 idx = i;
                                 break;
@@ -189,7 +190,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                     }
                     else
                     {
-                        target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
+                        target = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY), (int)Math.floor(player.posZ), 0, null);
                         clientTicker.plannerInstance.getPath(origin.x, origin.y, origin.z, target.x, target.y, target.z, false);
                     }
                 }
@@ -261,6 +262,12 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
     public void onReceivedPathDeletionPacket(ByteBuf data)
     {
         clientTicker.removeOtherPath(ByteBufUtils.readUTF8String(data));
+    }
+
+    @Override
+    public void init()
+    {
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(MagicYarn.instance.magicYarn, 0, new ModelResourceLocation("magicyarn:magicyarn", "inventory"));
     }
     
 }

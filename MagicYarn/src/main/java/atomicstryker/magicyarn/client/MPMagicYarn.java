@@ -4,14 +4,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 import org.lwjgl.input.Keyboard;
 
 import atomicstryker.magicyarn.common.MagicYarn;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class MPMagicYarn
 {
@@ -43,7 +43,7 @@ public class MPMagicYarn
     {
         if (tick.phase == Phase.END)
         {
-            if (clientKey.getIsKeyPressed())
+            if (clientKey.isKeyDown())
             {
                 if (serverDoesNotHaveMod)
                 {
@@ -74,12 +74,12 @@ public class MPMagicYarn
                 }
             }
             
-            if (mcinstance.currentScreen == null && playerKey.getIsKeyPressed())
+            if (mcinstance.currentScreen == null && playerKey.isKeyDown())
             {
                 if (!serverDoesNotHaveMod)
                 {
                     ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
-                    if (curItem != null && curItem.getItem() == MagicYarn.magicYarn)
+                    if (curItem != null && curItem.getItem() == MagicYarn.instance.magicYarn)
                     {
                         mcinstance.displayGuiScreen(new GuiNavigateToPlayer()); 
                     }
@@ -100,7 +100,7 @@ public class MPMagicYarn
     public void onServerHasMod()
     {
         serverDoesNotHaveMod = false;
-        mcinstance.thePlayer.addChatMessage(new ChatComponentText("Magic Yarn found on server."));
+        //mcinstance.thePlayer.addChatMessage(new ChatComponentText("Magic Yarn found on server."));
     }
     
     public boolean getHasServerMod()
