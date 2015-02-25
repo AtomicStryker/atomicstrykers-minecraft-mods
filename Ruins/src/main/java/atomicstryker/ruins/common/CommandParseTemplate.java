@@ -32,7 +32,7 @@ public class CommandParseTemplate extends CommandBase
     }
 
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "parseruin";
     }
@@ -50,9 +50,9 @@ public class CommandParseTemplate extends CommandBase
     }
 
     @Override
-    public void execute(ICommandSender sender, String[] args)
+    public void processCommand(ICommandSender sender, String[] args)
     {
-        player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
+        player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
         if (player != null)
         {
             if (args.length != 1)
@@ -78,7 +78,7 @@ public class CommandParseTemplate extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand)o).getName().compareTo(getName());
+            return ((ICommand)o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }

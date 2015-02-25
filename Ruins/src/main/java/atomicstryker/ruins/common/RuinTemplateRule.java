@@ -127,19 +127,16 @@ public class RuinTemplateRule
                         }
                         
                         // special case -addbonemeal
-                        if (blockIDs[i] instanceof IGrowable)
+                        if (blockIDs[i] instanceof IGrowable && data[data.length-1].equals("addbonemeal"))
                         {
-                            if (data[data.length-1].equals("addbonemeal"))
+                            specialFlags[i] = SpecialFlags.ADDBONEMEAL;
+                            try
                             {
-                                specialFlags[i] = SpecialFlags.ADDBONEMEAL;
-                                try
-                                {
-                                    blockMDs[i] = Integer.parseInt(data[data.length-2]);
-                                }
-                                catch (NumberFormatException ne)
-                                {
-                                    blockMDs[i] = 0;
-                                }
+                                blockMDs[i] = Integer.parseInt(data[data.length-2]);
+                            }
+                            catch (NumberFormatException ne)
+                            {
+                                blockMDs[i] = 0;
                             }
                         }
                         // otherwise parse meta value

@@ -21,7 +21,7 @@ public class CommandTestTemplate extends CommandBase
     private int lastFinalY;
 
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "testruin";
     }
@@ -39,9 +39,9 @@ public class CommandTestTemplate extends CommandBase
     }
 
     @Override
-    public void execute(ICommandSender sender, String[] args)
+    public void processCommand(ICommandSender sender, String[] args)
     {
-        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
+        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
         int xpos, ypos, zpos;
         xpos = sender.getPosition().getX();
         ypos = sender.getPosition().getY();
@@ -168,7 +168,7 @@ public class CommandTestTemplate extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand) o).getName().compareTo(getName());
+            return ((ICommand) o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }

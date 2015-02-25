@@ -93,7 +93,7 @@ public class CommandUndo extends CommandBase
     }
     
     @Override
-    public String getName()
+    public String getCommandName()
     {
         return "undoruin";
     }
@@ -112,7 +112,7 @@ public class CommandUndo extends CommandBase
 
     @SuppressWarnings("unchecked")
     @Override
-    public void execute(ICommandSender sender, String[] args)
+    public void processCommand(ICommandSender sender, String[] args)
     {
         World w = sender.getEntityWorld();
         if (w != null)
@@ -158,7 +158,7 @@ public class CommandUndo extends CommandBase
     {
         if (o instanceof ICommand)
         {
-            return ((ICommand) o).getName().compareTo(getName());
+            return ((ICommand) o).getCommandName().compareTo(getCommandName());
         }
         return 0;
     }
