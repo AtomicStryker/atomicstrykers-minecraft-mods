@@ -6,6 +6,7 @@ import java.util.Collections;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -41,7 +42,7 @@ public class AStarStatic
 	 */
 	public static boolean isViable(World worldObj, int x, int y, int z, int yoffset)
 	{
-	    Block id = worldObj.getBlock(x, y, z);
+	    Block id = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
 
 	    if (id == Blocks.ladder && isPassableBlock(worldObj, x, y+1, z))
 	    {
@@ -57,7 +58,7 @@ public class AStarStatic
 	    if (isPassableBlock(worldObj, x, y-1, z))
 	    {
 	        if (id != Blocks.air
-	        && !id.getBlocksMovement(worldObj, x, y-1, z))
+	        && id.isPassable(worldObj, new BlockPos(x, y-1, z)))
 	        {
 	            // is a traversable fluid, allow navigating
 	        }
@@ -94,7 +95,7 @@ public class AStarStatic
 	 */
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
-		return !worldObj.getBlock(ix, iy, iz).getMaterial().isSolid();
+		return !worldObj.getBlockState(new BlockPos(ix, iy, iz)).getBlock().getMaterial().isSolid();
 	}
 	
 	public static int getIntCoordFromDoubleCoord(double input)
@@ -201,7 +202,7 @@ public class AStarStatic
 	
 	public static boolean isLadder(World world, Block blockID, int x, int y, int z)
 	{
-	    return blockID.isLadder(world, x, y, z, null);
+	    return blockID.isLadder(world, new BlockPos(x, y, z), null);
 	}
 	
 	/**
@@ -270,7 +271,7 @@ public class AStarStatic
         {
             reading = input.get(size-1);
             points[i] = new AS_PathPoint(reading.x, reading.y, reading.z);
-            points[i].isFirst = i == 0;
+            //points[i].isFirst = i == 0;
             points[i].setIndex(i);
             points[i].setTotalPathDistance(i);
             points[i].setDistanceToNext(1F);

@@ -11,5 +11,7 @@ public interface IProxy
     public void preInit(File configFile);
     
     public void onPlayerUsedYarn(World world, EntityPlayer player, float timeButtonHeld);
+
+    public void init();
     
 }

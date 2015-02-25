@@ -1,7 +1,5 @@
 package atomicstryker.magicyarn.common;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -11,23 +9,12 @@ import net.minecraft.world.World;
 
 public class ItemMagicYarn extends Item
 {
-	public ItemMagicYarn()
+    
+	protected ItemMagicYarn()
 	{
 		super();
-		setMaxStackSize(1);
-		setCreativeTab(CreativeTabs.tabTools);
-	}
-	
-	@Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("magicyarn:magicYarn");
-    }
-
-	@Override
-	public boolean isFull3D()
-	{
-		return true;
+        maxStackSize = 1;
+        setMaxDamage(0);
 	}
 
 	@Override
@@ -62,7 +49,7 @@ public class ItemMagicYarn extends Item
 	@Override
 	public EnumAction getItemUseAction(ItemStack var1)
 	{
-		return EnumAction.bow;
+		return EnumAction.BOW;
 	}
 	
     @Override
