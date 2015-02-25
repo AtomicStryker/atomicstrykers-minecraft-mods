@@ -418,3 +418,6 @@ a: setAccessible now true
 
 14.7
 + fixed some more command block parsing errors
+
+14.8
++ fixed IGrowable metadata bug
