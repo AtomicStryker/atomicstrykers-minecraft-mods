@@ -2,7 +2,6 @@ package atomicstryker.dynamiclights.client.modules;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -21,7 +20,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -30,7 +28,7 @@ import cpw.mods.fml.common.registry.GameData;
  * Offers Dynamic Light functionality emulating portable or static Flood Lights
  *
  */
-@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.2", dependencies = "required-after:DynamicLights")
 public class FloodLightSource
 {
     private EntityPlayer thePlayer;
@@ -74,7 +72,7 @@ public class FloodLightSource
             thePlayer = FMLClientHandler.instance().getClient().thePlayer;
             if (thePlayer != null && thePlayer.isEntityAlive() && !DynamicLights.globalLightsOff())
             {
-                int lightLevel = getLightFromItemStack(thePlayer.getCurrentEquippedItem());
+                int lightLevel = itemsMap.getLightFromItemStack(thePlayer.getCurrentEquippedItem());
                 
                 checkDummyInit(thePlayer.worldObj);
                 
@@ -167,16 +165,6 @@ public class FloodLightSource
                 DynamicLights.addLightSource(partialLights[i]);
             }
         }
-    }
-
-    private int getLightFromItemStack(ItemStack stack)
-    {
-        if (stack != null)
-        {
-            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
-            return r < 0 ? 0 : r;
-        }
-        return 0;
     }
     
     private class PartialLightSource implements IDynamicLightSource

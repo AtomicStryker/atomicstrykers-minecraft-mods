@@ -23,7 +23,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -33,7 +32,7 @@ import cpw.mods.fml.common.registry.GameData;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.8", dependencies = "required-after:DynamicLights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;
@@ -67,7 +66,7 @@ public class PlayerOthersLightSource
     {
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,easycoloredlights:easycoloredlightsCLStone=-1");
         itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON OTHERS] Syntax: ItemID[-MetaValue]:LightValue, seperated by commas";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
@@ -94,16 +93,6 @@ public class PlayerOthersLightSource
                 threadRunning = true;
             }
         }   
-    }
-    
-    private int getLightFromItemStack(ItemStack stack)
-    {
-        if (stack != null)
-        {
-            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
-            return r < 0 ? 0 : r;
-        }
-        return 0;
     }
     
     private class OtherPlayerChecker extends Thread
@@ -183,10 +172,10 @@ public class PlayerOthersLightSource
         {
             int prevLight = lightLevel;
             
-            lightLevel = getLightFromItemStack(player.getCurrentEquippedItem());
+            lightLevel = itemsMap.getLightFromItemStack(player.getCurrentEquippedItem());
             for (ItemStack armor : player.inventory.armorInventory)
             {
-                lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
+                lightLevel = DynamicLights.maxLight(lightLevel, itemsMap.getLightFromItemStack(armor));
             }
             
             if (prevLight != 0 && lightLevel != prevLight)

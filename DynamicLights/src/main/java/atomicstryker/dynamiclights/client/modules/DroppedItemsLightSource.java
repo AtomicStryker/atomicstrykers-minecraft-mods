@@ -8,7 +8,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -34,7 +33,7 @@ import cpw.mods.fml.common.registry.GameData;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.8", dependencies = "required-after:DynamicLights")
 public class DroppedItemsLightSource
 {
     private Minecraft mcinstance;
@@ -69,7 +68,7 @@ public class DroppedItemsLightSource
     {
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,easycoloredlights:easycoloredlightsCLStone=-1");
         itemsList.comment = "Item IDs that shine light when dropped in the World.";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
@@ -100,16 +99,6 @@ public class DroppedItemsLightSource
                 threadRunning = true;
             }
         }
-    }
-    
-    private int getLightFromItemStack(ItemStack stack)
-    {
-        if (stack != null)
-        {
-            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
-            return r < 0 ? 0 : r;
-        }
-        return 0;
     }
     
     private class EntityListChecker extends Thread
@@ -194,7 +183,7 @@ public class DroppedItemsLightSource
             }
             else
             {
-                lightLevel = getLightFromItemStack(entity.getEntityItem());
+                lightLevel = itemsMap.getLightFromItemStack(entity.getEntityItem());
                 
                 if (notWaterProof
                 && entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).getMaterial() == Material.water)

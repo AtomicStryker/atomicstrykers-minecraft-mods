@@ -3,6 +3,11 @@ package atomicstryker.dynamiclights.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import coloredlightscore.src.api.CLBlock;
+import cpw.mods.fml.common.registry.GameData;
+
 public class ItemConfigHelper
 {
     private final String SWILDCARD = "*";
@@ -28,6 +33,16 @@ public class ItemConfigHelper
         }
     }
     
+    public int getLightFromItemStack(ItemStack stack)
+    {
+        if (stack != null)
+        {
+            int r = retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
+            return r < 0 ? 0 : r;
+        }
+        return 0;
+    }
+    
     public int retrieveValue(String name, int meta)
     {
         if (name != null)
@@ -36,7 +51,17 @@ public class ItemConfigHelper
             {
                 if (item.matches(name, meta))
                 {
-                    return dataMap.get(item);
+                    int val = dataMap.get(item);
+                    if (val == WILDCARD)
+                    {
+                        Block b = GameData.getBlockRegistry().getObject(name);
+                        if (b instanceof CLBlock)
+                        {
+                            return ((CLBlock)b).getColorLightValue(meta);
+                        }
+                        return b != null ? b.getLightValue() : 0;
+                    }
+                    return val;
                 }
             }
         }
