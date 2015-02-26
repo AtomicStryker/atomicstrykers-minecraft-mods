@@ -25,7 +25,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.registry.GameData;
 
 /**
  * 
@@ -35,7 +34,7 @@ import cpw.mods.fml.common.registry.GameData;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.8", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -72,7 +71,7 @@ public class EntityLivingEquipmentLightSource
         updateI.comment = "Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.";
         updateInterval = updateI.getInt();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,easycoloredlights:easycoloredlightsCLStone=-1");
         itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
@@ -108,15 +107,15 @@ public class EntityLivingEquipmentLightSource
             {
                 if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_gold.png"))
                 {
-                    return getLightFromItemStack(new ItemStack(Items.golden_horse_armor)); // horsearmorgold
+                    return itemsMap.getLightFromItemStack(new ItemStack(Items.golden_horse_armor)); // horsearmorgold
                 }
                 if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_iron.png"))
                 {
-                    return getLightFromItemStack(new ItemStack(Items.iron_horse_armor)); // horsearmormetal
+                    return itemsMap.getLightFromItemStack(new ItemStack(Items.iron_horse_armor)); // horsearmormetal
                 }
                 if (horseArmorTexture.equals("textures/entity/horse/armor/horse_armor_diamond.png"))
                 {
-                    return getLightFromItemStack(new ItemStack(Items.diamond_horse_armor)); // butt stallion
+                    return itemsMap.getLightFromItemStack(new ItemStack(Items.diamond_horse_armor)); // butt stallion
                 }
             }
         }
@@ -126,22 +125,12 @@ public class EntityLivingEquipmentLightSource
     
     private int getMobEquipMaxLight(EntityLivingBase ent)
     {
-        int light = getLightFromItemStack(ent.getEquipmentInSlot(0));
+        int light = itemsMap.getLightFromItemStack(ent.getEquipmentInSlot(0));
         for (int i = 1; i < ent.getLastActiveItems().length; i++)
         {
-            light = Math.max(light, getLightFromItemStack(ent.getLastActiveItems()[i]));
+            light = DynamicLights.maxLight(light, itemsMap.getLightFromItemStack(ent.getLastActiveItems()[i]));
         }
         return light;
-    }
-
-    private int getLightFromItemStack(ItemStack stack)
-    {
-        if (stack != null)
-        {
-            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
-            return r < 0 ? 0 : r;
-        }
-        return 0;
     }
     
     private class EntityListChecker extends Thread

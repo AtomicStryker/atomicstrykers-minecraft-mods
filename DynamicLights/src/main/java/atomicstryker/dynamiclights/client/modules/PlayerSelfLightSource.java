@@ -43,7 +43,7 @@ import cpw.mods.fml.common.registry.GameData;
  * get stuck in the on or off state inside your own code. It will not revert to off on its own.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.4", dependencies = "required-after:DynamicLights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;
@@ -76,7 +76,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     {
         config.load();
         
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,golden_horse_armor=15");
+        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,golden_horse_armor=15,easycoloredlights:easycoloredlightsCLStone=-1");
         itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON YOURSELF]";
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
@@ -140,11 +140,11 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                 int prevLight = lightLevel;
                 
                 ItemStack item = thePlayer.getCurrentEquippedItem();
-                lightLevel = getLightFromItemStack(item);
+                lightLevel = itemsMap.getLightFromItemStack(item);
                 
                 for (ItemStack armor : thePlayer.inventory.armorInventory)
                 {
-                    lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
+                    lightLevel = DynamicLights.maxLight(lightLevel, itemsMap.getLightFromItemStack(armor));
                 }
                 
                 if (prevLight != 0 && lightLevel != prevLight)
@@ -169,7 +169,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                             {
                                 if (armor != null && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(armor.getItem()), item.getItemDamage()) == 0)
                                 {
-                                    lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));
+                                    lightLevel = DynamicLights.maxLight(lightLevel, itemsMap.getLightFromItemStack(armor));
                                 }
                             }
                         }
@@ -198,16 +198,6 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             return thePlayer.worldObj.getBlock(x, y, z).getMaterial() == Material.water;
         }
         return false;
-    }
-    
-    private int getLightFromItemStack(ItemStack stack)
-    {
-        if (stack != null)
-        {
-            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
-            return r < 0 ? 0 : r;
-        }
-        return 0;
     }
     
     private void enableLight()

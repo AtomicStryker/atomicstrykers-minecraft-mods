@@ -18,6 +18,7 @@ import org.lwjgl.input.Keyboard;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -38,7 +39,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.7")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.8")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -70,6 +71,11 @@ public class DynamicLights
     private KeyBinding toggleButton;
     private long nextKeyTriggerTime;
     
+    /**
+     * whether or not the colored lights mod is present
+     */
+    private static boolean coloredLights;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -85,6 +91,7 @@ public class DynamicLights
     {
         toggleButton = new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
+        coloredLights = Loader.isModLoaded("easycoloredlights");
     }
     
     @SubscribeEvent
@@ -179,13 +186,13 @@ public class DynamicLights
                     {
                         if (light.getZ() == z)
                         {
-                            dynamicValue = Math.max(dynamicValue, light.getLightSource().getLightLevel());
+                            dynamicValue = maxLight(dynamicValue, light.getLightSource().getLightLevel());
                         }
                     }
                 }
             }
         }
-        return Math.max(vanillaValue, dynamicValue);
+        return maxLight(vanillaValue, dynamicValue);
     }
     
     /**
@@ -265,6 +272,26 @@ public class DynamicLights
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Compatibility extension for CptSpaceToaster's colored lights mod
+     */
+    public static int maxLight(int a, int b)
+    {
+        if (coloredLights)
+        {
+            if ((((0x100000 | b) - a) & 0x84210) > 0)
+            {
+                // some color components of A > B
+                return a;
+            }
+            return b;
+        }
+        else
+        {
+            return Math.max(a, b);
         }
     }
 }

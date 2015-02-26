@@ -1,3 +1,7 @@
+1.3.8
+- worked in compatibility to CptSpaceToaster's Colored Lights mod, added colored stone to default light items
+- added fall-through mechanic to item config: set a light value of "-1" to read the light from the block instead, which includes colored light
+
 1.3.7
 - changed EntityLivingEquipment module default config file string to match actually used config scheme
 - added 1 sec cooldown to light toggle button. wussies.
