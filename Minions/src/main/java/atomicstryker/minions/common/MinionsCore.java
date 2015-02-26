@@ -83,7 +83,7 @@ import atomicstryker.minions.common.network.UnsummonPacket;
 import com.google.common.collect.Lists;
 
 
-@Mod(modid = "minions", name = "Minions", version = "1.9.5")
+@Mod(modid = "minions", name = "Minions", version = "1.9.6")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
