@@ -1,6 +1,6 @@
 [
 {
-  "modid": "AS_Minions",
+  "modid": "minions",
   "name": "Minions",
   "description": "semi-intelligent Minions in Minecraft that do your Bidding! Evil Deeds! Wrongdoings! Lightning Bolts!",
   "mcversion": "${mcversion}",
