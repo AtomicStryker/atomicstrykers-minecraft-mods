@@ -65,7 +65,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     private long timeLastSound;
     public boolean canPickUpItems;
     private long canPickUpItemsAgainAt;
-    private long closeInventoryTime;
     private long despawnTime;
     private float moveSpeed;
 
@@ -102,7 +101,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         isStripMining = false;
         canPickUpItems = true;
         canPickUpItemsAgainAt = 0L;
-        closeInventoryTime = 0;
         despawnTime = -1l;
 
         chunkLoadingTicket = ForgeChunkManager.requestTicket(MinionsCore.instance, worldObj, Type.ENTITY);
@@ -354,12 +352,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         super.onEntityUpdate();
 
-        if (closeInventoryTime != 0)
-        {
-            ((IInventory) returnChestOrInventory).closeInventory(null);
-            closeInventoryTime = 0;
-        }
-
         if (workBoostTime != 0L && System.currentTimeMillis() - workBoostTime > 30000L)
         {
             workBoostTime = 0L;
@@ -444,8 +436,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             {
                 if (this.inventory.containsItems() && checkReturnChestValidity())
                 {
-                    ((IInventory) returnChestOrInventory).openInventory(null);
-                    closeInventoryTime = System.currentTimeMillis() + 4000L;
                     this.inventory.putAllItemsToInventory((IInventory) returnChestOrInventory);
                 }
                 returningGoods = false;
