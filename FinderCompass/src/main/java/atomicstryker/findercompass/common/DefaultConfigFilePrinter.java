@@ -162,7 +162,7 @@ public class DefaultConfigFilePrinter
                             }
                             else
                             {
-                                configInts[8] = 0;
+                                configInts[8] = -1;
                             }
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);

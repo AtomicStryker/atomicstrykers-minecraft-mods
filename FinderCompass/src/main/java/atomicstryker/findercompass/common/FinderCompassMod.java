@@ -30,7 +30,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.10b")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.10c")
 public class FinderCompassMod
 {
 

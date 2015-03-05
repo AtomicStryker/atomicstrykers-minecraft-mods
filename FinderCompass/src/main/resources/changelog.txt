@@ -1,3 +1,7 @@
+1.7.10c
+changed 'unspecified/any' meta value in config from 0 to -1, should allow limitation to just meta 0 subblocks
+also disabled some debug console printing
+
 1.7.10b
 fixed problem preventing server-client interactions from working
 
