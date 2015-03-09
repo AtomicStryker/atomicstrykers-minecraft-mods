@@ -3,7 +3,7 @@ package atomicstryker.ropesplus.client;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
@@ -50,7 +50,7 @@ public class RenderFreeFormRope extends Render
     
     public void renderRope(EntityFreeFormRope rope, double posX, double posY, double posZ, float partialTick)
     {
-        EntityPlayer player = (EntityPlayer) renderManager.livingPlayer;
+        EntityLivingBase player = renderManager.livingPlayer;
         Vec3 look = player.getLook(partialTick);
         xGuess = player.prevPosX + (player.posX - player.prevPosX) * partialTick - look.xCoord;
         yGuess = player.prevPosY + (player.posY - player.prevPosY) * partialTick - look.yCoord;
