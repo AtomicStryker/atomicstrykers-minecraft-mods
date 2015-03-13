@@ -4,8 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.world.ChunkPosition;
+import net.minecraft.util.BlockPos;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
@@ -69,19 +68,19 @@ public class StrongholdPacket implements IPacket
         
         if (username.equals("")) // client received stronghold answer
         {
-            FinderCompassLogic.strongholdCoords = new ChunkCoordinates(x, y, z);
+            FinderCompassLogic.strongholdCoords = new BlockPos(x, y, z);
             //System.out.printf("Finder Compass server sent Stronghold coords: [%d|%d|%d]\n", x, y, z);
             FinderCompassLogic.hasStronghold = true;
         }
         else // server received stronghold request
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(username);
             if (p != null)
             {
-                ChunkPosition result = p.worldObj.findClosestStructure("stronghold", (int) p.posX, (int) p.posY, (int) p.posZ);
+                BlockPos result = p.worldObj.getStrongholdPos("Stronghold", new BlockPos(p));
                 if (result != null)
                 {
-                    FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(result.chunkPosY, result.chunkPosZ, result.chunkPosX), p);
+                    FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(result.getX(), result.getY(), result.getZ()), p);
                 }
             }
         }

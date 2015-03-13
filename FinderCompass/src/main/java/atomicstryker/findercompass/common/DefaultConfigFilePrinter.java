@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.fml.common.registry.GameData;
 import atomicstryker.findercompass.client.CompassSetting;
-import cpw.mods.fml.common.registry.GameData;
 
 public class DefaultConfigFilePrinter
 {

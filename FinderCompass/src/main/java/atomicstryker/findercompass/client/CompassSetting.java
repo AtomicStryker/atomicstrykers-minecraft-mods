@@ -3,7 +3,7 @@ package atomicstryker.findercompass.client;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import atomicstryker.findercompass.common.CompassTargetData;
 
 public class CompassSetting
@@ -17,14 +17,14 @@ public class CompassSetting
     private final HashMap<CompassTargetData, int[]> customNeedles;
     
     /**
-     * Maps an int pair blockID/damage to the last detected Block ChunkCoordinates
+     * Maps an int pair blockID/damage to the last detected Block BlockPos
      */
-    private final ConcurrentHashMap<CompassTargetData, ChunkCoordinates> customNeedleTargets;
+    private final ConcurrentHashMap<CompassTargetData, BlockPos> customNeedleTargets;
     
     /**
      * Maps an int pair blockID/damage to a newly found ChunkCoordinate, to overwrite the last known on next tick
      */
-    private final HashMap<CompassTargetData, ChunkCoordinates> newFoundTargets;
+    private final HashMap<CompassTargetData, BlockPos> newFoundTargets;
     
     /**
      * Maps an int pair blockID/damage to it's AS_CompassWorker thread
@@ -36,8 +36,8 @@ public class CompassSetting
         displayedName = name;
         noEnderEyeNeedle = false;
         customNeedles = new HashMap<CompassTargetData, int[]>();
-        customNeedleTargets = new ConcurrentHashMap<CompassTargetData, ChunkCoordinates>();
-        newFoundTargets = new HashMap<CompassTargetData, ChunkCoordinates>();
+        customNeedleTargets = new ConcurrentHashMap<CompassTargetData, BlockPos>();
+        newFoundTargets = new HashMap<CompassTargetData, BlockPos>();
         compassWorkers = new HashMap<CompassTargetData, ThreadCompassWorker>();
     }
     
@@ -56,12 +56,12 @@ public class CompassSetting
         return customNeedles;
     }
     
-    public ConcurrentHashMap<CompassTargetData, ChunkCoordinates> getCustomNeedleTargets()
+    public ConcurrentHashMap<CompassTargetData, BlockPos> getCustomNeedleTargets()
     {
         return customNeedleTargets;
     }
     
-    public HashMap<CompassTargetData, ChunkCoordinates> getNewFoundTargets()
+    public HashMap<CompassTargetData, BlockPos> getNewFoundTargets()
     {
         return newFoundTargets;
     }

@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
@@ -13,7 +13,7 @@ import atomicstryker.findercompass.common.network.StrongholdPacket;
 public class FinderCompassLogic
 {
 
-    private final ChunkCoordinates NullChunk = new ChunkCoordinates(0, 0, 0);
+    private final BlockPos NullChunk = new BlockPos(0, 0, 0);
 
     private int x;
     private int y;
@@ -24,7 +24,7 @@ public class FinderCompassLogic
     private final Minecraft mc;
 
     public static boolean serverHasFinderCompass = false;
-    public static ChunkCoordinates strongholdCoords = new ChunkCoordinates(0, 0, 0);
+    public static BlockPos strongholdCoords = new BlockPos(0, 0, 0);
     public static boolean hasStronghold = false;
 
     public FinderCompassLogic(Minecraft minecraft)
@@ -70,7 +70,7 @@ public class FinderCompassLogic
 
             int[] configInts;
             CompassTargetData blockInts;
-            ChunkCoordinates coords;
+            BlockPos coords;
             Iterator<Entry<CompassTargetData, int[]>> iter;
             Entry<CompassTargetData, int[]> iterEntry;
             if (movement || isNewSecond)
@@ -116,7 +116,7 @@ public class FinderCompassLogic
      * 
      * @param currentSetting
      */
-    private ChunkCoordinates findNearestBlockChunkOfIDInRange(CompassSetting currentSetting,
+    private BlockPos findNearestBlockChunkOfIDInRange(CompassSetting currentSetting,
             Block blockID, int meta, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
     {
         int[] configInts = { meta, playerX, playerY, playerZ, xzRange, yRange, minY, maxY };
@@ -133,11 +133,11 @@ public class FinderCompassLogic
             worker.start();
         }
 
-        ChunkCoordinates result = (ChunkCoordinates) currentSetting.getNewFoundTargets().get(key);
+        BlockPos result = (BlockPos) currentSetting.getNewFoundTargets().get(key);
         if (result == null)
         {
             // System.out.println("Did not find saved coords for "+key.getBlockID()+", "+key.getDamage());
-            result = (ChunkCoordinates) currentSetting.getCustomNeedleTargets().get(key);
+            result = (BlockPos) currentSetting.getCustomNeedleTargets().get(key);
         }
         else
         {

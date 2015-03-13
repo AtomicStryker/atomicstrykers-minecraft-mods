@@ -11,26 +11,26 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import cpw.mods.fml.common.network.NetworkCheckHandler;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.7.10")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.8")
 public class FinderCompassMod
 {
 
@@ -53,7 +53,6 @@ public class FinderCompassMod
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -84,7 +83,7 @@ public class FinderCompassMod
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.player);
+        networkHelper.sendPacketToPlayer(new HandshakePacket("server"), (EntityPlayerMP) event.player);
     }
 
     @EventHandler
