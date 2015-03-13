@@ -74,7 +74,6 @@ public class Necromancy
 
     public NetworkHelper networkHelper;
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

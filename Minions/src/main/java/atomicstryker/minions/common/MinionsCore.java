@@ -132,7 +132,6 @@ public class MinionsCore
         delayedDeedEvents = new ArrayList<FutureDeedEvent>();
     }
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

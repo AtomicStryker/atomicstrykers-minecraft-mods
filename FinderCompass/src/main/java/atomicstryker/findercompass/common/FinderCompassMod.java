@@ -53,7 +53,6 @@ public class FinderCompassMod
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
