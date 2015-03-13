@@ -1,7 +1,7 @@
 package atomicstryker.kenshiro.client;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.kenshiro.common.CommonProxy;
 
 public class ClientProxy extends CommonProxy

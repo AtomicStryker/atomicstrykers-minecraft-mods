@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class AnimationPacket implements IPacket
 {
@@ -45,7 +45,7 @@ public class AnimationPacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isServer())
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(username);
             if (p != null)
             {
                 for (EntityPlayerMP po : (ArrayList<EntityPlayerMP>)MinecraftServer.getServer().getConfigurationManager().playerEntityList)

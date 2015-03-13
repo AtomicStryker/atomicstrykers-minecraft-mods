@@ -7,10 +7,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.KenshiroServer;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class EntityKickedPacket implements IPacket
 {

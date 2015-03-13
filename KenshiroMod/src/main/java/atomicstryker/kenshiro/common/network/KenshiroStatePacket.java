@@ -1,10 +1,10 @@
 package atomicstryker.kenshiro.common.network;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.kenshiro.common.KenshiroServer;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
 
@@ -41,7 +41,7 @@ public class KenshiroStatePacket implements IPacket
         
         if (FMLCommonHandler.instance().getEffectiveSide().isServer())
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(username);
             if (p != null)
             {
                 if (kenshirorunning)

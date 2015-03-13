@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.KenshiroServer;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class EntityPunchedPacket implements IPacket
 {
@@ -52,7 +52,7 @@ public class EntityPunchedPacket implements IPacket
         }
         else
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(username);
             if (p != null)
             {
                 KenshiroServer.instance().onClientPunchedEntity(p, p.worldObj, entID);

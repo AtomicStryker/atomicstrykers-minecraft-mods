@@ -2,11 +2,11 @@ package atomicstryker.kenshiro.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.KenshiroMod;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class SoundPacket implements IPacket
 {

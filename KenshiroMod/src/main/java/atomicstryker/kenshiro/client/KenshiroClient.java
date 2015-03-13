@@ -13,11 +13,15 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import org.lwjgl.input.Mouse;
 
@@ -28,9 +32,6 @@ import atomicstryker.kenshiro.common.network.EntityKickedPacket;
 import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
 import atomicstryker.kenshiro.common.network.KenshiroStatePacket;
 import atomicstryker.kenshiro.common.network.SoundPacket;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class KenshiroClient
 {
@@ -109,7 +110,7 @@ public class KenshiroClient
                     int y = mouseTargetObject.blockY;
                     int z = mouseTargetObject.blockZ;
                     
-                    Block blockID = minecraft.theWorld.getBlock(x, y, z);
+                    Block blockID = minecraft.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock();
                     int metadata = minecraft.theWorld.getBlockMetadata(x, y, z);
                     float hardness = 0F;
                     if (blockID != Blocks.air)

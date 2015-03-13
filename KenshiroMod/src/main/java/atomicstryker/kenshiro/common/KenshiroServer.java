@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -24,13 +25,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import atomicstryker.kenshiro.common.network.EntityKickedPacket;
 import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
 import atomicstryker.kenshiro.common.network.HandshakePacket;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class KenshiroServer
 {
@@ -61,7 +61,7 @@ public class KenshiroServer
     @SuppressWarnings("unchecked")
     public void onClientPunchedBlock(EntityPlayerMP player, int x, int y, int z)
     {
-        Block block = player.worldObj.getBlock(x, y, z);
+        Block block = player.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
         if (block != null)
         {
             BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
@@ -106,7 +106,7 @@ public class KenshiroServer
             }
             
             KenshiroMod.instance().networkHelper.sendPacketToAllAroundPoint(new EntityPunchedPacket(entityID), 
-                    new TargetPoint(world.provider.dimensionId, target.posX, target.posY, target.posZ, 30D));
+                    new TargetPoint(world.provider.getDimensionId(), target.posX, target.posY, target.posZ, 30D));
         }
         
         if (target instanceof EntityCreeper)
@@ -138,7 +138,7 @@ public class KenshiroServer
         target.setFire(8);
         
         KenshiroMod.instance().networkHelper.sendPacketToAllAroundPoint(new EntityKickedPacket(player.dimension, player.getEntityId(), target.getEntityId()), 
-                new TargetPoint(player.worldObj.provider.dimensionId, target.posX, target.posY, target.posZ, 30D));
+                new TargetPoint(player.worldObj.provider.getDimensionId(), target.posX, target.posY, target.posZ, 30D));
     }
 
     public void onClientUnleashedKenshiroVolley(EntityPlayer playerEnt)

@@ -2,9 +2,9 @@ package atomicstryker.kenshiro.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.kenshiro.client.KenshiroClient;
 import atomicstryker.kenshiro.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class HandshakePacket implements IPacket
 {
