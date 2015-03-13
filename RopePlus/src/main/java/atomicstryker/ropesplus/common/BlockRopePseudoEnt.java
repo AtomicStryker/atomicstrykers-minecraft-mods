@@ -1,6 +1,7 @@
 package atomicstryker.ropesplus.common;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockRopePseudoEnt
@@ -29,7 +30,7 @@ public class BlockRopePseudoEnt
 		
 		if (delay == 0)
 		{
-			if ((world.getBlock(ix, iy - 1, iz) == Blocks.air || world.getBlock(ix, iy - 1, iz) == Blocks.snow))
+			if ((world.getBlockState(new BlockPos(ix, iy - 1, iz)).getBlock() == Blocks.air || world.getBlockState(new BlockPos(ix, iy - 1, iz)).getBlock() == Blocks.snow))
 			{
 				remainrope -= 1;
 				if (remainrope <= 0)
@@ -37,7 +38,7 @@ public class BlockRopePseudoEnt
 					return true;
 				}
 				
-				world.setBlock(ix, iy - 1, iz, RopesPlusCore.instance.blockRope, 0, 3);
+				world.setBlockState(new BlockPos(ix,  iy - 1,  iz),  RopesPlusCore.instance.blockRope.getStateFromMeta( 0));
 				BlockRopePseudoEnt newent = new BlockRopePseudoEnt(world, ix, iy - 1, iz, remainrope);
 				RopesPlusCore.instance.addRopeToArray(newent);
 				

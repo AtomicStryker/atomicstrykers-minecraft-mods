@@ -3,6 +3,7 @@ package atomicstryker.ropesplus.common.arrows;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
@@ -14,6 +15,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -60,7 +63,6 @@ public class EntityArrow303 extends EntityProjectileBase
         precision = 1.0F;
         speed = 1.5F;
         item = new ItemStack(itemId, 1, 0);
-        yOffset = 0.0F;
         setSize(0.5F, 0.5F);
     }
     
@@ -71,9 +73,9 @@ public class EntityArrow303 extends EntityProjectileBase
 
     private boolean isInSight(Entity entity)
     {
-        MovingObjectPosition mop = worldObj.rayTraceBlocks(Vec3.createVectorHelper(posX, posY, posZ),
-                Vec3.createVectorHelper(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ));
-        return  mop == null || (mop.typeOfHit == MovingObjectType.BLOCK && worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ).getLightOpacity() == 255);
+        MovingObjectPosition mop = worldObj.rayTraceBlocks(new Vec3(posX, posY, posZ),
+                new Vec3(entity.posX, entity.posY + (double) entity.getEyeHeight(), entity.posZ));
+        return  mop == null || (mop.typeOfHit == MovingObjectType.BLOCK && worldObj.getBlockState(new BlockPos(mop.hitVec.xCoord, mop.hitVec.yCoord, mop.hitVec.zCoord)).getBlock().getLightOpacity() == 255);
     }
     
     @Override
@@ -93,9 +95,9 @@ public class EntityArrow303 extends EntityProjectileBase
             }
             if (target != null)
             {
-                double diffX = (target.boundingBox.minX + (target.boundingBox.maxX - target.boundingBox.minX) / 2D) - posX;
-                double diffY = (target.boundingBox.minY + (target.boundingBox.maxY - target.boundingBox.minY) / 2D) - posY;
-                double diffZ = (target.boundingBox.minZ + (target.boundingBox.maxZ - target.boundingBox.minZ) / 2D) - posZ;
+                double diffX = (target.getBoundingBox().minX + (target.getBoundingBox().maxX - target.getBoundingBox().minX) / 2D) - posX;
+                double diffY = (target.getBoundingBox().minY + (target.getBoundingBox().maxY - target.getBoundingBox().minY) / 2D) - posY;
+                double diffZ = (target.getBoundingBox().minZ + (target.getBoundingBox().maxZ - target.getBoundingBox().minZ) / 2D) - posZ;
                 setThrowableHeading(diffX, diffY, diffZ, speed, precision);
             }
         }
@@ -118,7 +120,7 @@ public class EntityArrow303 extends EntityProjectileBase
         float nearestDist = -1F;
         Entity entity = null;
         @SuppressWarnings("rawtypes")
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(boxSize, boxSize, boxSize));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().expand(boxSize, boxSize, boxSize));
         for (int i = 0; i < list.size(); i++)
         {
             Entity targetEnt = (Entity) list.get(i);
@@ -156,7 +158,8 @@ public class EntityArrow303 extends EntityProjectileBase
             int ix = candidateCoords[0];
             int iy = candidateCoords[1];
             int iz = candidateCoords[2];
-            if (worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, 1, null, item))
+            BlockPos placePos = new BlockPos(x + ix, y + iy, z + iz);
+            if (worldObj.canBlockBePlaced(blockID, placePos, true, EnumFacing.getFacingFromVector((float)(posX-shooter.posX), (float)(posY-shooter.posY), (float)(posZ-shooter.posZ)), null, item))
             {
                 x += ix;
                 y += iy;
@@ -179,13 +182,14 @@ public class EntityArrow303 extends EntityProjectileBase
 
         if (!worldObj.isRemote)
         {
-            Block prevBlockID = worldObj.getBlock(x, y, z);
+            BlockPos pos = new BlockPos(x, y, z);
+            IBlockState state = worldObj.getBlockState(pos);
+            Block prevBlockID = state.getBlock();
             if (prevBlockID != Blocks.air && shooter != null)
             {
-                int prevBlockMeta = worldObj.getBlockMetadata(x, y, z);
-                prevBlockID.harvestBlock(worldObj, shooter, x, y, z, prevBlockMeta);
+                prevBlockID.harvestBlock(worldObj, shooter, pos, state, worldObj.getTileEntity(pos));
             }
-            worldObj.setBlock(x, y, z, blockID, 0, 3);
+            worldObj.setBlockState(pos, blockID.getDefaultState(), 3);
         }
 
         return true;

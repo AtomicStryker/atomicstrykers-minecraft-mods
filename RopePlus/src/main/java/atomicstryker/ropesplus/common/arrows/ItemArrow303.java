@@ -1,6 +1,5 @@
 package atomicstryker.ropesplus.common.arrows;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;

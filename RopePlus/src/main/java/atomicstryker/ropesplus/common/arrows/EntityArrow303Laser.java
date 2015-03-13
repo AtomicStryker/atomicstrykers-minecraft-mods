@@ -61,7 +61,7 @@ public class EntityArrow303Laser extends EntityArrow303
     @Override
     public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        if (inTileBlockID.getLightOpacity() == 255) // isTransparent
+        if (inTileState.getLightOpacity() == 255) // isTransparent
         {
             if (pierced)
             {

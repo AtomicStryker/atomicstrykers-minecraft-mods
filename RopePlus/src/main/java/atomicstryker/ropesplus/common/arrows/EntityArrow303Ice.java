@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,6 +13,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 public class EntityArrow303Ice extends EntityArrow303
@@ -52,7 +55,7 @@ public class EntityArrow303Ice extends EntityArrow303
         
 
         @SuppressWarnings("unchecked")
-        List<Entity> list = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(3D, 3D, 3D));
+        List<Entity> list = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getBoundingBox().expand(3D, 3D, 3D));
         for (Entity e : list)
         {
             if (e instanceof EntityArrow303Ice)
@@ -113,7 +116,7 @@ public class EntityArrow303Ice extends EntityArrow303
             isDead = false;
             inGround = false;
             posX = victim.posX;
-            posY = victim.boundingBox.minY + (double) victim.height * 0.5D;
+            posY = victim.getBoundingBox().minY + (double) victim.height * 0.5D;
             posZ = victim.posZ;
             setPosition(posX, posY, posZ);
             victim.motionX *= freezeFactor;
@@ -136,26 +139,28 @@ public class EntityArrow303Ice extends EntityArrow303
             {
                 for (int iZ = curZ - 1; iZ <= curZ + 1; iZ++)
                 {
-                    Block b = worldObj.getBlock(iX, iY, iZ);
-                    if (b.getMaterial() == Material.water && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
+                    BlockPos pos = new BlockPos(iX, iY, iZ);
+                    IBlockState state = worldObj.getBlockState(pos);
+                    Block b = state.getBlock();
+                    if (b.getMaterial() == Material.water && b.getMetaFromState(state) == 0)
                     {
-                        worldObj.setBlock(iX, iY, iZ, Blocks.ice, 0, 3);
+                        worldObj.setBlockState(new BlockPos(iX,  iY,  iZ),  Blocks.ice.getStateFromMeta( 0));
                         continue;
                     }
-                    if (b.getMaterial() == Material.lava && worldObj.getBlockMetadata(iX, iY, iZ) == 0)
+                    if (b.getMaterial() == Material.lava && b.getMetaFromState(state) == 0)
                     {
-                        worldObj.setBlock(iX, iY, iZ, Blocks.cobblestone, 0, 3);
+                        worldObj.setBlockState(new BlockPos(iX,  iY,  iZ),  Blocks.cobblestone.getStateFromMeta( 0));
                         continue;
                     }
                     if (b == Blocks.fire)
                     {
-                        worldObj.setBlock(iX, iY, iZ, Blocks.air, 0, 3);
+                        worldObj.setBlockState(new BlockPos(iX,  iY,  iZ),  Blocks.air.getStateFromMeta( 0));
                         continue;
                     }
                     if (b == Blocks.torch)
                     {
-                        b.onEntityCollidedWithBlock(worldObj, iX, iY, iZ, this);
-                        worldObj.setBlock(iX, iY, iZ, Blocks.air, 0, 3);
+                        b.onEntityCollidedWithBlock(worldObj, pos, this);
+                        worldObj.setBlockState(new BlockPos(iX,  iY,  iZ),  Blocks.air.getStateFromMeta( 0));
                     }
                 }
             }
@@ -171,7 +176,7 @@ public class EntityArrow303Ice extends EntityArrow303
         
         for (int i = 0; i < 4; ++i)
         {
-            this.worldObj.spawnParticle("snowballpoof",
+            this.worldObj.spawnParticle(EnumParticleTypes.SNOWBALL,
                     this.posX + this.motionX * (double) i / 4.0D,
                     this.posY + this.motionY * (double) i / 4.0D,
                     this.posZ + this.motionZ * (double) i / 4.0D,

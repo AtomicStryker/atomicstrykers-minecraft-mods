@@ -5,6 +5,8 @@ import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.RopesPlusCore;
@@ -98,7 +100,7 @@ public class EntityArrow303Rope extends EntityArrow303
             int ix = coords[0];
             int iy = coords[1];
             int iz = coords[2];
-            if(worldObj.canPlaceEntityOnSide(blockID, x + ix, y + iy, z + iz, true, blockSide, null, item))
+            if(worldObj.canBlockBePlaced(blockID, new BlockPos(x + ix, y + iy, z + iz), true, EnumFacing.values()[blockSide], null, item))
             {
                 x += ix;
                 y += iy;
@@ -117,7 +119,7 @@ public class EntityArrow303Rope extends EntityArrow303
         
         if(!worldObj.isRemote)
         {
-            worldObj.setBlock(x, y, z, blockID, targetMeta, 3);
+            worldObj.setBlockState(new BlockPos(x, y, z), blockID.getStateFromMeta(targetMeta), 3);
         }
 
         placeCoords[0] = x;

@@ -6,8 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class RopesPlusBowController
 {
@@ -29,7 +29,7 @@ public class RopesPlusBowController
                 && selected.getItem() instanceof ItemArrow303
                 && ((ItemArrow303)selected.getItem()).arrow.tip != Items.flint)
                 {
-                    vanillaBows.put(player.getCommandSenderName(), firingBow.copy());
+                    vanillaBows.put(player.getName(), firingBow.copy());
                     final ItemStack replacementBow = new ItemStack(RopesPlusCore.instance.bowRopesPlus);
                     event.result = replacementBow;
                     player.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
@@ -41,6 +41,6 @@ public class RopesPlusBowController
     
     public static ItemStack getVanillaBowForPlayer(EntityPlayer player)
     {
-        return vanillaBows.get(player.getCommandSenderName());
+        return vanillaBows.get(player.getName());
     }
 }

@@ -3,12 +3,12 @@ package atomicstryker.ropesplus.client;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ClientProxy implements IProxy
 {

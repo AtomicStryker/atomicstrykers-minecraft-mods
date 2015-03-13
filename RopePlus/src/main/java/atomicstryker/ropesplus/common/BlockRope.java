@@ -2,13 +2,13 @@ package atomicstryker.ropesplus.common;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -41,22 +41,22 @@ public class BlockRope extends Block
         byte xoffset = 0;
         byte zoffset = 0;
         byte ropeending = 0;
-        if(world.getBlock(i - 1, j, k + 0) == this)
+        if(world.getBlockState(new BlockPos(i - 1, j, k + 0)).getBlock() == this)
         {
             xoffset = -1;
             zoffset = 0;
         }
-        else if(world.getBlock(i + 1, j, k + 0) == this)
+        else if(world.getBlockState(new BlockPos(i + 1, j, k + 0)).getBlock() == this)
         {
             xoffset = 1;
             zoffset = 0;
         }
-        else if(world.getBlock(i, j, k - 1) == this)
+        else if(world.getBlockState(new BlockPos(i, j, k - 1)).getBlock() == this)
         {
             xoffset = 0;
             zoffset = -1;
         }
-        else if(world.getBlock(i, j, k + 1) == this)
+        else if(world.getBlockState(new BlockPos(i, j, k + 1)).getBlock() == this)
         {
             xoffset = 0;
             zoffset = 1;
@@ -65,23 +65,23 @@ public class BlockRope extends Block
         {
             for(int length = 1; length <= 32; length++)
             {
-                if(world.getBlock(i + xoffset, j - length, k + zoffset).isOpaqueCube())
+                if(world.getBlockState(new BlockPos(i + xoffset, j - length, k + zoffset)).getBlock().isOpaqueCube())
                 {
                     ropeending = 2;
                 }
-                if(ropeending == 0 && world.getBlock(i + xoffset, j - length, k + zoffset) == Blocks.air)
+                if(ropeending == 0 && world.getBlockState(new BlockPos(i + xoffset, j - length, k + zoffset)).getBlock() == Blocks.air)
                 {
                     ropeending = 1;
-                    world.setBlock(i, j, k, Blocks.air, 0, 3);
-                    world.setBlock(i + xoffset, j - length, k + zoffset, this, 0, 3);
+                    world.setBlockState(new BlockPos(i,  j,  k),  Blocks.air.getStateFromMeta( 0));
+                    world.setBlockState(new BlockPos(i + xoffset,  j - length,  k + zoffset),  this.getStateFromMeta( 0));
                 }
             }
 
         }
-        if((ropeending == 0 || ropeending == 2) && (world.getBlock(i, j + 1, k) != this) && !world.getBlock(i, j + 1, k).isOpaqueCube())
+        if((ropeending == 0 || ropeending == 2) && (world.getBlockState(new BlockPos(i, j + 1, k)).getBlock() != this) && !world.getBlockState(new BlockPos(i, j + 1, k)).getBlock().isOpaqueCube())
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, Blocks.air, 0, 3);
+            world.setBlockState(new BlockPos(i,  j,  k),  Blocks.air.getStateFromMeta( 0));
         }
     }
 
@@ -90,61 +90,61 @@ public class BlockRope extends Block
     {
         super.onNeighborBlockChange(world, i, j, k, l);
         boolean blockstays = false;
-        if(world.getBlock(i - 1, j, k + 0) == this)
+        if(world.getBlockState(new BlockPos(i - 1, j, k + 0)).getBlock() == this)
         {
             blockstays = true;
         }
-        if(world.getBlock(i + 1, j, k + 0) == this)
+        if(world.getBlockState(new BlockPos(i + 1, j, k + 0)).getBlock() == this)
         {
             blockstays = true;
         }
-        if(world.getBlock(i, j, k - 1) == this)
+        if(world.getBlockState(new BlockPos(i, j, k - 1)).getBlock() == this)
         {
             blockstays = true;
         }
-        if(world.getBlock(i, j, k + 1) == this)
+        if(world.getBlockState(new BlockPos(i, j, k + 1)).getBlock() == this)
         {
             blockstays = true;
         }
-        if(world.getBlock(i, j + 1, k).isOpaqueCube())
+        if(world.getBlockState(new BlockPos(i, j + 1, k)).getBlock().isOpaqueCube())
         {
             blockstays = true;
         }
-        if(world.getBlock(i, j + 1, k) == this)
+        if(world.getBlockState(new BlockPos(i, j + 1, k)).getBlock() == this)
         {
             blockstays = true;
         }
         if(!blockstays)
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, Blocks.air, 0, 3);
+            world.setBlockState(new BlockPos(i,  j,  k),  Blocks.air.getStateFromMeta( 0));
         }
     }
 
     @Override
     public boolean canPlaceBlockAt(World world, int i, int j, int k)
     {
-        if(world.getBlock(i - 1, j, k + 0) == this)
+        if(world.getBlockState(new BlockPos(i - 1, j, k + 0)).getBlock() == this)
         {
             return true;
         }
-        if(world.getBlock(i + 1, j, k + 0) == this)
+        if(world.getBlockState(new BlockPos(i + 1, j, k + 0)).getBlock() == this)
         {
             return true;
         }
-        if(world.getBlock(i, j, k - 1) == this)
+        if(world.getBlockState(new BlockPos(i, j, k - 1)).getBlock() == this)
         {
             return true;
         }
-        if(world.getBlock(i, j, k + 1) == this)
+        if(world.getBlockState(new BlockPos(i, j, k + 1)).getBlock() == this)
         {
             return true;
         }
-        if(world.getBlock(i, j + 1, k).isOpaqueCube())
+        if(world.getBlockState(new BlockPos(i, j + 1, k)).getBlock().isOpaqueCube())
         {
             return true;
         }
-        return world.getBlock(i, j + 1, k) == this;
+        return world.getBlockState(new BlockPos(i, j + 1, k)).getBlock() == this;
     }
 	
     @Override
@@ -162,25 +162,25 @@ public class BlockRope extends Block
 		int rope_max_y;
 		int rope_min_y;
 		
-		if (world.getBlock(a, b, c) == this)
+		if (world.getBlockState(new BlockPos(a, b, c)).getBlock() == this)
 		{
-			world.setBlock(a, b, c, Blocks.air, 0, 3);
+			world.setBlockState(new BlockPos(a,  b,  c),  Blocks.air.getStateFromMeta( 0));
 		}
 		
 		for(int x = 1;; x++)
 		{
-			if (world.getBlock(a, b+x, c) != this)
+			if (world.getBlockState(new BlockPos(a, b+x, c)).getBlock() != this)
 			{
 				rope_max_y = b+x-1;
 				System.out.println("Player destroyed Rope goes ["+(x-1)+"] blocks higher, up to "+a+","+rope_max_y+","+c);
-				System.out.println("Differing BlockID is: "+world.getBlock(a, b+x, c));
+				System.out.println("Differing BlockID is: "+world.getBlockState(new BlockPos(a, b+x, c)).getBlock());
 				break;
 			}
 		}
 		
 		for(int x = 0;; x--)
 		{
-			if (world.getBlock(a, b+x, c) != this)
+			if (world.getBlockState(new BlockPos(a, b+x, c)).getBlock() != this)
 			{
 				rope_min_y = b+x+1;
 				System.out.println("Player destroyed Rope goes ["+(x+1)+"] blocks lower, down to "+a+","+rope_min_y+","+c);
@@ -194,7 +194,7 @@ public class BlockRope extends Block
 		{
 			coords = RopesPlusCore.instance.areCoordsArrowRope(a, rope_min_y+x, c);
 			
-			world.setBlock(a, rope_min_y+x, c, Blocks.air, 0, 3);
+			world.setBlockState(new BlockPos(a,  rope_min_y+x,  c),  Blocks.air.getStateFromMeta( 0));
 			
 			if (coords != null)
 			{

@@ -1,6 +1,7 @@
 package atomicstryker.ropesplus.common;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public class TileEntityRope
@@ -29,7 +30,7 @@ public class TileEntityRope
 		
 		if (delay == 0)
 		{
-			if ((world.getBlock(ix, iy - 1, iz) == Blocks.air || world.getBlock(ix, iy - 1, iz) == Blocks.snow))
+			if ((world.getBlockState(new BlockPos(ix, iy - 1, iz)).getBlock() == Blocks.air || world.getBlockState(new BlockPos(ix, iy - 1, iz)).getBlock() == Blocks.snow))
 			{
 				remainrope -= 1;
 				if (remainrope <= 0)
@@ -37,7 +38,7 @@ public class TileEntityRope
 					return true;
 				}
 				
-				world.setBlock(ix, iy - 1, iz, RopesPlusCore.instance.blockRopeWall, world.getBlockMetadata(ix, iy, iz), 3);
+				world.setBlockState(new BlockPos(ix,  iy - 1,  iz),  world.getBlockState(new BlockPos(ix, iy, iz)));
 				TileEntityRope newent = new TileEntityRope(world, ix, iy - 1, iz, remainrope);
 				RopesPlusCore.instance.addRopeToArray(newent);
 			}

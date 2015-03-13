@@ -1,6 +1,5 @@
 package atomicstryker.ropesplus.common;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +9,6 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.arrows.EntityArrow303;
@@ -130,6 +128,8 @@ public class ItemBowRopesPlus extends ItemBow
         return par1ItemStack;
     }
 	
+	/*
+	 * TODO see if this needs fixing
 	// these two enable the icon change to render an arrow on the drawn bow
 	@Override
     public boolean requiresMultipleRenderPasses()
@@ -159,6 +159,7 @@ public class ItemBowRopesPlus extends ItemBow
 	    
         return super.getIcon(stack, pass);
     }
+    */
 	
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)

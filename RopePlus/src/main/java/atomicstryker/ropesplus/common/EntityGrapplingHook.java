@@ -9,7 +9,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -60,12 +62,11 @@ public class EntityGrapplingHook extends Entity
     {
         this(world);
         owner = entityplayer;
-        setLocationAndAngles(entityplayer.posX, (entityplayer.posY + 1.6200000000000001D) - (double)entityplayer.yOffset, entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch);
+        setLocationAndAngles(entityplayer.posX, (entityplayer.posY + 1.6200000000000001D) - (double)entityplayer.getYOffset(), entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch);
         posX -= MathHelper.cos((rotationYaw / 180F) * 3.141593F) * 0.16F;
         posY -= 0.10000000149011612D;
         posZ -= MathHelper.sin((rotationYaw / 180F) * 3.141593F) * 0.16F;
         setPosition(posX, posY, posZ);
-        yOffset = 0.0F;
         float f = 0.4F;
         motionX = -MathHelper.sin((rotationYaw / 180F) * 3.141593F) * MathHelper.cos((rotationPitch / 180F) * 3.141593F) * f;
         motionZ = MathHelper.cos((rotationYaw / 180F) * 3.141593F) * MathHelper.cos((rotationPitch / 180F) * 3.141593F) * f;
@@ -107,6 +108,7 @@ public class EntityGrapplingHook extends Entity
         ticksInGround = 0;
     }
 
+    /*
     @Override
     public void setPositionAndRotation2(double d, double d1, double d2, float f, float f1, int i)
     {
@@ -120,6 +122,7 @@ public class EntityGrapplingHook extends Entity
         motionY = velocityY;
         motionZ = velocityZ;
     }
+    */
 
     @Override
     public void setVelocity(double d, double d1, double d2)
@@ -172,7 +175,7 @@ public class EntityGrapplingHook extends Entity
                 } else
                 {
                     posX = plantedHook.posX;
-                    posY = plantedHook.boundingBox.minY + (double)plantedHook.height * 0.80000000000000004D;
+                    posY = plantedHook.getBoundingBox().minY + (double)plantedHook.height * 0.80000000000000004D;
                     posZ = plantedHook.posZ;
                     return;
                 }
@@ -180,7 +183,7 @@ public class EntityGrapplingHook extends Entity
         }
         if(inGround)
         {
-            Block i = worldObj.getBlock(xTile, yTile, zTile);
+            Block i = worldObj.getBlockState(new BlockPos(xTile, yTile, zTile)).getBlock();
             if(i != inTile)
             {
                 inGround = false;
@@ -202,18 +205,18 @@ public class EntityGrapplingHook extends Entity
         {
             ticksInAir++;
         }
-        Vec3 vec3 = Vec3.createVectorHelper(posX, posY, posZ);
-        Vec3 vec31 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        Vec3 vec3 = new Vec3(posX, posY, posZ);
+        Vec3 vec31 = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
         MovingObjectPosition movingobjectposition = worldObj.rayTraceBlocks(vec3, vec31);
-        vec3 = Vec3.createVectorHelper(posX, posY, posZ);
-        vec31 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        vec3 = new Vec3(posX, posY, posZ);
+        vec31 = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
         if(movingobjectposition != null)
         {
-            vec31 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
+            vec31 = new Vec3(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
         }
         Entity entity = null;
         @SuppressWarnings("rawtypes")
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double d3 = 0.0D;
         for(int j = 0; j < list.size(); j++)
         {
@@ -223,7 +226,7 @@ public class EntityGrapplingHook extends Entity
                 continue;
             }
             float f2 = 0.3F;
-            AxisAlignedBB axisalignedbb = entity1.boundingBox.expand(f2, f2, f2);
+            AxisAlignedBB axisalignedbb = entity1.getBoundingBox().expand(f2, f2, f2);
             MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
             if(movingobjectposition1 == null)
             {
@@ -254,10 +257,10 @@ public class EntityGrapplingHook extends Entity
             {
                 double orientationX = motionX;
                 double orientationZ = motionZ;
-                xTile = movingobjectposition.blockX;
-                yTile = movingobjectposition.blockY;
-                zTile = movingobjectposition.blockZ;
-                inTile = worldObj.getBlock(xTile, yTile, zTile);
+                xTile = (int) movingobjectposition.hitVec.xCoord;
+                yTile = (int) movingobjectposition.hitVec.yCoord;
+                zTile = (int) movingobjectposition.hitVec.zCoord;
+                inTile = worldObj.getBlockState(new BlockPos(xTile, yTile, zTile)).getBlock();
                 motionX = (float)(movingobjectposition.hitVec.xCoord - posX);
                 motionY = (float)(movingobjectposition.hitVec.yCoord - posY);
                 motionZ = (float)(movingobjectposition.hitVec.zCoord - posZ);
@@ -268,8 +271,8 @@ public class EntityGrapplingHook extends Entity
                 
                 double hookLyingHeight = movingobjectposition.hitVec.yCoord - (double)yTile;
                 
-                if(((hookLyingHeight == 1.0D && (worldObj.getBlock(xTile, yTile + 1, zTile) == Blocks.air)
-                || worldObj.getBlock(xTile, yTile, zTile) == Blocks.snow))
+                if(((hookLyingHeight == 1.0D && (worldObj.getBlockState(new BlockPos(xTile, yTile + 1, zTile)).getBlock() == Blocks.air)
+                || worldObj.getBlockState(new BlockPos(xTile, yTile, zTile)).getBlock() == Blocks.snow))
                 && yTile + 1 < 256)
                 {
                     if(orientationX == 0.0D || orientationZ == 0.0D)
@@ -280,10 +283,10 @@ public class EntityGrapplingHook extends Entity
                     byte xOffset = ((byte)(orientationX <= 0.0D ? -1 : 1));
                     byte zOffset = ((byte)(orientationZ <= 0.0D ? -1 : 1));
                     
-                    boolean snowSituation = (worldObj.getBlock(xTile, yTile, zTile) == Blocks.snow);
+                    boolean snowSituation = (worldObj.getBlockState(new BlockPos(xTile, yTile, zTile)).getBlock() == Blocks.snow);
                     
-                    boolean canPlaceAtXOffset = (worldObj.getBlock(xTile - xOffset, yTile, zTile) == Blocks.air || worldObj.getBlock(xTile - xOffset, yTile, zTile) == Blocks.snow) && worldObj.getBlock(xTile - xOffset, yTile + 1, zTile) == Blocks.air;
-                    boolean canPlaceAtZOffset = (worldObj.getBlock(xTile, yTile, zTile - zOffset) == Blocks.air || worldObj.getBlock(xTile, yTile, zTile - zOffset) == Blocks.snow) && worldObj.getBlock(xTile, yTile + 1, zTile - zOffset) == Blocks.air;
+                    boolean canPlaceAtXOffset = (worldObj.getBlockState(new BlockPos(xTile - xOffset, yTile, zTile)).getBlock() == Blocks.air || worldObj.getBlockState(new BlockPos(xTile - xOffset, yTile, zTile)).getBlock() == Blocks.snow) && worldObj.getBlockState(new BlockPos(xTile - xOffset, yTile + 1, zTile)).getBlock() == Blocks.air;
+                    boolean canPlaceAtZOffset = (worldObj.getBlockState(new BlockPos(xTile, yTile, zTile - zOffset)).getBlock() == Blocks.air || worldObj.getBlockState(new BlockPos(xTile, yTile, zTile - zOffset)).getBlock() == Blocks.snow) && worldObj.getBlockState(new BlockPos(xTile, yTile + 1, zTile - zOffset)).getBlock() == Blocks.air;
                     int xRope = xTile;
                     int yRope = yTile;
                     int zRope = zTile;
@@ -321,8 +324,8 @@ public class EntityGrapplingHook extends Entity
                     		yRope--;
                     	}
                     	
-                        worldObj.setBlock(xTile, yTile + 1, zTile, RopesPlusCore.instance.blockGrapplingHook, metaData, 3);
-                        worldObj.setBlock(xRope, yRope, zRope, RopesPlusCore.instance.blockRopeWall, metaData, 3);
+                        worldObj.setBlockState(new BlockPos(xTile,  yTile + 1,  zTile),  RopesPlusCore.instance.blockGrapplingHook.getStateFromMeta( metaData));
+                        worldObj.setBlockState(new BlockPos(xRope,  yRope,  zRope),  RopesPlusCore.instance.blockRopeWall.getStateFromMeta( metaData));
                         
                         TileEntityRope newent = new TileEntityRope(worldObj, xRope, yRope, zRope, 32);
                         RopesPlusCore.instance.addRopeToArray(newent);
@@ -373,19 +376,19 @@ public class EntityGrapplingHook extends Entity
                 ticksCatchable = rand.nextInt(30) + 10;
                 motionY -= 0.20000000298023224D;
                 worldObj.playSoundAtEntity(this, "random.splash", 0.25F, 1.0F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
-                float f4 = MathHelper.floor_double(boundingBox.minY);
+                float f4 = MathHelper.floor_double(getBoundingBox().minY);
                 for(int i1 = 0; (float)i1 < 1.0F + width * 20F; i1++)
                 {
                     float f5 = (rand.nextFloat() * 2.0F - 1.0F) * width;
                     float f7 = (rand.nextFloat() * 2.0F - 1.0F) * width;
-                    worldObj.spawnParticle("bubble", posX + (double)f5, f4 + 1.0F, posZ + (double)f7, motionX, motionY - (double)(rand.nextFloat() * 0.2F), motionZ);
+                    worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX + (double)f5, f4 + 1.0F, posZ + (double)f7, motionX, motionY - (double)(rand.nextFloat() * 0.2F), motionZ);
                 }
 
                 for(int j1 = 0; (float)j1 < 1.0F + width * 20F; j1++)
                 {
                     float f6 = (rand.nextFloat() * 2.0F - 1.0F) * width;
                     float f8 = (rand.nextFloat() * 2.0F - 1.0F) * width;
-                    worldObj.spawnParticle("splash", posX + (double)f6, f4 + 1.0F, posZ + (double)f8, motionX, motionY, motionZ);
+                    worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, posX + (double)f6, f4 + 1.0F, posZ + (double)f8, motionX, motionY, motionZ);
                 }
 
             }
@@ -445,12 +448,14 @@ public class EntityGrapplingHook extends Entity
         zTile = nbttagcompound.getShort("zTile");
         inGround = nbttagcompound.getByte("inGround") == 1;
     }
-
+    
+    /*
     @Override
     public float getShadowSize()
     {
         return 0.0F;
     }
+    */
 
     @Override
     public void setDead()

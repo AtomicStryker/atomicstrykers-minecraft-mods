@@ -13,6 +13,10 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import org.lwjgl.input.Keyboard;
 
@@ -23,11 +27,6 @@ import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 import atomicstryker.ropesplus.common.network.ArrowChoicePacket;
 import atomicstryker.ropesplus.common.network.ZiplinePacket;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class RopesPlusClient
 {

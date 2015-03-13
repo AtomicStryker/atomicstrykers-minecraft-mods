@@ -1,11 +1,9 @@
 package atomicstryker.ropesplus.client;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.IBlockAccess;
 import atomicstryker.ropesplus.common.RopesPlusCore;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class BlockRenderHandler implements ISimpleBlockRenderingHandler
 {    

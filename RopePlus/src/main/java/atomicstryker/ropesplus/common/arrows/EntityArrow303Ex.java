@@ -7,6 +7,7 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 public class EntityArrow303Ex extends EntityArrow303
@@ -91,7 +92,7 @@ public class EntityArrow303Ex extends EntityArrow303
         
         for (int i = 0; i < 4; ++i)
         {
-            this.worldObj.spawnParticle("smoke",
+            this.worldObj.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK,
                     this.posX + this.motionX * (double) i / 4.0D,
                     this.posY + this.motionY * (double) i / 4.0D,
                     this.posZ + this.motionZ * (double) i / 4.0D,

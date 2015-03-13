@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.ropesplus.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class SoundPacket implements IPacket
 {
@@ -33,7 +33,7 @@ public class SoundPacket implements IPacket
         user = ByteBufUtils.readUTF8String(bytes);
         sound = ByteBufUtils.readUTF8String(bytes);
         
-        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
+        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
         if (player != null)
         {
             player.worldObj.playSoundAtEntity(player, sound, 1f, 1f);

@@ -5,13 +5,13 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -191,7 +191,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 1;; x++)
 		{
-			if (world.getBlock(a, b+x, c) != RopesPlusCore.instance.blockRopeWall)
+			if (world.getBlockState(new BlockPos(a, b+x, c)).getBlock() != RopesPlusCore.instance.blockRopeWall)
 			{
 				rope_max_y = (b+x)-1;
 				break;
@@ -200,7 +200,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = -1;; x--)
 		{
-			if (world.getBlock(a, b+x, c) != RopesPlusCore.instance.blockRopeWall)
+			if (world.getBlockState(new BlockPos(a, b+x, c)).getBlock() != RopesPlusCore.instance.blockRopeWall)
 			{
 				rope_min_y = (b+x)+1;
 				break;
@@ -213,7 +213,7 @@ public class BlockRopeWall extends BlockContainer
 		
 		for(int x = 0; x <= ropelenght; x++)
 		{
-			world.setBlock(a, rope_max_y-x, c, Blocks.air, 0, 3);
+			world.setBlockState(new BlockPos(a,  rope_max_y-x,  c),  Blocks.air.getStateFromMeta( 0));
 		}
 		
 		//ModLoader.getMinecraftInstance().ingameGUI.addChatMessage("Rope height of ["+(h-b)+"] removed");
@@ -230,9 +230,9 @@ public class BlockRopeWall extends BlockContainer
 		boolean IsHook = false;
 		for(int y = 0; y < candidates.length; y++)
 		{
-			if(world.getBlock(candidates[y][0], candidates[y][1], candidates[y][2]) == RopesPlusCore.instance.blockGrapplingHook)
+			if(world.getBlockState(new BlockPos(candidates[y][0], candidates[y][1], candidates[y][2])).getBlock() == RopesPlusCore.instance.blockGrapplingHook)
 			{
-				world.setBlock(candidates[y][0], candidates[y][1], candidates[y][2], Blocks.air, 0, 3);
+				world.setBlockState(new BlockPos(candidates[y][0],  candidates[y][1],  candidates[y][2]),  Blocks.air.getStateFromMeta( 0));
 				
 				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.instance.itemGrapplingHook));
 				entityitem.delayBeforeCanPickup = 5;

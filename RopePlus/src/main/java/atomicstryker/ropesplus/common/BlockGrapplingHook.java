@@ -4,10 +4,10 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
@@ -46,7 +46,7 @@ public class BlockGrapplingHook extends Block
     @Override
     public boolean canPlaceBlockAt(World world, int i, int j, int k)
     {
-        Block l = world.getBlock(i, j - 1, k);
+        Block l = world.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
         if(!l.isOpaqueCube())
         {
             return false;
@@ -62,7 +62,7 @@ public class BlockGrapplingHook extends Block
         if(!canPlaceBlockAt(world, i, j, k))
         {
             dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlock(i, j, k, Blocks.air, 0, 3);
+            world.setBlockState(new BlockPos(i,  j,  k),  Blocks.air.getStateFromMeta( 0));
             onBlockDestroyed(world, i, j, k);
         }
     }
@@ -108,16 +108,16 @@ public class BlockGrapplingHook extends Block
         };
         for(int l = 0; l < candidates.length; l++)
         {
-            if(world.getBlock(candidates[l][0], candidates[l][1], candidates[l][2]) != RopesPlusCore.instance.blockRopeWall)
+            if(world.getBlockState(new BlockPos(candidates[l][0], candidates[l][1], candidates[l][2])).getBlock() != RopesPlusCore.instance.blockRopeWall)
             {
                 continue;
             }
             
             System.out.println("Rope found at ["+candidates[l][0]+","+candidates[l][1]+","+candidates[l][2]+"]");
             
-            for(int m = candidates[l][1]; world.getBlock(candidates[l][0], m, candidates[l][2]) == RopesPlusCore.instance.blockRopeWall; m--)
+            for(int m = candidates[l][1]; world.getBlockState(new BlockPos(candidates[l][0], m, candidates[l][2])).getBlock() == RopesPlusCore.instance.blockRopeWall; m--)
             {
-                world.setBlock(candidates[l][0], m, candidates[l][2], Blocks.air, 0, 3);
+                world.setBlockState(new BlockPos(candidates[l][0],  m,  candidates[l][2]),  Blocks.air.getStateFromMeta( 0));
             }
         }
     }

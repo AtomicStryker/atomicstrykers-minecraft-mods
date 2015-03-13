@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 public class EntityArrow303Confusion extends EntityArrow303
@@ -55,7 +56,7 @@ public class EntityArrow303Confusion extends EntityArrow303
 
     private void confuse(Entity entity)
     {
-        Object[] ents = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.boundingBox.expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE)).toArray();
+        Object[] ents = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getBoundingBox().expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE)).toArray();
         ArrayList<EntityCreature> hitList = new ArrayList<EntityCreature>();
         for (Object o : ents)
         {
@@ -88,7 +89,7 @@ public class EntityArrow303Confusion extends EntityArrow303
         
         for (int i = 0; i < 4; ++i)
         {
-            this.worldObj.spawnParticle("tilecrack_12_0",
+            this.worldObj.spawnParticle(EnumParticleTypes.BLOCK_CRACK,
                     this.posX + this.motionX * (double) i / 4.0D,
                     this.posY + this.motionY * (double) i / 4.0D,
                     this.posZ + this.motionZ * (double) i / 4.0D,

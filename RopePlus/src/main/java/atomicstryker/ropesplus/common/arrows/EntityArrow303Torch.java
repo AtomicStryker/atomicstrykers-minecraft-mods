@@ -6,6 +6,7 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 
@@ -57,7 +58,7 @@ public class EntityArrow303Torch extends EntityArrow303
         
         for (int i = 0; i < 4; ++i)
         {
-            this.worldObj.spawnParticle("flame",
+            this.worldObj.spawnParticle(EnumParticleTypes.FLAME,
                     this.posX + this.motionX * (double) i / 4.0D,
                     this.posY + this.motionY * (double) i / 4.0D,
                     this.posZ + this.motionZ * (double) i / 4.0D,

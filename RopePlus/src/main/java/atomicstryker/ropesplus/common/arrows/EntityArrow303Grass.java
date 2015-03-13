@@ -7,6 +7,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 public class EntityArrow303Grass extends EntityArrow303
@@ -36,14 +38,14 @@ public class EntityArrow303Grass extends EntityArrow303
     @Override
     public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        Block hitBlockID = worldObj.getBlock(blockX, blockY, blockZ);
+        Block hitBlockID = worldObj.getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock();
         if(hitBlockID == Blocks.dirt)
         {
-            worldObj.setBlock(blockX, blockY, blockZ, Blocks.grass, 0, 3);
+            worldObj.setBlockState(new BlockPos(blockX,  blockY,  blockZ),  Blocks.grass.getStateFromMeta( 0));
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
-        else if(hitBlockID == Blocks.grass && worldObj.getBlock(blockX, blockY+1, blockZ) == Blocks.air)
+        else if(hitBlockID == Blocks.grass && worldObj.getBlockState(new BlockPos(blockX, blockY+1, blockZ)).getBlock() == Blocks.air)
         {
             Block targetblock = Blocks.air;
             switch (rand.nextInt(3))
@@ -64,19 +66,19 @@ public class EntityArrow303Grass extends EntityArrow303
                     break;
                 }
             }
-            worldObj.setBlock(blockX, blockY+1, blockZ, targetblock, 0, 3);
+            worldObj.setBlockState(new BlockPos(blockX,  blockY+1,  blockZ),  targetblock.getStateFromMeta( 0));
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
         else if(hitBlockID == Blocks.cobblestone)
         {
-            worldObj.setBlock(blockX, blockY, blockZ, Blocks.mossy_cobblestone, 0, 3);
+            worldObj.setBlockState(new BlockPos(blockX,  blockY,  blockZ),  Blocks.mossy_cobblestone.getStateFromMeta( 0));
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
-        else if(hitBlockID == Blocks.farmland && worldObj.getBlock(blockX, blockY+1, blockZ) == Blocks.air)
+        else if(hitBlockID == Blocks.farmland && worldObj.getBlockState(new BlockPos(blockX, blockY+1, blockZ)).getBlock() == Blocks.air)
         {
-            worldObj.setBlock(blockX, blockY+1, blockZ, Blocks.wheat, 0, 3);
+            worldObj.setBlockState(new BlockPos(blockX,  blockY+1,  blockZ),  Blocks.wheat.getStateFromMeta( 0));
             setDead();
             return super.onHitBlock(blockX, blockY, blockZ);
         }
@@ -91,7 +93,7 @@ public class EntityArrow303Grass extends EntityArrow303
         
         for (int i = 0; i < 4; ++i)
         {
-            this.worldObj.spawnParticle("tilecrack_18_0",
+            this.worldObj.spawnParticle(EnumParticleTypes.BLOCK_CRACK,
                     this.posX + this.motionX * (double) i / 4.0D,
                     this.posY + this.motionY * (double) i / 4.0D,
                     this.posZ + this.motionZ * (double) i / 4.0D,

@@ -3,6 +3,7 @@ package atomicstryker.ropesplus.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -16,11 +17,8 @@ public class EntityFreeFormRope extends Entity
      */
     private final double SEGMENT_LENGTH = 0.5D;
     
-    private final Vec3 swingStartPoint;
-    private final Vec3 anchorLoc;
-    private final Vec3 playerLoc;
-    private final Vec3 playerToAnchorVec;
-    private final Vec3 rightVec;
+    private Vec3 swingStartPoint;
+    private Vec3 anchorLoc;
     
     private boolean hangsTaut;
     private EntityPlayer shooter;
@@ -39,11 +37,8 @@ public class EntityFreeFormRope extends Entity
         inertiaSpeed = -1;
         nextSoundTime = 0;
         jungleCall = false;
-        swingStartPoint = Vec3.createVectorHelper(0, 0, 0);
-        anchorLoc = Vec3.createVectorHelper(0, 0, 0);
-        playerLoc = Vec3.createVectorHelper(0, 0, 0);
-        playerToAnchorVec = Vec3.createVectorHelper(0, 0, 0);
-        rightVec = Vec3.createVectorHelper(0, 0, 0);
+        swingStartPoint = new Vec3(0, 0, 0);
+        anchorLoc = new Vec3(0, 0, 0);
     }
     
     @Override
@@ -205,9 +200,9 @@ public class EntityFreeFormRope extends Entity
         final int endX = MathHelper.floor_double(getEndX());
         final int endY = MathHelper.floor_double(getEndY()) + (shooter == null ? -1 : 0);
         final int endZ = MathHelper.floor_double(getEndZ());
-        if (!worldObj.getBlock(endX, endY, endZ).isNormalCube())
+        if (!worldObj.getBlockState(new BlockPos(endX, endY, endZ)).getBlock().isNormalCube())
         {
-            System.out.printf("%d %d %d is not normal cube, it is %s\n", endX, endY, endZ, worldObj.getBlock(endX, endY, endZ));
+            System.out.printf("%d %d %d is not normal cube, it is %s\n", endX, endY, endZ, worldObj.getBlockState(new BlockPos(endX, endY, endZ)).getBlock());
             this.setDead();
             return;
         }
@@ -229,7 +224,7 @@ public class EntityFreeFormRope extends Entity
             }
             
             setStartCoordinates(shooter.posX, shooter.posY, shooter.posZ);
-            Vec3 playerToHookVec = Vec3.createVectorHelper(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
+            Vec3 playerToHookVec = new Vec3(getEndX()-shooter.posX, getEndY()-shooter.posY, getEndZ()-shooter.posZ);
             double dist = playerToHookVec.lengthVector();
 
             if (worldObj.isRemote)
@@ -251,7 +246,7 @@ public class EntityFreeFormRope extends Entity
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
                         RopesPlusCore.proxy.setShouldRopeChangeState(0f);
-                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new HookshotPullPacket(shooter.getCommandSenderName(), getEntityId()));
+                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new HookshotPullPacket(shooter.getName(), getEntityId()));
                     }
                     else
                     {
@@ -285,13 +280,8 @@ public class EntityFreeFormRope extends Entity
                             {
                                 inertiaSpeed = getShooterSpeed() + (maxLength-heightFromAnchor)/10;
                                 
-                                swingStartPoint.xCoord = shooter.posX;
-                                swingStartPoint.yCoord = shooter.posY;
-                                swingStartPoint.zCoord = shooter.posZ;
-                                
-                                anchorLoc.xCoord = getEndX();
-                                anchorLoc.yCoord = getEndY();
-                                anchorLoc.zCoord = getEndZ();
+                                swingStartPoint = new Vec3(shooter.posX, shooter.posY, shooter.posZ);
+                                anchorLoc = new Vec3(getEndX(), getEndY(), getEndZ());
                             }
                             
                             if (System.currentTimeMillis() > nextSoundTime)
@@ -301,31 +291,22 @@ public class EntityFreeFormRope extends Entity
                                 if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
                                 {
                                     jungleCall = true;
-                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:jungleking"));
+                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getName(), "ropesplus:jungleking"));
                                 }
                                 else
                                 {
-                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getCommandSenderName(), "ropesplus:ropetension"));
+                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getName(), "ropesplus:ropetension"));
                                 }
                             }
                             
                             // shorten the rope back to max length, set swinger position accordingly
-                            final Vec3 anchorToPlayerVec = Vec3.createVectorHelper(shooter.posX-getEndX(), shooter.posY-getEndY(), shooter.posZ-getEndZ()).normalize();
-                            anchorToPlayerVec.xCoord *= maxLength;
-                            anchorToPlayerVec.yCoord *= maxLength;
-                            anchorToPlayerVec.zCoord *= maxLength;
+                            Vec3 anchorToPlayerVec = new Vec3(shooter.posX-getEndX(), shooter.posY-getEndY(), shooter.posZ-getEndZ()).normalize();
+                            anchorToPlayerVec = new Vec3(anchorToPlayerVec.xCoord*maxLength, anchorToPlayerVec.yCoord*maxLength, anchorToPlayerVec.zCoord*maxLength);
                             shooter.setPosition(anchorToPlayerVec.xCoord+getEndX(), anchorToPlayerVec.yCoord+getEndY(), anchorToPlayerVec.zCoord+getEndZ());
                             
-                            playerToAnchorVec.xCoord = getEndX()-shooter.posX;
-                            playerToAnchorVec.yCoord = heightFromAnchor;
-                            playerToAnchorVec.zCoord = getEndZ()-shooter.posZ;
-                            
-                            playerLoc.xCoord = shooter.posX;
-                            playerLoc.yCoord = shooter.posY;
-                            playerLoc.zCoord = shooter.posZ;
-                            
-                            rightVec.xCoord = playerToAnchorVec.xCoord;
-                            rightVec.zCoord = playerToAnchorVec.zCoord;
+                            Vec3 playerToAnchorVec = new Vec3(getEndX()-shooter.posX, heightFromAnchor, getEndZ()-shooter.posZ);
+                            Vec3 playerLoc = new Vec3(shooter.posX, shooter.posY, shooter.posZ);
+                            Vec3 rightVec = new Vec3(playerToAnchorVec.xCoord, shooter.posY, playerToAnchorVec.zCoord);
                             
                             double relativeEnergy = inertiaSpeed;
                             
@@ -333,12 +314,12 @@ public class EntityFreeFormRope extends Entity
                             // down swing
                             if (downSwing)
                             {
-                                rightVec.rotateAroundY(-90f);
+                                rightVec.rotateYaw(-90f);
                             }
                             // up swing
                             else
                             {
-                                rightVec.rotateAroundY(90f);
+                                rightVec.rotateYaw(90f);
                             }
                             
                             // below anchor, apply potential energy reduction
@@ -387,9 +368,9 @@ public class EntityFreeFormRope extends Entity
             int startX = MathHelper.floor_double(getStartX());
             int startY = MathHelper.floor_double(getStartY());
             int startZ = MathHelper.floor_double(getStartZ());
-            if (worldObj.getBlock(startX, startY, startZ) != RopesPlusCore.instance.blockZipLineAnchor)
+            if (worldObj.getBlockState(new BlockPos(startX, startY, startZ)).getBlock() != RopesPlusCore.instance.blockZipLineAnchor)
             {
-                System.out.printf("[%d,%d,%d] is not anchor: %s\n", startX, startY, startZ, worldObj.getBlock(startX, startY, startZ));
+                System.out.printf("[%d,%d,%d] is not anchor: %s\n", startX, startY, startZ, worldObj.getBlockState(new BlockPos(startX, startY, startZ)).getBlock());
                 setDead();
                 return;
             }

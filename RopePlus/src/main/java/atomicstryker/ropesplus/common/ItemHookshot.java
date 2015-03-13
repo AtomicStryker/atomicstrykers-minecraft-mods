@@ -1,6 +1,5 @@
 package atomicstryker.ropesplus.common;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -11,8 +10,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.StatCollector;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import atomicstryker.ropesplus.common.network.HookshotPacket;
@@ -79,9 +78,9 @@ public class ItemHookshot extends Item
                         float guessRot = entityplayer.prevRotationPitch + (entityplayer.rotationPitch - entityplayer.prevRotationPitch);
                         float guessYaw = entityplayer.prevRotationYaw + (entityplayer.rotationYaw - entityplayer.prevRotationYaw);
                         double guessX = entityplayer.prevPosX + (entityplayer.posX - entityplayer.prevPosX);
-                        double guessY = entityplayer.prevPosY + (entityplayer.posY - entityplayer.prevPosY) + 1.62D - (double) entityplayer.yOffset;
+                        double guessY = entityplayer.prevPosY + (entityplayer.posY - entityplayer.prevPosY) + 1.62D - (double) entityplayer.getYOffset();
                         double guessZ = entityplayer.prevPosZ + (entityplayer.posZ - entityplayer.prevPosZ);
-                        final Vec3 playerVec = Vec3.createVectorHelper(guessX, guessY, guessZ);
+                        final Vec3 playerVec = new Vec3(guessX, guessY, guessZ);
                         float yawCos = MathHelper.cos(-guessYaw * 0.017453292F - (float) Math.PI);
                         float yawSin = MathHelper.sin(-guessYaw * 0.017453292F - (float) Math.PI);
                         float rotCos = -MathHelper.cos(-guessRot * 0.017453292F);
@@ -91,7 +90,7 @@ public class ItemHookshot extends Item
                         double traceDistance = Settings_RopePlus.maxHookShotRopeLength;
                         final Vec3 aimVec =
                                 playerVec.addVector((double) viewX * traceDistance, (double) viewY * traceDistance, (double) viewZ * traceDistance);
-                        final MovingObjectPosition target = world.func_147447_a(playerVec, aimVec, false, false, false);
+                        final MovingObjectPosition target = world.rayTraceBlocks(playerVec, aimVec, false, false, false);
 
                         if (target != null)
                         {
@@ -100,13 +99,12 @@ public class ItemHookshot extends Item
                                 EntityFreeFormRope ropeEnt = new EntityFreeFormRope(world);
                                 ropeEnt.setStartCoordinates(entityplayer.posX, entityplayer.posY + 0.5D, entityplayer.posZ);
                                 ropeEnt.setEndCoordinates(entityplayer.posX, entityplayer.posY + 0.5D, entityplayer.posZ);
-                                ropeEnt.setEndBlock(target.blockX, target.blockY, target.blockZ);
+                                ropeEnt.setEndBlock((int)target.hitVec.xCoord, (int)target.hitVec.yCoord, (int)target.hitVec.zCoord);
                                 ropeEnt.setShooter(entityplayer);
                                 world.spawnEntityInWorld(ropeEnt);
 
                                 RopesPlusCore.instance.setPlayerRope(entityplayer, ropeEnt);
-                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(ropeEnt.getEntityId(), target.blockX,
-                                        target.blockY, target.blockZ), (EntityPlayerMP) entityplayer);
+                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(ropeEnt.getEntityId(), (int)target.hitVec.xCoord, (int)target.hitVec.yCoord, (int)target.hitVec.zCoord), (EntityPlayerMP) entityplayer);
 
                                 entityplayer.worldObj.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F,
                                         1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
@@ -165,7 +163,7 @@ public class ItemHookshot extends Item
     @Override
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
-        return EnumAction.bow;
+        return EnumAction.BOW;
     }
 
     @Override

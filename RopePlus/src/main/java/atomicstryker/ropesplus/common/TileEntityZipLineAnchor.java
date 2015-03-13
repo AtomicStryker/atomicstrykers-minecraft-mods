@@ -1,9 +1,11 @@
 package atomicstryker.ropesplus.common;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 
-public class TileEntityZipLineAnchor extends TileEntity
+public class TileEntityZipLineAnchor extends TileEntity implements IUpdatePlayerListBox
 {
 
     private int targetX;
@@ -39,9 +41,8 @@ public class TileEntityZipLineAnchor extends TileEntity
     }
     
     @Override
-    public void updateEntity()
+    public void update()
     {
-        super.updateEntity();
         checkRope();
     }
     
@@ -95,17 +96,17 @@ public class TileEntityZipLineAnchor extends TileEntity
     {
         if (targetY > 0)
         {
-            if (worldObj.getBlock(targetX, targetY, targetZ).isNormalCube())
+            if (worldObj.getBlockState(new BlockPos(targetX, targetY, targetZ)).getBlock().isNormalCube())
             {                
                 ropeEnt = new EntityFreeFormRope(worldObj);
-                ropeEnt.setStartCoordinates(xCoord+0.5D, yCoord, zCoord+0.5D);
+                ropeEnt.setStartCoordinates(pos.getX()+0.5D, pos.getY(), pos.getZ()+0.5D);
                 ropeEnt.setEndCoordinates(targetX+0.5D, targetY+1D, targetZ+0.5D);
                 ropeEnt.setLoosening();
                 worldObj.spawnEntityInWorld(ropeEnt);
             }
             else if (!isInvalid())
             {
-                System.err.printf("zipline target coords [%d|%d|%d] not an opaque block: %s\n", targetX, targetY, targetZ, worldObj.getBlock(targetX, targetY, targetZ));
+                System.err.printf("zipline target coords [%d|%d|%d] not an opaque block: %s\n", targetX, targetY, targetZ, worldObj.getBlockState(new BlockPos(targetX, targetY, targetZ)).getBlock());
                 targetY = -1;
                 if (ropeEnt != null)
                 {

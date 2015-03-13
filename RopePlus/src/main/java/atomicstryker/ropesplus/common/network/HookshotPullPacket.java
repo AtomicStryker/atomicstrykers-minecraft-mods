@@ -5,11 +5,11 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class HookshotPullPacket implements IPacket
 {
@@ -45,7 +45,7 @@ public class HookshotPullPacket implements IPacket
         }
         else
         {
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(username);
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(username);
             if (player != null)
             {
                 Entity target = player.worldObj.getEntityByID(hookID);

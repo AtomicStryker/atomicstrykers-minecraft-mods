@@ -3,6 +3,7 @@ package atomicstryker.ropesplus.common;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
@@ -11,8 +12,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -33,8 +36,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
     public int xTile;
     public int yTile;
     public int zTile;
-    public Block inTileBlockID;
-    public int inTileMetadata;
+    public IBlockState inTileState;
     public boolean inGround;
     public int arrowShake;
     public EntityPlayer shooter;
@@ -82,12 +84,11 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         xTile = -1;
         yTile = -1;
         zTile = -1;
-        inTileBlockID = Blocks.air;
+        inTileState = Blocks.air.getDefaultState();
         inGround = false;
         arrowShake = 0;
         ticksFlying = 0;
         setSize(0.5F, 0.5F);
-        yOffset = 0.0F;
         hitBoxSize = 0.3F;
         speed = 1.0F;
         slowdown = 0.99F;
@@ -184,9 +185,10 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         
         if (inGround) // handle being stuck in the ground
         {
-            Block blockID = worldObj.getBlock(xTile, yTile, zTile);
-            int blockMeta = worldObj.getBlockMetadata(xTile, yTile, zTile);
-            if (blockID != inTileBlockID || blockMeta != inTileMetadata)
+            IBlockState state = worldObj.getBlockState(new BlockPos(xTile, yTile, zTile));
+            Block blockID = state.getBlock();
+            int blockMeta = blockID.getMetaFromState(state);
+            if (blockID != inTileState.getBlock() || blockMeta != inTileState.getBlock().getMetaFromState(inTileState))
             {
                 inGround = false;
                 motionX *= rand.nextFloat() * 0.2F;
@@ -213,19 +215,19 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         }
         
         // calculate entity hit
-        Vec3 currentPosVec = Vec3.createVectorHelper(posX, posY, posZ);
-        Vec3 nextPosVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
-        MovingObjectPosition collisionPosition = worldObj.func_147447_a(currentPosVec, nextPosVec, true, false, false);
-        currentPosVec = Vec3.createVectorHelper(posX, posY, posZ);
-        nextPosVec = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        Vec3 currentPosVec = new Vec3(posX, posY, posZ);
+        Vec3 nextPosVec = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
+        MovingObjectPosition collisionPosition = worldObj.rayTraceBlocks(currentPosVec, nextPosVec, true, false, false);
+        currentPosVec = new Vec3(posX, posY, posZ);
+        nextPosVec = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
         if (collisionPosition != null)
         {
-            nextPosVec = Vec3.createVectorHelper(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
+            nextPosVec = new Vec3(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
         
         EntityLivingBase entityHit = null;
         @SuppressWarnings("unchecked")
-        List<Entity> possibleHitsList = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List<Entity> possibleHitsList = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double nearestHit = 0.0D;
         MovingObjectPosition mopCollision = null;
         AxisAlignedBB axisalignedbb;
@@ -233,7 +235,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         {
             if (canBeShot(possibleHitEnt))
             {
-                axisalignedbb = possibleHitEnt.boundingBox.expand(hitBoxSize, hitBoxSize, hitBoxSize);
+                axisalignedbb = possibleHitEnt.getBoundingBox().expand(hitBoxSize, hitBoxSize, hitBoxSize);
                 mopCollision = axisalignedbb.calculateIntercept(currentPosVec, nextPosVec);
                 if (mopCollision != null)
                 {
@@ -259,11 +261,10 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         }
         else if (collisionPosition != null && collisionPosition.typeOfHit == MovingObjectType.BLOCK)
         {
-            xTile = collisionPosition.blockX;
-            yTile = collisionPosition.blockY;
-            zTile = collisionPosition.blockZ;
-            inTileBlockID = worldObj.getBlock(xTile, yTile, zTile);
-            inTileMetadata = worldObj.getBlockMetadata(xTile, yTile, zTile);
+            xTile = (int) collisionPosition.hitVec.xCoord;
+            yTile = (int) collisionPosition.hitVec.yCoord;
+            zTile = (int) collisionPosition.hitVec.zCoord;
+            inTileState = worldObj.getBlockState(new BlockPos(xTile, yTile, zTile));
             
             if (onHitBlock(xTile, yTile, zTile))
             {
@@ -279,15 +280,14 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
                 arrowShake = 7;
                 setIsCritical(false);
                 
-                if (inTileBlockID != Blocks.air)
+                if (inTileState != Blocks.air)
                 {
-                    inTileBlockID.onEntityCollidedWithBlock(this.worldObj, this.xTile, this.yTile, this.zTile, this);
+                    inTileState.getBlock().onEntityCollidedWithBlock(this.worldObj, new BlockPos(this.xTile, this.yTile, this.zTile), this);
                 }
             }
             else
             {
-                inTileBlockID = Blocks.air;
-                inTileMetadata = 0;
+                inTileState = Blocks.air.getDefaultState();
             }
         }
 
@@ -327,7 +327,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
             for (int i = 0; i < 4; i++)
             {
                 float f1 = 0.25F;
-                worldObj.spawnParticle("bubble", posX - motionX * (double) f1, posY - motionY * (double) f1, posZ - motionZ * (double) f1, motionX, motionY, motionZ);
+                worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * (double) f1, posY - motionY * (double) f1, posZ - motionZ * (double) f1, motionX, motionY, motionZ);
             }
 
             slow *= 0.8F;
@@ -417,7 +417,7 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         {
             for (int i = 0; i < 4; ++i)
             {
-                worldObj.spawnParticle("crit",
+                worldObj.spawnParticle(EnumParticleTypes.CRIT,
                         posX + motionX * (double) i / 4.0D,
                         posY + motionY * (double) i / 4.0D,
                         posZ + motionZ * (double) i / 4.0D,
