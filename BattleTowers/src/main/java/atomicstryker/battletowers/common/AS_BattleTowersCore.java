@@ -129,11 +129,11 @@ public class AS_BattleTowersCore
         // wheat-0-25-4-4 wheat
         floorItemManagers[4] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 5", "brown_mushroom-0-75-2-2;red_mushroom-0-75-2-2;sapling-0-90-3-3;wheat-0-75-4-4").getString());
         
-        // standing_sign-0-50-1-2 sign
+        // sign-0-50-1-2 sign
         // fishing_rod-0-75-1-1 fishing rod
         // pumpkin_seeds-0-25-2-2 pumpkin seeds
         // melon_seeds-0-25-3-3 Melon Seeds
-        floorItemManagers[5] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 6", "standing_sign-0-50-1-2;fishing_rod-0-75-1-1;pumpkin_seeds-0-60-2-2;melon_seeds-0-60-3-3").getString());
+        floorItemManagers[5] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 6", "sign-0-50-1-2;fishing_rod-0-75-1-1;pumpkin_seeds-0-60-2-2;melon_seeds-0-60-3-3").getString());
         
         // iron_sword-0-25-1-1 iron sword
         // gunpowder-0-25-3-3 gunpowder
