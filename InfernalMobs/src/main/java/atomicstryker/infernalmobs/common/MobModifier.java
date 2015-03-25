@@ -133,14 +133,11 @@ public abstract class MobModifier
     public void onSpawningComplete(EntityLivingBase entity)
     {
         String oldTag = entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
-        if (oldTag.equals(""))
-        {
-            entity.getEntityData().setString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
-        }
-        else if (!oldTag.equals(getLinkedModNameUntranslated()))
+        if (!oldTag.equals(getLinkedModNameUntranslated()))
         {
             System.out.printf("Infernal Mobs tag mismatch!! Was [%s], now trying to set [%s] \n", oldTag, getLinkedModNameUntranslated());
         }
+        entity.getEntityData().setString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
     }
 
     /**
