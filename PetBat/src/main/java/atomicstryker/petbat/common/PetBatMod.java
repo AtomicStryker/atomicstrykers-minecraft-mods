@@ -38,7 +38,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import atomicstryker.petbat.common.network.BatNamePacket;
 import atomicstryker.petbat.common.network.NetworkHelper;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.7")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.8")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;

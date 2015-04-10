@@ -56,7 +56,7 @@ public class ItemPocketedPetBat extends Item
         }
         
         ItemStack batstack = new ItemStack(PetBatMod.instance().itemPocketedBat);
-        writeCompoundStringToItemStack(batstack, "display", "Name", batEnt.getDisplayName().getFormattedText());
+        writeCompoundStringToItemStack(batstack, "display", "Name", batEnt.getDisplayName().getUnformattedText());
         writeCompoundStringToItemStack(batstack, "petbatmod", "Owner", batEnt.getOwnerName());
         writeCompoundIntegerToItemStack(batstack, "petbatmod", "BatXP", batEnt.getBatExperience());
         writeCompoundFloatToItemStack(batstack, "petbatmod", "health", batEnt.getHealth());
