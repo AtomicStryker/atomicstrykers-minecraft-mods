@@ -3,7 +3,7 @@ package atomicstryker.minions.common.jobmanager;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -85,25 +85,23 @@ public class BlockTask_TreeChop extends BlockTask
     		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
             if (event != -1)
             {
-                worker.worldObj.setBlockState(new BlockPos(tempCoords),  Blocks.air.getStateFromMeta( 0));
+                worker.worldObj.setBlockState(tempCoords, Blocks.air.getStateFromMeta(0));
             }
     	}
     	
     	if (leaveBlockList.size() > 0)
     	{
     		tempCoords = leaveBlockList.get(0);
-    		Block id = worker.worldObj.getBlockState(new BlockPos(tempCoords)).getBlock();
-    		if (id != Blocks.air)
+    		IBlockState state = worker.worldObj.getBlockState(tempCoords);
+    		if (state.getBlock() != Blocks.air)
     		{
     	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
     	    	{
     	    		tempCoords = leaveBlockList.get(i);
-    	    		
     	    		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
     	            if (event != -1)
     	            {
-    	                id.dropBlockAsItem(worker.worldObj, tempCoords, worker.worldObj.getBlockState(tempCoords), 0);
-                        worker.worldObj.setBlockToAir(tempCoords);
+    	                worker.worldObj.setBlockState(tempCoords, Blocks.air.getStateFromMeta(0));
     	            }
     	    	}
     		}
