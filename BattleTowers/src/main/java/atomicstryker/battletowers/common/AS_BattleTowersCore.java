@@ -26,7 +26,7 @@ import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 import atomicstryker.battletowers.common.network.LoginPacket;
 import atomicstryker.battletowers.common.network.NetworkHelper;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.5.2")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.5.3")
 public class AS_BattleTowersCore
 {
     
@@ -146,19 +146,19 @@ public class AS_BattleTowersCore
         // chainmail_chestplate-0-25-1-1 chain chestplate
         // chainmail_leggings-0-25-1-1 chain leggings
         // chainmail_boots-0-25-1-1 chain boots
-        floorItemManagers[7] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 8", "chainmail_helmet-0-40-1-1;chainmail_chestplate-0-40-1-1;chainmail_leggings-0-40-1-1;chainmail_boots-0-40-1-1").getString());
+        floorItemManagers[7] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 8", "chainmail_helmet-0-40-1-1;chainmail_chestplate-0-40-1-1;chainmail_leggings-0-40-1-1;chainmail_boots-0-40-1-1;ChestGenHook:dungeonChest:3").getString());
         
         // bookshelf-0-50-1-3 bookshelf
         // redstone_lamp-0-25-2-2 redstone lamp
         // waterlily-0-75-3-3 Lily Plants
         // brewing_stand-0-25-1-1 brewing stand
-        floorItemManagers[8] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 9", "bookshelf-0-70-1-3;redstone_lamp-0-60-2-2;waterlily-0-75-3-3;brewing_stand-0-50-1-1").getString());
+        floorItemManagers[8] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Floor 9", "bookshelf-0-70-1-3;redstone_lamp-0-60-2-2;waterlily-0-75-3-3;brewing_stand-0-50-1-1;ChestGenHook:dungeonChest:5").getString());
         
         // ender_pearl-0-50-2-2 ender pearl
         // diamond-0-50-2-2 diamond
         // redstone-0-75-5-5 redstone dust
         // gold_ingot-0-75-8-8 gold ingot
-        floorItemManagers[9] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Top Floor", "ender_pearl-0-50-2-2;diamond-0-70-2-2;redstone-0-75-5-5;gold_ingot-0-90-8-8").getString());
+        floorItemManagers[9] = new TowerStageItemManager(configuration.get("BattleTowerChestItems", "Top Floor", "ender_pearl-0-50-2-2;diamond-0-70-2-2;redstone-0-75-5-5;gold_ingot-0-90-8-8;ChestGenHook:dungeonChest:7").getString());
         configuration.save();
     }
     

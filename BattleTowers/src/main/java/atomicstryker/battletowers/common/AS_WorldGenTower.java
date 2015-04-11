@@ -421,13 +421,13 @@ public class AS_WorldGenTower
                 for(int chestlength = 0; chestlength < 2; chestlength++)
                 {
                     world.setBlockState(new BlockPos(ix - chestlength,  builderHeight + 7,  kz + 3),  Blocks.chest.getStateFromMeta( 2));
-                    for(int attempt = 0; attempt < (underground ? AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor*2 : AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor); attempt++)
+                    TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(new BlockPos(ix - chestlength, builderHeight + 7, kz + 3));
+                    if (tileentitychest != null)
                     {
-                        ItemStack itemstack = floorChestManager.getStageItem(world.rand);
-                        if(itemstack != null)
+                        for(int attempt = 0; attempt < (underground ? AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor*2 : AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor); attempt++)
                         {
-                            TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(new BlockPos(ix - chestlength, builderHeight + 7, kz + 3));
-                            if (tileentitychest != null)
+                            ItemStack itemstack = floorChestManager.getStageItem(world.rand, tileentitychest);
+                            if(itemstack != null)
                             {
                                 tileentitychest.setInventorySlotContents(world.rand.nextInt(tileentitychest.getSizeInventory()), itemstack);
                             }
