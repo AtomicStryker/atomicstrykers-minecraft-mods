@@ -1,3 +1,6 @@
+1.5.2
+- implemented the chestgenhook ruins has for battletower chests, by default the top 3 stages have 3, 5 and 7 dungeon loot items
+
 1.5.1
 - added Comparable Interface to Towerposition class (some java version demands it?)
 
