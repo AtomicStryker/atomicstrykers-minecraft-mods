@@ -77,7 +77,7 @@ public class ClientTickHandler
                             float progress = 0;
                             try
                             {
-                                progressHack = ReflectionHelper.getPrivateValue(PlayerControllerMP.class, mc.playerController, 6);
+                                progressHack = ReflectionHelper.getPrivateValue(PlayerControllerMP.class, mc.playerController, 4);
                                 progress = (Float) progressHack;
                             }
                             catch (Exception e)

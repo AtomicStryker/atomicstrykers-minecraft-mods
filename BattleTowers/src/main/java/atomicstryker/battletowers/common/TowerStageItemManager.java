@@ -58,7 +58,9 @@ public class TowerStageItemManager
 	            }
 	            else if (settings[0].startsWith("ChestGenHook:"))
 	            {
+	                validItemIndexes.add(i);
 	                itemID[i] = settings[0];
+	                chanceToSpawn[i] = 100;
 	            }
 	            
 	            if (itemID[i] != null)
