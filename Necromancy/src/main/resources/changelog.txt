@@ -1,3 +1,6 @@
+1.7.2
+- removed fluid registration call from client proxy
+
 1.7.1
 - fixed null usageexample string in minion command, possibly crashing servers(?)
 

@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import com.sirolf2009.necromancy.block.RegistryBlocksNecromancy;
 import com.sirolf2009.necromancy.client.model.ModelIsaacHead;
@@ -80,8 +79,6 @@ public class ClientProxy extends CommonProxy
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.scythe, new ItemScytheRenderer());
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.scytheBone, new ItemScytheBoneRenderer());
         MinecraftForgeClient.registerItemRenderer(RegistryNecromancyItems.necronomicon, new ItemNecronomiconRenderer());
-
-        FluidRegistry.registerFluid(RegistryBlocksNecromancy.fluidBlood);
         
         VillagerRegistry.instance().registerVillagerSkin(RegistryNecromancyEntities.villagerIDNecro, ReferenceNecromancy.TEXTURES_ENTITIES_VILLAGER);
     }
