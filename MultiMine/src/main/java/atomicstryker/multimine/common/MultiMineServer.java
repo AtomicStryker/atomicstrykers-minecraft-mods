@@ -9,7 +9,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -129,7 +128,7 @@ public class MultiMineServer
                     // and if its done, destroy the world block
                     player.worldObj.sendBlockBreakProgress(player.getEntityId(), pos, -1);
                     
-                    if (block.getMaterial() != Material.air)
+                    if (!block.isAir(player.worldObj, pos))
                     {
                         final int event =
                                 ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, pos);
@@ -139,7 +138,7 @@ public class MultiMineServer
                             {
                                 block.onBlockDestroyedByPlayer(player.worldObj, pos, state);
                                 onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
-                                if (block.canHarvestBlock(player.worldObj, pos, player))
+                                if (!block.isAir(player.worldObj, pos) && block.canHarvestBlock(player.worldObj, pos, player))
                                 {
                                     block.harvestBlock(player.worldObj, player, pos, state, player.worldObj.getTileEntity(pos));
                                 }

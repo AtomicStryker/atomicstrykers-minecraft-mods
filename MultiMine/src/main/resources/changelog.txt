@@ -1,3 +1,6 @@
+1.4.6
+- added even more Air checking in server logic
+
 1.4.5
 - fixed odd air blockstate with block != Blocks.Air
 
