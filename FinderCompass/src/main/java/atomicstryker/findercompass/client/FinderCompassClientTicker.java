@@ -13,7 +13,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,7 +43,6 @@ public class FinderCompassClientTicker
         currentSetting = null;
 
         FMLCommonHandler.instance().bus().register(this);
-        MinecraftForge.EVENT_BUS.register(new CompassRenderHook(mc));
     }
 
     public void onLoad()

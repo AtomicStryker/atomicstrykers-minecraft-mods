@@ -1,3 +1,7 @@
+1.8
+updated for mc 1.8, is now coremod because missing forge render hooks
+i would be very surprised if this worked with optifine
+
 1.7.10
 updated for mc 1.7.10
 server now allows client without it to connect
