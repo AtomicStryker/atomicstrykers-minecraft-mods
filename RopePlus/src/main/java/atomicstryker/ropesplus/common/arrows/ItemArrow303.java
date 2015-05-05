@@ -16,12 +16,6 @@ public class ItemArrow303 extends Item
     }
     
     @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon(arrow.getIcon());
-    }
-    
-    @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
         return EnumChatFormatting.AQUA+super.getItemStackDisplayName(itemStack);

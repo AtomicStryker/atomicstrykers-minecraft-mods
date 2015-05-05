@@ -29,7 +29,6 @@ public class EntityArrow303Warp extends EntityArrow303
         craftingResults = 4;
         tip = Blocks.obsidian;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:warparrow";
     }
 
     @Override

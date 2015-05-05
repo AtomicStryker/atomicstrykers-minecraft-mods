@@ -1,6 +1,9 @@
 package atomicstryker.ropesplus.client;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -9,6 +12,8 @@ import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.arrows.EntityArrow303;
+import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class ClientProxy implements IProxy
 {
@@ -35,8 +40,8 @@ public class ClientProxy implements IProxy
     @Override
     public void load()
     {        
-        RenderingRegistry.registerEntityRenderingHandler(EntityGrapplingHook.class, new RenderGrapplingHook());
-        Render arrowRenderer = new RenderArrow303();
+        RenderingRegistry.registerEntityRenderingHandler(EntityGrapplingHook.class, new RenderGrapplingHook(Minecraft.getMinecraft().getRenderManager()));
+        Render arrowRenderer = new RenderArrow303(Minecraft.getMinecraft().getRenderManager());
         for(Class<?> arrow : RopesPlusCore.coreArrowClasses)
         {
             RenderingRegistry.registerEntityRenderingHandler((Class<? extends Entity>) arrow, arrowRenderer);
@@ -45,8 +50,18 @@ public class ClientProxy implements IProxy
         //renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
         //RenderingRegistry.registerBlockHandler(new BlockRenderHandler());
         //TODO disabled for now
+        ItemModelMesher mm = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+        mm.register(RopesPlusCore.instance.itemGrapplingHook, 0, new ModelResourceLocation("ropesplus:itemGrapplingHook", "inventory"));
+        mm.register(RopesPlusCore.instance.bowRopesPlus, 0, new ModelResourceLocation("ropesplus:itemBowRopesPlus", "inventory"));
+        mm.register(RopesPlusCore.instance.itemHookShot, 0, new ModelResourceLocation("ropesplus:itemHookshot", "inventory"));
+        mm.register(RopesPlusCore.instance.itemHookShotCartridge, 0, new ModelResourceLocation("ropesplus:itemHookshotCartridge", "inventory"));
         
-        RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope());
+        for (ItemArrow303 item : RopesPlusCore.instance.arrowItems)
+        {
+            mm.register(item, 0, new ModelResourceLocation("ropesplus:"+item.arrow.name, "inventory"));
+        }
+        
+        RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope(Minecraft.getMinecraft().getRenderManager()));
     }
     
     @Override

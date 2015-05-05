@@ -15,12 +15,6 @@ public class ItemHookShotCartridge extends Item
     }
     
     @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("ropesplus:hscartridge");
-    }
-    
-    @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
         return EnumChatFormatting.YELLOW+super.getItemStackDisplayName(itemStack);

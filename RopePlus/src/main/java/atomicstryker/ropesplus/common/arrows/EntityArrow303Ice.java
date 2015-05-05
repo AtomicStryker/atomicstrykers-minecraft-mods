@@ -42,7 +42,6 @@ public class EntityArrow303Ice extends EntityArrow303
         craftingResults = 4;
         tip = Items.snowball;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:icearrow";
     }
 
     @Override
@@ -55,7 +54,7 @@ public class EntityArrow303Ice extends EntityArrow303
         
 
         @SuppressWarnings("unchecked")
-        List<Entity> list = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getBoundingBox().expand(3D, 3D, 3D));
+        List<Entity> list = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getEntityBoundingBox().expand(3D, 3D, 3D));
         for (Entity e : list)
         {
             if (e instanceof EntityArrow303Ice)
@@ -116,7 +115,7 @@ public class EntityArrow303Ice extends EntityArrow303
             isDead = false;
             inGround = false;
             posX = victim.posX;
-            posY = victim.getBoundingBox().minY + (double) victim.height * 0.5D;
+            posY = victim.getEntityBoundingBox().minY + (double) victim.height * 0.5D;
             posZ = victim.posZ;
             setPosition(posX, posY, posZ);
             victim.motionX *= freezeFactor;

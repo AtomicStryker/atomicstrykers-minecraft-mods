@@ -2,6 +2,7 @@ package atomicstryker.ropesplus.client;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -14,6 +15,17 @@ import atomicstryker.ropesplus.common.EntityFreeFormRope;
 public class RenderFreeFormRope extends Render
 {
     
+    protected RenderFreeFormRope(RenderManager renderManager)
+    {
+        super(renderManager);
+        f = 0.0F;
+        f1 = 1.0F;
+        f2 = 0;
+        f3 = 0.25F;
+        thickness = .05D;
+        tessellator = Tessellator.getInstance();
+    }
+
     float f;
     float f1;
     final float f2;
@@ -37,16 +49,6 @@ public class RenderFreeFormRope extends Render
     double ptz;
     
     private ResourceLocation tex = new ResourceLocation("ropesplus", "textures/items/ropeSegment.png");
-    
-    public RenderFreeFormRope()
-    {
-        f = 0.0F;
-        f1 = 1.0F;
-        f2 = 0;
-        f3 = 0.25F;
-        thickness = .05D;
-        tessellator = Tessellator.instance;
-    }
     
     public void renderRope(EntityFreeFormRope rope, double posX, double posY, double posZ, float partialTick)
     {
@@ -158,7 +160,7 @@ public class RenderFreeFormRope extends Render
         double[] q4 = addVectors(sideBounds1, multiplyVector(normal, -length));
         
         GL11.glNormal3f(0.0F, 0.0F, 1F);
-        tessellator.startDrawingQuads();
+        tessellator.getWorldRenderer().startDrawingQuads();
         addVertex(p1, f, f3);
         addVertex(p2, f1, f3);
         addVertex(p3, f1, f2);
@@ -166,7 +168,7 @@ public class RenderFreeFormRope extends Render
         tessellator.draw();
         
         GL11.glNormal3f(0.0F, 0.0F, 1F);
-        tessellator.startDrawingQuads();
+        tessellator.getWorldRenderer().startDrawingQuads();
         addVertex(q1, f, f3);
         addVertex(q2, f1, f3);
         addVertex(q3, f1, f2);
@@ -186,7 +188,7 @@ public class RenderFreeFormRope extends Render
     
     private void addVertex(double[] vertex, double u, double v)
     {
-        tessellator.addVertexWithUV(vertex[0], vertex[1], vertex[2], u, v);
+        tessellator.getWorldRenderer().addVertexWithUV(vertex[0], vertex[1], vertex[2], u, v);
     }
 
     private double[] normalize(double[] v)

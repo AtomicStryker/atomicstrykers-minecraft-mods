@@ -30,12 +30,6 @@ public class BlockZipLineAnchor extends BlockContainer
     }
 
     @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister)
-    {
-        this.blockIcon = par1IconRegister.registerIcon("ropesplus:grhkanchor");
-    }
-
-    @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer entityPlayer, EnumFacing side, float xOffset, float yOffset, float zOffset)
     {
         if (!world.isRemote)

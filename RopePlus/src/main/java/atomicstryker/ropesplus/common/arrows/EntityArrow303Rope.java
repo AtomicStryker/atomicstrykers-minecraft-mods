@@ -33,7 +33,6 @@ public class EntityArrow303Rope extends EntityArrow303
         craftingResults = 1;
         tip = RopesPlusCore.instance.blockRope;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:ropearrow";
     }
 
     @Override

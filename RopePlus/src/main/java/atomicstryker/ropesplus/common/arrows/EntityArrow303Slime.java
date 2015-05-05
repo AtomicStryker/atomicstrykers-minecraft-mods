@@ -31,7 +31,6 @@ public class EntityArrow303Slime extends EntityArrow303
         craftingResults = 1;
         tip = Items.slime_ball;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:slimearrow";
     }
 
     private EntityLivingBase makeMob()

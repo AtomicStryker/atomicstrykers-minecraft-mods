@@ -36,7 +36,6 @@ public class EntityArrow303Ex extends EntityArrow303
         craftingResults = 1;
         tip = Items.gunpowder;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:exarrow";
     }
 
     @Override

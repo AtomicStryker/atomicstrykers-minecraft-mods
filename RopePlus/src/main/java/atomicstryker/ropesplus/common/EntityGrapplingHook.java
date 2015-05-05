@@ -37,9 +37,6 @@ public class EntityGrapplingHook extends Entity
     private double positionZ;
     private double rotYaw;
     private double rotPitch;
-    private double velocityX;
-    private double velocityY;
-    private double velocityZ;
     private double startPosX;
     private double startPosZ;
     
@@ -125,14 +122,6 @@ public class EntityGrapplingHook extends Entity
     */
 
     @Override
-    public void setVelocity(double d, double d1, double d2)
-    {
-        velocityX = motionX = d;
-        velocityY = motionY = d1;
-        velocityZ = motionZ = d2;
-    }
-
-    @Override
     public void onUpdate()
     {
         super.onUpdate();
@@ -175,7 +164,7 @@ public class EntityGrapplingHook extends Entity
                 } else
                 {
                     posX = plantedHook.posX;
-                    posY = plantedHook.getBoundingBox().minY + (double)plantedHook.height * 0.80000000000000004D;
+                    posY = plantedHook.getEntityBoundingBox().minY + (double)plantedHook.height * 0.80000000000000004D;
                     posZ = plantedHook.posZ;
                     return;
                 }
@@ -216,7 +205,7 @@ public class EntityGrapplingHook extends Entity
         }
         Entity entity = null;
         @SuppressWarnings("rawtypes")
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double d3 = 0.0D;
         for(int j = 0; j < list.size(); j++)
         {
@@ -226,7 +215,7 @@ public class EntityGrapplingHook extends Entity
                 continue;
             }
             float f2 = 0.3F;
-            AxisAlignedBB axisalignedbb = entity1.getBoundingBox().expand(f2, f2, f2);
+            AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f2, f2, f2);
             MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
             if(movingobjectposition1 == null)
             {
@@ -376,7 +365,7 @@ public class EntityGrapplingHook extends Entity
                 ticksCatchable = rand.nextInt(30) + 10;
                 motionY -= 0.20000000298023224D;
                 worldObj.playSoundAtEntity(this, "random.splash", 0.25F, 1.0F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
-                float f4 = MathHelper.floor_double(getBoundingBox().minY);
+                float f4 = MathHelper.floor_double(getEntityBoundingBox().minY);
                 for(int i1 = 0; (float)i1 < 1.0F + width * 20F; i1++)
                 {
                     float f5 = (rand.nextFloat() * 2.0F - 1.0F) * width;

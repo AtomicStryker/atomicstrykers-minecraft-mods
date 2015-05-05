@@ -246,7 +246,7 @@ public class EntityFreeFormRope extends Entity
                         RopesPlusCore.proxy.setHasClientRopeOut(false);
                         RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
                         RopesPlusCore.proxy.setShouldRopeChangeState(0f);
-                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new HookshotPullPacket(shooter.getName(), getEntityId()));
+                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new HookshotPullPacket(shooter.getDisplayName().getUnformattedText(), getEntityId()));
                     }
                     else
                     {
@@ -291,11 +291,11 @@ public class EntityFreeFormRope extends Entity
                                 if (!jungleCall && maxLength > 25 && getEndY()-shooter.posY < 5D)
                                 {
                                     jungleCall = true;
-                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getName(), "ropesplus:jungleking"));
+                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getDisplayName().getUnformattedText(), "ropesplus:jungleking"));
                                 }
                                 else
                                 {
-                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getName(), "ropesplus:ropetension"));
+                                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new SoundPacket(shooter.getDisplayName().getUnformattedText(), "ropesplus:ropetension"));
                                 }
                             }
                             

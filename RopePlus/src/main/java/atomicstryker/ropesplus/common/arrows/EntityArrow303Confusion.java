@@ -36,7 +36,6 @@ public class EntityArrow303Confusion extends EntityArrow303
         craftingResults = 4;
         tip = Blocks.sand;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:confusionarrow";
     }
 
     @Override
@@ -56,7 +55,7 @@ public class EntityArrow303Confusion extends EntityArrow303
 
     private void confuse(Entity entity)
     {
-        Object[] ents = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getBoundingBox().expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE)).toArray();
+        Object[] ents = worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getEntityBoundingBox().expand(CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE, CONFUSION_EFFECT_SIZE)).toArray();
         ArrayList<EntityCreature> hitList = new ArrayList<EntityCreature>();
         for (Object o : ents)
         {

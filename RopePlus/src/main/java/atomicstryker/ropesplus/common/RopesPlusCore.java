@@ -92,7 +92,6 @@ public class RopesPlusCore
     private boolean zipLinesEnabled;
     private boolean grapplingEnabled;
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -107,14 +106,14 @@ public class RopesPlusCore
         Settings_RopePlus.InitSettings(event.getSuggestedConfigurationFile());
         proxy.loadConfig(Settings_RopePlus.config);
 
-        blockRope = (new BlockRope().setHardness(0.3F).setBlockName("blockRopeCenter"));
+        blockRope = (new BlockRope().setHardness(0.3F).setUnlocalizedName("blockRopeCenter"));
         itemGrapplingHook = new ItemGrapplingHook().setUnlocalizedName("itemGrapplingHook");
-        blockRopeWall = (new BlockRopeWall().setHardness(0.5F).setStepSound(Block.soundTypeCloth).setBlockName("blockRopeWall"));
-        blockGrapplingHook = (new BlockGrapplingHook()).setHardness(0.0F).setStepSound(Block.soundTypeMetal).setBlockName("blockGrHk");
-        blockZipLineAnchor = new BlockZipLineAnchor().setHardness(0.3F).setBlockName("blockZiplineAnchor");
+        blockRopeWall = (new BlockRopeWall().setHardness(0.5F).setStepSound(Block.soundTypeCloth).setUnlocalizedName("blockRopeWall"));
+        blockGrapplingHook = (new BlockGrapplingHook()).setHardness(0.0F).setStepSound(Block.soundTypeMetal).setUnlocalizedName("blockGrapplingHook");
+        blockZipLineAnchor = new BlockZipLineAnchor().setHardness(0.3F).setUnlocalizedName("blockZiplineAnchor");
         itemHookShot = new ItemHookshot().setUnlocalizedName("itemHookshot");
-        itemHookShotCartridge = new ItemHookShotCartridge().setUnlocalizedName("HookshotCartridge");
-        bowRopesPlus = new ItemBowRopesPlus().setUnlocalizedName("bowRopesPlus");
+        itemHookShotCartridge = new ItemHookShotCartridge().setUnlocalizedName("itemHookshotCartridge");
+        bowRopesPlus = new ItemBowRopesPlus().setUnlocalizedName("itemBowRopesPlus");
 
         EntityArrow303 baseArrow = new EntityArrow303(null);
         for (Class<?> c : coreArrowClasses)
@@ -152,11 +151,11 @@ public class RopesPlusCore
 
         if (grapplingEnabled)
         {
-            GameRegistry.registerBlock(blockGrapplingHook, "blockGrHk");
+            GameRegistry.registerBlock(blockGrapplingHook, "blockGrapplingHook");
             GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook", "RopesPlus");
         }
 
-        GameRegistry.registerBlock(blockRopeWall, "blockRope");
+        GameRegistry.registerBlock(blockRopeWall, "blockRopeWall");
         GameRegistry.registerBlock(blockRope, "blockRopeCentral");
 
         if (hookShotEnabled)
@@ -167,9 +166,9 @@ public class RopesPlusCore
                 GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
             }
             GameRegistry.registerItem(itemHookShot, "itemHookshot", "RopesPlus");
-            GameRegistry.registerItem(itemHookShotCartridge, "HookshotCartridge", "RopesPlus");
+            GameRegistry.registerItem(itemHookShotCartridge, "itemHookshotCartridge", "RopesPlus");
         }
-        GameRegistry.registerItem(bowRopesPlus, "bowRopesPlus", "RopesPlus");
+        GameRegistry.registerItem(bowRopesPlus, "itemBowRopesPlus", "RopesPlus");
 
         networkHelper =
                 new NetworkHelper("AS_RP", ArrowChoicePacket.class, GrapplingHookPacket.class, HookshotPacket.class, HookshotPullPacket.class,

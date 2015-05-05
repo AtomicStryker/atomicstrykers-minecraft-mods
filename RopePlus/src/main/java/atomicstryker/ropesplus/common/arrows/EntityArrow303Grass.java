@@ -32,7 +32,6 @@ public class EntityArrow303Grass extends EntityArrow303
         craftingResults = 4;
         tip = Items.wheat_seeds;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:grassarrow";
     }
 
     @Override

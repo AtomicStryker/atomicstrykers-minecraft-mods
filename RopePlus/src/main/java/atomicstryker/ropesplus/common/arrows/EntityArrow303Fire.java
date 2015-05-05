@@ -31,7 +31,6 @@ public class EntityArrow303Fire extends EntityArrow303
         craftingResults = 4;
         tip = Items.coal;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:fiarrow";
     }
 
     @Override

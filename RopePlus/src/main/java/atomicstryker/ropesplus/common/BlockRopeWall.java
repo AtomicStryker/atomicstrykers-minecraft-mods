@@ -2,86 +2,22 @@ package atomicstryker.ropesplus.common;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockRopeWall extends BlockContainer
+public class BlockRopeWall extends BlockLadder
 {
     public BlockRopeWall()
     {
-        super(Material.vine);
-    }
-    
-    @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister)
-    {
-        this.blockIcon = par1IconRegister.registerIcon("ropesplus:rope");
-    }
-    
-    @Override
-    public boolean isLadder(IBlockAccess world, int x, int y, int z, EntityLivingBase entity)
-    {
-        return true;
-    }
-    
-	@Override
-    public boolean canPlaceBlockOnSide(World var1, int var2, int var3, int var4, int var5)
-    {
-        switch (var5)
-        {
-            case 1:
-                return this.canBePlacedOn(var1.getBlock(var2, var3, var4 + 1));
-            case 2:
-                return this.canBePlacedOn(var1.getBlock(var2, var3, var4 + 1));
-            case 3:
-                return this.canBePlacedOn(var1.getBlock(var2, var3, var4 - 1));
-            case 4:
-                return this.canBePlacedOn(var1.getBlock(var2 + 1, var3, var4));
-            case 5:
-                return this.canBePlacedOn(var1.getBlock(var2 - 1, var3, var4));
-            default:
-                return false;
-        }
-    }
-	
-    private boolean canBePlacedOn(Block var1)
-    {
-        return var1.renderAsNormalBlock() && var1.getMaterial().blocksMovement();
-    }
-
-	@Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int i, int j, int k)
-    {
-        int l = world.getBlockMetadata(i, j, k);
-        float f = 0.125F;
-        if(l == 1)
-        {
-            setBlockBounds(0.0F, 0.0F, 1.0F - f, 1.0F, 1.0F, 1.0F);
-        }
-        if(l == 4)
-        {
-            setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, f);
-        }
-        if(l == 8)
-        {
-            setBlockBounds(1.0F - f, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        }
-        if(l == 2)
-        {
-            setBlockBounds(0.0F, 0.0F, 0.0F, f, 1.0F, 1.0F);
-        }
-        return super.getCollisionBoundingBoxFromPool(world, i, j, k);
+        super();
     }
     
 	@Override
@@ -89,23 +25,11 @@ public class BlockRopeWall extends BlockContainer
     {
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
-
-	@Override
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
-
-	@Override
-    public boolean renderAsNormalBlock()
-    {
-        return false;
-    }
     
 	@Override
-    public void setBlockBoundsBasedOnState(IBlockAccess var1, int var2, int var3, int var4)
+    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
     {
-        int metaData = var1.getBlockMetadata(var2, var3, var4);
+	    int metaData = this.getMetaFromState(worldIn.getBlockState(pos));
         float var7 = 1.0F;
         float var8 = 1.0F;
         float var9 = 1.0F;
@@ -168,18 +92,18 @@ public class BlockRopeWall extends BlockContainer
     }
     
 	@Override
-    public void onBlockDestroyedByPlayer(World world, int i, int j, int k, int l)
+    public void onBlockDestroyedByPlayer(World world, BlockPos p, IBlockState s)
     {
-        onBlockDestroyed(world, i, j, k);
+        onBlockDestroyed(world, p);
     }
 
 	@Override
-    public void onBlockDestroyedByExplosion(World world, int i, int j, int k, Explosion e)
+    public void onBlockDestroyedByExplosion(World world, BlockPos p, Explosion e)
     {
-        onBlockDestroyed(world, i, j, k);
+        onBlockDestroyed(world, p);
     }
 	
-    public void onBlockDestroyed(World world, int a, int b, int c)
+    public void onBlockDestroyed(World world, BlockPos p)
     {
 		if(world.isRemote)
         {
@@ -188,6 +112,9 @@ public class BlockRopeWall extends BlockContainer
 		
 		int rope_max_y;
 		int rope_min_y;
+		int a = p.getX();
+		int b = p.getY();
+		int c = p.getZ();
 		
 		for(int x = 1;; x++)
 		{
@@ -235,7 +162,7 @@ public class BlockRopeWall extends BlockContainer
 				world.setBlockState(new BlockPos(candidates[y][0],  candidates[y][1],  candidates[y][2]),  Blocks.air.getStateFromMeta( 0));
 				
 				EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.instance.itemGrapplingHook));
-				entityitem.delayBeforeCanPickup = 5;
+				entityitem.setPickupDelay(5);
 				world.spawnEntityInWorld(entityitem);
 				
 				IsHook = true;
@@ -246,13 +173,13 @@ public class BlockRopeWall extends BlockContainer
 		if (!IsHook)
 		{
 			EntityItem entityitem = new EntityItem(world, a, b, c, new ItemStack(RopesPlusCore.instance.getArrowItemByTip(RopesPlusCore.instance.blockRope)));
-			entityitem.delayBeforeCanPickup = 5;
+			entityitem.setPickupDelay(5);
 			world.spawnEntityInWorld(entityitem);
 		}
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i)
+	public TileEntity createTileEntity(World var1, IBlockState s)
 	{
 		return null;
 	}

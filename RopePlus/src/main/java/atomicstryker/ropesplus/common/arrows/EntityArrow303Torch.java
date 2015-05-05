@@ -31,7 +31,6 @@ public class EntityArrow303Torch extends EntityArrow303
         craftingResults = 1;
         tip = Blocks.torch;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:torcharrow";
     }
 
     @Override

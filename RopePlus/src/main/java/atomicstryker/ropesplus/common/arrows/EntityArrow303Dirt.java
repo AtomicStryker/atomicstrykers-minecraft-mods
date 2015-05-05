@@ -29,7 +29,6 @@ public class EntityArrow303Dirt extends EntityArrow303
         craftingResults = 8;
         tip = Blocks.dirt;
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:dirtarrow";
     }
 
     @Override

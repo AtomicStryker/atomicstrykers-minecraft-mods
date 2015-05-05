@@ -19,12 +19,6 @@ public class ItemGrapplingHook extends Item
         maxStackSize = 1;
         setCreativeTab(CreativeTabs.tabTools);
     }
-    
-    @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("ropesplus:itemGrapplingHook");
-    }
 
     @Override
     public boolean isFull3D()

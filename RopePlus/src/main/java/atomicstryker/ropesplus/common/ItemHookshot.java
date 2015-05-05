@@ -28,12 +28,6 @@ public class ItemHookshot extends Item
     }
 
     @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("ropesplus:hookshot");
-    }
-
-    @Override
     public boolean isFull3D()
     {
         return true;

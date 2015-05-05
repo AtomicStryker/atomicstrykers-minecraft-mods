@@ -2,6 +2,7 @@ package atomicstryker.ropesplus.client;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -14,11 +15,12 @@ import atomicstryker.ropesplus.common.EntityGrapplingHook;
 public class RenderGrapplingHook extends Render
 {
     
-    private ResourceLocation tex = new ResourceLocation("ropesplus", "textures/items/itemGrapplingHookThrown.png");
-
-    public RenderGrapplingHook()
+    protected RenderGrapplingHook(RenderManager renderManager)
     {
+        super(renderManager);
     }
+
+    private ResourceLocation tex = new ResourceLocation("ropesplus", "textures/items/itemGrapplingHookThrown.png");
 
     public void render(EntityGrapplingHook entitygrapplinghook, double d, double d1, double d2, float f, float f1)
     {
@@ -27,7 +29,7 @@ public class RenderGrapplingHook extends Render
         GL11.glEnable(32826 /*GL_RESCALE_NORMAL_EXT*/);
         GL11.glScalef(0.5F, 0.5F, 0.5F);
         this.bindEntityTexture(entitygrapplinghook);
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tessellator = Tessellator.getInstance();
         float f2 = 0.0F;
         float f3 = 1.0F;
         float f4 = 0.0F;
@@ -37,12 +39,12 @@ public class RenderGrapplingHook extends Render
         float f8 = 0.5F;
         GL11.glRotatef(180F - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        tessellator.startDrawingQuads();
-        tessellator.setNormal(0.0F, 1.0F, 0.0F);
-        tessellator.addVertexWithUV(0.0F - f7, 0.0F - f8, 0.0D, f2, f5);
-        tessellator.addVertexWithUV(f6 - f7, 0.0F - f8, 0.0D, f3, f5);
-        tessellator.addVertexWithUV(f6 - f7, 1.0F - f8, 0.0D, f3, f4);
-        tessellator.addVertexWithUV(0.0F - f7, 1.0F - f8, 0.0D, f2, f4);
+        tessellator.getWorldRenderer().startDrawingQuads();
+        tessellator.getWorldRenderer().setNormal(0.0F, 1.0F, 0.0F);
+        tessellator.getWorldRenderer().addVertexWithUV(0.0F - f7, 0.0F - f8, 0.0D, f2, f5);
+        tessellator.getWorldRenderer().addVertexWithUV(f6 - f7, 0.0F - f8, 0.0D, f3, f5);
+        tessellator.getWorldRenderer().addVertexWithUV(f6 - f7, 1.0F - f8, 0.0D, f3, f4);
+        tessellator.getWorldRenderer().addVertexWithUV(0.0F - f7, 1.0F - f8, 0.0D, f2, f4);
         tessellator.draw();
         GL11.glDisable(32826 /*GL_RESCALE_NORMAL_EXT*/);
         GL11.glPopMatrix();
@@ -74,13 +76,13 @@ public class RenderGrapplingHook extends Render
             double d17 = (float)(d9 - d14);
             GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
             GL11.glDisable(2896 /*GL_LIGHTING*/);
-            tessellator.startDrawing(3);
-            tessellator.setColorOpaque_I(0);
+            tessellator.getWorldRenderer().startDrawing(3);
+            tessellator.getWorldRenderer().setColorOpaque_I(0);
             int i = 16;
             for(int j = 0; j <= i; j++)
             {
                 float f12 = (float)j / (float)i;
-                tessellator.addVertex(d + d15 * (double)f12, d1 + d16 * (double)(f12 * f12 + f12) * 0.5D + 0.25D, d2 + d17 * (double)f12);
+                tessellator.getWorldRenderer().addVertex(d + d15 * (double)f12, d1 + d16 * (double)(f12 * f12 + f12) * 0.5D + 0.25D, d2 + d17 * (double)f12);
             }
 
             tessellator.draw();

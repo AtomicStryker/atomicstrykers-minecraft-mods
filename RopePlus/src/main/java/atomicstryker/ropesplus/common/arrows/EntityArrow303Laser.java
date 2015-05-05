@@ -44,7 +44,6 @@ public class EntityArrow303Laser extends EntityArrow303
         pierced = false;
         piercedMobs = new HashSet<Entity>();
         item = new ItemStack(itemId, 1, 0);
-        icon = "ropesplus:laserarrow";
     }
 
     @Override
@@ -61,18 +60,11 @@ public class EntityArrow303Laser extends EntityArrow303
     @Override
     public boolean onHitBlock(int blockX, int blockY, int blockZ)
     {
-        if (inTileState.getLightOpacity() == 255) // isTransparent
+        if (pierced)
         {
-            if (pierced)
-            {
-                setDead();
-            }
-            return super.onHitBlock(blockX, blockY, blockZ);
+            setDead();
         }
-        else
-        {
-            return false;
-        }
+        return super.onHitBlock(blockX, blockY, blockZ);
     }
     
     @Override

@@ -3,7 +3,6 @@ package atomicstryker.ropesplus.common;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
@@ -23,12 +22,6 @@ public class ItemBowRopesPlus extends ItemBow
 		super();
 		this.setCreativeTab(null);
 	}
-	
-    @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        itemIcon = iconRegister.registerIcon("bow");
-    }
     
 	@Override
     public void onPlayerStoppedUsing(ItemStack usedItemStack, World world, EntityPlayer player, int heldTicks)

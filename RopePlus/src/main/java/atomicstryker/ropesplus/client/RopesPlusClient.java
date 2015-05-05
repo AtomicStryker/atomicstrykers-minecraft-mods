@@ -9,6 +9,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 import org.lwjgl.input.Keyboard;
 
@@ -286,8 +288,8 @@ public class RopesPlusClient
                         }
                         s = s.concat("x" + arrowCount);
                     }
-                    mc.fontRenderer.drawStringWithShadow(s, guiStringX, guiStringY, 0x2F96EB);
-                    mc.fontRenderer
+                    mc.fontRendererObj.drawStringWithShadow(s, guiStringX, guiStringY, 0x2F96EB);
+                    mc.fontRendererObj
                             .drawStringWithShadow(
                                     StatCollector.translateToLocal("translation.ropesplus:OnScreenHintA") + Keyboard.getKeyName(swapForward.getKeyCode()) + ", "
                                             + Keyboard.getKeyName(swapBackward.getKeyCode()) + StatCollector.translateToLocal("translation.ropesplus:OnScreenHintB")
@@ -296,18 +298,18 @@ public class RopesPlusClient
 
                 if (System.currentTimeMillis() > keysBlockedUntil)
                 {
-                    if (swapForward.getIsKeyPressed())
+                    if (swapForward.isPressed())
                     {
                         cycle(false);
                         keysBlockedUntil = System.currentTimeMillis() + 250l;
                     }
-                    else if (swapBackward.getIsKeyPressed())
+                    else if (swapBackward.isPressed())
                     {
                         cycle(true);
                         keysBlockedUntil = System.currentTimeMillis() + 250l;
                     }
 
-                    if (keyToggle.getIsKeyPressed())
+                    if (keyToggle.isPressed())
                     {
                         keysBlockedUntil = System.currentTimeMillis() + 250l;
                         toggleEnabled = !toggleEnabled;
@@ -330,7 +332,7 @@ public class RopesPlusClient
 
             if (RopesPlusCore.proxy.getShouldRopeChangeState() >= 0f)
             {
-                if (mc.gameSettings.keyBindSneak.getIsKeyPressed())
+                if (mc.gameSettings.keyBindSneak.isPressed())
                 {
                     RopesPlusCore.proxy.setShouldRopeChangeState(0.33f);
                 }
@@ -338,7 +340,7 @@ public class RopesPlusClient
 
             if (onZipLine != null)
             {
-                if (mc.gameSettings.keyBindUseItem.getIsKeyPressed() && lastZipLineLength > 0.2)
+                if (mc.gameSettings.keyBindUseItem.isPressed() && lastZipLineLength > 0.2)
                 {
                     RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getCommandSenderName(), onZipLine
                             .getEntityId(), lastZipLineLength));
@@ -423,7 +425,7 @@ public class RopesPlusClient
 
     public static void onHookshotHit(int x, int y, int z)
     {
-        Minecraft.getMinecraft().theWorld.spawnParticle("largeexplode", x+0.5D, y, z+0.5D, 1.0D, 0.0D, 0.0D);
+        Minecraft.getMinecraft().theWorld.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, x+0.5D, y, z+0.5D, 1.0D, 0.0D, 0.0D);
     }
 
 }

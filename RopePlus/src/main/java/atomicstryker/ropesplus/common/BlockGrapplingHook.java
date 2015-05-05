@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
@@ -18,15 +19,9 @@ public class BlockGrapplingHook extends Block
         super(Material.vine);
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.125F, 1.0F);
     }
-    
-    @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister)
-    {
-        this.blockIcon = par1IconRegister.registerIcon("ropesplus:blockGrapplingHook");
-    }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int i, int j, int k)
+    public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
     {
         return null;
     }
@@ -36,17 +31,17 @@ public class BlockGrapplingHook extends Block
     {
         return false;
     }
-
+    
     @Override
-    public boolean renderAsNormalBlock()
+    public boolean isFullCube()
     {
         return false;
     }
 
     @Override
-    public boolean canPlaceBlockAt(World world, int i, int j, int k)
+    public boolean canPlaceBlockAt(World world, BlockPos p)
     {
-        Block l = world.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
+        Block l = world.getBlockState(p.add(0, -1, 0)).getBlock();
         if(!l.isOpaqueCube())
         {
             return false;
@@ -57,18 +52,18 @@ public class BlockGrapplingHook extends Block
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int i, int j, int k, Block l)
+    public void onNeighborBlockChange(World world, BlockPos p, IBlockState state, Block l)
     {
-        if(!canPlaceBlockAt(world, i, j, k))
+        if(!canPlaceBlockAt(world, p))
         {
-            dropBlockAsItem(world, i, j, k, world.getBlockMetadata(i, j, k), 0);
-            world.setBlockState(new BlockPos(i,  j,  k),  Blocks.air.getStateFromMeta( 0));
-            onBlockDestroyed(world, i, j, k);
+            dropBlockAsItem(world, p, state, 0);
+            world.setBlockState(p,  Blocks.air.getStateFromMeta(0));
+            onBlockDestroyed(world, p);
         }
     }
 
     @Override
-    public Item getItemDropped(int var1, Random var2, int var3)
+    public Item getItemDropped(IBlockState s, Random var2, int var3)
     {
         return RopesPlusCore.instance.itemGrapplingHook;
     }
@@ -80,21 +75,24 @@ public class BlockGrapplingHook extends Block
     }
     
     @Override
-    public void onBlockDestroyedByPlayer(World world, int i, int j, int k, int l)
+    public void onBlockDestroyedByPlayer(World world, BlockPos p, IBlockState state)
     {
-        onBlockDestroyed(world, i, j, k);
+        onBlockDestroyed(world, p);
     }
 
     @Override
-    public void onBlockDestroyedByExplosion(World world, int i, int j, int k, Explosion e)
+    public void onBlockDestroyedByExplosion(World world, BlockPos p, Explosion e)
     {
-        onBlockDestroyed(world, i, j, k);
+        onBlockDestroyed(world, p);
     }
 
-    private void onBlockDestroyed(World world, int i, int j, int k)
+    private void onBlockDestroyed(World world, BlockPos p)
     {
-    	System.out.println("Original Hook break at ["+i+","+j+","+k+"]");
+    	System.out.println("Original Hook break at "+p);
     	
+    	int i = p.getX();
+    	int j = p.getY();
+    	int k = p.getZ();
         int candidates[][] = {
             {
                 i - 1, j - 1, k

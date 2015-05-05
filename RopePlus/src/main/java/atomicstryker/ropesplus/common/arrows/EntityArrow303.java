@@ -34,7 +34,6 @@ public class EntityArrow303 extends EntityProjectileBase
     public Object tip;
     public Entity target;
     protected boolean isArrowHoming;
-    protected String icon;
     
     protected final static int candidates[][] = { { 0, 0, 0 }, { 0, -1, 0 }, { 0, 1, 0 }, { -1, 0, 0 }, { 1, 0, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, -1, 0 }, { -1, 0, -1 }, { -1, 0, 1 }, { -1, 1, 0 },
             { 0, -1, -1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, 1, 1 }, { 1, -1, 0 }, { 1, 0, -1 }, { 1, 0, 1 }, { 1, 1, 0 }, { -1, -1, -1 }, { -1, -1, 1 }, { -1, 1, -1 }, { -1, 1, 1 }, { 1, -1, -1 },
@@ -65,11 +64,6 @@ public class EntityArrow303 extends EntityProjectileBase
         item = new ItemStack(itemId, 1, 0);
         setSize(0.5F, 0.5F);
     }
-    
-    public String getIcon()
-    {
-        return icon;
-    }
 
     private boolean isInSight(Entity entity)
     {
@@ -95,9 +89,9 @@ public class EntityArrow303 extends EntityProjectileBase
             }
             if (target != null)
             {
-                double diffX = (target.getBoundingBox().minX + (target.getBoundingBox().maxX - target.getBoundingBox().minX) / 2D) - posX;
-                double diffY = (target.getBoundingBox().minY + (target.getBoundingBox().maxY - target.getBoundingBox().minY) / 2D) - posY;
-                double diffZ = (target.getBoundingBox().minZ + (target.getBoundingBox().maxZ - target.getBoundingBox().minZ) / 2D) - posZ;
+                double diffX = (target.getEntityBoundingBox().minX + (target.getEntityBoundingBox().maxX - target.getEntityBoundingBox().minX) / 2D) - posX;
+                double diffY = (target.getEntityBoundingBox().minY + (target.getEntityBoundingBox().maxY - target.getEntityBoundingBox().minY) / 2D) - posY;
+                double diffZ = (target.getEntityBoundingBox().minZ + (target.getEntityBoundingBox().maxZ - target.getEntityBoundingBox().minZ) / 2D) - posZ;
                 setThrowableHeading(diffX, diffY, diffZ, speed, precision);
             }
         }
@@ -120,7 +114,7 @@ public class EntityArrow303 extends EntityProjectileBase
         float nearestDist = -1F;
         Entity entity = null;
         @SuppressWarnings("rawtypes")
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().expand(boxSize, boxSize, boxSize));
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().expand(boxSize, boxSize, boxSize));
         for (int i = 0; i < list.size(); i++)
         {
             Entity targetEnt = (Entity) list.get(i);
