@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.logging.log4j.Level;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -62,6 +63,7 @@ import atomicstryker.infernalmobs.common.network.NetworkHelper;
 import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -85,6 +87,7 @@ public class InfernalMobsCore
     /**
      * Array of ItemStacks
      */
+    private ArrayList<Integer> dimensionBlackList;
     private ArrayList<ItemStack> dropIdListElite;
     private ArrayList<ItemStack> dropIdListUltra;
     private ArrayList<ItemStack> dropIdListInfernal;
@@ -129,6 +132,7 @@ public class InfernalMobsCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
+        dimensionBlackList = new ArrayList<Integer>();
         dropIdListElite = new ArrayList<ItemStack>();
         dropIdListUltra = new ArrayList<ItemStack>();
         dropIdListInfernal = new ArrayList<ItemStack>();
@@ -275,9 +279,40 @@ public class InfernalMobsCore
                 config.get(Configuration.CATEGORY_GENERAL, "maxOneShotDamage", 10d,
                         "highest amount of damage an Infernal Mob or reflecting Mod will do in a single strike").getDouble(10d);
 
+        parseIDsForList(
+                config.get(
+                        Configuration.CATEGORY_GENERAL,
+                        "dimensionIDBlackList",
+                        "",
+                        "List of DimensionIDs where InfernalMobs will NEVER spawn")
+                        .getString(), instance.dimensionBlackList);
+
         config.save();
     }
-
+    
+    private void parseIDsForList(String dimensionIDs, ArrayList<Integer> list)
+    {
+        dimensionIDs = dimensionIDs.trim();
+        for (String s : dimensionIDs.split(","))
+        {
+        	String trimmedDimIDString = s.trim();
+        	if (s.length() == 0)
+        		continue; // Skipping empty entries if list is empty at all
+        	
+            try
+            {
+            	Integer tDimID = Integer.parseInt(trimmedDimIDString);
+            	list.add(tDimID);
+            	FMLLog.log("InfernalMobs", Level.INFO, String.format("DimensionID %d is now Blacklisted for InfernalMobs spawn", tDimID));
+            }
+            catch (Exception e)
+            {
+            	FMLLog.log("InfernalMobs", Level.ERROR, String.format("Configured DimensionID %s is not an integer! All values must be numeric. Ignoring entry", trimmedDimIDString));
+            	continue;
+            }
+        }
+    }
+    
     private void parseItemsForList(String itemIDs, ArrayList<ItemStack> list)
     {
         Random rand = new Random();
@@ -341,13 +376,32 @@ public class InfernalMobsCore
                 if ((entity instanceof EntityMob || (entity instanceof EntityLivingBase && entity instanceof IMob)) && instance.checkEntityClassAllowed(entity)
                         && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
-                    MobModifier mod = instance.createMobModifiers(entity);
-                    if (mod != null)
-                    {
-                        proxy.getRareMobs().put(entity, mod);
-                        mod.onSpawningComplete(entity);
-                        // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.getEntityId()+": "+mod.getLinkedModName());
-                    }
+                    try
+                	{
+                    	Integer tEntityDim = entity.dimension;
+                    	
+                    	// Skip Infernal-Spawn when Dimension is Blacklisted
+                    	if (dimensionBlackList.contains(tEntityDim))
+                    	{
+                    		//System.out.println("InfernalMobsCore skipped spawning InfernalMob due blacklisted Dimension");
+                    		return;
+                    	}
+                    	else
+                    	{
+	                        MobModifier mod = instance.createMobModifiers(entity);
+	                        if (mod != null)
+	                        {
+	                            proxy.getRareMobs().put(entity, mod);
+	                            mod.onSpawningComplete(entity);
+	                            // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.getEntityId()+": "+mod.getLinkedModName());
+	                        }
+                    	}
+                	}
+                	catch(Exception e)
+                	{
+                		FMLLog.log("InfernalMobs", Level.ERROR, "processEntitySpawn() threw an exception");
+                		FMLLog.severe(e.getMessage(), new Object[0]);
+                	}
                 }
             }
         }
