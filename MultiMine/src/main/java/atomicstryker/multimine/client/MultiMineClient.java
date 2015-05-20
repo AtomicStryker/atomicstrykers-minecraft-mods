@@ -83,6 +83,7 @@ public class MultiMineClient
      */
     public float eventPlayerDamageBlock(int x, int y, int z, float blockCompletion)
     {
+    	float savedProgress = 0;
         thePlayer = FMLClientHandler.instance().getClient().thePlayer;
         boolean partiallyMined = false;
         // see if we have multimine completion cached somewhere
@@ -93,8 +94,9 @@ public class MultiMineClient
             && partiallyMinedBlocksArray[i].getY() == y
             && partiallyMinedBlocksArray[i].getZ() == z)
             {
-                float savedProgress = partiallyMinedBlocksArray[i].getProgress() * 0.1F;
-                // System.out.println("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
+                savedProgress = partiallyMinedBlocksArray[i].getProgress() * 0.1F;
+                //System.out.println("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
+                
                 if (savedProgress > blockCompletion)
                 {
                     blockCompletion = savedProgress;
@@ -114,19 +116,18 @@ public class MultiMineClient
             }
             
             if (curBlockX != x || curBlockY != y || curBlockZ != z)
-            {
-                // case block change, check one last time for partial mining
-                while (blockCompletion >= lastBlockCompletion+0.1f)
-                {
-                    MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlockX, curBlockY, curBlockZ, thePlayer.dimension));
-                    lastBlockCompletion += 0.1f;
-                }
-                
+            {              
                 // setup new block values
                 curBlockX = x;
                 curBlockY = y;
                 curBlockZ = z;
-                lastBlockCompletion = 0f;
+                
+                if(savedProgress == 0)
+                lastBlockCompletion = 0F;
+                else{
+                    blockCompletion = savedProgress;
+                    lastBlockCompletion = savedProgress;
+                }
             }
             else if (blockCompletion+0.1f >= lastBlockCompletion)
             {
@@ -138,6 +139,10 @@ public class MultiMineClient
                     MultiMine.instance().debugPrint("Sent one 10% block progress packet to server...");
                     lastBlockCompletion += 0.1f;
                 }
+            }
+            else if (blockCompletion+0.1f < lastBlockCompletion){
+                blockCompletion = savedProgress;
+                lastBlockCompletion = savedProgress;
             }
         }
         
