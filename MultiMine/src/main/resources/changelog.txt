@@ -1,3 +1,6 @@
+1.4.7
+- edge cases with changing target blocks fixed by fewizz, thank him
+
 1.4.6
 - added even more Air checking in server logic
 
