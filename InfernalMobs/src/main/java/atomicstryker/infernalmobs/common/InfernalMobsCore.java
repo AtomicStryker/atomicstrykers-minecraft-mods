@@ -401,7 +401,7 @@ public class InfernalMobsCore
                     catch(Exception e)
                     {
                         FMLLog.log("InfernalMobs", Level.ERROR, "processEntitySpawn() threw an exception");
-                        FMLLog.severe(e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }
