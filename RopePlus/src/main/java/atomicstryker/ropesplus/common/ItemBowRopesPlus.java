@@ -15,7 +15,7 @@ import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class ItemBowRopesPlus extends ItemBow
 {
-    private int heldTicksBuffer;
+    //private int heldTicksBuffer;
     
 	public ItemBowRopesPlus()
 	{
@@ -26,7 +26,7 @@ public class ItemBowRopesPlus extends ItemBow
 	@Override
     public void onPlayerStoppedUsing(ItemStack usedItemStack, World world, EntityPlayer player, int heldTicks)
     {
-	    heldTicksBuffer = heldTicks;
+	    //heldTicksBuffer = heldTicks;
         // get vanilla bow
         final ItemStack vanillaBow = RopesPlusBowController.getVanillaBowForPlayer(player);
         final ItemStack[] mainInv = player.inventory.mainInventory;

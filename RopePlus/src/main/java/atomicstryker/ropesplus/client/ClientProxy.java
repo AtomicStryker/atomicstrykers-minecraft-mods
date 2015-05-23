@@ -12,7 +12,6 @@ import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
-import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class ClientProxy implements IProxy
