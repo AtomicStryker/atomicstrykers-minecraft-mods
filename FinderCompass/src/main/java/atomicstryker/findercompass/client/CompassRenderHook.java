@@ -66,7 +66,7 @@ public class CompassRenderHook
     
     private static void drawNeedle(Tessellator t, float r, float g, float b, float angle)
     {
-        GL11.glRotatef(angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
+        GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
         // lets use mc code
         t.getWorldRenderer().startDrawingQuads();
@@ -92,7 +92,7 @@ public class CompassRenderHook
         GL11.glEnd(); // let ogl draw it
         */
         
-        GL11.glRotatef(-angle, 0, 0, 1f); // revert rotation for next needle
+        GL11.glRotatef(angle, 0, 0, 1f); // revert rotation for next needle
         GL11.glTranslatef(0, 0, -0.01f); // translate slightly up
     }
     
