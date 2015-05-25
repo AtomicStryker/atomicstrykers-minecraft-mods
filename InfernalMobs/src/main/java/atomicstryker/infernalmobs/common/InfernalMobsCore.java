@@ -78,7 +78,7 @@ import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import atomicstryker.infernalmobs.common.network.NetworkHelper;
 import atomicstryker.infernalmobs.common.network.VelocityPacket;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.2")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.3")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -141,6 +141,7 @@ public class InfernalMobsCore
         classesAllowedMap = new HashMap<String, Boolean>();
         classesForcedMap = new HashMap<String, Boolean>();
         classesHealthMap = new HashMap<String, Float>();
+        dimensionBlackList = new ArrayList<Integer>();
 
         config = new Configuration(evt.getSuggestedConfigurationFile());
         loadMods();

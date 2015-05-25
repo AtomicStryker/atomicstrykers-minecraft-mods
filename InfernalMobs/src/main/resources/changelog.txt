@@ -1,3 +1,6 @@
+1.6.3
+- hmm why isnt that dimension arraylist initialized ... the pull request was probably missing a line
+
 1.6.2
 - added configurable dimension blacklist, pull request by Namikon thank you very much
 
