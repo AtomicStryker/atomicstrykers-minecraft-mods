@@ -30,7 +30,7 @@ import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.8")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.8a")
 public class FinderCompassMod
 {
 
