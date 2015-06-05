@@ -8,10 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.ConcurrentSkipListSet;
 
+import atomicstryker.battletowers.common.AS_WorldGenTower.TowerTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -25,7 +26,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import atomicstryker.battletowers.common.AS_WorldGenTower.TowerTypes;
 
 public class WorldGenHandler implements IWorldGenerator
 {
@@ -35,7 +35,7 @@ public class WorldGenHandler implements IWorldGenerator
     private final static WorldGenHandler instance = new WorldGenHandler();
     private HashMap<String, Boolean> biomesMap;
     private HashMap<String, Boolean> providerMap;
-    private final static ConcurrentSkipListSet<TowerPosition> towerPositions = new ConcurrentSkipListSet<TowerPosition>();
+    private final static ArrayList<TowerPosition> towerPositions = new ArrayList<TowerPosition>();
     private static World lastWorld;
     private final AS_WorldGenTower generator;
     
@@ -118,7 +118,9 @@ public class WorldGenHandler implements IWorldGenerator
         TowerPosition pos = canTowerSpawnAt(world, xActual, zActual);
         if (pos != null)
         {
+            obtainTowerPosListAccess();
             towerPositions.add(pos);
+            releaseTowerPosListAccess();
             int y = getSurfaceBlockHeight(world, xActual, zActual);
             if (y > 49)
             {
@@ -131,7 +133,9 @@ public class WorldGenHandler implements IWorldGenerator
                 {
                     // spawn failed, bugger
                     System.out.printf("Tower Site [%d|%d] rejected: %s\n", pos.x, pos.z, generator.failState);
+                    obtainTowerPosListAccess();
                     towerPositions.remove(pos);
+                    releaseTowerPosListAccess();
                 }
             }
         }
@@ -155,7 +159,9 @@ public class WorldGenHandler implements IWorldGenerator
     public static void generateTower(World world, int x, int y, int z, int type, boolean underground)
     {
         instance.generator.generate(world, x, y, z, type, underground);
+        obtainTowerPosListAccess();
         towerPositions.add(instance.new TowerPosition(x, y, z, type, underground));
+        releaseTowerPosListAccess();
     }
     
     private int getSurfaceBlockHeight(World world, int x, int z)
@@ -174,7 +180,10 @@ public class WorldGenHandler implements IWorldGenerator
     public static TowerStageItemManager getTowerStageManagerForFloor(int floor, Random rand)
     {
         // wait for load if it hasnt happened yet
-        while (AS_BattleTowersCore.instance.floorItemManagers == null) {}
+        while (AS_BattleTowersCore.instance.floorItemManagers == null)
+        {
+            Thread.yield();
+        }
         
         floor--; // subtract 1 to match the floors to the array
         
@@ -190,6 +199,25 @@ public class WorldGenHandler implements IWorldGenerator
         return new TowerStageItemManager(AS_BattleTowersCore.instance.floorItemManagers[floor]);
     }
     
+    private static boolean towerPositionsAccessLock;
+    private synchronized static void obtainTowerPosListAccess()
+    {
+        int counter = 0;
+        while (towerPositionsAccessLock)
+        {
+            if (counter >= 0) counter++;
+            if (counter > 100000)
+            {
+                new Exception().printStackTrace(System.out);
+                counter = -1;
+            }
+            Thread.yield();
+        }
+        towerPositionsAccessLock = true;
+    }
+    
+    private static void releaseTowerPosListAccess() { towerPositionsAccessLock = false; }
+    
     private TowerPosition canTowerSpawnAt(World world, int xActual, int zActual)
     {
         BlockPos spawn = world.getSpawnPoint();
@@ -201,6 +229,7 @@ public class WorldGenHandler implements IWorldGenerator
         if (AS_BattleTowersCore.instance.minDistanceBetweenTowers > 0)
         {
             double mindist = 9999f;
+            obtainTowerPosListAccess();
             for (TowerPosition temp : towerPositions)
             {
                 int diffX = temp.x - xActual;
@@ -210,10 +239,12 @@ public class WorldGenHandler implements IWorldGenerator
                 if (dist < AS_BattleTowersCore.instance.minDistanceBetweenTowers)
                 {
                     //System.out.printf("refusing site coords [%d,%d], mindist %f\n", xActual, zActual, mindist);
+                    releaseTowerPosListAccess();
                     return null;
                 }
             }
             System.out.printf("Logged %d towers so far, accepted new site coords [%d,%d], mindist %f\n", towerPositions.size(), xActual, zActual, mindist);
+            releaseTowerPosListAccess();
         }
         
         return new TowerPosition(xActual, 0, zActual, 0, false);
@@ -279,6 +310,7 @@ public class WorldGenHandler implements IWorldGenerator
             return;
         }
         
+        obtainTowerPosListAccess();
         try
         {
             if (!file.exists())
@@ -314,6 +346,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             e.printStackTrace();
         }
+        releaseTowerPosListAccess();
     }
 
     private static void flushCurrentPosListToFile(World world)
@@ -323,6 +356,7 @@ public class WorldGenHandler implements IWorldGenerator
             return;
         }
         
+        obtainTowerPosListAccess();
         File file = new File(getWorldSaveDir(world), fileName);
         if (file.exists())
         {
@@ -357,6 +391,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             e.printStackTrace();
         }
+        releaseTowerPosListAccess();
     }
     
     private static File getWorldSaveDir(World world)
@@ -393,6 +428,7 @@ public class WorldGenHandler implements IWorldGenerator
         double lowestDist = 9999d;
         TowerPosition chosen = null;
         
+        obtainTowerPosListAccess();
         for (TowerPosition tp : towerPositions)
         {
             double dist = Math.sqrt((tp.x - x)*(tp.x - x) + (tp.z - z)*(tp.z - z));
@@ -402,12 +438,16 @@ public class WorldGenHandler implements IWorldGenerator
                 chosen = tp;
             }
         }
+        releaseTowerPosListAccess();
         
         if (chosen != null)
         {
             instance.generator.generate(world, chosen.x, chosen.y, chosen.z, TowerTypes.Null.ordinal(), chosen.underground);
+            obtainTowerPosListAccess();
             towerPositions.remove(chosen);
+            releaseTowerPosListAccess();
         }
+        
         return chosen;
     }
 
@@ -428,6 +468,7 @@ public class WorldGenHandler implements IWorldGenerator
             }
         }
         
+        obtainTowerPosListAccess();
         for (TowerPosition tp : towerPositions)
         {
             instance.generator.generate(world, tp.x, tp.y, tp.z, regenerate ? tp.type : TowerTypes.Null.ordinal(), tp.underground);
@@ -437,6 +478,7 @@ public class WorldGenHandler implements IWorldGenerator
         {
             towerPositions.clear();
         }
+        releaseTowerPosListAccess();
     }
 
 }

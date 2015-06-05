@@ -1,3 +1,7 @@
+1.5.4
+- properly synchronized tower list access, should stop too many towers spawning
+- or will make everything much, much worse
+
 1.5.3
 - implemented the chestgenhook ruins has for battletower chests, by default the top 3 stages have 3, 5 and 7 dungeon loot items
 
