@@ -1,3 +1,6 @@
+1.3.9
+pet bats are now immune to attacks from their owner while in combat with something else
+
 1.3.8
 fixed usage of clientside only message in bat flute item logic
 

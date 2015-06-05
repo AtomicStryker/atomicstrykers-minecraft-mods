@@ -190,6 +190,17 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             {
                 setIsBatHanging(false);
             }
+            
+            // if hit by owner
+            if (source.getEntity() != null && source.getEntity().getCommandSenderName().equals(getOwnerName()))
+            {
+                // and in combat with something else
+                if (source.getEntity() != getAttackTarget())
+                {
+                    // ignore the hit
+                    return true;
+                }
+            }
         }
         return super.attackEntityFrom(source, amount);
     }
@@ -202,7 +213,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public boolean interact(EntityPlayer player)
     {
-        if (getIsBatHanging() && player.getCommandSenderName() == ownerName)
+        if (getIsBatHanging() && player.getCommandSenderName().equals(ownerName))
         {
             setIsBatStaying(!getIsBatStaying());
             player.addChatMessage(new ChatComponentText(petName + ": " + 
