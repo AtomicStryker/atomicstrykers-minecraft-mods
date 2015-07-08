@@ -1,6 +1,7 @@
 package atomicstryker.ruins.common;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.UUID;
@@ -18,6 +19,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityCommandBlock;
@@ -52,11 +56,41 @@ public class RuinTemplateRule
         ADDBONEMEAL
     }
     
-    public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule, boolean debug) throws Exception
+    public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception
     {
         debugPrinter = dpw;
         owner = r;
         excessiveDebugging = debug;
+        
+        ArrayList<String> nbttags = new ArrayList<String>(5);
+        int openingIndex = rule.indexOf('{');
+        while (openingIndex != -1)
+        {
+            int closingIndex = openingIndex+1;
+            int bracketCounter = 1;
+            for (;;closingIndex++)
+            {
+                if (rule.charAt(closingIndex) == '{')
+                {
+                    bracketCounter++;
+                }
+                else if (rule.charAt(closingIndex) == '}')
+                {
+                    bracketCounter--;
+                    if (bracketCounter == 0)
+                    {
+                        break;
+                    }
+                } 
+            }
+            String capture = rule.substring(openingIndex, closingIndex+1);
+            nbttags.add(capture);
+            debugPrinter.println("template " + owner.getName()+" contains nbt tag: "+capture);
+            String pre = rule.substring(0, openingIndex);
+            String post = rule.substring(closingIndex+1, rule.length());
+            rule = pre + "NBT"+nbttags.size() + post;
+            openingIndex = rule.indexOf('{');
+        }
         String[] blockRules = rule.split(",");
         int numblocks = blockRules.length - 2;
         if (numblocks < 1)
@@ -110,6 +144,12 @@ public class RuinTemplateRule
                     // planks-3 or ChestGenHook:strongholdLibrary:5-2
                     {
                         blockStrings[i] = blockRules[i + 2];
+                        int nbtidx = 1;
+                        for (String capture : nbttags)
+                        {
+                            blockStrings[i] = blockStrings[i].replace("NBT"+nbtidx++, capture);
+                        }
+                        
                         blockIDs[i] = tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == Blocks.air)
                         {
@@ -118,7 +158,7 @@ public class RuinTemplateRule
                                 blockIDs[i] = null;
                                 if (!isKnownSpecialRule(blockStrings[i]))
                                 {
-                                    throw new Exception("Rule [" + rule + "] in template " + owner.getName()+" can absolutely not be mapped to anything known");
+                                    throw new Exception("Rule [" + rule + "], blockString [" + blockStrings[i] + "] in template " + owner.getName()+" can absolutely not be mapped to anything known");
                                 }
                             }
                         }
@@ -795,7 +835,18 @@ public class RuinTemplateRule
         {
             debugPrinter.println("itemString: "+itemstring);
             hashsplit = itemstring.split("#");
-            int itemStackSize = hashsplit.length > 1 ? Integer.valueOf(hashsplit[1]) : 1;
+            
+            int itemStackSize = 1;
+            boolean nbtdata = false;
+            if (hashsplit.length > 1)
+            {
+                nbtdata = hashsplit[1].startsWith("{");
+                if (!nbtdata)
+                {
+                    itemStackSize = Integer.valueOf(hashsplit[1]);
+                }
+            }
+            
             int itemMeta = hashsplit.length > 2 ? Integer.valueOf(hashsplit[2]) : 0;
             int targetslot = hashsplit.length > 3 ? Integer.valueOf(hashsplit[3]) : -1;
             o = tryFindingObject(hashsplit[0]);
@@ -812,6 +863,18 @@ public class RuinTemplateRule
             
             if (putItem != null)
             {
+                if (nbtdata && !hashsplit[1].equals("{}"))
+                {
+                    try
+                    {
+                        putItem.setTagCompound((NBTTagCompound) JsonToNBT.func_150315_a(hashsplit[1]));
+                    }
+                    catch (NBTException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                
                 if (targetslot != -1)
                 {
                     slotItemPrev = inv.getStackInSlot(targetslot);

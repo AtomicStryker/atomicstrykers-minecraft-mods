@@ -417,3 +417,6 @@ a: setAccessible now true
 
 14.7
 + fixed bug with IGrowable Blocks and meta values
+
+14.8
++ now supports item nbt data in inventories (names, enchantments..)
