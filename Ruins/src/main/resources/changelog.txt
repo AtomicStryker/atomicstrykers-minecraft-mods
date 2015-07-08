@@ -421,3 +421,6 @@ a: setAccessible now true
 
 14.8
 + fixed IGrowable metadata bug
+
+14.9
++ now supports item nbt data in inventories (names, enchantments..)

@@ -276,7 +276,9 @@ public class World2TemplateParser extends Thread
                             }
                         }
                         
-                        temp.data = "IInventory;"+GameData.getBlockRegistry().getNameForObject(temp.block)+";";
+                        StringBuilder sb = new StringBuilder("IInventory;");
+                        sb.append(GameData.getBlockRegistry().getNameForObject(temp.block));
+                        sb.append(';');
                         for (int index = 0; index < invItems.size(); index++)
                         {
                             ItemStack stack = invItems.get(index);
@@ -291,10 +293,32 @@ public class World2TemplateParser extends Thread
                             }
                             if (ident != null)
                             {
-                                temp.data = temp.data.concat(ident+"#"+stack.stackSize+"#"+stack.getItemDamage()+"#"+slots.get(index)+"+");
+                                sb.append(ident);
+                                sb.append('#');
+                                if (stack.isStackable())
+                                {
+                                    sb.append(stack.stackSize);
+                                }
+                                else
+                                {
+                                    if (stack.getTagCompound() != null)
+                                    {
+                                        sb.append(stack.getTagCompound().toString());
+                                    }
+                                    else
+                                    {
+                                        sb.append("{}");
+                                    }
+                                }
+                                sb.append('#');
+                                sb.append(stack.getItemDamage());
+                                sb.append('#');
+                                sb.append(slots.get(index));
+                                sb.append('+');
                             }
                         }
                         
+                        temp.data = sb.toString();
                         int iLastSep = temp.data.lastIndexOf("+");
                         if (iLastSep != -1)
                         {

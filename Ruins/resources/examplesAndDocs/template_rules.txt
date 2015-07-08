@@ -274,6 +274,9 @@ preserve_plants=0
 # below example is for oak and dark oak saplings
 # Example 12: rule1=0,100,0,sapling-addbonemeal,sapling-5-addbonemeal
 #
+# Ruins 14.9 adds support for item NBT data. the json nbt string replaces 'stacksize' in the format, as nbt capable items are never stackable
+# Example 13: rule1=0,100,IInventory;minecraft:chest;minecraft:diamond_sword#{RepairCost:2,display:{Name:"Choppa"}}#0#0
+#
 
 rule1=0,100,preserveBlock
 rule2=0,80,brick_block,brick_block,dirt,stone,gravel
