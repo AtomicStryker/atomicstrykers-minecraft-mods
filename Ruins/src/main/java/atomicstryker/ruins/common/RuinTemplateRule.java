@@ -511,7 +511,7 @@ public class RuinTemplateRule
                 // need to strip meta '-x' value if present
                 if (s[2].lastIndexOf("-") > s[2].length()-5)
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")-1), rotateMetadata(b, blockMDs[blocknum], rotate));
+                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), rotateMetadata(b, blockMDs[blocknum], rotate));
                 }
                 else
                 {
@@ -850,6 +850,7 @@ public class RuinTemplateRule
             int itemMeta = hashsplit.length > 2 ? Integer.valueOf(hashsplit[2]) : 0;
             int targetslot = hashsplit.length > 3 ? Integer.valueOf(hashsplit[3]) : -1;
             o = tryFindingObject(hashsplit[0]);
+            debugPrinter.println(hashsplit[0] + " resolved to object " + o);
             
             putItem = null;
             if (o instanceof Block)
@@ -860,6 +861,7 @@ public class RuinTemplateRule
             {
                 putItem = new ItemStack(((Item)o), itemStackSize, itemMeta);
             }
+            debugPrinter.println("itemstack instance: " + putItem);
             
             if (putItem != null)
             {
@@ -868,6 +870,7 @@ public class RuinTemplateRule
                     try
                     {
                         putItem.setTagCompound((NBTTagCompound) JsonToNBT.func_150315_a(hashsplit[1]));
+                        debugPrinter.println("nbt tag applied: " + hashsplit[1]);
                     }
                     catch (NBTException e)
                     {

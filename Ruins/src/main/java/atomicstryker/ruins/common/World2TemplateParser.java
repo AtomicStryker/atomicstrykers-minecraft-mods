@@ -6,6 +6,10 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import com.mojang.authlib.GameProfile;
+
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -19,11 +23,6 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
-
-import com.mojang.authlib.GameProfile;
-
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class World2TemplateParser extends Thread
 {
@@ -269,37 +268,30 @@ public class World2TemplateParser extends Thread
                         sb.append(';');
                         for (int index = 0; index < invItems.size(); index++)
                         {
-                            ItemStack i = invItems.get(index);
+                            ItemStack stack = invItems.get(index);
                             String ident = null;
-                            if (i.getItem() instanceof ItemBlock)
+                            if (stack.getItem() instanceof ItemBlock)
                             {
-                                ident = GameData.getBlockRegistry().getNameForObject(((ItemBlock)i.getItem()).field_150939_a);
+                                ident = GameData.getBlockRegistry().getNameForObject(((ItemBlock)stack.getItem()).field_150939_a);
                             }
                             else
                             {
-                                ident = GameData.getItemRegistry().getNameForObject(i.getItem());
+                                ident = GameData.getItemRegistry().getNameForObject(stack.getItem());
                             }
                             if (ident != null)
                             {
                                 sb.append(ident);
                                 sb.append('#');
-                                if (i.isStackable())
+                                if (stack.getTagCompound() != null)
                                 {
-                                    sb.append(i.stackSize);
+                                    sb.append(stack.getTagCompound().toString());
                                 }
                                 else
                                 {
-                                    if (i.getTagCompound() != null)
-                                    {
-                                        sb.append(i.getTagCompound().toString());
-                                    }
-                                    else
-                                    {
-                                        sb.append("{}");
-                                    }
+                                    sb.append(stack.stackSize);
                                 }
                                 sb.append('#');
-                                sb.append(i.getItemDamage());
+                                sb.append(stack.getItemDamage());
                                 sb.append('#');
                                 sb.append(slots.get(index));
                                 sb.append('+');
