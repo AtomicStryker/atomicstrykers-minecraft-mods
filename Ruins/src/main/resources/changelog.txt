@@ -424,3 +424,4 @@ a: setAccessible now true
 
 14.9
 + now supports item nbt data in inventories (names, enchantments..)
++ hotfix: bunch of issues with unsupported items and wrong item slots for the last item
