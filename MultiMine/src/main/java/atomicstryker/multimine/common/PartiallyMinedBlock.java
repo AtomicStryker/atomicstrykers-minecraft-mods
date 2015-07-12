@@ -6,10 +6,10 @@ public class PartiallyMinedBlock
 {
     private final BlockPos pos;
     private final int dimension;
-    private int progress;
+    private float progress;
     private long lastTimeMined;
     
-    public PartiallyMinedBlock(int x, int y, int z, int dimension, int progress)
+    public PartiallyMinedBlock(int x, int y, int z, int dimension, float progress)
     {
         this.pos = new BlockPos(x, y, z);
         this.dimension = dimension;
@@ -26,24 +26,19 @@ public class PartiallyMinedBlock
         return dimension;
     }
     
-    public int getProgress()
+    public float getProgress()
     {
         return progress;
     }
     
-    public void setProgress(int i)
+    public void setProgress(float i)
     {
         progress = i;
     }
     
-    public void advanceProgress()
-    {
-        progress++;
-    }
-    
     public boolean isFinished()
     {
-        return progress > 9;
+        return progress >= 1.0f;
     }
     
     public long getLastTimeMined()

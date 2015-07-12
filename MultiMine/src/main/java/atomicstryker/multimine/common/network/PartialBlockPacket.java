@@ -13,14 +13,15 @@ public class PartialBlockPacket implements IPacket
 {
 
     private String user;
-    private int x, y, z, value;
+    private int x, y, z;
+    private float value;
     
 
     public PartialBlockPacket()
     {
     }
 
-    public PartialBlockPacket(String username, int ix, int iy, int iz, int val)
+    public PartialBlockPacket(String username, int ix, int iy, int iz, float val)
     {
         user = username;
         x = ix;
@@ -36,7 +37,7 @@ public class PartialBlockPacket implements IPacket
         bytes.writeInt(x);
         bytes.writeInt(y);
         bytes.writeInt(z);
-        bytes.writeInt(value);
+        bytes.writeFloat(value);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class PartialBlockPacket implements IPacket
         x = bytes.readInt();
         y = bytes.readInt();
         z = bytes.readInt();
-        value = bytes.readInt();
+        value = bytes.readFloat();
         
         if (user.equals("server"))
         {

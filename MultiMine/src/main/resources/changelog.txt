@@ -1,3 +1,6 @@
+1.4.8
+- now uses floating point precision for block progress, fixes oh so many issues
+
 1.4.7
 - edge cases with changing target blocks fixed by fewizz, thank him
 

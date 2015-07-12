@@ -5,22 +5,20 @@ import static org.objectweb.asm.Opcodes.GETFIELD;
 import static org.objectweb.asm.Opcodes.IFLT;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.ISTORE;
 import static org.objectweb.asm.Opcodes.PUTFIELD;
 
 import java.util.Iterator;
 
-import net.minecraft.launchwrapper.IClassTransformer;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraft.launchwrapper.IClassTransformer;
 
 public class MMTransformer implements IClassTransformer
 {
@@ -48,7 +46,7 @@ public class MMTransformer implements IClassTransformer
     private final String playerControllerMPClassName = "net.minecraft.client.multiplayer.PlayerControllerMP";
     private final String playerControllerMPJavaClassName = "net/minecraft/client/multiplayer/PlayerControllerMP";
     
-    private final String playerControllerMPtargetMethodName = "func_180512_c";
+    private final String playerControllerMPtargetMethodName = "onPlayerDamageBlock";
     
     private final String playerControllerMPcurrentBlockDamageFieldName = "curBlockDamageMP";
     
@@ -91,7 +89,6 @@ public class MMTransformer implements IClassTransformer
                 
                 /*  pre patch, java source
                  
-                   	++this.stepSoundTickCounter;
 	                if (this.curBlockDamageMP >= 1.0F)
 	                {
 	                    this.isHittingBlock = false;
@@ -144,23 +141,13 @@ public class MMTransformer implements IClassTransformer
                 
                 
                 for (int index = 0; index < m.instructions.size(); index++)
-                {
-                    // find block ID local variable node and from that, local variable index
-                    int blockIDvar = 5;
-                    if (m.instructions.get(index).getType() == AbstractInsnNode.VAR_INSN && m.instructions.get(index).getOpcode() == ISTORE)
-                    {
-                        System.out.println("Found local variable ISTORE Node at " + index);
-                        VarInsnNode blockIDNode = (VarInsnNode) m.instructions.get(index);
-                        blockIDvar = blockIDNode.var;
-                        System.out.println("Block ID is in local variable " + blockIDvar);
-                    }
-                    
+                {                    
                     // find injection point in method, there is a single IFLT instruction we use as target
                     if (m.instructions.get(index).getOpcode() == IFLT)
                     {
                         System.out.println("Found IFLT Node at " + index);
                         
-                        // from there, step backwards to ALOAD node to get '++this.stepSoundTickCounter;'s first index
+                        // from there, step backwards to ALOAD node to get infront of the curBlockDamageMP field load
                         int offset = 1;
                         while (m.instructions.get(index - offset).getOpcode() != ALOAD)
                         {
@@ -179,7 +166,7 @@ public class MMTransformer implements IClassTransformer
 	 				      12: putfield      #44                 // Field curBlockDamageMP:F which is e:F
                          */
                         
-                        // construct it using asm, insert it before '++this.stepSoundTickCounter;'
+                        // construct it using asm, insert it before 'if (this.curBlockDamageMP >= 1.0F)'
                         InsnList toInject = new InsnList();
                         toInject.add(new VarInsnNode(ALOAD, 0));
                         toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false));
@@ -190,7 +177,7 @@ public class MMTransformer implements IClassTransformer
                         toInject.add(new FieldInsnNode(PUTFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
                         m.instructions.insertBefore(m.instructions.get(index - offset), toInject);
                         
-                        // in effect, we added this line of code: 'this.curBlockDamageMP = atomicstryker.multimine.client.MultiMineClient.instance().eventPlayerDamageBlock(p_180512_1_, p_180512_2_);'
+                        // in effect, we added this line of code: 'this.curBlockDamageMP = atomicstryker.multimine.client.MultiMineClient.instance().eventPlayerDamageBlock(blockPos, curBlockDamageMP);'
                         break;
                     }
                 }

@@ -72,8 +72,8 @@ public class MultiMineServer
     }
 
     /**
-     * Called when a client has completed mining a tenth of a block. Stack that
-     * tenth on the already existing partial Block or create one if not present,
+     * Called when a client has a block progression update. Update the
+     * already existing partial Block or create one if not present,
      * and send that information back to all interested players.
      * 
      * @param player
@@ -84,14 +84,14 @@ public class MultiMineServer
      *            coordinate of Block
      * @param z
      *            coordinate of Block
-     * @param dimension
-     *            of Block and Player
+     * @param value
+     *            block progression the client reported
      */
-    public void onClientSentPartialBlockPacket(EntityPlayerMP player, int x, int y, int z, int dim)
+    public void onClientSentPartialBlockPacket(EntityPlayerMP player, int x, int y, int z, float value)
     {
         serverInstance = FMLCommonHandler.instance().getMinecraftServerInstance();
         int dimension = player.dimension;
-        MultiMine.instance().debugPrint("multi mine client sent progress packet from dimension " + dim + ", server says its dimension " + dimension);
+        MultiMine.instance().debugPrint("multi mine client " + player + " sent progress packet: " + value);
         
         final BlockPos pos = new BlockPos(x, y, z);
         final IBlockState state = player.worldObj.getBlockState(pos);
@@ -109,15 +109,15 @@ public class MultiMineServer
             partiallyMinedBlocksListByDimension.put(dimension, partiallyMinedBlocks);
         }
 
-        final PartiallyMinedBlock newblock = new PartiallyMinedBlock(x, y, z, dimension, 1);
+        final PartiallyMinedBlock newblock = new PartiallyMinedBlock(x, y, z, dimension, 0f);
         newblock.setLastTimeMined(System.currentTimeMillis() + MultiMine.instance().getInitialBlockRegenDelay());
         for (PartiallyMinedBlock iterBlock : partiallyMinedBlocks)
         {
             if (iterBlock.equals(newblock))
             {
-                iterBlock.advanceProgress();
+                iterBlock.setProgress(Math.max(iterBlock.getProgress(), value));
                 iterBlock.setLastTimeMined(System.currentTimeMillis() + MultiMine.instance().getInitialBlockRegenDelay());
-                MultiMine.instance().debugPrint("Server advancing partial block at: ["+x+"|"+y+"|"+z+"], progress now: "+iterBlock.getProgress());
+                MultiMine.instance().debugPrint("Server updating partial block at: ["+x+"|"+y+"|"+z+"], progress now: "+iterBlock.getProgress());
 
                 // send the newly advanced partialblock to all relevant players
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock);
@@ -350,9 +350,9 @@ public class MultiMineServer
             {
                 block = blockRegenQueue.poll();
 
-                block.setProgress(block.getProgress() - 1);
+                block.setProgress(block.getProgress() - 0.1f);
                 block.setLastTimeMined(curTime);
-                if (block.getProgress() < 1)
+                if (block.getProgress() < 0f)
                 {
                     // tell everyone to stop tracking this one
                     sendPartiallyMinedBlockDeleteCommandToAllPlayers(block);
