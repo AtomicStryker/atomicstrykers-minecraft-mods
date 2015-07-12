@@ -328,7 +328,11 @@ public class WorldGenHandler implements IWorldGenerator
                 {
                     try
                     {
-                        towerPositions.add(tp.fromString(line));
+                        TowerPosition newtp = tp.fromString(line);
+                        if (!towerPositions.contains(newtp))
+                        {
+                            towerPositions.add(tp.fromString(line));
+                        }
                     }
                     catch (Exception e)
                     {

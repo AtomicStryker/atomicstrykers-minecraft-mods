@@ -1,3 +1,7 @@
+1.5.5
+- it actually made things much worse by duplicating all tower entries every world load
+- fixed tower entries being duplicated on load
+
 1.5.4
 - properly synchronized tower list access, should stop too many towers spawning
 - or will make everything much, much worse

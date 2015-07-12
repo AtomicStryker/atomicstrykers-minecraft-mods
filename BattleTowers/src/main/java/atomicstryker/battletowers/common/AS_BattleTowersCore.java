@@ -26,7 +26,7 @@ import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 import atomicstryker.battletowers.common.network.LoginPacket;
 import atomicstryker.battletowers.common.network.NetworkHelper;
 
-@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.5.4")
+@Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.5.5")
 public class AS_BattleTowersCore
 {
     
