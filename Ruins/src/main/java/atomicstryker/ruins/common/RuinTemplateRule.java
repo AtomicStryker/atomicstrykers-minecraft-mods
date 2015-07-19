@@ -121,6 +121,11 @@ public class RuinTemplateRule
                 specialFlags[i] = SpecialFlags.COMMANDBLOCK;
                 // readd the splitout string for the parsing, offset by 1 because of the prefix string
                 blockStrings[i] = commandrules[i+1];
+                int nbtidx = 1;
+                for (String capture : nbttags)
+                {
+                    blockStrings[i] = blockStrings[i].replace("NBT"+nbtidx++, capture);
+                }
                 debugPrinter.println("template " + owner.getName()+" contains Command Block command: "+blockStrings[i]);
             }
         }
