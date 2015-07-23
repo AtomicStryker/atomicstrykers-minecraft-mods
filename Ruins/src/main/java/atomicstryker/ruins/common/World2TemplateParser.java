@@ -16,6 +16,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -231,7 +232,13 @@ public class World2TemplateParser extends Thread
                     
                     TileEntity te = world.getTileEntity(blockx, blocky, blockz);
                     /* handle special blocks */
-                    if (temp.block == Blocks.mob_spawner)
+                    if (te != null && FileHandler.registeredTEBlocks.contains(temp.block))
+                    {
+                        NBTTagCompound tc = new NBTTagCompound();
+                        te.writeToNBT(tc);
+                        temp.data = "teBlock;" + GameData.getBlockRegistry().getNameForObject(temp.block) + ";" + tc.toString() + "-" + temp.meta;
+                    }
+                    else if (temp.block == Blocks.mob_spawner)
                     {
                         temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).func_145881_a().getEntityNameToSpawn();
                     }

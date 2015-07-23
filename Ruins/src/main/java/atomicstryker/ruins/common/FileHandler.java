@@ -3,17 +3,19 @@ package atomicstryker.ruins.common;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import com.google.common.io.Files;
+
+import cpw.mods.fml.common.registry.GameData;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.BiomeGenBase;
 
 public class FileHandler
@@ -33,6 +35,7 @@ public class FileHandler
     
     public float templateInstancesMinDistance = 75f;
     public float anyRuinsMinDistance = 0f;
+    public static HashSet<Block> registeredTEBlocks = new HashSet<Block>();
     
     private int templateCount;
 
@@ -331,6 +334,18 @@ public class FileHandler
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
             }
+            if (check[0].equals("teblocks"))
+            {
+                String[] blocks = check[1].split(",");
+                for (String b : blocks)
+                {
+                    Block bl = GameData.getBlockRegistry().getObject(b);
+                    if (bl != Blocks.air)
+                    {
+                        registeredTEBlocks.add(bl);
+                    }
+                }
+            }
 
             if (read.startsWith("specific_"))
             {
@@ -467,38 +482,13 @@ public class FileHandler
         {
             return;
         }
-        File basedir = RuinsMod.getMinecraftBaseDir();
-        basedir = new File(basedir, "mods");
-        File basefile = new File(basedir, "ruins.txt");
+        File modsdir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
+        File basefile = new File(modsdir, "ruins.txt");
         if (!basefile.exists())
         {
-            createDefaultGlobalOptions(basedir);
+            createDefaultGlobalOptions(modsdir);
         }
-        FileInputStream fis = new FileInputStream(basefile);
-        FileOutputStream fos = new FileOutputStream(copyfile);
-        FileChannel in = fis.getChannel();
-        FileChannel out = fos.getChannel();
-        try
-        {
-            in.transferTo(0, in.size(), out);
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
-        finally
-        {
-            if (in != null)
-            {
-                in.close();
-                fis.close();
-            }
-            if (out != null)
-            {
-                out.close();
-                fos.close();
-            }
-        }
+        Files.copy(basefile, copyfile);
     }
 
     private void createDefaultGlobalOptions(File dir) throws Exception
@@ -538,6 +528,9 @@ public class FileHandler
         pw.println("anyRuinsMinDistance=64");
         pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
         pw.println("allowedDimensions=0,1,-1");
+        pw.println();
+        pw.println("# tileentity blocks, those (nonvanilla)blocks which cannot function without storing their nbt data, full name as stick dictates, seperated by commata");
+        pw.println("teblocks=");
         pw.println();
         // print all the biomes!
         for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)

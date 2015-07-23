@@ -8,6 +8,10 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.mojang.authlib.GameProfile;
+
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -31,11 +35,6 @@ import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
-
-import com.mojang.authlib.GameProfile;
-
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class RuinTemplateRule
 {
@@ -216,6 +215,11 @@ public class RuinTemplateRule
                     }
                     blockMDs[i] = 0;
                     blockStrings[i] = blockRules[i + 2];
+                    int nbtidx = 1;
+                    for (String capture : nbttags)
+                    {
+                        blockStrings[i] = blockStrings[i].replace("NBT"+nbtidx++, capture);
+                    }
                 }
                 
                 if (excessiveDebugging)
@@ -460,6 +464,10 @@ public class RuinTemplateRule
         {
             return true;
         }
+        else if (dataString.startsWith("teBlock;"))
+        {
+            return true;
+        }
         return false;
     }
 
@@ -604,6 +612,26 @@ public class RuinTemplateRule
                 UUID id = UUID.fromString(moresplits[0]+"-"+moresplits[1]+"-"+moresplits[2]+"-"+moresplits[3]+"-"+moresplits[4]);
                 GameProfile playerprofile = new GameProfile(id, moresplits[5]);
                 ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, playerprofile, 2);
+            }
+        }
+        else if (dataString.startsWith("teBlock;"))
+        {
+            String[] in = dataString.split(";");
+            Object o = tryFindingObject(in[1]);
+            if (o instanceof Block)
+            {
+                try
+                {
+                    world.setBlock(x, y, z, (Block) o, blockMDs[blocknum], rotate);
+                    NBTTagCompound tc = (NBTTagCompound) JsonToNBT.func_150315_a(in[2].substring(0, in[2].lastIndexOf('}')+1));
+                    debugPrinter.println("teBlock read, decoded nbt tag: "+tc.toString());
+                    TileEntity tenew = TileEntity.createAndLoadEntity(tc);
+                    world.setTileEntity(x, y, z, tenew);
+                }
+                catch (NBTException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
         else
@@ -820,7 +848,17 @@ public class RuinTemplateRule
             {
                 debugPrinter.println("About to construct IInventory, itemData ["+itemData+"]");
             }
-            handleIInventory((IInventory) te, itemData);
+            
+            if (itemData.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
+            {
+                String[] input = itemData.split(":");
+                ChestGenHooks info = ChestGenHooks.getInfo(input[1]);
+                WeightedRandomChestContent.generateChestContents(random, info.getItems(random), (IInventory) te, Integer.valueOf(input[2]));
+            }
+            else
+            {
+                handleIInventory((IInventory) te, itemData);
+            }
         }
         else
         {
