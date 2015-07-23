@@ -426,3 +426,9 @@ a: setAccessible now true
 + now supports item nbt data in inventories (names, enchantments..)
 + hotfix: bunch of issues with unsupported items and wrong item slots for the last item
 + hotfix: command block brackets breaking on template load
+
+15.0
++ now supports ChestGenHook for any IInventory block in place of static itemlist (youll have to edit those in manually)
++ now supports saving and loading raw tile entity nbt data. The world-specific ruins.txt has a new line "teblocks=" behind which you can specify
+    blocks which should have their tile entities serialized (each is considered unique). The data is saved in json format, unfortunately with nonportable (numeric) IDs for inventories.
+    DO NOT USE FOR INVENTORIES. THE NUMBERS WILL BREAK. Also note ruins.txt with the teblocks setting is only parsed when new chunks are generated, and only takes effect after.

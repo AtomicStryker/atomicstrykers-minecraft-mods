@@ -267,6 +267,9 @@ preserve_plants=0
 # automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
 # if you specify the same slot index multiple times, only the first itemstack gets put in
 #
+# Ruins 15.0 adds ChestGenHook (see above) as valid <itemList> entry for IInventory rules
+# Example: rule1=0,100,IInventory;dispenser;ChestGenHook:dungeonChest:5-1
+#
 # Ruins 14.3 adds the -addbonemeal flag to use on IGrowable blocks such as saplings or most plants
 # simply append -addbonemeal to a block which is an IGrowable (and only those!)
 # note this overrides certain checks done before hand application of bonemeal, such as darkness checks for shrooms
@@ -276,6 +279,10 @@ preserve_plants=0
 #
 # Ruins 14.9 adds support for item NBT data. the json nbt string replaces 'stacksize' in the format, as nbt capable items are never stackable
 # Example 13: rule1=0,100,IInventory;minecraft:chest;minecraft:diamond_sword#{RepairCost:2,display:{Name:"Choppa"}}#0#0
+#
+# Ruins 15.0 adds support for tile entity NBT data. This is best achieved by adding the blockname to the global "teblock" variable in ruins.txt
+# Usage: teBlock;<blockName>;<nbttag json>-<blockrotation>
+# Example: rule1=0,100,teBlock;minecraft:trapped_chest;{x:-156,y:65,z:72,Items:[0:{Slot:12b,id:5s,Count:1b,Damage:0s},1:{Slot:13b,id:24s,Count:1b,Damage:1s}],id:"Chest"}-2
 #
 
 rule1=0,100,preserveBlock

@@ -219,6 +219,11 @@ public class RuinTemplateRule
                     }
                     blockMDs[i] = 0;
                     blockStrings[i] = blockRules[i + 2];
+                    int nbtidx = 1;
+                    for (String capture : nbttags)
+                    {
+                        blockStrings[i] = blockStrings[i].replace("NBT"+nbtidx++, capture);
+                    }
                 }
                 
                 if (excessiveDebugging)
@@ -464,6 +469,10 @@ public class RuinTemplateRule
         {
             return true;
         }
+        else if (dataString.startsWith("teBlock;"))
+        {
+            return true;
+        }
         return false;
     }
 
@@ -608,6 +617,29 @@ public class RuinTemplateRule
                 UUID id = UUID.fromString(moresplits[0]+"-"+moresplits[1]+"-"+moresplits[2]+"-"+moresplits[3]+"-"+moresplits[4]);
                 GameProfile playerprofile = new GameProfile(id, moresplits[5]);
                 ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, playerprofile, 2);
+            }
+        }
+        else if (dataString.startsWith("teBlock;"))
+        {
+            // examples: teBlock;minecraft:trapped_chest;{...nbt json...}, teBlock;minecraft:trapped_chest;{...nbt json...}-4
+            String[] in = dataString.split(";");
+            Object o = tryFindingObject(in[1]);
+            BlockPos p = new BlockPos(x, y, z);
+            if (o instanceof Block)
+            {
+                try
+                {
+                    NBTTagCompound tc = (NBTTagCompound) JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}')+1));
+                    debugPrinter.println("teBlock read, decoded nbt tag: "+tc.toString());
+                    world.setBlockState(p, ((Block) o).getStateFromMeta(blockMDs[blocknum]), rotate);
+                    TileEntity tenew = TileEntity.createAndLoadEntity(tc);
+                    world.removeTileEntity(p);
+                    world.setTileEntity(p, tenew);
+                }
+                catch (NBTException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
         else
@@ -822,7 +854,17 @@ public class RuinTemplateRule
             {
                 debugPrinter.println("About to construct IInventory, itemData ["+itemData+"]");
             }
-            handleIInventory((IInventory) te, itemData);
+            
+            if (itemData.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
+            {
+                String[] input = itemData.split(":");
+                ChestGenHooks info = ChestGenHooks.getInfo(input[1]);
+                WeightedRandomChestContent.generateChestContents(random, info.getItems(random), (IInventory) te, Integer.valueOf(input[2]));
+            }
+            else
+            {
+                handleIInventory((IInventory) te, itemData);
+            }
         }
         else
         {
