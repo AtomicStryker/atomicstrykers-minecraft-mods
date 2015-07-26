@@ -127,7 +127,7 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
             return ic2Output;
         }
 
-        if (te.isRedstonePowered())
+        if (te.hasWorldObj() && te.getWorldObj().isBlockIndirectlyGettingPowered(te.xCoord, te.yCoord, te.zCoord))
         {
             runningEmpty = true;
             return dummyOut;

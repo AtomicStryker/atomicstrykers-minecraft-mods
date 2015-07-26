@@ -1,17 +1,17 @@
 package atomicstryker.ic2.advancedmachines.client;
 
+import org.lwjgl.opengl.GL11;
+
 import ic2.core.block.machine.container.ContainerOreWashing;
 import ic2.core.block.machine.tileentity.TileEntityOreWashing;
 import ic2.core.util.DrawUtil;
-import ic2.core.util.GuiTooltiphelper;
+import ic2.core.util.GuiTooltipHelper;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiRotaryOreWasher extends GuiContainer
 {
@@ -35,7 +35,7 @@ public class GuiRotaryOreWasher extends GuiContainer
         if (fluidstack != null)
         {
             String tooltip = fluidstack.getFluid().getName() + ": " + fluidstack.amount + StatCollector.translateToLocal("ic2.generic.text.mb");
-            GuiTooltiphelper.drawAreaTooltip(par1 - this.guiLeft, par2 - this.guiTop, tooltip, 63, 23, 76, 71);
+            GuiTooltipHelper.drawAreaTooltip(par1 - this.guiLeft, par2 - this.guiTop, tooltip, 63, 23, 76, 71);
         }
     }
 
