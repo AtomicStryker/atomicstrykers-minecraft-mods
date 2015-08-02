@@ -1,10 +1,11 @@
 package atomicstryker.minions.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class HasMinionsPacket implements IPacket
 {
@@ -31,9 +32,19 @@ public class HasMinionsPacket implements IPacket
     {
         hasMinions = bytes.readInt();
         hasAllMinions = bytes.readInt();
-        MinionsClient.hasMinionsSMPOverride = hasMinions > 0;
-        MinionsClient.hasAllMinionsSMPOverride = hasAllMinions > 0;
-        MinionsCore.debugPrint("Client got status packet, now: hasMinionsSMPOverride = "+hasMinions+", hasAllMinionsSMPOverride: "+hasAllMinions);
+        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
+        {
+            MinionsClient.hasMinionsSMPOverride = hasMinions > 0;
+            MinionsClient.hasAllMinionsSMPOverride = hasAllMinions > 0;
+            MinionsCore.debugPrint("Client got status packet, now: hasMinionsSMPOverride = "+hasMinions+", hasAllMinionsSMPOverride: "+hasAllMinions);
+        }
     }
 
 }

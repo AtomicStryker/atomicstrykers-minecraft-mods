@@ -1,10 +1,11 @@
 package atomicstryker.minions.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class RequestXPSettingPacket implements IPacket
 {
@@ -28,10 +29,20 @@ public class RequestXPSettingPacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         setting = bytes.readInt();
-        if (MinionsCore.instance.evilDeedXPCost != setting)
+        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
         {
-            MinionsCore.instance.evilDeedXPCost = setting;
-            MinionsClient.onChangedXPSetting();
+            if (MinionsCore.instance.evilDeedXPCost != setting)
+            {
+                MinionsCore.instance.evilDeedXPCost = setting;
+                MinionsClient.onChangedXPSetting();
+            }
         }
     }
 

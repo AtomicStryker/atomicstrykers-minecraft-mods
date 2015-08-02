@@ -1,12 +1,12 @@
 package atomicstryker.minions.common.network;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 
 public class SoundPacket implements IPacket
 {
@@ -36,11 +36,20 @@ public class SoundPacket implements IPacket
         sound = ByteBufUtils.readUTF8String(bytes);
         dimension = bytes.readInt();
         entID = bytes.readInt();
-        
-        Entity e = MinecraftServer.getServer().worldServerForDimension(dimension).getEntityByID(entID);
-        if (e != null)
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
         {
-            MinionsCore.instance.sendSoundToClients(e, sound);
+            Entity e = MinecraftServer.getServer().worldServerForDimension(dimension).getEntityByID(entID);
+            if (e != null)
+            {
+                MinionsCore.instance.sendSoundToClients(e, sound);
+            }
         }
     }
 }

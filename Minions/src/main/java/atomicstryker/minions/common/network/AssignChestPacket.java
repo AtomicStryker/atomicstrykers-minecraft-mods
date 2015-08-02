@@ -42,16 +42,26 @@ public class AssignChestPacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         user = ByteBufUtils.readUTF8String(bytes);
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-        if (player != null)
+        sneak = bytes.readBoolean();
+        x = bytes.readInt();
+        y = bytes.readInt();
+        z = bytes.readInt();
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
         {
-            sneak = bytes.readBoolean();
-            x = bytes.readInt();
-            y = bytes.readInt();
-            z = bytes.readInt();
-            
-            MinionsCore.instance.orderMinionsToChestBlock(player, sneak, x, y, z);
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (player != null)
+            {                
+                MinionsCore.instance.orderMinionsToChestBlock(player, sneak, x, y, z);
+            }
         }
+        
     }
 
 }

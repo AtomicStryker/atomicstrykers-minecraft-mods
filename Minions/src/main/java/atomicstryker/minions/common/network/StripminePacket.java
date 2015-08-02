@@ -1,12 +1,12 @@
 package atomicstryker.minions.common.network;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 
 public class StripminePacket implements IPacket
 {
@@ -39,17 +39,27 @@ public class StripminePacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         user = ByteBufUtils.readUTF8String(bytes);
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-        if (player != null)
+        x = bytes.readInt();
+        y = bytes.readInt();
+        z = bytes.readInt();
+        
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
         {
-            x = bytes.readInt();
-            y = bytes.readInt();
-            z = bytes.readInt();
-            
-            if (MinionsCore.instance.hasPlayerWillPower(player))
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (player != null)
             {
-                MinionsCore.instance.orderMinionsToDigStripMineShaft(player, x, y, z);
-                MinionsCore.instance.exhaustPlayerBig(player);
+                if (MinionsCore.instance.hasPlayerWillPower(player))
+                {
+                    MinionsCore.instance.orderMinionsToDigStripMineShaft(player, x, y, z);
+                    MinionsCore.instance.exhaustPlayerBig(player);
+                }
             }
         }
     }

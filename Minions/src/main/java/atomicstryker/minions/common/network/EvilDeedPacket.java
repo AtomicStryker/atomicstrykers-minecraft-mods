@@ -42,17 +42,27 @@ public class EvilDeedPacket implements IPacket
         user = ByteBufUtils.readUTF8String(bytes);
         sound = ByteBufUtils.readUTF8String(bytes);
         soundLength = bytes.readInt();
+        
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
 
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-        if (player != null)
+        @Override
+        public void run()
         {
-            if (player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (player != null)
             {
-                player.addExperienceLevel(-MinionsCore.instance.evilDeedXPCost);
-                MinionsCore.instance.onMasterAddedEvil(player, soundLength);
-                player.addPotionEffect(new PotionEffect(Potion.blindness.id, soundLength * 30, 0));
-                MinionsCore.instance.sendSoundToClients(player, sound);
-                MinionsCore.debugPrint("player "+player+" just did evil deed "+sound);
+                if (player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
+                {
+                    player.addExperienceLevel(-MinionsCore.instance.evilDeedXPCost);
+                    MinionsCore.instance.onMasterAddedEvil(player, soundLength);
+                    player.addPotionEffect(new PotionEffect(Potion.blindness.id, soundLength * 30, 0));
+                    MinionsCore.instance.sendSoundToClients(player, sound);
+                    MinionsCore.debugPrint("player "+player+" just did evil deed "+sound);
+                }
             }
         }
     }

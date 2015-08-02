@@ -1,5 +1,7 @@
 package atomicstryker.minions.common.network;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
@@ -8,8 +10,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 
 public class PickupEntPacket implements IPacket
 {
@@ -37,13 +37,23 @@ public class PickupEntPacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         targetID = bytes.readInt();
-        EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-        if (player != null)
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
         {
-            Entity target = player.worldObj.getEntityByID(targetID);
-            if (target instanceof EntityAnimal || target instanceof EntityPlayer)
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (player != null)
             {
-                MinionsCore.instance.orderMinionToPickupEntity(player, (EntityLivingBase) target);
+                Entity target = player.worldObj.getEntityByID(targetID);
+                if (target instanceof EntityAnimal || target instanceof EntityPlayer)
+                {
+                    MinionsCore.instance.orderMinionToPickupEntity(player, (EntityLivingBase) target);
+                }
             }
         }
     }

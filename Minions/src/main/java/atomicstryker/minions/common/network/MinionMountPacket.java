@@ -1,9 +1,10 @@
 package atomicstryker.minions.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class MinionMountPacket implements IPacket
 {
@@ -30,7 +31,17 @@ public class MinionMountPacket implements IPacket
     {
         minionID = bytes.readInt();
         targetID = bytes.readInt();
-        MinionsClient.onMinionMountPacket(minionID, targetID);
+        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
+        {
+            MinionsClient.onMinionMountPacket(minionID, targetID);
+        }
     }
 
 }

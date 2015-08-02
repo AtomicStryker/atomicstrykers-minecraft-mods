@@ -1,12 +1,12 @@
 package atomicstryker.minions.common.network;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 
 public class MinionSpawnPacket implements IPacket
 {
@@ -39,19 +39,28 @@ public class MinionSpawnPacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         user = ByteBufUtils.readUTF8String(bytes);
-        EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-        if (player != null)
-        {
-            x = bytes.readInt();
-            y = bytes.readInt();
-            z = bytes.readInt();
+        x = bytes.readInt();
+        y = bytes.readInt();
+        z = bytes.readInt();
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
 
-            if (MinionsCore.instance.spawnMinionsForPlayer(player, x, y, z))
+        @Override
+        public void run()
+        {
+            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (player != null)
             {
-                MinionsCore.instance.exhaustPlayerBig(player);
+                if (MinionsCore.instance.spawnMinionsForPlayer(player, x, y, z))
+                {
+                    MinionsCore.instance.exhaustPlayerBig(player);
+                }
+                MinionsCore.instance.networkHelper.sendPacketToPlayer(new HasMinionsPacket(MinionsCore.instance.hasPlayerMinions(player) ? 1 : 0,
+                        MinionsCore.instance.hasAllMinions(player) ? 1 : 0), player);
             }
-            MinionsCore.instance.networkHelper.sendPacketToPlayer(new HasMinionsPacket(MinionsCore.instance.hasPlayerMinions(player) ? 1 : 0,
-                    MinionsCore.instance.hasAllMinions(player) ? 1 : 0), player);
         }
     }
 
