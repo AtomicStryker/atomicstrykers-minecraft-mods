@@ -36,12 +36,21 @@ public class BatNamePacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         batName = ByteBufUtils.readUTF8String(bytes);
-        EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-        if (p != null)
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+        @Override
+        public void run()
         {
-            if (p.getCurrentEquippedItem() != null && p.getCurrentEquippedItem().getItem() == PetBatMod.instance().itemPocketedBat)
+            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (p != null)
             {
-                ItemPocketedPetBat.writeBatNameToItemStack(p.getCurrentEquippedItem(), batName);
+                if (p.getCurrentEquippedItem() != null && p.getCurrentEquippedItem().getItem() == PetBatMod.instance().itemPocketedBat)
+                {
+                    ItemPocketedPetBat.writeBatNameToItemStack(p.getCurrentEquippedItem(), batName);
+                }
             }
         }
     }
