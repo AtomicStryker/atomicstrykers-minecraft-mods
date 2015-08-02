@@ -1,9 +1,10 @@
 package atomicstryker.infernalmobs.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.server.MinecraftServer;
 
 public class KnockBackPacket implements IPacket
 {
@@ -30,8 +31,16 @@ public class KnockBackPacket implements IPacket
     {
         xv = bytes.readFloat();
         zv = bytes.readFloat();
-        
-        InfernalMobsCore.proxy.onKnockBackPacket(xv, zv);
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            InfernalMobsCore.proxy.onKnockBackPacket(xv, zv);
+        }
     }
 
 }

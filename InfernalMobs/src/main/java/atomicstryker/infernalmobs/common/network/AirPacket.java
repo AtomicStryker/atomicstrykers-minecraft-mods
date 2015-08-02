@@ -1,9 +1,10 @@
 package atomicstryker.infernalmobs.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.server.MinecraftServer;
 
 public class AirPacket implements IPacket
 {
@@ -27,7 +28,16 @@ public class AirPacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         air = bytes.readInt();
-        InfernalMobsCore.proxy.onAirPacket(air);
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            InfernalMobsCore.proxy.onAirPacket(air);
+        }
     }
 
 }

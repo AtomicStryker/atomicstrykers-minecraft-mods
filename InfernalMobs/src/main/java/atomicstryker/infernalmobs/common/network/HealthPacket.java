@@ -1,15 +1,16 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
-import atomicstryker.infernalmobs.common.MobModifier;
-import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 
 public class HealthPacket implements IPacket
 {
@@ -49,23 +50,40 @@ public class HealthPacket implements IPacket
         // client always sends packets with health = maxhealth = 0
         if (maxhealth > 0)
         {
-            InfernalMobsCore.proxy.onHealthPacketForClient(stringData, entID, health, maxhealth);
+            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
         }
         else
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(stringData);
-            if (p != null)
+            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+        }
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            // client always sends packets with health = maxhealth = 0
+            if (maxhealth > 0)
             {
-                Entity ent = p.worldObj.getEntityByID(entID);
-                if (ent != null && ent instanceof EntityLivingBase)
+                InfernalMobsCore.proxy.onHealthPacketForClient(stringData, entID, health, maxhealth);
+            }
+            else
+            {
+                EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(stringData);
+                if (p != null)
                 {
-                    EntityLivingBase e = (EntityLivingBase) ent;
-                    MobModifier mod = InfernalMobsCore.getMobModifiers(e);
-                    if (mod != null)
+                    Entity ent = p.worldObj.getEntityByID(entID);
+                    if (ent != null && ent instanceof EntityLivingBase)
                     {
-                        health = e.getHealth();
-                        maxhealth = e.getMaxHealth();
-                        InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new HealthPacket(stringData, entID, health, maxhealth), p);
+                        EntityLivingBase e = (EntityLivingBase) ent;
+                        MobModifier mod = InfernalMobsCore.getMobModifiers(e);
+                        if (mod != null)
+                        {
+                            health = e.getHealth();
+                            maxhealth = e.getMaxHealth();
+                            InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new HealthPacket(stringData, entID, health, maxhealth), p);
+                        }
                     }
                 }
             }

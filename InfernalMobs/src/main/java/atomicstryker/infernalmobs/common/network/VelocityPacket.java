@@ -1,9 +1,10 @@
 package atomicstryker.infernalmobs.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.server.MinecraftServer;
 
 public class VelocityPacket implements IPacket
 {
@@ -33,8 +34,16 @@ public class VelocityPacket implements IPacket
         xv = bytes.readFloat();
         yv = bytes.readFloat();
         zv = bytes.readFloat();
-        
-        InfernalMobsCore.proxy.onVelocityPacket(xv, yv, zv);
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            InfernalMobsCore.proxy.onVelocityPacket(xv, yv, zv);
+        }
     }
 
 }

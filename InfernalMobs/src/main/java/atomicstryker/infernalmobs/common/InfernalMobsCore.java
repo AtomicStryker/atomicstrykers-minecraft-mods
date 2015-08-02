@@ -78,7 +78,7 @@ import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import atomicstryker.infernalmobs.common.network.NetworkHelper;
 import atomicstryker.infernalmobs.common.network.VelocityPacket;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.3")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.4")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;

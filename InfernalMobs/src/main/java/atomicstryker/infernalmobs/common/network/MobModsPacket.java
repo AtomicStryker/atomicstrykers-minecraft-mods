@@ -1,14 +1,15 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
-import atomicstryker.infernalmobs.common.MobModifier;
-import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class MobModsPacket implements IPacket
 {
@@ -44,28 +45,45 @@ public class MobModsPacket implements IPacket
         for (int i = 0; i < len; i++) chars[i] = bytes.readChar();
         stringData = String.valueOf(chars);
         entID = bytes.readInt();
+        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
         
         if (sentFromServer != 0)
         {
-            // so we are on client now
-            InfernalMobsCore.proxy.onMobModsPacketToClient(stringData, entID);
+            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
         }
         else
         {
-            // else we are on serverside
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(stringData);
-            if (p != null)
+            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+        }
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            if (sentFromServer != 0)
             {
-                Entity ent = p.worldObj.getEntityByID(entID);
-                if (ent != null && ent instanceof EntityLivingBase)
+                // so we are on client now
+                InfernalMobsCore.proxy.onMobModsPacketToClient(stringData, entID);
+            }
+            else
+            {
+                // else we are on serverside
+                EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(stringData);
+                if (p != null)
                 {
-                    EntityLivingBase e = (EntityLivingBase) ent;
-                    MobModifier mod = InfernalMobsCore.getMobModifiers(e);
-                    if (mod != null)
+                    Entity ent = p.worldObj.getEntityByID(entID);
+                    if (ent != null && ent instanceof EntityLivingBase)
                     {
-                        stringData = mod.getLinkedModNameUntranslated();
-                        InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new MobModsPacket(stringData, entID, (byte)1), p);
-                        InfernalMobsCore.instance().sendHealthPacket(e, mod.getActualHealth(e));
+                        EntityLivingBase e = (EntityLivingBase) ent;
+                        MobModifier mod = InfernalMobsCore.getMobModifiers(e);
+                        if (mod != null)
+                        {
+                            stringData = mod.getLinkedModNameUntranslated();
+                            InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new MobModsPacket(stringData, entID, (byte)1), p);
+                            InfernalMobsCore.instance().sendHealthPacket(e, mod.getActualHealth(e));
+                        }
                     }
                 }
             }
