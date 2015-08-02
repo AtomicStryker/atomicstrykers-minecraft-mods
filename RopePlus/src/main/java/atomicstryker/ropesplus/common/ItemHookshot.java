@@ -1,11 +1,14 @@
 package atomicstryker.ropesplus.common;
 
+import atomicstryker.ropesplus.common.network.HookshotPacket;
+import atomicstryker.ropesplus.common.network.HookshotPullPacket;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -14,8 +17,6 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.network.HookshotPacket;
-import atomicstryker.ropesplus.common.network.HookshotPullPacket;
 
 public class ItemHookshot extends Item
 {
@@ -85,20 +86,22 @@ public class ItemHookshot extends Item
                         final Vec3 aimVec =
                                 playerVec.addVector((double) viewX * traceDistance, (double) viewY * traceDistance, (double) viewZ * traceDistance);
                         final MovingObjectPosition target = world.rayTraceBlocks(playerVec, aimVec, false, false, false);
-
+                        System.out.println("Hookshot hit: "+target);
+                        
                         if (target != null)
                         {
                             if (target.typeOfHit == MovingObjectType.BLOCK)
                             {
                                 EntityFreeFormRope ropeEnt = new EntityFreeFormRope(world);
                                 ropeEnt.setStartCoordinates(entityplayer.posX, entityplayer.posY + 0.5D, entityplayer.posZ);
-                                ropeEnt.setEndCoordinates(entityplayer.posX, entityplayer.posY + 0.5D, entityplayer.posZ);
-                                ropeEnt.setEndBlock((int)target.hitVec.xCoord, (int)target.hitVec.yCoord, (int)target.hitVec.zCoord);
+                                BlockPos hit = target.getBlockPos();
+                                ropeEnt.setEndBlock(hit.getX(), hit.getY(), hit.getZ());
+                                //System.out.println("Setting server rope "+ropeEnt.getEntityId()+" for shooter: "+entityplayer);
                                 ropeEnt.setShooter(entityplayer);
                                 world.spawnEntityInWorld(ropeEnt);
 
                                 RopesPlusCore.instance.setPlayerRope(entityplayer, ropeEnt);
-                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(ropeEnt.getEntityId(), (int)target.hitVec.xCoord, (int)target.hitVec.yCoord, (int)target.hitVec.zCoord), (EntityPlayerMP) entityplayer);
+                                RopesPlusCore.instance.networkHelper.sendPacketToPlayer(new HookshotPacket(ropeEnt.getEntityId(), hit.getX(), hit.getY(), hit.getZ()), (EntityPlayerMP) entityplayer);
 
                                 entityplayer.worldObj.playSoundAtEntity(entityplayer, "ropesplus:hookshotfire", 1.0F,
                                         1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));

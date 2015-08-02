@@ -5,8 +5,8 @@ tile.blockGrHk.name=Legendary Grappling Hook
 
 item.itemGrapplingHook.name=Grappling Hook
 item.itemHookshot.name=Hook Shot
-item.HookshotCartridge.name=Hook Shot Cartridge
-item.bowRopesPlus.name=[firing Ropes+ Arrow]
+item.itemHookshotCartridge.name=Hook Shot Cartridge
+item.itemBowRopesPlus.name=[firing Ropes+ Arrow]
 
 item.DirtArrow.name=Dirt Arrow
 item.SeedArrow.name=Seed Arrow
@@ -35,3 +35,5 @@ translation.ropesplus:ZiplineFailB=not opaque!
 translation.ropesplus:ZiplineFailC=Newton says you can't Zipline upwards, sorry...
 
 translation.ropesplus:BowCacheFail=Ropes+ failed to retrieve original firing item
+
+entity.RopesPlus.FreeFormRope.name=Hookshot Line

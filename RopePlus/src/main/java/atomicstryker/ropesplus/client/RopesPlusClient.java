@@ -1,5 +1,14 @@
 package atomicstryker.ropesplus.client;
 
+import org.lwjgl.input.Keyboard;
+
+import atomicstryker.ropesplus.common.EntityFreeFormRope;
+import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.Settings_RopePlus;
+import atomicstryker.ropesplus.common.arrows.EntityArrow303;
+import atomicstryker.ropesplus.common.arrows.ItemArrow303;
+import atomicstryker.ropesplus.common.network.ArrowChoicePacket;
+import atomicstryker.ropesplus.common.network.ZiplinePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
@@ -14,26 +23,15 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-import org.lwjgl.input.Keyboard;
-
-import atomicstryker.ropesplus.common.EntityFreeFormRope;
-import atomicstryker.ropesplus.common.RopesPlusCore;
-import atomicstryker.ropesplus.common.Settings_RopePlus;
-import atomicstryker.ropesplus.common.arrows.EntityArrow303;
-import atomicstryker.ropesplus.common.arrows.ItemArrow303;
-import atomicstryker.ropesplus.common.network.ArrowChoicePacket;
-import atomicstryker.ropesplus.common.network.ZiplinePacket;
-
 public class RopesPlusClient
 {
 
-    private Minecraft mc;
+    private static Minecraft mc;
     private EntityArrow303 selectedArrow;
     private static int arrowCount;
     private int selectedSlot;
@@ -65,7 +63,7 @@ public class RopesPlusClient
 
     public RopesPlusClient()
     {
-        mc = FMLClientHandler.instance().getClient();
+        mc = Minecraft.getMinecraft();
         selectedArrow = null;
         arrowCount = -1;
         selectedSlot = 0;
@@ -372,18 +370,34 @@ public class RopesPlusClient
 
     public static void onAffixedToHookShotRope(int ropeEntID)
     {
-        if (localPlayer != null && localPlayer.worldObj != null)
+        mc.addScheduledTask(new ScheduledFixer(ropeEntID));
+    }
+    
+    static class ScheduledFixer implements Runnable
+    {
+        final int ID;
+        
+        private ScheduledFixer(int id)
         {
-            Entity ent = localPlayer.worldObj.getEntityByID(ropeEntID);
+            ID = id;
+        }
+
+        @Override
+        public void run()
+        {
+            Entity ent = Minecraft.getMinecraft().theWorld.getEntityByID(ID);
             if (ent != null && ent instanceof EntityFreeFormRope)
             {
-                ((EntityFreeFormRope) ent).setShooter(localPlayer);
+                ((EntityFreeFormRope) ent).setShooter(Minecraft.getMinecraft().thePlayer);
             }
         }
+        
     }
 
     public static void onUsedZipLine(int ropeEntID)
     {
+        mc = Minecraft.getMinecraft();
+        localPlayer = mc.thePlayer;
         if (localPlayer != null && localPlayer.worldObj != null)
         {
             Entity ent = localPlayer.worldObj.getEntityByID(ropeEntID);
@@ -416,6 +430,7 @@ public class RopesPlusClient
                 EntityFreeFormRope rope = (EntityFreeFormRope) o;
                 if (rope.getShooter() != null && rope.getShooter().equals(p))
                 {
+                    //System.out.println("shooter "+rope.getShooter()+" released rope...");
                     rope.setDead();
                     break;
                 }

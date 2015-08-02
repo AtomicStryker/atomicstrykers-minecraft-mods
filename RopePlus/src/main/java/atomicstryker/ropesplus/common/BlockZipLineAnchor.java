@@ -1,5 +1,7 @@
 package atomicstryker.ropesplus.common;
 
+import atomicstryker.ropesplus.common.network.HookshotPacket;
+import atomicstryker.ropesplus.common.network.ZiplinePacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -12,11 +14,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.network.HookshotPacket;
-import atomicstryker.ropesplus.common.network.ZiplinePacket;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockZipLineAnchor extends BlockContainer
 {
@@ -60,7 +63,7 @@ public class BlockZipLineAnchor extends BlockContainer
                             else
                             {
                                 int targetX = MathHelper.floor_double(rope.getEndX());
-                                int targetY = MathHelper.floor_double(rope.getEndY()+0.5);
+                                int targetY = MathHelper.floor_double(rope.getEndY());
                                 int targetZ = MathHelper.floor_double(rope.getEndZ());
                                 if (world.getBlockState(new BlockPos(targetX, targetY, targetZ)).getBlock().isNormalCube())
                                 {
@@ -118,24 +121,20 @@ public class BlockZipLineAnchor extends BlockContainer
         return world.getBlockState(pos.add(0, 1, 0)).getBlock().isOpaqueCube();
     }
 
-    @Override
     public boolean isOpaqueCube()
     {
         return false;
     }
 
-    /*
-    @Override
-    public boolean renderAsNormalBlock()
+    public boolean isFullCube()
     {
         return false;
     }
-    */
 
-    @Override
-    public int getRenderType()
+    @SideOnly(Side.CLIENT)
+    public EnumWorldBlockLayer getBlockLayer()
     {
-        return 1;
+        return EnumWorldBlockLayer.CUTOUT;
     }
 
 }

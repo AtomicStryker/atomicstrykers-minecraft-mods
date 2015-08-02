@@ -1,35 +1,35 @@
-tile.blockRopeCenter.name=Верёвка
-tile.blockZiplineAnchor.name=Канатный якорь
-tile.blockRopeWall.name=Настенная верёвка
-tile.blockGrHk.name=Легендарная абордажная кошка
+tile.blockRopeCenter.name=Ð’ÐµÑ€Ñ‘Ð²ÐºÐ°
+tile.blockZiplineAnchor.name=ÐšÐ°Ð½Ð°Ñ‚Ð½Ñ‹Ð¹ Ñ�ÐºÐ¾Ñ€ÑŒ
+tile.blockRopeWall.name=Ð�Ð°Ñ�Ñ‚ÐµÐ½Ð½Ð°Ñ� Ð²ÐµÑ€Ñ‘Ð²ÐºÐ°
+tile.blockGrHk.name=Ð›ÐµÐ³ÐµÐ½Ð´Ð°Ñ€Ð½Ð°Ñ� Ð°Ð±Ð¾Ñ€Ð´Ð°Ð¶Ð½Ð°Ñ� ÐºÐ¾ÑˆÐºÐ°
 
-item.itemGrapplingHook.name=Абордажная кошка
-item.itemHookshot.name=Стреляющий крюк
-item.HookshotCartridge.name=Картридж для стреляющего крюка
-item.bowRopesPlus.name=[Запуск стрелы Ropes+]
+item.itemGrapplingHook.name=Ð�Ð±Ð¾Ñ€Ð´Ð°Ð¶Ð½Ð°Ñ� ÐºÐ¾ÑˆÐºÐ°
+item.itemHookshot.name=Ð¡Ñ‚Ñ€ÐµÐ»Ñ�ÑŽÑ‰Ð¸Ð¹ ÐºÑ€ÑŽÐº
+item.itemHookshotCartridge.name=ÐšÐ°Ñ€Ñ‚Ñ€Ð¸Ð´Ð¶ Ð´Ð»Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ñ�ÑŽÑ‰ÐµÐ³Ð¾ ÐºÑ€ÑŽÐºÐ°
+item.itemBowRopesPlus.name=[Ð—Ð°Ð¿ÑƒÑ�Ðº Ñ�Ñ‚Ñ€ÐµÐ»Ñ‹ Ropes+]
 
-item.DirtArrow.name=Земляная стрела
-item.SeedArrow.name=Семенная стрела
-item.PenetratingArrow.name=Проникающая стрела
-item.SlimeArrow.name=Слизневая стрела
-item.RedstonetorchArrow.name=Красная стрела
-item.RopeArrow.name=Стрела с верёвкой
-item.FrostArrow.name=Замораживающая стрела
-item.FireArrow.name=Огненная стрела
-item.ConfusingArrow.name=Запутывающая стрела
-item.ExplodingArrow.name=Взрывающаяся стрела
-item.TorchArrow.name=Стрела с факелом
-item.WarpArrow.name=Телепортирующая стрела
+item.DirtArrow.name=Ð—ÐµÐ¼Ð»Ñ�Ð½Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.SeedArrow.name=Ð¡ÐµÐ¼ÐµÐ½Ð½Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.PenetratingArrow.name=ÐŸÑ€Ð¾Ð½Ð¸ÐºÐ°ÑŽÑ‰Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.SlimeArrow.name=Ð¡Ð»Ð¸Ð·Ð½ÐµÐ²Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.RedstonetorchArrow.name=ÐšÑ€Ð°Ñ�Ð½Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.RopeArrow.name=Ð¡Ñ‚Ñ€ÐµÐ»Ð° Ñ� Ð²ÐµÑ€Ñ‘Ð²ÐºÐ¾Ð¹
+item.FrostArrow.name=Ð—Ð°Ð¼Ð¾Ñ€Ð°Ð¶Ð¸Ð²Ð°ÑŽÑ‰Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.FireArrow.name=ÐžÐ³Ð½ÐµÐ½Ð½Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.ConfusingArrow.name=Ð—Ð°Ð¿ÑƒÑ‚Ñ‹Ð²Ð°ÑŽÑ‰Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.ExplodingArrow.name=Ð’Ð·Ñ€Ñ‹Ð²Ð°ÑŽÑ‰Ð°Ñ�Ñ�Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+item.TorchArrow.name=Ð¡Ñ‚Ñ€ÐµÐ»Ð° Ñ� Ñ„Ð°ÐºÐµÐ»Ð¾Ð¼
+item.WarpArrow.name=Ð¢ÐµÐ»ÐµÐ¿Ð¾Ñ€Ñ‚Ð¸Ñ€ÑƒÑŽÑ‰Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
 
-translation.ropesplus:hookshotnotarget=Нет доступной цели для стреляющего крюка
+translation.ropesplus:hookshotnotarget=Ð�ÐµÑ‚ Ð´Ð¾Ñ�Ñ‚ÑƒÐ¿Ð½Ð¾Ð¹ Ñ†ÐµÐ»Ð¸ Ð´Ð»Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ñ�ÑŽÑ‰ÐµÐ³Ð¾ ÐºÑ€ÑŽÐºÐ°
 
-translation.ropesplus:SwapArrowsForward=Следующая стрела
-translation.ropesplus:SwapArrowsBackward=Предыдущая стрела
-translation.ropesplus:ToggleArrows=Включить стрелы Ropes+
+translation.ropesplus:SwapArrowsForward=Ð¡Ð»ÐµÐ´ÑƒÑŽÑ‰Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+translation.ropesplus:SwapArrowsBackward=ÐŸÑ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰Ð°Ñ� Ñ�Ñ‚Ñ€ÐµÐ»Ð°
+translation.ropesplus:ToggleArrows=Ð’ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ñ�Ñ‚Ñ€ÐµÐ»Ñ‹ Ropes+
 
-translation.ropesplus:OnScreenHintA=Меняйте стрелы с помощью
-translation.ropesplus:OnScreenHintB=, вкл./выкл. стрелы с помощью 
+translation.ropesplus:OnScreenHintA=ÐœÐµÐ½Ñ�Ð¹Ñ‚Ðµ Ñ�Ñ‚Ñ€ÐµÐ»Ñ‹ Ñ� Ð¿Ð¾Ð¼Ð¾Ñ‰ÑŒÑŽ
+translation.ropesplus:OnScreenHintB=, Ð²ÐºÐ»./Ð²Ñ‹ÐºÐ». Ñ�Ñ‚Ñ€ÐµÐ»Ñ‹ Ñ� Ð¿Ð¾Ð¼Ð¾Ñ‰ÑŒÑŽ 
 
-translation.ropesplus:ZiplineFailA=Целевой блок канатного якоря
+translation.ropesplus:ZiplineFailA=Ð¦ÐµÐ»ÐµÐ²Ð¾Ð¹ Ð±Ð»Ð¾Ðº ÐºÐ°Ð½Ð°Ñ‚Ð½Ð¾Ð³Ð¾ Ñ�ÐºÐ¾Ñ€Ñ�
 translation.ropesplus:ZiplineFailB=not opaque!
-translation.ropesplus:ZiplineFailC=Ньютон говорит, что Вы не сможете установить канат, идущий вверх, извините...
+translation.ropesplus:ZiplineFailC=Ð�ÑŒÑŽÑ‚Ð¾Ð½ Ð³Ð¾Ð²Ð¾Ñ€Ð¸Ñ‚, Ñ‡Ñ‚Ð¾ Ð’Ñ‹ Ð½Ðµ Ñ�Ð¼Ð¾Ð¶ÐµÑ‚Ðµ ÑƒÑ�Ñ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÐºÐ°Ð½Ð°Ñ‚, Ð¸Ð´ÑƒÑ‰Ð¸Ð¹ Ð²Ð²ÐµÑ€Ñ…, Ð¸Ð·Ð²Ð¸Ð½Ð¸Ñ‚Ðµ...

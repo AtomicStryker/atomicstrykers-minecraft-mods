@@ -100,13 +100,13 @@ public class TileEntityZipLineAnchor extends TileEntity implements IUpdatePlayer
             {                
                 ropeEnt = new EntityFreeFormRope(worldObj);
                 ropeEnt.setStartCoordinates(pos.getX()+0.5D, pos.getY(), pos.getZ()+0.5D);
-                ropeEnt.setEndCoordinates(targetX+0.5D, targetY+1D, targetZ+0.5D);
+                ropeEnt.setEndCoordinates(targetX+0.5D, targetY, targetZ+0.5D);
                 ropeEnt.setLoosening();
                 worldObj.spawnEntityInWorld(ropeEnt);
             }
             else if (!isInvalid())
             {
-                System.err.printf("zipline target coords [%d|%d|%d] not an opaque block: %s\n", targetX, targetY, targetZ, worldObj.getBlockState(new BlockPos(targetX, targetY, targetZ)).getBlock());
+                System.err.printf("zipline target coords [%d|%d|%d] not normal cube: %s\n", targetX, targetY, targetZ, worldObj.getBlockState(new BlockPos(targetX, targetY, targetZ)).getBlock());
                 targetY = -1;
                 if (ropeEnt != null)
                 {

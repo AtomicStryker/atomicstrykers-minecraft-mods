@@ -194,14 +194,12 @@ public class EntityGrapplingHook extends Entity
         {
             ticksInAir++;
         }
-        Vec3 vec3 = new Vec3(posX, posY, posZ);
-        Vec3 vec31 = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
-        MovingObjectPosition movingobjectposition = worldObj.rayTraceBlocks(vec3, vec31);
-        vec3 = new Vec3(posX, posY, posZ);
-        vec31 = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
-        if(movingobjectposition != null)
+        Vec3 currentVec = new Vec3(posX, posY, posZ);
+        Vec3 projectedVec = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
+        MovingObjectPosition projectedCollision = worldObj.rayTraceBlocks(currentVec, projectedVec);
+        if(projectedCollision != null)
         {
-            vec31 = new Vec3(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
+            projectedVec = projectedCollision.hitVec;
         }
         Entity entity = null;
         @SuppressWarnings("rawtypes")
@@ -216,12 +214,12 @@ public class EntityGrapplingHook extends Entity
             }
             float f2 = 0.3F;
             AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f2, f2, f2);
-            MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
+            MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(currentVec, projectedVec);
             if(movingobjectposition1 == null)
             {
                 continue;
             }
-            double d8 = vec3.distanceTo(movingobjectposition1.hitVec);
+            double d8 = currentVec.distanceTo(movingobjectposition1.hitVec);
             if(d8 < d3 || d3 == 0.0D)
             {
                 entity = entity1;
@@ -231,34 +229,34 @@ public class EntityGrapplingHook extends Entity
 
         if(entity != null)
         {
-            movingobjectposition = new MovingObjectPosition(entity);
+            projectedCollision = new MovingObjectPosition(entity);
         }
-        if(movingobjectposition != null)
+        if(projectedCollision != null)
         {
-            if(movingobjectposition.entityHit != null)
+            if(projectedCollision.entityHit != null)
             {
-                if(movingobjectposition.entityHit.attackEntityFrom(DamageSource.causePlayerDamage(owner), 0))
+                if(projectedCollision.entityHit.attackEntityFrom(DamageSource.causePlayerDamage(owner), 0))
                 {
-                    plantedHook = movingobjectposition.entityHit;
+                    plantedHook = projectedCollision.entityHit;
                 }
             }
             else
             {
                 double orientationX = motionX;
                 double orientationZ = motionZ;
-                xTile = (int) movingobjectposition.hitVec.xCoord;
-                yTile = (int) movingobjectposition.hitVec.yCoord;
-                zTile = (int) movingobjectposition.hitVec.zCoord;
+                xTile = (int) projectedCollision.getBlockPos().getX();
+                yTile = (int) projectedCollision.getBlockPos().getY();
+                zTile = (int) projectedCollision.getBlockPos().getZ();
                 inTile = worldObj.getBlockState(new BlockPos(xTile, yTile, zTile)).getBlock();
-                motionX = (float)(movingobjectposition.hitVec.xCoord - posX);
-                motionY = (float)(movingobjectposition.hitVec.yCoord - posY);
-                motionZ = (float)(movingobjectposition.hitVec.zCoord - posZ);
+                motionX = (float)(projectedCollision.hitVec.xCoord - posX);
+                motionY = (float)(projectedCollision.hitVec.yCoord - posY);
+                motionZ = (float)(projectedCollision.hitVec.zCoord - posZ);
                 float f3 = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
                 posX -= (motionX / (double)f3) * 0.05000000074505806D;
                 posY -= (motionY / (double)f3) * 0.05000000074505806D;
                 posZ -= (motionZ / (double)f3) * 0.05000000074505806D;
                 
-                double hookLyingHeight = movingobjectposition.hitVec.yCoord - (double)yTile;
+                double hookLyingHeight = projectedCollision.hitVec.yCoord - (double)yTile;
                 
                 if(((hookLyingHeight == 1.0D && (worldObj.getBlockState(new BlockPos(xTile, yTile + 1, zTile)).getBlock() == Blocks.air)
                 || worldObj.getBlockState(new BlockPos(xTile, yTile, zTile)).getBlock() == Blocks.snow))

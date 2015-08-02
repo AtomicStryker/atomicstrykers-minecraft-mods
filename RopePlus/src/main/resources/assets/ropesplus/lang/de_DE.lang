@@ -5,8 +5,8 @@ tile.blockGrHk.name=Legendaerer Enterhaken
 
 item.itemGrapplingHook.name=Enterhaken
 item.itemHookshot.name=Hakenwerfer
-item.HookshotCartridge.name=Hakenwerfer-Kartusche
-item.bowRopesPlus.name=[feuert Ropes+ Pfeil]
+item.itemHookshotCartridge.name=Hakenwerfer-Kartusche
+item.itemBowRopesPlus.name=[feuert Ropes+ Pfeil]
 
 item.DirtArrow.name=Erdpfeil
 item.SeedArrow.name=Saatpfeil

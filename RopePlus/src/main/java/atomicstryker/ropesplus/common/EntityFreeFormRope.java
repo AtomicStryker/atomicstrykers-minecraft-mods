@@ -57,6 +57,7 @@ public class EntityFreeFormRope extends Entity
     {
         shooter = p;
         maxLength = getDistanceToEntity(shooter);
+        //System.out.println("rope "+this+" has shooter: "+p);
     }
     
     public EntityPlayer getShooter()
@@ -107,43 +108,43 @@ public class EntityFreeFormRope extends Entity
     public void setStartX(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(10, ""+input);
+            dataWatcher.updateObject(10, String.valueOf(input));
     }
     
     public void setStartY(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(11, ""+input);
+            dataWatcher.updateObject(11, String.valueOf(input));
     }
     
     public void setStartZ(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(12, ""+input);
+            dataWatcher.updateObject(12, String.valueOf(input));
     }
     
     public void setEndX(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(13, ""+input);
+            dataWatcher.updateObject(13, String.valueOf(input));
     }
     
     public void setEndY(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(14, ""+input);
+            dataWatcher.updateObject(14, String.valueOf(input));
     }
     
     public void setEndZ(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(15, ""+input);
+            dataWatcher.updateObject(15, String.valueOf(input));
     }
     
     public void setPowValue(double input)
     {
         if (!worldObj.isRemote)
-            dataWatcher.updateObject(16, ""+input);
+            dataWatcher.updateObject(16, String.valueOf(input));
     }
 
     @Override
@@ -198,7 +199,7 @@ public class EntityFreeFormRope extends Entity
         super.onUpdate();
         
         final int endX = MathHelper.floor_double(getEndX());
-        final int endY = MathHelper.floor_double(getEndY()) + (shooter == null ? -1 : 0);
+        final int endY = MathHelper.floor_double(getEndY());
         final int endZ = MathHelper.floor_double(getEndZ());
         if (!worldObj.getBlockState(new BlockPos(endX, endY, endZ)).getBlock().isNormalCube())
         {
@@ -216,6 +217,7 @@ public class EntityFreeFormRope extends Entity
         {
             if (shooter.isDead || !shooter.inventory.hasItem(RopesPlusCore.instance.itemHookShot))
             {
+                //System.out.println("EntityFreeFormRope dying because player "+shooter+" null or has no hookshot");
                 setDead();
                 RopesPlusCore.proxy.setHasClientRopeOut(false);
                 RopesPlusCore.proxy.setShouldHookShotDisconnect(true);
@@ -370,7 +372,7 @@ public class EntityFreeFormRope extends Entity
             int startZ = MathHelper.floor_double(getStartZ());
             if (worldObj.getBlockState(new BlockPos(startX, startY, startZ)).getBlock() != RopesPlusCore.instance.blockZipLineAnchor)
             {
-                System.out.printf("[%d,%d,%d] is not anchor: %s\n", startX, startY, startZ, worldObj.getBlockState(new BlockPos(startX, startY, startZ)).getBlock());
+                System.out.printf("rope %s, [%d,%d,%d] is not anchor: %s\n", this, startX, startY, startZ, worldObj.getBlockState(new BlockPos(startX, startY, startZ)).getBlock());
                 setDead();
                 return;
             }

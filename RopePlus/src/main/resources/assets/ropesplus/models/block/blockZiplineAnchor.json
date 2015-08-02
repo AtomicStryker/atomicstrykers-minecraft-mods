@@ -1,8 +1,8 @@
 {
     "ambientocclusion": false,
     "textures": {
-        "particle": "ropesplus:blocks/blockZiplineAnchor",
-        "texture": "ropesplus:blocks/blockZiplineAnchor"
+        "particle": "#cross",
+        "cross": "ropesplus:blocks/blockZiplineAnchor"
     },
     "elements": [
         {   "from": [ 0.8, 0, 8 ],

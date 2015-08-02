@@ -37,6 +37,7 @@ public class HookshotPacket implements IPacket
         x = bytes.readInt();
         y = bytes.readInt();
         z = bytes.readInt();
+        //System.out.printf("HookshotPacket [%d|%d|%d], ropeID %d\n", x, y, z, ropeEntID);
         
         if (ropeEntID < 0)
         {

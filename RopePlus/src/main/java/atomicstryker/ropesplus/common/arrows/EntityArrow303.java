@@ -153,7 +153,12 @@ public class EntityArrow303 extends EntityProjectileBase
             int iy = candidateCoords[1];
             int iz = candidateCoords[2];
             BlockPos placePos = new BlockPos(x + ix, y + iy, z + iz);
-            if (worldObj.canBlockBePlaced(blockID, placePos, true, EnumFacing.getFacingFromVector((float)(posX-shooter.posX), (float)(posY-shooter.posY), (float)(posZ-shooter.posZ)), null, item))
+            EnumFacing face = EnumFacing.getFacingFromVector((float)posX, (float)posY, (float)posZ);
+            if (shooter != null)
+            {
+                face = EnumFacing.getFacingFromVector((float)(posX-shooter.posX), (float)(posY-shooter.posY), (float)(posZ-shooter.posZ));
+            }
+            if (worldObj.canBlockBePlaced(blockID, placePos, true, face, null, item))
             {
                 x += ix;
                 y += iy;
