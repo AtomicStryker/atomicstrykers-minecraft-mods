@@ -1,13 +1,14 @@
 package atomicstryker.multimine.common.network;
 
+import atomicstryker.multimine.client.MultiMineClient;
+import atomicstryker.multimine.common.MultiMineServer;
+import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.multimine.client.MultiMineClient;
-import atomicstryker.multimine.common.MultiMineServer;
-import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 
 public class PartialBlockPacket implements IPacket
 {
@@ -48,19 +49,36 @@ public class PartialBlockPacket implements IPacket
         y = bytes.readInt();
         z = bytes.readInt();
         value = bytes.readFloat();
-        
         if (user.equals("server"))
         {
-            MultiMineClient.instance().onServerSentPartialBlockData(x, y, z, value);
+            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
         }
         else
         {
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-            if (player != null)
+            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+        }
+    }
+    
+    class ScheduledCode implements Runnable
+    {
+
+        @Override
+        public void run()
+        {
+            if (user.equals("server"))
             {
-                MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);
+                MultiMineClient.instance().onServerSentPartialBlockData(x, y, z, value);
+            }
+            else
+            {
+                EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+                if (player != null)
+                {
+                    MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);
+                }
             }
         }
+        
     }
 
 }

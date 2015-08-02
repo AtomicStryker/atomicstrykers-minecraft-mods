@@ -1,3 +1,6 @@
+1.4.9
+- fixes thread issue with packets
+
 1.4.8
 - now uses floating point precision for block progress, fixes oh so many issues
 
