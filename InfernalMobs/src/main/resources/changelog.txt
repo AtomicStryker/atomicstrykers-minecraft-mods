@@ -1,5 +1,6 @@
 1.6.4
 - fixing a thread issue with packets
+- hotfix: derped health packet client/server directions
 
 1.6.3
 - hmm why isnt that dimension arraylist initialized ... the pull request was probably missing a line

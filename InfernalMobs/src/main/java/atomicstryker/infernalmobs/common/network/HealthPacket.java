@@ -50,11 +50,11 @@ public class HealthPacket implements IPacket
         // client always sends packets with health = maxhealth = 0
         if (maxhealth > 0)
         {
-            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
         }
         else
         {
-            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
         }
     }
     
