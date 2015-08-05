@@ -73,6 +73,10 @@ public class RuinTemplateRule
             int bracketCounter = 1;
             for (;;closingIndex++)
             {
+                if (closingIndex == rule.length())
+                {
+                    throw new Exception("Unbalanced brackets in Ruins template "+r+", offending rule: "+rule);
+                }
                 if (rule.charAt(closingIndex) == '{')
                 {
                     bracketCounter++;
