@@ -428,3 +428,6 @@ a: setAccessible now true
 + now supports saving and loading raw tile entity nbt data. The world-specific ruins.txt has a new line "teblocks=" behind which you can specify
     blocks which should have their tile entities serialized (each is considered unique). The data is saved in json format, unfortunately with nonportable (numeric) IDs for inventories.
     DO NOT USE FOR INVENTORIES. THE NUMBERS WILL BREAK. Also note ruins.txt with the teblocks setting is only parsed when new chunks are generated, and only takes effect after.
+
+15.0
++ more work done to get complex nbt data parsed and restored, notably writable books in inventories

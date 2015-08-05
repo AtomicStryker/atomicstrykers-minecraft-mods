@@ -288,21 +288,25 @@ public class World2TemplateParser extends Thread
                             if (ident != null)
                             {
                                 sb.append(ident);
-                                sb.append('#');
-                                if (stack.getTagCompound() != null)
-                                {
-                                    sb.append(stack.getTagCompound().toString());
-                                }
-                                else
-                                {
-                                    sb.append(stack.stackSize);
-                                }
-                                sb.append('#');
-                                sb.append(stack.getItemDamage());
-                                sb.append('#');
-                                sb.append(slots.get(index));
-                                sb.append('+');
                             }
+                            else
+                            {
+                                sb.append(stack.getUnlocalizedName());
+                            }
+                            sb.append('#');
+                            if (stack.getTagCompound() != null)
+                            {
+                                sb.append(stack.getTagCompound().toString());
+                            }
+                            else
+                            {
+                                sb.append(stack.stackSize);
+                            }
+                            sb.append('#');
+                            sb.append(stack.getItemDamage());
+                            sb.append('#');
+                            sb.append(slots.get(index));
+                            sb.append('+');
                         }
                         
                         temp.data = sb.toString();
