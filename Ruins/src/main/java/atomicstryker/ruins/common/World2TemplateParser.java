@@ -292,30 +292,42 @@ public class World2TemplateParser extends Thread
                             String ident = null;
                             if (stack.getItem() instanceof ItemBlock)
                             {
-                                ident = ((ResourceLocation)GameData.getBlockRegistry().getNameForObject(((ItemBlock)stack.getItem().getContainerItem()))).toString();
+                                ItemStack cs = ((ItemBlock) stack.getItem()).getContainerItem(stack);
+                                if (cs != null)
+                                {
+                                    ident = ((ResourceLocation)GameData.getBlockRegistry().getNameForObject(cs)).toString();
+                                }
+                                else
+                                {
+                                    ident = ((ResourceLocation)GameData.getItemRegistry().getNameForObject(stack.getItem())).toString();
+                                }
                             }
                             else
                             {
-                                ident = ((ResourceLocation)GameData.getItemRegistry().getNameForObject(stack.getItem())).toString();;
+                                ident = ((ResourceLocation)GameData.getItemRegistry().getNameForObject(stack.getItem())).toString();
                             }
                             if (ident != null)
                             {
                                 sb.append(ident);
-                                sb.append('#');
-                                if (stack.getTagCompound() != null)
-                                {
-                                    sb.append(stack.getTagCompound().toString());
-                                }
-                                else
-                                {
-                                    sb.append(stack.stackSize);
-                                }
-                                sb.append('#');
-                                sb.append(stack.getItemDamage());
-                                sb.append('#');
-                                sb.append(slots.get(index));
-                                sb.append('+');
                             }
+                            else
+                            {
+                                sb.append(stack.getUnlocalizedName());
+                            }
+                            sb.append('#');
+                            if (stack.getTagCompound() != null)
+                            {
+                                sb.append(stack.getTagCompound().toString());
+                            }
+                            else
+                            {
+                                sb.append(stack.stackSize);
+                            }
+                            sb.append('#');
+                            sb.append(stack.getItemDamage());
+                            sb.append('#');
+                            sb.append(slots.get(index));
+                            sb.append('+');
                         }
                         
                         temp.data = sb.toString();
