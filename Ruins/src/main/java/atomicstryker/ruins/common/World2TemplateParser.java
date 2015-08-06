@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.registry.GameData;
@@ -431,7 +433,7 @@ public class World2TemplateParser extends Thread
             int rulenum = 1;
             for (BlockData bd : usedBlocks)
             {
-                pw.println("rule" + rulenum + "=" + bd.toString());
+                pw.println("rule" + rulenum + "=" + StringEscapeUtils.escapeJava(bd.toString()));
                 rulenum++;
             }
 

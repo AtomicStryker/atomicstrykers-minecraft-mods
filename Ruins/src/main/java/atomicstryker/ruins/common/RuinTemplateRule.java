@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.registry.GameData;
@@ -395,7 +397,7 @@ public class RuinTemplateRule
         }
         if (blockID == null)
         {
-            doSpecialBlock(world, random, x, y, z, blocknum, rotate, blockString);
+            doSpecialBlock(world, random, x, y, z, blocknum, rotate, StringEscapeUtils.unescapeJava(blockString));
         }
         else
         {
