@@ -1,3 +1,6 @@
+1.3.9
+- made the burning entity module configurable per-entity-class
+
 1.3.8
 - worked in compatibility to CptSpaceToaster's Colored Lights mod, added colored stone to default light items
 - added fall-through mechanic to item config: set a light value of "-1" to read the light from the block instead, which includes colored light

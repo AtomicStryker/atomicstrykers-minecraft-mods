@@ -1,6 +1,7 @@
 package atomicstryker.dynamiclights.client.modules;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  * Burning Entites can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.4", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.5", dependencies = "required-after:DynamicLights")
 public class BurningEntitiesLightSource
 {
     private Minecraft mcinstance;
@@ -41,11 +42,14 @@ public class BurningEntitiesLightSource
     private ArrayList<EntityLightAdapter> trackedEntities;
     private Thread thread;
     private boolean threadRunning;
+    private Configuration config;
+    private HashMap<Class<? extends Entity>, Integer> lightValueMap;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        Configuration config = new Configuration(evt.getSuggestedConfigurationFile());
+        lightValueMap = new HashMap<Class<? extends Entity>, Integer>();
+        config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
@@ -106,6 +110,26 @@ public class BurningEntitiesLightSource
                 if ((ent instanceof EntityLivingBase || ent instanceof EntityFireball || ent instanceof EntityArrow)
                         && ent.isEntityAlive() && ent.isBurning() && !(ent instanceof EntityItem) && !(ent instanceof EntityPlayer))
                 {
+                    boolean shouldLight = false;
+                    if (!lightValueMap.containsKey(ent.getClass()))
+                    {
+                        config.load();
+                        int value = config.get(Configuration.CATEGORY_GENERAL, ent.getClass().getSimpleName(), 1, "Set to 0 if you don't want that entclass to shine light when on fire").getInt();
+                        config.save();
+                        
+                        lightValueMap.put(ent.getClass(), value);
+                        shouldLight = value != 0;
+                    }
+                    else
+                    {
+                        shouldLight = lightValueMap.get(ent.getClass()) != 0;
+                    }
+                    
+                    if (!shouldLight)
+                    {
+                        continue;
+                    }
+                    
                     // now find them in the already tracked adapters
                     boolean found = false;
                     Iterator<EntityLightAdapter> iter = trackedEntities.iterator();

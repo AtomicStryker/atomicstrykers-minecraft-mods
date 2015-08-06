@@ -39,7 +39,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.8")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.9")
 public class DynamicLights
 {
     private Minecraft mcinstance;
