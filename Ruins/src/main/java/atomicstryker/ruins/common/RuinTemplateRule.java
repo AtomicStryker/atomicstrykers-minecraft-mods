@@ -221,6 +221,7 @@ public class RuinTemplateRule
                 if (closingIndex == rule.length())
                 {
                     System.err.println("Unbalanced brackets in Ruins template, offending rule: "+rule);
+                    return rule;
                 }
                 if (rule.charAt(closingIndex) == '{')
                 {
