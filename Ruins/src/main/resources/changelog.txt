@@ -431,3 +431,7 @@ a: setAccessible now true
 
 15.0
 + more work done to get complex nbt data parsed and restored, notably writable books in inventories
+
+15.1
++ template-breaking change: all nbt strings must now be escaped according to the Apache StringEscapeUtils inside the .tml files, ingame parser does this for you of course
+    if you have any special or complex custom templates, im sorry, you'll have to spawn them in a world with 15.1 and parse them again with 15.2 or escape all special chars by hand
