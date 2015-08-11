@@ -62,15 +62,15 @@ public class LightningPacket implements IPacket
         
         if (user.equals("server"))
         {
-            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCodeClient());
         }
         else
         {
-            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+            MinecraftServer.getServer().addScheduledTask(new ScheduledCodeServer());
         }
     }
     
-    class ScheduledCode implements Runnable
+    class ScheduledCodeClient implements Runnable
     {
 
         @Override
@@ -78,29 +78,33 @@ public class LightningPacket implements IPacket
         {
             Vector3 start = new Vector3(sx, sy, sz);
             Vector3 end = new Vector3(ex, ey, ez);
-            
-            if (user.equals("server"))
-            {
-                EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
-                long randomizer = player.worldObj.rand.nextLong();
-                spawnLightningBolt(player.worldObj, player, start, end, randomizer);
-            }
-            else
-            {
-                EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
-                if (player != null)
-                {                
-                    if (MinionsCore.instance.hasPlayerWillPower(player))
-                    {
-                        long randomizer = player.worldObj.rand.nextLong();
-                        
-                        cache.user = "server";
-                        MinionsCore.instance.networkHelper.sendPacketToAllAroundPoint(cache, new TargetPoint(player.dimension, sx, sy, sz, 32D));
-                        
-                        spawnLightningBolt(player.worldObj, player, start, end, randomizer);
-                        
-                        MinionsCore.instance.exhaustPlayerSmall(player);                
-                    }
+            EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
+            long randomizer = player.worldObj.rand.nextLong();
+            spawnLightningBolt(player.worldObj, player, start, end, randomizer);
+        }
+    }
+    
+    class ScheduledCodeServer implements Runnable
+    {
+
+        @Override
+        public void run()
+        {
+            Vector3 start = new Vector3(sx, sy, sz);
+            Vector3 end = new Vector3(ex, ey, ez);
+            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            if (player != null)
+            {                
+                if (MinionsCore.instance.hasPlayerWillPower(player))
+                {
+                    long randomizer = player.worldObj.rand.nextLong();
+                    
+                    cache.user = "server";
+                    MinionsCore.instance.networkHelper.sendPacketToAllAroundPoint(cache, new TargetPoint(player.dimension, sx, sy, sz, 32D));
+                    
+                    spawnLightningBolt(player.worldObj, player, start, end, randomizer);
+                    
+                    MinionsCore.instance.exhaustPlayerSmall(player);                
                 }
             }
         }
