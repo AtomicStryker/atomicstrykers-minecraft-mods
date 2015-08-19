@@ -10,7 +10,8 @@ public class KnockBackPacket implements IPacket
 {
     
     private float xv, zv;
-    
+
+    @SuppressWarnings("unused")
     public KnockBackPacket() {}
     
     public KnockBackPacket(float x, float z)

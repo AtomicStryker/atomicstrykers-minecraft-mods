@@ -11,15 +11,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Sticky extends MobModifier
 {
-    public MM_Sticky(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Sticky";
-    }
-    
-    public MM_Sticky(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Sticky";
-        this.nextMod = prevMod;
+        return "Sticky";
     }
     
     private long nextAbilityUse = 0L;

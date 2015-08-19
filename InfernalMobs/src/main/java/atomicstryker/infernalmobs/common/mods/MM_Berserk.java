@@ -8,17 +8,13 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Berserk extends MobModifier
 {
-    public MM_Berserk(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Berserk";
+        return "Berserk";
     }
-    
-    public MM_Berserk(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Berserk";
-        this.nextMod = prevMod;
-    }
-    
+
     @Override
     public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
     {

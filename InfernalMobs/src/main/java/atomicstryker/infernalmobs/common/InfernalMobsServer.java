@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.entity.EntityLivingBase;
 
+@SuppressWarnings("unused")
 public class InfernalMobsServer implements ISidedProxy
 {
     

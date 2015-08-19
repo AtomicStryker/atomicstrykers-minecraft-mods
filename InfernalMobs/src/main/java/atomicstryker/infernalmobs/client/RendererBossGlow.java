@@ -52,7 +52,7 @@ public class RendererBossGlow
                         ent.posZ + (ent.worldObj.rand.nextDouble() - 0.5D) * (double)ent.width,
                         (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D,
                         -ent.worldObj.rand.nextDouble(),
-                        (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D, null);
+                        (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D);
             }
         }
     }

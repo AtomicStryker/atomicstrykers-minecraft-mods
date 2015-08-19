@@ -8,15 +8,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Quicksand extends MobModifier
 {
-    public MM_Quicksand(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Quicksand";
-    }
-    
-    public MM_Quicksand(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Quicksand";
-        this.nextMod = prevMod;
+        return "Quicksand";
     }
     
     int ticker = 0;

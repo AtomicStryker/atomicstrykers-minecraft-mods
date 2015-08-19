@@ -5,15 +5,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Sprint extends MobModifier
 {
-    public MM_Sprint(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Sprint";
-    }
-    
-    public MM_Sprint(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Sprint";
-        this.nextMod = prevMod;
+        return "Sprint";
     }
     
     private long nextAbilityUse = 0L;

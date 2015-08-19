@@ -18,11 +18,6 @@ public abstract class MobModifier
     protected MobModifier nextMod;
     
     /**
-     * name of this particular MobModifier instance
-     */
-    protected String modName;
-    
-    /**
      * keeps track of our past-max-bounds health patch
      */
     private boolean healthHacked;
@@ -56,22 +51,38 @@ public abstract class MobModifier
      * buffered modifier string result
      */
     private String bufferedEntityName;
-    
+
+    /**
+     * Base constructor
+     */
     public MobModifier()
     {
-        nextMod = null;
         healthHacked = false;
         actualHealth = 100;
         actualMaxHealth = -1;
         bufferedSize = 0;
     }
+
+    /**
+     * Constructor for the chained-together case of modifiers
+     * @param nxtMod chained MobModifier instance
+     */
+    public MobModifier(MobModifier nxtMod)
+    {
+        this.nextMod = nxtMod;
+    }
+
+    /**
+     * @return internal Modifier id string
+     */
+    public abstract String getModName();
     
     /**
      * @return the complete List of linked Modifiers as their Names
      */
     public String getLinkedModName()
     {
-        return (StatCollector.translateToLocal("translation.infernalmobs:mod."+modName) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
+        return (StatCollector.translateToLocal("translation.infernalmobs:mod."+getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
     }
     
     /**
@@ -79,7 +90,7 @@ public abstract class MobModifier
      */
     public String getLinkedModNameUntranslated()
     {
-        return modName + " " + ((nextMod != null) ? nextMod.getLinkedModNameUntranslated() : "");
+        return getModName() + " " + ((nextMod != null) ? nextMod.getLinkedModNameUntranslated() : "");
     }
     
     /**
@@ -113,22 +124,12 @@ public abstract class MobModifier
      */
     public boolean containsModifierClass(Class<?> checkfor)
     {
-        if (checkfor.equals(this.getClass()))
-        {
-            return true;
-        }
-
-        if (nextMod != null)
-        {
-            return nextMod.containsModifierClass(checkfor);
-        }
-
-        return false;
+        return checkfor.equals(this.getClass()) || nextMod != null && nextMod.containsModifierClass(checkfor);
     }
 
     /**
      * Called when local Spawn Processing is completed or when a client remote-attached Modifiers to a local Entity
-     * @param entity 
+     * @param entity target mob to attach modifiers to
      */
     public void onSpawningComplete(EntityLivingBase entity)
     {
@@ -147,17 +148,13 @@ public abstract class MobModifier
     public boolean onDeath()
     {
         attackTarget = null;
-        if (nextMod != null)
-        {
-            return nextMod.onDeath();
-        }
-
-        return false;
+        return nextMod != null && nextMod.onDeath();
     }
 
     /**
      * Passes the loot drop event to the modifier list
      */
+    @SuppressWarnings("unused")
     public void onDropItems(EntityLivingBase moddedMob, DamageSource killSource, List<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
     {
         if (recentlyHit)
@@ -198,7 +195,7 @@ public abstract class MobModifier
 
     /**
      * Modified Mob is being hurt
-     * @param mob 
+     * @param mob entity instance
      * @param source Damagesource doing the hurting
      * @param amount unmitigated damage value
      * @return damage to be applied after we processed the value
@@ -224,19 +221,16 @@ public abstract class MobModifier
     /**
      * passes the fall event to the modifier list
      */
+    @SuppressWarnings("unused")
     public boolean onFall(float distance)
     {
-        if (nextMod != null)
-        {
-            return nextMod.onFall(distance);
-        }
-
-        return false;
+        return nextMod != null && nextMod.onFall(distance);
     }
     
     /**
      * passes the jump event to the modifier list
      */
+    @SuppressWarnings("unused")
     public void onJump(EntityLivingBase entityLiving)
     {
         if (nextMod != null)
@@ -277,13 +271,13 @@ public abstract class MobModifier
     /**
      * clientside helper method. Due to the health not being networked, we keep track of it
      * internally, here. Also, this is a good spot for the more-than-allowed health hack.
-     * @param mob 
+     * @param mob entity instance
      */
     public float getActualHealth(EntityLivingBase mob)
     {
         if (!mob.worldObj.isRemote)
         {
-            increaseHealthForMob(mob, getActualMaxHealth(mob));
+            increaseHealthForMob(mob);
         }
         
         return actualHealth;
@@ -301,7 +295,7 @@ public abstract class MobModifier
         }
     }
     
-    private void increaseHealthForMob(EntityLivingBase mob, float baseHealth)
+    private void increaseHealthForMob(EntityLivingBase mob)
     {
         if (!healthHacked)
         {
@@ -313,7 +307,7 @@ public abstract class MobModifier
     }
     
     /**
-     * @param mob 
+     * @param mob entity instance
      * @return buffered modified max health
      */
     public float getActualMaxHealth(EntityLivingBase mob)
@@ -327,7 +321,6 @@ public abstract class MobModifier
     
     /**
      * clientside receiving end of health packets sent from the InfernalMobs server instance
-     * @param packetReadout 
      */
     public void setActualHealth(float health, float maxHealth)
     {
@@ -360,7 +353,7 @@ public abstract class MobModifier
     public boolean equals(Object o)
     {
         return (o instanceof MobModifier
-                && ((MobModifier)o).modName.equals(modName));
+                && ((MobModifier)o).getModName().equals(getModName()));
     }
     
     /**

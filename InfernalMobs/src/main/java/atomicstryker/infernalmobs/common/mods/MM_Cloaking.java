@@ -10,15 +10,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Cloaking extends MobModifier
 {
-    public MM_Cloaking(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Cloaking";
-    }
-    
-    public MM_Cloaking(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Cloaking";
-        this.nextMod = prevMod;
+        return "Cloaking";
     }
     
     private long nextAbilityUse = 0L;

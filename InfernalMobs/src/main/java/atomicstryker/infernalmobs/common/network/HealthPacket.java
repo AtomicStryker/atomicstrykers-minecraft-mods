@@ -19,7 +19,8 @@ public class HealthPacket implements IPacket
     private int entID;
     private float health;
     private float maxhealth;
-    
+
+    @SuppressWarnings("unused")
     public HealthPacket() {}
     
     public HealthPacket(String u, int i, float f1, float f2)

@@ -10,7 +10,8 @@ public class VelocityPacket implements IPacket
 {
     
     private float xv, yv, zv;
-    
+
+    @SuppressWarnings("unused")
     public VelocityPacket() {}
     
     public VelocityPacket(float x, float y, float z)

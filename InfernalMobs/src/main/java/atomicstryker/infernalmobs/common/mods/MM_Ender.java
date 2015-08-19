@@ -13,15 +13,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ender extends MobModifier
 {
-    public MM_Ender(EntityLivingBase mob)
-    {
-        this.modName = "Ender";
-    }
 
-    public MM_Ender(EntityLivingBase mob, MobModifier prevMod)
+    @Override
+    public String getModName()
     {
-        this.modName = "Ender";
-        this.nextMod = prevMod;
+        return "Ender";
     }
 
     private long nextAbilityUse = 0L;

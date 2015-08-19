@@ -10,15 +10,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Poisonous extends MobModifier
 {
-    public MM_Poisonous(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Poisonous";
-    }
-    
-    public MM_Poisonous(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Poisonous";
-        this.nextMod = prevMod;
+        return "Poisonous";
     }
     
     @Override

@@ -8,20 +8,13 @@ import atomicstryker.infernalmobs.common.MobModifier;
 public class MM_1UP extends MobModifier
 {
     private boolean healed;
-    
-    public MM_1UP(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "1UP";
-        healed = false;
+        return "1UP";
     }
-    
-    public MM_1UP(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "1UP";
-        this.nextMod = prevMod;
-        healed = false;
-    }
-    
+
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {

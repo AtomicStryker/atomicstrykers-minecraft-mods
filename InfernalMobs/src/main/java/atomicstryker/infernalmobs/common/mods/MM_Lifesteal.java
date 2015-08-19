@@ -8,15 +8,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Lifesteal extends MobModifier
 {
-    public MM_Lifesteal(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "LifeSteal";
-    }
-    
-    public MM_Lifesteal(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "LifeSteal";
-        this.nextMod = prevMod;
+        return "LifeSteal";
     }
     
     @Override

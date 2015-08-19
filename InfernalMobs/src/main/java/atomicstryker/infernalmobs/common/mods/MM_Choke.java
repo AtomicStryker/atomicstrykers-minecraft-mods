@@ -11,19 +11,11 @@ public class MM_Choke extends MobModifier
 {
     private EntityLivingBase lastTarget;
     private int lastAir;
-    
-    public MM_Choke(EntityLivingBase mob)
-    {
-        super();
-        this.modName = "Choke";
-        lastTarget = null;
-        lastAir = -999;
-    }
 
-    public MM_Choke(EntityLivingBase mob, MobModifier prevMod)
+    @Override
+    public String getModName()
     {
-        this(mob);
-        this.nextMod = prevMod;
+        return "Choke";
     }
     
     @Override

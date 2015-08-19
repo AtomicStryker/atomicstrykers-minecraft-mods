@@ -10,15 +10,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Wither extends MobModifier
 {
-    public MM_Wither(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Wither";
-    }
-    
-    public MM_Wither(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Wither";
-        this.nextMod = prevMod;
+        return "Wither";
     }
     
     @Override

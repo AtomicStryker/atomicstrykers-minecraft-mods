@@ -17,7 +17,8 @@ public class MobModsPacket implements IPacket
     private String stringData;
     private int entID;
     private byte sentFromServer;
-    
+
+    @SuppressWarnings("unused")
     public MobModsPacket() {}
     
     public MobModsPacket(String str, int i, byte ir)
@@ -82,7 +83,7 @@ public class MobModsPacket implements IPacket
                         {
                             stringData = mod.getLinkedModNameUntranslated();
                             InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new MobModsPacket(stringData, entID, (byte)1), p);
-                            InfernalMobsCore.instance().sendHealthPacket(e, mod.getActualHealth(e));
+                            InfernalMobsCore.instance().sendHealthPacket(e);
                         }
                     }
                 }

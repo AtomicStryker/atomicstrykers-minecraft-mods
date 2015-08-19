@@ -9,15 +9,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Sapper extends MobModifier
 {
-    public MM_Sapper(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Sapper";
-    }
-    
-    public MM_Sapper(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Sapper";
-        this.nextMod = prevMod;
+        return "Sapper";
     }
     
     @Override

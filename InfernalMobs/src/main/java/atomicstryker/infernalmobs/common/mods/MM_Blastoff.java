@@ -9,15 +9,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Blastoff extends MobModifier
 {
-    public MM_Blastoff(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Blastoff";
-    }
-    
-    public MM_Blastoff(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Blastoff";
-        this.nextMod = prevMod;
+        return "Blastoff";
     }
     
     private long nextAbilityUse = 0L;
@@ -34,7 +30,7 @@ public class MM_Blastoff extends MobModifier
         
         return super.onUpdate(mob);
     }
-    
+
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {

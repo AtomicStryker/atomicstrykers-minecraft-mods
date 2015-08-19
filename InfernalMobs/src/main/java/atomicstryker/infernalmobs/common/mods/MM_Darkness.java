@@ -9,15 +9,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Darkness extends MobModifier
 {
-    public MM_Darkness(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Darkness";
-    }
-    
-    public MM_Darkness(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Darkness";
-        this.nextMod = prevMod;
+        return "Darkness";
     }
     
     @Override

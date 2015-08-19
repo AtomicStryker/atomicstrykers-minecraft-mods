@@ -13,15 +13,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ninja extends MobModifier
 {
-    public MM_Ninja(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Ninja";
-    }
-    
-    public MM_Ninja(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Ninja";
-        this.nextMod = prevMod;
+        return "Ninja";
     }
     
     private long nextAbilityUse = 0L;

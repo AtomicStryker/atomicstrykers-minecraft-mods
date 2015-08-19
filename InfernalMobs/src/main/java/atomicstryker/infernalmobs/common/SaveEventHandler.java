@@ -1,7 +1,5 @@
 package atomicstryker.infernalmobs.common;
 
-import java.util.Iterator;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.chunk.Chunk;
@@ -19,10 +17,9 @@ public class SaveEventHandler
         Entity newEnt;
         for (int i = 0; i < chunk.getEntityLists().length; i++)
         {
-        	Iterator iter = chunk.getEntityLists()[i].iterator();
-        	while (iter.hasNext())
-        	{
-        		newEnt = (Entity) iter.next();
+            for (Object o : chunk.getEntityLists()[i])
+            {
+                newEnt = (Entity) o;
                 if (newEnt instanceof EntityLivingBase)
                 {
                     /*
@@ -34,7 +31,7 @@ public class SaveEventHandler
                         InfernalMobsCore.removeEntFromElites((EntityLivingBase) newEnt);
                     }
                 }
-        	}
+            }
         }
     }
 
@@ -46,10 +43,9 @@ public class SaveEventHandler
         Entity newEnt;
         for (int i = 0; i < chunk.getEntityLists().length; i++)
         {
-        	Iterator iter = chunk.getEntityLists()[i].iterator();
-        	while (iter.hasNext())
-        	{
-        		newEnt = (Entity) iter.next();
+            for (Object o : chunk.getEntityLists()[i])
+            {
+                newEnt = (Entity) o;
                 if (newEnt instanceof EntityLivingBase)
                 {
                     String savedMods = newEnt.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());

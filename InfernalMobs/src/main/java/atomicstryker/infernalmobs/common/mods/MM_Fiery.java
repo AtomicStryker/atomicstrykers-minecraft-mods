@@ -7,15 +7,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Fiery extends MobModifier
 {
-    public MM_Fiery(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Fiery";
-    }
-    
-    public MM_Fiery(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Fiery";
-        this.nextMod = prevMod;
+        return "Fiery";
     }
     
     @Override
@@ -25,7 +21,7 @@ public class MM_Fiery extends MobModifier
         && (source.getEntity() instanceof EntityLivingBase)
         && !(source instanceof EntityDamageSourceIndirect))
         {
-            ((EntityLivingBase)source.getEntity()).setFire(3);
+            source.getEntity().setFire(3);
         }
         
         mob.extinguish();

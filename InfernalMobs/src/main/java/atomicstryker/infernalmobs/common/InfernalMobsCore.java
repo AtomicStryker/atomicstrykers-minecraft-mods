@@ -1,14 +1,8 @@
 package atomicstryker.infernalmobs.common;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.apache.logging.log4j.Level;
-
+import atomicstryker.infernalmobs.common.mods.*;
+import atomicstryker.infernalmobs.common.network.*;
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -44,39 +38,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.GameData;
-import atomicstryker.infernalmobs.common.mods.MM_1UP;
-import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
-import atomicstryker.infernalmobs.common.mods.MM_Berserk;
-import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
-import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
-import atomicstryker.infernalmobs.common.mods.MM_Choke;
-import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
-import atomicstryker.infernalmobs.common.mods.MM_Darkness;
-import atomicstryker.infernalmobs.common.mods.MM_Ender;
-import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
-import atomicstryker.infernalmobs.common.mods.MM_Fiery;
-import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
-import atomicstryker.infernalmobs.common.mods.MM_Gravity;
-import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
-import atomicstryker.infernalmobs.common.mods.MM_Ninja;
-import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
-import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
-import atomicstryker.infernalmobs.common.mods.MM_Regen;
-import atomicstryker.infernalmobs.common.mods.MM_Rust;
-import atomicstryker.infernalmobs.common.mods.MM_Sapper;
-import atomicstryker.infernalmobs.common.mods.MM_Sprint;
-import atomicstryker.infernalmobs.common.mods.MM_Sticky;
-import atomicstryker.infernalmobs.common.mods.MM_Storm;
-import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
-import atomicstryker.infernalmobs.common.mods.MM_Weakness;
-import atomicstryker.infernalmobs.common.mods.MM_Webber;
-import atomicstryker.infernalmobs.common.mods.MM_Wither;
-import atomicstryker.infernalmobs.common.network.AirPacket;
-import atomicstryker.infernalmobs.common.network.HealthPacket;
-import atomicstryker.infernalmobs.common.network.KnockBackPacket;
-import atomicstryker.infernalmobs.common.network.MobModsPacket;
-import atomicstryker.infernalmobs.common.network.NetworkHelper;
-import atomicstryker.infernalmobs.common.network.VelocityPacket;
+import org.apache.logging.log4j.Level;
+
+import java.util.*;
 
 @Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.4")
 public class InfernalMobsCore
@@ -179,8 +143,6 @@ public class InfernalMobsCore
 
     /**
      * Registers the MobModifier classes for consideration
-     * 
-     * @param config
      */
     private void loadMods()
     {
@@ -310,7 +272,6 @@ public class InfernalMobsCore
             catch (Exception e)
             {
                 FMLLog.log("InfernalMobs", Level.ERROR, String.format("Configured DimensionID %s is not an integer! All values must be numeric. Ignoring entry", trimmedDimIDString));
-                continue;
             }
         }
     }
@@ -375,20 +336,14 @@ public class InfernalMobsCore
         {
             if (!getIsRareEntity(entity))
             {
-                if ((entity instanceof EntityMob || (entity instanceof EntityLivingBase && entity instanceof IMob)) && instance.checkEntityClassAllowed(entity)
-                        && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
+                if ((entity instanceof EntityMob || (entity instanceof IMob)) && instance.checkEntityClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
                     try
                     {
                         Integer tEntityDim = entity.dimension;
                         
                         // Skip Infernal-Spawn when Dimension is Blacklisted
-                        if (dimensionBlackList.contains(tEntityDim))
-                        {
-                            //System.out.println("InfernalMobsCore skipped spawning InfernalMob due blacklisted Dimension");
-                            return;
-                        }
-                        else
+                        if (!dimensionBlackList.contains(tEntityDim))
                         {
                             MobModifier mod = instance.createMobModifiers(entity);
                             if (mod != null)
@@ -486,7 +441,7 @@ public class InfernalMobsCore
     {
         entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(amount);
         entity.setHealth(amount);
-        instance.sendHealthPacket(entity, amount);
+        instance.sendHealthPacket(entity);
     }
 
     /**
@@ -497,13 +452,12 @@ public class InfernalMobsCore
      *            Target Entity
      * @return null or the first linked MobModifier instance for the Entity
      */
-    @SuppressWarnings("unchecked")
     private MobModifier createMobModifiers(EntityLivingBase entity)
     {
         /* 2-5 modifications standard */
         int number = 2 + entity.worldObj.rand.nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
-        ArrayList<Class<? extends MobModifier>> possibleMods = (ArrayList<Class<? extends MobModifier>>) mobMods.clone();
+        ArrayList<Class<? extends MobModifier>> possibleMods = Lists.newArrayList(mobMods);
 
         if (entity.worldObj.rand.nextInt(ultraRarity) == 0) // ultra mobs
         {
@@ -532,13 +486,11 @@ public class InfernalMobsCore
             {
                 if (lastMod == null)
                 {
-                    nextMod = possibleMods.get(index).getConstructor(new Class[] { EntityLivingBase.class }).newInstance(entity);
+                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] {}).newInstance(entity);
                 }
                 else
                 {
-                    nextMod =
-                            possibleMods.get(index).getConstructor(new Class[] { EntityLivingBase.class, MobModifier.class })
-                                    .newInstance(entity, lastMod);
+                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] { MobModifier.class }).newInstance(entity, lastMod);
                 }
             }
             catch (Exception e)
@@ -633,11 +585,11 @@ public class InfernalMobsCore
                 {
                     if (lastMod == null)
                     {
-                        nextMod = c.getConstructor(new Class[] { EntityLivingBase.class }).newInstance(entity);
+                        nextMod = (MobModifier) c.getConstructor(new Class[] {}).newInstance(entity);
                     }
                     else
                     {
-                        nextMod = c.getConstructor(new Class[] { EntityLivingBase.class, MobModifier.class }).newInstance(entity, lastMod);
+                        nextMod = (MobModifier) c.getConstructor(new Class[] {MobModifier.class }).newInstance(entity, lastMod);
                     }
                 }
                 catch (Exception e)
@@ -645,7 +597,7 @@ public class InfernalMobsCore
                     e.printStackTrace();
                 }
 
-                if (nextMod != null && nextMod.modName.equals(modName))
+                if (nextMod != null && nextMod.getModName().equals(modName))
                 {
                     /*
                      * Only actually keep the new linked instance if it's what
@@ -720,7 +672,7 @@ public class InfernalMobsCore
             if (itemStack != null)
             {
                 Item item = itemStack.getItem();
-                if (item != null && item instanceof Item)
+                if (item != null)
                 {
                     if (item instanceof ItemEnchantedBook)
                     {
@@ -804,7 +756,7 @@ public class InfernalMobsCore
         }
     }
 
-    public void sendHealthPacket(EntityLivingBase mob, float health)
+    public void sendHealthPacket(EntityLivingBase mob)
     {
         networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new TargetPoint(
                 mob.dimension, mob.posX, mob.posY, mob.posZ, 32d));
@@ -836,7 +788,7 @@ public class InfernalMobsCore
                 if (mob.isDead || !mob.worldObj.loadedEntityList.contains(mob))
                 {
                     // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.getEntityId()+" from rareMobs");
-                    removeEntFromElites((EntityLivingBase) mob);
+                    removeEntFromElites(mob);
                 }
             }
         }

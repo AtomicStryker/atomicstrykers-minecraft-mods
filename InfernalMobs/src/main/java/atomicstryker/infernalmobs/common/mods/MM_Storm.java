@@ -9,15 +9,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Storm extends MobModifier
 {
-    public MM_Storm(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Storm";
-    }
-    
-    public MM_Storm(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Storm";
-        this.nextMod = prevMod;
+        return "Storm";
     }
     
     private long nextAbilityUse = 0L;

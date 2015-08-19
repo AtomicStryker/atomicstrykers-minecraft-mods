@@ -9,15 +9,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Weakness extends MobModifier
 {
-    public MM_Weakness(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Weakness";
-    }
-    
-    public MM_Weakness(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Weakness";
-        this.nextMod = prevMod;
+        return "Weakness";
     }
     
     @Override

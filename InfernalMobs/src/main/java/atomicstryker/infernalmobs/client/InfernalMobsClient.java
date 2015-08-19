@@ -127,7 +127,7 @@ public class InfernalMobsClient implements ISidedProxy
                 short lifeBarLength = 182;
                 int x = screenwidth / 2 - lifeBarLength / 2;
 
-                int lifeBarLeft = (int) ((float) mod.getActualHealth(target) / (float) mod.getActualMaxHealth(target) * (float) (lifeBarLength + 1));
+                int lifeBarLeft = (int) (mod.getActualHealth(target) / mod.getActualMaxHealth(target) * (float) (lifeBarLength + 1));
                 byte y = 12;
                 gui.drawTexturedModalRect(x, y, 0, 74, lifeBarLength, 5);
                 gui.drawTexturedModalRect(x, y, 0, 74, lifeBarLength, 5);

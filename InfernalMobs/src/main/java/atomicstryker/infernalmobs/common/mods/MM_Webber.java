@@ -10,15 +10,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Webber extends MobModifier
 {
-    public MM_Webber(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Webber";
-    }
-    
-    public MM_Webber(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Webber";
-        this.nextMod = prevMod;
+        return "Webber";
     }
     
     private long lastAbilityUse = 0L;

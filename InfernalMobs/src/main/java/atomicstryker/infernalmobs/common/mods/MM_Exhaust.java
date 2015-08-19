@@ -7,15 +7,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Exhaust extends MobModifier
 {
-    public MM_Exhaust(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Exhaust";
-    }
-    
-    public MM_Exhaust(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Exhaust";
-        this.nextMod = prevMod;
+        return "Exhaust";
     }
     
     @Override

@@ -8,21 +8,17 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Alchemist extends MobModifier
 {
-    public MM_Alchemist(EntityLivingBase mob)
-    {
-        this.modName = "Alchemist";
-    }
-    
-    public MM_Alchemist(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Alchemist";
-        this.nextMod = prevMod;
-    }
     
     private long nextAbilityUse = 0L;
     private final static long coolDown = 6000L;
     private final static float MIN_DISTANCE = 2F;
-    
+
+    @Override
+    public String getModName()
+    {
+        return "Alchemist";
+    }
+
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {

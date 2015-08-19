@@ -7,15 +7,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Vengeance extends MobModifier
 {
-    public MM_Vengeance(EntityLivingBase mob)
-    {
-        this.modName = "Vengeance";
-    }
 
-    public MM_Vengeance(EntityLivingBase mob, MobModifier prevMod)
+    @Override
+    public String getModName()
     {
-        this.modName = "Vengeance";
-        this.nextMod = prevMod;
+        return "Vengeance";
     }
 
     @Override

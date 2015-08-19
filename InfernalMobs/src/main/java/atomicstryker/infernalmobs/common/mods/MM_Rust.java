@@ -8,15 +8,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Rust extends MobModifier
 {
-    public MM_Rust(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Rust";
-    }
-    
-    public MM_Rust(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Rust";
-        this.nextMod = prevMod;
+        return "Rust";
     }
     
     @Override

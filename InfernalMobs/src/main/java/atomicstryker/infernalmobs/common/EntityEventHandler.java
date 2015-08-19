@@ -35,9 +35,6 @@ public class EntityEventHandler
     /**
      * Links the Forge Event Handler to the registered Entity MobModifier Events
      * (if present) Also keeps track of the anti mobfarm mechanic if enabled
-     * 
-     * @param antiMobfarming
-     *            enables or disables
      */
     public EntityEventHandler()
     {
@@ -227,12 +224,15 @@ public class EntityEventHandler
                         }
                     }
 
-                    System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords "
-                            + maxC.getCenterXPos() + ", " + maxC.getCenterZPosition());
-                    if (maxDamage > mobFarmDamageTrigger)
+                    if (maxC != null)
                     {
-                        MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.entityLiving.worldObj.getChunkFromChunkCoords(maxC.chunkXPos,
-                                maxC.chunkZPos), mobFarmCheckIntervals, maxDamage));
+                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords "
+                                + maxC.getCenterXPos() + ", " + maxC.getCenterZPosition());
+                        if (maxDamage > mobFarmDamageTrigger)
+                        {
+                            MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.entityLiving.worldObj.getChunkFromChunkCoords(maxC.chunkXPos,
+                                    maxC.chunkZPos), mobFarmCheckIntervals, maxDamage));
+                        }
                     }
                     damageMap.clear();
                 }

@@ -1,23 +1,18 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ghastly extends MobModifier
 {
-    public MM_Ghastly(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Ghastly";
-    }
-    
-    public MM_Ghastly(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Ghastly";
-        this.nextMod = prevMod;
+        return "Ghastly";
     }
     
     private long nextAbilityUse = 0L;
@@ -50,7 +45,7 @@ public class MM_Ghastly extends MobModifier
             double diffZ = target.posZ - mob.posZ;
             mob.renderYawOffset = mob.rotationYaw = -((float)Math.atan2(diffX, diffZ)) * 180.0F / (float)Math.PI;
 
-            mob.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1008, new BlockPos((int)mob.posX, (int)mob.posY, (int)mob.posZ), 0);
+            mob.worldObj.playAuxSFXAtEntity(null, 1008, new BlockPos((int)mob.posX, (int)mob.posY, (int)mob.posZ), 0);
             EntityLargeFireball entFB = new EntityLargeFireball(mob.worldObj, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
             Vec3 mobLook = mob.getLook(1.0F);

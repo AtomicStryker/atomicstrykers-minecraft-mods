@@ -6,15 +6,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Regen extends MobModifier
 {
-    public MM_Regen(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Regen";
-    }
-    
-    public MM_Regen(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Regen";
-        this.nextMod = prevMod;
+        return "Regen";
     }
     
     private long nextAbilityUse = 0L;

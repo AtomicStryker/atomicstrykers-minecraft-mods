@@ -6,17 +6,13 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Bulwark extends MobModifier
 {
-    public MM_Bulwark(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Bulwark";
+        return "Bulwark";
     }
-    
-    public MM_Bulwark(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Bulwark";
-        this.nextMod = prevMod;
-    }
-    
+
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {

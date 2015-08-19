@@ -1,57 +1,34 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.MathHelper;
 
 public class MM_Gravity extends MobModifier
 {
-    public MM_Gravity(EntityLivingBase mob)
+
+    @Override
+    public String getModName()
     {
-        this.modName = "Gravity";
-        offensive = mob.getClass().isAssignableFrom(IMob.class);
+        return "Gravity";
     }
-    
-    public MM_Gravity(EntityLivingBase mob, MobModifier prevMod)
-    {
-        this.modName = "Gravity";
-        this.nextMod = prevMod;
-        offensive = mob.getClass().isAssignableFrom(IMob.class);
-    }
-    
-    private final boolean offensive;    
+
     private long nextAbilityUse = 0L;
     private final static long coolDown = 5000L;
     
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (offensive
-        && getMobTarget() != null
+        if (getMobTarget() != null
         && getMobTarget() instanceof EntityPlayer)
         {
             tryAbility(mob, getMobTarget());
         }
         
         return super.onUpdate(mob);
-    }
-    
-    @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
-        if (!offensive
-        && source.getEntity() != null
-        && source.getEntity() instanceof EntityLivingBase)
-        {
-            tryAbility(mob, (EntityLivingBase) source.getEntity());
-        }
-        
-        return super.onHurt(mob, source, damage);
     }
 
     private void tryAbility(EntityLivingBase mob, EntityLivingBase target)
@@ -65,12 +42,10 @@ public class MM_Gravity extends MobModifier
         if (time > nextAbilityUse)
         {
             nextAbilityUse = time+coolDown;
-            
-            EntityLivingBase source = offensive ? mob : target;
-            EntityLivingBase destination = offensive ? target : mob;
-            double diffX = destination.posX - source.posX;
+
+            double diffX = target.posX - mob.posX;
             double diffZ;
-            for (diffZ = destination.posZ - source.posZ; diffX * diffX + diffZ * diffZ < 1.0E-4D; diffZ = (Math.random() - Math.random()) * 0.01D)
+            for (diffZ = target.posZ - mob.posZ; diffX * diffX + diffZ * diffZ < 1.0E-4D; diffZ = (Math.random() - Math.random()) * 0.01D)
             {
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
