@@ -1,19 +1,26 @@
 package atomicstryker.minions.common;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
+import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
+import atomicstryker.minions.common.entity.EntityMinion;
+import atomicstryker.minions.common.jobmanager.*;
+import atomicstryker.minions.common.network.*;
+import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockOldLog;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,51 +43,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
-import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.jobmanager.BlockTask_MineOreVein;
-import atomicstryker.minions.common.jobmanager.Minion_Job_DigByCoordinates;
-import atomicstryker.minions.common.jobmanager.Minion_Job_DigMineStairwell;
-import atomicstryker.minions.common.jobmanager.Minion_Job_Manager;
-import atomicstryker.minions.common.jobmanager.Minion_Job_StripMine;
-import atomicstryker.minions.common.jobmanager.Minion_Job_TreeHarvest;
-import atomicstryker.minions.common.network.AssignChestPacket;
-import atomicstryker.minions.common.network.ChopTreesPacket;
-import atomicstryker.minions.common.network.CustomDigPacket;
-import atomicstryker.minions.common.network.DigOreVeinPacket;
-import atomicstryker.minions.common.network.DigStairwellPacket;
-import atomicstryker.minions.common.network.DropAllPacket;
-import atomicstryker.minions.common.network.EvilDeedPacket;
-import atomicstryker.minions.common.network.FollowPacket;
-import atomicstryker.minions.common.network.HasMinionsPacket;
-import atomicstryker.minions.common.network.HaxPacket;
-import atomicstryker.minions.common.network.LightningPacket;
-import atomicstryker.minions.common.network.MinionMountPacket;
-import atomicstryker.minions.common.network.MinionSpawnPacket;
-import atomicstryker.minions.common.network.MovetoPacket;
-import atomicstryker.minions.common.network.NetworkHelper;
-import atomicstryker.minions.common.network.PickupEntPacket;
-import atomicstryker.minions.common.network.RequestXPSettingPacket;
-import atomicstryker.minions.common.network.SoundPacket;
-import atomicstryker.minions.common.network.StripminePacket;
-import atomicstryker.minions.common.network.UnsummonPacket;
 
-import com.google.common.collect.Lists;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 @Mod(modid = "AS_Minions", name = "Minions", version = "1.9.4")
@@ -138,7 +106,7 @@ public class MinionsCore
         networkHelper =
                 new NetworkHelper("AS_M", AssignChestPacket.class, ChopTreesPacket.class, CustomDigPacket.class, DigOreVeinPacket.class,
                         DigStairwellPacket.class, DropAllPacket.class, EvilDeedPacket.class, FollowPacket.class, HasMinionsPacket.class,
-                        HaxPacket.class, LightningPacket.class, MinionMountPacket.class, MinionSpawnPacket.class, MovetoPacket.class,
+                        HaxPacket.class, LightningPacket.class, MinionSpawnPacket.class, MovetoPacket.class,
                         PickupEntPacket.class, RequestXPSettingPacket.class, SoundPacket.class, StripminePacket.class, UnsummonPacket.class);
         
         Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
@@ -171,7 +139,7 @@ public class MinionsCore
         configpath = configpath.replaceFirst(".cfg", "_Advanced.cfg");
         initializeSettingsFile(new File(configpath));
         
-        itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff");;
+        itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff");
         GameRegistry.registerItem(itemMastersStaff, "masterstaff");
         
         MinecraftForge.EVENT_BUS.register(this);
@@ -273,26 +241,22 @@ public class MinionsCore
 	
     public boolean isBlockValueable(Block blockID)
     {
-        if (blockID == Blocks.air
-        || blockID == Blocks.dirt
-        || blockID == Blocks.grass
-        || blockID == Blocks.stone
-        || blockID == Blocks.cobblestone
-        || blockID == Blocks.gravel
-        || blockID == Blocks.sand
-        || blockID == Blocks.leaves
-        || blockID == Blocks.obsidian
-        || blockID == Blocks.bedrock
-        || blockID == Blocks.stone_brick_stairs
-        || blockID == Blocks.netherrack
-        || blockID == Blocks.soul_sand
-        || blockID == Blocks.snow
-        || configWorthlessBlocks.contains(blockID))
-        {
-            return false;
-        }
-        
-        return true;
+        return !(blockID == Blocks.air
+                || blockID == Blocks.dirt
+                || blockID == Blocks.grass
+                || blockID == Blocks.stone
+                || blockID == Blocks.cobblestone
+                || blockID == Blocks.gravel
+                || blockID == Blocks.sand
+                || blockID == Blocks.leaves
+                || blockID == Blocks.obsidian
+                || blockID == Blocks.bedrock
+                || blockID == Blocks.stone_brick_stairs
+                || blockID == Blocks.netherrack
+                || blockID == Blocks.soul_sand
+                || blockID == Blocks.snow
+                || configWorthlessBlocks.contains(blockID));
+
     }
     
     @SuppressWarnings("unchecked")
@@ -301,7 +265,7 @@ public class MinionsCore
         for (String s : (Set<String>)GameData.getBlockRegistry().getKeys())
         {
             Block iter = GameData.getBlockRegistry().getObject(s);
-            if (iter instanceof BlockLog || iter instanceof BlockOldLog || iter.getLocalizedName().contains("log"))
+            if (iter instanceof BlockLog || iter.getLocalizedName().contains("log"))
             {
                 debugPrint("Minions found viable TreeBlock: "+iter);
                 foundTreeBlocks.add(iter);
@@ -391,7 +355,7 @@ public class MinionsCore
             System.out.println("Minions got faulty request for username "+n+", no Minionlist prepared?!");
             minionMapLock = false;
             
-            l = prepareMinionHolder(n);
+            prepareMinionHolder(n);
             return new EntityMinion[0];
         }
         Iterator<EntityMinion> iter = l.iterator();
@@ -444,7 +408,7 @@ public class MinionsCore
         {
             offerMinionToMap(ent, mastername);
         }
-        System.out.println("added additional minion for "+mastername+", now registered: "+minions.length);
+        System.out.println("added additional minion for " + mastername + ", now registered: " + minions.length);
     }
     
     public void onMasterAddedEvil(EntityPlayer player, int soundLength)
@@ -499,16 +463,16 @@ public class MinionsCore
         {
             if (minion.riddenByEntity == null)
             {
-                minion.targetEntityToGrab = (EntityLivingBase) target;
+                minion.targetEntityToGrab = target;
                 sendSoundToClients(minion, "minions:grabanimalorder");
                 break;
             }
         }
     }
     
-    public void orderMinionToDrop(EntityPlayer playerEnt, EntityMinion minion)
+    public void orderMinionToDrop(EntityMinion minion)
     {
-        MinionsCore.debugPrint("Minion got drop order: "+minion);
+        MinionsCore.debugPrint("Minion got drop order: " + minion);
         if (minion.riddenByEntity != null)
         {
             sendSoundToClients(minion, "minions:foryou");
@@ -626,7 +590,7 @@ public class MinionsCore
                         minion.giveTask(null, true);
                         minion.returningGoods = true;
                     }
-                    minion.returnChestOrInventory = (TileEntity) chestOrInventoryBlock;
+                    minion.returnChestOrInventory = chestOrInventoryBlock;
                 }
             }
         }
@@ -689,7 +653,7 @@ public class MinionsCore
     
     public void unSummonPlayersMinions(EntityPlayerMP playerEnt)
     {
-        System.out.println("Minions: unSummonPlayersMinions called by "+playerEnt);
+        System.out.println("Minions: unSummonPlayersMinions called by " + playerEnt);
         for (EntityMinion minion : getMinionsForMaster(playerEnt))
         {
             System.out.println("Minions: Killing "+minion);
@@ -768,11 +732,6 @@ public class MinionsCore
         {
             System.out.println("EXCEPTION BufferedReader: " + var6);
         }
-    }
-
-    public final static String getPacketChannel()
-    {
-        return "AS_Minions";
     }
     
     public void sendSoundToClients(Entity ent, String string)

@@ -1,11 +1,11 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-import atomicstryker.minions.common.entity.EntityMinion;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Minion Job class for scanning for Trees and then keeping track of the minions harvesting them.
@@ -43,7 +43,7 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     {
     	super.onJobUpdateTick();
     	
-    	BlockTask_TreeChop nextTree = null;
+    	BlockTask_TreeChop nextTree;
     	EntityMinion worker = null;
     	boolean hasJobs = !this.jobQueue.isEmpty();
     	
@@ -61,8 +61,8 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     		if (hasJobs)
     		{
     			// order him to walk there and chop the tree
-    			((BlockTask_TreeChop) this.jobQueue.get(0)).setWorker(worker);
-    			worker.giveTask((BlockTask_TreeChop) this.jobQueue.get(0), true);
+    			this.jobQueue.get(0).setWorker(worker);
+    			worker.giveTask(this.jobQueue.get(0), true);
     			this.jobQueue.remove(0);
     		}
     		else

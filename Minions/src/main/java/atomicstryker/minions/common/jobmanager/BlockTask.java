@@ -1,7 +1,9 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-
+import atomicstryker.astarpathing.AStarNode;
+import atomicstryker.astarpathing.AStarStatic;
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -10,10 +12,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import atomicstryker.astarpathing.AStarNode;
-import atomicstryker.astarpathing.AStarStatic;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.entity.EntityMinion;
+
+import java.util.ArrayList;
 
 /**
  * Blocktask super schematic. By default a Blocktask doesnt change the Block.
@@ -84,7 +84,7 @@ public abstract class BlockTask
     /**
      * Specifies from which "block reach" range this task can be done
      * 
-     * @param input
+     * @param input range in ingame blocks
      */
     public void setAccessRange(double input)
     {
@@ -94,7 +94,7 @@ public abstract class BlockTask
     /**
      * Specifies the task's work duration in millis
      * 
-     * @param input
+     * @param input duration
      */
     public void setTaskDuration(long input)
     {
@@ -137,10 +137,10 @@ public abstract class BlockTask
         if (isWorking())
         {
             worker.faceBlock(posX, posY, posZ);
-            worker.getDataWatcher().updateObject(12, Integer.valueOf(1));
-            worker.getDataWatcher().updateObject(13, Integer.valueOf(posX));
-            worker.getDataWatcher().updateObject(14, Integer.valueOf(posY));
-            worker.getDataWatcher().updateObject(15, Integer.valueOf(posZ));
+            worker.getDataWatcher().updateObject(12, 1);
+            worker.getDataWatcher().updateObject(13, posX);
+            worker.getDataWatcher().updateObject(14, posY);
+            worker.getDataWatcher().updateObject(15, posZ);
         }
 
         if (!workerReachedBlock)
@@ -235,7 +235,7 @@ public abstract class BlockTask
     }
 
     /**
-     * @param ent
+     * @param ent target entity to check distance to
      * @return true when the entity currently is within reach distance of the
      *         target Block, false otherwise
      */
@@ -245,9 +245,9 @@ public abstract class BlockTask
     }
 
     /**
-     * @param workerX
-     * @param workerY
-     * @param workerZ
+     * @param workerX x coordinate of worker
+     * @param workerY y coordinate of worker
+     * @param workerZ z coordinate of worker
      * @return an Array of pathable AStarNodes, starting with the closest one to
      *         parameter coordinates and ascending. Array can be size 0 but is
      *         != null

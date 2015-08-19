@@ -1,10 +1,10 @@
 package atomicstryker.minions.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 public class HasMinionsPacket implements IPacket
 {

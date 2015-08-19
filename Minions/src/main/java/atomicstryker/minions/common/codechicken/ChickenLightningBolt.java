@@ -6,27 +6,20 @@ package atomicstryker.minions.common.codechicken;
  */
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ChickenLightningBolt
 {
@@ -57,8 +50,7 @@ public class ChickenLightningBolt
     
     /* Damage in half hearts */
     public static int playerdamage = 1;
-    public static int entitydamage = 1;
-    
+
 	public class BoltPoint
 	{
 		public BoltPoint(Vector3 basepoint, Vector3 offsetvec)
@@ -198,17 +190,7 @@ public class ChickenLightningBolt
 		
 		segments.add(new Segment(start, end));
 	}
-	
-	public static Vector3 getFocalPoint(TileEntity tile)
-	{
-		return Vector3.fromTileEntityCenter((TileEntity) tile);
-	}
-	
-	public ChickenLightningBolt(World world, Vector3 sourcevec, TileEntity target, long seed)
-	{
-		this(world, sourcevec, getFocalPoint(target), seed);
-	}
-	
+
 	public void setWrapper(Entity entity)
 	{
 		source = entity;
@@ -224,7 +206,7 @@ public class ChickenLightningBolt
 		ArrayList<Segment> oldsegments = segments;
 		segments = new ArrayList<Segment>();
 		
-		Segment prev = null;
+		Segment prev;
 		
 		for(Iterator<Segment> iterator = oldsegments.iterator(); iterator.hasNext();)
 		{
@@ -413,10 +395,6 @@ public class ChickenLightningBolt
 			}
 			segment.calcEndDiffs();
 		}
-		
-		if(lastactivesegment.get(0) + 1 < numsegments0)
-		{
-		}
 	}
 	
 	public void finalizeBolt()
@@ -439,11 +417,6 @@ public class ChickenLightningBolt
 		particleAge++;
 		
 		bbTestEntityDamage();
-		
-		if(particleAge == 0)
-		{	
-			//jamTile();
-		}
 		
 		if(particleAge >= particleMaxAge)
 		{

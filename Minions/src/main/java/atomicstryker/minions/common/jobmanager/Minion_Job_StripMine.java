@@ -1,5 +1,7 @@
 package atomicstryker.minions.common.jobmanager;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -7,8 +9,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Minion Job class for digging a horizontal 2x1 mineshaft and mining ores of precious material in walls and ceiling (not floor)
@@ -88,7 +88,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         }
         else if (!workerList.get(0).hasTask() && !jobQueue.isEmpty())
         {
-            BlockTask job = (BlockTask) this.jobQueue.get(0);
+            BlockTask job = this.jobQueue.get(0);
             workerList.get(0).giveTask(job, true);           
             job.setWorker(workerList.get(0));
         }

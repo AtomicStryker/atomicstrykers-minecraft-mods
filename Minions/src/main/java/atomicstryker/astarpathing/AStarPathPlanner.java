@@ -1,9 +1,9 @@
 package atomicstryker.astarpathing;
 
-import java.util.ArrayList;
-
 import atomicstryker.minions.common.MinionsCore;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
 
 /**
  * Control Class for AstarPath, creates workers and manages returns
@@ -37,13 +37,8 @@ public class AStarPathPlanner
         isJPS = b;
     }
 
-    public boolean isBusy()
-    {
-        if (worker == null)
-        {
-            return false;
-        }
-        return worker.getState() != Thread.State.NEW;
+    public boolean isBusy() {
+        return worker != null && worker.getState() != Thread.State.NEW;
     }
     
     private int checkYCoordViability(int startx, int starty, int startz)

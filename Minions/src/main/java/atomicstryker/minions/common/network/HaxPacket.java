@@ -1,11 +1,11 @@
 package atomicstryker.minions.common.network;
 
+import atomicstryker.minions.common.network.NetworkHelper.IPacket;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import atomicstryker.minions.common.network.NetworkHelper.IPacket;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class HaxPacket implements IPacket
 {

@@ -1,5 +1,6 @@
 package atomicstryker.minions.client;
 
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -11,10 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
-
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Minion Render Class, allows displaying of a Minion Description and it's item

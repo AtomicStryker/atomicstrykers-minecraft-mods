@@ -1,11 +1,5 @@
 package atomicstryker.minions.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
@@ -14,6 +8,12 @@ import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
 
 public class LightningPacket implements IPacket
 {

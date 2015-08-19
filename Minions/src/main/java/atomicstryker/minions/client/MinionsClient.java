@@ -1,30 +1,5 @@
 package atomicstryker.minions.client;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.client.gui.GuiMinionMenu;
 import atomicstryker.minions.client.render.LineColor;
@@ -34,23 +9,33 @@ import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.network.AssignChestPacket;
-import atomicstryker.minions.common.network.ChopTreesPacket;
-import atomicstryker.minions.common.network.CustomDigPacket;
-import atomicstryker.minions.common.network.DigOreVeinPacket;
-import atomicstryker.minions.common.network.DigStairwellPacket;
-import atomicstryker.minions.common.network.DropAllPacket;
-import atomicstryker.minions.common.network.FollowPacket;
-import atomicstryker.minions.common.network.LightningPacket;
-import atomicstryker.minions.common.network.MinionSpawnPacket;
-import atomicstryker.minions.common.network.MovetoPacket;
-import atomicstryker.minions.common.network.PickupEntPacket;
-import atomicstryker.minions.common.network.SoundPacket;
-import atomicstryker.minions.common.network.StripminePacket;
+import atomicstryker.minions.common.network.*;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MinionsClient
 {
@@ -114,7 +99,7 @@ public class MinionsClient
         Iterator<PointCube> iter = additionalCubes.iterator();
         while (iter.hasNext())
         {
-            ((PointCube)iter.next()).render();
+            iter.next().render();
         }
         
         GL11.glDepthFunc(GL11.GL_LEQUAL);
@@ -205,7 +190,7 @@ public class MinionsClient
                         setSelectionPoint(0, x, y, z - half);
                         setSelectionPoint(1, x + (customSizeXZ*xDirection), y + customSizeY-1, z + half);
                     }
-                    else if (zDirection != 0) // advancing in Zdir, start at z and x-half to z+size and x+half
+                    else
                     {
                         setSelectionPoint(0, x - half, y, z);
                         setSelectionPoint(1, x + half, y + customSizeY-1, z + (customSizeXZ*zDirection));
@@ -245,7 +230,7 @@ public class MinionsClient
                 }
                 else
                 {
-                    playFartSound(mc.theWorld, mc.thePlayer);
+                    playFartSound(mc.thePlayer);
                 }
             }
             
@@ -293,7 +278,7 @@ public class MinionsClient
         }
     }
     
-    private void playFartSound(World world, EntityPlayer player)
+    private void playFartSound(EntityPlayer player)
     {
         if (timeNextSoundAllowed + timeSoundDelay*2 < System.currentTimeMillis())
         {
@@ -307,7 +292,7 @@ public class MinionsClient
         MinionsCore.instance.networkHelper.sendPacketToServer(new SoundPacket(soundName, source.dimension, source.getEntityId()));
     }
     
-    public void onMastersGloveRightClick(ItemStack var1, World worldObj, EntityPlayer playerEnt)
+    public void onMastersGloveRightClick(World worldObj, EntityPlayer playerEnt)
     {
         if (System.currentTimeMillis() > timeNextSoundAllowed)
         {
@@ -379,8 +364,7 @@ public class MinionsClient
                 }
                 else
                 {
-                    playFartSound(playerEnt.worldObj, playerEnt);
-                    return;
+                    playFartSound(playerEnt);
                 }
             }
             else if (isSelectingMineArea)
@@ -394,8 +378,7 @@ public class MinionsClient
                     }
                     else
                     {
-                        playFartSound(playerEnt.worldObj, playerEnt);
-                        return;
+                        playFartSound(playerEnt);
                     }
                 }
                 else if (mineAreaShape == 1)
@@ -406,8 +389,7 @@ public class MinionsClient
                     }
                     else
                     {
-                        playFartSound(playerEnt.worldObj, playerEnt);
-                        return;
+                        playFartSound(playerEnt);
                     }
                 }
                 else if (mineAreaShape == 2)
@@ -418,8 +400,7 @@ public class MinionsClient
                     }
                     else
                     {
-                        playFartSound(playerEnt.worldObj, playerEnt);
-                        return;
+                        playFartSound(playerEnt);
                     }
                 }
             }
@@ -450,7 +431,7 @@ public class MinionsClient
         }
     }
     
-    public static void onMastersGloveRightClickHeld(ItemStack var1, World var2, EntityPlayer var3)
+    public static void onMastersGloveRightClickHeld(EntityPlayer var3)
     {
         MinionsCore.instance.networkHelper.sendPacketToServer(new FollowPacket(var3.getCommandSenderName()));
     }
@@ -472,14 +453,4 @@ public class MinionsClient
         }
     }
 
-    public static void onMinionMountPacket(int minionID, int targetID)
-    {
-        Entity minion = mc.theWorld.getEntityByID(minionID);
-        Entity target = mc.theWorld.getEntityByID(targetID);
-        if (minion != null && target != null)
-        {
-            target.mountEntity(minion);
-        }
-    }
-    
 }

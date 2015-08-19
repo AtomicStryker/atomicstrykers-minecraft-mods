@@ -6,21 +6,18 @@ package atomicstryker.minions.client;
  * Available at: http://www.minecraftforum.net/topic/909223-125-smp-chickenbones-mods/
  */
 
-import java.util.Iterator;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt.Segment;
 import atomicstryker.minions.common.codechicken.Vector3;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Iterator;
 
 public class RenderChickenLightningBolt
 {
@@ -57,7 +54,7 @@ public class RenderChickenLightningBolt
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
-			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.rotationX, ActiveRenderInfo.rotationXZ, ActiveRenderInfo.rotationZ, ActiveRenderInfo.rotationXY, 0);
+			renderBolt(bolt, tessellator, 0);
 		}
         tessellator.draw();
         
@@ -66,7 +63,7 @@ public class RenderChickenLightningBolt
 		tessellator.setBrightness(0xF000F0);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
-			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.rotationX, ActiveRenderInfo.rotationXZ, ActiveRenderInfo.rotationZ, ActiveRenderInfo.rotationXY, 1);
+			renderBolt(bolt, tessellator, 1);
 		}
         tessellator.draw();
 		
@@ -77,10 +74,10 @@ public class RenderChickenLightningBolt
 		GL11.glTranslated(interpPosX, interpPosY, interpPosZ);
 	}
 	
-	private void renderBolt(ChickenLightningBolt bolt, Tessellator tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float cossinpitch, int pass)
+	private void renderBolt(ChickenLightningBolt bolt, Tessellator tessellator, int pass)
 	{		
         float boltage = bolt.particleAge < 0 ? 0 : (float)bolt.particleAge / (float)bolt.particleMaxAge;
-        float mainalpha = 1;
+        float mainalpha;
         if(pass == 0)
         {
         	mainalpha = (1 - boltage) * 0.4F;

@@ -8,13 +8,13 @@ package atomicstryker.minions.common.jobmanager;
  * @author AtomicStryker
  */
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.entity.EntityMinion;
+import net.minecraft.util.ChunkCoordinates;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import net.minecraft.util.ChunkCoordinates;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.entity.EntityMinion;
 
 public abstract class Minion_Job_Manager
 {
@@ -210,7 +210,7 @@ public abstract class Minion_Job_Manager
     {
     	while(!this.workerList.isEmpty())
     	{
-    		this.setWorkerFree((EntityMinion) this.workerList.get(0));
+    		this.setWorkerFree(this.workerList.get(0));
     	}
     	
     	isFinished = true;
@@ -219,7 +219,7 @@ public abstract class Minion_Job_Manager
     /**
      * event coming back from an issued Blocktask, useful in recursive tasks or similar
      * 
-     * @param worker Minion having finished a BlockTask
+     * @param task finished BlockTask
      * @param x coordinate of task
      * @param y coordinate of task
      * @param z coordinate of task
@@ -230,13 +230,8 @@ public abstract class Minion_Job_Manager
     }
     
     @Override
-    public boolean equals(Object o)
-    {
-        if (o instanceof Minion_Job_Manager)
-        {
-            return ((Minion_Job_Manager)o).pointOfOrigin.equals(this.pointOfOrigin);
-        }
-        return false;
+    public boolean equals(Object o) {
+        return o instanceof Minion_Job_Manager && ((Minion_Job_Manager) o).pointOfOrigin.equals(this.pointOfOrigin);
     }
     
 }

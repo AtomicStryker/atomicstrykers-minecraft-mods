@@ -1,15 +1,15 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import atomicstryker.astarpathing.AStarStatic;
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import atomicstryker.astarpathing.AStarStatic;
-import atomicstryker.minions.common.entity.EntityMinion;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Minion Job class for digging out a NxN sized space, automatically digging a support stairwell if one is needed
@@ -27,19 +27,14 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 	private final int startX;
 	private final int startY;
 	private final int startZ;
-	
-	private final int xZtoDig;
-	private final int ytoDig;
+
 	private int minX;
 	private int maxX;
 	private int minY;
 	private int maxY;
 	private int minZ;
 	private int maxZ;
-	
-	private final int xDirection;
-	private final int zDirection;
-	
+
 	private int[] stopCoords = new int[3];
 	private boolean indexFinished;
 	private ArrayList<BlockTask> blocksToMine;
@@ -60,14 +55,14 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	startX = this.pointOfOrigin.posX;
     	startY = this.pointOfOrigin.posY;
     	startZ = this.pointOfOrigin.posZ;
-    	xZtoDig = ixzSize;
-    	ytoDig = iySize;
-    	
-    	Entity boss = m.master;
+
+		Entity boss = m.master;
     	int bossX = MathHelper.floor_double(boss.posX);
     	int bossZ = MathHelper.floor_double(boss.posZ);
-    	
-    	if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
+
+		int xDirection;
+		int zDirection;
+		if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
     	{
     		xDirection = (startX - bossX > 0) ? 1 : -1;
     		zDirection = 0;
@@ -79,23 +74,23 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	}
     	
     	minX = startX;
-    	minX += (xDirection == 0) ? (-(xZtoDig - 1) / 2)
+    	minX += (xDirection == 0) ? (-(ixzSize - 1) / 2)
 				: (xDirection == 1) ? 0 :
-				/* xDirection == -1 */-(xZtoDig - 1);
+				/* xDirection == -1 */-(ixzSize - 1);
     	
     	// minX is ALWAYS the lowest x value of the cube, hence maxX is ALWAYS a full length higher
-    	maxX = minX + (xZtoDig-1);
+    	maxX = minX + (ixzSize -1);
     	
     	minZ = startZ;
-    	minZ += (zDirection == 0) ? (-(xZtoDig - 1) / 2)
+    	minZ += (zDirection == 0) ? (-(ixzSize - 1) / 2)
 				: (zDirection == 1) ? 0 :
-				/* zDirection == -1 */-(xZtoDig - 1);
+				/* zDirection == -1 */-(ixzSize - 1);
     	
     	// minZ is ALWAYS the lowest z value of the cube, hence maxZ is ALWAYS a full length higher
-    	maxZ = minZ + (xZtoDig-1);
+    	maxZ = minZ + (ixzSize -1);
     	
     	minY = startY;
-    	maxY = startY + ytoDig-1;
+    	maxY = startY + iySize -1;
     	
 		stairDirection[0] = (zDirection == 1) ? 1 
 				: (zDirection == -1) ? -1 :
@@ -123,7 +118,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 			return false;
 		}
     	
-    	BlockTask nextBlock = null;
+    	BlockTask nextBlock;
     	EntityMinion worker = null;
     	boolean hasJobs = (!blocksToMine.isEmpty());
     	
@@ -131,7 +126,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	{
     		if (!jobQueue.isEmpty())
     		{
-        		nextBlock = (BlockTask) this.jobQueue.get(0);
+        		nextBlock = this.jobQueue.get(0);
     	    	worker = this.getNearestAvailableWorker(nextBlock.posX, nextBlock.posY, nextBlock.posZ);
     		}
     		

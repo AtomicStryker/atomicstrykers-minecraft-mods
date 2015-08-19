@@ -6,13 +6,12 @@ package atomicstryker.minions.common.codechicken;
  * Available at: http://www.minecraftforum.net/topic/909223-125-smp-chickenbones-mods/
  */
 
+import net.minecraft.entity.Entity;
+import net.minecraft.util.Vec3;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Vec3;
 
 public class Vector3
 {
@@ -43,46 +42,15 @@ public class Vector3
     	return new Vector3(this);
     }
     
-    public static Vector3 fromEntity(Entity e)
-	{
-    	return new Vector3(e.posX, e.posY, e.posZ);
-	}
-    
     public static Vector3 fromEntityCenter(Entity e)
 	{
     	return new Vector3(e.posX, e.posY - e.yOffset + e.height/2, e.posZ);
-	}
-
-	public static Vector3 fromTileEntity(TileEntity e)
-	{
-		return new Vector3(e.xCoord, e.yCoord, e.zCoord);
-	}
-	
-	public static Vector3 fromTileEntityCenter(TileEntity e)
-	{
-		return new Vector3(e.xCoord + 0.5, e.yCoord + 0.5, e.zCoord + 0.5);
 	}
 
 	public static Vector3 fromVec3(Vec3 vec)
 	{
 		return new Vector3(vec.xCoord, vec.yCoord, vec.zCoord);
 	}
-
-	public Vector3 set(double d, double d1, double d2)
-    {
-        x = d;
-        y = d1;
-        z = d2;
-		return this;
-    }
-
-    public Vector3 set(Vector3 vec)
-    {
-        x = vec.x;
-        y = vec.y;
-        z = vec.z;
-		return this;
-    }
 
     public double dotProduct(Vector3 vec)
     {
@@ -93,11 +61,6 @@ public class Vector3
         else if(d < -1 && d > -1.00001)
         	d = -1;
         return d;
-    }
-
-    public double dotProduct(double d, double d1, double d2)
-    {
-        return d * x + d1 * y + d2 * z;
     }
 
     public Vector3 crossProduct(Vector3 vec)
@@ -148,11 +111,6 @@ public class Vector3
         return Math.sqrt(x * x + y * y + z * z);
     }
 
-    public double magSquared()
-    {
-        return x * x + y * y + z * z;
-    }
-
     public Vector3 normalize()
     {
         double d = mag();
@@ -201,16 +159,6 @@ public class Vector3
 		return this;
 	}
 	
-	public Vector3 yCrossProduct()
-	{
-		double d = -z;
-		double d1 = x;
-		x = d;
-		y = 0;
-		z = d1;
-		return this;
-	}
-	
 	public Vector3 rotate(double angle, Vector3 axis)
 	{
 		Quat.aroundAxis(axis.copy().normalize(), angle).rotate(this);
@@ -225,11 +173,6 @@ public class Vector3
 	public double angle(Vector3 vec)
 	{
 		return Math.acos(copy().normalize().dotProduct(vec.copy().normalize()));
-	}
-
-	public boolean isZero()
-	{
-		return x == 0 && y == 0 && z == 0;
 	}
 	
 	@Override

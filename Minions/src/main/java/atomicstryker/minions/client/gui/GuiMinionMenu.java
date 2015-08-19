@@ -1,11 +1,11 @@
 package atomicstryker.minions.client.gui;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.HaxPacket;
 import atomicstryker.minions.common.network.UnsummonPacket;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 
 /**
  * Minion Menu, provides access to evil deeds and later minion commands

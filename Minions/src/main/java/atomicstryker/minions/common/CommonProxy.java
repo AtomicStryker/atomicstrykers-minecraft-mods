@@ -1,10 +1,10 @@
 package atomicstryker.minions.common;
 
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy implements IProxy
 {
@@ -21,11 +21,6 @@ public class CommonProxy implements IProxy
     public void registerRenderInformation()
     {
         // NOOP
-    }
-
-    public boolean hasPlayerMinions(EntityPlayer player)
-    {
-        return MinionsCore.instance.getMinionsForMaster(player).length > 0;
     }
 
     public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)

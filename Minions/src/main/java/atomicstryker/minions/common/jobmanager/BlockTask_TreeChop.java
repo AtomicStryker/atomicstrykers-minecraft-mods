@@ -1,7 +1,6 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -10,7 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import atomicstryker.minions.common.entity.EntityMinion;
+
+import java.util.ArrayList;
 
 /**
  * BlockTask dummy to compute tree chopping time, give out the Items, and destroy the tree. The actual work is done in the threaded AS_TreeScanner

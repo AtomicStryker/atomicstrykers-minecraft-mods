@@ -1,14 +1,14 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import atomicstryker.minions.common.entity.EntityMinion;
+
+import java.util.ArrayList;
 
 /**
  * Blocktask for destroying and stashing a single Block

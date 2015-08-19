@@ -1,20 +1,20 @@
 package atomicstryker.minions.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-
-import java.util.EnumMap;
-import java.util.HashSet;
-
-import net.minecraft.entity.player.EntityPlayerMP;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
 import cpw.mods.fml.common.network.FMLOutboundHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import net.minecraft.entity.player.EntityPlayerMP;
+
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
 
 /**
  * 
@@ -53,10 +53,7 @@ public class NetworkHelper
         serverOutboundChannel = channelPair.get(Side.SERVER);
         
         registeredClasses = new HashSet<Class<? extends IPacket>>(handledPacketClasses.length);
-        for (Class<? extends IPacket> c : handledPacketClasses)
-        {
-            registeredClasses.add(c);
-        }
+        Collections.addAll(registeredClasses, handledPacketClasses);
     }
     
     /**
@@ -67,7 +64,7 @@ public class NetworkHelper
      * the other way around, so be careful using them bidirectional or avoid
      * doing that altogether.
      */
-    public static interface IPacket
+    public interface IPacket
     {
         
         /**
@@ -76,19 +73,19 @@ public class NetworkHelper
          * @param ctx channel context
          * @param bytes data being sent
          */
-        public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes);
+        void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes);
         
         /**
          * Executed upon arrival of a Packet at a recipient. Byte order matches writeBytes exactly.
          * @param ctx channel context, you can send answers through here directly
          * @param bytes data being received
          */
-        public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes);
+        void readBytes(ChannelHandlerContext ctx, ByteBuf bytes);
     }
     
     /**
      * Sends the supplied Packet from a client to the server
-     * @param packet
+     * @param packet to be sent
      */
     public void sendPacketToServer(IPacket packet)
     {
@@ -100,8 +97,8 @@ public class NetworkHelper
 
     /**
      * Sends the supplied Packet from the server to the chosen Player
-     * @param packet
-     * @param player
+     * @param packet to be sent
+     * @param player target player reference
      */
     public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player)
     {
@@ -114,7 +111,7 @@ public class NetworkHelper
     
     /**
      * Sends a packet from the server to all currently connected players
-     * @param packet
+     * @param packet to be sent
      */
     public void sendPacketToAllPlayers(IPacket packet)
     {
@@ -126,8 +123,8 @@ public class NetworkHelper
     
     /**
      * Sends a packet from the server to all players in a dimension around a location
-     * @param packet
-     * @param tp
+     * @param packet to be sent
+     * @param tp targetpoint reference, cannot be null
      */
     public void sendPacketToAllAroundPoint(IPacket packet, TargetPoint tp)
     {
@@ -140,8 +137,8 @@ public class NetworkHelper
     
     /**
      * Sends a packet from the server to all players in a dimension
-     * @param packet
-     * @param dimension
+     * @param packet to be sent
+     * @param dimension dimension id (serverside)
      */
     public void sendPacketToAllInDimension(IPacket packet, int dimension)
     {

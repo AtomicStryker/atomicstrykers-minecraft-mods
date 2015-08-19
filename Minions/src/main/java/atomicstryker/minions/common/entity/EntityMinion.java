@@ -1,8 +1,8 @@
 package atomicstryker.minions.common.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import atomicstryker.astarpathing.*;
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.jobmanager.BlockTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -28,13 +28,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
-import atomicstryker.astarpathing.AS_PathEntity;
-import atomicstryker.astarpathing.AStarNode;
-import atomicstryker.astarpathing.AStarPathPlanner;
-import atomicstryker.astarpathing.AStarStatic;
-import atomicstryker.astarpathing.IAStarPathedEntity;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.jobmanager.BlockTask;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Minion Entity class, this is where the evil magic happens
@@ -131,19 +127,19 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         super.entityInit();
         /* boolean isWorking for SwingProgress and Sounds, set by AS_BlockTask */
-        this.dataWatcher.addObject(12, new Integer(0));
-        this.dataWatcher.addObject(13, new Integer(0)); // x blocktask
-        this.dataWatcher.addObject(14, new Integer(0)); // y blocktask
-        this.dataWatcher.addObject(15, new Integer(0)); // z blocktask
+        this.dataWatcher.addObject(12, 0);
+        this.dataWatcher.addObject(13, 0); // x blocktask
+        this.dataWatcher.addObject(14, 0); // y blocktask
+        this.dataWatcher.addObject(15, 0); // z blocktask
         this.dataWatcher.addObject(16, "undef"); // masterUserName
-        this.dataWatcher.addObject(17, new Integer(0)); // heldItem Index
+        this.dataWatcher.addObject(17, 0); // heldItem Index
     }
 
     public void setWorking(boolean b)
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(12, (Integer) (b ? 1 : 0));
+            dataWatcher.updateObject(12, b ? 1 : 0);
         }
     }
 
@@ -243,15 +239,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         if (currentTarget != null)
         {
             this.setPositionAndUpdate(currentTarget.posX + 0.5D, currentTarget.posY, currentTarget.posZ + 0.5D);
-            MinionsCore.instance.sendSoundToClients(this, "mob.endermen.portal");
-        }
-    }
-
-    public void performRecallTeleportToMaster()
-    {
-        if (master != null)
-        {
-            this.setPositionAndUpdate(master.posX + 1, master.posY, master.posZ + 1);
             MinionsCore.instance.sendSoundToClients(this, "mob.endermen.portal");
         }
     }

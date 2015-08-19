@@ -1,12 +1,10 @@
 package atomicstryker.minions.client.render.shapes;
 
-import net.minecraft.client.renderer.Tessellator;
-
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.LineInfo;
 import atomicstryker.minions.common.util.Vector3;
+import net.minecraft.client.renderer.Tessellator;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Draws a rectangular prism around 2 corners

@@ -1,9 +1,5 @@
 package atomicstryker.minions.client;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import atomicstryker.minions.common.IProxy;
 import atomicstryker.minions.common.entity.EntityMinion;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -13,6 +9,10 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy implements IProxy
 {
@@ -57,22 +57,16 @@ public class ClientProxy implements IProxy
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityMinion.class, new RenderMinion(new ModelMinion(), 0.25F));
     }
-    
-    @Override
-    public boolean hasPlayerMinions(EntityPlayer player)
-    {
-        return MinionsClient.hasMinionsSMPOverride;
-    }
-    
+
     @Override
     public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
     {
-        MinionsClient.onMastersGloveRightClickHeld(itemstack, world, player);
+        MinionsClient.onMastersGloveRightClickHeld(player);
     }
 
     @Override
     public void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
     {
-        client.onMastersGloveRightClick(itemstack, world, player);
+        client.onMastersGloveRightClick(world, player);
     }
 }
