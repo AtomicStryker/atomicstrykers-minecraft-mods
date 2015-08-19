@@ -14,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -122,7 +121,6 @@ public class RenderMinion extends RenderLiving
             if (itemstack != null)
             {
                 GlStateManager.pushMatrix();
-                
                 rightArm.postRender(0.0625F);
                 GlStateManager.translate(-0.0625F, 0.4375F, 0.0625F);
 
