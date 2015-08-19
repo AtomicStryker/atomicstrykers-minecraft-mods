@@ -123,17 +123,25 @@ public class DefaultConfigFilePrinter
                     else if (buffer.contentEquals("NoDefaultNeedle"))
                     {
                         //left in for backwards compatibility
+                        System.out.println("Finder Compass skipping legacy setting NoDefaultNeedle");
                     }
                     else if (buffer.contentEquals("NoEnderEyeNeedle"))
                     {
-                        currentSetting.setHasStrongholdNeedle(false);
-                        System.out.println("Disabling Ender Eye Needle as per config file");
+                        if (currentSetting == null)
+                        {
+                            System.err.println("Finder Compass config line "+buffer+" without Setting before it!!!");
+                        }
+                        else
+                        {
+                            currentSetting.setHasStrongholdNeedle(false);
+                            System.out.println("Disabling Ender Eye Needle as per config file");
+                        }
                     }
                     else if (settingList.isEmpty())
                     {
                         //System.out.println("ERROR: Finder Compass skipping config line because no Setting has been defined yet! Did you update your config file???");
                     }
-                    else
+                    else if (currentSetting != null)
                     {
                         try
                         {

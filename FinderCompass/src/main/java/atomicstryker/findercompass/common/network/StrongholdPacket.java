@@ -11,7 +11,8 @@ import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 
 public class StrongholdPacket implements IPacket
 {
-    
+
+    @SuppressWarnings("unused")
     public StrongholdPacket() {}
     
     private int x,y,z;

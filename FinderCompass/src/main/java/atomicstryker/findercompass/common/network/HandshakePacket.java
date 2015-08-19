@@ -19,7 +19,8 @@ public class HandshakePacket implements IPacket
 
     private byte[] configByteArray;
     private String username;
-    
+
+    @SuppressWarnings("unused")
     public HandshakePacket() {}
     
     public HandshakePacket(String user)
@@ -38,7 +39,10 @@ public class HandshakePacket implements IPacket
             try
             {
                 FileInputStream fis = new FileInputStream(config);
-                fis.read(configByteArray);
+                if (fis.read(configByteArray) < 1)
+                {
+                    throw new Exception("Config does not contain bytes: "+config);
+                }
                 fis.close();
                 bytes.writeShort(configByteArray.length);
                 bytes.writeBytes(configByteArray);

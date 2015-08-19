@@ -124,7 +124,7 @@ public class FinderCompassClientTicker
     /**
      * Used by the server packet to override the clientside config
      * 
-     * @param dataIn
+     * @param dataIn inputstream to be used by DefaultConfigFilePrinter
      */
     public void inputOverrideConfig(DataInputStream dataIn)
     {

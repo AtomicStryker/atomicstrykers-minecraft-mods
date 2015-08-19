@@ -114,7 +114,7 @@ public class FinderCompassLogic
      * one, and if a worker found something, it retrieves and puts the found
      * target into the "display" Coordinates Map
      * 
-     * @param currentSetting
+     * @param currentSetting CompassSetting instance
      */
     private BlockPos findNearestBlockChunkOfIDInRange(CompassSetting currentSetting,
             Block blockID, int meta, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
@@ -122,10 +122,10 @@ public class FinderCompassLogic
         int[] configInts = { meta, playerX, playerY, playerZ, xzRange, yRange, minY, maxY };
         CompassTargetData key = new CompassTargetData(blockID, meta);
 
-        ThreadCompassWorker worker = (ThreadCompassWorker) currentSetting.getCompassWorkers().get(key);
+        ThreadCompassWorker worker = currentSetting.getCompassWorkers().get(key);
         if (worker == null || !worker.isWorking())
         {
-            worker = new ThreadCompassWorker(mc, this);
+            worker = new ThreadCompassWorker(mc);
             worker.setPriority(Thread.MIN_PRIORITY);
             currentSetting.getCompassWorkers().put(key, worker);
 
@@ -133,11 +133,11 @@ public class FinderCompassLogic
             worker.start();
         }
 
-        BlockPos result = (BlockPos) currentSetting.getNewFoundTargets().get(key);
+        BlockPos result = currentSetting.getNewFoundTargets().get(key);
         if (result == null)
         {
             // System.out.println("Did not find saved coords for "+key.getBlockID()+", "+key.getDamage());
-            result = (BlockPos) currentSetting.getCustomNeedleTargets().get(key);
+            result = currentSetting.getCustomNeedleTargets().get(key);
         }
         else
         {
