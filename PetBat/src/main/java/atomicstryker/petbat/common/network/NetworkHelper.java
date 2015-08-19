@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 
@@ -53,10 +54,7 @@ public class NetworkHelper
         serverOutboundChannel = channelPair.get(Side.SERVER);
         
         registeredClasses = new HashSet<Class<? extends IPacket>>(handledPacketClasses.length);
-        for (Class<? extends IPacket> c : handledPacketClasses)
-        {
-            registeredClasses.add(c);
-        }
+        Collections.addAll(registeredClasses, handledPacketClasses);
     }
     
     /**
@@ -67,7 +65,7 @@ public class NetworkHelper
      * the other way around, so be careful using them bidirectional or avoid
      * doing that altogether.
      */
-    public static interface IPacket
+    public interface IPacket
     {
         
         /**
@@ -76,20 +74,21 @@ public class NetworkHelper
          * @param ctx channel context
          * @param bytes data being sent
          */
-        public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes);
+        void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes);
         
         /**
          * Executed upon arrival of a Packet at a recipient. Byte order matches writeBytes exactly.
          * @param ctx channel context, you can send answers through here directly
          * @param bytes data being received
          */
-        public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes);
+        void readBytes(ChannelHandlerContext ctx, ByteBuf bytes);
     }
     
     /**
      * Sends the supplied Packet from a client to the server
-     * @param packet
+     * @param packet to send
      */
+    @SuppressWarnings("unused")
     public void sendPacketToServer(IPacket packet)
     {
         checkClassAndSync(packet.getClass());
@@ -100,9 +99,10 @@ public class NetworkHelper
 
     /**
      * Sends the supplied Packet from the server to the chosen Player
-     * @param packet
-     * @param player
+     * @param packet to send
+     * @param player to send to
      */
+    @SuppressWarnings("unused")
     public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player)
     {
         checkClassAndSync(packet.getClass());
@@ -114,8 +114,9 @@ public class NetworkHelper
     
     /**
      * Sends a packet from the server to all currently connected players
-     * @param packet
+     * @param packet to send
      */
+    @SuppressWarnings("unused")
     public void sendPacketToAllPlayers(IPacket packet)
     {
         checkClassAndSync(packet.getClass());
@@ -126,9 +127,10 @@ public class NetworkHelper
     
     /**
      * Sends a packet from the server to all players in a dimension around a location
-     * @param packet
-     * @param tp
+     * @param packet to send
+     * @param tp targetpoint instance to pass, cannot be null
      */
+    @SuppressWarnings("unused")
     public void sendPacketToAllAroundPoint(IPacket packet, TargetPoint tp)
     {
         checkClassAndSync(packet.getClass());
@@ -140,9 +142,10 @@ public class NetworkHelper
     
     /**
      * Sends a packet from the server to all players in a dimension
-     * @param packet
-     * @param dimension
+     * @param packet to send
+     * @param dimension serverside dim id to use
      */
+    @SuppressWarnings("unused")
     public void sendPacketToAllInDimension(IPacket packet, int dimension)
     {
         checkClassAndSync(packet.getClass());
