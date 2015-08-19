@@ -43,16 +43,15 @@ public class AS_WorldGenTower
 
     
     /**
-     * @param world
-     * @param random
-     * @param ix
-     * @param jy
-     * @param kz
+     * @param world instance
+     * @param random gen
+     * @param ix coordinate
+     * @param jy coordinate
+     * @param kz coordinate
      * @return -1 when no tower should be able to spawn, else Towerchosen enum ordinal
      */
     public int getChosenTowerOrdinal(World world, Random random, int ix, int jy, int kz)
     {
-        int centerblockY = jy;
         TowerTypes towerChosen;
         int countWater = 0;
         int countSand = 0;
@@ -86,9 +85,9 @@ public class AS_WorldGenTower
             else
                 countElse++;
             
-            if (Math.abs(checkBlockY - centerblockY) > maxHoleDepthInBase)
+            if (Math.abs(checkBlockY - jy) > maxHoleDepthInBase)
             {
-                failState = "Uneven Surface, diff value: "+Math.abs(checkBlockY - centerblockY);
+                failState = "Uneven Surface, diff value: "+Math.abs(checkBlockY - jy);
                 return -1;
             }
             
@@ -408,14 +407,14 @@ public class AS_WorldGenTower
             if (towerChosen != TowerTypes.Null)
             {
                 // chest
-                TowerStageItemManager floorChestManager = null;
+                TowerStageItemManager floorChestManager;
                 if (!underground)
                 {
-                    floorChestManager = topFloor ? WorldGenHandler.getTowerStageManagerForFloor(10, world.rand) : WorldGenHandler.getTowerStageManagerForFloor(floor, world.rand);
+                    floorChestManager = topFloor ? WorldGenHandler.getTowerStageManagerForFloor(10) : WorldGenHandler.getTowerStageManagerForFloor(floor);
                 }
                 else
                 {
-                    floorChestManager = floor == 1 ? WorldGenHandler.getTowerStageManagerForFloor(10, world.rand) : WorldGenHandler.getTowerStageManagerForFloor(Math.abs(11-floor), world.rand);
+                    floorChestManager = floor == 1 ? WorldGenHandler.getTowerStageManagerForFloor(10) : WorldGenHandler.getTowerStageManagerForFloor(Math.abs(11-floor));
                 }
                 
                 for(int chestlength = 0; chestlength < 2; chestlength++)
@@ -491,11 +490,11 @@ public class AS_WorldGenTower
 
     private void fillTowerBaseToGround(World world, int i, int j, int k, Block blocktype)
 	{
-		int x = j-1;
-		while(x>0 && !isBuildableBlockID(world.getBlockState(new BlockPos(i, x, k)).getBlock()))
+		int y = j-1;
+		while(y>0 && !isBuildableBlockID(world.getBlockState(new BlockPos(i, y, k)).getBlock()))
 		{
-			world.setBlockState(new BlockPos(i,  x,  k),  blocktype.getStateFromMeta( 0));
-			x--;
+			world.setBlockState(new BlockPos(i,  y,  k),  blocktype.getStateFromMeta( 0));
+			y--;
 		}
 	}
 	

@@ -26,7 +26,7 @@ public class AS_RenderFireball extends Render
         this.fireBallSize = par1;
     }
 
-    public void doRenderFireball(AS_EntityGolemFireball fireBallEnt, double posX, double posY, double posZ, float par8, float par9)
+    public void doRenderFireball(AS_EntityGolemFireball fireBallEnt, double posX, double posY, double posZ)
     {
         GL11.glPushMatrix();
         this.bindEntityTexture(fireBallEnt);
@@ -59,7 +59,7 @@ public class AS_RenderFireball extends Render
     @Override
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
-        this.doRenderFireball((AS_EntityGolemFireball)par1Entity, par2, par4, par6, par8, par9);
+        this.doRenderFireball((AS_EntityGolemFireball)par1Entity, par2, par4, par6);
     }
 
     @Override

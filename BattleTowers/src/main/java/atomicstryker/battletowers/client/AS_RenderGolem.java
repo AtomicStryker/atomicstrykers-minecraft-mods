@@ -21,7 +21,7 @@ public class AS_RenderGolem extends RenderBiped
         super(rm, new ModelBiped(), 1.0F);
     }
 
-    protected void rescaleGolem(AS_EntityGolem entitygolem, float f)
+    protected void rescaleGolem()
     {
         GL11.glScalef(2.0F, 2.0F, 2.0F);
     }
@@ -29,7 +29,7 @@ public class AS_RenderGolem extends RenderBiped
     @Override
     protected void preRenderCallback(EntityLivingBase entityliving, float f)
     {
-        rescaleGolem((AS_EntityGolem)entityliving, f);
+        rescaleGolem();
     }
     
     @Override

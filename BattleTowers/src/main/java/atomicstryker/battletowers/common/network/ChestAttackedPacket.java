@@ -15,6 +15,7 @@ public class ChestAttackedPacket implements IPacket
     private int golemEntityID;
     
     // if there is a constructor with >0 args, we MUST supply another with no args
+    @SuppressWarnings("unused")
     public ChestAttackedPacket()
     {
         playerName = "";

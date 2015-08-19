@@ -136,7 +136,7 @@ public class TowerStageItemManager
 	
 	/**
 	 * @param rand your WorldGen Random
-	 * @param teChest 
+	 * @param teChest chest tileentity to fill with loot
 	 * @return ItemStack instance of the configured Block or Item with amount, or null
 	 */
 	public ItemStack getStageItem(Random rand, TileEntityChest teChest)

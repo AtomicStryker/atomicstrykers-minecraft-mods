@@ -69,7 +69,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 		{
 			return true;
 		}
-    };
+    }
 
     public AS_EntityGolem(World world, int i)
     {
@@ -122,14 +122,14 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(16, new Integer(Integer.valueOf(1))); // dormant datawatcher
+        this.dataWatcher.addObject(16, 1); // dormant datawatcher
     }
 
     public void setDormant()
     {
         if (!worldObj.isRemote)
         {
-            this.dataWatcher.updateObject(16, new Integer(Integer.valueOf(1)));
+            this.dataWatcher.updateObject(16, 1);
         }
     }
 
@@ -142,7 +142,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                 worldObj.playSoundAtEntity(this, "battletowers:golemawaken", getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
             }
             
-            this.dataWatcher.updateObject(16, new Integer(Integer.valueOf(0)));
+            this.dataWatcher.updateObject(16, 0);
         }
     }
 
@@ -290,9 +290,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
 			boolean targetNearby = (getAttackTarget().getDistanceSqToEntity(this) < 6F*6F);
 
-            if(!targetNearby
-			|| explosionAttack == 1
-			|| (targetNearby && ((this.posY - getAttackTarget().posY) > 0.3D)))
+            if(!targetNearby || explosionAttack == 1 || (((this.posY - getAttackTarget().posY) > 0.3D)))
             {
                 rageCounter-=2;
                 //System.out.println("Golem losing patience: "+rageCounter);
@@ -324,7 +322,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         if (!worldObj.isRemote)
         {
             double diffX = getAttackTarget().posX - posX;
-            double diffY = (getAttackTarget().getEntityBoundingBox().minY + (double)(getAttackTarget().height / 2.0F)) - (posY + (double)(height * 0.8D));
+            double diffY = (getAttackTarget().getEntityBoundingBox().minY + (double)(getAttackTarget().height / 2.0F)) - (posY + height * 0.8D);
             double diffZ = getAttackTarget().posZ - posZ;
             
             renderYawOffset = rotationYaw = (-(float)Math.atan2(diffX, diffZ) * 180F) / (float)Math.PI;

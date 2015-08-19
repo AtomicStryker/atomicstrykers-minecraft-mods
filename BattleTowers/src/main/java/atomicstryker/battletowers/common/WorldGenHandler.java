@@ -1,18 +1,6 @@
 package atomicstryker.battletowers.common;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
 
-import atomicstryker.battletowers.common.AS_WorldGenTower.TowerTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -26,6 +14,12 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.io.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class WorldGenHandler implements IWorldGenerator
 {
@@ -125,13 +119,8 @@ public class WorldGenHandler implements IWorldGenerator
             if (y > 49)
             {
                 pos.y = y;
-                if (attemptToSpawnTower(world, pos, random, xActual, y, zActual))
+                if (!attemptToSpawnTower(world, pos, random, xActual, y, zActual))
                 {
-                    //System.out.println("Battle Tower spawned at [ "+xActual+" | "+zActual+" ]");
-                }
-                else
-                {
-                    // spawn failed, bugger
                     System.out.printf("Tower Site [%d|%d] rejected: %s\n", pos.x, pos.z, generator.failState);
                     obtainTowerPosListAccess();
                     towerPositions.remove(pos);
@@ -177,7 +166,7 @@ public class WorldGenHandler implements IWorldGenerator
         return h-1;
     }
     
-    public static TowerStageItemManager getTowerStageManagerForFloor(int floor, Random rand)
+    public static TowerStageItemManager getTowerStageManagerForFloor(int floor)
     {
         // wait for load if it hasnt happened yet
         while (AS_BattleTowersCore.instance.floorItemManagers == null)
@@ -315,7 +304,10 @@ public class WorldGenHandler implements IWorldGenerator
         {
             if (!file.exists())
             {
-                file.createNewFile();
+                if (!file.createNewFile())
+                {
+                    throw new RuntimeException("Ruins mod crashed trying to create pos file "+file);
+                }
             }
             int lineNumber = 1;
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -344,7 +336,7 @@ public class WorldGenHandler implements IWorldGenerator
                 line = br.readLine();
             }
             br.close();
-            System.out.println("Battletower Positions reloaded. Lines "+lineNumber+", entries "+towerPositions.size());
+            System.out.println("Battletower Positions reloaded. Lines " + lineNumber + ", entries " + towerPositions.size());
         }
         catch (Exception e)
         {
@@ -364,7 +356,10 @@ public class WorldGenHandler implements IWorldGenerator
         File file = new File(getWorldSaveDir(world), fileName);
         if (file.exists())
         {
-            file.delete();
+            if (!file.delete())
+            {
+                throw new RuntimeException("Ruins mod crashed because it was denied file write access to "+file);
+            }
         }
         
         try
@@ -413,8 +408,7 @@ public class WorldGenHandler implements IWorldGenerator
                     try
                     {
                         f.setAccessible(true);
-                        File saveLoc = (File) f.get(loader);
-                        return saveLoc;
+                        return (File) f.get(loader);
                     }
                     catch (Exception e)
                     {
@@ -446,7 +440,7 @@ public class WorldGenHandler implements IWorldGenerator
         
         if (chosen != null)
         {
-            instance.generator.generate(world, chosen.x, chosen.y, chosen.z, TowerTypes.Null.ordinal(), chosen.underground);
+            instance.generator.generate(world, chosen.x, chosen.y, chosen.z, AS_WorldGenTower.TowerTypes.Null.ordinal(), chosen.underground);
             obtainTowerPosListAccess();
             towerPositions.remove(chosen);
             releaseTowerPosListAccess();
@@ -475,7 +469,7 @@ public class WorldGenHandler implements IWorldGenerator
         obtainTowerPosListAccess();
         for (TowerPosition tp : towerPositions)
         {
-            instance.generator.generate(world, tp.x, tp.y, tp.z, regenerate ? tp.type : TowerTypes.Null.ordinal(), tp.underground);
+            instance.generator.generate(world, tp.x, tp.y, tp.z, regenerate ? tp.type : AS_WorldGenTower.TowerTypes.Null.ordinal(), tp.underground);
         }
         
         if (!regenerate)

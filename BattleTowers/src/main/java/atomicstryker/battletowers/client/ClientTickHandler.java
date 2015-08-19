@@ -73,7 +73,7 @@ public class ClientTickHandler
                             boolean multiplayer = mc.theWorld.isRemote;
 
                             AS_EntityGolem golem = (AS_EntityGolem) ents.get(i);
-                            Object progressHack = null;
+                            Object progressHack;
                             float progress = 0;
                             try
                             {

@@ -99,7 +99,7 @@ public class AS_EntityGolemFireball extends Entity
             {
                 if(collisionPosition.entityHit != null)
                 {
-                    if(!collisionPosition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity), 0));
+                    collisionPosition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity), 0);
                 }
                 worldObj.newExplosion(null, posX, posY, posZ, 1.0F, true, true);
             }
