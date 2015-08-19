@@ -1,14 +1,5 @@
 package atomicstryker.ruins.common;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -17,7 +8,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderHell;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
@@ -40,12 +30,20 @@ import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
     public static final String modversion = "15.2";
-    
-    public final static String TEMPLATE_EXT = "tml";
+
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
 
@@ -203,10 +201,11 @@ public class RuinsMod
         WorldHandle wh = getWorldHandle(world);
         if (wh.fileHandle != null)
         {
-            for (; !wh.fileHandle.loaded; Thread.yield())
+            while (!wh.fileHandle.loaded)
             {
+                Thread.yield();
             }
-            wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
+            wh.generator.generateNether(world, random, chunkX, chunkZ);
         }
     }
 
@@ -215,10 +214,11 @@ public class RuinsMod
         WorldHandle wh = getWorldHandle(world);
         if (wh.fileHandle != null)
         {
-            for (; !wh.fileHandle.loaded; Thread.yield())
+            while (!wh.fileHandle.loaded)
             {
+                Thread.yield();
             }
-            wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
+            wh.generator.generateNormal(world, random, chunkX, chunkZ);
         }
     }
 
@@ -264,9 +264,8 @@ public class RuinsMod
                     try
                     {
                         f.setAccessible(true);
-                        File saveLoc = (File) f.get(loader);
                         // System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
-                        return saveLoc;
+                        return (File) f.get(loader);
                     }
                     catch (Exception e)
                     {
@@ -287,19 +286,6 @@ public class RuinsMod
             return FMLClientHandler.instance().getClient().mcDataDir;
         }
         return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
-    }
-
-    public static int getBiomeFromName(String name)
-    {
-        for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
-        {
-            if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(name))
-            {
-                return BiomeGenBase.getBiomeGenArray()[i].biomeID;
-            }
-        }
-
-        return -1;
     }
 
     private void initWorldHandle(WorldHandle worldHandle, World world)

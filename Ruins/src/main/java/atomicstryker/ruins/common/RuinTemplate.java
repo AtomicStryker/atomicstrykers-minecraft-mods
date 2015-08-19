@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -80,11 +77,7 @@ public class RuinTemplate
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof RuinTemplate)
-        {
-            return ((RuinTemplate) o).name.equals(name);
-        }
-        return false;
+        return o instanceof RuinTemplate && ((RuinTemplate) o).name.equals(name);
     }
 
     @Override
@@ -108,28 +101,9 @@ public class RuinTemplate
         return biomes;
     }
 
-    public int getMinDistance()
-    {
-        return (width > length ? width : length) + lbuffer;
-    }
-
     public boolean isIgnoredBlock(Block blockID, World world, int x, int y, int z)
     {
-        if (blockID == Blocks.air)
-        {
-            return true;
-        }
-        // treat thin snow and most plants as air too
-        if (blockID == Blocks.snow_layer || blockID == Blocks.web)
-        {
-            return true;
-        }
-        if (isPlant(blockID, world, x, y, z))
-        {
-            return true;
-        }
-
-        return preserveBlock(blockID, world, x, y, z);
+        return blockID == Blocks.air || blockID == Blocks.snow_layer || blockID == Blocks.web || isPlant(blockID, world, x, y, z) || preserveBlock(blockID);
     }
     
     private boolean isPlant(Block blockID, World world, int x, int y, int z)
@@ -138,7 +112,7 @@ public class RuinTemplate
                 || blockID.isWood(world, new BlockPos(x, y, z));
     }
 
-    public boolean preserveBlock(Block blockID, World world, int x, int y, int z)
+    public boolean preserveBlock(Block blockID)
     {
         if (preserveWater)
         {
@@ -206,14 +180,9 @@ public class RuinTemplate
         int z = zBase + l_off;
         int xDim = width;
         int zDim = length;
-        
-        // override rotation wishes if its locked by template
-        if (preventRotation)
-        {
-            rotate = RuinsMod.DIR_NORTH;
-        }
+
         // how are we oriented?
-        else if (rotate == RuinsMod.DIR_EAST || rotate == RuinsMod.DIR_WEST)
+        if (!preventRotation && (rotate == RuinsMod.DIR_EAST || rotate == RuinsMod.DIR_WEST))
         {
             // reorient for east/west rotation
             x = xBase + l_off;
@@ -281,10 +250,6 @@ public class RuinTemplate
             }
         }
         final int newY = vals > 0 ? (int) Math.ceil(sum/vals) : y;
-        if (newY > y)
-        {
-            // TODO if the structure box just moved up, should check the top end of the box again for new obstructions?
-        }
         
         // check if the resulting levelling and overhang in the build site surface is acceptable
         int localOverhang = overhang;
@@ -315,7 +280,7 @@ public class RuinTemplate
     public RuinData getRuinData(int x, int y, int z, int rotate)
     {
         int add = lbuffer;
-        int xMin = 0, xMax = 0, zMin = 0, zMax = 0;
+        int xMin, xMax, zMin, zMax;
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
             xMin = x + l_off - add;
@@ -476,8 +441,7 @@ public class RuinTemplate
             }
         }
         bonemealMarkers.clear();
-        
-        // TODO test this
+
         for (AdjoiningTemplateData ad : adjoiningTemplates)
         {
             debugPrinter.printf("Considering to spawn adjoining %s of Ruin %s...\n", ad.adjoiningTemplate.getName(), getName());
@@ -582,7 +546,7 @@ public class RuinTemplate
         parseVariables(lines);
 
         // the first rule added will always be the preserve block rule.
-        rules.add(new RuinRuleAir(debugPrinter, this, ""));
+        rules.add(new RuinRuleAir(debugPrinter, this));
         
         // now get the rest of the data
         final Iterator<String> i = lines.iterator();
@@ -642,9 +606,9 @@ public class RuinTemplate
                         check = check[1].split(",");
                         final HashSet<Block> acceptables = new HashSet<Block>();
                         Block b;
-                        for (int x = 0; x < check.length; x++)
+                        for (String aCheck : check)
                         {
-                            b = GameData.getBlockRegistry().getObject(check[x]);
+                            b = GameData.getBlockRegistry().getObject(aCheck);
                             if (b != Blocks.air)
                             {
                                 acceptables.add(b);
@@ -663,9 +627,9 @@ public class RuinTemplate
                         check = check[1].split(",");
                         final HashSet<Block> inacceptables = new HashSet<Block>();
                         Block b;
-                        for (int x = 0; x < check.length; x++)
+                        for (String aCheck : check)
                         {
-                            b = GameData.getBlockRegistry().getObject(check[x]);
+                            b = GameData.getBlockRegistry().getObject(aCheck);
                             if (b != Blocks.air)
                             {
                                 inacceptables.add(b);
@@ -686,10 +650,7 @@ public class RuinTemplate
                 }
                 else if (line.startsWith("biomesToSpawnIn"))
                 {
-                    for (String s : line.split("=")[1].split(","))
-                    {
-                        biomes.add(s);
-                    }
+                    Collections.addAll(biomes, line.split("=")[1].split(","));
                 }
                 else if (line.startsWith("weight"))
                 {
@@ -765,17 +726,14 @@ public class RuinTemplate
                     if (file.exists() && file.canRead())
                     {
                         RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
-                        if (adjTempl != null)
-                        {
-                            AdjoiningTemplateData data = new AdjoiningTemplateData();
-                            data.adjoiningTemplate = adjTempl;
-                            data.relativeX = Integer.parseInt(vals[1]);
-                            data.acceptableY = Integer.parseInt(vals[2]);
-                            data.relativeZ = Integer.parseInt(vals[3]);
-                            data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
-                            
-                            adjoiningTemplates.add(data);
-                        }
+                        AdjoiningTemplateData data = new AdjoiningTemplateData();
+                        data.adjoiningTemplate = adjTempl;
+                        data.relativeX = Integer.parseInt(vals[1]);
+                        data.acceptableY = Integer.parseInt(vals[2]);
+                        data.relativeZ = Integer.parseInt(vals[3]);
+                        data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+
+                        adjoiningTemplates.add(data);
                     }
                 }
             }

@@ -22,7 +22,6 @@ public class FileHandler
 {
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
     private final ArrayList<HashSet<RuinTemplate>> templates = new ArrayList<HashSet<RuinTemplate>>();
-    private final ArrayList<Exclude> excluded = new ArrayList<Exclude>();
     protected int[][] vars;
 
     protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
@@ -67,7 +66,7 @@ public class FileHandler
             }
 
             PrintWriter pw;
-            File basedir = null;
+            File basedir;
             try
             {
                 basedir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
@@ -85,8 +84,10 @@ public class FileHandler
                 File log = new File(basedir, "ruins_log.txt");
                 if (log.exists())
                 {
-                    log.delete();
-                    log.createNewFile();
+                    if (!log.delete() || !log.createNewFile())
+                    {
+                        throw new RuntimeException("Ruins crashed trying to access file: "+log);
+                    }
                 }
                 pw = new PrintWriter(new BufferedWriter(new FileWriter(log)));
             }
@@ -145,21 +146,6 @@ public class FileHandler
             }
 
             /*
-             * Find and load the excluded file. If this does not exist, no
-             * worries.
-             */
-            try
-            {
-                pw.println();
-                pw.println("Loading excluded list from: " + saveFolder.getCanonicalPath());
-                readExclusions(saveFolder, pw);
-            }
-            catch (Exception e)
-            {
-                pw.println("No exclusions found for this world.");
-            }
-
-            /*
              * Now load in the main options file. All of these will revert to
              * defaults if the file could not be loaded.
              */
@@ -188,10 +174,9 @@ public class FileHandler
             int rand = random.nextInt(vars[WEIGHT][biome]);
             int oldval = 0, increment = 0;
             RuinTemplate retval = null;
-            final Iterator<RuinTemplate> i = templates.get(biome).iterator();
-            while (i.hasNext())
+            for (RuinTemplate ruinTemplate : templates.get(biome))
             {
-                retval = i.next();
+                retval = ruinTemplate;
                 increment += retval.getWeight();
                 if ((oldval <= rand) && (rand < increment))
                 {
@@ -210,45 +195,6 @@ public class FileHandler
     public boolean useGeneric(Random random, int biome)
     {
         return biome == RuinsMod.BIOME_NONE || random.nextInt(100) + 1 >= vars[CHANCE][biome];
-    }
-
-    public void removeTemplate(String name, int biome)
-    {
-        /*
-         * removes a ruin from the specified biome, providing support for unique
-         * templates.
-         */
-        final Iterator<RuinTemplate> i = templates.get(biome).iterator();
-        RuinTemplate rem = null;
-        boolean found = false;
-        while (i.hasNext())
-        {
-            rem = i.next();
-            if (rem.getName().equals(name))
-            {
-                found = true;
-                break;
-            }
-        }
-        if (found)
-        {
-            templates.get(biome).remove(rem);
-            excluded.add(new Exclude(name, biome));
-            recalcBiomeWeight(biome);
-        }
-    }
-
-    public void writeExclusions(File dir) throws Exception
-    {
-        final File file = new File(dir, "excl.txt");
-        final PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-        final Iterator<Exclude> i = excluded.iterator();
-        while (i.hasNext())
-        {
-            pw.println(i.next().toString());
-        }
-        pw.flush();
-        pw.close();
     }
 
     private void loadSpecificTemplates(PrintWriter pw, File dir, int biome, String bname) throws Exception
@@ -373,42 +319,22 @@ public class FileHandler
         br.close();
     }
 
-    private void readExclusions(File dir, PrintWriter pw) throws Exception
-    {
-        final File file = new File(dir, "excl.txt");
-        final BufferedReader br = new BufferedReader(new FileReader(file));
-        String read = br.readLine();
-        String[] check;
-        while (read != null)
-        {
-            if (read.startsWith("excl="))
-            {
-                check = read.split("=");
-                check = check[1].split(";");
-                int biome = Integer.parseInt(check[0]);
-                removeTemplate(check[1], biome);
-                pw.println("Excluded from biome " + BiomeGenBase.getBiomeGenArray()[biome].biomeName + ": " + check[1]);
-            }
-            read = br.readLine();
-        }
-        br.close();
-    }
-
     private void addRuins(PrintWriter pw, File path, int biomeID) throws Exception
     {
         final HashSet<RuinTemplate> targetList = templates.get(biomeID);
         RuinTemplate r;
         String candidate;
         BiomeGenBase bgb;
-        if (path.listFiles() != null)
+        File[] listFiles = path.listFiles();
+        if (listFiles != null)
         {
-            for (File f : path.listFiles())
+            for (File f : listFiles)
             {
                 try
                 {
                     r = new RuinTemplate(pw, f.getCanonicalPath(), f.getName());
                     targetList.add(r);
-                    for (String biomeName : ((RuinTemplate) r).getBiomesToSpawnIn())
+                    for (String biomeName : r.getBiomesToSpawnIn())
                     {
                         for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
                         {
@@ -456,23 +382,6 @@ public class FileHandler
             }
         }
         return false;
-    }
-
-    private class Exclude
-    {
-        protected String name;
-        protected int biome;
-
-        public Exclude(String n, int b)
-        {
-            name = n;
-            biome = b;
-        }
-
-        public String toString()
-        {
-            return "excl=" + biome + ";" + name;
-        }
     }
     
     private void copyGlobalOptionsTo(File dir) throws Exception

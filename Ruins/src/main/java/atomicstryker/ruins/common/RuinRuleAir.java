@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class RuinRuleAir extends RuinTemplateRule
 {
 
-    public RuinRuleAir(PrintWriter debugPrinter, RuinTemplate r, String rule) throws Exception
+    public RuinRuleAir(PrintWriter debugPrinter, RuinTemplate r) throws Exception
     {
         super(debugPrinter, r, "0,100,air");
     }
@@ -19,7 +19,7 @@ public class RuinRuleAir extends RuinTemplateRule
     public void doBlock(World world, Random random, int x, int y, int z, int rotate)
     {
         // This will preserve blocks correctly.
-        if (!owner.preserveBlock(world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y, z))
+        if (!owner.preserveBlock(world.getBlockState(new BlockPos(x, y, z)).getBlock()))
         //if (canReplace(Blocks.air, world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y ,z))
         {
             world.setBlockState(new BlockPos(x, y, z), Blocks.air.getDefaultState(), 2);

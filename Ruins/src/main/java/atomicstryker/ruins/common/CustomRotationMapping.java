@@ -120,17 +120,17 @@ public class CustomRotationMapping
                 {
                     String[] val = strLine.split("-");
                     int dir = 0;
-                    if (val[0].equals("EAST"))
+                    switch (val[0])
                     {
-                        dir = RuinsMod.DIR_EAST;
-                    }
-                    else if (val[0].equals("SOUTH"))
-                    {
-                        dir = RuinsMod.DIR_SOUTH;
-                    }
-                    else if (val[0].equals("WEST"))
-                    {
-                        dir = RuinsMod.DIR_WEST;
+                        case "EAST":
+                            dir = RuinsMod.DIR_EAST;
+                            break;
+                        case "SOUTH":
+                            dir = RuinsMod.DIR_SOUTH;
+                            break;
+                        case "WEST":
+                            dir = RuinsMod.DIR_WEST;
+                            break;
                     }
 
                     int metadata = Integer.parseInt(val[1]);

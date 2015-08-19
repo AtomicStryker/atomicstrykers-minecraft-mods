@@ -1,14 +1,6 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,19 +9,20 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityCommandBlock;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.tileentity.*;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.mojang.authlib.GameProfile;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class World2TemplateParser extends Thread
 {
@@ -250,12 +243,17 @@ public class World2TemplateParser extends Thread
                     {
                     	try
                         {
-                            Field f = ((TileEntityMobSpawner) te).getSpawnerBaseLogic().getClass().getDeclaredFields()[1];
-                            f.setAccessible(true);
-                            temp.data = (String) f.get(((TileEntityMobSpawner) te).getSpawnerBaseLogic());
+                            if (te != null)
+                            {
+                                Field f = ((TileEntityMobSpawner) te).getSpawnerBaseLogic().getClass().getDeclaredFields()[1];
+                                f.setAccessible(true);
+                                temp.data = (String) f.get(((TileEntityMobSpawner) te).getSpawnerBaseLogic());
+                            }
                         }
-                        catch (Exception e) {}
-                        // TODO temp.data = "MobSpawner:" + ((TileEntityMobSpawner) te).getSpawnerBaseLogic().getEntityNameToSpawn();
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
                     }
                     else if (temp.block == Blocks.torch || temp.block == Blocks.redstone_torch)
                     {
@@ -291,22 +289,22 @@ public class World2TemplateParser extends Thread
                         for (int index = 0; index < invItems.size(); index++)
                         {
                             ItemStack stack = invItems.get(index);
-                            String ident = null;
+                            String ident;
                             if (stack.getItem() instanceof ItemBlock)
                             {
-                                ItemStack cs = ((ItemBlock) stack.getItem()).getContainerItem(stack);
+                                ItemStack cs = stack.getItem().getContainerItem(stack);
                                 if (cs != null)
                                 {
-                                    ident = ((ResourceLocation)GameData.getBlockRegistry().getNameForObject(cs)).toString();
+                                    ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
                                 }
                                 else
                                 {
-                                    ident = ((ResourceLocation)GameData.getItemRegistry().getNameForObject(stack.getItem())).toString();
+                                    ident = GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
                                 }
                             }
                             else
                             {
-                                ident = ((ResourceLocation)GameData.getItemRegistry().getNameForObject(stack.getItem())).toString();
+                                ident = GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
                             }
                             if (ident != null)
                             {
@@ -350,7 +348,10 @@ public class World2TemplateParser extends Thread
                     else if (temp.block == Blocks.command_block)
                     {
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
-                        temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCustomName() + ":" + tec.getCommandBlockLogic().getCommandSenderName();
+                        if (tec != null)
+                        {
+                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCustomName() + ":" + tec.getCommandBlockLogic().getCommandSenderName();
+                        }
                     }
                     else if (temp.block == Blocks.standing_sign)
                     {
@@ -416,8 +417,7 @@ public class World2TemplateParser extends Thread
         if (c.equals("")) c = "null";
         String d = sign.signText[3].getUnformattedTextForChat();
         if (d.equals("")) d = "null";
-        String result = prefix+a+":"+b+":"+c+":"+d;
-        return result;
+        return prefix+a+":"+b+":"+c+":"+d;
     }
     
     private void toFile(File file)
@@ -426,11 +426,17 @@ public class World2TemplateParser extends Thread
         {
             if (file.exists())
             {
-                file.delete();
+                if (!file.delete())
+                {
+                    throw new RuntimeException("Ruins crashed trying to access file "+file);
+                }
             }
             else
             {
-                file.createNewFile();
+                if (!file.createNewFile())
+                {
+                    throw new RuntimeException("Ruins crashed trying to access file "+file);
+                }
             }
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             
@@ -464,16 +470,16 @@ public class World2TemplateParser extends Thread
             {
                 pw.println("layer");
 
-                for (int i = 0; i < layer.length; i++)
+                for (BlockData[] aLayer : layer)
                 {
                     /* have to invert this for some reason */
-                    for (int j = 0, j2 = layer[0].length-1; j < layer[0].length; j++, j2--)
+                    for (int j = 0, j2 = layer[0].length - 1; j < layer[0].length; j++, j2--)
                     {
                         /*
                          * since 'nothing' is not contained, it returns -1 + 1 =
                          * 0, which is the default preserveBlock rule
                          */
-                        pw.print(usedBlocks.indexOf(layer[i][j2]) + 1);
+                        pw.print(usedBlocks.indexOf(aLayer[j2]) + 1);
 
                         if (j < layer[0].length - 1)
                         {
@@ -545,11 +551,7 @@ public class World2TemplateParser extends Thread
         @Override
         public boolean equals(Object o)
         {
-            if (o instanceof BlockData)
-            {
-                return ((BlockData)o).toString().equals(this.toString());
-            }
-            return false;
+            return o instanceof BlockData && o.toString().equals(this.toString());
         }
     }
 }

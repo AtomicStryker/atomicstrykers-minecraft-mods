@@ -209,7 +209,6 @@ public class RuinTemplateRule
      * @param rule which may or may not contain nbt tags
      * @param nbttags a non null array list which after execution contains each nbt tag in order of occurence
      * @return the input string except all nbt tags have been replaced with NBT1, NBT2 ... etc
-     * @throws Exception
      */
     private String replaceNBTTags(String rule, ArrayList<String> nbttags)
     {
@@ -265,12 +264,10 @@ public class RuinTemplateRule
         return str;
     }
 
-    private Block cachedBlock;
     private Block tryFindingBlockOfName(String blockName)
     {
-        cachedBlock = GameData.getBlockRegistry().getObject(blockName);
         // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
-        return cachedBlock;
+        return GameData.getBlockRegistry().getObject(blockName);
     }
 
     @SuppressWarnings("unused")
@@ -360,7 +357,7 @@ public class RuinTemplateRule
 
     private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y - 1, z)).getBlock(), world, x, y - 1, z))
+        if ((condition <= 0) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y - 1, z)).getBlock(), world, x, y - 1, z))
         {
             return;
         }
@@ -370,7 +367,7 @@ public class RuinTemplateRule
 
     private void doAdjacentBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ (
+        if ((condition <= 0) ^ (
         // Are -all- adjacent blocks air?
                 (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x + 1, y, z)).getBlock(), world, x + 1, y, z)) 
                 && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z + 1)).getBlock(), world, x, y, z + 1))
@@ -385,7 +382,7 @@ public class RuinTemplateRule
 
     private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0 ? true : false) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y + 1, z)).getBlock(), world, x, y + 1, z))
+        if ((condition <= 0) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y + 1, z)).getBlock(), world, x, y + 1, z))
         {
             return;
         }
@@ -657,7 +654,7 @@ public class RuinTemplateRule
             {
                 try
                 {
-                    NBTTagCompound tc = (NBTTagCompound) JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}')+1));
+                    NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}')+1));
                     debugPrinter.println("teBlock read, decoded nbt tag: "+tc.toString());
                     world.setBlockState(p, ((Block) o).getStateFromMeta(blockMDs[blocknum]), rotate);
                     TileEntity tenew = TileEntity.createAndLoadEntity(tc);
@@ -796,7 +793,7 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            ItemStack stack = null;
+            ItemStack stack;
             for (int i = 0; i < items; i++)
             {
                 stack = getNormalStack(random);
@@ -814,7 +811,7 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            ItemStack stack = null;
+            ItemStack stack;
             for (int i = 0; i < items; i++)
             {
                 if (random.nextInt(20) < 19)
@@ -839,7 +836,7 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            ItemStack stack = null;
+            ItemStack stack;
             for (int i = 0; i < items; i++)
             {
                 if (random.nextInt(10) < 9)
@@ -948,7 +945,7 @@ public class RuinTemplateRule
                     try
                     {
                         hashsplit[1] = restoreNBTTags(hashsplit[1], nbtTags);
-                        putItem.setTagCompound((NBTTagCompound) JsonToNBT.getTagFromJson(hashsplit[1]));
+                        putItem.setTagCompound(JsonToNBT.getTagFromJson(hashsplit[1]));
                         debugPrinter.println("nbt tag applied: " + hashsplit[1]);
                     }
                     catch (NBTException e)
@@ -962,7 +959,6 @@ public class RuinTemplateRule
                     if (slotItemPrev == null)
                     {
                         inv.setInventorySlotContents(targetslot, putItem);
-                        continue;
                     }
                     else if (slotItemPrev.isItemEqual(putItem))
                     {
@@ -999,7 +995,6 @@ public class RuinTemplateRule
                             {
                                 slotItemPrev.stackSize += freeSize;
                                 putItem.stackSize -= freeSize;
-                                continue;
                             }
                         }
                     }
@@ -1204,18 +1199,8 @@ public class RuinTemplateRule
             return new ItemStack(Items.diamond, random.nextInt(4));
         }
     }
-    
-    private int rotateMetadata(Block blockID, int metadata, int dir)
-    {
-        int result = rotateMetadata(blockID, metadata, dir, true);
-        if (excessiveDebugging)
-        {
-            debugPrinter.println("Rotated blockID " + blockID + ", meta " + metadata + ", dir: " + dir + " result: " + result);
-        }
-        return result;
-    }
 
-    private int rotateMetadata(Block blockID, int metadata, int dir, boolean debugme)
+    private int rotateMetadata(Block blockID, int metadata, int dir)
     {
         // remember that, in this mod, NORTH is the default direction.
         // this method is unused if the direction is NORTH
@@ -1392,7 +1377,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 3)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
             case RuinsMod.DIR_SOUTH:
                 if (metadata == 0)
@@ -1405,7 +1390,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 2)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
                 if (metadata == 3)
                 {
@@ -1418,7 +1403,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 1)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
                 if (metadata == 2)
                 {
@@ -1593,7 +1578,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 3)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
             case RuinsMod.DIR_SOUTH:
                 if (metadata == 0)
@@ -1606,7 +1591,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 2)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
                 if (metadata == 3)
                 {
@@ -1619,7 +1604,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 1)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
                 if (metadata == 2)
                 {
@@ -1656,7 +1641,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 3)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
             case RuinsMod.DIR_SOUTH:
                 if (metadata == 0)
@@ -1669,7 +1654,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 2)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
                 if (metadata == 3)
                 {
@@ -1682,7 +1667,7 @@ public class RuinTemplateRule
                 }
                 if (metadata == 1)
                 {
-                    return 0 + tempdata;
+                    return tempdata;
                 }
                 if (metadata == 2)
                 {
@@ -1921,7 +1906,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 3)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
             case RuinsMod.DIR_SOUTH:
                 if (rotbits == 0)
@@ -1934,7 +1919,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 2)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 3)
                 {
@@ -1947,7 +1932,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 1)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 2)
                 {
@@ -1977,7 +1962,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 2)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 0)
                 {
@@ -1990,7 +1975,7 @@ public class RuinTemplateRule
             case RuinsMod.DIR_SOUTH:
                 if (rotbits == 1)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 2)
                 {
@@ -2019,7 +2004,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 3)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
             }
         }
@@ -2041,7 +2026,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 3)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 0)
                 {
@@ -2054,7 +2039,7 @@ public class RuinTemplateRule
             case RuinsMod.DIR_SOUTH:
                 if (rotbits == 2)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 3)
                 {
@@ -2083,7 +2068,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 1)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
             }
         }
@@ -2113,7 +2098,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 3)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
             case RuinsMod.DIR_SOUTH:
                 if (rotbits == 0)
@@ -2126,7 +2111,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 2)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 3)
                 {
@@ -2139,7 +2124,7 @@ public class RuinTemplateRule
                 }
                 if (rotbits == 1)
                 {
-                    return 0 | databits;
+                    return databits;
                 }
                 if (rotbits == 2)
                 {
@@ -2167,7 +2152,7 @@ public class RuinTemplateRule
                 {
                     return 1 | databits;
                 }
-                return 0 | databits;
+                return databits;
             }
             return metadata;
         }

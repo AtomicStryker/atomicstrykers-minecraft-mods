@@ -81,7 +81,10 @@ public class RuinGenerator
         {
             if (ruinsDataFileWriting.exists())
             {
-                ruinsDataFileWriting.delete();
+                if (!ruinsDataFileWriting.delete())
+                {
+                    throw new RuntimeException("Ruins crashed trying to access file "+ruinsDataFileWriting);
+                }
             }
 
             try
@@ -110,9 +113,15 @@ public class RuinGenerator
                 
                 if (ruinsDataFile.exists())
                 {
-                    ruinsDataFile.delete();
+                    if (!ruinsDataFile.delete())
+                    {
+                        throw new RuntimeException("Ruins crashed trying to access file "+ruinsDataFileWriting);
+                    }
                 }
-                ruinsDataFileWriting.renameTo(ruinsDataFile);
+                if (!ruinsDataFileWriting.renameTo(ruinsDataFile))
+                {
+                    throw new RuntimeException("Ruins crashed trying to access file "+ruinsDataFileWriting);
+                }
             }
             catch (IOException e)
             {
@@ -127,7 +136,10 @@ public class RuinGenerator
         {
             if (!file.exists())
             {
-                file.createNewFile();
+                if (!file.createNewFile())
+                {
+                    throw new RuntimeException("Ruins crashed trying to access file "+file);
+                }
                 
                 // put it into the initial set
                 registeredRuins.add(spawnPointBlock);
@@ -162,7 +174,7 @@ public class RuinGenerator
         }
     }
 
-    public boolean generateNormal(World world, Random random, int xBase, int j, int zBase)
+    public boolean generateNormal(World world, Random random, int xBase, int zBase)
     {
         for (int c = 0; c < fileHandler.triesPerChunkNormal; c++)
         {
@@ -174,7 +186,7 @@ public class RuinGenerator
         return true;
     }
 
-    public boolean generateNether(World world, Random random, int xBase, int j, int zBase)
+    public boolean generateNether(World world, Random random, int xBase, int zBase)
     {
         for (int c = 0; c < fileHandler.triesPerChunkNether; c++)
         {

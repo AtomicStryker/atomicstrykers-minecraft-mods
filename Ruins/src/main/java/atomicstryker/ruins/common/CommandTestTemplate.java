@@ -59,7 +59,6 @@ public class CommandTestTemplate extends CommandBase
                 {
                     player.addChatMessage(new ChatComponentText(
                             "You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
-                    player = null;
                 }
             }
             else
