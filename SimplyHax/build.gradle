@@ -18,3 +18,14 @@ buildscript {
 apply plugin: 'forge'
 
 apply from: '../masterbuild.gradle'
+
+apply plugin: 'curseforge'
+
+curse {
+    projectId = '227894'
+    displayName = 'Simply Hax'
+    artifact = file('build/libs/SimplyHax-1.8.jar')
+    addGameVersion '1.8'
+    apiKey = project.curseForgeApiKey
+    releaseType = 'release'
+}

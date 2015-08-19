@@ -18,3 +18,14 @@ buildscript {
 apply plugin: 'forge'
 
 apply from: '../masterbuild.gradle'
+
+apply plugin: 'curseforge'
+
+curse {
+    projectId = '227885'
+    displayName = 'Finder Compass'
+    artifact = file('build/libs/FinderCompass-1.8.jar')
+    addGameVersion '1.8'
+    apiKey = project.curseForgeApiKey
+    releaseType = 'release'
+}

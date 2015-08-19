@@ -18,3 +18,14 @@ buildscript {
 apply plugin: 'forge'
 
 apply from: '../masterbuild.gradle'
+
+apply plugin: 'curseforge'
+
+curse {
+    projectId = '227877'
+    displayName = 'AtomicStryker\'s Battle Towers'
+    artifact = file('build/distributions/BattleTowers-1.8.zip')
+    addGameVersion '1.8'
+    apiKey = project.curseForgeApiKey
+    releaseType = 'release'
+}

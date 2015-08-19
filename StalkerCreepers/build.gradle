@@ -18,3 +18,14 @@ buildscript {
 apply plugin: 'forge'
 
 apply from: '../masterbuild.gradle'
+
+apply plugin: 'curseforge'
+
+curse {
+    projectId = '227886'
+    displayName = 'Stalker Creepers'
+    artifact = file('build/distributions/StalkerCreepers-1.8.zip')
+    addGameVersion '1.8'
+    apiKey = project.curseForgeApiKey
+    releaseType = 'release'
+}
