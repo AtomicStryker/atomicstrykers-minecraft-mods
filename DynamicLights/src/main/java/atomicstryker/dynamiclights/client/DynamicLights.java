@@ -71,7 +71,7 @@ public class DynamicLights
     private long nextKeyTriggerTime;
     
     @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
+    public void preInit(@SuppressWarnings("unused")FMLPreInitializationEvent evt)
     {
         globalLightsOff = false;
         mcinstance = FMLClientHandler.instance().getClient();
@@ -81,7 +81,7 @@ public class DynamicLights
     }
     
     @EventHandler
-    public void load(FMLInitializationEvent evt)
+    public void load(@SuppressWarnings("unused")FMLInitializationEvent evt)
     {
         toggleButton = new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
@@ -151,6 +151,7 @@ public class DynamicLights
      * @param pos BlockPos instance of target coords
      * @return max(Block.getLightValue, Dynamic Light)
      */
+    @SuppressWarnings("unused")
     public static int getLightValue(Block block, IBlockAccess world, BlockPos pos)
     {
         int vanillaValue = block.getLightValue(world, pos);
@@ -249,7 +250,7 @@ public class DynamicLights
                     Iterator<DynamicLightSourceContainer> iter = lightList.iterator();
                     while (iter.hasNext())
                     {
-                        iterContainer = (DynamicLightSourceContainer) iter.next();
+                        iterContainer = iter.next();
                         if (iterContainer.getLightSource().equals(lightToRemove))
                         {
                             iter.remove();

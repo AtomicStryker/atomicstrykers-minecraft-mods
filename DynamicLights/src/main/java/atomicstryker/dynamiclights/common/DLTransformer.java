@@ -104,7 +104,7 @@ public class DLTransformer implements IClassTransformer
                 while (iter.hasNext())
                 {
                 	// check all nodes
-                    targetNode = (AbstractInsnNode) iter.next();
+                    targetNode = iter.next();
                     
                     // find the first ASTORE node, it stores the Block reference for the Block.getLightValue call
                     if (targetNode.getOpcode() == ASTORE)
