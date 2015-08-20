@@ -35,7 +35,6 @@ public class EntityClassLightSource
     private long nextUpdate;
     private long updateInterval;
     private ArrayList<EntityLightAdapter> trackedItems;
-    private Thread thread;
     private boolean threadRunning;
     
     private Configuration config;
@@ -77,7 +76,7 @@ public class EntityClassLightSource
             
             if (!threadRunning)
             {
-                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -132,7 +131,7 @@ public class EntityClassLightSource
                     // now find them in the already tracked item adapters
                     boolean found = false;
                     Iterator<EntityLightAdapter> iter = trackedItems.iterator();
-                    EntityLightAdapter adapter = null;
+                    EntityLightAdapter adapter;
                     while (iter.hasNext())
                     {
                         adapter = iter.next();

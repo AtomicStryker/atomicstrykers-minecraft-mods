@@ -120,10 +120,8 @@ public class DynamicLights
                 {
                     if (worldLights != null)
                     {
-                        Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
-                        while (iter.hasNext())
+                        for (DynamicLightSourceContainer c : worldLights)
                         {
-                            DynamicLightSourceContainer c = iter.next();
                             world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(c.getX(), c.getY(), c.getZ()));
                         }
                     }

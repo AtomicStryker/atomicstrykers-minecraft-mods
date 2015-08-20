@@ -42,7 +42,6 @@ public class DroppedItemsLightSource
     private long nextUpdate;
     private long updateInterval;
     private ArrayList<EntityItemAdapter> trackedItems;
-    private Thread thread;
     private boolean threadRunning;
     private Configuration config;
     
@@ -95,7 +94,7 @@ public class DroppedItemsLightSource
             
             if (!threadRunning)
             {
-                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -137,7 +136,7 @@ public class DroppedItemsLightSource
                     // now find them in the already tracked item adapters
                     boolean found = false;
                     Iterator<EntityItemAdapter> iter = trackedItems.iterator();
-                    EntityItemAdapter adapter = null;
+                    EntityItemAdapter adapter;
                     while (iter.hasNext())
                     {
                         adapter = iter.next();

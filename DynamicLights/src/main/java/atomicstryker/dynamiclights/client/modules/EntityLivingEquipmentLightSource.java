@@ -42,7 +42,6 @@ public class EntityLivingEquipmentLightSource
     private long nextUpdate;
     private long updateInterval;
     private ArrayList<EntityLightAdapter> trackedEntities;
-    private Thread thread;
     private boolean threadRunning;
     private ItemConfigHelper itemsMap;
     private Configuration config;
@@ -89,7 +88,7 @@ public class EntityLivingEquipmentLightSource
             
             if (!threadRunning)
             {
-                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -169,7 +168,7 @@ public class EntityLivingEquipmentLightSource
                     // now find them in the already tracked adapters
                     boolean found = false;
                     Iterator<EntityLightAdapter> iter = trackedEntities.iterator();
-                    EntityLightAdapter adapter = null;
+                    EntityLightAdapter adapter;
                     while (iter.hasNext())
                     {
                         adapter = iter.next();

@@ -1,16 +1,10 @@
 package atomicstryker.dynamiclights.client.modules;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
@@ -24,6 +18,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -40,7 +39,6 @@ public class BurningEntitiesLightSource
     private long nextUpdate;
     private long updateInterval;
     private ArrayList<EntityLightAdapter> trackedEntities;
-    private Thread thread;
     private boolean threadRunning;
     private Configuration config;
     private HashMap<Class<? extends Entity>, Integer> lightValueMap;
@@ -80,7 +78,7 @@ public class BurningEntitiesLightSource
             
             if (!threadRunning)
             {
-                thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -107,10 +105,9 @@ public class BurningEntitiesLightSource
             {
                 ent = (Entity) o;
                 // Loop all loaded Entities, find alive and valid EntityLiving not otherwise handled
-                if ((ent instanceof EntityLivingBase || ent instanceof EntityFireball || ent instanceof EntityArrow)
-                        && ent.isEntityAlive() && ent.isBurning() && !(ent instanceof EntityItem) && !(ent instanceof EntityPlayer))
+                if ((ent instanceof EntityLivingBase || ent instanceof EntityFireball || ent instanceof EntityArrow) && ent.isEntityAlive() && ent.isBurning() && !(ent instanceof EntityPlayer))
                 {
-                    boolean shouldLight = false;
+                    boolean shouldLight;
                     if (!lightValueMap.containsKey(ent.getClass()))
                     {
                         config.load();
@@ -133,7 +130,7 @@ public class BurningEntitiesLightSource
                     // now find them in the already tracked adapters
                     boolean found = false;
                     Iterator<EntityLightAdapter> iter = trackedEntities.iterator();
-                    EntityLightAdapter adapter = null;
+                    EntityLightAdapter adapter;
                     while (iter.hasNext())
                     {
                         adapter = iter.next();

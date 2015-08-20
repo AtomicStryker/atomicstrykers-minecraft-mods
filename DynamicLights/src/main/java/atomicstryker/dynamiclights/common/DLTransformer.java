@@ -66,17 +66,15 @@ public class DLTransformer implements IClassTransformer
         classReader.accept(classNode, ClassReader.SKIP_FRAMES); // SKIP_FRAMES to avoid ASM bug present here
         
         // find method to inject into
-        Iterator<MethodNode> methods = classNode.methods.iterator();
-        while(methods.hasNext())
+        for (MethodNode m : classNode.methods)
         {
-            MethodNode m = methods.next();
             if (m.name.equals(computeLightValueMethodName)
-            && m.desc.equals(targetMethodDesc))
+                    && m.desc.equals(targetMethodDesc))
             {
-                System.out.println("In target method "+computeLightValueMethodName+", Patching!");
+                System.out.println("In target method " + computeLightValueMethodName + ", Patching!");
                 
                 /* before patch:
-			       0: aload_2       
+                   0: aload_2
 			       1: getstatic     #136                // Field net/minecraft/world/EnumSkyBlock.SKY:Lnet/minecraft/world/EnumSkyBlock;
 			       4: if_acmpne     18
 			       7: aload_0       
@@ -97,44 +95,44 @@ public class DLTransformer implements IClassTransformer
 			      35: istore        4
 			      [... many more...]
                  */
-                
+
                 AbstractInsnNode targetNode = null;
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 boolean found = false;
                 while (iter.hasNext())
                 {
-                	// check all nodes
+                    // check all nodes
                     targetNode = iter.next();
-                    
+
                     // find the first ASTORE node, it stores the Block reference for the Block.getLightValue call
                     if (targetNode.getOpcode() == ASTORE)
                     {
-                    	VarInsnNode astore = (VarInsnNode) targetNode;
-                    	System.out.println("Found ASTORE Node, is writing variable number: "+astore.var);
-                    	
-                    	// go further until ISTORE is hit
-                    	while (targetNode.getOpcode() != ISTORE)
-                    	{
-                    		if (targetNode instanceof MethodInsnNode)
-                    		{
-                    			MethodInsnNode mNode = (MethodInsnNode) targetNode;
-                    			System.out.printf("found target node, opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
-                    			found = true;
-                    			iter.remove();
-                    			targetNode = iter.next(); // select next node as target
-                    			break;
-                    		}
-                    		targetNode = iter.next();
-                    		System.out.printf("Node %s, opcode %d\n", targetNode, targetNode.getOpcode());
-                    	}
-                    	break;
+                        VarInsnNode astore = (VarInsnNode) targetNode;
+                        System.out.println("Found ASTORE Node, is writing variable number: " + astore.var);
+
+                        // go further until ISTORE is hit
+                        while (targetNode.getOpcode() != ISTORE)
+                        {
+                            if (targetNode instanceof MethodInsnNode)
+                            {
+                                MethodInsnNode mNode = (MethodInsnNode) targetNode;
+                                System.out.printf("found target node, opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
+                                found = true;
+                                iter.remove();
+                                targetNode = iter.next(); // select next node as target
+                                break;
+                            }
+                            targetNode = iter.next();
+                            System.out.printf("Node %s, opcode %d\n", targetNode, targetNode.getOpcode());
+                        }
+                        break;
                     }
                 }
-                
+
                 if (found)
                 {
-                	// now write our replacement before the target node
-                	m.instructions.insertBefore(targetNode, new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", goalInvokeDesc, false));
+                    // now write our replacement before the target node
+                    m.instructions.insertBefore(targetNode, new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", goalInvokeDesc, false));
                 }
                 break;
             }

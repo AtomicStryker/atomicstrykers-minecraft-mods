@@ -40,7 +40,6 @@ public class PlayerOthersLightSource
     private long nextUpdate;
     private long updateInterval;
     private ArrayList<OtherPlayerAdapter> trackedPlayers;
-    private Thread thread;
     private boolean threadRunning;
     
     private ItemConfigHelper itemsMap;
@@ -88,7 +87,7 @@ public class PlayerOthersLightSource
             
             if (!threadRunning)
             {
-                thread = new OtherPlayerChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new OtherPlayerChecker(mcinstance.theWorld.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -130,7 +129,7 @@ public class PlayerOthersLightSource
                     // now find them in the already tracked player adapters
                     boolean found = false;
                     Iterator<OtherPlayerAdapter> iter = trackedPlayers.iterator();
-                    OtherPlayerAdapter adapter = null;
+                    OtherPlayerAdapter adapter;
                     while (iter.hasNext())
                     {
                         adapter = iter.next();
