@@ -68,21 +68,21 @@ public class AS_EntityGolemFireball extends Entity
         Entity hitEntity = null;
         List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double minDist = 0.0D;
-        for(int index = 0; index < list.size(); index++)
+        for (Object aList : list)
         {
-            Entity ent = (Entity)list.get(index);
-            if(!ent.canBeCollidedWith() || (ent == shooterEntity && ticksExisted < 25 && !wasDeflected))
+            Entity ent = (Entity) aList;
+            if (!ent.canBeCollidedWith() || (ent == shooterEntity && ticksExisted < 25 && !wasDeflected))
             {
                 continue;
             }
-            AxisAlignedBB axisalignedbb = ent.getEntityBoundingBox().expand( 0.3F,  0.3F,  0.3F);
+            AxisAlignedBB axisalignedbb = ent.getEntityBoundingBox().expand(0.3F, 0.3F, 0.3F);
             MovingObjectPosition entCollision = axisalignedbb.calculateIntercept(curVec, nextVec);
-            if(entCollision == null)
+            if (entCollision == null)
             {
                 continue;
             }
             double distToCollision = curVec.distanceTo(entCollision.hitVec);
-            if(distToCollision < minDist || minDist == 0.0D)
+            if (distToCollision < minDist || minDist == 0.0D)
             {
                 hitEntity = ent;
                 minDist = distToCollision;
