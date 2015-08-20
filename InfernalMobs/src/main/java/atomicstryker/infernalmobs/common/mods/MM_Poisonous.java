@@ -10,6 +10,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Poisonous extends MobModifier
 {
+    
+    public MM_Poisonous()
+    {
+        super();
+    }
+    
+    public MM_Poisonous(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

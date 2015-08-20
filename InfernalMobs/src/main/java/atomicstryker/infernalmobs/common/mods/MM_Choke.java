@@ -9,6 +9,17 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Choke extends MobModifier
 {
+    
+    public MM_Choke()
+    {
+        super();
+    }
+    
+    public MM_Choke(MobModifier next)
+    {
+        super(next);
+    }
+    
     private EntityLivingBase lastTarget;
     private int lastAir;
 

@@ -9,6 +9,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Darkness extends MobModifier
 {
+    
+    public MM_Darkness()
+    {
+        super();
+    }
+    
+    public MM_Darkness(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

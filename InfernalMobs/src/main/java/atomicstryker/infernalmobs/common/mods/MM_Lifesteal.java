@@ -8,6 +8,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Lifesteal extends MobModifier
 {
+    
+    public MM_Lifesteal()
+    {
+        super();
+    }
+    
+    public MM_Lifesteal(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

@@ -6,6 +6,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Bulwark extends MobModifier
 {
+    
+    public MM_Bulwark()
+    {
+        super();
+    }
+    
+    public MM_Bulwark(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

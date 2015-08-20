@@ -9,6 +9,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Weakness extends MobModifier
 {
+    
+    public MM_Weakness()
+    {
+        super();
+    }
+    
+    public MM_Weakness(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

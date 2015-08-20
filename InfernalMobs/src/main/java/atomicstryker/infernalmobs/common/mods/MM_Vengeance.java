@@ -7,6 +7,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Vengeance extends MobModifier
 {
+    
+    public MM_Vengeance()
+    {
+        super();
+    }
+    
+    public MM_Vengeance(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

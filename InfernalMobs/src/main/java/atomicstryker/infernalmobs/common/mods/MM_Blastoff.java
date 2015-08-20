@@ -9,6 +9,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Blastoff extends MobModifier
 {
+    
+    public MM_Blastoff()
+    {
+        super();
+    }
+    
+    public MM_Blastoff(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

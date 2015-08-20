@@ -8,6 +8,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Quicksand extends MobModifier
 {
+    
+    public MM_Quicksand()
+    {
+        super();
+    }
+    
+    public MM_Quicksand(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

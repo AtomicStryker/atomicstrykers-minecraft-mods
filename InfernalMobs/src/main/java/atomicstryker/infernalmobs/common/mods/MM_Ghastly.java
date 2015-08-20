@@ -8,6 +8,16 @@ import net.minecraft.util.Vec3;
 
 public class MM_Ghastly extends MobModifier
 {
+    
+    public MM_Ghastly()
+    {
+        super();
+    }
+    
+    public MM_Ghastly(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

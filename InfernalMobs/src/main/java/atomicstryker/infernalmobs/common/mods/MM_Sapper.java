@@ -9,6 +9,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Sapper extends MobModifier
 {
+    
+    public MM_Sapper()
+    {
+        super();
+    }
+    
+    public MM_Sapper(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

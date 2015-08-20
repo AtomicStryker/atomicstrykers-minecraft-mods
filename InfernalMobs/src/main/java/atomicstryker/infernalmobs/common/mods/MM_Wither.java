@@ -10,6 +10,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Wither extends MobModifier
 {
+    
+    public MM_Wither()
+    {
+        super();
+    }
+    
+    public MM_Wither(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

@@ -10,6 +10,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Cloaking extends MobModifier
 {
+    
+    public MM_Cloaking()
+    {
+        super();
+    }
+    
+    public MM_Cloaking(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

@@ -6,6 +6,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Regen extends MobModifier
 {
+    
+    public MM_Regen()
+    {
+        super();
+    }
+    
+    public MM_Regen(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

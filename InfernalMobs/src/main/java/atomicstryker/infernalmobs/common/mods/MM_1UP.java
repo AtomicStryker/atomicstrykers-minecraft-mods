@@ -8,7 +8,17 @@ import atomicstryker.infernalmobs.common.MobModifier;
 public class MM_1UP extends MobModifier
 {
     private boolean healed;
-
+    
+    public MM_1UP()
+    {
+        super();
+    }
+    
+    public MM_1UP(MobModifier next)
+    {
+        super(next);
+    }
+    
     @Override
     public String getModName()
     {

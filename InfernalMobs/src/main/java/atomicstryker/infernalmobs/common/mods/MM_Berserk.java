@@ -8,6 +8,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Berserk extends MobModifier
 {
+    
+    public MM_Berserk()
+    {
+        super();
+    }
+    
+    public MM_Berserk(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

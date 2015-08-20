@@ -9,6 +9,16 @@ import net.minecraft.util.MathHelper;
 
 public class MM_Gravity extends MobModifier
 {
+    
+    public MM_Gravity()
+    {
+        super();
+    }
+    
+    public MM_Gravity(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

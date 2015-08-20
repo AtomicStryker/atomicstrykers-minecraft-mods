@@ -7,6 +7,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Exhaust extends MobModifier
 {
+    
+    public MM_Exhaust()
+    {
+        super();
+    }
+    
+    public MM_Exhaust(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

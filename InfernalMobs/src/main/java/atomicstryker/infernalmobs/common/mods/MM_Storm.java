@@ -9,6 +9,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Storm extends MobModifier
 {
+    
+    public MM_Storm()
+    {
+        super();
+    }
+    
+    public MM_Storm(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

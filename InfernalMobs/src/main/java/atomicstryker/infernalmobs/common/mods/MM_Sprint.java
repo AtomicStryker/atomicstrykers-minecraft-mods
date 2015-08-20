@@ -5,6 +5,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Sprint extends MobModifier
 {
+    
+    public MM_Sprint()
+    {
+        super();
+    }
+    
+    public MM_Sprint(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

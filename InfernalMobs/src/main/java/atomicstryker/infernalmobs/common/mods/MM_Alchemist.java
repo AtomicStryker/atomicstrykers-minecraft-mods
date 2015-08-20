@@ -9,6 +9,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 public class MM_Alchemist extends MobModifier
 {
     
+    public MM_Alchemist()
+    {
+        super();
+    }
+    
+    public MM_Alchemist(MobModifier next)
+    {
+        super(next);
+    }
+    
     private long nextAbilityUse = 0L;
     private final static long coolDown = 6000L;
     private final static float MIN_DISTANCE = 2F;

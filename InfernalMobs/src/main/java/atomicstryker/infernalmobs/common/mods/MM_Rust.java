@@ -8,6 +8,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Rust extends MobModifier
 {
+    
+    public MM_Rust()
+    {
+        super();
+    }
+    
+    public MM_Rust(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()

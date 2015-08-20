@@ -13,6 +13,16 @@ import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Ender extends MobModifier
 {
+    
+    public MM_Ender()
+    {
+        super();
+    }
+    
+    public MM_Ender(MobModifier next)
+    {
+        super(next);
+    }
 
     @Override
     public String getModName()
