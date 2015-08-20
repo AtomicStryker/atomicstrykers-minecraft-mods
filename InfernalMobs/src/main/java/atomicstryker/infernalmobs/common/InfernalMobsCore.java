@@ -486,11 +486,11 @@ public class InfernalMobsCore
             {
                 if (lastMod == null)
                 {
-                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] {}).newInstance(entity);
+                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] {}).newInstance();
                 }
                 else
                 {
-                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] { MobModifier.class }).newInstance(entity, lastMod);
+                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] { MobModifier.class }).newInstance(lastMod);
                 }
             }
             catch (Exception e)
@@ -551,7 +551,7 @@ public class InfernalMobsCore
     {
         if (!getIsRareEntity(entity))
         {
-            MobModifier mod = stringToMobModifiers(entity, savedMods);
+            MobModifier mod = stringToMobModifiers(savedMods);
             if (mod != null)
             {
                 proxy.getRareMobs().put(entity, mod);
@@ -565,7 +565,7 @@ public class InfernalMobsCore
         }
     }
 
-    private MobModifier stringToMobModifiers(EntityLivingBase entity, String buffer)
+    private MobModifier stringToMobModifiers(String buffer)
     {
         MobModifier lastMod = null;
 
@@ -585,11 +585,11 @@ public class InfernalMobsCore
                 {
                     if (lastMod == null)
                     {
-                        nextMod = (MobModifier) c.getConstructor(new Class[] {}).newInstance(entity);
+                        nextMod = (MobModifier) c.getConstructor(new Class[] {}).newInstance();
                     }
                     else
                     {
-                        nextMod = (MobModifier) c.getConstructor(new Class[] {MobModifier.class }).newInstance(entity, lastMod);
+                        nextMod = (MobModifier) c.getConstructor(new Class[] {MobModifier.class }).newInstance(lastMod);
                     }
                 }
                 catch (Exception e)

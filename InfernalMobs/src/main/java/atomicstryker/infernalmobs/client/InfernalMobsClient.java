@@ -258,7 +258,7 @@ public class InfernalMobsClient implements ISidedProxy
     }
 
     @Override
-    public void onHealthPacketForClient(String stringData, int entID, float health, float maxhealth)
+    public void onHealthPacketForClient(int entID, float health, float maxhealth)
     {
         Entity ent = FMLClientHandler.instance().getClient().theWorld.getEntityByID(entID);
         if (ent != null && ent instanceof EntityLivingBase)

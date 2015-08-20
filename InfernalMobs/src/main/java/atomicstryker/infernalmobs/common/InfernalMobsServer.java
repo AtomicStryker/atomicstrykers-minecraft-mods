@@ -34,7 +34,7 @@ public class InfernalMobsServer implements ISidedProxy
     }
 
     @Override
-    public void onHealthPacketForClient(String stringData, int entID, float health, float maxhealth)
+    public void onHealthPacketForClient(int entID, float health, float maxhealth)
     {
         // NOOP
     }

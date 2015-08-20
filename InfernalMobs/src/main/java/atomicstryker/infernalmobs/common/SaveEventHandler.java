@@ -9,7 +9,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class SaveEventHandler
 {
 
-    @SuppressWarnings("rawtypes")
 	@SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event)
     {
@@ -35,7 +34,6 @@ public class SaveEventHandler
         }
     }
 
-    @SuppressWarnings("rawtypes")
 	@SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load event)
     {

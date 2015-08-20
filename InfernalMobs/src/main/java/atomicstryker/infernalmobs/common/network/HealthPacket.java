@@ -67,7 +67,7 @@ public class HealthPacket implements IPacket
             // client always sends packets with health = maxhealth = 0
             if (maxhealth > 0)
             {
-                InfernalMobsCore.proxy.onHealthPacketForClient(stringData, entID, health, maxhealth);
+                InfernalMobsCore.proxy.onHealthPacketForClient(entID, health, maxhealth);
             }
             else
             {

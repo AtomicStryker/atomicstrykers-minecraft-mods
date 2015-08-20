@@ -67,8 +67,9 @@ public abstract class MobModifier
      * Constructor for the chained-together case of modifiers
      * @param nxtMod chained MobModifier instance
      */
-    public MobModifier(MobModifier nxtMod)
+    protected MobModifier(MobModifier nxtMod)
     {
+        this();
         this.nextMod = nxtMod;
     }
 

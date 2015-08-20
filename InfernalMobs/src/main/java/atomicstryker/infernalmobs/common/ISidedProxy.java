@@ -12,7 +12,7 @@ public interface ISidedProxy
     
     ConcurrentHashMap<EntityLivingBase, MobModifier> getRareMobs();
     
-    void onHealthPacketForClient(String stringData, int entID, float health, float maxhealth);
+    void onHealthPacketForClient(int entID, float health, float maxhealth);
     
     void onKnockBackPacket(float xv, float zv);
     
