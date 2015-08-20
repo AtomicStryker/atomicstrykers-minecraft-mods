@@ -199,7 +199,7 @@ public class ChickenLightningBolt
 	
 	public static Vector3 getFocalPoint(TileEntity tile)
 	{
-		return Vector3.fromTileEntityCenter((TileEntity) tile);
+		return Vector3.fromTileEntityCenter(tile);
 	}
 	
 	public ChickenLightningBolt(World world, Vector3 sourcevec, TileEntity target, long seed)

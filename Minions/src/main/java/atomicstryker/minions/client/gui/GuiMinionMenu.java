@@ -69,7 +69,7 @@ public class GuiMinionMenu extends GuiScreen
         		if (MinionsClient.hasMinionsSMPOverride)
         		{
         			MinionsCore.instance.networkHelper.sendPacketToServer(new UnsummonPacket(mc.thePlayer.getCommandSenderName()));
-        			mc.displayGuiScreen((GuiScreen)null);
+        			mc.displayGuiScreen(null);
         		}
         		else
         		{
@@ -79,14 +79,14 @@ public class GuiMinionMenu extends GuiScreen
         	else if (ID == 2)
         	{
             	MinionsClient.isSelectingMineArea = !MinionsClient.isSelectingMineArea;
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.mc.displayGuiScreen(null);
                 MinionsClient.mineAreaShape = 0;
         	}
         	else if (ID == 3)
         	{
         	    MinionsClient.isSelectingMineArea = !MinionsClient.isSelectingMineArea;
         	    MinionsClient.mineAreaShape = 1;
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.mc.displayGuiScreen(null);
         	}
         	else if (ID == 4)
         	{
@@ -110,7 +110,7 @@ public class GuiMinionMenu extends GuiScreen
     	if (var1 == 'l' && cheatCount == 7)
         {
     	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.thePlayer.getCommandSenderName())); // cheater!!!!
-            mc.displayGuiScreen((GuiScreen) null);
+            mc.displayGuiScreen(null);
         }
     }
 

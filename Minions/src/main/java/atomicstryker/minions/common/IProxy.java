@@ -8,15 +8,15 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public interface IProxy
 {
-    public void preInit(FMLPreInitializationEvent event);
+    void preInit(FMLPreInitializationEvent event);
 
-    public void load(FMLInitializationEvent evt);
+    void load(FMLInitializationEvent evt);
 
-    public void registerRenderInformation();
+    void registerRenderInformation();
 
-    public boolean hasPlayerMinions(EntityPlayer player);
+    boolean hasPlayerMinions(EntityPlayer player);
 
-    public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player);
+    void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player);
 
-    public void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player);
+    void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player);
 }

@@ -30,12 +30,12 @@ public enum LineColor {
     protected LineInfo normal;
     protected LineInfo hidden;
 
-    private LineColor(float r, float g, float b) {
+    LineColor(float r, float g, float b) {
         normal = new LineInfo(3.0f, r, g, b, 0.8f, GL11.GL_LESS);
         hidden = new LineInfo(3.0f, r, g, b, 0.2f, GL11.GL_GEQUAL);
     }
     
-    private LineColor(String hex) {
+    LineColor(String hex) {
         setColor(hex);
     }
 

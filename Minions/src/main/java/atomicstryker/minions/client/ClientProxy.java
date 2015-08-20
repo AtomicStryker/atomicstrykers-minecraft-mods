@@ -70,12 +70,12 @@ public class ClientProxy implements IProxy
     @Override
     public void onMastersGloveRightClickHeld(ItemStack itemstack, World world, EntityPlayer player)
     {
-        MinionsClient.onMastersGloveRightClickHeld(itemstack, world, player);
+        MinionsClient.onMastersGloveRightClickHeld(player);
     }
 
     @Override
     public void onMastersGloveRightClick(ItemStack itemstack, World world, EntityPlayer player)
     {
-        client.onMastersGloveRightClick(itemstack, world, player);
+        client.onMastersGloveRightClick(world, player);
     }
 }

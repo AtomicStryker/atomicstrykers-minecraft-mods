@@ -64,12 +64,6 @@ public class ItemMastersStaff extends Item
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
     {
         player.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
-        
-        if (world.isRemote)
-        {
-            //PacketDispatcher.sendPacketToServer(ForgePacketWrapper.createPacket(MinionsCore.getPacketChannel(), PacketType.HASMINIONS.ordinal(), null));
-        }
-        
         return itemStack;
     }
 

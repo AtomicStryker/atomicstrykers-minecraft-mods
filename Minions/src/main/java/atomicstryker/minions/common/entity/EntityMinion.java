@@ -142,7 +142,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(16, (Integer) (b ? 1 : 0));
+            dataWatcher.updateObject(16, b ? 1 : 0);
         }
     }
 
@@ -423,7 +423,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                     else
                     {
                         AStarNode[] possibles =
-                                AStarStatic.getAccessNodesSorted(worldObj, doubleToInt(posX), doubleToInt(posY), doubleToInt(posZ),
+                                AStarStatic.getAccessNodesSorted(worldObj,
                                         returnChestOrInventory.getPos().getX(), returnChestOrInventory.getPos().getY(), returnChestOrInventory.getPos().getZ());
                         if (possibles.length != 0)
                         {

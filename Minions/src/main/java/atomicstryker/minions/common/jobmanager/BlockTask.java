@@ -259,7 +259,7 @@ public abstract class BlockTask
      */
     private AStarNode[] getAccessNodesSorted(int workerX, int workerY, int workerZ)
     {
-        return AStarStatic.getAccessNodesSorted(worker.worldObj, workerX, workerY, workerZ, posX, posY, posZ);
+        return AStarStatic.getAccessNodesSorted(worker.worldObj, posX, posY, posZ);
     }
 
     /**

@@ -209,7 +209,7 @@ public abstract class Minion_Job_Manager
     {
     	while(!this.workerList.isEmpty())
     	{
-    		this.setWorkerFree((EntityMinion) this.workerList.get(0));
+    		this.setWorkerFree(this.workerList.get(0));
     	}
     	
     	isFinished = true;

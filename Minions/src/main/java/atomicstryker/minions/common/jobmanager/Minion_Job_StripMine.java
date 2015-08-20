@@ -88,7 +88,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         }
         else if (!workerList.get(0).hasTask() && !jobQueue.isEmpty())
         {
-            BlockTask job = (BlockTask) this.jobQueue.get(0);
+            BlockTask job = this.jobQueue.get(0);
             workerList.get(0).giveTask(job, true);           
             job.setWorker(workerList.get(0));
         }

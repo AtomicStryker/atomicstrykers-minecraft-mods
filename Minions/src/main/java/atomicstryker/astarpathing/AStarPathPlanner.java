@@ -39,11 +39,7 @@ public class AStarPathPlanner
 
     public boolean isBusy()
     {
-        if (worker == null)
-        {
-            return false;
-        }
-        return worker.getState() != Thread.State.NEW;
+        return worker != null && worker.getState() != Thread.State.NEW;
     }
     
     private int checkYCoordViability(int startx, int starty, int startz)

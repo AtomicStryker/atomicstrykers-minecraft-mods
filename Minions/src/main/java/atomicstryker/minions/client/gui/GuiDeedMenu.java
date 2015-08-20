@@ -60,7 +60,7 @@ public class GuiDeedMenu extends GuiScreen
     {
         if (var1.enabled)
         {
-            mc.displayGuiScreen((GuiScreen) null);
+            mc.displayGuiScreen(null);
             if (var1.id != 0)
             {
                 EvilDeed deed = deedButtons.get(var1.id - 1);

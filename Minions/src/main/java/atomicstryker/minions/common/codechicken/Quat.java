@@ -118,10 +118,8 @@ public class Quat
     {
         StringBuilder stringbuilder = new StringBuilder();
         Formatter formatter = new Formatter(stringbuilder, Locale.US);
-        formatter.format("Quaternion:\n", new Object[0]);
-        formatter.format("  < %f %f %f %f >\n", new Object[] {
-            Double.valueOf(s), Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)
-        });
+        formatter.format("Quaternion:\n");
+        formatter.format("  < %f %f %f %f >\n", Double.valueOf(s), Double.valueOf(x), Double.valueOf(y), Double.valueOf(z));
         formatter.close();
         return stringbuilder.toString();
     }

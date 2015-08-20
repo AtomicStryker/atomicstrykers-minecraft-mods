@@ -44,7 +44,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     	
     	if (hasJobs)
     	{
-    		nextBlock = (BlockTask) this.jobQueue.get(0);
+    		nextBlock = this.jobQueue.get(0);
 	    	worker = this.getNearestAvailableWorker(nextBlock.posX, nextBlock.posY, nextBlock.posZ);
     	}
     	else
@@ -59,7 +59,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     			// worker.giveTask();
     			// job.setworker!
     			
-    			BlockTask job = (BlockTask) this.jobQueue.get(0);
+    			BlockTask job = this.jobQueue.get(0);
     			worker.giveTask(job, true);
     			job.setWorker(worker);
     			

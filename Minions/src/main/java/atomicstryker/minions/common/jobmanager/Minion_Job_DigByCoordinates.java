@@ -132,7 +132,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     	{
     		if (!jobQueue.isEmpty())
     		{
-        		nextBlock = (BlockTask) this.jobQueue.get(0);
+        		nextBlock = this.jobQueue.get(0);
     	    	worker = this.getNearestAvailableWorker(nextBlock.posX, nextBlock.posY, nextBlock.posZ);
     		}
     		
@@ -277,7 +277,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     		}
     		
     		// so we have one of the topmost layer's blocks infront of us now. Check if Minions can reach it.
-    		if(AStarStatic.getAccessNodesSorted(worldObj, startX, startY, startZ, task.posX, task.posY, task.posZ).length > 0)
+    		if(AStarStatic.getAccessNodesSorted(worldObj, task.posX, task.posY, task.posZ).length > 0)
     		{
     			//System.out.println("canReachTopLayer actually found an access to the topmost layer! No Stairwell will be made!");
     			jobQueue.add(task);

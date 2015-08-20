@@ -171,7 +171,7 @@ public class MinionsCore
         configpath = configpath.replaceFirst(".cfg", "_Advanced.cfg");
         initializeSettingsFile(new File(configpath));
         
-        itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff");;
+        itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff");
         GameRegistry.registerItem(itemMastersStaff, "masterstaff");
         
         MinecraftForge.EVENT_BUS.register(this);
@@ -273,26 +273,23 @@ public class MinionsCore
 	
     public boolean isBlockValueable(Block blockID)
     {
-        if (blockID == Blocks.air
-        || blockID == Blocks.dirt
-        || blockID == Blocks.grass
-        || blockID == Blocks.stone
-        || blockID == Blocks.cobblestone
-        || blockID == Blocks.gravel
-        || blockID == Blocks.sand
-        || blockID == Blocks.leaves
-        || blockID == Blocks.obsidian
-        || blockID == Blocks.bedrock
-        || blockID == Blocks.stone_brick_stairs
-        || blockID == Blocks.netherrack
-        || blockID == Blocks.soul_sand
-        || blockID == Blocks.snow
-        || configWorthlessBlocks.contains(blockID))
-        {
-            return false;
-        }
-        
-        return true;
+
+        return !(blockID == Blocks.air
+                || blockID == Blocks.dirt
+                || blockID == Blocks.grass
+                || blockID == Blocks.stone
+                || blockID == Blocks.cobblestone
+                || blockID == Blocks.gravel
+                || blockID == Blocks.sand
+                || blockID == Blocks.leaves
+                || blockID == Blocks.obsidian
+                || blockID == Blocks.bedrock
+                || blockID == Blocks.stone_brick_stairs
+                || blockID == Blocks.netherrack
+                || blockID == Blocks.soul_sand
+                || blockID == Blocks.snow
+                || configWorthlessBlocks.contains(blockID));
+
     }
     
     @SuppressWarnings("unchecked")
@@ -500,7 +497,7 @@ public class MinionsCore
         {
             if (minion.riddenByEntity == null)
             {
-                minion.targetEntityToGrab = (EntityLivingBase) target;
+                minion.targetEntityToGrab = target;
                 sendSoundToClients(minion, "minions:grabanimalorder");
                 break;
             }
@@ -627,7 +624,7 @@ public class MinionsCore
                         minion.giveTask(null, true);
                         minion.returningGoods = true;
                     }
-                    minion.returnChestOrInventory = (TileEntity) chestOrInventoryBlock;
+                    minion.returnChestOrInventory = chestOrInventoryBlock;
                 }
             }
         }
@@ -769,11 +766,6 @@ public class MinionsCore
         {
             System.out.println("EXCEPTION BufferedReader: " + var6);
         }
-    }
-
-    public final static String getPacketChannel()
-    {
-        return "AS_Minions";
     }
     
     public void sendSoundToClients(Entity ent, String string)

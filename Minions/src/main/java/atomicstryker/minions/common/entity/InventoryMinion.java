@@ -177,8 +177,8 @@ public class InventoryMinion implements IInventory
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding item to inventory");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
-                crashreportcategory.addCrashSection("Item ID", Integer.valueOf(Item.getIdFromItem(par1ItemStack.getItem())));
-                crashreportcategory.addCrashSection("Item data", Integer.valueOf(par1ItemStack.getItemDamage()));
+                crashreportcategory.addCrashSection("Item ID", Item.getIdFromItem(par1ItemStack.getItem()));
+                crashreportcategory.addCrashSection("Item data", par1ItemStack.getItemDamage());
                 throw new ReportedException(crashreport);
             }
         }

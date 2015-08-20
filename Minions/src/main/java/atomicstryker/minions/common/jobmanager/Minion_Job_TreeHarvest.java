@@ -61,8 +61,8 @@ public class Minion_Job_TreeHarvest extends Minion_Job_Manager
     		if (hasJobs)
     		{
     			// order him to walk there and chop the tree
-    			((BlockTask_TreeChop) this.jobQueue.get(0)).setWorker(worker);
-    			worker.giveTask((BlockTask_TreeChop) this.jobQueue.get(0), true);
+    			this.jobQueue.get(0).setWorker(worker);
+    			worker.giveTask(this.jobQueue.get(0), true);
     			this.jobQueue.remove(0);
     		}
     		else

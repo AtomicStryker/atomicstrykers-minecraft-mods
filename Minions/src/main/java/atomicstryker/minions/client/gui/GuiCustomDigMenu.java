@@ -60,7 +60,7 @@ public class GuiCustomDigMenu extends GuiScreen
         	
         	if (ID == 0)
         	{
-        		this.mc.displayGuiScreen((GuiScreen)null);
+        		this.mc.displayGuiScreen(null);
         	}
         	else if (ID == 1)
         	{
@@ -68,7 +68,7 @@ public class GuiCustomDigMenu extends GuiScreen
         	    MinionsClient.customSizeXZ = this.xzSize;
         	    MinionsClient.customSizeY = this.ySize;
         	    MinionsClient.mineAreaShape = 2;
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.mc.displayGuiScreen(null);
         	}
         	else if (ID == 2)
         	{

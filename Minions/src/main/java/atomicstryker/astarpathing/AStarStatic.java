@@ -57,14 +57,11 @@ public class AStarStatic
 	    
 	    if (isPassableBlock(worldObj, x, y-1, z))
 	    {
-	        if (id != Blocks.air
-	        && !id.isPassable(worldObj, new BlockPos(x, y-1, z)))
+	        if (id == Blocks.air
+	        || id.isPassable(worldObj, new BlockPos(x, y-1, z)))
 	        {
-	            // is a traversable fluid, allow navigating
-	        }
-	        else
-	        {
-	            return false;
+	            // is not a traversable fluid, dont allow navigating
+				return false;
 	        }
 	    }
 	    
@@ -212,15 +209,12 @@ public class AStarStatic
 	 * possible way to stand near the target (if it's in sold earth for example).
 	 * 
 	 * @param worldObj World instance
-	 * @param workerX worker coordinate
-	 * @param workerY worker coordinate
-	 * @param workerZ worker coordinate
 	 * @param posX Node coordinate
 	 * @param posY Node coordinate
 	 * @param posZ Node coordinate
 	 * @return sorted Array of AStarNodes in accessing distance to the target coordinates
 	 */
-    public static AStarNode[] getAccessNodesSorted(World worldObj, int workerX, int workerY, int workerZ, int posX, int posY, int posZ)
+    public static AStarNode[] getAccessNodesSorted(World worldObj, int posX, int posY, int posZ)
     {
     	ArrayList<AStarNode> resultList = new ArrayList<AStarNode>();
 
@@ -244,7 +238,7 @@ public class AStarStatic
 		
 		int count = 0;
 		AStarNode[] returnVal = new AStarNode[resultList.size()];
-		while (!resultList.isEmpty() && (check = (AStarNode) resultList.get(0)) != null)
+		while (!resultList.isEmpty() && (check = resultList.get(0)) != null)
 		{
 			returnVal[count] = check;
 			resultList.remove(0);
