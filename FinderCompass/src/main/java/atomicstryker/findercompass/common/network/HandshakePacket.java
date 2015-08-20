@@ -41,6 +41,7 @@ public class HandshakePacket implements IPacket
                 FileInputStream fis = new FileInputStream(config);
                 if (fis.read(configByteArray) < 1)
                 {
+                    fis.close();
                     throw new Exception("Config does not contain bytes: "+config);
                 }
                 fis.close();

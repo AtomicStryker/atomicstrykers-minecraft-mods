@@ -18,7 +18,8 @@ public class CompassRenderHook
     
     private static final float[] strongholdNeedlecolor = { 0.4f, 0f, 0.6f };
     private static Minecraft mc;
-    
+
+    @SuppressWarnings("unused")
     public static void renderItemHook(ItemStack stack)
     {
         if (stack.getItem() == Items.compass || stack.getItem() == FinderCompassMod.instance.compass)

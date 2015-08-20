@@ -70,23 +70,21 @@ public class FCTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        Iterator<MethodNode> methods = classNode.methods.iterator();
-        while(methods.hasNext())
+        for (MethodNode m : classNode.methods)
         {
-            MethodNode m = methods.next();
             if (m.name.equals(methodNameToModify)
-            && m.desc.equals(methodDescriptorToModify))
+                    && m.desc.equals(methodDescriptorToModify))
             {
-                System.out.println("In target method "+methodNameToModify+", Patching!");
-                
+                System.out.println("In target method " + methodNameToModify + ", Patching!");
+
                 AbstractInsnNode targetNode = null;
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 boolean found = false;
                 while (iter.hasNext())
                 {
-                	// check all nodes
-                    targetNode = (AbstractInsnNode) iter.next();
-                    
+                    // check all nodes
+                    targetNode = iter.next();
+
                     if (targetNode instanceof MethodInsnNode)
                     {
                         MethodInsnNode candidate = (MethodInsnNode) targetNode;
@@ -98,7 +96,7 @@ public class FCTransformer implements IClassTransformer
                         }
                     }
                 }
-                
+
                 if (found)
                 {
                     // prepare code to inject
@@ -106,9 +104,9 @@ public class FCTransformer implements IClassTransformer
                     toInject.add(new VarInsnNode(ALOAD, 1)); // push itemstack argument from calling method
                     toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/findercompass/client/CompassRenderHook", "renderItemHook", itemStackVoidDescriptor, false));
                     // this bytecode is equivalent to this line: CompassRenderHook.renderItemHook(itemStack);
-                    
-                	// now write our hook in, after the target node
-                	m.instructions.insertBefore(targetNode, toInject);
+
+                    // now write our hook in, after the target node
+                    m.instructions.insertBefore(targetNode, toInject);
                 }
                 break;
             }
