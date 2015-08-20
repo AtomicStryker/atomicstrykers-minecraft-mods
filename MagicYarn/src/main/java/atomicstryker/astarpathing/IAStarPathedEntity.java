@@ -21,11 +21,11 @@ public interface IAStarPathedEntity
      * 
      * @param result ArrayList of AStarNodes depicting a path solution
      */
-	public void onFoundPath(ArrayList<AStarNode> result);
+	void onFoundPath(ArrayList<AStarNode> result);
 	
 	/**
      * Returned by a Pathfinding worker that either ran out of Nodes
      * to check or hit it's maximum searching time limit.
 	 */
-	public void onNoPathAvailable();
+	void onNoPathAvailable();
 }

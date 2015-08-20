@@ -1,8 +1,9 @@
 package atomicstryker.astarpathing;
 
-import java.util.ArrayList;
 
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
 
 /**
  * Control Class for AstarPath, creates workers and manages returns
@@ -38,11 +39,7 @@ public class AStarPathPlanner
 
     public boolean isBusy()
     {
-        if (worker == null)
-        {
-            return false;
-        }
-        return worker.getState() != Thread.State.NEW;
+        return worker != null && worker.getState() != Thread.State.NEW;
     }
     
     private int checkYCoordViability(int startx, int starty, int startz)
@@ -120,7 +117,7 @@ public class AStarPathPlanner
             }
             else if (pathedEntity != null)
             {
-                // System.out.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
+                System.err.println("Total AStar fail recorded for "+lastStart+" to "+lastEnd);
                 pathedEntity.onNoPathAvailable();
             }
         }

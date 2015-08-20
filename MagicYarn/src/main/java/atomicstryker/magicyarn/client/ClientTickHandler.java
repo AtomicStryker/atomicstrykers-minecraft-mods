@@ -117,9 +117,5 @@ public class ClientTickHandler
         otherPaths.remove(user);
         otherPaths.put(user, nodes);
     }
-    
-    public void removeOtherPath(String user)
-    {
-        otherPaths.remove(user);
-    }
+
 }

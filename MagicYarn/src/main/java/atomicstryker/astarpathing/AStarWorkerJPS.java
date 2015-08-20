@@ -1,7 +1,6 @@
 package atomicstryker.astarpathing;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.PriorityQueue;
 
 
@@ -115,14 +114,13 @@ public class AStarWorkerJPS extends AStarWorker
     private boolean identifySuccessors(AStarNode node)
     {
         int x = node.x;
-        int y = node.y;
         int z = node.z;
         
         ArrayList<AStarNode> successors = findNeighbours(node);
         for (AStarNode s : successors)
         {
             //System.out.println("checking neighbor: "+s);
-            AStarNode jumpPoint = jump(s.x, s.y, s.z, x, y, z);
+            AStarNode jumpPoint = jump(s.x, s.y, s.z, x, z);
             if (jumpPoint != null)
             {
                 if (closedNodes.contains(jumpPoint))
@@ -172,36 +170,36 @@ public class AStarWorkerJPS extends AStarWorker
                     return getAllNeighborsWithoutParent(x, y, z, dx, dz, node);
                 }
                 
-                int left = 0;
-                int right = 0;
+                int leftY = 0;
+                int rightY = 0;
                 nY = getGroundNodeHeight(x, y, z + dz);
                 if (nY > 0)
                 {
-                    left = nY;
+                    leftY = nY;
                     r.add(new AStarNode(x, nY, z + dz, dist+1, node));
                 }
                 nY = getGroundNodeHeight(x + dx, y, z);
                 if (nY > 0)
                 {
-                    right = nY;
+                    rightY = nY;
                     r.add(new AStarNode(x + dx, nY, z, dist+1, node));
                 }
-                if (left != 0 || right != 0)
+                if (leftY != 0 || rightY != 0)
                 {
-                    r.add(new AStarNode(x + dx, Math.max(left, right), z + dz, dist+2, node));
+                    r.add(new AStarNode(x + dx, Math.max(leftY, rightY), z + dz, dist+2, node));
                 }
-                if (left != 0)
+                if (leftY != 0)
                 {
                     if (getGroundNodeHeight(x - dx, py, z) == 0)
                     {
-                        r.add(new AStarNode(x - dx, left,  z + dz, dist+2, node));
+                        r.add(new AStarNode(x - dx, leftY,  z + dz, dist+2, node));
                     }
                 }
-                if (right != 0)
+                if (rightY != 0)
                 {
                     if (getGroundNodeHeight(x, py, z - dz) == 0)
                     {
-                        r.add(new AStarNode(x + dx, right, z - dz, dist+2, node));
+                        r.add(new AStarNode(x + dx, rightY, z - dz, dist+2, node));
                     }
                 }
             }
@@ -287,7 +285,7 @@ public class AStarWorkerJPS extends AStarWorker
      * @param dx jump direction
      * @param dz jump direction
      * @param node AStarNode we jumped from
-     * @return
+     * @return arraylist of neighbor nodes minus the origin
      */
     private ArrayList<AStarNode> getAllNeighborsWithoutParent(int x, int y, int z, int dx, int dz, AStarNode node)
     {
@@ -310,47 +308,44 @@ public class AStarWorkerJPS extends AStarWorker
     /**
      * Recursive Jumper as described by JPS algorithm
      * 
-     * @param nextX
-     * @param nextY
-     * @param nextZ
-     * @param px
-     * @param py
-     * @param pz
+     * @param nextX next coordinate
+     * @param nextY next coordinate
+     * @param nextZ next coordinate
+     * @param px previous coordinate
+     * @param pz previous coordinate
      * @return AStarNode of Jumping Point found, or null if none encountered
      */
-    private AStarNode jump(int nextX, int nextY, int nextZ, int px, int py, int pz)
+    private AStarNode jump(int nextX, int nextY, int nextZ, int px, int pz)
     {
         //System.out.printf("jump landed on [%d|%d|%d] from [%d|%d|%d], dir [%d|%d] \n", nextX, nextY, nextZ, px, py, pz, nextX-px, nextZ-pz);
-        int x = nextX;
         int y = nextY;
-        int z = nextZ;
-        int dist = currentNode.getG() + (Math.abs(x - currentNode.x) + Math.abs(y - currentNode.y) + Math.abs(z - currentNode.z));
+        int dist = currentNode.getG() + (Math.abs(nextX - currentNode.x) + Math.abs(y - currentNode.y) + Math.abs(nextZ - currentNode.z));
         
-        int dx = x - px;
-        int dz = z - pz;
-        py = y;
-        y = getGroundNodeHeight(x, py, z);
+        int dx = nextX - px;
+        int dz = nextZ - pz;
+        int py = y;
+        y = getGroundNodeHeight(nextX, py, nextZ);
         
         if (y == 0)
         {
             return null;
         }
-        else if (targetNode.x == x && targetNode.z == z && targetNode.y == y || dist >= MAX_SKIP_DISTANCE)
+        else if (targetNode.x == nextX && targetNode.z == nextZ && targetNode.y == y || dist >= MAX_SKIP_DISTANCE)
         {
-            return new AStarNode(x, y, z, dist, currentNode, targetNode);
+            return new AStarNode(nextX, y, nextZ, dist, currentNode, targetNode);
         }
         
         // check for moving up or down along the path
-        int nxY = (dx != 0) ? getGroundNodeHeight(x+dx, y, z) : 0;
-        int nzY = (dz != 0) ? getGroundNodeHeight(x, y, z+dz) : 0;
+        int nxY = (dx != 0) ? getGroundNodeHeight(nextX +dx, y, nextZ) : 0;
+        int nzY = (dz != 0) ? getGroundNodeHeight(nextX, y, nextZ +dz) : 0;
         
         // check for forced neighbors along the diagonal
         if (dx != 0 && dz != 0)
         {
-            if ((getGroundNodeHeight(x - dx, y, z + dz) != 0 && getGroundNodeHeight(x - dx, py, z) == 0)
-            ||  (getGroundNodeHeight(x + dx, y, z - dz) != 0 && getGroundNodeHeight(x, py, z - dz) == 0))
+            if ((getGroundNodeHeight(nextX - dx, y, nextZ + dz) != 0 && getGroundNodeHeight(nextX - dx, py, nextZ) == 0)
+            ||  (getGroundNodeHeight(nextX + dx, y, nextZ - dz) != 0 && getGroundNodeHeight(nextX, py, nextZ - dz) == 0))
             {
-                return new AStarNode(x, y, z, dist, currentNode, targetNode);
+                return new AStarNode(nextX, y, nextZ, dist, currentNode, targetNode);
             }
         }
         // horizontally/vertically
@@ -359,19 +354,19 @@ public class AStarWorkerJPS extends AStarWorker
             if (dx != 0)
             { // moving along x
                 if (nxY != y
-                || (getGroundNodeHeight(x, y, z + 1) == 0 && getGroundNodeHeight(x + dx, nxY, z + 1) != 0)
-                || (getGroundNodeHeight(x, y, z - 1) == 0 && getGroundNodeHeight(x + dx, nxY, z - 1) != 0))
+                || (getGroundNodeHeight(nextX, y, nextZ + 1) == 0 && getGroundNodeHeight(nextX + dx, nxY, nextZ + 1) != 0)
+                || (getGroundNodeHeight(nextX, y, nextZ - 1) == 0 && getGroundNodeHeight(nextX + dx, nxY, nextZ - 1) != 0))
                 {
-                    return new AStarNode(x, y, z, dist, currentNode, targetNode);
+                    return new AStarNode(nextX, y, nextZ, dist, currentNode, targetNode);
                 }
             }
             else
             { // moving along z
                 if (nzY != y
-                || (getGroundNodeHeight(x + 1, y, z) == 0 && getGroundNodeHeight(x + 1, nzY, z + dz) != 0)
-                || (getGroundNodeHeight(x - 1, y, z) == 0 && getGroundNodeHeight(x - 1, nzY, z + dz) != 0))
+                || (getGroundNodeHeight(nextX + 1, y, nextZ) == 0 && getGroundNodeHeight(nextX + 1, nzY, nextZ + dz) != 0)
+                || (getGroundNodeHeight(nextX - 1, y, nextZ) == 0 && getGroundNodeHeight(nextX - 1, nzY, nextZ + dz) != 0))
                 {
-                    return new AStarNode(x, y, z, dist, currentNode, targetNode);
+                    return new AStarNode(nextX, y, nextZ, dist, currentNode, targetNode);
                 }
             }
         }
@@ -379,11 +374,11 @@ public class AStarWorkerJPS extends AStarWorker
         // when moving diagonally, must check for vertical/horizontal jump points
         if (dx != 0 && dz != 0)
         {
-            AStarNode jx = jump(x + dx, y, z,      x, y, z);
-            AStarNode jy = jump(x,      y, z + dz, x, y, z);
+            AStarNode jx = jump(nextX + dx, y, nextZ, nextX, nextZ);
+            AStarNode jy = jump(nextX,      y, nextZ + dz, nextX, nextZ);
             if (jx != null || jy != null)
             {
-                return new AStarNode(x, y, z, dist, currentNode, targetNode);
+                return new AStarNode(nextX, y, nextZ, dist, currentNode, targetNode);
             }
         }
 
@@ -391,7 +386,7 @@ public class AStarWorkerJPS extends AStarWorker
         // neighbors is open to allow the path
         if (nxY != 0 || nzY != 0)
         {
-            return jump(x + dx, y, z + dz, x, y, z);
+            return jump(nextX + dx, y, nextZ + dz, nextX, nextZ);
         }
         else
         {
@@ -407,11 +402,8 @@ public class AStarWorkerJPS extends AStarWorker
     private void addOrUpdateNode(AStarNode newNode)
     {
         boolean found = false;
-        Iterator<AStarNode> iter = closedNodes.iterator();
-        while (iter.hasNext())
+        for (AStarNode toUpdate : closedNodes)
         {
-            AStarNode toUpdate = iter.next();
-
             if (newNode.equals(toUpdate))
             {
                 toUpdate.updateDistance(newNode.getG(), newNode.parent);

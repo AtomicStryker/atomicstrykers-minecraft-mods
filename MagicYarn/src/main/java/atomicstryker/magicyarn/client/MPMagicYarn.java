@@ -24,7 +24,7 @@ public class MPMagicYarn
     private KeyBinding clientKey;
     private KeyBinding playerKey;
 
-    public MPMagicYarn(Minecraft mc, MagicYarnClient client)
+    public MPMagicYarn(Minecraft mc)
     {
         mcinstance = mc;
         timeStartedHoldingButton = 0;

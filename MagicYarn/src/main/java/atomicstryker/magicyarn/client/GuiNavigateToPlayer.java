@@ -71,7 +71,7 @@ public class GuiNavigateToPlayer extends GuiScreen
         {
             if (button.id == 0)
             {
-                mc.displayGuiScreen((GuiScreen)null);
+                mc.displayGuiScreen(null);
             }
             else if (button.id == 1)
             {
@@ -83,7 +83,7 @@ public class GuiNavigateToPlayer extends GuiScreen
                 EntityPlayer target = (EntityPlayer) playerList[button.id-BUTTON_TO_PLAYER_ID_OFFSET];
                 MagicYarnClient.instance.tryPathToPlayer(target);
                 mc.thePlayer.addChatMessage(new ChatComponentText("Trying to path to "+target.getGameProfile().getName()));
-                mc.displayGuiScreen((GuiScreen)null);
+                mc.displayGuiScreen(null);
             }
         }
     }

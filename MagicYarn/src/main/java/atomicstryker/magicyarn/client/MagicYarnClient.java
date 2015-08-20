@@ -37,7 +37,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
         instance = this;
           
         clientTicker = new ClientTickHandler(this, mcinstance);
-        mpYarnInstance = new MPMagicYarn(mcinstance, this);
+        mpYarnInstance = new MPMagicYarn(mcinstance);
         FMLCommonHandler.instance().bus().register(mpYarnInstance);        
         FMLCommonHandler.instance().bus().register(clientTicker);
     }
@@ -175,8 +175,8 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                             idx--;
                         }
                     }
-                    
-                    if (clientTicker.showPath)
+
+                    if (clientTicker.showPath && clientTicker.path != null)
                     {
                         origin = clientTicker.path.get(0);
                         target = null;
@@ -257,11 +257,6 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             nodes--;
         }
         clientTicker.addOtherPath(username, out);
-    }
-
-    public void onReceivedPathDeletionPacket(ByteBuf data)
-    {
-        clientTicker.removeOtherPath(ByteBufUtils.readUTF8String(data));
     }
 
     @Override

@@ -8,10 +8,10 @@ import net.minecraft.world.World;
 public interface IProxy
 {
     
-    public void preInit(File configFile);
+    void preInit(File configFile);
     
-    public void onPlayerUsedYarn(World world, EntityPlayer player, float timeButtonHeld);
+    void onPlayerUsedYarn(World world, EntityPlayer player, float timeButtonHeld);
 
-    public void init();
+    void init();
     
 }

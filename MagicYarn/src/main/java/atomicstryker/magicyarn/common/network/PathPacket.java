@@ -11,7 +11,8 @@ public class PathPacket implements IPacket
 {
     
     private ByteBuf data;
-    
+
+    @SuppressWarnings("unused")
     public PathPacket() {}
     
     public PathPacket(ByteBuf pathData)
