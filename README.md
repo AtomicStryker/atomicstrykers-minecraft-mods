@@ -13,6 +13,7 @@ The build file reacts to certain conditions like a "META-INF.mf" being present, 
 
 THIS ASSUMES YOUR MOD COMPILES AGAINST FORGEGRADLE - if there are compile errors in the eclipse project, it will fail.
 
+There is also a "curse" build target my successor can probably safely ignore.
 
 NOTE: Some projects attempt to include the Update Checker into their packages, which means it should be built first.
 NOTE #2: Pet Bat relies on Dynamic Lights to have been compiled first.
@@ -40,6 +41,9 @@ Mods with special Needs:
 
 -- Stalker Creepers
 - similar to Multi Mine. sourcefile is "common\atomicstryker\stalkercreepers\common\SCTransformer.java"
+- 
+-- Finder Compass
+- similar to Multi Mine. sourcefile is "atomicstryker.findercompass.client.coremod\FCTransformer.java"
 
 -- Kenshiro Mod
 - uses some hacky stuff for rendering and manipulating punched entities. Will probably crash if broken.
