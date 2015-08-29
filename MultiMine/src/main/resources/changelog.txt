@@ -1,3 +1,6 @@
+1.5.0
+- back to fully emulating serverside block breaking to fix lag and other issues
+
 1.4.9
 - fixes thread issue with packets
 

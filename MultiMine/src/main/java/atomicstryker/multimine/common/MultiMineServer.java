@@ -8,13 +8,17 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import atomicstryker.multimine.common.network.PartialBlockPacket;
+import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.config.Configuration;
@@ -26,11 +30,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.GameData;
-import atomicstryker.multimine.common.network.PartialBlockPacket;
-import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class MultiMineServer
 {
@@ -94,9 +93,9 @@ public class MultiMineServer
         MultiMine.instance().debugPrint("multi mine client " + player + " sent progress packet: " + value);
         
         final BlockPos pos = new BlockPos(x, y, z);
-        final IBlockState state = player.worldObj.getBlockState(pos);
-        final Block block = state.getBlock();
-        if (isItemBanned(player.getCurrentEquippedItem()) || isBlockBanned(block, block.getMetaFromState(state)))
+        final IBlockState iblockstate = player.worldObj.getBlockState(pos);
+        final Block block = iblockstate.getBlock();
+        if (isItemBanned(player.getCurrentEquippedItem()) || isBlockBanned(block, block.getMetaFromState(iblockstate)))
         {
             return;
         }
@@ -122,39 +121,63 @@ public class MultiMineServer
                 // send the newly advanced partialblock to all relevant players
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock);
 
-                if (iterBlock.isFinished())
+                
+                if (iterBlock.isFinished() && !block.isAir(player.worldObj, pos))
                 {
                     MultiMine.instance().debugPrint("Server finishing partial block at: ["+x+"|"+y+"|"+z+"]");
                     // and if its done, destroy the world block
                     player.worldObj.sendBlockBreakProgress(player.getEntityId(), pos, -1);
                     
-                    if (!block.isAir(player.worldObj, pos))
+                    final int event =
+                            ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, pos);
+                    if (event != -1)
                     {
-                        final int event =
-                                ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, pos);
-                        if (event != -1)
+                        TileEntity tileentity = player.worldObj.getTileEntity(pos);
+
+                        ItemStack stack = player.getCurrentEquippedItem();
+                        if (stack != null && stack.getItem().onBlockStartBreak(stack, pos, player)) return;
+
+                        player.worldObj.playAuxSFXAtEntity(player, 2001, pos, Block.getStateId(iblockstate));
+
+                        ItemStack itemstack = player.getCurrentEquippedItem();
+                        boolean canHarvest = iblockstate.getBlock().canHarvestBlock(player.worldObj, pos, player);
+
+                        if (itemstack != null)
                         {
-                            if (block.removedByPlayer(player.worldObj, pos, player, true))
+                            itemstack.onBlockDestroyed(player.worldObj, iblockstate.getBlock(), pos, player);
+                            if (itemstack.stackSize == 0)
                             {
-                                block.onBlockDestroyedByPlayer(player.worldObj, pos, state);
-                                onBlockMineFinishedDamagePlayerItem(player, block, x, y, z);
-                                if (!block.isAir(player.worldObj, pos) && block.canHarvestBlock(player.worldObj, pos, player))
-                                {
-                                    block.harvestBlock(player.worldObj, player, pos, state, player.worldObj.getTileEntity(pos));
-                                }
-                                
-                                final S23PacketBlockChange packet = new S23PacketBlockChange(player.worldObj, pos);
-                                FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager()
-                                        .sendPacketToAllPlayersInDimension(packet, player.dimension);
+                                player.destroyCurrentEquippedItem();
                             }
                         }
+                        
+                        iblockstate.getBlock().onBlockHarvested(player.worldObj, pos, iblockstate, player);
+                        boolean removed = iblockstate.getBlock().removedByPlayer(player.worldObj, pos, player, canHarvest);
+                        if (removed)
+                        {
+                            iblockstate.getBlock().onBlockDestroyedByPlayer(player.worldObj, pos, iblockstate);
+                        }
+                        
+                        if (removed && canHarvest)
+                        {
+                            iblockstate.getBlock().harvestBlock(player.worldObj, player, pos, iblockstate, tileentity);
+                        }
+
+                        // Drop experiance
+                        if (removed && event > 0)
+                        {
+                            iblockstate.getBlock().dropXpOnBlockBreak(player.worldObj, pos, event);
+                        }
+                        
+                        partiallyMinedBlocks.remove(iterBlock);
+                        blockRegenQueue.remove(iterBlock);
                     }
-
-                    partiallyMinedBlocks.remove(iterBlock);
-                    blockRegenQueue.remove(iterBlock);
                 }
-
-                blockRegenQueue.offer(iterBlock);
+                else
+                {
+                    blockRegenQueue.offer(iterBlock);
+                }
+                
                 return;
             }
         }
@@ -217,39 +240,10 @@ public class MultiMineServer
     }
 
     /**
-     * Helper method to emulate vanilla behaviour of damaging your Item as you
-     * finish mining a Block.
-     * 
-     * @param player
-     *            Player doing the mining
-     * @param blockID
-     *            id of the Block which was destroyed
-     * @param x
-     *            Coordinates of the Block
-     * @param y
-     *            Coordinates of the Block
-     * @param z
-     *            Coordinates of the Block
-     */
-    private void onBlockMineFinishedDamagePlayerItem(EntityPlayer player, Block blockID, int x, int y, int z)
-    {
-        final ItemStack itemStack = player.getCurrentEquippedItem();
-        if (itemStack != null)
-        {
-            itemStack.onBlockDestroyed(player.worldObj, blockID, new BlockPos(x, y, z), player);
-
-            if (itemStack.stackSize == 0)
-            {
-                player.destroyCurrentEquippedItem();
-            }
-        }
-    }
-
-    /**
      * Tells all clients to delete this partially mined Block off their local
      * storage, the server exceeds the max amount of concurrent partial Blocks.
      * 
-     * @param partiallyMinedBlock
+     * @param block
      *            partial Block to be deleted
      */
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block)
@@ -328,7 +322,7 @@ public class MultiMineServer
                 return;
             }
 
-            PartiallyMinedBlock block = null;
+            PartiallyMinedBlock block;
             for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext();)
             {
                 block = iter.next();
