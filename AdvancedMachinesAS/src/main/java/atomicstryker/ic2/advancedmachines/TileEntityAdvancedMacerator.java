@@ -84,9 +84,9 @@ public class TileEntityAdvancedMacerator extends TileEntityMacerator implements 
     }
     
     @Override
-    public void updateEntity()
+    public void updateEntityServer()
     {
-        super.updateEntity();
+        super.updateEntityServer();
         advLogic.updateEntity(this);
         
         // is second output is not empty but primary is, swap output slot contents

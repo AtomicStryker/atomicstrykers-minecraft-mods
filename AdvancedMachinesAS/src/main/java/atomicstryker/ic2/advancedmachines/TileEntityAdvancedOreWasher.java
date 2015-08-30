@@ -37,9 +37,9 @@ public class TileEntityAdvancedOreWasher extends TileEntityOreWashing implements
     }
 
     @Override
-    public void updateEntity()
+    public void updateEntityServer()
     {
-        super.updateEntity();
+        super.updateEntityServer();
         advLogic.updateEntity(this);
     }
 

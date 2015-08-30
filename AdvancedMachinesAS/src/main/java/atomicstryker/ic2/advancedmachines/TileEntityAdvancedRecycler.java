@@ -39,9 +39,9 @@ public class TileEntityAdvancedRecycler extends TileEntityRecycler implements IA
     }
     
     @Override
-    public void updateEntity()
+    public void updateEntityServer()
     {
-        super.updateEntity();
+        super.updateEntityServer();
         advLogic.updateEntity(this);
     }
     

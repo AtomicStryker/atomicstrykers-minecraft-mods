@@ -156,7 +156,7 @@ public class CommonLogicAdvancedMachines implements IAdvancedMachine
     {
         try
         {
-            if (progressField != null && !te.getWorldObj().isRemote)
+            if (progressField != null)
             {
                 if (te.getActive())
                 {

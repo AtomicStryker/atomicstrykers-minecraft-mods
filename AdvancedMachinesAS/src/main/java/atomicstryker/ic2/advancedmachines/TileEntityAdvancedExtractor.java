@@ -39,9 +39,9 @@ public class TileEntityAdvancedExtractor extends TileEntityExtractor implements 
     }
     
     @Override
-    public void updateEntity()
+    public void updateEntityServer()
     {
-        super.updateEntity();
+        super.updateEntityServer();
         advLogic.updateEntity(this);
     }
     

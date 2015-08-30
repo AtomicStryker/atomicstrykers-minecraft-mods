@@ -37,9 +37,9 @@ public class TileEntityAdvancedCompressor extends TileEntityCompressor implement
     }
 
     @Override
-    public void updateEntity()
+    public void updateEntityServer()
     {
-        super.updateEntity();
+        super.updateEntityServer();
         advLogic.updateEntity(this);
     }
 

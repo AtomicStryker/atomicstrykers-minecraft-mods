@@ -1,3 +1,6 @@
+Version 1.1.5
+	- updated (and requires) to IC 2.2.767
+
 Version 1.1.4
 	- updated (and requires) IC 2.2.754
 
