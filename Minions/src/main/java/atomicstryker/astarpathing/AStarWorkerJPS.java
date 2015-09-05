@@ -115,7 +115,7 @@ public class AStarWorkerJPS extends AStarWorker
     private boolean identifySuccessors(AStarNode node)
     {
         int x = node.x;
-        int y = node.y;
+        //int y = node.y;
         int z = node.z;
         
         ArrayList<AStarNode> successors = findNeighbours(node);
