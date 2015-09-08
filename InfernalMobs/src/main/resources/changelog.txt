@@ -1,3 +1,6 @@
+1.6.5
+- fixed Infernal Mobs health bars never showing up again after a vanilla healthbar showed up once
+
 1.6.4
 - fixing a thread issue with packets
 - hotfix: derped health packet client/server directions

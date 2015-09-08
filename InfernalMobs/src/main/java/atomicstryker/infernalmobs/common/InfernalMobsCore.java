@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Level;
 
 import java.util.*;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.4")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.5")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
