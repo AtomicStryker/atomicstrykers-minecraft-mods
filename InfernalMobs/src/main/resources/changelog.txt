@@ -1,3 +1,6 @@
+1.6.2
+- fixed Infernal Mobs health bars never showing up again after a vanilla healthbar showed up once
+
 1.6.1
 - added configurable dimension blacklist, pull request by Namikon thank you very much
 
