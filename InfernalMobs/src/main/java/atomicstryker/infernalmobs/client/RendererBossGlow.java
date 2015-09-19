@@ -47,7 +47,7 @@ public class RendererBossGlow
             && ent.isEntityAlive())
             {
                 mc.renderGlobal.spawnParticle(EnumParticleTypes.SPELL_MOB.getParticleID(),
-                        EnumParticleTypes.SPELL_MOB.func_179344_e(), ent.posX + (ent.worldObj.rand.nextDouble() - 0.5D) * (double)ent.width,
+                        EnumParticleTypes.SPELL_MOB.getShouldIgnoreRange(), ent.posX + (ent.worldObj.rand.nextDouble() - 0.5D) * (double)ent.width,
                         ent.posY + ent.worldObj.rand.nextDouble() * (double)ent.height - 0.25D,
                         ent.posZ + (ent.worldObj.rand.nextDouble() - 0.5D) * (double)ent.width,
                         (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D,

@@ -350,7 +350,7 @@ public class World2TemplateParser extends Thread
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
                         if (tec != null)
                         {
-                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCustomName() + ":" + tec.getCommandBlockLogic().getCommandSenderName();
+                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getCommandSenderName();
                         }
                     }
                     else if (temp.block == Blocks.standing_sign)

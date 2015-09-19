@@ -72,14 +72,14 @@ public class CommandTestTemplate extends CommandBase
         	{
                 if (args[2].equals("_"))
                 {
-                    tryBuild(sender, args, (int)func_175769_b(xpos, args[1], -30000000, 30000000, false), -1, 
-                    		(int)func_175769_b(zpos, args[3], -30000000, 30000000, false));
+                    tryBuild(sender, args, (int)parseDouble(xpos, args[1], -30000000, 30000000, false), -1, 
+                    		(int)parseDouble(zpos, args[3], -30000000, 30000000, false));
                 }
                 else
                 {
-                    tryBuild(sender, args, (int)func_175769_b(xpos, args[1], -30000000, 30000000, false), 
-                    		(int)func_175769_b(ypos, args[2], -30000000, 30000000, false)-1, 
-                    		(int)func_175769_b(zpos, args[3], -30000000, 30000000, false));
+                    tryBuild(sender, args, (int)parseDouble(xpos, args[1], -30000000, 30000000, false), 
+                    		(int)parseDouble(ypos, args[2], -30000000, 30000000, false)-1, 
+                    		(int)parseDouble(zpos, args[3], -30000000, 30000000, false));
                 }
         	}
         	catch (NumberInvalidException e)
