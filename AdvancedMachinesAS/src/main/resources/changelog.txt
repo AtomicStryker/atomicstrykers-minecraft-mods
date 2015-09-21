@@ -1,3 +1,7 @@
+Version 1.1.6
+	- updated (and requires) to IC 2.2.775
+	- added hack to circumvent the input==output check for the supplemented macerator recipes
+
 Version 1.1.5
 	- updated (and requires) to IC 2.2.767
 

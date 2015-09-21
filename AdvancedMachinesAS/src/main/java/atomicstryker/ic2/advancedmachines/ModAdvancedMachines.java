@@ -30,7 +30,7 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.1.5", dependencies = "required-after:IC2@2.2.767")
+@Mod(modid = "AdvancedMachines", name = "IC2 Advanced Machines Addon", version = "1.1.6", dependencies = "required-after:IC2@2.2.775")
 public class ModAdvancedMachines implements IGuiHandler, IProxy
 {
     
@@ -103,6 +103,7 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
                 Character.valueOf('A'), IC2Items.getItem("advancedMachine")});
         }
         
+        // ident recipes for my supplemented specialties
         Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.netherrack)), new NBTTagCompound(), new ItemStack(Blocks.netherrack));
         Recipes.macerator.addRecipe(new IdentRecipe(new ItemStack(Blocks.quartz_ore)), new NBTTagCompound(), new ItemStack(Blocks.quartz_ore));
         
@@ -156,12 +157,15 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
     private class IdentRecipe implements IRecipeInput
     {
         
+    	// matches will return false ONCE to get past the input == output check Player so thoughtfully added
+    	boolean registerHackActive;
         private ArrayList<ItemStack> inputresult;
         
         private IdentRecipe(ItemStack toProcess)
         {
             inputresult = new ArrayList<ItemStack>();
             inputresult.add(toProcess);
+            registerHackActive = true;
         }
 
         @Override
@@ -179,6 +183,11 @@ public class ModAdvancedMachines implements IGuiHandler, IProxy
         @Override
         public boolean matches(ItemStack itemStack)
         {
+        	if (registerHackActive)
+        	{
+        		registerHackActive = false;
+        		return false;
+        	}
             return inputresult.get(0).isItemEqual(itemStack);
         }
         
