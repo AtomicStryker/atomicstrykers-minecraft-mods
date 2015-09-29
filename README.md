@@ -41,7 +41,7 @@ Mods with special Needs:
 
 -- Stalker Creepers
 - similar to Multi Mine. sourcefile is "common\atomicstryker\stalkercreepers\common\SCTransformer.java"
-- 
+
 -- Finder Compass
 - similar to Multi Mine. sourcefile is "atomicstryker.findercompass.client.coremod\FCTransformer.java"
 
