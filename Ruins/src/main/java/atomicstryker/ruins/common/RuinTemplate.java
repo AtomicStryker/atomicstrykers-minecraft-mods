@@ -332,9 +332,24 @@ public class RuinTemplate
     }
 
     /**
-     * @return the finalized y value of the embedded template
+     * @return the finalized y value of the embedded template or -1 if there was an exception
      */
     public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate)
+    {
+        try
+        {
+            return doBuildNested(world, random, xBase, yBase, zBase, rotate);
+        }
+        catch (Exception e)
+        {
+            debugPrinter.printf("An Exception was thrown while building Ruin: %s\n", getName());
+            System.err.println("Faulty Template name: "+getName());
+            System.err.println(e.getStackTrace());
+            return -1;
+        }
+    }
+    
+    private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate)
     {
         /*
          * we need to shift the base coordinates and take care of any rotations
@@ -493,7 +508,10 @@ public class RuinTemplate
                     }
                     debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
                     int finalY = ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot);
-                    MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, finalY, targetZ, newrot, false, false));
+                    if (finalY > 0)
+                    {
+                        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, finalY, targetZ, newrot, false, false));
+                    }
                 }
                 else
                 {

@@ -237,8 +237,11 @@ public class RuinGenerator
                 stats.NumCreated++;
 
                 int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate);
-                registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
-                MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, finalY, z, rotate, false, false));
+                if (finalY > 0)
+                {
+                    registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
+                    MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, finalY, z, rotate, false, false));
+                }
             }
             else
             {
