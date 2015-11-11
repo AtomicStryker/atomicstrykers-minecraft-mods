@@ -1,31 +1,18 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.2"
+    id 'com.matthewprenger.cursegradle' version '1.0.1'
 }
-
-apply plugin: 'forge'
 
 apply from: '../masterbuild.gradle'
 
-apply plugin: 'curseforge'
-
-curse {
-    projectId = '227887'
-    displayName = 'Multi Mine'
-    artifact = file('build/distributions/MultiMine-1.8.zip')
-    addGameVersion '1.8'
+curseforge {
     apiKey = project.curseForgeApiKey
-    releaseType = 'release'
+    project {
+        id = '227887'
+        releaseType = 'release'
+        addGameVersion '1.8'
+        mainArtifact(file('build/distributions/MultiMine-1.8.zip')) {
+          displayName = 'Multi Mine'
+        }
+    }
 }
