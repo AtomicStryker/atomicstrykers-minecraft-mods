@@ -18,7 +18,6 @@ public class CommandTestTemplate extends CommandBase
 {
 
     public static RuinTemplate parsedRuin;
-    private int lastFinalY;
 
     @Override
     public String getCommandName()
@@ -52,7 +51,7 @@ public class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    execBuild(sender.getEntityWorld(), RuinsMod.DIR_NORTH, xpos, ypos-1, zpos);
+                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos-1, zpos, RuinsMod.DIR_NORTH);
                     parsedRuin = null;
                 }
                 else
@@ -136,8 +135,11 @@ public class CommandTestTemplate extends CommandBase
                     }
                     else
                     {
-                        execBuild(sender.getEntityWorld(), rotation, x, y, z);
-                        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, lastFinalY, z, rotation, true, false));
+                        int resultY = parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, x, y, z, rotation);
+                        if (resultY > 0)
+                        {
+                            MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, resultY, z, rotation, true, false));
+                        }
                         parsedRuin = null;
                     }
                 }
@@ -155,11 +157,6 @@ public class CommandTestTemplate extends CommandBase
         {
             sender.addChatMessage(new ChatComponentText("Could not open/write file " + file));
         }
-    }
-
-    private void execBuild(World world, int rotation, int x, int y, int z)
-    {
-        lastFinalY = parsedRuin.doBuild(world, world.rand, x, y, z, rotation);
     }
 
     @Override

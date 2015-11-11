@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "15.2";
+    public static final String modversion = "15.3";
 
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
