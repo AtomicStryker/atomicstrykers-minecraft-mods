@@ -22,6 +22,7 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -166,17 +167,41 @@ public class SCTransformer implements IClassTransformer
             if (m.name.equals(shouldExecuteMethodName) && m.desc.equals("()Z"))
             {
                 System.out.println("In target method! Patching!");
-                
+                System.out.println("----- READ START-----");
                 // find interesting instructions in method, there is a single ICONST_1 instruction we use as target
                 AbstractInsnNode nodeTarget = null;
                 for (int index = 0; index < m.instructions.size(); index++)
                 {
                     AbstractInsnNode curNode = m.instructions.get(index);
+                    
+                    if (curNode instanceof VarInsnNode) {
+                    	VarInsnNode vn = (VarInsnNode) curNode;
+                    	System.out.println("VarInsnNode, opcode:"+vn.getOpcode()+", var:"+vn.var);
+                    } else if (curNode instanceof FieldInsnNode) {
+                    	FieldInsnNode vn = (FieldInsnNode) curNode;
+                    	System.out.println("FieldInsnNode, name:"+vn.name+", desc:"+vn.desc);
+                    } else if (curNode instanceof MethodInsnNode) {
+                    	MethodInsnNode vn = (MethodInsnNode) curNode;
+                    	System.out.println("MethodInsnNode, name:"+vn.name+", desc:"+vn.desc);
+                    } else if (curNode instanceof JumpInsnNode) {
+                    	JumpInsnNode vn = (JumpInsnNode) curNode;
+                    	System.out.println("JumpInsnNode, opcode:"+vn.getOpcode()+", type:"+vn.getType());
+                    } else if (curNode instanceof LdcInsnNode) {
+                    	LdcInsnNode vn = (LdcInsnNode) curNode;
+                    	System.out.println("LdcInsnNode, cst:"+vn.cst);
+                    } else if (curNode instanceof InsnNode) {
+                    	InsnNode vn = (InsnNode) curNode;
+                    	System.out.println("InsnNode, opcode:"+vn.getOpcode());
+                    } else {
+                    	System.out.println(curNode);
+                    }
+                    
                     if (curNode.getOpcode() == ICONST_1)
                     {
                         nodeTarget = curNode;
                     }
                 }
+                System.out.println("----- READ END-----");
                 
                 if (nodeTarget == null)
                 {
