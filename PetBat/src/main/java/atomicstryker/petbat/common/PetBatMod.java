@@ -37,7 +37,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.6")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.3.7")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -393,7 +393,7 @@ public class PetBatMod implements IProxy
             ItemStack item = player.inventory.mainInventory[i];
             if (item != null && item.getItem() == itemBatFlute)
             {
-                if (item.stackTagCompound.getString("batName").equals(petName))
+                if (item.stackTagCompound != null && item.stackTagCompound.getString("batName").equals(petName))
                 {
                     player.inventory.setInventorySlotContents(i, null);
                     return item;
