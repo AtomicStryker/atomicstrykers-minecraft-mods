@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/forgegradle"/>
-	<classpathentry kind="lib" path="../../forgegradle/libs/industrialcraft-2-2.2.647-experimental-dev.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
