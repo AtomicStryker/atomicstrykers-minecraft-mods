@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.mojang.authlib.GameProfile;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -39,8 +41,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-
-import com.mojang.authlib.GameProfile;
 
 public class RuinTemplateRule
 {
@@ -695,7 +695,6 @@ public class RuinTemplateRule
         world.setBlockState(new BlockPos(x, y, z), Blocks.bedrock.getDefaultState(), 2);
     }
 
-    @SuppressWarnings("unchecked")
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
         world.setBlockState(new BlockPos(x, y, z), Blocks.mob_spawner.getDefaultState(), 2);

@@ -1,7 +1,6 @@
 package atomicstryker.ruins.common;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -71,16 +70,6 @@ public class CommandParseTemplate extends CommandBase
         {
             sender.addChatMessage(new ChatComponentText("Command only available for ingame player entities."));
         }
-    }
-    
-    @Override
-    public int compareTo(Object o)
-    {
-        if (o instanceof ICommand)
-        {
-            return ((ICommand)o).getCommandName().compareTo(getCommandName());
-        }
-        return 0;
     }
 
 }

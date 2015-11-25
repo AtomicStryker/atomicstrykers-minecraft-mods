@@ -1,12 +1,10 @@
 package atomicstryker.ruins.common;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -110,7 +108,6 @@ public class CommandUndo extends CommandBase
         return 2;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void processCommand(ICommandSender sender, String[] args)
     {
@@ -137,7 +134,7 @@ public class CommandUndo extends CommandBase
                     }
                     
                     // kill off the resulting entityItems instances
-                    for (Entity e : (List<Entity>) w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.fromBounds(ta.xBase - 1, ta.yBase - 1,
+                    for (Entity e : w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.fromBounds(ta.xBase - 1, ta.yBase - 1,
                             ta.zBase - 1, ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1)))
                     {
                         e.setDead();
@@ -153,13 +150,4 @@ public class CommandUndo extends CommandBase
         }
     }
 
-    @Override
-    public int compareTo(Object o)
-    {
-        if (o instanceof ICommand)
-        {
-            return ((ICommand) o).getCommandName().compareTo(getCommandName());
-        }
-        return 0;
-    }
 }

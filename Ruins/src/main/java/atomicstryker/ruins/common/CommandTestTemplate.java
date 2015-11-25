@@ -5,13 +5,11 @@ import java.io.PrintWriter;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 public class CommandTestTemplate extends CommandBase
@@ -159,13 +157,4 @@ public class CommandTestTemplate extends CommandBase
         }
     }
 
-    @Override
-    public int compareTo(Object o)
-    {
-        if (o instanceof ICommand)
-        {
-            return ((ICommand) o).getCommandName().compareTo(getCommandName());
-        }
-        return 0;
-    }
 }

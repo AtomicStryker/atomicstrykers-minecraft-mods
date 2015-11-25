@@ -1,8 +1,17 @@
 package atomicstryker.ruins.common;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -29,15 +38,6 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
@@ -77,7 +77,8 @@ public class RuinsMod
 
     private long nextInfoTime;
 
-    @SubscribeEvent
+    @SuppressWarnings("unchecked")
+	@SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
         ItemStack is = event.entityPlayer.getCurrentEquippedItem();
@@ -89,7 +90,8 @@ public class RuinsMod
         }
     }
 
-    @SubscribeEvent
+    @SuppressWarnings("unchecked")
+	@SubscribeEvent
     public void onBreak(BreakEvent event)
     {
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
@@ -126,9 +128,9 @@ public class RuinsMod
             final double y = event.entity.posY;
             final double z = event.entity.posZ;
             ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<TileEntityCommandBlock>();
-            @SuppressWarnings("unchecked")
-            ArrayList<Object> telist = new ArrayList<Object>((List<Object>)event.entity.worldObj.loadedTileEntityList);
-            for (Object teo : telist)
+
+            ArrayList<TileEntity> telist = new ArrayList<TileEntity>(event.entity.worldObj.loadedTileEntityList);
+            for (TileEntity teo : telist)
             {
                 if (teo instanceof TileEntityCommandBlock)
                 {
