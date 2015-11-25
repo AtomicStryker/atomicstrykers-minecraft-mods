@@ -1,9 +1,9 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import atomicstryker.infernalmobs.common.MobModifier;
 
 public class MM_Exhaust extends MobModifier
 {

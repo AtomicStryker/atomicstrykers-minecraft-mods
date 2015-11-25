@@ -155,7 +155,6 @@ public abstract class MobModifier
     /**
      * Passes the loot drop event to the modifier list
      */
-    @SuppressWarnings("unused")
     public void onDropItems(EntityLivingBase moddedMob, DamageSource killSource, List<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue)
     {
         if (recentlyHit)
@@ -222,7 +221,6 @@ public abstract class MobModifier
     /**
      * passes the fall event to the modifier list
      */
-    @SuppressWarnings("unused")
     public boolean onFall(float distance)
     {
         return nextMod != null && nextMod.onFall(distance);
@@ -231,7 +229,6 @@ public abstract class MobModifier
     /**
      * passes the jump event to the modifier list
      */
-    @SuppressWarnings("unused")
     public void onJump(EntityLivingBase entityLiving)
     {
         if (nextMod != null)

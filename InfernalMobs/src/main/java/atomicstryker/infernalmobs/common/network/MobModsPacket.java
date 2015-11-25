@@ -18,7 +18,6 @@ public class MobModsPacket implements IPacket
     private int entID;
     private byte sentFromServer;
 
-    @SuppressWarnings("unused")
     public MobModsPacket() {}
     
     public MobModsPacket(String str, int i, byte ir)

@@ -1,8 +1,49 @@
 package atomicstryker.infernalmobs.common;
 
-import atomicstryker.infernalmobs.common.mods.*;
-import atomicstryker.infernalmobs.common.network.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.logging.log4j.Level;
+
 import com.google.common.collect.Lists;
+
+import atomicstryker.infernalmobs.common.mods.MM_1UP;
+import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
+import atomicstryker.infernalmobs.common.mods.MM_Berserk;
+import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
+import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Choke;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
+import atomicstryker.infernalmobs.common.mods.MM_Darkness;
+import atomicstryker.infernalmobs.common.mods.MM_Ender;
+import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
+import atomicstryker.infernalmobs.common.mods.MM_Fiery;
+import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
+import atomicstryker.infernalmobs.common.mods.MM_Ninja;
+import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
+import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
+import atomicstryker.infernalmobs.common.mods.MM_Regen;
+import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
+import atomicstryker.infernalmobs.common.mods.MM_Sprint;
+import atomicstryker.infernalmobs.common.mods.MM_Sticky;
+import atomicstryker.infernalmobs.common.mods.MM_Storm;
+import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
+import atomicstryker.infernalmobs.common.mods.MM_Weakness;
+import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
+import atomicstryker.infernalmobs.common.network.AirPacket;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.KnockBackPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import atomicstryker.infernalmobs.common.network.NetworkHelper;
+import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,7 +65,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -38,9 +78,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.GameData;
-import org.apache.logging.log4j.Level;
-
-import java.util.*;
 
 @Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.5")
 public class InfernalMobsCore
@@ -111,7 +148,7 @@ public class InfernalMobsCore
         loadMods();
 
         proxy.preInit();
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
 
         networkHelper = new NetworkHelper("AS_IF", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
     }
@@ -297,11 +334,13 @@ public class InfernalMobsCore
 
                 if (itemOrBlock instanceof Block)
                 {
-                    list.add(new ItemStack(((Block) itemOrBlock), stackSize + rand.nextInt(randomizer), imeta));
+                	Block block = (Block) itemOrBlock;
+                    list.add(new ItemStack(block, stackSize + rand.nextInt(randomizer), imeta));
                 }
                 else
                 {
-                    list.add(new ItemStack(((Item) itemOrBlock), stackSize + rand.nextInt(randomizer), imeta));
+                	Item item = (Item) itemOrBlock;
+                    list.add(new ItemStack(item, stackSize + rand.nextInt(randomizer), imeta));
                 }
             }
         }

@@ -2,6 +2,14 @@ package atomicstryker.infernalmobs.client;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.lwjgl.opengl.GL11;
+
+import atomicstryker.infernalmobs.common.ISidedProxy;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -22,18 +30,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import org.lwjgl.opengl.GL11;
-
-import atomicstryker.infernalmobs.common.ISidedProxy;
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
-import atomicstryker.infernalmobs.common.MobModifier;
-import atomicstryker.infernalmobs.common.mods.MM_Gravity;
-import atomicstryker.infernalmobs.common.network.HealthPacket;
-import atomicstryker.infernalmobs.common.network.MobModsPacket;
 
 public class InfernalMobsClient implements ISidedProxy
 {
@@ -50,7 +48,7 @@ public class InfernalMobsClient implements ISidedProxy
     @Override
     public void preInit()
     {
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         mc = FMLClientHandler.instance().getClient();
     }
 
@@ -119,7 +117,7 @@ public class InfernalMobsClient implements ISidedProxy
                 EntityLivingBase target = (EntityLivingBase) ent;
                 String buffer = mod.getEntityDisplayName(target);
 
-                ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+                ScaledResolution resolution = new ScaledResolution(mc);
                 int screenwidth = resolution.getScaledWidth();
                 FontRenderer fontR = mc.fontRendererObj;
 
@@ -303,7 +301,7 @@ public class InfernalMobsClient implements ISidedProxy
         {
             if (!mc.thePlayer.isInsideOfMaterial(Material.water) && airOverrideValue != -999)
             {
-                final ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+                final ScaledResolution res = new ScaledResolution(mc);
                 GL11.glEnable(GL11.GL_BLEND);
                 
                 int right_height = 39;

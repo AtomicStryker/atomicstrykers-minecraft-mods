@@ -1,16 +1,15 @@
 package atomicstryker.infernalmobs.common;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-
-import org.apache.logging.log4j.Level;
 
 public class InfernalCommandSpawnInfernal extends CommandBase
 {
@@ -86,16 +85,6 @@ public class InfernalCommandSpawnInfernal extends CommandBase
     public int getRequiredPermissionLevel()
     {
         return 2;
-    }
-
-    @Override
-    public int compareTo(Object o)
-    {
-        if (o instanceof ICommand)
-        {
-            return ((ICommand)o).getCommandName().compareTo(getCommandName());
-        }
-        return 0;
     }
 
 }

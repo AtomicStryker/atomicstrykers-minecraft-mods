@@ -1,8 +1,8 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import net.minecraft.entity.EntityLivingBase;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.entity.EntityLivingBase;
 
 public class MM_Regen extends MobModifier
 {

@@ -11,7 +11,6 @@ public class AirPacket implements IPacket
     
     private int air;
 
-    @SuppressWarnings("unused")
     public AirPacket() {}
     
     public AirPacket(int a)
