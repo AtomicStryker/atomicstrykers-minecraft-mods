@@ -2,10 +2,10 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.HashSet;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.BlockPos;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
+import net.minecraft.block.Block;
+import net.minecraft.util.BlockPos;
 
 /**
  * Blocktask for destroying any number of interconnected Blocks

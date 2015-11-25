@@ -1,12 +1,12 @@
 package atomicstryker.minions.client.render.shapes;
 
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.LineInfo;
 import atomicstryker.minions.common.util.Vector3;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 /**
  * Draws a rectangular prism around 2 corners
@@ -38,38 +38,38 @@ public class Render3DBox {
             tempColor.prepareRender();
 
             // Draw bottom face
-            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINE_LOOP);
+            Tessellator.getInstance().getWorldRenderer().func_181668_a(GL11.GL_LINE_LOOP, DefaultVertexFormats.field_181703_c);
             tempColor.prepareColor();
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z1);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z1);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z2);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z2);
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y1, z1).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y1, z1).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y1, z2).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y1, z2).func_181675_d();
             Tessellator.getInstance().draw();
 
             // Draw top face
-            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINE_LOOP);
+            Tessellator.getInstance().getWorldRenderer().func_181668_a(GL11.GL_LINE_LOOP, DefaultVertexFormats.field_181703_c);
             tempColor.prepareColor();
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z1);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z1);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z2);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z2);
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y2, z1).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y2, z1).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y2, z2).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y2, z2).func_181675_d();
             Tessellator.getInstance().draw();
 
             // Draw join top and bottom faces
-            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINES);
+            Tessellator.getInstance().getWorldRenderer().func_181668_a(GL11.GL_LINES, DefaultVertexFormats.field_181703_c);
             tempColor.prepareColor();
 
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z1);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z1);
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y1, z1).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y2, z1).func_181675_d();
 
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z1);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z1);
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y1, z1).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y2, z1).func_181675_d();
 
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y1, z2);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x2, y2, z2);
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y1, z2).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y2, z2).func_181675_d();
 
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y1, z2);
-            Tessellator.getInstance().getWorldRenderer().addVertex(x1, y2, z2);
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y1, z2).func_181675_d();
+            Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y2, z2).func_181675_d();
 
             Tessellator.getInstance().draw();
         }

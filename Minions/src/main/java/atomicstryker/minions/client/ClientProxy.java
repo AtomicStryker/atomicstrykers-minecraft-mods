@@ -1,5 +1,8 @@
 package atomicstryker.minions.client;
 
+import atomicstryker.minions.common.IProxy;
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,15 +10,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import atomicstryker.minions.common.IProxy;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.entity.EntityMinion;
 
 public class ClientProxy implements IProxy
 {
@@ -26,7 +25,7 @@ public class ClientProxy implements IProxy
     public void preInit(FMLPreInitializationEvent event)
     {
         client =  new MinionsClient();
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new RenderChickenLightningBolt());
         MinecraftForge.EVENT_BUS.register(client);
     }

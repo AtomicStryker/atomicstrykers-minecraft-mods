@@ -1,5 +1,7 @@
 package atomicstryker.minions.client;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -8,13 +10,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 /**
  * Minion Render Class, allows displaying of a Minion Description and it's item
@@ -24,12 +24,11 @@ import org.lwjgl.opengl.GL11;
  */
 
 @SuppressWarnings("deprecation")
-public class RenderMinion extends RenderLiving
+public class RenderMinion extends RenderLiving<EntityLiving>
 {
 	private ModelMinion model;
 	private ResourceLocation tex = new ResourceLocation("minions", "textures/model/AS_EntityMinion.png");
 	
-    @SuppressWarnings("unchecked")
     public RenderMinion(ModelBase var1, float var2)
     {
 		super(Minecraft.getMinecraft().getRenderManager(), var1, var2);
@@ -39,7 +38,7 @@ public class RenderMinion extends RenderLiving
 	}
 
     @Override
-	protected void preRenderCallback(EntityLivingBase var1, float var2)
+	protected void preRenderCallback(EntityLiving var1, float var2)
     {
         float var4 = 1.0F;
         GL11.glScalef(var4, var4, var4);
@@ -98,12 +97,12 @@ public class RenderMinion extends RenderLiving
     */
 
     @Override
-    protected ResourceLocation getEntityTexture(Entity entity)
+    protected ResourceLocation getEntityTexture(EntityLiving entity)
     {
         return tex;
     }
     
-    private class CustomHeldItem implements LayerRenderer
+    private class CustomHeldItem implements LayerRenderer<EntityLiving>
     {
         
         private final ModelRenderer rightArm;
@@ -114,7 +113,7 @@ public class RenderMinion extends RenderLiving
         }
         
         @Override
-        public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
+        public void doRenderLayer(EntityLiving entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
         {
             ItemStack itemstack = entitylivingbaseIn.getHeldItem();
 

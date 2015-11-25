@@ -3,6 +3,13 @@ package atomicstryker.minions.common.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import atomicstryker.astarpathing.AS_PathEntity;
+import atomicstryker.astarpathing.AStarNode;
+import atomicstryker.astarpathing.AStarPathPlanner;
+import atomicstryker.astarpathing.AStarStatic;
+import atomicstryker.astarpathing.IAStarPathedEntity;
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.jobmanager.BlockTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -29,13 +36,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
-import atomicstryker.astarpathing.AS_PathEntity;
-import atomicstryker.astarpathing.AStarNode;
-import atomicstryker.astarpathing.AStarPathPlanner;
-import atomicstryker.astarpathing.AStarStatic;
-import atomicstryker.astarpathing.IAStarPathedEntity;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.jobmanager.BlockTask;
 
 /**
  * Minion Entity class, this is where the evil magic happens
@@ -464,7 +464,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
         if (canPickUpItems)
         {
-            @SuppressWarnings("unchecked")
             List<Entity> collidingEntities = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(1.0D, 0.0D, 1.0D));
 
             if (collidingEntities != null && collidingEntities.size() > 0)

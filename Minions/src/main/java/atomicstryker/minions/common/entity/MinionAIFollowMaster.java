@@ -1,10 +1,10 @@
 package atomicstryker.minions.common.entity;
 
+import atomicstryker.minions.common.MinionsCore;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
-import atomicstryker.minions.common.MinionsCore;
 
 public class MinionAIFollowMaster extends EntityAIBase
 {

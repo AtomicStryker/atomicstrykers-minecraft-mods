@@ -8,19 +8,19 @@ package atomicstryker.minions.client;
 
 import java.util.Iterator;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt.Segment;
 import atomicstryker.minions.common.codechicken.Vector3;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class RenderChickenLightningBolt
 {
@@ -53,8 +53,10 @@ public class RenderChickenLightningBolt
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texO);
-		tessellator.getWorldRenderer().startDrawingQuads();
-		tessellator.getWorldRenderer().setBrightness(0xF000F0);
+		tessellator.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+        short j = 0xF000F0 >> 16 & 65535;
+        short k = 0xF000F0 & 65535;
+		tessellator.getWorldRenderer().func_181671_a(j, k);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
 			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.getRotationX(), ActiveRenderInfo.getRotationXZ(), ActiveRenderInfo.getRotationZ(), ActiveRenderInfo.getRotationXY(), 0);
@@ -62,8 +64,8 @@ public class RenderChickenLightningBolt
         tessellator.draw();
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texI);
-		tessellator.getWorldRenderer().startDrawingQuads();
-		tessellator.getWorldRenderer().setBrightness(0xF000F0);
+		tessellator.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+		tessellator.getWorldRenderer().func_181671_a(j, k);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
 			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.getRotationX(), ActiveRenderInfo.getRotationXZ(), ActiveRenderInfo.getRotationZ(), ActiveRenderInfo.getRotationXY(), 1);
@@ -114,31 +116,52 @@ public class RenderChickenLightningBolt
         	Vector3 startvec = rendersegment.startpoint.point;
         	Vector3 endvec = rendersegment.endpoint.point;
         	
-            tessellator.getWorldRenderer().setColorRGBA_F(1, 1, 1, mainalpha * rendersegment.light);
+            tessellator.getWorldRenderer().putColorRGBA(0, 255, 255, 255, Math.round(255 / (mainalpha * rendersegment.light)));
             
-            tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
-            tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
-            tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
-            tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+            //tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
+            tessellator.getWorldRenderer().func_181662_b(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z).func_181673_a(0.5, 0).func_181675_d();
+            
+            //tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
+            tessellator.getWorldRenderer().func_181662_b(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z).func_181673_a(0.5, 0).func_181675_d();
+            
+            //tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+            tessellator.getWorldRenderer().func_181662_b(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z).func_181673_a(0.5, 1).func_181675_d();
+            
+            //tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+            tessellator.getWorldRenderer().func_181662_b(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z).func_181673_a(0.5, 1).func_181675_d();
             
             if(rendersegment.next == null)
             {
             	Vector3 roundend = rendersegment.endpoint.point.copy().add(rendersegment.diff.copy().normalize().multiply(width));
             	                
-                tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z, 0, 0);
-                tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
-                tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
-                tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z, 0, 1);
+                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z, 0, 0);
+                tessellator.getWorldRenderer().func_181662_b(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z).func_181673_a(0, 0).func_181675_d();
+                
+                //tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
+                tessellator.getWorldRenderer().func_181662_b(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z).func_181673_a(0.5, 0).func_181675_d();
+                
+                //tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+                tessellator.getWorldRenderer().func_181662_b(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z).func_181673_a(0.5, 1).func_181675_d();
+                
+                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z, 0, 1);
+                tessellator.getWorldRenderer().func_181662_b(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z).func_181673_a(0, 1).func_181675_d();
             }
             
             if(rendersegment.prev == null)
             {
             	Vector3 roundend = rendersegment.startpoint.point.copy().subtract(rendersegment.diff.copy().normalize().multiply(width));
             	                
-                tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
-                tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z, 0, 0);
-                tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z, 0, 1);
-                tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+                //tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
+                tessellator.getWorldRenderer().func_181662_b(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z).func_181673_a(0.5, 0).func_181675_d();
+                
+                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z, 0, 0);
+                tessellator.getWorldRenderer().func_181662_b(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z).func_181673_a(0, 0).func_181675_d();
+                
+                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z, 0, 1);
+                tessellator.getWorldRenderer().func_181662_b(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z).func_181673_a(0, 1).func_181675_d();
+                
+                //tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+                tessellator.getWorldRenderer().func_181662_b(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z).func_181673_a(0.5, 1).func_181675_d();
             }
         }
 	}

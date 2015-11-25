@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.minecraft.util.BlockPos;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
+import net.minecraft.util.BlockPos;
 
 public abstract class Minion_Job_Manager
 {

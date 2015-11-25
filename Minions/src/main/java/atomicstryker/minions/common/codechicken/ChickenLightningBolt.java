@@ -346,7 +346,6 @@ public class ChickenLightningBolt
 	{
 		if(!world.isRemote)
 		{
-	        @SuppressWarnings("unchecked")
 	        List<Entity> nearentities = world.getEntitiesWithinAABBExcludingEntity(source, boundingBox);
 	        if(nearentities.size() != 0)
 	        {

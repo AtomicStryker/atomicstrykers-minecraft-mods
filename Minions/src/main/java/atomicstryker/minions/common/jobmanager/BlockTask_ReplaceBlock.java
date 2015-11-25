@@ -1,10 +1,10 @@
 package atomicstryker.minions.common.jobmanager;
 
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Blocktask for mining a single Block, then replacing it with another

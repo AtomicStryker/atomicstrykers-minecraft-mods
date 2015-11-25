@@ -1,11 +1,10 @@
 package atomicstryker.minions.client.gui;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.client.MinionsClient;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 
 /**
  * Minions Custom Dig Menu, allows you to choose your desired Dimensions
@@ -21,8 +20,7 @@ public class GuiCustomDigMenu extends GuiScreen
     private int xzSize = 3;
     private int ySize = 3;
 
-    @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void initGui()
     {
     	xzSize = MinionsClient.customSizeXZ;

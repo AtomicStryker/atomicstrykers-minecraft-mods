@@ -2,6 +2,7 @@ package atomicstryker.minions.common.jobmanager;
 
 import java.util.List;
 
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -9,7 +10,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Blocktask for destroying and stashing a single Block

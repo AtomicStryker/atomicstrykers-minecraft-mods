@@ -1,5 +1,7 @@
 package atomicstryker.minions.common.jobmanager;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -7,8 +9,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Minion Job class for digging a horizontal 2x1 mineshaft and mining ores of precious material in walls and ceiling (not floor)

@@ -1,6 +1,5 @@
 package atomicstryker.minions.client.render;
 
-
 import org.lwjgl.opengl.GL11;
 
 /**

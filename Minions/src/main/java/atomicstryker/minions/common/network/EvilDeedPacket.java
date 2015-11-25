@@ -1,5 +1,7 @@
 package atomicstryker.minions.common.network;
 
+import atomicstryker.minions.common.MinionsCore;
+import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,8 +9,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.minions.common.MinionsCore;
-import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 
 public class EvilDeedPacket implements IPacket
 {

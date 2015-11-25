@@ -2,13 +2,13 @@ package atomicstryker.minions.client.render.shapes;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.LineInfo;
 import atomicstryker.minions.client.render.points.PointRectangle;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 /**
  * Draws the top and bottom rings of
@@ -36,13 +36,13 @@ public class Render2DBox {
         for (LineInfo tempColor : color.getColors()) {
             tempColor.prepareRender();
 
-            Tessellator.getInstance().getWorldRenderer().startDrawing(GL11.GL_LINES);
+            Tessellator.getInstance().getWorldRenderer().func_181668_a(GL11.GL_LINES, DefaultVertexFormats.field_181703_c);
             tempColor.prepareColor();
 
             for (PointRectangle point : points) {
                 if (point != null) {
-                	Tessellator.getInstance().getWorldRenderer().addVertex(point.getPoint().getX() + 0.5, min + off, point.getPoint().getY() + 0.5);
-                	Tessellator.getInstance().getWorldRenderer().addVertex(point.getPoint().getX() + 0.5, max + 1 + off, point.getPoint().getY() + 0.5);
+                	Tessellator.getInstance().getWorldRenderer().func_181662_b(point.getPoint().getX() + 0.5, min + off, point.getPoint().getY() + 0.5).func_181675_d();
+                	Tessellator.getInstance().getWorldRenderer().func_181662_b(point.getPoint().getX() + 0.5, max + 1 + off, point.getPoint().getY() + 0.5).func_181675_d();
                 }
             }
             Tessellator.getInstance().draw();
