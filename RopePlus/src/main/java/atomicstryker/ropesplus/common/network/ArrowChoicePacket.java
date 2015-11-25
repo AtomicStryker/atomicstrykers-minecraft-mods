@@ -1,12 +1,12 @@
 package atomicstryker.ropesplus.common.network;
 
+import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.ropesplus.common.RopesPlusCore;
-import atomicstryker.ropesplus.common.network.NetworkHelper.IPacket;
 
 public class ArrowChoicePacket implements IPacket
 {

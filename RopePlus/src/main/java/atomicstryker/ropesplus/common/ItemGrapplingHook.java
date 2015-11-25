@@ -1,5 +1,7 @@
 package atomicstryker.ropesplus.common;
 
+import atomicstryker.ropesplus.client.RopesPlusClient;
+import atomicstryker.ropesplus.common.network.GrapplingHookPacket;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -7,8 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.client.RopesPlusClient;
-import atomicstryker.ropesplus.common.network.GrapplingHookPacket;
 
 public class ItemGrapplingHook extends Item
 {

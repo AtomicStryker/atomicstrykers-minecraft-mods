@@ -1,18 +1,18 @@
 package atomicstryker.ropesplus.client;
 
+import org.lwjgl.opengl.GL11;
+
+import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
-import org.lwjgl.opengl.GL11;
-
-import atomicstryker.ropesplus.common.EntityFreeFormRope;
-
-public class RenderFreeFormRope extends Render
+public class RenderFreeFormRope extends Render<Entity>
 {
     
     protected RenderFreeFormRope(RenderManager renderManager)
@@ -160,7 +160,7 @@ public class RenderFreeFormRope extends Render
         double[] q4 = addVectors(sideBounds1, multiplyVector(normal, -length));
         
         GL11.glNormal3f(0.0F, 0.0F, 1F);
-        tessellator.getWorldRenderer().startDrawingQuads();
+        tessellator.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
         addVertex(p1, f, f3);
         addVertex(p2, f1, f3);
         addVertex(p3, f1, f2);
@@ -168,7 +168,7 @@ public class RenderFreeFormRope extends Render
         tessellator.draw();
         
         GL11.glNormal3f(0.0F, 0.0F, 1F);
-        tessellator.getWorldRenderer().startDrawingQuads();
+        tessellator.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
         addVertex(q1, f, f3);
         addVertex(q2, f1, f3);
         addVertex(q3, f1, f2);
@@ -188,7 +188,7 @@ public class RenderFreeFormRope extends Render
     
     private void addVertex(double[] vertex, double u, double v)
     {
-        tessellator.getWorldRenderer().addVertexWithUV(vertex[0], vertex[1], vertex[2], u, v);
+        Tessellator.getInstance().getWorldRenderer().func_181662_b(vertex[0], vertex[1], vertex[2]).func_181673_a(u, v).func_181675_d();
     }
 
     private double[] normalize(double[] v)

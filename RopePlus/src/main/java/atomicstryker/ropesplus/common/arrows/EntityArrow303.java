@@ -2,6 +2,7 @@ package atomicstryker.ropesplus.common.arrows;
 
 import java.util.List;
 
+import atomicstryker.ropesplus.common.EntityProjectileBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
@@ -22,7 +23,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.EntityProjectileBase;
 
 public class EntityArrow303 extends EntityProjectileBase
 {

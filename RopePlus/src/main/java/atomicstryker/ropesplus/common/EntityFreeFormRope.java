@@ -1,5 +1,7 @@
 package atomicstryker.ropesplus.common;
 
+import atomicstryker.ropesplus.common.network.HookshotPullPacket;
+import atomicstryker.ropesplus.common.network.SoundPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -7,8 +9,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.network.HookshotPullPacket;
-import atomicstryker.ropesplus.common.network.SoundPacket;
 
 public class EntityFreeFormRope extends Entity
 {

@@ -226,7 +226,6 @@ public abstract class EntityProjectileBase extends Entity implements IProjectile
         }
         
         EntityLivingBase entityHit = null;
-        @SuppressWarnings("unchecked")
         List<Entity> possibleHitsList = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double nearestHit = 0.0D;
         MovingObjectPosition mopCollision = null;

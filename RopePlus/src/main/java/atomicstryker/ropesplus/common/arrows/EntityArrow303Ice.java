@@ -52,8 +52,6 @@ public class EntityArrow303Ice extends EntityArrow303
             return false;
         }
         
-
-        @SuppressWarnings("unchecked")
         List<Entity> list = (List<Entity>)worldObj.getEntitiesWithinAABBExcludingEntity(this, entity.getEntityBoundingBox().expand(3D, 3D, 3D));
         for (Entity e : list)
         {

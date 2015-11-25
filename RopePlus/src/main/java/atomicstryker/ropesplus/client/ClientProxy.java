@@ -1,18 +1,18 @@
 package atomicstryker.ropesplus.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.entity.Entity;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy implements IProxy
 {
@@ -31,7 +31,7 @@ public class ClientProxy implements IProxy
     @Override
     public void loadConfig(Configuration config)
     {
-        FMLCommonHandler.instance().bus().register(new RopesPlusClient());
+        MinecraftForge.EVENT_BUS.register(new RopesPlusClient());
         RopesPlusClient.toolTipEnabled = config.get(Configuration.CATEGORY_GENERAL, "Equipped Bow Tool Tip", true).getBoolean(true);
     }
     
@@ -40,7 +40,7 @@ public class ClientProxy implements IProxy
     public void load()
     {        
         RenderingRegistry.registerEntityRenderingHandler(EntityGrapplingHook.class, new RenderGrapplingHook(Minecraft.getMinecraft().getRenderManager()));
-        Render arrowRenderer = new RenderArrow303(Minecraft.getMinecraft().getRenderManager());
+        Render<Entity> arrowRenderer = new RenderArrow303(Minecraft.getMinecraft().getRenderManager());
         for(Class<?> arrow : RopesPlusCore.coreArrowClasses)
         {
             RenderingRegistry.registerEntityRenderingHandler((Class<? extends Entity>) arrow, arrowRenderer);

@@ -1,11 +1,11 @@
 package atomicstryker.ropesplus.common;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ITickable;
 
-public class TileEntityZipLineAnchor extends TileEntity implements IUpdatePlayerListBox
+public class TileEntityZipLineAnchor extends TileEntity implements ITickable
 {
 
     private int targetX;

@@ -2,6 +2,7 @@ package atomicstryker.ropesplus.common;
 
 import atomicstryker.ropesplus.common.network.HookshotPacket;
 import atomicstryker.ropesplus.common.network.ZiplinePacket;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -18,7 +19,6 @@ import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockZipLineAnchor extends BlockContainer

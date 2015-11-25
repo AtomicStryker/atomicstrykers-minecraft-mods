@@ -1,5 +1,7 @@
 package atomicstryker.ropesplus.common.arrows;
 
+import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.TileEntityRope;
 import net.minecraft.block.Block;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.IProjectile;
@@ -9,8 +11,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.RopesPlusCore;
-import atomicstryker.ropesplus.common.TileEntityRope;
 
 public class EntityArrow303Rope extends EntityArrow303
 {

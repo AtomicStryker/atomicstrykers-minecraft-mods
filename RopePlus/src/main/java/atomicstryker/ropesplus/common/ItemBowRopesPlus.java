@@ -1,5 +1,7 @@
 package atomicstryker.ropesplus.common;
 
+import atomicstryker.ropesplus.common.arrows.EntityArrow303;
+import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,8 +12,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import atomicstryker.ropesplus.common.arrows.EntityArrow303;
-import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 
 public class ItemBowRopesPlus extends ItemBow
 {

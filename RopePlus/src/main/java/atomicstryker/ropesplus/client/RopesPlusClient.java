@@ -1,5 +1,7 @@
 package atomicstryker.ropesplus.client;
 
+import net.minecraftforge.common.config.Configuration;
+
 import org.lwjgl.input.Keyboard;
 
 import atomicstryker.ropesplus.common.EntityFreeFormRope;
@@ -21,7 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
