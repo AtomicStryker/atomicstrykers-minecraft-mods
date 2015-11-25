@@ -4,3 +4,4 @@
 *.gradle*
 */build/tmp/*
 */build/sources/*
+*/build/*
