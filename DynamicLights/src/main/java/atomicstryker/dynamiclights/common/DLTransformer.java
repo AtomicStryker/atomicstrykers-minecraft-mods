@@ -1,12 +1,6 @@
 package atomicstryker.dynamiclights.common;
 
-import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.ISTORE;
-
 import java.util.Iterator;
-
-import net.minecraft.launchwrapper.IClassTransformer;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -15,6 +9,9 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraft.launchwrapper.IClassTransformer;
+import scala.tools.asm.Opcodes;
 
 /**
  * 
@@ -27,17 +24,17 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class DLTransformer implements IClassTransformer
 {
     
-    /* net/minecraft/World */
-    private String classNameWorld = "aqu";
+    /* net/minecraft/world/World */
+    private String classNameWorld = "adm";
       
     /* (Lnet/minecraft/util/BlockPos;Lnet/minecraft/world/EnumSkyBlock;)I */
-    private String targetMethodDesc = "(Ldt;Larf;)I";
+    private String targetMethodDesc = "(Lcj;Lads;)I";
     
-    /* net/minecraft/World.getRawLight / func_175638_a */
+    /* net/minecraft/world/World.getRawLight / func_175638_a */
     private String computeLightValueMethodName = "a";
     
     /* (Lnet/minecraft/block/Block;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I */
-    private String goalInvokeDesc = "(Latr;Lard;Ldt;)I";
+    private String goalInvokeDesc = "(Lafh;Ladq;Lcj;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -105,13 +102,13 @@ public class DLTransformer implements IClassTransformer
                     targetNode = iter.next();
 
                     // find the first ASTORE node, it stores the Block reference for the Block.getLightValue call
-                    if (targetNode.getOpcode() == ASTORE)
+                    if (targetNode.getOpcode() == Opcodes.ASTORE)
                     {
                         VarInsnNode astore = (VarInsnNode) targetNode;
                         System.out.println("Found ASTORE Node, is writing variable number: " + astore.var);
 
                         // go further until ISTORE is hit
-                        while (targetNode.getOpcode() != ISTORE)
+                        while (targetNode.getOpcode() != Opcodes.ISTORE)
                         {
                             if (targetNode instanceof MethodInsnNode)
                             {
@@ -132,7 +129,7 @@ public class DLTransformer implements IClassTransformer
                 if (found)
                 {
                     // now write our replacement before the target node
-                    m.instructions.insertBefore(targetNode, new MethodInsnNode(INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", goalInvokeDesc, false));
+                    m.instructions.insertBefore(targetNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getLightValue", goalInvokeDesc, false));
                 }
                 break;
             }

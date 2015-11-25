@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import atomicstryker.dynamiclights.client.DynamicLights;
+import atomicstryker.dynamiclights.client.IDynamicLightSource;
+import atomicstryker.dynamiclights.client.ItemConfigHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -11,10 +14,10 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -23,9 +26,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.GameData;
-import atomicstryker.dynamiclights.client.DynamicLights;
-import atomicstryker.dynamiclights.client.IDynamicLightSource;
-import atomicstryker.dynamiclights.client.ItemConfigHelper;
 
 /**
  * 
@@ -52,7 +52,7 @@ public class DroppedItemsLightSource
     public void preInit(FMLPreInitializationEvent evt)
     {
         config = new Configuration(evt.getSuggestedConfigurationFile());
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
     
     @EventHandler
@@ -84,7 +84,6 @@ public class DroppedItemsLightSource
         config.save();
     }
     
-    @SuppressWarnings("unchecked")
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
@@ -102,7 +101,8 @@ public class DroppedItemsLightSource
         }
     }
     
-    private int getLightFromItemStack(ItemStack stack)
+    @SuppressWarnings("unchecked")
+	private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
         {
@@ -174,7 +174,8 @@ public class DroppedItemsLightSource
         private boolean enabled;
         private boolean notWaterProof;
         
-        public EntityItemAdapter(EntityItem eI)
+        @SuppressWarnings("unchecked")
+		public EntityItemAdapter(EntityItem eI)
         {
             lightLevel = 0;
             enabled = false;

@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -13,9 +15,9 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -24,8 +26,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-
-import org.lwjgl.input.Keyboard;
 
 /**
  * 
@@ -71,17 +71,17 @@ public class DynamicLights
     private long nextKeyTriggerTime;
     
     @EventHandler
-    public void preInit(@SuppressWarnings("unused")FMLPreInitializationEvent evt)
+    public void preInit(FMLPreInitializationEvent evt)
     {
         globalLightsOff = false;
         mcinstance = FMLClientHandler.instance().getClient();
         worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         nextKeyTriggerTime = System.currentTimeMillis();
     }
     
     @EventHandler
-    public void load(@SuppressWarnings("unused")FMLInitializationEvent evt)
+    public void load(FMLInitializationEvent evt)
     {
         toggleButton = new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
@@ -149,7 +149,6 @@ public class DynamicLights
      * @param pos BlockPos instance of target coords
      * @return max(Block.getLightValue, Dynamic Light)
      */
-    @SuppressWarnings("unused")
     public static int getLightValue(Block block, IBlockAccess world, BlockPos pos)
     {
         int vanillaValue = block.getLightValue(world, pos);
