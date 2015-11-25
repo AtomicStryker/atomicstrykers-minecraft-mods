@@ -21,6 +21,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -62,7 +63,7 @@ public class MultiMineServer
             blacklistedBlocksAndTools.put(entry.getKey(), entry.getValue().getBoolean(false));
         }
 
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public static MultiMineServer instance()
@@ -198,7 +199,8 @@ public class MultiMineServer
         sendPartiallyMinedBlockUpdateToAllPlayers(newblock);
     }
 
-    private boolean isBlockBanned(Block block, int meta)
+    @SuppressWarnings("unchecked")
+	private boolean isBlockBanned(Block block, int meta)
     {
         final String ident = GameData.getBlockRegistry().getNameForObject(block).toString()+"-"+meta;
         Boolean result = blacklistedBlocksAndTools.get(ident);
@@ -216,7 +218,8 @@ public class MultiMineServer
         return result;
     }
 
-    private boolean isItemBanned(ItemStack item)
+    @SuppressWarnings("unchecked")
+	private boolean isItemBanned(ItemStack item)
     {
         if (item == null || item.getItem() == null)
         {

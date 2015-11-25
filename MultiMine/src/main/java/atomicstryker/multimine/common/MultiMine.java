@@ -1,15 +1,16 @@
 package atomicstryker.multimine.common;
 
 import net.minecraftforge.common.config.Configuration;
+
+import atomicstryker.multimine.common.network.NetworkHelper;
+import atomicstryker.multimine.common.network.PartialBlockPacket;
+import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import atomicstryker.multimine.common.network.NetworkHelper;
-import atomicstryker.multimine.common.network.PartialBlockPacket;
-import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts

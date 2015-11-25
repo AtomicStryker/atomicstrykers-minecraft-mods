@@ -1,16 +1,10 @@
 package atomicstryker.multimine.common.fmlmagic;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.GETFIELD;
-import static org.objectweb.asm.Opcodes.IFLT;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.PUTFIELD;
-
 import java.util.Iterator;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
@@ -25,18 +19,18 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for PlayerControllerMP Transformation */
 
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "cem";
-    private final String playerControllerMPJavaClassNameO = "cem";
+    private final String playerControllerMPClassNameO = "bda";
+    private final String playerControllerMPJavaClassNameO = "bda";
     
     /* onPlayerDamageBlock / func_180512_c */
     private final String playerControllerMPtargetMethodNameO = "c";
     
     /* method description of func_180512_c  */
-    private final String methodDescO = "(Ldt;Lej;)Z";
+    private final String methodDescO = "(Lcj;Lcq;)Z";
     private final String methodDesc = "(Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)Z";
     
     /* method desc of call to client hook */
-    private final String methodDescCallO = "(Ldt;F)F";
+    private final String methodDescCallO = "(Lcj;F)F";
     private final String methodDescCall = "(Lnet/minecraft/util/BlockPos;F)F";
     
     /* curBlockDamageMP / field_78770_f */
@@ -143,13 +137,13 @@ public class MMTransformer implements IClassTransformer
                 for (int index = 0; index < m.instructions.size(); index++)
                 {                    
                     // find injection point in method, there is a single IFLT instruction we use as target
-                    if (m.instructions.get(index).getOpcode() == IFLT)
+                    if (m.instructions.get(index).getOpcode() == Opcodes.IFLT)
                     {
                         System.out.println("Found IFLT Node at " + index);
                         
                         // from there, step backwards to ALOAD node to get infront of the curBlockDamageMP field load
                         int offset = 1;
-                        while (m.instructions.get(index - offset).getOpcode() != ALOAD)
+                        while (m.instructions.get(index - offset).getOpcode() != Opcodes.ALOAD)
                         {
                             offset++;
                         }
@@ -168,13 +162,13 @@ public class MMTransformer implements IClassTransformer
                         
                         // construct it using asm, insert it before 'if (this.curBlockDamageMP >= 1.0F)'
                         InsnList toInject = new InsnList();
-                        toInject.add(new VarInsnNode(ALOAD, 0));
-                        toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false));
-                        toInject.add(new VarInsnNode(ALOAD, 1));
-                        toInject.add(new VarInsnNode(ALOAD, 0));
-                        toInject.add(new FieldInsnNode(GETFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
-                        toInject.add(new MethodInsnNode(INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "eventPlayerDamageBlock", getTargetMethodCallDesc(), false));
-                        toInject.add(new FieldInsnNode(PUTFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
+                        toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                        toInject.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false));
+                        toInject.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                        toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                        toInject.add(new FieldInsnNode(Opcodes.GETFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
+                        toInject.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "eventPlayerDamageBlock", getTargetMethodCallDesc(), false));
+                        toInject.add(new FieldInsnNode(Opcodes.PUTFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
                         m.instructions.insertBefore(m.instructions.get(index - offset), toInject);
                         
                         // in effect, we added this line of code: 'this.curBlockDamageMP = atomicstryker.multimine.client.MultiMineClient.instance().eventPlayerDamageBlock(blockPos, curBlockDamageMP);'

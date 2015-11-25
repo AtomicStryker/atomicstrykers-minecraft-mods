@@ -3,6 +3,9 @@ package atomicstryker.multimine.client;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import atomicstryker.multimine.common.MultiMine;
+import atomicstryker.multimine.common.PartiallyMinedBlock;
+import atomicstryker.multimine.common.network.PartialBlockPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -16,9 +19,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import atomicstryker.multimine.common.MultiMine;
-import atomicstryker.multimine.common.PartiallyMinedBlock;
-import atomicstryker.multimine.common.network.PartialBlockPacket;
 
 public class MultiMineClient
 {
