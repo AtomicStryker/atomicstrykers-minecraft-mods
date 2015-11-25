@@ -11,21 +11,21 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Properties;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 @Mod(modid = "SimplyHaxVision", name = "Simply Hax Vision", version = "1.8")
 public class SimplyHaxVision
@@ -48,7 +48,7 @@ public class SimplyHaxVision
     public void preInit(FMLPreInitializationEvent evt)
     {
         configfile = evt.getSuggestedConfigurationFile();
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
     
     @SubscribeEvent
