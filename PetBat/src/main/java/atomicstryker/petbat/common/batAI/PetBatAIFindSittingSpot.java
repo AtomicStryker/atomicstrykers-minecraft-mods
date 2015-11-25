@@ -1,9 +1,9 @@
 package atomicstryker.petbat.common.batAI;
 
+import atomicstryker.petbat.common.EntityPetBat;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import atomicstryker.petbat.common.EntityPetBat;
 
 public class PetBatAIFindSittingSpot extends EntityAIBase
 {

@@ -1,14 +1,14 @@
 package atomicstryker.petbat.client;
 
+import atomicstryker.petbat.common.EntityPetBat;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.MathHelper;
-import atomicstryker.petbat.common.EntityPetBat;
 
-public class ModelPetBat extends ModelBase implements LayerRenderer
+public class ModelPetBat extends ModelBase implements LayerRenderer<EntityLiving>
 {
     private ModelRenderer batHead;
     private ModelRenderer batBody;
@@ -93,7 +93,7 @@ public class ModelPetBat extends ModelBase implements LayerRenderer
     }
 
     @Override
-    public void doRenderLayer(EntityLivingBase ent, float limbSwing, float prevLimbSwing, float partialTicks, float x, float y, float z, float smallConst)
+    public void doRenderLayer(EntityLiving ent, float limbSwing, float prevLimbSwing, float partialTicks, float x, float y, float z, float smallConst)
     {
     }
 

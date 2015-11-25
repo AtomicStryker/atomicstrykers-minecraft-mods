@@ -1,8 +1,8 @@
 package atomicstryker.petbat.common.batAI;
 
+import atomicstryker.petbat.common.EntityPetBat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITarget;
-import atomicstryker.petbat.common.EntityPetBat;
 
 public class PetBatAIOwnerAttacks extends EntityAITarget
 {

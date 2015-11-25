@@ -2,6 +2,9 @@ package atomicstryker.petbat.common.batAI;
 
 import java.util.Random;
 
+import atomicstryker.petbat.common.EntityPetBat;
+import atomicstryker.petbat.common.ItemPocketedPetBat;
+import atomicstryker.petbat.common.PetBatMod;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -9,9 +12,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-import atomicstryker.petbat.common.EntityPetBat;
-import atomicstryker.petbat.common.ItemPocketedPetBat;
-import atomicstryker.petbat.common.PetBatMod;
 
 public class PetBatAIFlying extends EntityAIBase
 {

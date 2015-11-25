@@ -2,19 +2,18 @@ package atomicstryker.petbat.client;
 
 import java.io.IOException;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
 import atomicstryker.petbat.common.network.BatNamePacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 
 public class GuiPetBatRename extends GuiScreen
 {

@@ -5,6 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraftforge.common.config.Configuration;
+
+import atomicstryker.petbat.common.network.BatNamePacket;
+import atomicstryker.petbat.common.network.NetworkHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityBat;
@@ -17,7 +21,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -35,8 +38,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import atomicstryker.petbat.common.network.BatNamePacket;
-import atomicstryker.petbat.common.network.NetworkHelper;
 
 @Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.0")
 public class PetBatMod implements IProxy
@@ -188,7 +189,6 @@ public class PetBatMod implements IProxy
         ItemStack item = p.inventory.getCurrentItem();
         if (item != null && item.getItem() == TAME_ITEM_ID)
         {
-            @SuppressWarnings("unchecked")
             List<Entity> entityList = p.worldObj.getEntitiesWithinAABBExcludingEntity(p, p.getEntityBoundingBox().expand(10D, 10D, 10D));
             BlockPos coords = new BlockPos((int)(p.posX+0.5D), (int)(p.posY+1.5D), (int)(p.posZ+0.5D));
             for (Entity ent : entityList)

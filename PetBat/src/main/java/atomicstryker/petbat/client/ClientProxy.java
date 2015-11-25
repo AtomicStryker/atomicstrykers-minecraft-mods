@@ -1,14 +1,14 @@
 package atomicstryker.petbat.client;
 
+import atomicstryker.petbat.common.EntityPetBat;
+import atomicstryker.petbat.common.IProxy;
+import atomicstryker.petbat.common.PetBatMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import atomicstryker.petbat.common.EntityPetBat;
-import atomicstryker.petbat.common.IProxy;
-import atomicstryker.petbat.common.PetBatMod;
 
 public class ClientProxy implements IProxy
 {

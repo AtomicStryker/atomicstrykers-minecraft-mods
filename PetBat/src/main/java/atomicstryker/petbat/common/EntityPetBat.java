@@ -1,5 +1,10 @@
 package atomicstryker.petbat.common;
 
+import atomicstryker.petbat.common.batAI.PetBatAIAttack;
+import atomicstryker.petbat.common.batAI.PetBatAIFindSittingSpot;
+import atomicstryker.petbat.common.batAI.PetBatAIFlying;
+import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
+import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -22,11 +27,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import atomicstryker.petbat.common.batAI.PetBatAIAttack;
-import atomicstryker.petbat.common.batAI.PetBatAIFindSittingSpot;
-import atomicstryker.petbat.common.batAI.PetBatAIFlying;
-import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
-import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
 
 public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpawnData
 {
@@ -327,7 +327,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public void setInPortal()
+    public void func_181015_d(BlockPos b) //setInPortal()
     {
         // Nope
     }

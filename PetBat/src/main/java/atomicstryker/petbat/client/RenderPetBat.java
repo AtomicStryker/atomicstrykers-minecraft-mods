@@ -1,24 +1,21 @@
 package atomicstryker.petbat.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.petbat.common.EntityPetBat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 
-public class RenderPetBat extends RenderLiving
+public class RenderPetBat extends RenderLiving<EntityLiving>
 {
     private ModelPetBat renderModel;
     private ResourceLocation tex = new ResourceLocation("petbat", "textures/model/petbat.png");
     private ResourceLocation texGlis = new ResourceLocation("petbat", "textures/model/petbat_glister.png");
     
-    @SuppressWarnings("unchecked")
-	public RenderPetBat()
+    public RenderPetBat()
     {
         super(Minecraft.getMinecraft().getRenderManager(), new ModelPetBat(), 0.25F);
         renderModel = new ModelPetBat();
@@ -26,13 +23,13 @@ public class RenderPetBat extends RenderLiving
     }
     
     @Override
-    protected void preRenderCallback(EntityLivingBase par1EntityLivingBase, float par2)
+    protected void preRenderCallback(EntityLiving par1EntityLivingBase, float par2)
     {
     	GL11.glScalef(0.35F, 0.35F, 0.35F);
     }
 
     @Override
-    protected void rotateCorpse(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4)
+    protected void rotateCorpse(EntityLiving par1EntityLivingBase, float par2, float par3, float par4)
     {
         this.rotateRenderedModel((EntityPetBat)par1EntityLivingBase, par2, par3, par4);
     }
@@ -52,14 +49,14 @@ public class RenderPetBat extends RenderLiving
     }
     
     @Override
-	public void passSpecialRender(EntityLivingBase par1EntityLivingBase, double par2, double par4, double par6)
+	public void renderName(EntityLiving par1EntityLivingBase, double par2, double par4, double par6)
     {
         String name = ((EntityPetBat)par1EntityLivingBase).getCommandSenderName();
         if (!name.equals(""))
         {
         	renderLivingLabel(par1EntityLivingBase, name, par2, par4-1D, par6, 64);
         }
-        super.passSpecialRender(par1EntityLivingBase, par2, par4, par6);
+        super.renderName(par1EntityLivingBase, par2, par4, par6);
     }
     
     /*
@@ -79,7 +76,7 @@ public class RenderPetBat extends RenderLiving
     */
 
     @Override
-    protected ResourceLocation getEntityTexture(Entity entity)
+    protected ResourceLocation getEntityTexture(EntityLiving entity)
     {
         return ((EntityPetBat)entity).glister ? texGlis : tex;
     }

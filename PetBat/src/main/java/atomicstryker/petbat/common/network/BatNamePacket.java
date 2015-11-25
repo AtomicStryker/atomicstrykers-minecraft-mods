@@ -1,13 +1,13 @@
 package atomicstryker.petbat.common.network;
 
+import atomicstryker.petbat.common.ItemPocketedPetBat;
+import atomicstryker.petbat.common.PetBatMod;
+import atomicstryker.petbat.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import atomicstryker.petbat.common.ItemPocketedPetBat;
-import atomicstryker.petbat.common.PetBatMod;
-import atomicstryker.petbat.common.network.NetworkHelper.IPacket;
 
 public class BatNamePacket implements IPacket
 {

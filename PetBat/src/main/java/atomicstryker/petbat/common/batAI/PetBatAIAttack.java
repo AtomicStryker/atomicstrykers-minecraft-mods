@@ -1,5 +1,6 @@
 package atomicstryker.petbat.common.batAI;
 
+import atomicstryker.petbat.common.EntityPetBat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -9,7 +10,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.Vec3;
-import atomicstryker.petbat.common.EntityPetBat;
 
 public class PetBatAIAttack extends EntityAIBase
 {

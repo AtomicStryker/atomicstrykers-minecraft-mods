@@ -1,8 +1,8 @@
 package atomicstryker.petbat.common;
 
-import net.minecraft.entity.Entity;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
+import net.minecraft.entity.Entity;
 
 public class GlisterBatAdapter implements IDynamicLightSource
 {
