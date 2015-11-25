@@ -3,11 +3,16 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+
+import atomicstryker.battletowers.common.network.ChestAttackedPacket;
+import atomicstryker.battletowers.common.network.LoginPacket;
+import atomicstryker.battletowers.common.network.NetworkHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -22,9 +27,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import atomicstryker.battletowers.common.network.ChestAttackedPacket;
-import atomicstryker.battletowers.common.network.LoginPacket;
-import atomicstryker.battletowers.common.network.NetworkHelper;
 
 @Mod(modid = "BattleTowers", name = "Battle Towers", version = "1.5.5")
 public class AS_BattleTowersCore
@@ -38,7 +40,7 @@ public class AS_BattleTowersCore
 	public int chanceTowerIsUnderGround;
 	public boolean noGolemExplosions;
 	public boolean towerFallDestroysMobSpawners;
-	private int golemEntityID;
+	//private int golemEntityID;
 	
     @Instance(value = "BattleTowers")
     public static AS_BattleTowersCore instance;
@@ -61,8 +63,8 @@ public class AS_BattleTowersCore
         
         networkHelper = new NetworkHelper("AS_BT", LoginPacket.class, ChestAttackedPacket.class);
         
-        FMLCommonHandler.instance().bus().register(this);
-        FMLCommonHandler.instance().bus().register(new ServerTickHandler());
+        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ServerTickHandler());
     }
     
     @SubscribeEvent
@@ -83,7 +85,7 @@ public class AS_BattleTowersCore
     {
         proxy.load();
         
-        EntityRegistry.registerGlobalEntityID(AS_EntityGolem.class, "Battletower Golem", golemEntityID, 0xA0A0A0, 0x808080);
+        //EntityRegistry.registerGlobalEntityID(AS_EntityGolem.class, "Battletower Golem", golemEntityID, 0xA0A0A0, 0x808080);
         EntityRegistry.registerModEntity(AS_EntityGolem.class, "Battletower Golem", 1, this, 25, 5, true);
         
         EntityRegistry.registerModEntity(AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 25, 5, true);
@@ -182,7 +184,7 @@ public class AS_BattleTowersCore
         chanceTowerIsUnderGround = configuration.get("MainOptions", "chanceTowerIsUnderGround", 15).getInt();
         noGolemExplosions = configuration.get("MainOptions", "noGolemExplosions", false).getBoolean(false);
         towerFallDestroysMobSpawners = configuration.get("MainOptions", "towerFallDestroysMobSpawners", false, "Destroy all Mob Spawners in Tower Area upon Tower Fall?").getBoolean(false);
-        golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();        
+        //golemEntityID = configuration.get(Configuration.CATEGORY_GENERAL, "Golem Entity ID", 186).getInt();        
         configuration.save();
     }
     

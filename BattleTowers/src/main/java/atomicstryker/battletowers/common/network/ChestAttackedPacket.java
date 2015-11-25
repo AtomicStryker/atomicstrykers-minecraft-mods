@@ -1,12 +1,12 @@
 package atomicstryker.battletowers.common.network;
 
+import atomicstryker.battletowers.common.AS_EntityGolem;
+import atomicstryker.battletowers.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import atomicstryker.battletowers.common.AS_EntityGolem;
-import atomicstryker.battletowers.common.network.NetworkHelper.IPacket;
 
 public class ChestAttackedPacket implements IPacket
 {
@@ -15,7 +15,6 @@ public class ChestAttackedPacket implements IPacket
     private int golemEntityID;
     
     // if there is a constructor with >0 args, we MUST supply another with no args
-    @SuppressWarnings("unused")
     public ChestAttackedPacket()
     {
         playerName = "";

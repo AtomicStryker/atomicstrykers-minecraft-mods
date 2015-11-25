@@ -1,18 +1,18 @@
 package atomicstryker.battletowers.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.battletowers.common.AS_EntityGolem;
 import atomicstryker.battletowers.common.AS_EntityGolemFireball;
 import atomicstryker.battletowers.common.CommonProxy;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy
 {
     @Override
     public void preInit()
     {
-        FMLCommonHandler.instance().bus().register(new ClientTickHandler());
+        MinecraftForge.EVENT_BUS.register(new ClientTickHandler());
     }
     
     @Override

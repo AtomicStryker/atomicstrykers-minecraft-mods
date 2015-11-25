@@ -23,8 +23,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-import com.google.common.base.Predicate;
-
 public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnData
 {
     private int rageCounter;
@@ -37,7 +35,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     private int towerY = -1;
     private int towerZ = -1;
     
-    public AS_EntityGolem(World world)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public AS_EntityGolem(World world)
     {
         super(world);
         this.setSize(1.1F, 4.0F);
@@ -59,16 +58,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         tasks.addTask(1, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0d, true));
         tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-        targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, true, new AttackSelector()));
-    }
-    
-    private static final class AttackSelector implements Predicate<Entity>
-    {
-		@Override
-		public boolean apply(Entity input)
-		{
-			return true;
-		}
+        targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, true));
     }
 
     public AS_EntityGolem(World world, int i)

@@ -1,11 +1,11 @@
 package atomicstryker.battletowers.common;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-
-import org.apache.logging.log4j.Level;
 
 public class CommandSpawnBattleTower extends CommandBattleTowers
 {

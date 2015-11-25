@@ -1,17 +1,16 @@
 package atomicstryker.battletowers.client;
 
+import org.lwjgl.opengl.GL11;
+
+import atomicstryker.battletowers.common.AS_EntityGolem;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
-import org.lwjgl.opengl.GL11;
 
-import atomicstryker.battletowers.common.AS_EntityGolem;
-
-public class AS_RenderGolem extends RenderBiped
+public class AS_RenderGolem extends RenderBiped<EntityLiving>
 {
     private static ResourceLocation texSleep = new ResourceLocation("battletowers", "textures/model/golemdormant.png");
     private static ResourceLocation texAwake = new ResourceLocation("battletowers", "textures/model/golem.png");
@@ -27,7 +26,7 @@ public class AS_RenderGolem extends RenderBiped
     }
     
     @Override
-    protected void preRenderCallback(EntityLivingBase entityliving, float f)
+    protected void preRenderCallback(EntityLiving entityliving, float f)
     {
         rescaleGolem();
     }

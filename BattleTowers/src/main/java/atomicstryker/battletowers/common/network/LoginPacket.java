@@ -1,9 +1,9 @@
 package atomicstryker.battletowers.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import atomicstryker.battletowers.common.AS_BattleTowersCore;
 import atomicstryker.battletowers.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 public class LoginPacket implements IPacket
 {

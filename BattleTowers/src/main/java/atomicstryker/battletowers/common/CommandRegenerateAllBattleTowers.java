@@ -1,9 +1,9 @@
 package atomicstryker.battletowers.common;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-
-import org.apache.logging.log4j.Level;
 
 public class CommandRegenerateAllBattleTowers extends CommandBattleTowers
 {

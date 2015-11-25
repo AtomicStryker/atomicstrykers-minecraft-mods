@@ -2,6 +2,9 @@ package atomicstryker.battletowers.client;
 
 import java.util.List;
 
+import atomicstryker.battletowers.common.AS_BattleTowersCore;
+import atomicstryker.battletowers.common.AS_EntityGolem;
+import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -14,9 +17,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import atomicstryker.battletowers.common.AS_BattleTowersCore;
-import atomicstryker.battletowers.common.AS_EntityGolem;
-import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 
 public class ClientTickHandler
 {
