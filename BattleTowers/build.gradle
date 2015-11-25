@@ -10,8 +10,8 @@ curseforge {
     project {
         id = '227877'
         releaseType = 'release'
-        addGameVersion '1.8'
-        mainArtifact(file('build/distributions/BattleTowers-1.8.zip')) {
+        addGameVersion '1.8.8'
+        mainArtifact(file('build/distributions/BattleTowers-1.8.8.zip')) {
           displayName = 'AtomicStryker\'s Battle Towers'
         }
     }

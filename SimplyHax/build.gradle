@@ -10,8 +10,8 @@ curseforge {
     project {
         id = '227894'
         releaseType = 'release'
-        addGameVersion '1.8'
-        mainArtifact(file('build/libs/SimplyHax-1.8.jar')) {
+        addGameVersion '1.8.8'
+        mainArtifact(file('build/libs/SimplyHax-1.8.8.jar')) {
           displayName = 'Simply Hax'
         }
     }

@@ -10,8 +10,8 @@ curseforge {
     project {
         id = '227878'
         releaseType = 'release'
-        addGameVersion '1.8'
-        mainArtifact(file('build/distributions/Minions-1.8.zip')) {
+        addGameVersion '1.8.8'
+        mainArtifact(file('build/distributions/Minions-1.8.8.zip')) {
           displayName = 'Minecraft Minions'
         }
     }

@@ -10,8 +10,8 @@ curseforge {
     project {
         id = '227895'
         releaseType = 'release'
-        addGameVersion '1.8'
-        mainArtifact(file('build/libs/MagicYarn-1.8.jar')) {
+        addGameVersion '1.8.8'
+        mainArtifact(file('build/libs/MagicYarn-1.8.8.jar')) {
           displayName = 'AtomicStryker\'s Magic Yarn'
         }
     }
