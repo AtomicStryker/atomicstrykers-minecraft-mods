@@ -1,23 +1,22 @@
 package atomicstryker.magicyarn.client;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import java.io.File;
 import java.util.ArrayList;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
 import atomicstryker.magicyarn.common.MagicYarn;
 import atomicstryker.magicyarn.common.network.PathPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class MagicYarnClient implements IProxy, IAStarPathedEntity
 {
@@ -38,8 +37,8 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
           
         clientTicker = new ClientTickHandler(this, mcinstance);
         mpYarnInstance = new MPMagicYarn(mcinstance);
-        FMLCommonHandler.instance().bus().register(mpYarnInstance);        
-        FMLCommonHandler.instance().bus().register(clientTicker);
+        MinecraftForge.EVENT_BUS.register(mpYarnInstance);        
+        MinecraftForge.EVENT_BUS.register(clientTicker);
     }
     
     public void onServerAnsweredChallenge()

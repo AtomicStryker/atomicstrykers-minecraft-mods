@@ -1,14 +1,14 @@
 package atomicstryker.astarpathing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Static parts of AStarPath calculation and translation

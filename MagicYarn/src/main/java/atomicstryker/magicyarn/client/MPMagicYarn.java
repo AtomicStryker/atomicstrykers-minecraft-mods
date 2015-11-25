@@ -1,5 +1,8 @@
 package atomicstryker.magicyarn.client;
 
+import org.lwjgl.input.Keyboard;
+
+import atomicstryker.magicyarn.common.MagicYarn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
@@ -8,10 +11,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-
-import org.lwjgl.input.Keyboard;
-
-import atomicstryker.magicyarn.common.MagicYarn;
 
 public class MPMagicYarn
 {

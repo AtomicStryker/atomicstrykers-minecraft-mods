@@ -2,6 +2,9 @@ package atomicstryker.magicyarn.common;
 
 import java.io.File;
 
+import atomicstryker.magicyarn.common.network.HandshakePacket;
+import atomicstryker.magicyarn.common.network.NetworkHelper;
+import atomicstryker.magicyarn.common.network.PathPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -19,9 +22,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import atomicstryker.magicyarn.common.network.HandshakePacket;
-import atomicstryker.magicyarn.common.network.NetworkHelper;
-import atomicstryker.magicyarn.common.network.PathPacket;
 
 @Mod(modid = "magicyarn", name = "Magic Yarn", version = "1.1.6")
 public class MagicYarn implements IProxy

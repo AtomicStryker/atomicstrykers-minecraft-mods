@@ -1,18 +1,17 @@
 package atomicstryker.magicyarn.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import atomicstryker.magicyarn.client.MagicYarnClient;
 import atomicstryker.magicyarn.common.MagicYarn;
 import atomicstryker.magicyarn.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class PathPacket implements IPacket
 {
     
     private ByteBuf data;
 
-    @SuppressWarnings("unused")
     public PathPacket() {}
     
     public PathPacket(ByteBuf pathData)

@@ -1,21 +1,20 @@
 package atomicstryker.magicyarn.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * 
@@ -88,7 +87,6 @@ public class NetworkHelper
      * Sends the supplied Packet from a client to the server
      * @param packet to send
      */
-    @SuppressWarnings("unused")
     public void sendPacketToServer(IPacket packet)
     {
         checkClassAndSync(packet.getClass());
@@ -102,7 +100,6 @@ public class NetworkHelper
      * @param packet to send
      * @param player to send to
      */
-    @SuppressWarnings("unused")
     public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player)
     {
         checkClassAndSync(packet.getClass());
@@ -116,7 +113,6 @@ public class NetworkHelper
      * Sends a packet from the server to all currently connected players
      * @param packet to send
      */
-    @SuppressWarnings("unused")
     public void sendPacketToAllPlayers(IPacket packet)
     {
         checkClassAndSync(packet.getClass());
@@ -130,7 +126,6 @@ public class NetworkHelper
      * @param packet to send
      * @param tp targetpoint instance to pass, cannot be null
      */
-    @SuppressWarnings("unused")
     public void sendPacketToAllAroundPoint(IPacket packet, TargetPoint tp)
     {
         checkClassAndSync(packet.getClass());
@@ -145,7 +140,6 @@ public class NetworkHelper
      * @param packet to send
      * @param dimension serverside dim id to use
      */
-    @SuppressWarnings("unused")
     public void sendPacketToAllInDimension(IPacket packet, int dimension)
     {
         checkClassAndSync(packet.getClass());

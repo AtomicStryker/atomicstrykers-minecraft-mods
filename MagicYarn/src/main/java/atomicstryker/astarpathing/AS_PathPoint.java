@@ -1,8 +1,8 @@
 package atomicstryker.astarpathing;
 
-import net.minecraft.pathfinding.PathPoint;
-
 import java.lang.reflect.Field;
+
+import net.minecraft.pathfinding.PathPoint;
 
 /**
  * PathPoint extension for field access.

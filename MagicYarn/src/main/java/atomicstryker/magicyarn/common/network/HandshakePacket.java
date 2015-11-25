@@ -1,10 +1,10 @@
 package atomicstryker.magicyarn.common.network;
 
+import atomicstryker.magicyarn.client.MagicYarnClient;
+import atomicstryker.magicyarn.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import atomicstryker.magicyarn.client.MagicYarnClient;
-import atomicstryker.magicyarn.common.network.NetworkHelper.IPacket;
 
 public class HandshakePacket implements IPacket
 {
