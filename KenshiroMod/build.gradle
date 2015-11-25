@@ -11,6 +11,23 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
+plugins {
+    id 'com.matthewprenger.cursegradle' version '1.0.1'
+}
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 apply from: '../masterbuild.gradle'
+
+/*
+curseforge {
+    apiKey = project.curseForgeApiKey
+    project {
+        id = 'xxxxxx'
+        releaseType = 'release'
+        addGameVersion '1.8.8'
+        mainArtifact(file('build/libs/KenshiroMod-1.8.8.jar')) {
+          displayName = 'AtomicStryker\'s Kenshiro Mod'
+        }
+    }
+}
+*/
