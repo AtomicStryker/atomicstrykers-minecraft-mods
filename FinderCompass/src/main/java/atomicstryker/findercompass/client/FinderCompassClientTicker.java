@@ -5,6 +5,9 @@ import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import atomicstryker.findercompass.common.CompassTargetData;
+import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
+import atomicstryker.findercompass.common.FinderCompassMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
@@ -13,14 +16,11 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import atomicstryker.findercompass.common.CompassTargetData;
-import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
-import atomicstryker.findercompass.common.FinderCompassMod;
 
 public class FinderCompassClientTicker
 {
@@ -42,7 +42,7 @@ public class FinderCompassClientTicker
         settingList = FinderCompassMod.instance.settingList;
         currentSetting = null;
 
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void onLoad()

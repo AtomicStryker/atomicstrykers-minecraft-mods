@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import atomicstryker.findercompass.client.CompassSetting;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.registry.GameData;
-import atomicstryker.findercompass.client.CompassSetting;
 
 public class DefaultConfigFilePrinter
 {

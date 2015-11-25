@@ -1,18 +1,17 @@
 package atomicstryker.findercompass.common.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class HandshakePacket implements IPacket
 {
@@ -20,7 +19,6 @@ public class HandshakePacket implements IPacket
     private byte[] configByteArray;
     private String username;
 
-    @SuppressWarnings("unused")
     public HandshakePacket() {}
     
     public HandshakePacket(String user)

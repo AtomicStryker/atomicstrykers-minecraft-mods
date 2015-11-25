@@ -1,12 +1,12 @@
 package atomicstryker.findercompass.common;
 
+import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import atomicstryker.findercompass.client.FinderCompassClientTicker;
 
 public class ItemFinderCompass extends Item
 {

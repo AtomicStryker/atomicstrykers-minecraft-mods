@@ -1,20 +1,18 @@
 package atomicstryker.findercompass.client.coremod;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-
 import java.util.Iterator;
-
-import net.minecraft.launchwrapper.IClassTransformer;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraft.launchwrapper.IClassTransformer;
 
 /**
  * 
@@ -28,19 +26,19 @@ public class FCTransformer implements IClassTransformer
 {
     
     /*  net.minecraft.client.renderer.entity.RenderItem */
-    private String classNameToModify = "cqh";
+    private String classNameToModify = "bjh";
       
     /* (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resources/model/IBakedModel;)V */
-    private String methodDescriptorToModify = "(Lamj;Lcxe;)V";
+    private String methodDescriptorToModify = "(Lzx;Lboq;)V";
     
     /* net.minecraft.client.renderer.entity.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a */
     private String methodNameToModify = "a"; // this is actually unneeded because a is too generic
     
     /* (Lnet/minecraft/client/resources/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V */
-    private String targetNodeDescriptor = "(Lcxe;Lamj;)V";
+    private String targetNodeDescriptor = "(Lboq;Lzx;)V";
     
     /* (Lnet/minecraft/item/ItemStack;)V */
-    private String itemStackVoidDescriptor = "(Lamj;)V";
+    private String itemStackVoidDescriptor = "(Lzx;)V";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -101,8 +99,8 @@ public class FCTransformer implements IClassTransformer
                 {
                     // prepare code to inject
                     InsnList toInject = new InsnList();
-                    toInject.add(new VarInsnNode(ALOAD, 1)); // push itemstack argument from calling method
-                    toInject.add(new MethodInsnNode(INVOKESTATIC, "atomicstryker/findercompass/client/CompassRenderHook", "renderItemHook", itemStackVoidDescriptor, false));
+                    toInject.add(new VarInsnNode(Opcodes.ALOAD, 1)); // push itemstack argument from calling method
+                    toInject.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/findercompass/client/CompassRenderHook", "renderItemHook", itemStackVoidDescriptor, false));
                     // this bytecode is equivalent to this line: CompassRenderHook.renderItemHook(itemStack);
 
                     // now write our hook in, after the target node

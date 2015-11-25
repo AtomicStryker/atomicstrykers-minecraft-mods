@@ -2,16 +2,16 @@ package atomicstryker.findercompass.client;
 
 import java.util.Map.Entry;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 
 public class CompassRenderHook
 {
@@ -19,7 +19,6 @@ public class CompassRenderHook
     private static final float[] strongholdNeedlecolor = { 0.4f, 0f, 0.6f };
     private static Minecraft mc;
 
-    @SuppressWarnings("unused")
     public static void renderItemHook(ItemStack stack)
     {
         if (stack.getItem() == Items.compass || stack.getItem() == FinderCompassMod.instance.compass)
@@ -70,17 +69,18 @@ public class CompassRenderHook
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
         // lets use mc code
-        t.getWorldRenderer().startDrawingQuads();
-        t.getWorldRenderer().setColorRGBA_F(r, g, b, 1f);
+        t.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+        t.getWorldRenderer().putColorRGB_F(r, g, b, 1); // TODO try values 1-5 for the last arg if problems
 
-        t.getWorldRenderer().addVertex(-0.03D, -0.04D, 0.0D); // lower left
-        t.getWorldRenderer().addVertex(0.03D, -0.04D, 0.0D); // lower right
-        t.getWorldRenderer().addVertex(0.03D, 0.2D, 0.0D); // upper right
-        t.getWorldRenderer().addVertex(-0.03D, 0.2D, 0.0D); // upper left
+        // TODO test this
+        t.getWorldRenderer().func_181662_b(-0.03f, -0.04f, 0.0f); // lower left
+        t.getWorldRenderer().func_181662_b(0.03f, -0.04f, 0.0f); // lower right
+        t.getWorldRenderer().func_181662_b(0.03f, 0.2f, 0.0f); // upper right
+        t.getWorldRenderer().func_181662_b(-0.03f, 0.2f, 0.0f); // upper left
 
         t.draw();
 
-        /* alternative native ogl code
+/*        // alternative native ogl code
         GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
         GL11.glColor4f(r, g, b, 0.75F); // set color
 
@@ -91,11 +91,10 @@ public class CompassRenderHook
         GL11.glVertex3d(-0.03D, 0.2D, 0.0D); // upper left
         
         GL11.glEnd(); // let ogl draw it
-        */
         
         GL11.glRotatef(angle, 0, 0, 1f); // revert rotation for next needle
         GL11.glTranslatef(0, 0, -0.01f); // translate slightly up
-    }
+*/    }
     
     private static float computeNeedleHeading(BlockPos coords)
     {        

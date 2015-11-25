@@ -3,8 +3,8 @@ package atomicstryker.findercompass.client;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.util.BlockPos;
 import atomicstryker.findercompass.common.CompassTargetData;
+import net.minecraft.util.BlockPos;
 
 public class CompassSetting
 {

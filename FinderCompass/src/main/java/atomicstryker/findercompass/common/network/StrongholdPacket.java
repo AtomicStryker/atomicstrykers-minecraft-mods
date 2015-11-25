@@ -1,18 +1,17 @@
 package atomicstryker.findercompass.common.network;
 
+import atomicstryker.findercompass.client.FinderCompassLogic;
+import atomicstryker.findercompass.common.FinderCompassMod;
+import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
-import atomicstryker.findercompass.client.FinderCompassLogic;
-import atomicstryker.findercompass.common.FinderCompassMod;
-import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 
 public class StrongholdPacket implements IPacket
 {
 
-    @SuppressWarnings("unused")
     public StrongholdPacket() {}
     
     private int x,y,z;

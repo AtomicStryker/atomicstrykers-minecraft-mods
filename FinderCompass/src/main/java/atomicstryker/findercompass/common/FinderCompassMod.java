@@ -1,14 +1,24 @@
 package atomicstryker.findercompass.common;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Map;
+
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -20,14 +30,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Map;
 
 @Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.8a")
 public class FinderCompassMod
@@ -68,7 +70,7 @@ public class FinderCompassMod
             GameRegistry.registerItem(compass, "finder_compass");
         }
         
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
