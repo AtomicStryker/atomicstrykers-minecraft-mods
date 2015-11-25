@@ -1,5 +1,19 @@
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
 plugins {
-    id "net.minecraftforge.gradle.forge" version "2.0.2"
     id 'com.matthewprenger.cursegradle' version '1.0.1'
 }
 
