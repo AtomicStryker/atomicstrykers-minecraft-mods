@@ -7,7 +7,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import atomicstryker.kenshiro.common.network.EntityKickedPacket;
+import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
+import atomicstryker.kenshiro.common.network.HandshakePacket;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -24,13 +28,10 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import atomicstryker.kenshiro.common.network.EntityKickedPacket;
-import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
-import atomicstryker.kenshiro.common.network.HandshakePacket;
 
 public class KenshiroServer
 {
@@ -58,25 +59,25 @@ public class KenshiroServer
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void onClientPunchedBlock(EntityPlayerMP player, int x, int y, int z)
     {
         Block block = player.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
         if (block != null)
         {
-            BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
-            if (!event.isCanceled())
+        	BlockPos bp = new BlockPos(x, y, z);
+            int isCancelled = ForgeHooks.onBlockBreakEvent(player.worldObj, player.theItemInWorldManager.getGameType(), player, bp);
+            if (isCancelled >= 0)
             {
-                int meta = player.worldObj.getBlockMetadata(x, y, z);
-                if (block.removedByPlayer(player.worldObj, player, x, y, z, true))
+            	IBlockState ibs = player.worldObj.getBlockState(bp);
+            	if (block.removedByPlayer(player.worldObj, bp, player, true))
                 {
-                    block.onBlockDestroyedByPlayer(player.worldObj, x, y, z, meta);
-                    block.harvestBlock(player.worldObj, player, x, y, z, meta);
+                    block.onBlockDestroyedByPlayer(player.worldObj, bp, ibs);
+                    block.harvestBlock(player.worldObj, player, bp, ibs, player.worldObj.getTileEntity(bp));
                 }
                 
                 for (EntityPlayerMP p : (ArrayList<EntityPlayerMP>)MinecraftServer.getServer().getConfigurationManager().playerEntityList)
                 {
-                    p.playerNetServerHandler.sendPacket(new S23PacketBlockChange(x, y, z, player.worldObj));
+                    p.playerNetServerHandler.sendPacket(new S23PacketBlockChange(player.worldObj, bp));
                 }
             }
         }

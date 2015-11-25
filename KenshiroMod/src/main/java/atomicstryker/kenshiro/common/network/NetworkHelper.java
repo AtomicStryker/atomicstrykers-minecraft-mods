@@ -1,4 +1,4 @@
-package atomicstryker.battletowers.common.network;
+package atomicstryker.kenshiro.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -88,7 +88,6 @@ public class NetworkHelper
      * Sends the supplied Packet from a client to the server
      * @param packet to send
      */
-    @SuppressWarnings("unused")
     public void sendPacketToServer(IPacket packet)
     {
         checkClassAndSync(packet.getClass());
@@ -102,7 +101,6 @@ public class NetworkHelper
      * @param packet to send
      * @param player to send to
      */
-    @SuppressWarnings("unused")
     public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player)
     {
         checkClassAndSync(packet.getClass());
@@ -116,7 +114,6 @@ public class NetworkHelper
      * Sends a packet from the server to all currently connected players
      * @param packet to send
      */
-    @SuppressWarnings("unused")
     public void sendPacketToAllPlayers(IPacket packet)
     {
         checkClassAndSync(packet.getClass());
@@ -130,7 +127,6 @@ public class NetworkHelper
      * @param packet to send
      * @param tp targetpoint instance to pass, cannot be null
      */
-    @SuppressWarnings("unused")
     public void sendPacketToAllAroundPoint(IPacket packet, TargetPoint tp)
     {
         checkClassAndSync(packet.getClass());
@@ -145,7 +141,6 @@ public class NetworkHelper
      * @param packet to send
      * @param dimension serverside dim id to use
      */
-    @SuppressWarnings("unused")
     public void sendPacketToAllInDimension(IPacket packet, int dimension)
     {
         checkClassAndSync(packet.getClass());

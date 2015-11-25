@@ -3,26 +3,6 @@ package atomicstryker.kenshiro.client;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.particle.EntityCrit2FX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
 import org.lwjgl.input.Mouse;
 
 import atomicstryker.kenshiro.common.KenshiroMod;
@@ -32,6 +12,26 @@ import atomicstryker.kenshiro.common.network.EntityKickedPacket;
 import atomicstryker.kenshiro.common.network.EntityPunchedPacket;
 import atomicstryker.kenshiro.common.network.KenshiroStatePacket;
 import atomicstryker.kenshiro.common.network.SoundPacket;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class KenshiroClient
 {
@@ -106,26 +106,23 @@ public class KenshiroClient
             {
                 if(mouseTargetObject.typeOfHit == MovingObjectType.BLOCK)
                 {
-                    int x = mouseTargetObject.blockX;
-                    int y = mouseTargetObject.blockY;
-                    int z = mouseTargetObject.blockZ;
-                    
-                    Block blockID = minecraft.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock();
-                    int metadata = minecraft.theWorld.getBlockMetadata(x, y, z);
+                	BlockPos bp = mouseTargetObject.getBlockPos();
+                    IBlockState ibs = minecraft.theWorld.getBlockState(bp);
+                    Block blockID = ibs.getBlock();
                     float hardness = 0F;
                     if (blockID != Blocks.air)
                     {
-                        hardness = blockID.getBlockHardness(minecraft.theWorld, x, y, z);
+                        hardness = blockID.getBlockHardness(minecraft.theWorld, bp);
                     }
                     
                     if (((hardness <= 3.0F && hardness >= 0F) || blockID == Blocks.log || blockID == Blocks.log2 || blockID == Blocks.web)
                     && currtime > smashTime+250L)
                     {
-                        sendPacketToServerHasDestroyedBlock(x, y, z);
+                        sendPacketToServerHasDestroyedBlock(bp.getX(), bp.getY(), bp.getZ());
                         
                         smashTime = currtime;
-                        minecraft.playerController.onPlayerDestroyBlock(x, y, z, metadata);
-                        blockID.harvestBlock(minecraft.theWorld, minecraft.thePlayer, x, y, z, metadata);
+                        minecraft.playerController.onPlayerDestroyBlock(bp, mouseTargetObject.sideHit);
+                        blockID.harvestBlock(minecraft.theWorld, minecraft.thePlayer, bp, ibs, minecraft.theWorld.getTileEntity(bp));
                     }
                 }
                 else if(mouseTargetObject.typeOfHit == MovingObjectType.ENTITY)
@@ -270,9 +267,9 @@ public class KenshiroClient
         {
             KenshiroMod.instance().debuffEntityLiving((EntityLivingBase) ent);
             
-            ent.worldObj.spawnParticle("explode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
-            ent.worldObj.spawnParticle("largeexplode", ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
-            minecraft.effectRenderer.addEffect(new EntityCrit2FX(ent.worldObj, ent));
+            ent.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
+            ent.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
+            ent.worldObj.spawnParticle(EnumParticleTypes.CRIT, ent.posX, ent.posY, ent.posZ, 0, 0.2, 0);
             entPlayer.worldObj.playSound(ent.posX, ent.posY, ent.posZ, "kenshiropunch", 1.0F, (entPlayer.getRNG().nextFloat() - entPlayer.getRNG().nextFloat()) * 0.2F + 1.0F, false);
             
             if (ent instanceof EntityCreeper)

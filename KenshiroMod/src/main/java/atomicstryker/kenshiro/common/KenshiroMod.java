@@ -4,20 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIArrowAttack;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import atomicstryker.kenshiro.common.network.AnimationPacket;
 import atomicstryker.kenshiro.common.network.BlockPunchedPacket;
 import atomicstryker.kenshiro.common.network.EntityKickedPacket;
@@ -26,6 +12,20 @@ import atomicstryker.kenshiro.common.network.HandshakePacket;
 import atomicstryker.kenshiro.common.network.KenshiroStatePacket;
 import atomicstryker.kenshiro.common.network.NetworkHelper;
 import atomicstryker.kenshiro.common.network.SoundPacket;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIArrowAttack;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 
 @Mod(modid = "AS_Kenshiro", name = "Kenshiro Mod", version = "1.2.1")
 public class KenshiroMod
@@ -43,7 +43,6 @@ public class KenshiroMod
 
     public NetworkHelper networkHelper;
 
-    @SuppressWarnings("unchecked")
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -62,7 +61,7 @@ public class KenshiroMod
     @EventHandler
     public void serverStarted(FMLServerStartedEvent event)
     {
-        FMLCommonHandler.instance().bus().register(new KenshiroServer());
+        MinecraftForge.EVENT_BUS.register(new KenshiroServer());
     }
 
     public void stopSkeletonShooter(EntitySkeleton skelly)
