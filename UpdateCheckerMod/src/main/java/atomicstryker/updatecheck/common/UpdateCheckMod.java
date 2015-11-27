@@ -16,8 +16,10 @@ import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.NetworkCheckHandler;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.6")
+@Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.7")
 public class UpdateCheckMod
 {
     private final String updateURL = "http://atomicstryker.net/updatemanager/modversions.txt";
@@ -27,6 +29,12 @@ public class UpdateCheckMod
 
     @SidedProxy(clientSide = "atomicstryker.updatecheck.client.UpdateCheckClient", serverSide = "atomicstryker.updatecheck.common.UpdateCheckServer")
     public static IProxy proxy;
+    
+    @NetworkCheckHandler
+    public boolean checkModLists(Map<String,String> modList, Side side)
+    {
+        return true;
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
