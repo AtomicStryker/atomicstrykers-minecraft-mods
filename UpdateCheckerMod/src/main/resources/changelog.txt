@@ -1,5 +1,6 @@
 1.1.7
 updated to MC 1.8
+removed necessity for clients to have the mod installed (omg)
 
 1.1.6
 updated to MC 1.7.10

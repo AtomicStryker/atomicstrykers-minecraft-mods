@@ -16,6 +16,9 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.relauncher.Side;
+
 
 @Mod(modid = "AS_UpdateCheck", name = "AtomicStryker Update Check Mod", version = "1.1.7")
 public class UpdateCheckMod
@@ -27,6 +30,12 @@ public class UpdateCheckMod
 
     @SidedProxy(clientSide = "atomicstryker.updatecheck.client.UpdateCheckClient", serverSide = "atomicstryker.updatecheck.common.UpdateCheckServer")
     public static IProxy proxy;
+    
+    @NetworkCheckHandler
+    public boolean checkModLists(Map<String,String> modList, Side side)
+    {
+        return true;
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
