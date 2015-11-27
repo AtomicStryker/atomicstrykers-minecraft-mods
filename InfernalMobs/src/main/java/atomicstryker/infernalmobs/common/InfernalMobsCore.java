@@ -50,6 +50,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -79,7 +80,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.5")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.6")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -375,7 +376,7 @@ public class InfernalMobsCore
         {
             if (!getIsRareEntity(entity))
             {
-                if ((entity instanceof EntityMob || (entity instanceof IMob)) && instance.checkEntityClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
+                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
                     try
                     {
@@ -403,7 +404,23 @@ public class InfernalMobsCore
         }
     }
 
-    private String getEntityNameSafe(Entity entity)
+    private boolean isClassAllowed(EntityLivingBase entity)
+    {
+    	if (entity instanceof EntityMob || (entity instanceof IMob))
+    	{
+    		if (entity instanceof IEntityOwnable)
+    		{
+    			return false;
+    		}
+    		if (instance.checkEntityClassAllowed(entity))
+    		{
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	private String getEntityNameSafe(Entity entity)
     {
         String result;
         try
