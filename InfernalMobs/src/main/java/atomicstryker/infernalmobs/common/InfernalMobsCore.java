@@ -8,26 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.logging.log4j.Level;
-import net.minecraft.block.Block;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemEnchantedBook;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.util.FakePlayer;
+
 import atomicstryker.infernalmobs.common.mods.MM_1UP;
 import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
 import atomicstryker.infernalmobs.common.mods.MM_Berserk;
@@ -76,8 +57,29 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.registry.GameData;
+import net.minecraft.block.Block;
+import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.FakePlayer;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.2")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.6")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -373,8 +375,7 @@ public class InfernalMobsCore
         {
             if (!getIsRareEntity(entity))
             {
-                if ((entity instanceof EntityMob || (entity instanceof EntityLivingBase && entity instanceof IMob)) && instance.checkEntityClassAllowed(entity)
-                        && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
+                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
                 {
                     try
                 	{
@@ -407,7 +408,23 @@ public class InfernalMobsCore
         }
     }
 
-    private String getEntityNameSafe(Entity entity)
+    private boolean isClassAllowed(EntityLivingBase entity)
+    {
+    	if (entity instanceof EntityMob || (entity instanceof IMob))
+    	{
+    		if (entity instanceof IEntityOwnable)
+    		{
+    			return false;
+    		}
+    		if (instance.checkEntityClassAllowed(entity))
+    		{
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	private String getEntityNameSafe(Entity entity)
     {
         String result;
         try
