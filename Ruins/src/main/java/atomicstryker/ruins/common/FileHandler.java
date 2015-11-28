@@ -271,7 +271,7 @@ public class FileHandler
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
                 ruinsLog.println("anyRuinsMinDistance = "+anyRuinsMinDistance);
             }
-            if (check[0].equals("allowedDimensions"))
+            if (check[0].equals("allowedDimensions") && check.length > 1)
             {
                 String[] ints = check[1].split(",");
                 allowedDimensions = new int[ints.length];
@@ -280,7 +280,7 @@ public class FileHandler
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
             }
-            if (check[0].equals("teblocks"))
+            if (check[0].equals("teblocks") && check.length > 1)
             {
                 String[] blocks = check[1].split(",");
                 for (String b : blocks)
@@ -297,20 +297,23 @@ public class FileHandler
             {
                 read = read.split("_")[1];
                 check = read.split("=");
-                boolean found = false;
-                for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
+                if (check.length > 1)
                 {
-                    if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(check[0]))
+                    boolean found = false;
+                    for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
                     {
-                        vars[CHANCE][i] = Integer.parseInt(check[1]);
-                        found = true;
-                        break;
+                        if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(check[0]))
+                        {
+                            vars[CHANCE][i] = Integer.parseInt(check[1]);
+                            found = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!found && !disableLogging)
-                {
-                    System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
+                    if (!found && !disableLogging)
+                    {
+                        System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
+                    }
                 }
             }
 
@@ -318,7 +321,7 @@ public class FileHandler
         }
         br.close();
     }
-
+    
     private void addRuins(PrintWriter pw, File path, int biomeID) throws Exception
     {
         final HashSet<RuinTemplate> targetList = templates.get(biomeID);
