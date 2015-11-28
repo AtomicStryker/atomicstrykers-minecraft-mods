@@ -438,3 +438,6 @@ a: setAccessible now true
     
 15.2
 + put the actual template building code inside an exception catcher so Ruins wont crash servers because of faulty templates
+
+15.3
++ fixes some config reading issues when no values were specified
