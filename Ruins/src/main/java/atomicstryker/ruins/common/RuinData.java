@@ -14,9 +14,9 @@ public class RuinData implements Comparable<RuinData>
         zMin = zmin;
         zMax = zmax;
         name = n;
-        xMid = (xMin+xMax)/2;
-        yMid = (yMin+yMax)/2;
-        zMid = (zMin+zMax)/2;
+        xMid = xMin + ((xMax-xMin)/2);
+        yMid = yMin + ((yMax-yMin)/2);
+        zMid = zMin + ((zMax-zMin)/2);
     }
 
     public RuinData(String string)
@@ -29,9 +29,9 @@ public class RuinData implements Comparable<RuinData>
         yMax = Integer.valueOf(split[4]);
         zMax = Integer.valueOf(split[5]);
         name = split[6];
-        xMid = (xMin+xMax)/2;
-        yMid = (yMin+yMax)/2;
-        zMid = (zMin+zMax)/2;
+        xMid = xMin + ((xMax-xMin)/2);
+        yMid = yMin + ((yMax-yMin)/2);
+        zMid = zMin + ((zMax-zMin)/2);
     }
     
     public boolean intersectsWith(RuinData check)
@@ -55,6 +55,11 @@ public class RuinData implements Comparable<RuinData>
      */
     public double getClosestDistanceBetweenBounds(RuinData r)
     {
+        if (intersectsWith(r))
+        {
+        	return 0f;
+        }
+    	
         int midToMid = ((xMid-r.xMid)*(xMid-r.xMid)) + ((yMid-r.yMid)*(yMid-r.yMid)) + ((zMid-r.zMid)*(zMid-r.zMid));
         if (midToMid > 262144)
         {
