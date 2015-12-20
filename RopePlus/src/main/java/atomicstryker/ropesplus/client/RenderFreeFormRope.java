@@ -160,7 +160,7 @@ public class RenderFreeFormRope extends Render<Entity>
         double[] q4 = addVectors(sideBounds1, multiplyVector(normal, -length));
         
         GL11.glNormal3f(0.0F, 0.0F, 1F);
-        tessellator.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+        tessellator.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
         addVertex(p1, f, f3);
         addVertex(p2, f1, f3);
         addVertex(p3, f1, f2);
@@ -168,7 +168,7 @@ public class RenderFreeFormRope extends Render<Entity>
         tessellator.draw();
         
         GL11.glNormal3f(0.0F, 0.0F, 1F);
-        tessellator.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+        tessellator.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
         addVertex(q1, f, f3);
         addVertex(q2, f1, f3);
         addVertex(q3, f1, f2);
@@ -188,7 +188,7 @@ public class RenderFreeFormRope extends Render<Entity>
     
     private void addVertex(double[] vertex, double u, double v)
     {
-        Tessellator.getInstance().getWorldRenderer().func_181662_b(vertex[0], vertex[1], vertex[2]).func_181673_a(u, v).func_181675_d();
+        Tessellator.getInstance().getWorldRenderer().pos(vertex[0], vertex[1], vertex[2]).tex(u, v).endVertex();
     }
 
     private double[] normalize(double[] v)

@@ -41,7 +41,7 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
                 TowerPosition tp = WorldGenHandler.deleteNearestTower(icommandsender.getEntityWorld(), x, z);
                 if (tp != null)
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": Battletower regenerated: "+tp.toString());
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower regenerated: "+tp.toString());
                     for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, AxisAlignedBB.fromBounds(tp.x-10, 0.0D, tp.z-10, tp.x+10, 255, tp.z+10)))
                     {
                         ((Entity) o).setDead();
@@ -52,7 +52,7 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
                 }
                 else
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": no Battletower regenerated, no valid target");
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": no Battletower regenerated, no valid target");
                 }
             }
             catch (Exception e)

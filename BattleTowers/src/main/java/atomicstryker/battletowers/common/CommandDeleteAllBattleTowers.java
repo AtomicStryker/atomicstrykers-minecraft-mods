@@ -24,7 +24,7 @@ public class CommandDeleteAllBattleTowers extends CommandBattleTowers
     public void processCommand(ICommandSender icommandsender, String[] astring)
     {
         WorldGenHandler.deleteAllTowers(icommandsender.getEntityWorld(), false);
-        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName()+": All Battletowers deleted");
+        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName()+": All Battletowers deleted");
     }
 
 }

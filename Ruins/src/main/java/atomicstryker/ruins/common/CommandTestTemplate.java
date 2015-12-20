@@ -38,7 +38,7 @@ public class CommandTestTemplate extends CommandBase
     @Override
     public void processCommand(ICommandSender sender, String[] args)
     {
-        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
+        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
         int xpos, ypos, zpos;
         xpos = sender.getPosition().getX();
         ypos = sender.getPosition().getY();

@@ -65,7 +65,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
                 result += "Nothing found.";
             }
             
-            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName()+ ": " + result);
+            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName()+ ": " + result);
         }
     }
     

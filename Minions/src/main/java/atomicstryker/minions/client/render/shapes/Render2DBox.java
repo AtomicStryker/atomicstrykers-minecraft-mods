@@ -36,13 +36,13 @@ public class Render2DBox {
         for (LineInfo tempColor : color.getColors()) {
             tempColor.prepareRender();
 
-            Tessellator.getInstance().getWorldRenderer().func_181668_a(GL11.GL_LINES, DefaultVertexFormats.field_181703_c);
+            Tessellator.getInstance().getWorldRenderer().begin(GL11.GL_LINES, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
             tempColor.prepareColor();
 
             for (PointRectangle point : points) {
                 if (point != null) {
-                	Tessellator.getInstance().getWorldRenderer().func_181662_b(point.getPoint().getX() + 0.5, min + off, point.getPoint().getY() + 0.5).func_181675_d();
-                	Tessellator.getInstance().getWorldRenderer().func_181662_b(point.getPoint().getX() + 0.5, max + 1 + off, point.getPoint().getY() + 0.5).func_181675_d();
+                	Tessellator.getInstance().getWorldRenderer().pos(point.getPoint().getX() + 0.5, min + off, point.getPoint().getY() + 0.5).endVertex();
+                	Tessellator.getInstance().getWorldRenderer().pos(point.getPoint().getX() + 0.5, max + 1 + off, point.getPoint().getY() + 0.5).endVertex();
                 }
             }
             Tessellator.getInstance().draw();

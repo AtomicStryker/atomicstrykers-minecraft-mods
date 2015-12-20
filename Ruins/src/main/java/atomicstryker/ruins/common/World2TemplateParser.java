@@ -357,7 +357,7 @@ public class World2TemplateParser extends Thread
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
                         if (tec != null)
                         {
-                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getCommandSenderName();
+                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getName();
                         }
                     }
                     else if (temp.block == Blocks.standing_sign)
@@ -449,7 +449,7 @@ public class World2TemplateParser extends Thread
             
             pw.println();
             pw.println("# Created by Ruins mod version "+RuinsMod.modversion+" Ingame Parser");
-            pw.println("# authoring Player: "+player.getCommandSenderName());
+            pw.println("# authoring Player: "+player.getName());
             pw.println();
             
             pw.println("weight=1");

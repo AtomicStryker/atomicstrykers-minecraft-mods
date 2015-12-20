@@ -111,7 +111,7 @@ public class MultiMineClient
             else if (blockCompletion > lastBlockCompletion)
             {
                 MultiMine.instance().debugPrint("Client has block progress for: ["+pos+"], actual completion: "+blockCompletion+", lastCompletion: "+lastBlockCompletion);
-                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getCommandSenderName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion));
+                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion));
                 MultiMine.instance().debugPrint("Sent block progress packet to server: " + blockCompletion);
                 lastBlockCompletion = blockCompletion;
                 updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion);

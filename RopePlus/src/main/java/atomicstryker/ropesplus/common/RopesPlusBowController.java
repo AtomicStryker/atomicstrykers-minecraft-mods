@@ -29,7 +29,7 @@ public class RopesPlusBowController
                 && selected.getItem() instanceof ItemArrow303
                 && ((ItemArrow303)selected.getItem()).arrow.tip != Items.flint)
                 {
-                    vanillaBows.put(player.getCommandSenderName(), firingBow.copy());
+                    vanillaBows.put(player.getName(), firingBow.copy());
                     final ItemStack replacementBow = new ItemStack(RopesPlusCore.instance.bowRopesPlus);
                     event.result = replacementBow;
                     player.setItemInUse(replacementBow, replacementBow.getMaxItemUseDuration());
@@ -41,6 +41,6 @@ public class RopesPlusBowController
     
     public static ItemStack getVanillaBowForPlayer(EntityPlayer player)
     {
-        return vanillaBows.get(player.getCommandSenderName());
+        return vanillaBows.get(player.getName());
     }
 }

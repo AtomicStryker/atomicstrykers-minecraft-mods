@@ -237,7 +237,7 @@ public class MinionsClient
                         Vector3 endvec = Vector3.fromVec3(pos.hitVec);
                         
                         MinionsCore.instance.networkHelper.sendPacketToServer(
-                                new LightningPacket(mc.thePlayer.getCommandSenderName(), startvec.x, startvec.y, startvec.z, endvec.x, endvec.y, endvec.z));
+                                new LightningPacket(mc.thePlayer.getName(), startvec.x, startvec.y, startvec.z, endvec.x, endvec.y, endvec.z));
                     }
                 }
                 else
@@ -297,8 +297,8 @@ public class MinionsClient
         
         // this raytrace does not hit entities since 1.7!
         MovingObjectPosition targetObjectMouseOver = mcinstance.getRenderViewEntity().rayTrace(30.0D, 1.0F);
-        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.getGameProfile().getCommandSenderName());
-        MinionsCore.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getCommandSenderName());
+        // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.getGameProfile().getName());
+        MinionsCore.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getName());
         
         if (targetObjectMouseOver == null)
         {
@@ -313,12 +313,12 @@ public class MinionsClient
             if (target instanceof EntityAnimal || target instanceof EntityPlayer)
             {
                 MinionsCore.debugPrint("OnMastersGloveRightClick -> PickupEntPacket");
-                MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getCommandSenderName(), target.getEntityId()));
+                MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getName(), target.getEntityId()));
             }
             else if (target instanceof EntityMinion)
             {
                 MinionsCore.debugPrint("OnMastersGloveRightClick -> DropAllPacket");
-                MinionsCore.instance.networkHelper.sendPacketToServer(new DropAllPacket(playerEnt.getCommandSenderName(), target.getEntityId()));
+                MinionsCore.instance.networkHelper.sendPacketToServer(new DropAllPacket(playerEnt.getName(), target.getEntityId()));
             }
         }
         else if (targetObjectMouseOver.typeOfHit == MovingObjectType.BLOCK)
@@ -337,7 +337,7 @@ public class MinionsClient
             // System.out("OnMastersGloveRightClick hasAllMinionsSMPOverride: "+hasAllMinionsSMPOverride);
             if (!hasAllMinionsSMPOverride)
             {
-                MinionsCore.instance.networkHelper.sendPacketToServer(new MinionSpawnPacket(playerEnt.getCommandSenderName(), x, y, z));
+                MinionsCore.instance.networkHelper.sendPacketToServer(new MinionSpawnPacket(playerEnt.getName(), x, y, z));
                 playerEnt.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y, z, 0.0D, 0.0D, 0.0D);
                 return;
             }
@@ -349,7 +349,7 @@ public class MinionsClient
             {
                 if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                 {
-                    MinionsCore.instance.networkHelper.sendPacketToServer(new ChopTreesPacket(playerEnt.getCommandSenderName(), x, y, z));
+                    MinionsCore.instance.networkHelper.sendPacketToServer(new ChopTreesPacket(playerEnt.getName(), x, y, z));
                 }
                 else
                 {
@@ -363,7 +363,7 @@ public class MinionsClient
                 {
                     if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                     {
-                        MinionsCore.instance.networkHelper.sendPacketToServer(new DigStairwellPacket(playerEnt.getCommandSenderName(), x, y, z));
+                        MinionsCore.instance.networkHelper.sendPacketToServer(new DigStairwellPacket(playerEnt.getName(), x, y, z));
                     }
                     else
                     {
@@ -374,7 +374,7 @@ public class MinionsClient
                 {
                     if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                     {
-                        MinionsCore.instance.networkHelper.sendPacketToServer(new StripminePacket(playerEnt.getCommandSenderName(), x, y, z));
+                        MinionsCore.instance.networkHelper.sendPacketToServer(new StripminePacket(playerEnt.getName(), x, y, z));
                     }
                     else
                     {
@@ -385,7 +385,7 @@ public class MinionsClient
                 {
                     if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                     {
-                        MinionsCore.instance.networkHelper.sendPacketToServer(new CustomDigPacket(playerEnt.getCommandSenderName(), x, y, z, customSizeXZ, customSizeY));
+                        MinionsCore.instance.networkHelper.sendPacketToServer(new CustomDigPacket(playerEnt.getName(), x, y, z, customSizeXZ, customSizeY));
                     }
                     else
                     {
@@ -397,7 +397,7 @@ public class MinionsClient
                     && chestOrInventoryBlock instanceof IInventory
                     && ((IInventory)chestOrInventoryBlock).getSizeInventory() >= 24)
             {
-                MinionsCore.instance.networkHelper.sendPacketToServer(new AssignChestPacket(playerEnt.getCommandSenderName(), playerEnt.isSneaking(), x, y, z));
+                MinionsCore.instance.networkHelper.sendPacketToServer(new AssignChestPacket(playerEnt.getName(), playerEnt.isSneaking(), x, y, z));
             }
             else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && hasMinionsSMPOverride)
             {
@@ -406,23 +406,23 @@ public class MinionsClient
                         && MathHelper.floor_double(playerEnt.posZ) == z
                         && Math.abs(MathHelper.floor_double(playerEnt.posY) - y) < 3)
                 {
-                    MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getCommandSenderName(), playerEnt.getEntityId()));
+                    MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getName(), playerEnt.getEntityId()));
                 }
                 else
                 {
-                    MinionsCore.instance.networkHelper.sendPacketToServer(new MovetoPacket(playerEnt.getCommandSenderName(), x, y, z));
+                    MinionsCore.instance.networkHelper.sendPacketToServer(new MovetoPacket(playerEnt.getName(), x, y, z));
                 }
             }
             else if (MinionsCore.instance.isBlockValueable(worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock()))
             {
-                MinionsCore.instance.networkHelper.sendPacketToServer(new DigOreVeinPacket(playerEnt.getCommandSenderName(), x, y, z));
+                MinionsCore.instance.networkHelper.sendPacketToServer(new DigOreVeinPacket(playerEnt.getName(), x, y, z));
             }
         }
     }
     
     public static void onMastersGloveRightClickHeld(EntityPlayer var3)
     {
-        MinionsCore.instance.networkHelper.sendPacketToServer(new FollowPacket(var3.getCommandSenderName()));
+        MinionsCore.instance.networkHelper.sendPacketToServer(new FollowPacket(var3.getName()));
     }
 
     public static void onChangedXPSetting()

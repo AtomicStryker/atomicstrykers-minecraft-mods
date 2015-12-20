@@ -69,14 +69,14 @@ public class CompassRenderHook
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
         // lets use mc code
-        t.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+        t.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
         t.getWorldRenderer().putColorRGB_F(r, g, b, 1); // TODO try values 1-5 for the last arg if problems
 
         // TODO test this
-        t.getWorldRenderer().func_181662_b(-0.03f, -0.04f, 0.0f); // lower left
-        t.getWorldRenderer().func_181662_b(0.03f, -0.04f, 0.0f); // lower right
-        t.getWorldRenderer().func_181662_b(0.03f, 0.2f, 0.0f); // upper right
-        t.getWorldRenderer().func_181662_b(-0.03f, 0.2f, 0.0f); // upper left
+        t.getWorldRenderer().pos(-0.03f, -0.04f, 0.0f); // lower left
+        t.getWorldRenderer().pos(0.03f, -0.04f, 0.0f); // lower right
+        t.getWorldRenderer().pos(0.03f, 0.2f, 0.0f); // upper right
+        t.getWorldRenderer().pos(-0.03f, 0.2f, 0.0f); // upper left
 
         t.draw();
 

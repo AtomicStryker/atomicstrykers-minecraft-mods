@@ -71,7 +71,7 @@ public class InfernalMobsClient implements ISidedProxy
         if (event.world.isRemote && mc.thePlayer != null
                 && (event.entity instanceof EntityMob || (event.entity instanceof EntityLivingBase && event.entity instanceof IMob)))
         {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.getCommandSenderName(), event.entity
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.getName(), event.entity
                     .getEntityId(), (byte) 0));
         }
     }
@@ -80,7 +80,7 @@ public class InfernalMobsClient implements ISidedProxy
     {
         if (System.currentTimeMillis() > nextPacketTime)
         {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.thePlayer.getCommandSenderName(), ent.getEntityId(), 0f, 0f));
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.thePlayer.getName(), ent.getEntityId(), 0f, 0f));
             nextPacketTime = System.currentTimeMillis() + 100l;
         }
     }

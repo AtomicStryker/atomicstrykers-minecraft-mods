@@ -50,30 +50,30 @@ public class RenderArrow303 extends Render<Entity>
         GL11.glScalef(var20, var20, var20);
         GL11.glTranslatef(-4.0F, 0.0F, 0.0F);
         GL11.glNormal3f(var20, 0.0F, 0.0F);
-        var10.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
+        var10.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
 
-        var10.getWorldRenderer().func_181662_b(-7.0D, -2.0D, -2.0D).func_181673_a((double) var16, (double) var18).func_181675_d();
-        var10.getWorldRenderer().func_181662_b(-7.0D, -2.0D, 2.0D).func_181673_a((double) var17, (double) var18).func_181675_d();
-        var10.getWorldRenderer().func_181662_b(7.0D, 2.0D, 2.0D).func_181673_a((double) var17, (double) var19).func_181675_d();
-        var10.getWorldRenderer().func_181662_b(-7.0D, 2.0D, -2.0D).func_181673_a((double) var16, (double) var19).func_181675_d();
+        var10.getWorldRenderer().pos(-7.0D, -2.0D, -2.0D).tex((double) var16, (double) var18).endVertex();
+        var10.getWorldRenderer().pos(-7.0D, -2.0D, 2.0D).tex((double) var17, (double) var18).endVertex();
+        var10.getWorldRenderer().pos(7.0D, 2.0D, 2.0D).tex((double) var17, (double) var19).endVertex();
+        var10.getWorldRenderer().pos(-7.0D, 2.0D, -2.0D).tex((double) var16, (double) var19).endVertex();
         var10.draw();
         GL11.glNormal3f(-var20, 0.0F, 0.0F);
-        var10.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
-        var10.getWorldRenderer().func_181662_b(-7.0D, 2.0D, -2.0D).func_181673_a((double) var16, (double) var18).func_181675_d();
-        var10.getWorldRenderer().func_181662_b(-7.0D, 2.0D, 2.0D).func_181673_a((double) var17, (double) var18).func_181675_d();
-        var10.getWorldRenderer().func_181662_b(-7.0D, -2.0D, 2.0D).func_181673_a((double) var17, (double) var19).func_181675_d();
-        var10.getWorldRenderer().func_181662_b(-7.0D, -2.0D, -2.0D).func_181673_a((double) var16, (double) var19).func_181675_d();
+        var10.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+        var10.getWorldRenderer().pos(-7.0D, 2.0D, -2.0D).tex((double) var16, (double) var18).endVertex();
+        var10.getWorldRenderer().pos(-7.0D, 2.0D, 2.0D).tex((double) var17, (double) var18).endVertex();
+        var10.getWorldRenderer().pos(-7.0D, -2.0D, 2.0D).tex((double) var17, (double) var19).endVertex();
+        var10.getWorldRenderer().pos(-7.0D, -2.0D, -2.0D).tex((double) var16, (double) var19).endVertex();
         var10.draw();
 
         for (int var23 = 0; var23 < 4; ++var23)
         {
             GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
             GL11.glNormal3f(0.0F, 0.0F, var20);
-            var10.getWorldRenderer().func_181668_a(GL11.GL_QUADS, DefaultVertexFormats.field_181703_c);
-            var10.getWorldRenderer().func_181662_b(-8.0D, -2.0D, 0.0D).func_181673_a((double) var12, (double) var14).func_181675_d();
-            var10.getWorldRenderer().func_181662_b(8.0D, -2.0D, 0.0D).func_181673_a((double) var13, (double) var14).func_181675_d();
-            var10.getWorldRenderer().func_181662_b(8.0D, 2.0D, 0.0D).func_181673_a((double) var13, (double) var15).func_181675_d();
-            var10.getWorldRenderer().func_181662_b(-8.0D, 2.0D, 0.0D).func_181673_a((double) var12, (double) var15).func_181675_d();
+            var10.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            var10.getWorldRenderer().pos(-8.0D, -2.0D, 0.0D).tex((double) var12, (double) var14).endVertex();
+            var10.getWorldRenderer().pos(8.0D, -2.0D, 0.0D).tex((double) var13, (double) var14).endVertex();
+            var10.getWorldRenderer().pos(8.0D, 2.0D, 0.0D).tex((double) var13, (double) var15).endVertex();
+            var10.getWorldRenderer().pos(-8.0D, 2.0D, 0.0D).tex((double) var12, (double) var15).endVertex();
             var10.draw();
         }
 

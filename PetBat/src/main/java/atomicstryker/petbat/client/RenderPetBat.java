@@ -51,7 +51,7 @@ public class RenderPetBat extends RenderLiving<EntityLiving>
     @Override
 	public void renderName(EntityLiving par1EntityLivingBase, double par2, double par4, double par6)
     {
-        String name = ((EntityPetBat)par1EntityLivingBase).getCommandSenderName();
+        String name = ((EntityPetBat)par1EntityLivingBase).getName();
         if (!name.equals(""))
         {
         	renderLivingLabel(par1EntityLivingBase, name, par2, par4-1D, par6, 64);

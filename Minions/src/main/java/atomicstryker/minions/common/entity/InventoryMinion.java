@@ -537,7 +537,7 @@ public class InventoryMinion implements IInventory
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         return "Minion Inventory";
     }
@@ -551,7 +551,7 @@ public class InventoryMinion implements IInventory
     @Override
     public IChatComponent getDisplayName()
     {
-        return new ChatComponentText(getCommandSenderName());
+        return new ChatComponentText(getName());
     }
 
     @Override

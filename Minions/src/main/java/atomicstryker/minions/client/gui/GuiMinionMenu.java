@@ -67,7 +67,7 @@ public class GuiMinionMenu extends GuiScreen
         	{
         		if (MinionsClient.hasMinionsSMPOverride)
         		{
-        			MinionsCore.instance.networkHelper.sendPacketToServer(new UnsummonPacket(mc.thePlayer.getCommandSenderName()));
+        			MinionsCore.instance.networkHelper.sendPacketToServer(new UnsummonPacket(mc.thePlayer.getName()));
         			mc.displayGuiScreen(null);
         		}
         		else
@@ -108,7 +108,7 @@ public class GuiMinionMenu extends GuiScreen
     	if (var1 == 'i' && cheatCount == 6) cheatCount++;
     	if (var1 == 'l' && cheatCount == 7)
         {
-    	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.thePlayer.getCommandSenderName())); // cheater!!!!
+    	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.thePlayer.getName())); // cheater!!!!
             mc.displayGuiScreen(null);
         }
     }

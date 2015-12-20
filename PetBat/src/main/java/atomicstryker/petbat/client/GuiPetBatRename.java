@@ -71,7 +71,7 @@ public class GuiPetBatRename extends GuiScreen
         {
             if (!textfield.getText().equals(""))
             {
-                PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getMinecraft().thePlayer.getCommandSenderName(),
+                PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getMinecraft().thePlayer.getName(),
                         textfield.getText()));
             }
         }

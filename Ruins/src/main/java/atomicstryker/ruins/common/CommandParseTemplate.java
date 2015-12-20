@@ -51,7 +51,7 @@ public class CommandParseTemplate extends CommandBase
     @Override
     public void processCommand(ICommandSender sender, String[] args)
     {
-        player = sender.getEntityWorld().getPlayerEntityByName(sender.getCommandSenderName());
+        player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
         if (player != null)
         {
             if (args.length != 1)

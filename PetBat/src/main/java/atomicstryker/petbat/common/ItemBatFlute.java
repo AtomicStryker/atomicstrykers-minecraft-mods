@@ -34,7 +34,7 @@ public class ItemBatFlute extends Item
                 if (world.loadedEntityList.get(i) instanceof EntityPetBat)
                 {
                     bat = (EntityPetBat) world.loadedEntityList.get(i);
-                    if (bat.getCommandSenderName().equals(batname))
+                    if (bat.getName().equals(batname))
                     {
                         bat.recallToOwner();
                         itemStack.stackSize = 0;

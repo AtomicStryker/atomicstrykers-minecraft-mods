@@ -59,7 +59,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                     MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
                     if (mod != null)
                     {
-                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getCommandSenderName() 
+                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName() 
                                 + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() 
                                 + " at [" + x + "|" + y + "|" + z + "]");
                     }

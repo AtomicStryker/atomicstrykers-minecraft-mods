@@ -68,10 +68,10 @@ public class ItemPocketedPetBat extends Item
     public static EntityPetBat toBatEntity(World world, ItemStack batStack, EntityPlayer player)
     {
         EntityPetBat batEnt = new EntityPetBat(world);
-        String owner = batStack.getTagCompound() != null ? batStack.getTagCompound().getCompoundTag("petbatmod").getString("Owner") : player.getCommandSenderName();
+        String owner = batStack.getTagCompound() != null ? batStack.getTagCompound().getCompoundTag("petbatmod").getString("Owner") : player.getName();
         String name = batStack.getTagCompound() != null ? batStack.getTagCompound().getCompoundTag("display").getString("Name") : "Battus Genericus";
         int xp = batStack.getTagCompound() != null ? batStack.getTagCompound().getCompoundTag("petbatmod").getInteger("BatXP") : 0;
-        if (owner.equals("")) owner = player.getCommandSenderName();
+        if (owner.equals("")) owner = player.getName();
         if (name.equals("")) name = "Battus Genericus";
         batEnt.setNames(owner, name);
         batEnt.setOwnerEntity(player);

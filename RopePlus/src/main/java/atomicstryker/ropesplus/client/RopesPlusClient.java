@@ -221,7 +221,7 @@ public class RopesPlusClient
         if (toggleEnabled)
         {
             arrowCount = -1;
-            RopesPlusCore.instance.networkHelper.sendPacketToServer(new ArrowChoicePacket(mc.thePlayer.getCommandSenderName(), selectedSlot));
+            RopesPlusCore.instance.networkHelper.sendPacketToServer(new ArrowChoicePacket(mc.thePlayer.getName(), selectedSlot));
         }
     }
 
@@ -341,7 +341,7 @@ public class RopesPlusClient
             {
                 if (mc.gameSettings.keyBindUseItem.isPressed() && lastZipLineLength > 0.2)
                 {
-                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getCommandSenderName(), onZipLine
+                    RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getName(), onZipLine
                             .getEntityId(), lastZipLineLength));
                     onZipLine = null;
                 }
@@ -356,7 +356,7 @@ public class RopesPlusClient
                     if (++zipTicker == 10)
                     {
                         zipTicker = 0;
-                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getCommandSenderName(), onZipLine
+                        RopesPlusCore.instance.networkHelper.sendPacketToServer(new ZiplinePacket(mc.thePlayer.getName(), onZipLine
                                 .getEntityId(), lastZipLineLength));
                     }
 

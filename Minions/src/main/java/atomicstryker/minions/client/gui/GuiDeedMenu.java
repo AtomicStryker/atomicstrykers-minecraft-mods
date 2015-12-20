@@ -63,7 +63,7 @@ public class GuiDeedMenu extends GuiScreen
             if (var1.id != 0)
             {
                 EvilDeed deed = deedButtons.get(var1.id - 1);
-                MinionsCore.instance.networkHelper.sendPacketToServer(new EvilDeedPacket(mc.thePlayer.getCommandSenderName(), deed.getSoundFile(), deed.getSoundLength()));
+                MinionsCore.instance.networkHelper.sendPacketToServer(new EvilDeedPacket(mc.thePlayer.getName(), deed.getSoundFile(), deed.getSoundLength()));
             }
         }
     }

@@ -192,7 +192,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             }
             
             // if hit by owner
-            if (source.getEntity() != null && source.getEntity().getCommandSenderName().equals(getOwnerName()))
+            if (source.getEntity() != null && source.getEntity().getName().equals(getOwnerName()))
             {
                 // and in combat with something else
                 if (source.getEntity() != getAttackTarget())
@@ -213,7 +213,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public boolean interact(EntityPlayer player)
     {
-        if (getIsBatHanging() && player.getCommandSenderName().equals(ownerName))
+        if (getIsBatHanging() && player.getName().equals(ownerName))
         {
             setIsBatStaying(!getIsBatStaying());
             player.addChatMessage(new ChatComponentText(petName + ": " + 
@@ -327,7 +327,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public void func_181015_d(BlockPos b) //setInPortal()
+    public void setPortal(BlockPos b)
     {
         // Nope
     }
@@ -523,7 +523,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         return petName;
     }

@@ -39,7 +39,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
                 int type = Integer.valueOf(astring[3]);
                 boolean underground = Boolean.valueOf(astring[4]);
                 WorldGenHandler.generateTower(icommandsender.getEntityWorld(), x, y, z, type, underground);
-                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getCommandSenderName() + ": Battletower spawned");
+                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower spawned");
             }
             catch (Exception e)
             {

@@ -367,7 +367,7 @@ public class MinionsCore
     
     public EntityMinion[] getMinionsForMaster(EntityPlayer p)
     {
-        EntityMinion[] minions = getMinionsForMasterName(p.getCommandSenderName());
+        EntityMinion[] minions = getMinionsForMasterName(p.getName());
         minionMapLock = false;
         for (EntityMinion m : minions)
         {

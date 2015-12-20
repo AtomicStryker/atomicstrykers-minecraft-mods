@@ -37,7 +37,7 @@ public class Render3DGrid {
         for (LineInfo tempColor : color.getColors()) {
             tempColor.prepareRender();
 
-            Tessellator.getInstance().getWorldRenderer().func_181668_a(GL11.GL_LINES, DefaultVertexFormats.field_181703_c);
+            Tessellator.getInstance().getWorldRenderer().begin(GL11.GL_LINES, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
             tempColor.prepareColor();
 
             double x, y, z;
@@ -49,8 +49,8 @@ public class Render3DGrid {
             int msize = 150;
             if ((y2 - y / offsetSize) < msize) {
                 for (double yoff = 0; yoff + y <= y2; yoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y + yoff, z).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y + yoff, z).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x1, y + yoff, z).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x2, y + yoff, z).endVertex();
                 }
             }
 
@@ -58,8 +58,8 @@ public class Render3DGrid {
             z = z1;
             if ((y2 - y / offsetSize) < msize) {
                 for (double yoff = 0; yoff + y <= y2; yoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y + yoff, z).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y + yoff, z).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x1, y + yoff, z).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x2, y + yoff, z).endVertex();
                 }
             }
 
@@ -67,8 +67,8 @@ public class Render3DGrid {
             x = x1;
             if ((y2 - y / offsetSize) < msize) {
                 for (double yoff = 0; yoff + y <= y2; yoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y + yoff, z1).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y + yoff, z2).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y + yoff, z1).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y + yoff, z2).endVertex();
                 }
             }
 
@@ -76,8 +76,8 @@ public class Render3DGrid {
             x = x2;
             if ((y2 - y / offsetSize) < msize) {
                 for (double yoff = 0; yoff + y <= y2; yoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y + yoff, z1).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y + yoff, z2).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y + yoff, z1).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y + yoff, z2).endVertex();
                 }
             }
 
@@ -86,32 +86,32 @@ public class Render3DGrid {
             z = z1;
             if ((x2 - x / offsetSize) < msize) {
                 for (double xoff = 0; xoff + x <= x2; xoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y1, z).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y2, z).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y1, z).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y2, z).endVertex();
                 }
             }
             // Zmax XY plane, x axis
             z = z2;
             if ((x2 - x / offsetSize) < msize) {
                 for (double xoff = 0; xoff + x <= x2; xoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y1, z).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y2, z).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y1, z).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y2, z).endVertex();
                 }
             }
             // Ymin XZ plane, x axis
             y = y2;
             if ((x2 - x / offsetSize) < msize) {
                 for (double xoff = 0; xoff + x <= x2; xoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y, z1).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y, z2).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y, z1).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y, z2).endVertex();
                 }
             }
             // Ymax XZ plane, x axis
             y = y1;
             if ((x2 - x / offsetSize) < msize) {
                 for (double xoff = 0; xoff + x <= x2; xoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y, z1).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x + xoff, y, z2).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y, z1).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x + xoff, y, z2).endVertex();
                 }
             }
 
@@ -120,32 +120,32 @@ public class Render3DGrid {
             y = y1;
             if ((z2 - z / offsetSize) < msize) {
                 for (double zoff = 0; zoff + z <= z2; zoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y, z + zoff).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y, z + zoff).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x1, y, z + zoff).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x2, y, z + zoff).endVertex();
                 }
             }
             // Ymax XZ plane, z axis
             y = y2;
             if ((z2 - z / offsetSize) < msize) {
                 for (double zoff = 0; zoff + z <= z2; zoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x1, y, z + zoff).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x2, y, z + zoff).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x1, y, z + zoff).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x2, y, z + zoff).endVertex();
                 }
             }
             // Xmin YZ plane, z axis
             x = x2;
             if ((z2 - z / offsetSize) < msize) {
                 for (double zoff = 0; zoff + z <= z2; zoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y1, z + zoff).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y2, z + zoff).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y1, z + zoff).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y2, z + zoff).endVertex();
                 }
             }
             // Xmax YZ plane, z axis
             x = x1;
             if ((z2 - z / offsetSize) < msize) {
                 for (double zoff = 0; zoff + z <= z2; zoff += offsetSize) {
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y1, z + zoff).func_181675_d();
-                    Tessellator.getInstance().getWorldRenderer().func_181662_b(x, y2, z + zoff).func_181675_d();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y1, z + zoff).endVertex();
+                    Tessellator.getInstance().getWorldRenderer().pos(x, y2, z + zoff).endVertex();
                 }
             }
 
