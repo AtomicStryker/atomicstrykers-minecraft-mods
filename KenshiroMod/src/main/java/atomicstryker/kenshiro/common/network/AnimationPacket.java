@@ -33,7 +33,6 @@ public class AnimationPacket implements IPacket
         bytes.writeInt(animation);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {

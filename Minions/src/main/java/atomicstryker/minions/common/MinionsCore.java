@@ -57,6 +57,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
@@ -723,7 +724,7 @@ public class MinionsCore
                         lineString = lineString.trim();
                         if (lineString.startsWith("registerBlockIDasTreeBlock:"))
                         {
-                            Block id = GameData.getBlockRegistry().getObject(lineString.substring(lineString.indexOf(":")+1));
+                            Block id = GameData.getBlockRegistry().getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
                             if (id != Blocks.air)
                             {
                                 foundTreeBlocks.add(id);
@@ -732,7 +733,7 @@ public class MinionsCore
                         }
                         else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
                         {
-                            Block id = GameData.getBlockRegistry().getObject(lineString.substring(lineString.indexOf(":")+1));
+                            Block id = GameData.getBlockRegistry().getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
                             if (id != Blocks.air)
                             {
                                 configWorthlessBlocks.add(id);

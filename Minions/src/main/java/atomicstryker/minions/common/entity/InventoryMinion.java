@@ -484,7 +484,7 @@ public class InventoryMinion implements IInventory
     }
     
     @Override
-    public ItemStack getStackInSlotOnClosing(int par1)
+    public ItemStack removeStackFromSlot(int par1)
     {
         return null;
     }

@@ -9,6 +9,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
@@ -100,13 +101,14 @@ public class TowerStageItemManager
 	
     private Object tryFindingObject(String s)
     {
-        Item item = GameData.getItemRegistry().getObject(s);
+    	ResourceLocation rl = new ResourceLocation(s);
+        Item item = GameData.getItemRegistry().getObject(rl);
         if (item != null)
         {
             return item;
         }
         
-        Block block = GameData.getBlockRegistry().getObject(s);
+        Block block = GameData.getBlockRegistry().getObject(rl);
         if (block != Blocks.air)
         {
             return block;

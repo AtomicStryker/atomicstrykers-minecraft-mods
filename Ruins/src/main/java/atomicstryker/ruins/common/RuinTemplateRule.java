@@ -35,6 +35,7 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
@@ -267,7 +268,7 @@ public class RuinTemplateRule
     private Block tryFindingBlockOfName(String blockName)
     {
         // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
-        return GameData.getBlockRegistry().getObject(blockName);
+        return GameData.getBlockRegistry().getObject(new ResourceLocation(blockName));
     }
 
     @SuppressWarnings("unused")
@@ -1004,7 +1005,8 @@ public class RuinTemplateRule
     
     private Object tryFindingObject(String s)
     {
-        Item item = GameData.getItemRegistry().getObject(s);
+    	ResourceLocation rl = new ResourceLocation(s);
+        Item item = GameData.getItemRegistry().getObject(rl);
         if (item != null)
         {
             if (item instanceof ItemBlock)
@@ -1014,7 +1016,7 @@ public class RuinTemplateRule
             return item;
         }
         
-        Block block = GameData.getBlockRegistry().getObject(s);
+        Block block = GameData.getBlockRegistry().getObject(rl);
         if (block != Blocks.air)
         {
             return block;

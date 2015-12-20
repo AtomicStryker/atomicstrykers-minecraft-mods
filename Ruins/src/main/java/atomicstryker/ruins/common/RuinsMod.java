@@ -77,7 +77,6 @@ public class RuinsMod
 
     private long nextInfoTime;
 
-    @SuppressWarnings("unchecked")
 	@SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
@@ -86,11 +85,10 @@ public class RuinsMod
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
             event.entityPlayer.addChatComponentMessage(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.state.getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.state.getBlock()), event.state.getBlock().getMetaFromState(event.state))));
+                    event.state.getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
         }
     }
 
-    @SuppressWarnings("unchecked")
 	@SubscribeEvent
     public void onBreak(BreakEvent event)
     {
@@ -102,7 +100,7 @@ public class RuinsMod
                 nextInfoTime = System.currentTimeMillis() + 1000l;
                 event.getPlayer().addChatComponentMessage(
                         new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.state.getBlock().getLocalizedName(),
-                                GameData.getBlockRegistry().getNameForObject(event.state.getBlock()), event.state.getBlock().getMetaFromState(event.state))));
+                                GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
                 event.setCanceled(true);
             }
         }

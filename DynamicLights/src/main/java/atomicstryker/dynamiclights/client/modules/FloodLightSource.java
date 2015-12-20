@@ -171,8 +171,7 @@ public class FloodLightSource
         }
     }
 
-    @SuppressWarnings("unchecked")
-	private int getLightFromItemStack(ItemStack stack)
+    private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
         {

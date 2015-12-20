@@ -199,8 +199,7 @@ public class MultiMineServer
         sendPartiallyMinedBlockUpdateToAllPlayers(newblock);
     }
 
-    @SuppressWarnings("unchecked")
-	private boolean isBlockBanned(Block block, int meta)
+    private boolean isBlockBanned(Block block, int meta)
     {
         final String ident = GameData.getBlockRegistry().getNameForObject(block).toString()+"-"+meta;
         Boolean result = blacklistedBlocksAndTools.get(ident);
@@ -218,8 +217,7 @@ public class MultiMineServer
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-	private boolean isItemBanned(ItemStack item)
+    private boolean isItemBanned(ItemStack item)
     {
         if (item == null || item.getItem() == null)
         {

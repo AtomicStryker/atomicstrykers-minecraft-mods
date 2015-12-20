@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import atomicstryker.findercompass.client.CompassSetting;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
 
 public class DefaultConfigFilePrinter
@@ -148,7 +149,7 @@ public class DefaultConfigFilePrinter
                             int prefixoffset = 0;
                             String[] splitString = buffer.split(":");
                             String blockID = splitString[0];
-                            if (blockID.equals("minecraft") || GameData.getBlockRegistry().getObject(blockID) == Blocks.air)
+                            if (blockID.equals("minecraft") || GameData.getBlockRegistry().getObject(new ResourceLocation(blockID)) == Blocks.air)
                             {
                                 prefixoffset = 1;
                                 blockID = splitString[0]+":"+splitString[1];
@@ -175,7 +176,7 @@ public class DefaultConfigFilePrinter
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
-                            block = GameData.getBlockRegistry().getObject(blockID);
+                            block = GameData.getBlockRegistry().getObject(new ResourceLocation(blockID));
                             if (block != Blocks.air)
                             {
                                 CompassTargetData key = new CompassTargetData(block, configInts[8]);

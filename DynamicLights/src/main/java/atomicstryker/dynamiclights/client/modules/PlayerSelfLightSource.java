@@ -88,8 +88,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         config.save();
     }
     
-    @SuppressWarnings("unchecked")
-	@SubscribeEvent
+    @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
         if (lastWorld != FMLClientHandler.instance().getClient().theWorld || thePlayer != FMLClientHandler.instance().getClient().thePlayer)
@@ -202,8 +201,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         return false;
     }
     
-    @SuppressWarnings("unchecked")
-	private int getLightFromItemStack(ItemStack stack)
+    private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
         {

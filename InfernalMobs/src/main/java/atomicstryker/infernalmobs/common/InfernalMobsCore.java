@@ -61,6 +61,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -349,13 +350,14 @@ public class InfernalMobsCore
 
     private Object parseOrFind(String s)
     {
-        Item item = GameData.getItemRegistry().getObject(s);
+    	ResourceLocation rl = new ResourceLocation(s);
+        Item item = GameData.getItemRegistry().getObject(rl);
         if (item != null)
         {
             return item;
         }
 
-        Block block = GameData.getBlockRegistry().getObject(s);
+        Block block = GameData.getBlockRegistry().getObject(rl);
         if (block != Blocks.air)
         {
             return block;

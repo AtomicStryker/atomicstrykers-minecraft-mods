@@ -188,7 +188,6 @@ public class World2TemplateParser extends Thread
         }
     }
 
-    @SuppressWarnings("unchecked")
 	private void readBlocks(World world)
     {
         yPadding = 0;
@@ -244,7 +243,7 @@ public class World2TemplateParser extends Thread
                     {
                         NBTTagCompound tc = new NBTTagCompound();
                         te.writeToNBT(tc);
-                        temp.data = "teBlock;" + GameData.getBlockRegistry().getNameForObject(temp.block) + ";" + tc.toString() + "-" + temp.meta;
+                        temp.data = "teBlock;" + GameData.getBlockRegistry().getNameForObject(temp.block).toString() + ";" + tc.toString() + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.mob_spawner)
                     {
@@ -302,7 +301,9 @@ public class World2TemplateParser extends Thread
                                 ItemStack cs = stack.getItem().getContainerItem(stack);
                                 if (cs != null)
                                 {
-                                    ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
+                                    //ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
+                                	//TODO: Is this correct? i dont remember which case this code was handling
+                                    ident = GameData.getItemRegistry().getNameForObject(cs.getItem()).toString();
                                 }
                                 else
                                 {
@@ -539,11 +540,10 @@ public class World2TemplateParser extends Thread
             return state.getBlock() == block && meta == block.getMetaFromState(state);
         }
 
-        @SuppressWarnings("unchecked")
 		@Override
         public String toString()
         {
-            return spawnRule + ",100," + ((data != null) ? data : GameData.getBlockRegistry().getNameForObject(block) + "-" + meta);
+            return spawnRule + ",100," + ((data != null) ? data : GameData.getBlockRegistry().getNameForObject(block).toString() + "-" + meta);
         }
 
         @Override

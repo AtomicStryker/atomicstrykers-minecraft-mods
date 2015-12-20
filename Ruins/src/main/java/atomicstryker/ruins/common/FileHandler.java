@@ -16,6 +16,7 @@ import com.google.common.io.Files;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.fml.common.registry.GameData;
 
@@ -288,7 +289,7 @@ public class FileHandler
                 String[] blocks = check[1].split(",");
                 for (String b : blocks)
                 {
-                    Block bl = GameData.getBlockRegistry().getObject(b);
+                    Block bl = GameData.getBlockRegistry().getObject(new ResourceLocation(b));
                     if (bl != Blocks.air)
                     {
                         registeredTEBlocks.add(bl);

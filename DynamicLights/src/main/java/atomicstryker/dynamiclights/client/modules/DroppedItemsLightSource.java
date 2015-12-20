@@ -101,7 +101,6 @@ public class DroppedItemsLightSource
         }
     }
     
-    @SuppressWarnings("unchecked")
 	private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
@@ -174,13 +173,12 @@ public class DroppedItemsLightSource
         private boolean enabled;
         private boolean notWaterProof;
         
-        @SuppressWarnings("unchecked")
 		public EntityItemAdapter(EntityItem eI)
         {
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(eI.getEntityItem()), eI.getEntityItem().getItemDamage()) == 1;
+            notWaterProof = notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(eI.getEntityItem().getItem()), eI.getEntityItem().getItemDamage()) == 1;
         }
         
         /**

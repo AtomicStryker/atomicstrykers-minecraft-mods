@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
 
 /**
@@ -105,7 +106,7 @@ public class CustomRotationMapping
                     Block b;
                     for (String s : ids)
                     {
-                        b = tryFindingBlockOfName(s);
+                        b = tryFindingBlockOfName(new ResourceLocation(s));
                         if (b != Blocks.air)
                         {
                             currentBlockIDs.add(b);
@@ -168,7 +169,7 @@ public class CustomRotationMapping
         bIdMap[dir].put(metadata, result);
     }
 
-    private Block tryFindingBlockOfName(String blockName)
+    private Block tryFindingBlockOfName(ResourceLocation blockName)
     {
         // it returns Blocks.air when nothing is found, ok
         return GameData.getBlockRegistry().getObject(blockName);

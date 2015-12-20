@@ -16,6 +16,7 @@ import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
@@ -630,7 +631,7 @@ public class RuinTemplate
                         Block b;
                         for (String aCheck : check)
                         {
-                            b = GameData.getBlockRegistry().getObject(aCheck);
+                            b = GameData.getBlockRegistry().getObject(new ResourceLocation(aCheck));
                             if (b != Blocks.air)
                             {
                                 acceptables.add(b);
@@ -651,7 +652,7 @@ public class RuinTemplate
                         Block b;
                         for (String aCheck : check)
                         {
-                            b = GameData.getBlockRegistry().getObject(aCheck);
+                            b = GameData.getBlockRegistry().getObject(new ResourceLocation(aCheck));
                             if (b != Blocks.air)
                             {
                                 inacceptables.add(b);
