@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "15.4";
+    public static final String modversion = "15.5";
     
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final int BIOME_NONE = 500;
@@ -285,7 +285,13 @@ public class RuinsMod
     {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
-            return FMLClientHandler.instance().getClient().mcDataDir;
+        	File file = FMLClientHandler.instance().getClient().mcDataDir;
+        	String abspath = file.getAbsolutePath();
+        	if (abspath.endsWith("."))
+        	{
+        		file = new File(abspath.substring(0, abspath.length()-1));
+        	}
+            return file;
         }
         return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
     }
@@ -296,7 +302,7 @@ public class RuinsMod
         try
         {
             File worlddir = getWorldSaveDir(world);
-            worldHandle.fileHandle = new FileHandler(worlddir);
+            worldHandle.fileHandle = new FileHandler(worlddir, world.provider.getDimensionId());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
             
             worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().loadData(ChunkLoggerData.class, "ruinschunklogger");

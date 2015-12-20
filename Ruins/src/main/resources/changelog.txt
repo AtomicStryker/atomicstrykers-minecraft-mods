@@ -445,3 +445,6 @@ a: setAccessible now true
 
 15.4
 + fixes some config reading issues when no values were specified
+
+15.5
++ updated to current forge, bugfix to multidimensional logfiles

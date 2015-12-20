@@ -23,6 +23,7 @@ public class FileHandler
 {
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
     private final ArrayList<HashSet<RuinTemplate>> templates = new ArrayList<HashSet<RuinTemplate>>();
+    private final int dimension;
     protected int[][] vars;
 
     protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
@@ -39,11 +40,12 @@ public class FileHandler
     
     private int templateCount;
 
-    public FileHandler(File worldPath)
+    public FileHandler(File worldPath, int dim)
     {
         saveFolder = worldPath;
         loaded = false;
         templateCount = 0;
+        dimension = dim;
         new LoaderThread().start();
     }
 
@@ -82,12 +84,12 @@ public class FileHandler
             }
             try
             {
-                File log = new File(basedir, "ruins_log.txt");
+                File log = new File(basedir, "ruins_log_dim_"+dimension+".txt");
                 if (log.exists())
                 {
                     if (!log.delete() || !log.createNewFile())
                     {
-                        throw new RuntimeException("Ruins crashed trying to access file: "+log);
+                        throw new RuntimeException("Ruins crashed trying to access file: "+log.getAbsolutePath());
                     }
                 }
                 pw = new PrintWriter(new BufferedWriter(new FileWriter(log)));
