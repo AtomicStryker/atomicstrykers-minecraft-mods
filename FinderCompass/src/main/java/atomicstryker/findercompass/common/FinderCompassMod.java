@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.8a")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.8.8")
 public class FinderCompassMod
 {
 

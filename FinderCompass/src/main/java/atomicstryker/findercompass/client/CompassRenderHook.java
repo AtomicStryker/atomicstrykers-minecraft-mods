@@ -8,7 +8,6 @@ import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
@@ -68,7 +67,8 @@ public class CompassRenderHook
     {
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
-        // lets use mc code
+        /*
+        // this mc code worked until forge 1592, then the fire nation attacked RIP
         t.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
         t.getWorldRenderer().putColorRGB_F(r, g, b, 1); // TODO try values 1-5 for the last arg if problems
 
@@ -79,8 +79,9 @@ public class CompassRenderHook
         t.getWorldRenderer().pos(-0.03f, 0.2f, 0.0f); // upper left
 
         t.draw();
+        */
 
-/*        // alternative native ogl code
+        // alternative native ogl code
         GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
         GL11.glColor4f(r, g, b, 0.75F); // set color
 
@@ -94,7 +95,7 @@ public class CompassRenderHook
         
         GL11.glRotatef(angle, 0, 0, 1f); // revert rotation for next needle
         GL11.glTranslatef(0, 0, -0.01f); // translate slightly up
-*/    }
+    }
     
     private static float computeNeedleHeading(BlockPos coords)
     {        

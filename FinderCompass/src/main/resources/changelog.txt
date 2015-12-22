@@ -1,3 +1,6 @@
+1.8.8
+fixed rendering crash
+
 1.8a
 fixed scanrange offset, using a setting of 1 will once again find everything in a 1x2 tunnel edges
 

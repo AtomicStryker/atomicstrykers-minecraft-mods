@@ -179,6 +179,7 @@ public class DefaultConfigFilePrinter
                             block = GameData.getBlockRegistry().getObject(new ResourceLocation(blockID));
                             if (block != Blocks.air)
                             {
+                            	System.err.println("Finder Compass resolved "+blockID+" to "+block);
                                 CompassTargetData key = new CompassTargetData(block, configInts[8]);
                                 currentSetting.getCustomNeedles().put(key, configInts);
                             }
