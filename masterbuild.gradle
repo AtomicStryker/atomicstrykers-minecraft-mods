@@ -24,6 +24,8 @@ minecraft {
 	runDir = "eclipse/assets"
 }
 
+compileJava { options.encoding = 'utf-8' }
+
 // check for specified dependencies on other projects or jars
 def dfile = file( 'dependencies.xml' )
 if( dfile.exists() ) {
@@ -40,6 +42,7 @@ if( dfile.exists() ) {
 dependencies {
 	// also punch in anything in the forgegradle libs folder
 	compile fileTree(dir: projectpath+'/../../forgegradle/libs', include: '*.jar')
+    compile fileTree(dir: projectpath+'/../../forgegradle/libs', include: '*.zip')
 }
 
 processResources
