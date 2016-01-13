@@ -1,3 +1,6 @@
+1.5.1
+- fixing issue where client did not reset properly upon breaking a block
+
 1.5.0
 - back to fully emulating serverside block breaking to fix lag and other issues
 

@@ -90,7 +90,7 @@ public class MultiMineClient
             && partiallyMinedBlocksArray[i].getPos().equals(pos))
             {
                 float savedProgress = partiallyMinedBlocksArray[i].getProgress();
-                MultiMine.instance().debugPrint("found cached block, cached: "+savedProgress+", completion: "+blockCompletion);
+                MultiMine.instance().debugPrint("found cached block at index "+i+", cached: "+savedProgress+", completion: "+blockCompletion);
                 if (savedProgress > blockCompletion)
                 {
                     lastBlockCompletion = savedProgress;
@@ -190,6 +190,7 @@ public class MultiMineClient
                     renderBlockDigParticles(x, y, z);
                     notClientsBlock = true;
                 }
+                MultiMine.instance().debugPrint("Client updating local partial block ["+x+"|"+y+"|"+z+"], at index "+i+", notClientsBlock: "+notClientsBlock+", setting progres from "+iterBlock.getProgress()+" to "+progress);
                 
                 iterBlock.setProgress(progress);
                 final DestroyBlockProgress newDestroyBP = new DestroyBlockProgress(0, iterBlock.getPos());
@@ -217,9 +218,20 @@ public class MultiMineClient
 
                     vanillaDestroyBlockProgressMap.remove(i);
                     partiallyMinedBlocksArray[i] = null;
+                    if (curBlock.getX() == x && curBlock.getY() == y && curBlock.getZ() == z)
+                    {
+                    	curBlock = BlockPos.ORIGIN;
+                    }
+                    MultiMine.instance().debugPrint("Client wiped local finished block ["+x+"|"+y+"|"+z+"], at index "+i);
                 }
                 return;
             }
+        }
+        
+        if (progress > 0.99)
+        {
+        	MultiMine.instance().debugPrint("Client ignoring late arrival packet ["+x+"|"+y+"|"+z+"]");
+        	return;
         }
         
         if (freeIndex != -1)
