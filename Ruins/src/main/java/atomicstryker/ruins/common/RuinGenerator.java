@@ -319,9 +319,9 @@ public class RuinGenerator
         {
         	if (r.name.equals(ruinData.name)) 
         	{
-        		tooClose = checkSelfMinDist.intersectsWith2(r);
+        		tooClose = checkSelfMinDist.intersectsWith(r);
         	} else {
-        		tooClose = checkOtherMinDist.intersectsWith2(r);
+        		tooClose = checkOtherMinDist.intersectsWith(r);
         	}
         	
             if (tooClose)
