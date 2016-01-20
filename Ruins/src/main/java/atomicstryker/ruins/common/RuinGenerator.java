@@ -293,13 +293,38 @@ public class RuinGenerator
     
     private boolean checkMinDistance(RuinTemplate ruinTemplate, RuinData ruinData)
     {
-        float uniqueMinDist = (ruinTemplate.uniqueMinDistance == 0) ? fileHandler.templateInstancesMinDistance : ruinTemplate.uniqueMinDistance;
+		//
+		// We increase the bounding box by the required minimal distance
+		// in each direction and check on intersections with other ruins.
+		//
+        int uniqueMinDist = (int) ((ruinTemplate.uniqueMinDistance == 0) ? fileHandler.templateInstancesMinDistance : ruinTemplate.uniqueMinDistance);
+        
+        int bbExtension = uniqueMinDist;
+        final RuinData checkSelfMinDist = new RuinData(
+				ruinData.xMin - bbExtension, ruinData.xMax + bbExtension, 
+				ruinData.yMin - bbExtension, ruinData.yMax + bbExtension, 
+				ruinData.zMin - bbExtension, ruinData.zMax + bbExtension, 
+				ruinData.name);
+        
+        bbExtension = (int) fileHandler.anyRuinsMinDistance;
+        final RuinData checkOtherMinDist = new RuinData(
+				ruinData.xMin - bbExtension, ruinData.xMax + bbExtension, 
+				ruinData.yMin - bbExtension, ruinData.yMax + bbExtension, 
+				ruinData.zMin - bbExtension, ruinData.zMax + bbExtension, 
+				ruinData.name);
         
         // refuse Ruins spawning too close to each other
+    	boolean tooClose = false;
         for (RuinData r : registeredRuins)
         {
-            double closestToRuin = r.getClosestDistanceBetweenBounds(ruinData);
-            if (closestToRuin < (r.name.equals(ruinData.name) ? uniqueMinDist : fileHandler.anyRuinsMinDistance))
+        	if (r.name.equals(ruinData.name)) 
+        	{
+        		tooClose = checkSelfMinDist.intersectsWith2(r);
+        	} else {
+        		tooClose = checkOtherMinDist.intersectsWith2(r);
+        	}
+        	
+            if (tooClose)
             {
                 return false;
             }
