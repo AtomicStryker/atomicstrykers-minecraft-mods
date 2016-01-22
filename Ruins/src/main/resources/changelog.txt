@@ -448,3 +448,7 @@ a: setAccessible now true
 
 15.5
 + updated to current forge, bugfix to multidimensional logfiles
++ fixes some config reading issues when no values were specified
+
+15.6
++ fixes intersection and distance checks, courtesy of homacs pull request
