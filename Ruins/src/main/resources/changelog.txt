@@ -441,3 +441,6 @@ a: setAccessible now true
 
 15.3
 + fixes some config reading issues when no values were specified
+
+15.4
++ fixes intersection and distance checks, courtesy of homacs pull request
