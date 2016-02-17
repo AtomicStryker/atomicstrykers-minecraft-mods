@@ -39,7 +39,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.0")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.1")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;

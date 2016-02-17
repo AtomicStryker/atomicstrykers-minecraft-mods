@@ -287,7 +287,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             if (batstack != null)
             {
                 PetBatMod.instance().removeFluteFromPlayer(owner, petName);
-                if (owner.inventory.addItemStackToInventory(batstack))
+                if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack))
                 {
                     worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
                 }
