@@ -1,3 +1,6 @@
+1.4.1
+now drops bat as item where it died when player is dead
+
 1.4.0
 fixing thread issue with packets
 
