@@ -42,7 +42,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "15.4";
+    public static final String modversion = "15.4.1";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -74,6 +74,8 @@ public class RuinsMod
         evt.registerServerCommand(new CommandParseTemplate());
         evt.registerServerCommand(new CommandTestTemplate());
         evt.registerServerCommand(new CommandUndo());
+        // remove generators registered by a previous server
+        generatorMap.clear();
     }
 
     private long nextInfoTime;
@@ -198,33 +200,49 @@ public class RuinsMod
 
     private void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
-        WorldHandle wh = getWorldHandle(world);
-        if (wh.fileHandle != null)
-        {
-            for (; !wh.fileHandle.loaded; Thread.yield())
-            {
-            }
-            wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
-        }
+    	try {
+	        WorldHandle wh = getWorldHandle(world);
+	        if (wh.fileHandle != null)
+	        {
+	        	wh.waitLoaded();
+	        	wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
+	        }
+    	} catch (InterruptedException e) {
+    		// shutting down?
+			e.printStackTrace();
+    	}
     }
 
     private void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
-        WorldHandle wh = getWorldHandle(world);
-        if (wh.fileHandle != null)
-        {
-            for (; !wh.fileHandle.loaded; Thread.yield())
-            {
-            }
-            wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
-        }
+    	try {
+	        WorldHandle wh = getWorldHandle(world);
+	        if (wh.fileHandle != null)
+	        {
+	        	wh.waitLoaded();
+	            wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
+	        }
+    	} catch (InterruptedException e) {
+    		// shutting down?
+			e.printStackTrace();
+    	}
     }
 
     private class WorldHandle
     {
-        FileHandler fileHandle;
+		FileHandler fileHandle;
         RuinGenerator generator;
         ChunkLoggerData chunkLogger;
+		int dimension;
+		private boolean loaded = false;
+		
+		public void waitLoaded() throws InterruptedException {
+			if (!loaded) {
+				fileHandle.waitLoaded();
+				generator.waitLoaded();
+				loaded = true;
+			}
+		}
     }
 
     private WorldHandle getWorldHandle(World world)
@@ -289,6 +307,7 @@ public class RuinsMod
 
     public static int getBiomeFromName(String name)
     {
+
         for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
         {
             if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(name))
@@ -305,6 +324,7 @@ public class RuinsMod
         // load in defaults
         try
         {
+        	worldHandle.dimension = world.provider.dimensionId;
             File worlddir = getWorldSaveDir(world);
             worldHandle.fileHandle = new FileHandler(worlddir);
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);

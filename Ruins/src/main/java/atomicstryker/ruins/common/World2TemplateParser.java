@@ -234,7 +234,7 @@ public class World2TemplateParser extends Thread
                     
                     TileEntity te = world.getTileEntity(blockx, blocky, blockz);
                     /* handle special blocks */
-                    if (te != null && FileHandler.registeredTEBlocks.contains(temp.block))
+                    if (te != null && FileHandler.isRegisteredTEBlock(temp.block))
                     {
                         NBTTagCompound tc = new NBTTagCompound();
                         te.writeToNBT(tc);
