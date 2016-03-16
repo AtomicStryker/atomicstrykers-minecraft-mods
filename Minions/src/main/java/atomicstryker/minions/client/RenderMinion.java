@@ -9,6 +9,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.Item;
@@ -29,9 +30,9 @@ public class RenderMinion extends RenderLiving<EntityLiving>
 	private ModelMinion model;
 	private ResourceLocation tex = new ResourceLocation("minions", "textures/model/AS_EntityMinion.png");
 	
-    public RenderMinion(ModelBase var1, float var2)
+    public RenderMinion(RenderManager manager, ModelBase var1, float var2)
     {
-		super(Minecraft.getMinecraft().getRenderManager(), var1, var2);
+		super(manager, var1, var2);
 		
 		this.model = (ModelMinion) var1;
 		this.layerRenderers.add(new CustomHeldItem(model.bipedRightArm));

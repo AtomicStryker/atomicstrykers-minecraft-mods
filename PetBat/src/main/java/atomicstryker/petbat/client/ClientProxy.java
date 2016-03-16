@@ -4,10 +4,13 @@ import atomicstryker.petbat.common.EntityPetBat;
 import atomicstryker.petbat.common.IProxy;
 import atomicstryker.petbat.common.PetBatMod;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy implements IProxy
@@ -22,7 +25,14 @@ public class ClientProxy implements IProxy
 	@Override
 	public void onModInit()
 	{
-		RenderingRegistry.registerEntityRenderingHandler(EntityPetBat.class, new RenderPetBat());
+	    RenderingRegistry.registerEntityRenderingHandler(EntityPetBat.class, new IRenderFactory<EntityPetBat>()
+        {
+            @Override
+            public Render<? super EntityPetBat> createRenderFor(RenderManager manager)
+            {
+                return new RenderPetBat(manager);
+            }
+        });
 		
         RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
         renderItem.getItemModelMesher().register(PetBatMod.instance().itemBatFlute, 0, new ModelResourceLocation("petbat:bat_flute", "inventory"));

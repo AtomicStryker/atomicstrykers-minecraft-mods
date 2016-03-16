@@ -63,9 +63,7 @@ public class RopesPlusCore
 
     public NetworkHelper networkHelper;
 
-    public final static Class<?> coreArrowClasses[] = { EntityArrow303Dirt.class, EntityArrow303Ex.class, EntityArrow303Fire.class,
-            EntityArrow303Grass.class, EntityArrow303Ice.class, EntityArrow303Laser.class, EntityArrow303Slime.class, EntityArrow303Torch.class,
-            EntityArrow303Warp.class, EntityArrow303Confusion.class, EntityArrow303Rope.class, EntityArrow303RedStoneTorch.class };
+    public static final ArrayList<Class<? extends EntityArrow303>> coreArrowClasses = new ArrayList<Class<? extends EntityArrow303>>();
 
     private List<EntityArrow303> arrows;
     public Item bowRopesPlus;
@@ -94,6 +92,19 @@ public class RopesPlusCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        coreArrowClasses.add(EntityArrow303Dirt.class);
+        coreArrowClasses.add(EntityArrow303Ex.class);
+        coreArrowClasses.add(EntityArrow303Fire.class);
+        coreArrowClasses.add(EntityArrow303Grass.class);
+        coreArrowClasses.add(EntityArrow303Ice.class);
+        coreArrowClasses.add(EntityArrow303Laser.class);
+        coreArrowClasses.add(EntityArrow303Slime.class);
+        coreArrowClasses.add(EntityArrow303Torch.class);
+        coreArrowClasses.add(EntityArrow303Warp.class);
+        coreArrowClasses.add(EntityArrow303Confusion.class);
+        coreArrowClasses.add(EntityArrow303Rope.class);
+        coreArrowClasses.add(EntityArrow303RedStoneTorch.class);
+        
         arrows = new ArrayList<EntityArrow303>();
         arrowItems = new ArrayList<ItemArrow303>();
         ropeEntArray = new ArrayList<Object>();
@@ -151,7 +162,7 @@ public class RopesPlusCore
         if (grapplingEnabled)
         {
             GameRegistry.registerBlock(blockGrapplingHook, "blockGrapplingHook");
-            GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook", "RopesPlus");
+            GameRegistry.registerItem(itemGrapplingHook, "itemGrapplingHook");
         }
 
         GameRegistry.registerBlock(blockRopeWall, "blockRopeWall");
@@ -164,10 +175,10 @@ public class RopesPlusCore
                 GameRegistry.registerBlock(blockZipLineAnchor, "blockZiplineAnchor");
                 GameRegistry.registerTileEntity(TileEntityZipLineAnchor.class, "TileEntityZipLineAnchor");
             }
-            GameRegistry.registerItem(itemHookShot, "itemHookshot", "RopesPlus");
-            GameRegistry.registerItem(itemHookShotCartridge, "itemHookshotCartridge", "RopesPlus");
+            GameRegistry.registerItem(itemHookShot, "itemHookshot");
+            GameRegistry.registerItem(itemHookShotCartridge, "itemHookshotCartridge");
         }
-        GameRegistry.registerItem(bowRopesPlus, "itemBowRopesPlus", "RopesPlus");
+        GameRegistry.registerItem(bowRopesPlus, "itemBowRopesPlus");
 
         networkHelper =
                 new NetworkHelper("AS_RP", ArrowChoicePacket.class, GrapplingHookPacket.class, HookshotPacket.class, HookshotPullPacket.class,

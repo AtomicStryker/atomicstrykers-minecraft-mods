@@ -3,8 +3,8 @@ package atomicstryker.petbat.client;
 import org.lwjgl.opengl.GL11;
 
 import atomicstryker.petbat.common.EntityPetBat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -15,9 +15,9 @@ public class RenderPetBat extends RenderLiving<EntityLiving>
     private ResourceLocation tex = new ResourceLocation("petbat", "textures/model/petbat.png");
     private ResourceLocation texGlis = new ResourceLocation("petbat", "textures/model/petbat_glister.png");
     
-    public RenderPetBat()
+    public RenderPetBat(RenderManager manager)
     {
-        super(Minecraft.getMinecraft().getRenderManager(), new ModelPetBat(), 0.25F);
+        super(manager, new ModelPetBat(), 0.25F);
         renderModel = new ModelPetBat();
         layerRenderers.add(renderModel);
     }

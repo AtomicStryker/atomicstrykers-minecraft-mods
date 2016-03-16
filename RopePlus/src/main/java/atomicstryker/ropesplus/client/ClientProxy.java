@@ -4,14 +4,16 @@ import atomicstryker.ropesplus.common.EntityFreeFormRope;
 import atomicstryker.ropesplus.common.EntityGrapplingHook;
 import atomicstryker.ropesplus.common.IProxy;
 import atomicstryker.ropesplus.common.RopesPlusCore;
+import atomicstryker.ropesplus.common.arrows.EntityArrow303;
 import atomicstryker.ropesplus.common.arrows.ItemArrow303;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy implements IProxy
@@ -35,15 +37,29 @@ public class ClientProxy implements IProxy
         RopesPlusClient.toolTipEnabled = config.get(Configuration.CATEGORY_GENERAL, "Equipped Bow Tool Tip", true).getBoolean(true);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public void load()
-    {        
-        RenderingRegistry.registerEntityRenderingHandler(EntityGrapplingHook.class, new RenderGrapplingHook(Minecraft.getMinecraft().getRenderManager()));
-        Render<Entity> arrowRenderer = new RenderArrow303(Minecraft.getMinecraft().getRenderManager());
-        for(Class<?> arrow : RopesPlusCore.coreArrowClasses)
+    {
+        RenderingRegistry.registerEntityRenderingHandler(EntityGrapplingHook.class, new IRenderFactory<EntityGrapplingHook>()
         {
-            RenderingRegistry.registerEntityRenderingHandler((Class<? extends Entity>) arrow, arrowRenderer);
+            @Override
+            public Render<? super EntityGrapplingHook> createRenderFor(RenderManager manager)
+            {
+                return new RenderGrapplingHook(manager);
+            }
+        });
+
+        IRenderFactory<EntityArrow303> arrowRenderer = new IRenderFactory<EntityArrow303>()
+        {
+            @Override
+            public Render<? super EntityArrow303> createRenderFor(RenderManager manager)
+            {
+                return new RenderArrow303(manager);
+            }
+        };
+        for(Class<? extends EntityArrow303> arrow : RopesPlusCore.coreArrowClasses)
+        {
+            RenderingRegistry.registerEntityRenderingHandler(arrow, arrowRenderer);
         }
         
         //renderIDGrapplingHook = RenderingRegistry.getNextAvailableRenderId();
@@ -60,7 +76,14 @@ public class ClientProxy implements IProxy
             mm.register(item, 0, new ModelResourceLocation("ropesplus:"+item.arrow.name, "inventory"));
         }
         
-        RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new RenderFreeFormRope(Minecraft.getMinecraft().getRenderManager()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityFreeFormRope.class, new IRenderFactory<EntityFreeFormRope>()
+        {
+            @Override
+            public Render<? super EntityFreeFormRope> createRenderFor(RenderManager manager)
+            {
+                return new RenderFreeFormRope(manager);
+            }
+        });
     }
     
     @Override

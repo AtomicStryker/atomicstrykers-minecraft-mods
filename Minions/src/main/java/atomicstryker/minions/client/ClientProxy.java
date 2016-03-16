@@ -4,11 +4,14 @@ import atomicstryker.minions.common.IProxy;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -57,7 +60,14 @@ public class ClientProxy implements IProxy
     @Override
     public void registerRenderInformation()
     {
-        RenderingRegistry.registerEntityRenderingHandler(EntityMinion.class, new RenderMinion(new ModelMinion(), 0.25F));
+        RenderingRegistry.registerEntityRenderingHandler(EntityMinion.class, new IRenderFactory<EntityMinion>()
+        {
+            @Override
+            public Render<? super EntityMinion> createRenderFor(RenderManager manager)
+            {
+                return new RenderMinion(manager, new ModelMinion(), 0.25F);
+            }
+        });
     }
     
     @Override
