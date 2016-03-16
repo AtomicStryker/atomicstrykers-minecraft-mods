@@ -14,6 +14,7 @@ buildscript {
 plugins {
     id 'com.matthewprenger.cursegradle' version '1.0.1'
 }
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 apply from: '../masterbuild.gradle'
@@ -23,8 +24,8 @@ curseforge {
     project {
         id = '227879'
         releaseType = 'release'
-        addGameVersion '1.8.8'
-        mainArtifact(file('build/libs/PetBat-1.8.8.jar')) {
+        addGameVersion '1.8.9'
+        mainArtifact(file('build/libs/PetBat-1.8.9.jar')) {
           displayName = 'Pet Bats'
         }
     }

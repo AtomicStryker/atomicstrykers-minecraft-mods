@@ -25,8 +25,8 @@ curseforge {
     project {
         id = '227873'
         releaseType = 'release'
-        addGameVersion '1.8.8'
-        mainArtifact(file('build/distributions/Ruins-1.8.8.zip')) {
+        addGameVersion '1.8.9'
+        mainArtifact(file('build/distributions/Ruins-1.8.9.zip')) {
           displayName = 'Ruins (Structure Spawning System)'
         }
     }
