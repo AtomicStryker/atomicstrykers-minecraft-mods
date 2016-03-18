@@ -33,7 +33,7 @@ import net.minecraftforge.fml.common.registry.GameData;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.8", dependencies = "required-after:DynamicLights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;
@@ -181,7 +181,7 @@ public class PlayerOthersLightSource
         {
             int prevLight = lightLevel;
             
-            lightLevel = getLightFromItemStack(player.getCurrentEquippedItem());
+            lightLevel = Math.max(getLightFromItemStack(player.getHeldItemMainhand()), getLightFromItemStack(player.getHeldItemOffhand()));
             for (ItemStack armor : player.inventory.armorInventory)
             {
                 lightLevel = Math.max(lightLevel, getLightFromItemStack(armor));

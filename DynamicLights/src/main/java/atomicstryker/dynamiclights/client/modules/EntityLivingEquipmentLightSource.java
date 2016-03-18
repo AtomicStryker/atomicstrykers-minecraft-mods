@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -35,7 +36,7 @@ import net.minecraftforge.fml.common.registry.GameData;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.8", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.9", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -124,10 +125,10 @@ public class EntityLivingEquipmentLightSource
     
     private int getMobEquipMaxLight(EntityLivingBase ent)
     {
-        int light = getLightFromItemStack(ent.getEquipmentInSlot(0));
-        for (int i = 1; i < 5; i++) // 5 is the magic inventory size for mc
+        int light = 0;
+        for (EntityEquipmentSlot ees : EntityEquipmentSlot.values())
         {
-            light = Math.max(light, getLightFromItemStack(ent.getEquipmentInSlot(i)));
+            light = Math.max(light, getLightFromItemStack(ent.getItemStackFromSlot(ees)));
         }
         return light;
     }

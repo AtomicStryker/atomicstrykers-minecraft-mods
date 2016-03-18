@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  *         explode. Those can give off Light through this Module.
  * 
  */
-@Mod(modid = "DynamicLights_creepers", name = "Dynamic Lights on Creepers", version = "1.0.4", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_creepers", name = "Dynamic Lights on Creepers", version = "1.0.5", dependencies = "required-after:DynamicLights")
 public class ChargingCreeperLightSource
 {
 
@@ -32,7 +32,7 @@ public class ChargingCreeperLightSource
     @SubscribeEvent
     public void onPlaySoundAtEntity(PlaySoundAtEntityEvent event)
     {
-        if (event.name != null && event.name.equals("random.fuse") && event.entity != null && event.entity instanceof EntityCreeper)
+        if (event.getSound() != null && event.getSound().getSoundName().getResourcePath().equals("random.fuse") && event.entity != null && event.entity instanceof EntityCreeper)
         {
             if (event.entity.isEntityAlive())
             {

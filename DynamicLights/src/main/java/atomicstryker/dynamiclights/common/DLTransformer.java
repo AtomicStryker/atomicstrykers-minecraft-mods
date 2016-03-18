@@ -1,17 +1,22 @@
 package atomicstryker.dynamiclights.common;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceMethodVisitor;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import scala.tools.asm.Opcodes;
 
 /**
  * 
@@ -25,16 +30,16 @@ public class DLTransformer implements IClassTransformer
 {
     
     /* net/minecraft/world/World */
-    private String classNameWorld = "adm";
+    private String classNameWorld = "aht";
       
     /* (Lnet/minecraft/util/BlockPos;Lnet/minecraft/world/EnumSkyBlock;)I */
-    private String targetMethodDesc = "(Lcj;Lads;)I";
+    private String targetMethodDesc = "(Lcj;Lahz;)I";
     
     /* net/minecraft/world/World.getRawLight / func_175638_a */
     private String computeLightValueMethodName = "a";
     
-    /* (Lnet/minecraft/block/Block;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I */
-    private String goalInvokeDesc = "(Lafh;Ladq;Lcj;)I";
+    /* (Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I */
+    private String goalInvokeDesc = "(Larc;Lahx;Lcj;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -47,28 +52,39 @@ public class DLTransformer implements IClassTransformer
         else if (name.equals("net.minecraft.world.World")) // MCP testing
         {
             computeLightValueMethodName = "getRawLight";
-            targetMethodDesc = "(Lnet/minecraft/util/BlockPos;Lnet/minecraft/world/EnumSkyBlock;)I";
-            goalInvokeDesc = "(Lnet/minecraft/block/Block;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I";
+            goalInvokeDesc = "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I";
             return handleWorldTransform(bytes, false);
         }
         
         return bytes;
     }
     
+    private String insnToString(AbstractInsnNode insn)
+    {
+        insn.accept(mp);
+        StringWriter sw = new StringWriter();
+        printer.print(new PrintWriter(sw));
+        printer.getText().clear();
+        return sw.toString();
+    }
+
+    private Printer printer = new Textifier();
+    private TraceMethodVisitor mp = new TraceMethodVisitor(printer); 
+    
     private byte[] handleWorldTransform(byte[] bytes, boolean obf)
     {
         System.out.println("**************** Dynamic Lights transform running on World, obf: "+obf+" *********************** ");
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
-        classReader.accept(classNode, ClassReader.SKIP_FRAMES); // SKIP_FRAMES to avoid ASM bug present here
+        classReader.accept(classNode, 0);
         
         // find method to inject into
         for (MethodNode m : classNode.methods)
         {
             if (m.name.equals(computeLightValueMethodName)
-                    && m.desc.equals(targetMethodDesc))
+                    && (!obf || m.desc.equals(targetMethodDesc)))
             {
-                System.out.println("In target method " + computeLightValueMethodName + ", Patching!");
+                System.out.println("In target method " + computeLightValueMethodName +":"+m.desc+ ", Patching!");
                 
                 /* before patch:
                    0: aload_2
@@ -92,10 +108,22 @@ public class DLTransformer implements IClassTransformer
 			      35: istore        4
 			      [... many more...]
                  */
+                
+                /*
+                System.out.println("=== PRE PRINT===");
+                Iterator<AbstractInsnNode> printIter = m.instructions.iterator();
+                while (printIter.hasNext())
+                {
+                    System.out.print(insnToString(printIter.next()));
+                }
+                System.out.println();
+                System.out.println("=== PRE PRINT===");
+                */
 
                 AbstractInsnNode targetNode = null;
                 Iterator<AbstractInsnNode> iter = m.instructions.iterator();
                 boolean found = false;
+                int index = 0;
                 while (iter.hasNext())
                 {
                     // check all nodes
@@ -105,25 +133,26 @@ public class DLTransformer implements IClassTransformer
                     if (targetNode.getOpcode() == Opcodes.ASTORE)
                     {
                         VarInsnNode astore = (VarInsnNode) targetNode;
-                        System.out.println("Found ASTORE Node, is writing variable number: " + astore.var);
+                        System.out.println("Found ASTORE Node at index "+index+", is writing variable number: " + astore.var);
 
                         // go further until ISTORE is hit
                         while (targetNode.getOpcode() != Opcodes.ISTORE)
                         {
-                            if (targetNode instanceof MethodInsnNode)
+                            if (targetNode instanceof MethodInsnNode && targetNode.getOpcode() != Opcodes.INVOKEINTERFACE)
                             {
                                 MethodInsnNode mNode = (MethodInsnNode) targetNode;
-                                System.out.printf("found target node, opcode: %d, %s %s %s\n", mNode.getOpcode(), mNode.owner, mNode.name, mNode.desc);
+                                System.out.printf("found deletion target at index %d: %s\n", index, insnToString(mNode));
                                 found = true;
                                 iter.remove();
                                 targetNode = iter.next(); // select next node as target
                                 break;
                             }
                             targetNode = iter.next();
-                            System.out.printf("Node %s, opcode %d\n", targetNode, targetNode.getOpcode());
+                            System.out.print("Reading node: "+insnToString(targetNode));
                         }
                         break;
                     }
+                    index++;
                 }
 
                 if (found)
@@ -135,7 +164,7 @@ public class DLTransformer implements IClassTransformer
             }
         }
         
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
         return writer.toByteArray();
     }

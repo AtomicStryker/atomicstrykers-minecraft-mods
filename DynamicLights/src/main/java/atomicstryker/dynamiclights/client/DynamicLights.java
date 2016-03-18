@@ -6,11 +6,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.lwjgl.input.Keyboard;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.3.9")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.4.0")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -113,7 +113,7 @@ public class DynamicLights
             {
                 nextKeyTriggerTime = System.currentTimeMillis() + 1000l;
                 globalLightsOff = !globalLightsOff;
-                mcinstance.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
+                mcinstance.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
                 
                 World world = mcinstance.theWorld;
                 if (world != null)
@@ -144,14 +144,14 @@ public class DynamicLights
      * Block.getLightValue. Loops active Dynamic Light Sources and if it finds
      * one for the exact coordinates asked, returns the Light value from that source if higher.
      * 
-     * @param block Block queried
+     * @param blockState IBlockState queried
      * @param world World queried
      * @param pos BlockPos instance of target coords
      * @return max(Block.getLightValue, Dynamic Light)
      */
-    public static int getLightValue(Block block, IBlockAccess world, BlockPos pos)
+    public static int getLightValue(IBlockState blockState, IBlockAccess world, BlockPos pos)
     {
-        int vanillaValue = block.getLightValue(world, pos);
+        int vanillaValue = blockState.getBlock().getLightValue(world.getBlockState(pos));
         
         if (instance == null || instance.globalLightsOff || world instanceof WorldServer)
         {

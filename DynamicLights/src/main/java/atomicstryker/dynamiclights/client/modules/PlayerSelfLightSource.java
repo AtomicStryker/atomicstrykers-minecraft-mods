@@ -5,12 +5,12 @@ import java.util.List;
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -140,8 +140,24 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             {
                 int prevLight = lightLevel;
                 
-                ItemStack item = thePlayer.getCurrentEquippedItem();
-                lightLevel = getLightFromItemStack(item);
+                ItemStack item = null;
+                int main = getLightFromItemStack(thePlayer.getHeldItemMainhand());
+                int off = getLightFromItemStack(thePlayer.getHeldItemOffhand());
+                if (main >= off && main > 0)
+                {
+                    item = thePlayer.getHeldItemMainhand();
+                    lightLevel = main;
+                }
+                else if (off >= main && off > 0)
+                {
+                    item = thePlayer.getHeldItemOffhand();
+                    lightLevel = off;
+                }
+                else
+                {
+                    lightLevel = 0;
+                }
+                //System.out.printf("Self light tick, main:%d, off:%d, light:%d, chosen itemstack:%s\n", main, off, lightLevel, item);
                 
                 for (ItemStack armor : thePlayer.inventory.armorInventory)
                 {
@@ -165,7 +181,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
                         && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(item.getItem()), item.getItemDamage()) == 1)
                         {
                             lightLevel = 0;
-                            
+                            //System.out.printf("Self light tick, water blocked light!\n");
                             for (ItemStack armor : thePlayer.inventory.armorInventory)
                             {
                                 if (armor != null && notWaterProofItems.retrieveValue(GameData.getItemRegistry().getNameForObject(armor.getItem()), item.getItemDamage()) == 0)
@@ -196,7 +212,8 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             int x = MathHelper.floor_double(thePlayer.posX + 0.5D);
             int y = MathHelper.floor_double(thePlayer.posY + thePlayer.getEyeHeight());
             int z = MathHelper.floor_double(thePlayer.posZ + 0.5D);
-            return thePlayer.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock().getMaterial() == Material.water;
+            IBlockState is = thePlayer.worldObj.getBlockState(new BlockPos(x, y, z));
+            return is.getBlock().getMaterial(is).isLiquid();
         }
         return false;
     }

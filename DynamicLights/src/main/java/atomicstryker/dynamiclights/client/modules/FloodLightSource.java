@@ -7,9 +7,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -75,7 +75,7 @@ public class FloodLightSource
             thePlayer = FMLClientHandler.instance().getClient().thePlayer;
             if (thePlayer != null && thePlayer.isEntityAlive() && !DynamicLights.globalLightsOff())
             {
-                int lightLevel = getLightFromItemStack(thePlayer.getCurrentEquippedItem());
+                int lightLevel = Math.max(getLightFromItemStack(thePlayer.getHeldItemMainhand()), getLightFromItemStack(thePlayer.getHeldItemOffhand()));
                 
                 checkDummyInit(thePlayer.worldObj);
                 
@@ -102,14 +102,14 @@ public class FloodLightSource
     
     private void handleLight(PartialLightSource source, int light, float yawRot, float pitchRot)
     {
-        Vec3 posvec = thePlayer.getLook(1.0f);
+        Vec3d posvec = thePlayer.getLook(1.0f);
         thePlayer.rotationPitch += pitchRot;
         thePlayer.rotationYaw += yawRot;
-        Vec3 look = thePlayer.getLook(1.0f);
+        Vec3d look = thePlayer.getLook(1.0f);
         thePlayer.rotationPitch -= pitchRot;
         thePlayer.rotationYaw -= yawRot;
         look = posvec.addVector(look.xCoord * 16d, look.yCoord * 16d, look.zCoord * 16d);
-        MovingObjectPosition mop = thePlayer.worldObj.rayTraceBlocks(posvec, look);
+        RayTraceResult mop = thePlayer.worldObj.rayTraceBlocks(posvec, look);
         if (mop != null)
         {
         	BlockPos pos = mop.getBlockPos();
