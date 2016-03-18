@@ -25,8 +25,8 @@ curseforge {
     project {
         id = 'xxxxxx'
         releaseType = 'release'
-        addGameVersion '1.8.9'
-        mainArtifact(file('build/libs/KenshiroMod-1.8.9.jar')) {
+        addGameVersion '1.9'
+        mainArtifact(file('build/libs/KenshiroMod-1.9.jar')) {
           displayName = 'AtomicStryker\'s Kenshiro Mod'
         }
     }

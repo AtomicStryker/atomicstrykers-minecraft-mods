@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227879'
         releaseType = 'release'
-        addGameVersion '1.8.9'
-        mainArtifact(file('build/libs/PetBat-1.8.9.jar')) {
+        addGameVersion '1.9'
+        mainArtifact(file('build/libs/PetBat-1.9.jar')) {
           displayName = 'Pet Bats'
         }
     }
