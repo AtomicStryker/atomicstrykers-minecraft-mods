@@ -123,9 +123,6 @@ public class RuinsMod
         if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote)
         {
             TileEntityCommandBlock tecb;
-            final double x = event.entity.posX;
-            final double y = event.entity.posY;
-            final double z = event.entity.posZ;
             ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<TileEntityCommandBlock>();
 
             for (int xoffset = -4; xoffset <= 4; xoffset++)
