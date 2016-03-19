@@ -137,16 +137,13 @@ public class RuinsMod
                         if (teo instanceof TileEntityCommandBlock)
                         {
                             tecb = (TileEntityCommandBlock) teo;
-                            if (tecb.getDistanceSq(x, y, z) < 4096.0) //square dist!
+                            if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER "))
                             {
-                                if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER "))
-                                {
-                                    // strip prefix from command
-                                    tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
-                                    // call command block execution
-                                    tecb.getCommandBlockLogic().trigger(event.entity.worldObj);
-                                    tecblistToDelete.add(tecb);
-                                }
+                                // strip prefix from command
+                                tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
+                                // call command block execution
+                                tecb.getCommandBlockLogic().trigger(event.entity.worldObj);
+                                tecblistToDelete.add(tecb);
                             }
                         }
                     }
