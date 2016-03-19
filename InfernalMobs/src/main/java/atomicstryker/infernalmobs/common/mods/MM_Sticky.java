@@ -5,9 +5,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 
 public class MM_Sticky extends MobModifier
 {
@@ -51,7 +54,7 @@ public class MM_Sticky extends MobModifier
                     if (drop != null)
                     {
                         drop.setPickupDelay(50);
-                        p.worldObj.playSoundAtEntity(mob, "mob.slimeattack", 1.0F, (p.worldObj.rand.nextFloat() - p.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
+                        mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
                     }
                 }
             }

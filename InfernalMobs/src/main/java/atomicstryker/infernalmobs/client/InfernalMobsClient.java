@@ -18,13 +18,12 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -89,7 +88,7 @@ public class InfernalMobsClient implements ISidedProxy
     public void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event)
     {
         if (InfernalMobsCore.instance().getIsHealthBarDisabled() || 
-                event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || (BossStatus.bossName != null && BossStatus.statusBarTime > 0))
+                event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || mc.ingameGUI.getBossOverlay().shouldPlayEndBossMusic()) // TODO probably needs more logic
         {
             return;
         }
@@ -169,17 +168,17 @@ public class InfernalMobsClient implements ISidedProxy
             if (mc.theWorld != null)
             {
                 double reachDistance = NAME_VISION_DISTANCE;
-                final MovingObjectPosition mopos = mc.getRenderViewEntity().rayTrace(reachDistance, renderTick);
+                final RayTraceResult mopos = mc.getRenderViewEntity().rayTrace(reachDistance, renderTick);
                 double reachDist2 = reachDistance;
-                final Vec3 viewEntPositionVec = mc.getRenderViewEntity().getPositionVector();
+                final Vec3d viewEntPositionVec = mc.getRenderViewEntity().getPositionVector();
 
                 if (mopos != null)
                 {
                     reachDist2 = mopos.hitVec.squareDistanceTo(viewEntPositionVec);
                 }
 
-                final Vec3 viewEntityLookVec = mc.getRenderViewEntity().getLook(renderTick);
-                final Vec3 actualReachVector =
+                final Vec3d viewEntityLookVec = mc.getRenderViewEntity().getLook(renderTick);
+                final Vec3d actualReachVector =
                         viewEntPositionVec.addVector(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
                                 viewEntityLookVec.zCoord * reachDistance);
                 float expandBBvalue = 1.0F;
@@ -197,7 +196,7 @@ public class InfernalMobsClient implements ISidedProxy
                     {
                         float entBorderSize = iterEnt.getCollisionBorderSize();
                         AxisAlignedBB entHitBox = iterEnt.getEntityBoundingBox().expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
-                        MovingObjectPosition interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
+                        RayTraceResult interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
 
                         if (entHitBox.isVecInside(viewEntPositionVec))
                         {

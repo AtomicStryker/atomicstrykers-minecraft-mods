@@ -5,7 +5,10 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 
 public class MM_Blastoff extends MobModifier
 {
@@ -64,7 +67,7 @@ public class MM_Blastoff extends MobModifier
         if (time > nextAbilityUse)
         {
             nextAbilityUse = time+coolDown;
-            mob.worldObj.playSoundAtEntity(mob, "mob.slimeattack", 1.0F, (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_slime_jump, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             
             if (target.worldObj.isRemote || !(target instanceof EntityPlayerMP))
             {

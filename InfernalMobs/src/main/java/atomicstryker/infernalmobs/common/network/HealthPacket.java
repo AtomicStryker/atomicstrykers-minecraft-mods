@@ -8,8 +8,8 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class HealthPacket implements IPacket
@@ -54,7 +54,7 @@ public class HealthPacket implements IPacket
         }
         else
         {
-            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
         }
     }
     
@@ -70,7 +70,7 @@ public class HealthPacket implements IPacket
             }
             else
             {
-                EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(stringData);
+                EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(stringData);
                 if (p != null)
                 {
                     Entity ent = p.worldObj.getEntityByID(entID);

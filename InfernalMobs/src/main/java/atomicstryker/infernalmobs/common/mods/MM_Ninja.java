@@ -3,13 +3,16 @@ package atomicstryker.infernalmobs.common.mods;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.BlockPos;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class MM_Ninja extends MobModifier
 {
@@ -53,7 +56,7 @@ public class MM_Ninja extends MobModifier
     
     private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity)
     {
-        Vec3 vector = new Vec3(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
+        Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 8.0D;
         double destX = mob.posX + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;
@@ -78,8 +81,9 @@ public class MM_Ninja extends MobModifier
         boolean hitGround = false;
         while (!hitGround && y < 96)
         {
-            blockID = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
-            if (blockID.getMaterial().blocksMovement())
+            IBlockState bs = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z));
+            blockID = bs.getBlock();
+            if (blockID.getMaterial(bs).blocksMovement())
             {
                 hitGround = true;
             }
@@ -94,7 +98,7 @@ public class MM_Ninja extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
             
-            mob.worldObj.playSoundEffect(oldX, oldY, oldZ, "random.explode", 2.0F, (1.0F + (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_generic_explode, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             mob.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, oldX, oldY, oldZ, 0D, 0D, 0D);
         }
         else

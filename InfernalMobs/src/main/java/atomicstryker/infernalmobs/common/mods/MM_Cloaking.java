@@ -4,7 +4,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.potion.Potion;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 
@@ -60,7 +60,7 @@ public class MM_Cloaking extends MobModifier
         if (time > nextAbilityUse)
         {
             nextAbilityUse = time+coolDown;
-            mob.addPotionEffect(new PotionEffect(Potion.invisibility.id, 200));
+            mob.addPotionEffect(new PotionEffect(MobEffects.invisibility, 200));
         }
     }
     

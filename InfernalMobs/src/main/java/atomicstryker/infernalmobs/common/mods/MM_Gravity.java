@@ -5,7 +5,10 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.MathHelper;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class MM_Gravity extends MobModifier
 {
@@ -60,7 +63,7 @@ public class MM_Gravity extends MobModifier
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
             
-            mob.worldObj.playSoundAtEntity(mob, "mob.irongolem.throw", 1.0F, (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_irongolem_attack, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             
             if (mob.worldObj.isRemote || !(target instanceof EntityPlayerMP))
             {

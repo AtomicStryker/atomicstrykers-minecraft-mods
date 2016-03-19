@@ -7,8 +7,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 
 public abstract class MobModifier
 {    
@@ -83,7 +83,7 @@ public abstract class MobModifier
      */
     public String getLinkedModName()
     {
-        return (StatCollector.translateToLocal("translation.infernalmobs:mod."+getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
+        return (I18n.translateToLocal("translation.infernalmobs:mod."+getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
     }
     
     /**
@@ -407,7 +407,7 @@ public abstract class MobModifier
             buffer = buffer.replaceFirst("Entity", "");
             
             String entLoc = "translation.infernalmobs:entity."+buffer;
-            String entTrans = StatCollector.translateToLocal(entLoc);
+            String entTrans = I18n.translateToLocal(entLoc);
             if (!entLoc.equals(entTrans))
             {
                 buffer = entTrans;
@@ -427,12 +427,12 @@ public abstract class MobModifier
             if (mod.getModNamePrefix() != null)
             {
                 modprefix = mod.getModNamePrefix()[target.getRNG().nextInt(mod.getModNamePrefix().length)];
-                modprefix = StatCollector.translateToLocal("translation.infernalmobs:prefix."+modprefix);
+                modprefix = I18n.translateToLocal("translation.infernalmobs:prefix."+modprefix);
             }
             
-            String prefix = size <= 5 ? EnumChatFormatting.AQUA+StatCollector.translateToLocal("translation.infernalmobs:rareClass") 
-                    : size <= 10 ? EnumChatFormatting.YELLOW+StatCollector.translateToLocal("translation.infernalmobs:ultraClass") 
-                            : EnumChatFormatting.GOLD+StatCollector.translateToLocal("translation.infernalmobs:infernalClass");
+            String prefix = size <= 5 ? TextFormatting.AQUA+I18n.translateToLocal("translation.infernalmobs:rareClass") 
+                    : size <= 10 ? TextFormatting.YELLOW+I18n.translateToLocal("translation.infernalmobs:ultraClass") 
+                            : TextFormatting.GOLD+I18n.translateToLocal("translation.infernalmobs:infernalClass");
 
             buffer = prefix+modprefix+buffer;
             
@@ -442,7 +442,7 @@ public abstract class MobModifier
                 if (mod.getModNameSuffix() != null)
                 {
                     String pickedSuffix = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
-                    pickedSuffix = StatCollector.translateToLocal("translation.infernalmobs:suffix."+pickedSuffix);
+                    pickedSuffix = I18n.translateToLocal("translation.infernalmobs:suffix."+pickedSuffix);
                     buffer = buffer+pickedSuffix;
                 }
             }

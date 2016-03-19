@@ -45,6 +45,7 @@ import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import atomicstryker.infernalmobs.common.network.NetworkHelper;
 import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -81,7 +82,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.6")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.7")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -133,6 +134,7 @@ public class InfernalMobsCore
     public NetworkHelper networkHelper;
 
     private double maxDamage;
+    private ArrayList<Enchantment> enchantmentList;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
@@ -497,7 +499,7 @@ public class InfernalMobsCore
      */
     public void setEntityHealthPastMax(EntityLivingBase entity, float amount)
     {
-        entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(amount);
+        entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(amount);
         entity.setHealth(amount);
         instance.sendHealthPacket(entity);
     }
@@ -735,7 +737,7 @@ public class InfernalMobsCore
                     if (item instanceof ItemEnchantedBook)
                     {
                     	ItemEnchantedBook book = (ItemEnchantedBook) item;
-                        itemStack = book.getRandom(mob.getRNG()).theItemId;
+                        itemStack = book.getEnchantedItemStack(getRandomEnchantment(mob.getRNG()));
                     }
                     else
                     {
@@ -756,6 +758,28 @@ public class InfernalMobsCore
             }
         }
     }
+    
+    private EnchantmentData getRandomEnchantment(Random rand)
+    {
+        if (enchantmentList == null)
+        {
+            enchantmentList = new ArrayList<Enchantment>(26); // 26 is the vanilla enchantment count as of 1.9
+            for (Enchantment enchantment : Enchantment.enchantmentRegistry)
+            {
+                if (enchantment != null && enchantment.type != null)
+                {
+                    enchantmentList.add(enchantment);
+                }
+            }
+        }
+        
+        Enchantment e = enchantmentList.get(rand.nextInt(enchantmentList.size()));
+        int min = e.getMinLevel();
+        int range = e.getMaxLevel() - min;
+        int lvl = min + rand.nextInt(range+1);
+        EnchantmentData ed = new EnchantmentData(e, lvl);
+        return ed;
+    }
 
     /**
      * Custom Enchanting Helper
@@ -772,7 +796,7 @@ public class InfernalMobsCore
     private void enchantRandomly(Random rand, ItemStack itemStack, int itemEnchantability, int modStr)
     {
         int remainStr = (modStr + 1) / 2; // should result in 1-3
-        List<?> enchantments = EnchantmentHelper.buildEnchantmentList(rand, itemStack, itemEnchantability);
+        List<?> enchantments = EnchantmentHelper.buildEnchantmentList(rand, itemStack, itemEnchantability, true);
         if (enchantments != null)
         {
             Iterator<?> iter = enchantments.iterator();

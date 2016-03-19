@@ -3,7 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.Potion;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 
 public class MM_Quicksand extends MobModifier
@@ -36,7 +36,7 @@ public class MM_Quicksand extends MobModifier
         && ++ticker == 50)
         {
             ticker = 0;
-            getMobTarget().addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 45, 0));
+            getMobTarget().addPotionEffect(new PotionEffect(MobEffects.moveSlowdown, 45, 0));
         }
         
         return super.onUpdate(mob);

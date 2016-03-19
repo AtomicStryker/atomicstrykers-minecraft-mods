@@ -4,6 +4,9 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 
 public class MM_1UP extends MobModifier
 {
@@ -31,7 +34,7 @@ public class MM_1UP extends MobModifier
         if (!healed && mob.getHealth() < (getActualMaxHealth(mob)*0.25))
         {
             InfernalMobsCore.instance().setEntityHealthPastMax(mob, getActualMaxHealth(mob));
-            mob.worldObj.playSoundAtEntity(mob, "random.levelup", 1.0F, 1.0F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_player_levelup, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             healed = true;
         }
         return super.onUpdate(mob);

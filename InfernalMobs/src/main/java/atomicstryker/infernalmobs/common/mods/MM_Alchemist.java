@@ -3,8 +3,13 @@ package atomicstryker.infernalmobs.common.mods;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityPotion;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.MathHelper;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.math.MathHelper;
 
 public class MM_Alchemist extends MobModifier
 {
@@ -50,25 +55,29 @@ public class MM_Alchemist extends MobModifier
         
         if (mob.getDistanceToEntity(target) > MIN_DISTANCE)
         {
-            EntityPotion potion = new EntityPotion(mob.worldObj, mob, 32732);
-            potion.rotationPitch -= -20.0F;
             double diffX = target.posX + target.motionX - mob.posX;
             double diffY = target.posY + (double)target.getEyeHeight() - 1.100000023841858D - mob.posY;
             double diffZ = target.posZ + target.motionZ - mob.posZ;
             float distance = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+            
+            PotionType potiontype = PotionTypes.harming;
 
-            if (distance >= 8.0F && !target.isPotionActive(Potion.moveSlowdown))
+            if (distance >= 8.0F && !target.isPotionActive(MobEffects.moveSlowdown))
             {
-                potion.setPotionDamage(32698);
+                potiontype = PotionTypes.slowness;
             }
-            else if (target.getHealth() >= 8 && !target.isPotionActive(Potion.poison))
+            else if (target.getHealth() >= 8.0F && !target.isPotionActive(MobEffects.poison))
             {
-                potion.setPotionDamage(32660);
+                potiontype = PotionTypes.poison;
             }
-            else if (distance <= 3.0F && !target.isPotionActive(Potion.weakness) && mob.getRNG().nextFloat() < 0.25F)
+            else if (distance <= 3.0F && !target.isPotionActive(MobEffects.weakness) && mob.getRNG().nextFloat() < 0.25F)
             {
-                potion.setPotionDamage(32696);
+                potiontype = PotionTypes.weakness;
             }
+
+            EntityPotion potion = new EntityPotion(mob.worldObj, mob, PotionUtils.addPotionToItemStack(new ItemStack(Items.splash_potion), potiontype));
+            
+            potion.rotationPitch -= -20.0F;
 
             potion.setThrowableHeading(diffX, diffY + (double)(distance * 0.2F), diffZ, 0.75F, 8.0F);
             mob.worldObj.spawnEntityInWorld(potion);

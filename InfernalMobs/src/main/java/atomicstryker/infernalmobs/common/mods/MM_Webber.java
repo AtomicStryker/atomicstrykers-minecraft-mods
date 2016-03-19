@@ -4,9 +4,11 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class MM_Webber extends MobModifier
 {
@@ -84,7 +86,7 @@ public class MM_Webber extends MobModifier
             
             lastAbilityUse = time;
             target.worldObj.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.web.getStateFromMeta( 0));
-            mob.worldObj.playSoundAtEntity(mob, "mob.spider", 1.0F, (mob.worldObj.rand.nextFloat() - mob.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_spider_ambient, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
     }
     

@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -31,7 +31,7 @@ public class RendererBossGlow
     {
         Minecraft mc = Minecraft.getMinecraft();
         EntityLivingBase viewEnt = (EntityLivingBase) mc.getRenderViewEntity();
-        Vec3 curPos = viewEnt.getPositionVector();
+        Vec3d curPos = viewEnt.getPositionVector();
         
         Frustum f = new Frustum();
         double var7 = viewEnt.lastTickPosX + (viewEnt.posX - viewEnt.lastTickPosX) * (double)renderTick;

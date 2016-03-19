@@ -4,8 +4,8 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class MM_Storm extends MobModifier
 {
@@ -44,7 +44,7 @@ public class MM_Storm extends MobModifier
 
     private void tryAbility(EntityLivingBase mob, EntityLivingBase target)
     {
-        if (target == null || target.ridingEntity != null || !mob.canEntityBeSeen(target))
+        if (target == null || target.getRidingEntity() != null || !mob.canEntityBeSeen(target))
         {
             return;
         }
@@ -55,7 +55,7 @@ public class MM_Storm extends MobModifier
         && target.worldObj.canBlockSeeSky(new BlockPos(MathHelper.floor_double(target.posX), MathHelper.floor_double(target.posY), MathHelper.floor_double(target.posZ))))
         {
             nextAbilityUse = time+coolDown;
-            mob.worldObj.addWeatherEffect(new EntityLightningBolt(mob.worldObj, target.posX, target.posY-1, target.posZ));
+            mob.worldObj.addWeatherEffect(new EntityLightningBolt(mob.worldObj, target.posX, target.posY-1, target.posZ, false));
         }
     }
     

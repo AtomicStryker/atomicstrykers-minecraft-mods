@@ -3,8 +3,8 @@ package atomicstryker.infernalmobs.common.mods;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityLargeFireball;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class MM_Ghastly extends MobModifier
 {
@@ -58,7 +58,7 @@ public class MM_Ghastly extends MobModifier
             mob.worldObj.playAuxSFXAtEntity(null, 1008, new BlockPos((int)mob.posX, (int)mob.posY, (int)mob.posZ), 0);
             EntityLargeFireball entFB = new EntityLargeFireball(mob.worldObj, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
-            Vec3 mobLook = mob.getLook(1.0F);
+            Vec3d mobLook = mob.getLook(1.0F);
             entFB.posX = mob.posX + mobLook.xCoord * spawnOffset;
             entFB.posY = mob.posY + (double)(mob.height / 2.0F) + 0.5D;
             entFB.posZ = mob.posZ + mobLook.zCoord * spawnOffset;
