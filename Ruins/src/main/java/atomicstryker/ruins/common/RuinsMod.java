@@ -128,21 +128,26 @@ public class RuinsMod
             final double z = event.entity.posZ;
             ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<TileEntityCommandBlock>();
 
-            ArrayList<TileEntity> telist = new ArrayList<TileEntity>(event.entity.worldObj.loadedTileEntityList);
-            for (TileEntity teo : telist)
+            for (int xoffset = -4; xoffset <= 4; xoffset++)
             {
-                if (teo instanceof TileEntityCommandBlock)
+                for (int zoffset = -4; zoffset <= 4; zoffset++)
                 {
-                    tecb = (TileEntityCommandBlock) teo;
-                    if (tecb.getDistanceSq(x, y, z) < 4096.0) //square dist!
+                    for (TileEntity teo : event.entity.worldObj.getChunkFromChunkCoords(event.newChunkX+xoffset, event.newChunkZ+zoffset).getTileEntityMap().values())
                     {
-                        if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER "))
+                        if (teo instanceof TileEntityCommandBlock)
                         {
-                            // strip prefix from command
-                            tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
-                            // call command block execution
-                            tecb.getCommandBlockLogic().trigger(event.entity.worldObj);
-                            tecblistToDelete.add(tecb);
+                            tecb = (TileEntityCommandBlock) teo;
+                            if (tecb.getDistanceSq(x, y, z) < 4096.0) //square dist!
+                            {
+                                if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER "))
+                                {
+                                    // strip prefix from command
+                                    tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
+                                    // call command block execution
+                                    tecb.getCommandBlockLogic().trigger(event.entity.worldObj);
+                                    tecblistToDelete.add(tecb);
+                                }
+                            }
                         }
                     }
                 }
