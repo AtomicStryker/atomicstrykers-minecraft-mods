@@ -6,8 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -23,9 +22,9 @@ import net.minecraftforge.fml.common.registry.GameData;
 public class FileHandler
 {
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
-    private final ArrayList<HashSet<RuinTemplate>> templates = new ArrayList<HashSet<RuinTemplate>>();
+    private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<String, HashSet<RuinTemplate>>();
     private final int dimension;
-    protected int[][] vars;
+    protected HashMap<String, int[]> vars = new HashMap<String, int[]>();
 
     protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
     protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
@@ -55,20 +54,6 @@ public class FileHandler
         @Override
         public void run()
         {
-            // create the vars array fitting to the number of Biomes present
-            int biomeAmountPlusOne = RuinsMod.BIOME_NONE + 1;
-            vars = new int[3][biomeAmountPlusOne];
-            for (int j = 0; j < vars[0].length; j++)
-            {
-                vars[CHANCE][j] = 75;
-            }
-
-            // fill up the template arraylist
-            for (int fill = 0; fill < biomeAmountPlusOne; fill++)
-            {
-                templates.add(new HashSet<RuinTemplate>());
-            }
-
             PrintWriter pw;
             File basedir;
             try
@@ -118,9 +103,13 @@ public class FileHandler
             {
                 // load in the generic templates
                 // pw.println("Loading the generic ruins templates...");
-                addRuins(pw, new File(templPath, "generic"), RuinsMod.BIOME_NONE);
-                vars[COUNT][RuinsMod.BIOME_NONE] = templates.get(RuinsMod.BIOME_NONE).size();
-                recalcBiomeWeight(RuinsMod.BIOME_NONE);
+                HashSet<RuinTemplate> set = new HashSet<RuinTemplate>();
+                templates.put(RuinsMod.BIOME_ANY, set);
+                addRuins(pw, new File(templPath, RuinsMod.BIOME_ANY), RuinsMod.BIOME_ANY, set);
+                int[] val = new int[3];
+                val[COUNT] = templates.get(RuinsMod.BIOME_ANY).size();
+                vars.put(RuinsMod.BIOME_ANY, val);
+                recalcBiomeWeight(RuinsMod.BIOME_ANY);
             }
             catch (Exception e)
             {
@@ -132,19 +121,19 @@ public class FileHandler
              * BiomeGenBase
              */
             BiomeGenBase bgb;
-            for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
+            for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
             {
-                bgb = BiomeGenBase.getBiomeGenArray()[x];
+                bgb = BiomeGenBase.biomeRegistry.getObject(rl);
                 if (bgb != null)
                 {
                     try
                     {
-                        loadSpecificTemplates(pw, templPath, bgb.biomeID, bgb.biomeName);
+                        loadSpecificTemplates(pw, templPath, bgb.getBiomeName());
                         // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
                     }
                     catch (Exception e)
                     {
-                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.biomeName + " ruins templates:");
+                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.getBiomeName() + " ruins templates:");
                     }
                 }
             }
@@ -171,11 +160,11 @@ public class FileHandler
         }
     }
 
-    public RuinTemplate getTemplate(Random random, int biome)
+    public RuinTemplate getTemplate(Random random, String biome)
     {
         try
         {
-            int rand = random.nextInt(vars[WEIGHT][biome]);
+            int rand = random.nextInt(vars.get(biome)[WEIGHT]);
             int oldval = 0, increment = 0;
             RuinTemplate retval = null;
             for (RuinTemplate ruinTemplate : templates.get(biome))
@@ -196,20 +185,24 @@ public class FileHandler
         }
     }
 
-    public boolean useGeneric(Random random, int biome)
+    public boolean useGeneric(Random random, String biome)
     {
-        return biome == RuinsMod.BIOME_NONE || random.nextInt(100) + 1 >= vars[CHANCE][biome];
+        int[] val = vars.get(biome);
+        return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextInt(100) + 1 >= val[CHANCE]);
     }
 
-    private void loadSpecificTemplates(PrintWriter pw, File dir, int biome, String bname) throws Exception
+    private void loadSpecificTemplates(PrintWriter pw, File dir, String bname) throws Exception
     {
-        bname = bname.toLowerCase();
         // pw.println("Loading the " + bname + " ruins templates...");
         pw.flush();
         File path_biome = new File(dir, bname);
-        addRuins(pw, path_biome, biome);
-        vars[COUNT][biome] = templates.get(biome).size();
-        recalcBiomeWeight(biome);
+        HashSet<RuinTemplate> set = new HashSet<RuinTemplate>();
+        templates.put(bname, set);
+        addRuins(pw, path_biome, bname, set);
+        int[] val = new int[3];
+        val[COUNT] = templates.get(bname).size();
+        vars.put(bname, val);
+        recalcBiomeWeight(bname);
     }
 
     private void printErrorToLog(PrintWriter pw, Exception e, String msg)
@@ -220,14 +213,16 @@ public class FileHandler
         pw.flush();
     }
 
-    private void recalcBiomeWeight(int biome)
+    private void recalcBiomeWeight(String biomeName)
     {
-        final Iterator<RuinTemplate> i = templates.get(biome).iterator();
-        vars[WEIGHT][biome] = 0;
+        final Iterator<RuinTemplate> i = templates.get(biomeName).iterator();
+        int[] val = vars.get(biomeName);
+        val[WEIGHT] = 0;
         while (i.hasNext())
         {
-            vars[WEIGHT][biome] += i.next().getWeight();
+            val[WEIGHT] += i.next().getWeight();
         }
+        vars.put(biomeName, val);
     }
 
     private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception
@@ -304,16 +299,23 @@ public class FileHandler
                 if (check.length > 1)
                 {
                     boolean found = false;
-                    for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
+                    BiomeGenBase bgb;
+                    for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
                     {
-                        if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(check[0]))
+                        bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                        if (bgb != null && bgb.getBiomeName().equals(check[0]))
                         {
-                            vars[CHANCE][i] = Integer.parseInt(check[1]);
-                            found = true;
-                            break;
+                            int[] val = vars.get(bgb.getBiomeName());
+                            if (val != null)
+                            {
+                                val[CHANCE] = Integer.parseInt(check[1]);
+                                found = true;
+                                vars.put(bgb.getBiomeName(), val);
+                                break;
+                            }
                         }
                     }
-
+                    
                     if (!found && !disableLogging)
                     {
                         System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
@@ -326,11 +328,9 @@ public class FileHandler
         br.close();
     }
     
-    private void addRuins(PrintWriter pw, File path, int biomeID) throws Exception
+    private void addRuins(PrintWriter pw, File path, String name, HashSet<RuinTemplate> targetList) throws Exception
     {
-        final HashSet<RuinTemplate> targetList = templates.get(biomeID);
         RuinTemplate r;
-        String candidate;
         BiomeGenBase bgb;
         File[] listFiles = path.listFiles();
         if (listFiles != null)
@@ -343,20 +343,14 @@ public class FileHandler
                     targetList.add(r);
                     for (String biomeName : r.getBiomesToSpawnIn())
                     {
-                        for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
+                        for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
                         {
-                            bgb = BiomeGenBase.getBiomeGenArray()[x];
-                            if (bgb != null)
+                            bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                            if (bgb != null && bgb.getBiomeName().equals(biomeName))
                             {
-                                candidate = bgb.biomeName.toLowerCase();
-                                if (candidate.equals(biomeName))
+                                if (!biomeName.equals(name))
                                 {
-                                    if (bgb.biomeID != biomeID)
-                                    {
-                                        templates.get(x).add(r);
-                                        // pw.println("template " + f.getName() + "also registered for Biome " + bgb.biomeName);
-                                    }
-                                    break;
+                                    templates.get(name).add(r);
                                 }
                             }
                         }
@@ -449,11 +443,13 @@ public class FileHandler
         pw.println("teblocks=");
         pw.println();
         // print all the biomes!
-        for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
+        BiomeGenBase bgb;
+        for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
         {
-            if (BiomeGenBase.getBiomeGenArray()[i] != null)
+            bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+            if (bgb != null)
             {
-                pw.println("specific_" + BiomeGenBase.getBiomeGenArray()[i].biomeName + "=75");
+                pw.println("specific_" + bgb.getBiomeName() + "=75");
             }
         }
         pw.flush();

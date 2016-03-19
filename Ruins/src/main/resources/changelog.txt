@@ -452,3 +452,6 @@ a: setAccessible now true
 
 15.6
 + fixes intersection and distance checks, courtesy of homacs pull request
+
+15.7
++ updated to mc 1.9

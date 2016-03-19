@@ -13,10 +13,11 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityCommandBlock;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderHell;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.storage.ISaveHandler;
@@ -42,10 +43,10 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "15.6";
+    public static final String modversion = "15.7";
     
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
-    public static final int BIOME_NONE = 500;
+    public static final String BIOME_ANY = "generic";
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
     private ConcurrentLinkedQueue<int[]> currentlyGenerating;
@@ -80,11 +81,11 @@ public class RuinsMod
 	@SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
-        ItemStack is = event.entityPlayer.getCurrentEquippedItem();
+        ItemStack is = event.entityPlayer.getHeldItemMainhand();
         if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000l;
-            event.entityPlayer.addChatComponentMessage(new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]",
+            event.entityPlayer.addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
                     event.state.getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
         }
     }
@@ -94,12 +95,12 @@ public class RuinsMod
     {
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
         {
-            ItemStack is = event.getPlayer().getCurrentEquippedItem();
+            ItemStack is = event.getPlayer().getHeldItemMainhand();
             if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
             {
                 nextInfoTime = System.currentTimeMillis() + 1000l;
                 event.getPlayer().addChatComponentMessage(
-                        new ChatComponentText(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.state.getBlock().getLocalizedName(),
+                        new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.state.getBlock().getLocalizedName(),
                                 GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
                 event.setCanceled(true);
             }
@@ -160,7 +161,7 @@ public class RuinsMod
     public class RuinsWorldGenerator implements IWorldGenerator
     {
         @Override
-        public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
+        public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
         {
             if (world.isRemote)
             {
@@ -177,7 +178,7 @@ public class RuinsMod
                 WorldHandle wh = getWorldHandle(world);
                 if (wh != null)
                 {
-                    if (wh.fileHandle.allowsDimension(world.provider.getDimensionId()) && !getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
+                    if (wh.fileHandle.allowsDimension(world.provider.getDimension()) && !getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
                     {
                         currentlyGenerating.add(tuple);
                         if (world.provider instanceof WorldProviderHell)
@@ -234,15 +235,15 @@ public class RuinsMod
         WorldHandle wh = null;
         if (!world.isRemote)
         {
-            if (!generatorMap.containsKey(world.provider.getDimensionId()))
+            if (!generatorMap.containsKey(world.provider.getDimension()))
             {
                 wh = new WorldHandle();
                 initWorldHandle(wh, world);
-                generatorMap.put(world.provider.getDimensionId(), wh);
+                generatorMap.put(world.provider.getDimension(), wh);
             }
             else
             {
-                wh = generatorMap.get(world.provider.getDimensionId());
+                wh = generatorMap.get(world.provider.getDimension());
             }
         }
 
@@ -300,7 +301,7 @@ public class RuinsMod
         try
         {
             File worlddir = getWorldSaveDir(world);
-            worldHandle.fileHandle = new FileHandler(worlddir, world.provider.getDimensionId());
+            worldHandle.fileHandle = new FileHandler(worlddir, world.provider.getDimension());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
             
             worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().loadData(ChunkLoggerData.class, "ruinschunklogger");

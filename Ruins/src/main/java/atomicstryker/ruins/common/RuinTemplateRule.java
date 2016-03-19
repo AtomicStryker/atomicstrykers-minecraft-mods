@@ -3,7 +3,6 @@ package atomicstryker.ruins.common;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -33,13 +32,10 @@ import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.WeightedRandom;
-import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -358,7 +354,8 @@ public class RuinTemplateRule
 
     private void doAboveBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y - 1, z)).getBlock(), world, x, y - 1, z))
+        BlockPos pos = new BlockPos(x, y - 1, z);
+        if ((condition <= 0) ^ owner.isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
         {
             return;
         }
@@ -368,12 +365,16 @@ public class RuinTemplateRule
 
     private void doAdjacentBlock(World world, Random random, int x, int y, int z, int rotate)
     {
+        BlockPos a = new BlockPos(x + 1, y, z);
+        BlockPos b = new BlockPos(x, y, z + 1);
+        BlockPos c = new BlockPos(x, y, z - 1);
+        BlockPos d = new BlockPos(x - 1, y, z);
         if ((condition <= 0) ^ (
         // Are -all- adjacent blocks air?
-                (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x + 1, y, z)).getBlock(), world, x + 1, y, z)) 
-                && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z + 1)).getBlock(), world, x, y, z + 1))
-                && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z - 1)).getBlock(), world, x, y, z - 1)) 
-                && (owner.isIgnoredBlock(world.getBlockState(new BlockPos(x - 1, y, z)).getBlock(), world, x - 1, y, z))))
+                (owner.isIgnoredBlock(world.getBlockState(a).getBlock(), world, a)) 
+                && (owner.isIgnoredBlock(world.getBlockState(b).getBlock(), world, b))
+                && (owner.isIgnoredBlock(world.getBlockState(c).getBlock(), world, c)) 
+                && (owner.isIgnoredBlock(world.getBlockState(d).getBlock(), world, d))))
         {
             return;
         }
@@ -383,7 +384,8 @@ public class RuinTemplateRule
 
     private void doUnderBlock(World world, Random random, int x, int y, int z, int rotate)
     {
-        if ((condition <= 0) ^ owner.isIgnoredBlock(world.getBlockState(new BlockPos(x, y + 1, z)).getBlock(), world, x, y + 1, z))
+        BlockPos pos = new BlockPos(x, y + 1, z);
+        if ((condition <= 0) ^ owner.isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
         {
             return;
         }
@@ -602,7 +604,7 @@ public class RuinTemplateRule
             {
                 for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
                 {
-                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new ChatComponentText("") : new ChatComponentText(splits[i+1].split("-")[0]);
+                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i+1].split("-")[0]);
                 }
             }
         }
@@ -620,7 +622,7 @@ public class RuinTemplateRule
             {
                 for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
                 {
-                	tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new ChatComponentText("") : new ChatComponentText(splits[i+1].split("-")[0]);
+                	tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i+1].split("-")[0]);
                 }
             }
         }
@@ -658,7 +660,7 @@ public class RuinTemplateRule
                     NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}')+1));
                     debugPrinter.println("teBlock read, decoded nbt tag: "+tc.toString());
                     world.setBlockState(p, ((Block) o).getStateFromMeta(blockMDs[blocknum]), rotate);
-                    TileEntity tenew = TileEntity.createAndLoadEntity(tc);
+                    TileEntity tenew = TileEntity.createTileEntity(world.getMinecraftServer(), tc);
                     world.removeTileEntity(p);
                     world.setTileEntity(p, tenew);
                 }
@@ -861,11 +863,7 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            List<WeightedRandomChestContent> list = ChestGenHooks.getInfo(gen).getItems(random);
-            if (WeightedRandom.getTotalWeight(list) > 0)
-            {
-            	WeightedRandomChestContent.generateChestContents(random, list, chest, items);
-            }
+            chest.setLoot(new ResourceLocation("minecraft", gen), random.nextLong());
         }
     }
     
@@ -880,11 +878,11 @@ public class RuinTemplateRule
                 debugPrinter.println("About to construct IInventory, itemData ["+itemDataWithoutNBT+"]");
             }
             
-            if (itemDataWithoutNBT.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
+            if (te instanceof TileEntityChest && itemDataWithoutNBT.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
             {
+                TileEntityChest chest = (TileEntityChest) te;
                 String[] input = itemDataWithoutNBT.split(":");
-                ChestGenHooks info = ChestGenHooks.getInfo(input[1]);
-                WeightedRandomChestContent.generateChestContents(random, info.getItems(random), (IInventory) te, Integer.valueOf(input[2]));
+                chest.setLoot(new ResourceLocation("minecraft", input[1]), random.nextLong());
             }
             else
             {
@@ -1194,8 +1192,6 @@ public class RuinTemplateRule
             return new ItemStack(Items.golden_apple);
         case 23:
             return new ItemStack(Items.mushroom_stew, random.nextInt(2) + 1);
-        case 24:
-            return ChestGenHooks.getOneItem(ChestGenHooks.DUNGEON_CHEST, random);
         default:
             return new ItemStack(Items.diamond, random.nextInt(4));
         }

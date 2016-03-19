@@ -3,7 +3,8 @@ package atomicstryker.ruins.common;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -49,26 +50,26 @@ public class CommandParseTemplate extends CommandBase
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
         player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
         if (player != null)
         {
             if (args.length != 1)
             {
-                player.addChatMessage(new ChatComponentText("You need to use the command with the target template name, eg. /parseruin funhouse"));
+                player.addChatMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin funhouse"));
                 player = null;
             }
             else
             {
                 templateName = args[0];
-                player.addChatMessage(new ChatComponentText("Template parser ready to create " + templateName
+                player.addChatMessage(new TextComponentTranslation("Template parser ready to create " + templateName
                         + ". Break any block of the baseplate now."));
             }
         }
         else
         {
-            sender.addChatMessage(new ChatComponentText("Command only available for ingame player entities."));
+            sender.addChatMessage(new TextComponentTranslation("Command only available for ingame player entities."));
         }
     }
 

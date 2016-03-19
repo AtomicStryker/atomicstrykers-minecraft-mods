@@ -15,8 +15,8 @@ import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
@@ -106,15 +106,15 @@ public class RuinTemplate
         return biomes;
     }
 
-    public boolean isIgnoredBlock(Block blockID, World world, int x, int y, int z)
+    public boolean isIgnoredBlock(Block blockID, World world, BlockPos pos)
     {
-        return blockID == Blocks.air || blockID == Blocks.snow_layer || blockID == Blocks.web || isPlant(blockID, world, x, y, z) || preserveBlock(blockID);
+        return blockID == Blocks.air || blockID == Blocks.snow_layer || blockID == Blocks.web || isPlant(blockID, world, pos) || preserveBlock(blockID);
     }
     
-    private boolean isPlant(Block blockID, World world, int x, int y, int z)
+    private boolean isPlant(Block blockID, World world, BlockPos pos)
     {
-        return blockID instanceof IShearable || blockID instanceof BlockBush || blockID instanceof IPlantable || blockID.isLeaves(world, new BlockPos(x, y, z))
-                || blockID.isWood(world, new BlockPos(x, y, z));
+        return blockID instanceof IShearable || blockID instanceof BlockBush || blockID instanceof IPlantable || blockID.isLeaves(world.getBlockState(pos), world, pos)
+                || blockID.isWood(world, pos);
     }
 
     public boolean preserveBlock(Block blockID)
@@ -217,8 +217,9 @@ public class RuinTemplate
                 boolean foundSurface = false;
                 for (int iy = topYguess; iy >= minimalCheckedY; iy--)
                 {
-                    curBlock = world.getBlockState(new BlockPos(ix, iy, iz)).getBlock();
-                    if (!isIgnoredBlock(curBlock, world, ix, iy, iz))
+                    BlockPos pos = new BlockPos(ix, iy, iz);
+                    curBlock = world.getBlockState(pos).getBlock();
+                    if (!isIgnoredBlock(curBlock, world, pos))
                     {
                         if (isAcceptableSurface(curBlock))
                         {
@@ -431,7 +432,8 @@ public class RuinTemplate
                     xv = x+x1;
                     yv = y+y1;
                     zv = z+z1;
-                    world.markBlockForUpdate(new BlockPos(xv, yv, zv));
+                    BlockPos pos = new BlockPos(xv, yv, zv);
+                    world.markAndNotifyBlock(pos, null, Blocks.air.getDefaultState(), world.getBlockState(pos), 2);
                 }
             }
         }
@@ -545,7 +547,7 @@ public class RuinTemplate
                 for (int yi = y-leveling; yi <= y; yi++)
                 {
                 	BlockPos pos = new BlockPos(xi, yi, zi);
-                    if (isIgnoredBlock(world.getBlockState(pos).getBlock(), world, xi, yi, zi))
+                    if (isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
                     {
                         world.setBlockState(pos, fillBlockID.getDefaultState(), 2);
                     }
@@ -554,7 +556,7 @@ public class RuinTemplate
                 for (int yi = y+1; yi <= lastY; yi++)
                 {
                 	BlockPos pos = new BlockPos(xi, yi, zi);
-                    if (!isIgnoredBlock(world.getBlockState(pos).getBlock(), world, xi, yi, zi))
+                    if (!isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
                     {
                         world.setBlockState(pos, Blocks.air.getDefaultState(), 2);
                     }

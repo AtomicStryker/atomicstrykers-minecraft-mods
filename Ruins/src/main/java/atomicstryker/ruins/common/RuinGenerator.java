@@ -12,7 +12,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
@@ -204,18 +205,28 @@ public class RuinGenerator
     {        
         final int rotate = random.nextInt(4);
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(new BlockPos(x, 0, z));
-        int biomeID = biome.biomeID;
+        String biomeID = biome.getBiomeName();
 
         if (fileHandler.useGeneric(random, biomeID))
         {
-            biomeID = RuinsMod.BIOME_NONE;
+            biomeID = RuinsMod.BIOME_ANY;
         }
-        stats.biomes[biomeID]++;
+        
+        Integer i = stats.biomes.get(biomeID);
+        if (i != null)
+        {
+            i = i+1;
+        }
+        else
+        {
+            i = 1;
+        }
+        stats.biomes.put(biomeID, i);
         
         RuinTemplate ruinTemplate = fileHandler.getTemplate(random, biomeID);
         if (ruinTemplate == null)
         {
-            biomeID = RuinsMod.BIOME_NONE;
+            biomeID = RuinsMod.BIOME_ANY;
             ruinTemplate = fileHandler.getTemplate(random, biomeID);
 
             if (ruinTemplate == null)
@@ -245,7 +256,7 @@ public class RuinGenerator
                 
                 if (!fileHandler.disableLogging)
                 {
-                    System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.biomeName, x, y, z);
+                    System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getBiomeName(), x, y, z);
                 }
                 stats.NumCreated++;
 
@@ -290,15 +301,21 @@ public class RuinGenerator
             System.out.println("    Bad Blocks:                  " + stats.BadBlockFails);
             System.out.println("    No Leveling:                 " + stats.LevelingFails);
             System.out.println("    No Cut-In:                   " + stats.CutInFails);
-
-            for (int i = 0; i < RuinsMod.BIOME_NONE; i++)
+            
+            BiomeGenBase bgb;
+            for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
             {
-                if (stats.biomes[i] != 0)
+                bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                if (bgb != null)
                 {
-                    System.out.println(BiomeGenBase.getBiomeGenArray()[i].biomeName + ": " + stats.biomes[i] + " Biome building attempts");
+                    Integer i = stats.biomes.get(bgb.getBiomeName());
+                    if (i != null)
+                    {
+                        System.out.println(bgb.getBiomeName() + ": " + i + " Biome building attempts");
+                    }
                 }
             }
-            System.out.println("Any-Biome: " + stats.biomes[RuinsMod.BIOME_NONE] + " building attempts");
+            System.out.println("Any-Biome: " + stats.biomes.get(RuinsMod.BIOME_ANY) + " building attempts");
             
             System.out.println();
         }
@@ -351,8 +368,9 @@ public class RuinGenerator
         {
             for (int y = WORLD_MAX_HEIGHT - 1; y > 7; y--)
             {
-                final Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                if (r.isIgnoredBlock(b, world, x, y, z))
+                BlockPos pos = new BlockPos(x, y, z);
+                final Block b = world.getBlockState(pos).getBlock();
+                if (r.isIgnoredBlock(b, world, pos))
                 {
                     continue;
                 }
@@ -382,7 +400,8 @@ public class RuinGenerator
                         // now find the first non-air block from here
                         for (; y > -1; y--)
                         {
-                            if (!r.isIgnoredBlock(world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y, z))
+                            BlockPos pos = new BlockPos(x, y, z);
+                            if (!r.isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
                             {
                                 if (r.isAcceptableSurface(b))
                                 {
@@ -399,8 +418,9 @@ public class RuinGenerator
                 // from the bottom. find the first air block from the floor
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++)
                 {
-                    final Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                    if (!r.isIgnoredBlock(b, world, x, y, z))
+                    BlockPos pos = new BlockPos(x, y, z);
+                    final Block b = world.getBlockState(pos).getBlock();
+                    if (!r.isIgnoredBlock(b, world, pos))
                     {
                         if (r.isAcceptableSurface(b))
                         {

@@ -8,8 +8,9 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 
 public class CommandTestTemplate extends CommandBase
@@ -36,7 +37,7 @@ public class CommandTestTemplate extends CommandBase
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
         EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
         int xpos, ypos, zpos;
@@ -54,7 +55,7 @@ public class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    player.addChatMessage(new ChatComponentText(
+                    player.addChatMessage(new TextComponentTranslation(
                             "You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
                 }
             }
@@ -81,12 +82,12 @@ public class CommandTestTemplate extends CommandBase
         	}
         	catch (NumberInvalidException e)
         	{
-        		sender.addChatMessage(new ChatComponentText("Invalid coordinates specified"));
+        		sender.addChatMessage(new TextComponentTranslation("Invalid coordinates specified"));
 			}
         }
         else
         {
-            sender.addChatMessage(new ChatComponentText("Command is only available for ingame player entities, or with coordinates specified"));
+            sender.addChatMessage(new TextComponentTranslation("Command is only available for ingame player entities, or with coordinates specified"));
         }
     }
     
@@ -112,8 +113,9 @@ public class CommandTestTemplate extends CommandBase
                     {
                         for (y = RuinGenerator.WORLD_MAX_HEIGHT - 1; y > 7; y--)
                         {
-                            final Block b = sender.getEntityWorld().getBlockState(new BlockPos(x, y, z)).getBlock();
-                            if (parsedRuin.isIgnoredBlock(b, sender.getEntityWorld(), x, y, z))
+                            BlockPos pos = new BlockPos(x, y, z);
+                            final Block b = sender.getEntityWorld().getBlockState(pos).getBlock();
+                            if (parsedRuin.isIgnoredBlock(b, sender.getEntityWorld(), pos))
                             {
                                 continue;
                             }
@@ -122,14 +124,14 @@ public class CommandTestTemplate extends CommandBase
                             {
                                 break;
                             }
-                            sender.addChatMessage(new ChatComponentText("Could not find acceptable Y coordinate"));
+                            sender.addChatMessage(new TextComponentTranslation("Could not find acceptable Y coordinate"));
                             return;
                         }
                     }
                     
                     if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
                     {
-                        sender.addChatMessage(new ChatComponentText("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                        sender.addChatMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
                     }
                     else
                     {
@@ -143,7 +145,7 @@ public class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    sender.addChatMessage(new ChatComponentText("Could not parse Ruin of file " + file));
+                    sender.addChatMessage(new TextComponentTranslation("Could not parse Ruin of file " + file));
                 }
             }
             catch (Exception e)
@@ -153,7 +155,7 @@ public class CommandTestTemplate extends CommandBase
         }
         else
         {
-            sender.addChatMessage(new ChatComponentText("Could not open/write file " + file));
+            sender.addChatMessage(new TextComponentTranslation("Could not open/write file " + file));
         }
     }
 

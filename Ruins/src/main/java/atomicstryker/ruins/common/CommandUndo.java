@@ -8,9 +8,10 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -109,14 +110,14 @@ public class CommandUndo extends CommandBase
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
         World w = sender.getEntityWorld();
         if (w != null)
         {
             if (savedLocations.isEmpty())
             {
-                sender.addChatMessage(new ChatComponentText("There is nothing cached to be undone..."));
+                sender.addChatMessage(new TextComponentTranslation("There is nothing cached to be undone..."));
             }
             else
             {
@@ -134,19 +135,19 @@ public class CommandUndo extends CommandBase
                     }
                     
                     // kill off the resulting entityItems instances
-                    for (Entity e : w.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.fromBounds(ta.xBase - 1, ta.yBase - 1,
-                            ta.zBase - 1, ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1)))
+                    for (Entity e : w.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1,
+                            ta.zBase - 1), new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))))
                     {
                         e.setDead();
                     }
                 }
-                sender.addChatMessage(new ChatComponentText("Cleared away "+savedLocations.size()+" template sites."));
+                sender.addChatMessage(new TextComponentTranslation("Cleared away "+savedLocations.size()+" template sites."));
                 savedLocations.clear();
             }
         }
         else
         {
-            sender.addChatMessage(new ChatComponentText("Command can only be run ingame..."));
+            sender.addChatMessage(new TextComponentTranslation("Command can only be run ingame..."));
         }
     }
 

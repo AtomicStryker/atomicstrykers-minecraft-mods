@@ -24,8 +24,8 @@ import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -163,7 +163,7 @@ public class World2TemplateParser extends Thread
             zLength = 1 + zmax - lowestZ;
 
             readBlocks(world);
-            player.addChatMessage(new ChatComponentText("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size()
+            player.addChatMessage(new TextComponentTranslation("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size()
                     + ", xlen: " + xLength + ", zlen: " + zLength));
 
             File templateFile = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/templateparser/" + fileName + ".tml");
@@ -171,12 +171,12 @@ public class World2TemplateParser extends Thread
 
             if (!failed)
             {
-                player.addChatMessage(new ChatComponentText("Success writing templatefile " + templateFile));
+                player.addChatMessage(new TextComponentTranslation("Success writing templatefile " + templateFile));
             }
         }
         else
         {
-            player.addChatMessage(new ChatComponentText("Template Parse fail, chosen Block was air WTF?!"));
+            player.addChatMessage(new TextComponentTranslation("Template Parse fail, chosen Block was air WTF?!"));
         }
     }
     
@@ -509,8 +509,8 @@ public class World2TemplateParser extends Thread
         {
             e.printStackTrace();
             failed = true;
-            player.addChatMessage(new ChatComponentText("Something broke! See server logfile for exception message and get it to AtomicStryker."));
-            player.addChatMessage(new ChatComponentText("First line of stacktrace: "+e.getMessage()));
+            player.addChatMessage(new TextComponentTranslation("Something broke! See server logfile for exception message and get it to AtomicStryker."));
+            player.addChatMessage(new TextComponentTranslation("First line of stacktrace: "+e.getMessage()));
         }
     }
 
