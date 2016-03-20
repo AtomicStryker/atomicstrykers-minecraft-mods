@@ -1,49 +1,41 @@
 package atomicstryker.multimine.common.fmlmagic;
 
-import java.util.Iterator;
-
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
-
-import net.minecraft.launchwrapper.IClassTransformer;
+import org.objectweb.asm.tree.*;
 
 public class MMTransformer implements IClassTransformer
 {
     /* Obfuscated Names for PlayerControllerMP Transformation */
 
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bda";
-    private final String playerControllerMPJavaClassNameO = "bda";
-    
+    private final String playerControllerMPClassNameO = "bkt";
+    private final String playerControllerMPJavaClassNameO = "bkt";
+
     /* onPlayerDamageBlock / func_180512_c */
-    private final String playerControllerMPtargetMethodNameO = "c";
-    
-    /* method description of func_180512_c  */
+    private final String playerControllerMPtargetMethodNameO = "b";
+
+    /* method desc of onPlayerDamageBlock / func_180512_c  */
     private final String methodDescO = "(Lcj;Lcq;)Z";
-    private final String methodDesc = "(Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)Z";
-    
+    private final String methodDesc = "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)Z";
+
     /* method desc of call to client hook */
     private final String methodDescCallO = "(Lcj;F)F";
-    private final String methodDescCall = "(Lnet/minecraft/util/BlockPos;F)F";
-    
+    private final String methodDescCall = "(Lnet/minecraft/util/math/BlockPos;F)F";
+
     /* curBlockDamageMP / field_78770_f */
     private final String playerControllerMPcurrentBlockDamageFieldNameO = "e";
 
     /* MCP Names for PlayerControllerMP Transformation */
     private final String playerControllerMPClassName = "net.minecraft.client.multiplayer.PlayerControllerMP";
     private final String playerControllerMPJavaClassName = "net/minecraft/client/multiplayer/PlayerControllerMP";
-    
+
     private final String playerControllerMPtargetMethodName = "onPlayerDamageBlock";
-    
+
     private final String playerControllerMPcurrentBlockDamageFieldName = "curBlockDamageMP";
-    
+
     private boolean obfuscation;
 
     @Override
@@ -73,13 +65,11 @@ public class MMTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
 
         // find method to inject into
-        Iterator<MethodNode> methods = classNode.methods.iterator();
-        while (methods.hasNext())
+        for (MethodNode m : classNode.methods)
         {
-            MethodNode m = methods.next();
             if (m.name.equals(getTargetMethodName()) && m.desc.equals(getTargetMethodDesc()))
             {
-                System.out.println("In target method "+getTargetMethodName()+"! Patching!");
+                System.out.println("In target method " + getTargetMethodName() + "! Patching!");
                 
                 /*  pre patch, java source
                  
@@ -132,15 +122,14 @@ public class MMTransformer implements IClassTransformer
 				     309: iconst_5      
 				     310: putfield      #69                 // Field g:I
                  */
-                
-                
+
                 for (int index = 0; index < m.instructions.size(); index++)
-                {                    
+                {
                     // find injection point in method, there is a single IFLT instruction we use as target
                     if (m.instructions.get(index).getOpcode() == Opcodes.IFLT)
                     {
                         System.out.println("Found IFLT Node at " + index);
-                        
+
                         // from there, step backwards to ALOAD node to get infront of the curBlockDamageMP field load
                         int offset = 1;
                         while (m.instructions.get(index - offset).getOpcode() != Opcodes.ALOAD)
@@ -151,7 +140,7 @@ public class MMTransformer implements IClassTransformer
                         System.out.println("Found ALOAD Node at offset -" + offset + " from IFLT Node");
                         
                         /* this is the code we want to patch in, in bytecode
-	 				       0: aload_0       
+                            0: aload_0
 	 				       1: invokestatic  #38                 // Method atomicstryker/multimine/client/MultiMineClient.instance:()Latomicstryker/multimine/client/MultiMineClient;
 	 				       4: aload_1       
 	 				       5: aload_0       
@@ -159,18 +148,19 @@ public class MMTransformer implements IClassTransformer
 	 				       9: invokevirtual #46                 // Method atomicstryker/multimine/client/MultiMineClient.eventPlayerDamageBlock:(Lnet/minecraft/util/BlockPos;F)F
 	 				      12: putfield      #44                 // Field curBlockDamageMP:F which is e:F
                          */
-                        
+
                         // construct it using asm, insert it before 'if (this.curBlockDamageMP >= 1.0F)'
                         InsnList toInject = new InsnList();
                         toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                        toInject.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false));
+                        toInject.add(
+                                new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/multimine/client/MultiMineClient", "instance", "()Latomicstryker/multimine/client/MultiMineClient;", false));
                         toInject.add(new VarInsnNode(Opcodes.ALOAD, 1));
                         toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
                         toInject.add(new FieldInsnNode(Opcodes.GETFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
                         toInject.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "atomicstryker/multimine/client/MultiMineClient", "eventPlayerDamageBlock", getTargetMethodCallDesc(), false));
                         toInject.add(new FieldInsnNode(Opcodes.PUTFIELD, getPlayerControllerClassName(), getCurBlockDamageName(), "F"));
                         m.instructions.insertBefore(m.instructions.get(index - offset), toInject);
-                        
+
                         // in effect, we added this line of code: 'this.curBlockDamageMP = atomicstryker.multimine.client.MultiMineClient.instance().eventPlayerDamageBlock(blockPos, curBlockDamageMP);'
                         break;
                     }
@@ -188,15 +178,15 @@ public class MMTransformer implements IClassTransformer
     {
         return obfuscation ? playerControllerMPtargetMethodNameO : playerControllerMPtargetMethodName;
     }
-    
+
     private String getTargetMethodDesc()
     {
-    	return obfuscation ? methodDescO : this.methodDesc;
+        return obfuscation ? methodDescO : this.methodDesc;
     }
-    
+
     private String getTargetMethodCallDesc()
     {
-    	return obfuscation ? methodDescCallO : methodDescCall;
+        return obfuscation ? methodDescCallO : methodDescCall;
     }
 
     private String getPlayerControllerClassName()

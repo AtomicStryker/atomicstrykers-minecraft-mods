@@ -1,3 +1,6 @@
+1.5.2
+- updated to mc 1.9
+
 1.5.1
 - fixing issue where client did not reset properly upon breaking a block
 

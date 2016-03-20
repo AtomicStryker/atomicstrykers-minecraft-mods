@@ -1,6 +1,6 @@
 package atomicstryker.multimine.common;
 
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public class PartiallyMinedBlock
 {
@@ -8,7 +8,7 @@ public class PartiallyMinedBlock
     private final int dimension;
     private float progress;
     private long lastTimeMined;
-    
+
     public PartiallyMinedBlock(int x, int y, int z, int dimension, float progress)
     {
         this.pos = new BlockPos(x, y, z);
@@ -18,29 +18,29 @@ public class PartiallyMinedBlock
 
     public BlockPos getPos()
     {
-    	return pos;
+        return pos;
     }
-    
+
     public int getDimension()
     {
         return dimension;
     }
-    
+
     public float getProgress()
     {
         return progress;
     }
-    
+
     public void setProgress(float i)
     {
         progress = i;
     }
-    
+
     public boolean isFinished()
     {
         return progress >= 1.0f;
     }
-    
+
     public long getLastTimeMined()
     {
         return lastTimeMined;
@@ -50,7 +50,7 @@ public class PartiallyMinedBlock
     {
         this.lastTimeMined = lastTimeMined;
     }
-    
+
     @Override
     public boolean equals(Object o)
     {
@@ -59,10 +59,10 @@ public class PartiallyMinedBlock
             PartiallyMinedBlock p = (PartiallyMinedBlock) o;
             return p.getPos().equals(getPos());
         }
-        
+
         return false;
     }
-    
+
     @Override
     public int hashCode()
     {

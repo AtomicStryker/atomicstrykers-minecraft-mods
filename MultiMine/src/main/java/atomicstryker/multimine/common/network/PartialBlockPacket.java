@@ -6,8 +6,8 @@ import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class PartialBlockPacket implements IPacket
@@ -16,7 +16,6 @@ public class PartialBlockPacket implements IPacket
     private String user;
     private int x, y, z;
     private float value;
-    
 
     public PartialBlockPacket()
     {
@@ -55,10 +54,10 @@ public class PartialBlockPacket implements IPacket
         }
         else
         {
-            MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
         }
     }
-    
+
     class ScheduledCode implements Runnable
     {
 
@@ -71,14 +70,14 @@ public class PartialBlockPacket implements IPacket
             }
             else
             {
-                EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+                EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
                 if (player != null)
                 {
                     MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);
                 }
             }
         }
-        
+
     }
 
 }

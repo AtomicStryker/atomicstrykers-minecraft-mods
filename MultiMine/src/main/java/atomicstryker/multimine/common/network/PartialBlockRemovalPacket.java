@@ -4,7 +4,7 @@ import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class PartialBlockRemovalPacket implements IPacket
@@ -18,7 +18,7 @@ public class PartialBlockRemovalPacket implements IPacket
 
     public PartialBlockRemovalPacket(BlockPos p)
     {
-    	pos = p;
+        pos = p;
     }
 
     @Override
@@ -32,10 +32,10 @@ public class PartialBlockRemovalPacket implements IPacket
     @Override
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
-    	pos = new BlockPos(bytes.readInt(), bytes.readInt(), bytes.readInt());
-    	FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+        pos = new BlockPos(bytes.readInt(), bytes.readInt(), bytes.readInt());
+        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
     }
-    
+
     class ScheduledCode implements Runnable
     {
 
