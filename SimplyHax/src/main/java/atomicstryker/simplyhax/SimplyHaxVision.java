@@ -75,9 +75,9 @@ public class SimplyHaxVision
                     mcinstance.renderGlobal = rendererReplaced ? replacement : original;
                 }
                 
-                if (mcinstance.thePlayer.getCurrentEquippedItem() != item)
+                if (mcinstance.thePlayer.getHeldItemMainhand() != item)
                 {
-                    item = mcinstance.thePlayer.getCurrentEquippedItem();
+                    item = mcinstance.thePlayer.getHeldItemMainhand();
                     if (item != null)
                     {
                         System.out.printf("[SimplyHaxVision] %s swapped Item, now: [%s] damage: %d\n", 
