@@ -20,18 +20,18 @@ import org.objectweb.asm.tree.VarInsnNode;
 import net.minecraft.launchwrapper.IClassTransformer;
 
 
-
+@SuppressWarnings("unused")
 public class SCTransformer implements IClassTransformer
 {
     /* Obfuscated Names for EntityAICreeperSwell Transformation */
     
     /* class net.minecraft.src.EntityAICreeperSwell */
-    private final String entityAICreeperSwellClassNameO = "sf";
-    private final String entityAICreeperSwellJavaClassNameO = "sf";
+    private final String entityAICreeperSwellClassNameO = "un";
+    private final String entityAICreeperSwellJavaClassNameO = "un";
     /* class net.minecraft.src.EntityLiving */
-    private final String entityLivingJavaClassNameO = "ps";
+    private final String entityLivingJavaClassNameO = "sb";
     /* class net.minecraft.src.EntityCreeper */
-    private final String entityCreeperJavaClassNameO = "vn";
+    private final String entityCreeperJavaClassNameO = "yi";
     /*shouldExecute() / func_75250_a */
     private final String shouldExecuteMethodNameO = "a";
     /*swellingCreeper / field_75269_a */
@@ -70,14 +70,12 @@ public class SCTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        Iterator<MethodNode> methods = classNode.methods.iterator();
-        while(methods.hasNext())
+        for (MethodNode m : classNode.methods)
         {
-            MethodNode m = methods.next();
             if (m.name.equals(shouldExecuteMethodNameO) && m.desc.equals("()Z"))
             {
                 System.out.println("In target method! Patching!");
-                
+
                 // find interesting instructions in method, there is a single ICONST_1 instruction we use as target
                 AbstractInsnNode nodeTarget = null;
                 for (int index = 0; index < m.instructions.size(); index++)
@@ -88,34 +86,34 @@ public class SCTransformer implements IClassTransformer
                         nodeTarget = curNode;
                     }
                 }
-                
+
                 if (nodeTarget == null)
                 {
                     System.out.println("Did not find all necessary target nodes! ABANDON CLASS!");
                     return bytes;
                 }
-                
+
                 // make new instruction list
                 InsnList toInject = new InsnList();
-                
+
                 // make an exit label node
                 LabelNode exitLabelNode = new LabelNode(new Label());
-                               
+
                 toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                toInject.add(new FieldInsnNode(Opcodes.GETFIELD, entityAICreeperSwellJavaClassNameO, swellingCreeperFieldNameO, "L"+entityCreeperJavaClassNameO+";"));
-                
+                toInject.add(new FieldInsnNode(Opcodes.GETFIELD, entityAICreeperSwellJavaClassNameO, swellingCreeperFieldNameO, "L" + entityCreeperJavaClassNameO + ";"));
+
                 try
                 {
                     try
                     {
-                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
-                        		Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassNameO+";)Z");
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class)
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassNameO + ";)Z");
                         toInject.add(node);
                     }
                     catch (NoSuchMethodException e)
                     {
-                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
-                        		Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassNameO+";)Z", false);
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class)
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassNameO + ";)Z", false);
                         toInject.add(node);
                     }
                 }
@@ -125,15 +123,15 @@ public class SCTransformer implements IClassTransformer
                     System.out.println("Stalker Creepers ASM transform failed T_T");
                     return bytes;
                 }
-                
+
                 toInject.add(new JumpInsnNode(Opcodes.IFNE, exitLabelNode));
                 toInject.add(new InsnNode(Opcodes.ICONST_0));
                 toInject.add(new InsnNode(Opcodes.IRETURN));
                 toInject.add(exitLabelNode);
-                
+
                 // inject new instruction list into method instruction list
                 m.instructions.insertBefore(nodeTarget, toInject);
-                
+
                 System.out.println("Patching Complete!");
                 break;
             }
@@ -152,14 +150,12 @@ public class SCTransformer implements IClassTransformer
         classReader.accept(classNode, 0);
         
         // find method to inject into
-        Iterator<MethodNode> methods = classNode.methods.iterator();
-        while(methods.hasNext())
+        for (MethodNode m : classNode.methods)
         {
-            MethodNode m = methods.next();
             if (m.name.equals(shouldExecuteMethodName) && m.desc.equals("()Z"))
             {
                 System.out.println("In target method! Patching!");
-                
+
                 // find interesting instructions in method, there is a single ICONST_1 instruction we use as target
                 AbstractInsnNode nodeTarget = null;
                 for (int index = 0; index < m.instructions.size(); index++)
@@ -170,34 +166,34 @@ public class SCTransformer implements IClassTransformer
                         nodeTarget = curNode;
                     }
                 }
-                
+
                 if (nodeTarget == null)
                 {
                     System.out.println("Did not find all necessary target nodes! ABANDON CLASS!");
                     return bytes;
                 }
-                
+
                 // make new instruction list
                 InsnList toInject = new InsnList();
-                
+
                 // make an exit label node
                 LabelNode exitLabelNode = new LabelNode(new Label());
-                                
+
                 toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                toInject.add(new FieldInsnNode(Opcodes.GETFIELD, entityAICreeperSwellJavaClassName, swellingCreeperFieldName, "L"+entityCreeperJavaClassName+";"));
-                
+                toInject.add(new FieldInsnNode(Opcodes.GETFIELD, entityAICreeperSwellJavaClassName, swellingCreeperFieldName, "L" + entityCreeperJavaClassName + ";"));
+
                 try
                 {
                     try
                     {
-                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class).newInstance(
-                        		Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassName+";)Z");
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class)
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassName + ";)Z");
                         toInject.add(node);
                     }
                     catch (NoSuchMethodException e)
                     {
-                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class).newInstance(
-                        		Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L"+entityLivingJavaClassName+";)Z", false);
+                        AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class)
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassName + ";)Z", false);
                         toInject.add(node);
                     }
                 }
@@ -207,15 +203,15 @@ public class SCTransformer implements IClassTransformer
                     System.out.println("Stalker Creepers ASM transform failed T_T");
                     return bytes;
                 }
-                
+
                 toInject.add(new JumpInsnNode(Opcodes.IFNE, exitLabelNode));
                 toInject.add(new InsnNode(Opcodes.ICONST_0));
                 toInject.add(new InsnNode(Opcodes.IRETURN));
                 toInject.add(exitLabelNode);
-                
+
                 // inject new instruction list into method instruction list
                 m.instructions.insertBefore(nodeTarget, toInject);
-                
+
                 System.out.println("Patching Complete!");
                 break;
             }

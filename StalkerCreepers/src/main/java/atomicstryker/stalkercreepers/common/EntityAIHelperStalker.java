@@ -2,18 +2,20 @@ package atomicstryker.stalkercreepers.common;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
+@SuppressWarnings("unused")
 public class EntityAIHelperStalker
 {
+    @SuppressWarnings("unused")
     public static boolean isSeenByTarget(EntityLiving stalker)
     {
         EntityLivingBase seer = stalker.getAttackTarget();
         
-        if (stalker == null || seer == null || stalker.getEntityBoundingBox() == null) return true;
+        if (seer == null || stalker.getEntityBoundingBox() == null) return true;
         
-        Vec3 visionVec = seer.getLook(1.0F).normalize();
-        Vec3 targetVec = new Vec3(stalker.posX - seer.posX,
+        Vec3d visionVec = seer.getLook(1.0F).normalize();
+        Vec3d targetVec = new Vec3d(stalker.posX - seer.posX,
                                             stalker.getEntityBoundingBox().minY + (double)(stalker.height / 2.0F) - (seer.posY + (double)seer.getEyeHeight()),
                                             stalker.posZ - seer.posZ);
         targetVec = targetVec.normalize();
