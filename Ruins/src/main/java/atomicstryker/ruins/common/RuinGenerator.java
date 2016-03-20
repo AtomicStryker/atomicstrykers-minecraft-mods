@@ -1,15 +1,5 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Random;
-import java.util.concurrent.ConcurrentSkipListSet;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -18,33 +8,40 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
 
-public class RuinGenerator
+import java.io.*;
+import java.util.Random;
+import java.util.concurrent.ConcurrentSkipListSet;
+
+class RuinGenerator
 {
-    public static final int WORLD_MAX_HEIGHT = 256;
+    static final int WORLD_MAX_HEIGHT = 256;
     private final static String fileName = "RuinsPositionsFile.txt";
 
     private final FileHandler fileHandler;
     private final RuinStats stats;
     private int numTries = 0, LastNumTries = 0;
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
-    private File ruinsDataFile;
-    private File ruinsDataFileWriting;
+    private final File ruinsDataFile;
+    private final File ruinsDataFileWriting;
     private final RuinData spawnPointBlock;
+
+    private static boolean flushing;
 
     public RuinGenerator(FileHandler rh, World world)
     {
         fileHandler = rh;
         stats = new RuinStats();
-        registeredRuins = new ConcurrentSkipListSet<RuinData>();
-        
+        registeredRuins = new ConcurrentSkipListSet<>();
+        flushing = false;
+
         // lets create a banned area 2 chunks around the spawn
         final int minX = world.getSpawnPoint().getX() - 32;
         final int minY = world.getSpawnPoint().getY() - 32;
         final int minZ = world.getSpawnPoint().getZ() - 32;
-        spawnPointBlock = new RuinData(minX, minX+64, minY, minY+64, minZ, minZ+64, "SpawnPointBlock");
-        
+        spawnPointBlock = new RuinData(minX, minX + 64, minY, minY + 64, minZ, minZ + 64, "SpawnPointBlock");
+
         ruinsDataFile = new File(rh.saveFolder, fileName);
-        ruinsDataFileWriting = new File(rh.saveFolder, fileName+"_writing");
+        ruinsDataFileWriting = new File(rh.saveFolder, fileName + "_writing");
 
         if (ruinsDataFile.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
         {
@@ -65,13 +62,14 @@ public class RuinGenerator
         }
     }
 
-    public void flushPosFile(String worldName)
+    void flushPosFile(String worldName)
     {
-        if (registeredRuins.isEmpty() || worldName.equals("MpServer"))
+        if (flushing || registeredRuins.isEmpty() || worldName.equals("MpServer"))
         {
             return;
         }
 
+        flushing = true;
         new FlushThread().start();
     }
 
@@ -84,12 +82,17 @@ public class RuinGenerator
             {
                 if (!ruinsDataFileWriting.delete())
                 {
-                    throw new RuntimeException("Ruins crashed trying to access file "+ruinsDataFileWriting);
+                    flushing = false;
+                    throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
                 }
             }
 
             try
             {
+                if (!ruinsDataFileWriting.createNewFile())
+                {
+                    System.err.println("Ruins could not create new file: " + ruinsDataFileWriting.getAbsolutePath());
+                }
                 PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(ruinsDataFileWriting)));
                 pw.println("# Ruins data management file. Below, you see all data accumulated by AtomicStrykers Ruins during the last run of this World.");
                 pw.println("# Data is noted as follows: Each line stands for one successfull Ruin spawn. Data syntax is:");
@@ -111,21 +114,25 @@ public class RuinGenerator
                 pw.flush();
                 pw.close();
                 // System.out.println("Ruins Positions flushed, entries "+registeredRuins.size());
-                
+
                 if (ruinsDataFile.exists())
                 {
                     if (!ruinsDataFile.delete())
                     {
-                        throw new RuntimeException("Ruins crashed trying to access file "+ruinsDataFileWriting);
+                        flushing = false;
+                        throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
                     }
                 }
                 if (!ruinsDataFileWriting.renameTo(ruinsDataFile))
                 {
-                    throw new RuntimeException("Ruins crashed trying to access file "+ruinsDataFileWriting);
+                    flushing = false;
+                    throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
                 }
+                flushing = false;
             }
             catch (IOException e)
             {
+                flushing = false;
                 e.printStackTrace();
             }
         }
@@ -139,9 +146,9 @@ public class RuinGenerator
             {
                 if (!file.createNewFile())
                 {
-                    throw new RuntimeException("Ruins crashed trying to access file "+file);
+                    throw new RuntimeException("Ruins crashed trying to access file " + file);
                 }
-                
+
                 // put it into the initial set
                 registeredRuins.add(spawnPointBlock);
             }
@@ -175,7 +182,7 @@ public class RuinGenerator
         }
     }
 
-    public boolean generateNormal(World world, Random random, int xBase, int zBase)
+    void generateNormal(World world, Random random, int xBase, int zBase)
     {
         for (int c = 0; c < fileHandler.triesPerChunkNormal; c++)
         {
@@ -184,10 +191,9 @@ public class RuinGenerator
                 createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), false);
             }
         }
-        return true;
     }
 
-    public boolean generateNether(World world, Random random, int xBase, int zBase)
+    void generateNether(World world, Random random, int xBase, int zBase)
     {
         for (int c = 0; c < fileHandler.triesPerChunkNether; c++)
         {
@@ -198,11 +204,10 @@ public class RuinGenerator
                 createBuilding(world, random, xBase + xMod, zBase + zMod, true);
             }
         }
-        return true;
     }
 
     private void createBuilding(World world, Random random, int x, int z, boolean nether)
-    {        
+    {
         final int rotate = random.nextInt(4);
         final BiomeGenBase biome = world.getBiomeGenForCoordsBody(new BlockPos(x, 0, z));
         String biomeID = biome.getBiomeName();
@@ -211,18 +216,18 @@ public class RuinGenerator
         {
             biomeID = RuinsMod.BIOME_ANY;
         }
-        
+
         Integer i = stats.biomes.get(biomeID);
         if (i != null)
         {
-            i = i+1;
+            i = i + 1;
         }
         else
         {
             i = 1;
         }
         stats.biomes.put(biomeID, i);
-        
+
         RuinTemplate ruinTemplate = fileHandler.getTemplate(random, biomeID);
         if (ruinTemplate == null)
         {
@@ -235,7 +240,7 @@ public class RuinGenerator
             }
         }
         numTries++;
-        
+
         int y = findSuitableY(world, ruinTemplate, x, z, nether);
         if (y > 0)
         {
@@ -248,12 +253,12 @@ public class RuinGenerator
                     // System.out.println("checkArea fail");
                     return;
                 }
-                
+
                 if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, y, z, rotate, false, true)))
                 {
                     return;
                 }
-                
+
                 if (!fileHandler.disableLogging)
                 {
                     System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getBiomeName(), x, y, z);
@@ -291,17 +296,13 @@ public class RuinGenerator
     {
         if (!fileHandler.disableLogging)
         {
-            int total =
-                    stats.NumCreated + stats.BadBlockFails + stats.LevelingFails + stats.CutInFails + stats.OverhangFails + stats.NoAirAboveFails;
+            int total = stats.NumCreated + stats.LevelingFails;
             System.out.println("Current Stats:");
             System.out.println("    Total Tries:                 " + total);
             System.out.println("    Number Created:              " + stats.NumCreated);
-            System.out.println("    Site Tries:                  " + stats.siteTries);
             System.out.println("    Min Dist fail:               " + stats.minDistFails);
-            System.out.println("    Bad Blocks:                  " + stats.BadBlockFails);
-            System.out.println("    No Leveling:                 " + stats.LevelingFails);
-            System.out.println("    No Cut-In:                   " + stats.CutInFails);
-            
+            System.out.println("    Leveling:                    " + stats.LevelingFails);
+
             BiomeGenBase bgb;
             for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
             {
@@ -316,44 +317,45 @@ public class RuinGenerator
                 }
             }
             System.out.println("Any-Biome: " + stats.biomes.get(RuinsMod.BIOME_ANY) + " building attempts");
-            
+
             System.out.println();
         }
     }
-    
+
     private boolean checkMinDistance(RuinTemplate ruinTemplate, RuinData ruinData)
     {
-		//
-		// We increase the bounding box by the required minimal distance
-		// in each direction and check on intersections with other ruins.
-		//
-        int uniqueMinDist = (int) ((ruinTemplate.uniqueMinDistance == 0) ? fileHandler.templateInstancesMinDistance : ruinTemplate.uniqueMinDistance);
-        
-        int bbExtension = uniqueMinDist;
+        //
+        // We increase the bounding box by the required minimal distance
+        // in each direction and check on intersections with other ruins.
+        //
+
+        int bbExtension = (int) ((ruinTemplate.uniqueMinDistance == 0) ? fileHandler.templateInstancesMinDistance : ruinTemplate.uniqueMinDistance);
         final RuinData checkSelfMinDist = new RuinData(
-				ruinData.xMin - bbExtension, ruinData.xMax + bbExtension, 
-				ruinData.yMin - bbExtension, ruinData.yMax + bbExtension, 
-				ruinData.zMin - bbExtension, ruinData.zMax + bbExtension, 
-				ruinData.name);
-        
+                ruinData.xMin - bbExtension, ruinData.xMax + bbExtension,
+                ruinData.yMin - bbExtension, ruinData.yMax + bbExtension,
+                ruinData.zMin - bbExtension, ruinData.zMax + bbExtension,
+                ruinData.name);
+
         bbExtension = (int) fileHandler.anyRuinsMinDistance;
         final RuinData checkOtherMinDist = new RuinData(
-				ruinData.xMin - bbExtension, ruinData.xMax + bbExtension, 
-				ruinData.yMin - bbExtension, ruinData.yMax + bbExtension, 
-				ruinData.zMin - bbExtension, ruinData.zMax + bbExtension, 
-				ruinData.name);
-        
+                ruinData.xMin - bbExtension, ruinData.xMax + bbExtension,
+                ruinData.yMin - bbExtension, ruinData.yMax + bbExtension,
+                ruinData.zMin - bbExtension, ruinData.zMax + bbExtension,
+                ruinData.name);
+
         // refuse Ruins spawning too close to each other
-    	boolean tooClose = false;
+        boolean tooClose;
         for (RuinData r : registeredRuins)
         {
-        	if (r.name.equals(ruinData.name)) 
-        	{
-        		tooClose = checkSelfMinDist.intersectsWith(r);
-        	} else {
-        		tooClose = checkOtherMinDist.intersectsWith(r);
-        	}
-        	
+            if (r.name.equals(ruinData.name))
+            {
+                tooClose = checkSelfMinDist.intersectsWith(r);
+            }
+            else
+            {
+                tooClose = checkOtherMinDist.intersectsWith(r);
+            }
+
             if (tooClose)
             {
                 return false;
@@ -374,7 +376,7 @@ public class RuinGenerator
                 {
                     continue;
                 }
-                
+
                 if (r.isAcceptableSurface(b))
                 {
                     return y;

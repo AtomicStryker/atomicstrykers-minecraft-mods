@@ -42,7 +42,7 @@ public class CommandParseTemplate extends CommandBase
     {
         return "/parseruin TEMPLATENAME sets the Ruins World2Template parser to wait for the next block you break, which will be considered part of the template baseplate";
     }
-    
+
     @Override
     public int getRequiredPermissionLevel()
     {

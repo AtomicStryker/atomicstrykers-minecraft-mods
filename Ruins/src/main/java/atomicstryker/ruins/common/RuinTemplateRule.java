@@ -1,17 +1,6 @@
 package atomicstryker.ruins.common;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -26,18 +15,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityCommandBlock;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.tileentity.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RuinTemplateRule
 {
@@ -47,26 +39,26 @@ public class RuinTemplateRule
     private final SpecialFlags[] specialFlags;
     private int chance = 100;
     private int condition = 0;
-    protected final RuinTemplate owner;
+    final RuinTemplate owner;
     private final PrintWriter debugPrinter;
     private final boolean excessiveDebugging;
-    
+
     // just leave the field null for NONE
     public enum SpecialFlags
     {
         COMMANDBLOCK,
         ADDBONEMEAL
     }
-    
+
     public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception
     {
         debugPrinter = dpw;
         owner = r;
         excessiveDebugging = debug;
-        
-        ArrayList<String> nbttags = new ArrayList<String>(5);
+
+        ArrayList<String> nbttags = new ArrayList<>(5);
         rule = replaceNBTTags(rule, nbttags);
-        
+
         String[] blockRules = rule.split(",");
         int numblocks = blockRules.length - 2;
         if (numblocks < 1)
@@ -77,12 +69,12 @@ public class RuinTemplateRule
         chance = Integer.parseInt(blockRules[1]);
 
         String[] data;
-        
+
         // Command Block special case, contains basically any character that breaks this
         if (blockRules[2].startsWith("CommandBlock:"))
         {
             String[] commandrules = rule.split("CommandBlock:");
-            int count = commandrules.length-1; // -1 because there is a prefix part we ignore
+            int count = commandrules.length - 1; // -1 because there is a prefix part we ignore
             blockIDs = new Block[count];
             blockMDs = new int[count];
             blockStrings = new String[count];
@@ -93,9 +85,9 @@ public class RuinTemplateRule
                 blockMDs[i] = 0;
                 specialFlags[i] = SpecialFlags.COMMANDBLOCK;
                 // readd the splitout string for the parsing, offset by 1 because of the prefix string
-                blockStrings[i] = commandrules[i+1];
+                blockStrings[i] = commandrules[i + 1];
                 blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
-                debugPrinter.println("template " + owner.getName()+" contains Command Block command: "+blockStrings[i]);
+                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i]);
             }
         }
         // not command blocks
@@ -112,7 +104,7 @@ public class RuinTemplateRule
                 {
                     if (isNumber(data[0])) // torch-5
                     {
-                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
                         blockIDs[i] = Blocks.air;
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
@@ -122,7 +114,7 @@ public class RuinTemplateRule
                     {
                         blockStrings[i] = blockRules[i + 2];
                         blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
-                        
+
                         blockIDs[i] = tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == Blocks.air)
                         {
@@ -131,18 +123,19 @@ public class RuinTemplateRule
                                 blockIDs[i] = null;
                                 if (!isKnownSpecialRule(blockStrings[i]))
                                 {
-                                    throw new Exception("Rule [" + rule + "], blockString [" + blockStrings[i] + "] in template " + owner.getName()+" can absolutely not be mapped to anything known");
+                                    throw new Exception(
+                                            "Rule [" + rule + "], blockString [" + blockStrings[i] + "] in template " + owner.getName() + " can absolutely not be mapped to anything known");
                                 }
                             }
                         }
-                        
+
                         // special case -addbonemeal
-                        if (blockIDs[i] instanceof IGrowable && data[data.length-1].equals("addbonemeal"))
+                        if (blockIDs[i] instanceof IGrowable && data[data.length - 1].equals("addbonemeal"))
                         {
                             specialFlags[i] = SpecialFlags.ADDBONEMEAL;
                             try
                             {
-                                blockMDs[i] = Integer.parseInt(data[data.length-2]);
+                                blockMDs[i] = Integer.parseInt(data[data.length - 2]);
                             }
                             catch (NumberFormatException ne)
                             {
@@ -154,7 +147,7 @@ public class RuinTemplateRule
                         {
                             try
                             {
-                                blockMDs[i] = Integer.parseInt(data[data.length-1]);
+                                blockMDs[i] = Integer.parseInt(data[data.length - 1]);
                             }
                             catch (NumberFormatException ne)
                             {
@@ -168,7 +161,7 @@ public class RuinTemplateRule
                 {
                     if (isNumber(blockRules[i + 2]))
                     {
-                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" still uses numeric blockIDs! ERROR!");
+                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
                         blockIDs[i] = Blocks.air;
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
@@ -186,24 +179,25 @@ public class RuinTemplateRule
                     blockStrings[i] = blockRules[i + 2];
                     blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
                 }
-                
+
                 if (excessiveDebugging)
                 {
-                    debugPrinter.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s]\n", i+1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i]);
+                    debugPrinter.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s]\n", i + 1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i]);
                 }
             }
         }
     }
-    
-    public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule) throws Exception
+
+    RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule) throws Exception
     {
         this(dpw, r, rule, false);
     }
-    
+
     /**
      * Since NBT contents, especially books, wreak havoc with all the legacy and hardcoded string splitting going on, we replace
      * them in their entirety for slightly less problematic hardcoded strings.
-     * @param rule which may or may not contain nbt tags
+     *
+     * @param rule    which may or may not contain nbt tags
      * @param nbttags a non null array list which after execution contains each nbt tag in order of occurence
      * @return the input string except all nbt tags have been replaced with NBT1, NBT2 ... etc
      */
@@ -212,13 +206,13 @@ public class RuinTemplateRule
         int openingIndex = rule.indexOf('{');
         while (openingIndex != -1)
         {
-            int closingIndex = openingIndex+1;
+            int closingIndex = openingIndex + 1;
             int bracketCounter = 1;
-            for (;;closingIndex++)
+            for (; ; closingIndex++)
             {
                 if (closingIndex == rule.length())
                 {
-                    System.err.println("Unbalanced brackets in Ruins template, offending rule: "+rule);
+                    System.err.println("Unbalanced brackets in Ruins template, offending rule: " + rule);
                     return rule;
                 }
                 if (rule.charAt(closingIndex) == '{')
@@ -232,22 +226,23 @@ public class RuinTemplateRule
                     {
                         break;
                     }
-                } 
+                }
             }
-            String capture = rule.substring(openingIndex, closingIndex+1);
+            String capture = rule.substring(openingIndex, closingIndex + 1);
             nbttags.add(capture);
-            debugPrinter.println("template " + owner.getName()+" contains nbt tag: "+capture);
+            debugPrinter.println("template " + owner.getName() + " contains nbt tag: " + capture);
             String pre = rule.substring(0, openingIndex);
-            String post = rule.substring(closingIndex+1, rule.length());
-            rule = pre + "NBT"+nbttags.size() + post;
+            String post = rule.substring(closingIndex + 1, rule.length());
+            rule = pre + "NBT" + nbttags.size() + post;
             openingIndex = rule.indexOf('{');
         }
         return rule;
     }
-    
+
     /**
      * And the reverse, restore the glorious NBT tags into a string loaded with their placeholders
-     * @param str string with nbt placeholders
+     *
+     * @param str     string with nbt placeholders
      * @param nbttags list with stored nbt tags
      * @return original string with nbt tags
      */
@@ -256,7 +251,7 @@ public class RuinTemplateRule
         int nbtidx = 1;
         for (String capture : nbttags)
         {
-            str = str.replace("NBT"+nbtidx++, capture);
+            str = str.replace("NBT" + nbtidx++, capture);
         }
         return str;
     }
@@ -370,11 +365,11 @@ public class RuinTemplateRule
         BlockPos c = new BlockPos(x, y, z - 1);
         BlockPos d = new BlockPos(x - 1, y, z);
         if ((condition <= 0) ^ (
-        // Are -all- adjacent blocks air?
-                (owner.isIgnoredBlock(world.getBlockState(a).getBlock(), world, a)) 
-                && (owner.isIgnoredBlock(world.getBlockState(b).getBlock(), world, b))
-                && (owner.isIgnoredBlock(world.getBlockState(c).getBlock(), world, c)) 
-                && (owner.isIgnoredBlock(world.getBlockState(d).getBlock(), world, d))))
+                // Are -all- adjacent blocks air?
+                (owner.isIgnoredBlock(world.getBlockState(a).getBlock(), world, a))
+                        && (owner.isIgnoredBlock(world.getBlockState(b).getBlock(), world, b))
+                        && (owner.isIgnoredBlock(world.getBlockState(c).getBlock(), world, c))
+                        && (owner.isIgnoredBlock(world.getBlockState(d).getBlock(), world, d))))
         {
             return;
         }
@@ -399,7 +394,7 @@ public class RuinTemplateRule
         Block blockID = blockIDs[blocknum];
         if (excessiveDebugging)
         {
-            debugPrinter.println("About to place blockID "+blockID+", meta "+blockMDs[blocknum]+" rotation "+rotate+", string: "+blockString);
+            debugPrinter.println("About to place blockID " + blockID + ", meta " + blockMDs[blocknum] + " rotation " + rotate + ", string: " + blockString);
         }
         if (blockID == null)
         {
@@ -415,20 +410,20 @@ public class RuinTemplateRule
     {
         int metadata = rotate != RuinsMod.DIR_NORTH ? rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate) : blockMDs[blocknum];
         world.setBlockState(new BlockPos(x, y, z), blockIDs[blocknum].getStateFromMeta(metadata), 2);
-        
+
         if (specialFlags[blocknum] != null)
         {
             switch (specialFlags[blocknum])
             {
-                case ADDBONEMEAL:
-                    owner.markBlockForBonemeal(x, y, z);
-                    break;
-                default:
-                    break;
+            case ADDBONEMEAL:
+                owner.markBlockForBonemeal(x, y, z);
+                break;
+            default:
+                break;
             }
         }
     }
-    
+
     private boolean isKnownSpecialRule(final String dataString)
     {
         if (dataString.equals("preserveBlock"))
@@ -510,7 +505,7 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("MobSpawner:"))
         {
-            addCustomSpawner(world, x, y, z, dataString.substring(dataString.indexOf(":")+1));
+            addCustomSpawner(world, x, y, z, dataString.substring(dataString.indexOf(":") + 1));
         }
         else if (dataString.equals("UprightMobSpawn"))
         {
@@ -543,11 +538,11 @@ public class RuinTemplateRule
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
-            addChestGenChest(world, random, x, y, z, s[1], Integer.valueOf(s[2].split("-")[0]), rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate));
+            addChestGenChest(world, random, x, y, z, s[1], rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate));
         }
         else if (dataString.startsWith("IInventory;"))
         {
-            ArrayList<String> nbttags = new ArrayList<String>(5);
+            ArrayList<String> nbttags = new ArrayList<>(5);
             String dataWithoutNBT = replaceNBTTags(dataString, nbttags);
             String[] s = dataWithoutNBT.split(";");
             Object o = tryFindingObject(s[1]);
@@ -555,7 +550,7 @@ public class RuinTemplateRule
             {
                 Block b = (Block) o;
                 // need to strip meta '-x' value if present
-                if (s[2].lastIndexOf("-") > s[2].length()-5)
+                if (s[2].lastIndexOf("-") > s[2].length() - 5)
                 {
                     addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), nbttags, rotateMetadata(b, blockMDs[blocknum], rotate));
                 }
@@ -586,7 +581,7 @@ public class RuinTemplateRule
             else
             {
                 command = dataString.substring(0, lastIdx);
-                sender = dataString.substring(lastIdx+1, dataString.length());
+                sender = dataString.substring(lastIdx + 1, dataString.length());
             }
             addCommandBlock(world, x, y, z, command, sender, rotate);
         }
@@ -602,9 +597,9 @@ public class RuinTemplateRule
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             if (tes != null && tes.signText != null)
             {
-                for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
+                for (int i = 0; i < tes.signText.length && i + 1 < splits.length; i++)
                 {
-                    tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i+1].split("-")[0]);
+                    tes.signText[i] = (splits[i + 1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i + 1].split("-")[0]);
                 }
             }
         }
@@ -620,9 +615,9 @@ public class RuinTemplateRule
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             if (tes != null && tes.signText != null)
             {
-                for (int i = 0; i < tes.signText.length && i+1 < splits.length; i++)
+                for (int i = 0; i < tes.signText.length && i + 1 < splits.length; i++)
                 {
-                	tes.signText[i] = (splits[i+1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i+1].split("-")[0]);
+                    tes.signText[i] = (splits[i + 1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i + 1].split("-")[0]);
                 }
             }
         }
@@ -635,14 +630,14 @@ public class RuinTemplateRule
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
             int rot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.standing_sign, rot, rotate), 1);
-            
+
             // is a player head saved?
             // looks like Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
             if (splits.length > 3)
             {
                 // split segment like this: 1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
                 String[] moresplits = splits[3].split("-");
-                UUID id = UUID.fromString(moresplits[0]+"-"+moresplits[1]+"-"+moresplits[2]+"-"+moresplits[3]+"-"+moresplits[4]);
+                UUID id = UUID.fromString(moresplits[0] + "-" + moresplits[1] + "-" + moresplits[2] + "-" + moresplits[3] + "-" + moresplits[4]);
                 GameProfile playerprofile = new GameProfile(id, moresplits[5]);
                 ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, playerprofile, 2);
             }
@@ -657,8 +652,8 @@ public class RuinTemplateRule
             {
                 try
                 {
-                    NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}')+1));
-                    debugPrinter.println("teBlock read, decoded nbt tag: "+tc.toString());
+                    NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
+                    debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
                     world.setBlockState(p, ((Block) o).getStateFromMeta(blockMDs[blocknum]), rotate);
                     TileEntity tenew = TileEntity.createTileEntity(world.getMinecraftServer(), tc);
                     world.removeTileEntity(p);
@@ -707,13 +702,13 @@ public class RuinTemplateRule
             Entity test = EntityList.createEntityByName(id, world);
             if (test == null)
             {
-                System.err.println("Warning: Ruins Mod could not find an Entity ["+id+"] set for a Mob Spawner");
-                for (String entString : (Collection<String>)EntityList.classToStringMapping.values())
+                System.err.println("Warning: Ruins Mod could not find an Entity [" + id + "] set for a Mob Spawner");
+                for (String entString : EntityList.classToStringMapping.values())
                 {
                     if (entString.contains(id))
                     {
                         id = entString;
-                        System.err.println("Ruins Mod going close match ["+id+"]");
+                        System.err.println("Ruins Mod going close match [" + id + "]");
                         break;
                     }
                 }
@@ -857,7 +852,7 @@ public class RuinTemplateRule
         }
     }
 
-    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int items, int meta)
+    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int meta)
     {
         world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
@@ -866,7 +861,7 @@ public class RuinTemplateRule
             chest.setLoot(new ResourceLocation("minecraft", gen), random.nextLong());
         }
     }
-    
+
     private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, ArrayList<String> nbtTags, int rotateMetadata)
     {
         world.setBlockState(new BlockPos(x, y, z), block.getStateFromMeta(rotateMetadata), 2);
@@ -875,9 +870,9 @@ public class RuinTemplateRule
         {
             if (excessiveDebugging)
             {
-                debugPrinter.println("About to construct IInventory, itemData ["+itemDataWithoutNBT+"]");
+                debugPrinter.println("About to construct IInventory, itemData [" + itemDataWithoutNBT + "]");
             }
-            
+
             if (te instanceof TileEntityChest && itemDataWithoutNBT.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
             {
                 TileEntityChest chest = (TileEntityChest) te;
@@ -894,7 +889,7 @@ public class RuinTemplateRule
             System.err.println("Ruins Mod could not find IInventory instance for [" + block + "] in Ruin template: " + owner.getName());
         }
     }
-    
+
     private void handleIInventory(IInventory inv, String itemDataWithoutNBT, ArrayList<String> nbtTags)
     {
         // example string: minecraft:stone#1#4#0+minecraft:written_book#NBT1#0#1+minecraft:chest#1#0#2
@@ -903,12 +898,12 @@ public class RuinTemplateRule
         String[] itemStrings = itemDataWithoutNBT.split(Pattern.quote("+"));
         String[] hashsplit;
         Object o;
-        debugPrinter.println("itemStrings length: "+itemStrings.length);
+        debugPrinter.println("itemStrings length: " + itemStrings.length);
         for (String itemstring : itemStrings)
         {
-            debugPrinter.println("itemString: "+itemstring);
+            debugPrinter.println("itemString: " + itemstring);
             hashsplit = itemstring.split("#");
-            
+
             int itemStackSize = 1;
             boolean nbtdata = false;
             if (hashsplit.length > 1)
@@ -919,23 +914,23 @@ public class RuinTemplateRule
                     itemStackSize = Integer.valueOf(hashsplit[1]);
                 }
             }
-            
+
             int itemMeta = hashsplit.length > 2 ? Integer.valueOf(hashsplit[2]) : 0;
             int targetslot = hashsplit.length > 3 ? Integer.valueOf(hashsplit[3]) : -1;
             o = tryFindingObject(hashsplit[0]);
             debugPrinter.println(hashsplit[0] + " resolved to object " + o);
-            
+
             putItem = null;
             if (o instanceof Block)
             {
-                putItem = new ItemStack(((Block)o), itemStackSize, itemMeta);
+                putItem = new ItemStack(((Block) o), itemStackSize, itemMeta);
             }
             else if (o instanceof Item)
             {
-                putItem = new ItemStack(((Item)o), itemStackSize, itemMeta);
+                putItem = new ItemStack(((Item) o), itemStackSize, itemMeta);
             }
             debugPrinter.println("itemstack instance: " + putItem);
-            
+
             if (putItem != null)
             {
                 if (nbtdata)
@@ -1000,20 +995,20 @@ public class RuinTemplateRule
             }
         }
     }
-    
+
     private Object tryFindingObject(String s)
     {
-    	ResourceLocation rl = new ResourceLocation(s);
+        ResourceLocation rl = new ResourceLocation(s);
         Item item = GameData.getItemRegistry().getObject(rl);
         if (item != null)
         {
             if (item instanceof ItemBlock)
             {
-                return ((ItemBlock)item).block;
+                return ((ItemBlock) item).block;
             }
             return item;
         }
-        
+
         Block block = GameData.getBlockRegistry().getObject(rl);
         if (block != Blocks.air)
         {
@@ -1051,7 +1046,7 @@ public class RuinTemplateRule
             {
                 if (excessiveDebugging)
                 {
-                    debugPrinter.println("Found contained coordinate triple: "+coordinateMatcher.group());
+                    debugPrinter.println("Found contained coordinate triple: " + coordinateMatcher.group());
                 }
                 if (rotate == RuinsMod.DIR_EAST)
                 {
@@ -1085,9 +1080,10 @@ public class RuinTemplateRule
         }
         return command;
     }
-    
+
     /**
      * Possible inputs are "", "x", "-x" with int x
+     *
      * @param maybeNumber input string
      * @return "-input" or "" if not applicable
      */
@@ -1202,7 +1198,7 @@ public class RuinTemplateRule
         // remember that, in this mod, NORTH is the default direction.
         // this method is unused if the direction is NORTH
         int tempdata = 0;
-        
+
         if (blockID == Blocks.rail || blockID == Blocks.golden_rail || blockID == Blocks.detector_rail || blockID == Blocks.activator_rail)
         {
             // minecart tracks
@@ -1412,7 +1408,8 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.torch || blockID == Blocks.stone_button || blockID == Blocks.wooden_button || blockID == Blocks.lever || blockID == Blocks.unlit_redstone_torch || blockID == Blocks.redstone_torch)
+        else if (blockID == Blocks.torch || blockID == Blocks.stone_button || blockID == Blocks.wooden_button || blockID == Blocks.lever || blockID == Blocks.unlit_redstone_torch
+                || blockID == Blocks.redstone_torch)
         {
             tempdata = 0;
             if (blockID == Blocks.lever || blockID == Blocks.stone_button || blockID == Blocks.wooden_button)
@@ -1885,7 +1882,7 @@ public class RuinTemplateRule
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
-            
+
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -1949,7 +1946,7 @@ public class RuinTemplateRule
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
-            
+
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -2013,7 +2010,7 @@ public class RuinTemplateRule
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
-            
+
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -2077,7 +2074,7 @@ public class RuinTemplateRule
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
-            
+
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -2140,7 +2137,7 @@ public class RuinTemplateRule
         {
             int rotbits = metadata & 0x01;
             int databits = metadata & 0xFE;
-            
+
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -2166,7 +2163,7 @@ public class RuinTemplateRule
             {
                 return metadata;
             }
-            
+
             switch (dir)
             {
             case RuinsMod.DIR_EAST:
@@ -2181,7 +2178,7 @@ public class RuinTemplateRule
             }
             return metadata;
         }
-        
+
         return CustomRotationMapping.getMapping(blockID, metadata, dir);
     }
 

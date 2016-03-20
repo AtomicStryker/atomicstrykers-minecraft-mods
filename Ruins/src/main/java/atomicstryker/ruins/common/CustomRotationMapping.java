@@ -1,32 +1,26 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.TreeMap;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.TreeMap;
 
 /**
  * Class to save and retrieve custom Rotational Mappings into. A rotation is
  * determined by blockID, desired direction, and current metadata value. For
  * full coverage, all possible combinations of direction and current metadata
  * need to be mapped.
- * 
+ * <p>
  * See RuinTemplateRule.rotateMetadata for how it works.
- * 
+ *
  * @author AtomicStryker
- * 
  */
-public class CustomRotationMapping
+class CustomRotationMapping
 {
 
     private static CustomRotationMapping instance;
@@ -39,12 +33,11 @@ public class CustomRotationMapping
 
     private final ArrayList<Block> currentBlockIDs;
 
-    @SuppressWarnings("rawtypes")
     public CustomRotationMapping(File fRuinsResources)
     {
         instance = this;
-        blockIDMap = new TreeMap<Block, TreeMap[]>(new BlockComparator());
-        currentBlockIDs = new ArrayList<Block>();
+        blockIDMap = new TreeMap<>(new BlockComparator());
+        currentBlockIDs = new ArrayList<>();
 
         File f = new File(fRuinsResources, "rotation_mappings.txt");
         if (!f.exists())
@@ -56,7 +49,7 @@ public class CustomRotationMapping
             loadCustomMappings(f, new PrintWriter(System.out, true));
         }
     }
-    
+
     private class BlockComparator implements Comparator<Block>
     {
         @Override
@@ -123,15 +116,15 @@ public class CustomRotationMapping
                     int dir = RuinsMod.DIR_NORTH;
                     if ("EAST".equals(val[0]))
                     {
-                    	dir = RuinsMod.DIR_EAST;
+                        dir = RuinsMod.DIR_EAST;
                     }
                     else if ("SOUTH".equals(val[0]))
                     {
-                    	dir = RuinsMod.DIR_SOUTH;
+                        dir = RuinsMod.DIR_SOUTH;
                     }
                     else if ("WEST".equals(val[0]))
                     {
-                    	dir = RuinsMod.DIR_WEST;
+                        dir = RuinsMod.DIR_WEST;
                     }
 
                     int metadata = Integer.parseInt(val[1]);
@@ -162,7 +155,7 @@ public class CustomRotationMapping
             bIdMap = new TreeMap[4];
             for (int i = 0; i < bIdMap.length; i++)
             {
-                bIdMap[i] = new TreeMap<Integer, Integer>();
+                bIdMap[i] = new TreeMap<>();
             }
             blockIDMap.put(blockID, bIdMap);
         }

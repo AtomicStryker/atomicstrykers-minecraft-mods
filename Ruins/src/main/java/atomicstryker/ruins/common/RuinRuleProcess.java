@@ -1,10 +1,10 @@
 package atomicstryker.ruins.common;
 
-import java.util.Random;
-
 import net.minecraft.world.World;
 
-public class RuinRuleProcess
+import java.util.Random;
+
+class RuinRuleProcess
 {
 
     private final RuinTemplateRule rule;

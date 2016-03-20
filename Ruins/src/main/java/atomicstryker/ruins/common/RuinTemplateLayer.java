@@ -3,9 +3,9 @@ package atomicstryker.ruins.common;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class RuinTemplateLayer
+class RuinTemplateLayer
 {
-    final int[][] layer;
+    private final int[][] layer;
 
     public RuinTemplateLayer(ArrayList<String> layerdata, int width, int length, int maxrule) throws Exception
     {
@@ -21,10 +21,10 @@ public class RuinTemplateLayer
             {
                 // ruins are flipped when read in, hence this crazy hack.
                 layer[x][z] = Integer.parseInt(rowdata[length - z - 1]);
-                
+
                 if (layer[x][z] > maxrule)
                 {
-                    throw new Exception("Template uses undefined Rule, number: "+layer[x][z]);
+                    throw new Exception("Template uses undefined Rule, number: " + layer[x][z]);
                 }
             }
         }

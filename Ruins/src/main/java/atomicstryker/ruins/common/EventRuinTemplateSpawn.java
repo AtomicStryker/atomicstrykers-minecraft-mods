@@ -12,19 +12,19 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
 @Cancelable
 public class EventRuinTemplateSpawn extends WorldEvent
 {
-    
+
     public final RuinTemplate template;
     public final int x, y, z, rotation;
     public final boolean testingRuin;
     public final boolean isPrePhase;
-    
+
     /**
-     * @param world World template is about to spawn in
-     * @param templ template about to spawn, contains RuinData with bounding box
-     * @param a x Coordinate
-     * @param b y Coordinate
-     * @param c z Coordinate
-     * @param r Rotation value
+     * @param world   World template is about to spawn in
+     * @param templ   template about to spawn, contains RuinData with bounding box
+     * @param a       x Coordinate
+     * @param b       y Coordinate
+     * @param c       z Coordinate
+     * @param r       Rotation value
      * @param testing whether or not the template was manually spawned
      * @param isPrior true before a Ruins spawned, can be cancelled only then, false otherwise
      */

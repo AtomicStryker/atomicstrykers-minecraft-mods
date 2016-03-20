@@ -1,11 +1,11 @@
 package atomicstryker.ruins.common;
 
-import java.util.ArrayList;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldSavedData;
 
-public class ChunkLoggerData extends WorldSavedData
+import java.util.ArrayList;
+
+class ChunkLoggerData extends WorldSavedData
 {
     private final ArrayList<Integer> xCoords;
     private final ArrayList<Integer> zCoords;
@@ -13,15 +13,15 @@ public class ChunkLoggerData extends WorldSavedData
     public ChunkLoggerData(String name)
     {
         super(name);
-        xCoords = new ArrayList<Integer>();
-        zCoords = new ArrayList<Integer>();
+        xCoords = new ArrayList<>();
+        zCoords = new ArrayList<>();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         int[] xload = nbt.getIntArray("xcoords");
-        System.out.println("Ruins chunks logged: "+xload.length);
+        System.out.println("Ruins chunks logged: " + xload.length);
         if (xload.length > 0)
         {
             xCoords.clear();
@@ -54,7 +54,7 @@ public class ChunkLoggerData extends WorldSavedData
         nbt.setIntArray("xcoords", xsave);
         nbt.setIntArray("zcoords", zsave);
     }
-    
+
     public boolean catchChunkBug(int chunkX, int chunkZ)
     {
         for (int i = 0; i < xCoords.size(); i++)
@@ -64,11 +64,11 @@ public class ChunkLoggerData extends WorldSavedData
                 return true;
             }
         }
-        
+
         xCoords.add(chunkX);
         zCoords.add(chunkZ);
         setDirty(true);
-        
+
         return false;
     }
 

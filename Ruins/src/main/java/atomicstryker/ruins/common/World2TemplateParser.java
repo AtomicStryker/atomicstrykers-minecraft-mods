@@ -1,16 +1,6 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,20 +9,24 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityCommandBlock;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.tileentity.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.commons.lang3.StringEscapeUtils;
 
-public class World2TemplateParser extends Thread
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
+class World2TemplateParser extends Thread
 {
-    
+
     private static final int SPAWN_RULE_EXISTSBELOW = 1;
     private static final int SPAWN_RULE_EXISTSADJACENT = 2;
 
@@ -91,7 +85,7 @@ public class World2TemplateParser extends Thread
      * Keeps track of and reports result back to player
      */
     private boolean failed;
-    
+
     /**
      * Counts in the Background to stop near-finite loops by accident
      */
@@ -113,8 +107,8 @@ public class World2TemplateParser extends Thread
         fileName = fName;
         IBlockState state = world.getBlockState(new BlockPos(a, b, c));
         templateHelperBlock = new BlockData(state.getBlock(), state.getBlock().getMetaFromState(state), null, 0);
-        usedBlocks = new ArrayList<BlockData>();
-        layerData = new ArrayList<BlockData[][]>();
+        usedBlocks = new ArrayList<>();
+        layerData = new ArrayList<>();
     }
 
     @Override
@@ -179,7 +173,7 @@ public class World2TemplateParser extends Thread
             player.addChatMessage(new TextComponentTranslation("Template Parse fail, chosen Block was air WTF?!"));
         }
     }
-    
+
     private void checkLockup()
     {
         if (blocker++ > 1024)
@@ -188,7 +182,7 @@ public class World2TemplateParser extends Thread
         }
     }
 
-	private void readBlocks(World world)
+    private void readBlocks(World world)
     {
         yPadding = 0;
         int highestY = y + 1;
@@ -196,7 +190,7 @@ public class World2TemplateParser extends Thread
         BlockData currentinstance;
         BlockData[][] currentLayer;
         blocker = 0;
-        
+
         for (int yi = y + 1; true; yi++)
         {
             currentLayer = new BlockData[xLength][zLength];
@@ -205,7 +199,7 @@ public class World2TemplateParser extends Thread
             if (yi > (highestY + 100))
             {
                 // strip off the empty layers again
-                layerData = new ArrayList<BlockData[][]>(layerData.subList(yPadding, highestY - y));
+                layerData = new ArrayList<>(layerData.subList(yPadding, highestY - y));
                 return;
             }
             checkLockup();
@@ -218,7 +212,7 @@ public class World2TemplateParser extends Thread
                     blockx = xi + lowestX;
                     blocky = yi;
                     blockz = zi + lowestZ;
-                    
+
                     IBlockState state = world.getBlockState(new BlockPos(blockx, blocky, blockz));
                     temp.block = state.getBlock();
                     temp.meta = temp.block.getMetaFromState(state);
@@ -236,7 +230,7 @@ public class World2TemplateParser extends Thread
                         yPadding = yi - y;
                     }
                     highestY = yi;
-                    
+
                     TileEntity te = world.getTileEntity(new BlockPos(new BlockPos(blockx, blocky, blockz)));
                     /* handle special blocks */
                     if (te != null && FileHandler.registeredTEBlocks.contains(temp.block))
@@ -247,7 +241,7 @@ public class World2TemplateParser extends Thread
                     }
                     else if (temp.block == Blocks.mob_spawner)
                     {
-                    	try
+                        try
                         {
                             if (te != null)
                             {
@@ -275,11 +269,11 @@ public class World2TemplateParser extends Thread
                         // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
                         temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
-                    else if (te instanceof IInventory && !isIInventoryEmpty((IInventory)te))
+                    else if (te instanceof IInventory && !isIInventoryEmpty((IInventory) te))
                     {
                         IInventory inventory = (IInventory) te;
-                        final ArrayList<ItemStack> invItems = new ArrayList<ItemStack>();
-                        final ArrayList<Integer> slots = new ArrayList<Integer>();
+                        final ArrayList<ItemStack> invItems = new ArrayList<>();
+                        final ArrayList<Integer> slots = new ArrayList<>();
                         for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
                         {
                             if (inventory.getStackInSlot(slot) != null)
@@ -288,7 +282,7 @@ public class World2TemplateParser extends Thread
                                 slots.add(slot);
                             }
                         }
-                        
+
                         StringBuilder sb = new StringBuilder("IInventory;");
                         sb.append(GameData.getBlockRegistry().getNameForObject(temp.block));
                         sb.append(';');
@@ -302,7 +296,7 @@ public class World2TemplateParser extends Thread
                                 if (cs != null)
                                 {
                                     //ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
-                                	//TODO: Is this correct? i dont remember which case this code was handling
+                                    //TODO: Is this correct? i dont remember which case this code was handling
                                     ident = GameData.getItemRegistry().getNameForObject(cs.getItem()).toString();
                                 }
                                 else
@@ -337,21 +331,21 @@ public class World2TemplateParser extends Thread
                             sb.append(slots.get(index));
                             sb.append('+');
                         }
-                        
+
                         temp.data = sb.toString();
                         int iLastSep = temp.data.lastIndexOf("+");
                         if (iLastSep != -1)
                         {
-                            temp.data = temp.data.substring(0, iLastSep)+"-"+temp.meta;
+                            temp.data = temp.data.substring(0, iLastSep) + "-" + temp.meta;
                         }
                         else
                         {
-                            temp.data = temp.data+"-"+temp.meta;
+                            temp.data = temp.data + "-" + temp.meta;
                         }
                     }
                     else if (temp.block == Blocks.chest)
                     {
-                        temp.data = "ChestGenHook:dungeonChest:5-"+temp.meta;
+                        temp.data = "ChestGenHook:dungeonChest:5-" + temp.meta;
                     }
                     else if (temp.block == Blocks.command_block)
                     {
@@ -382,7 +376,7 @@ public class World2TemplateParser extends Thread
                         GameProfile playerhead = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
                         if (playerhead != null)
                         {
-                            specialType = playerhead.getId().toString()+"-"+playerhead.getName();
+                            specialType = playerhead.getId().toString() + "-" + playerhead.getName();
                         }
                         temp.data = "Skull:" + skulltype + ":" + rot + ((specialType.equals("")) ? "" : ":" + specialType) + "-" + temp.meta;
                     }
@@ -402,7 +396,7 @@ public class World2TemplateParser extends Thread
             }
         }
     }
-    
+
     private boolean isIInventoryEmpty(IInventory inventory)
     {
         for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
@@ -418,16 +412,28 @@ public class World2TemplateParser extends Thread
     private String convertSignStrings(String prefix, TileEntitySign sign)
     {
         String a = sign.signText[0].getUnformattedTextForChat();
-        if (a.equals("")) a = "null";
+        if (a.equals(""))
+        {
+            a = "null";
+        }
         String b = sign.signText[1].getUnformattedTextForChat();
-        if (b.equals("")) b = "null";
+        if (b.equals(""))
+        {
+            b = "null";
+        }
         String c = sign.signText[2].getUnformattedTextForChat();
-        if (c.equals("")) c = "null";
+        if (c.equals(""))
+        {
+            c = "null";
+        }
         String d = sign.signText[3].getUnformattedTextForChat();
-        if (d.equals("")) d = "null";
-        return prefix+a+":"+b+":"+c+":"+d;
+        if (d.equals(""))
+        {
+            d = "null";
+        }
+        return prefix + a + ":" + b + ":" + c + ":" + d;
     }
-    
+
     private void toFile(File file)
     {
         try
@@ -436,23 +442,23 @@ public class World2TemplateParser extends Thread
             {
                 if (!file.delete())
                 {
-                    throw new RuntimeException("Ruins crashed trying to access file "+file);
+                    throw new RuntimeException("Ruins crashed trying to access file " + file);
                 }
             }
             else
             {
                 if (!file.createNewFile())
                 {
-                    throw new RuntimeException("Ruins crashed trying to access file "+file);
+                    throw new RuntimeException("Ruins crashed trying to access file " + file);
                 }
             }
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-            
+
             pw.println();
-            pw.println("# Created by Ruins mod version "+RuinsMod.modversion+" Ingame Parser");
-            pw.println("# authoring Player: "+player.getName());
+            pw.println("# Created by Ruins mod version " + RuinsMod.modversion + " Ingame Parser");
+            pw.println("# authoring Player: " + player.getName());
             pw.println();
-            
+
             pw.println("weight=1");
             pw.println("embed_into_distance=" + yPadding);
             pw.println("acceptable_target_blocks=");
@@ -502,7 +508,7 @@ public class World2TemplateParser extends Thread
             }
 
             pw.close();
-            
+
             CommandTestTemplate.parsedRuin = new RuinTemplate(new PrintWriter(System.out), file.getCanonicalPath(), file.getName());
         }
         catch (Exception e)
@@ -510,7 +516,7 @@ public class World2TemplateParser extends Thread
             e.printStackTrace();
             failed = true;
             player.addChatMessage(new TextComponentTranslation("Something broke! See server logfile for exception message and get it to AtomicStryker."));
-            player.addChatMessage(new TextComponentTranslation("First line of stacktrace: "+e.getMessage()));
+            player.addChatMessage(new TextComponentTranslation("First line of stacktrace: " + e.getMessage()));
         }
     }
 
@@ -536,11 +542,11 @@ public class World2TemplateParser extends Thread
 
         boolean matchesBlock(World w, int x, int y, int z)
         {
-        	IBlockState state = w.getBlockState(new BlockPos(x, y, z));
+            IBlockState state = w.getBlockState(new BlockPos(x, y, z));
             return state.getBlock() == block && meta == block.getMetaFromState(state);
         }
 
-		@Override
+        @Override
         public String toString()
         {
             return spawnRule + ",100," + ((data != null) ? data : GameData.getBlockRegistry().getNameForObject(block).toString() + "-" + meta);

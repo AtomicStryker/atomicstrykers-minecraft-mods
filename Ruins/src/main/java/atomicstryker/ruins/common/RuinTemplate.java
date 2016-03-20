@@ -1,15 +1,5 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
@@ -22,6 +12,12 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.GameData;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class RuinTemplate
 {
@@ -40,7 +36,7 @@ public class RuinTemplate
     private boolean preventRotation = false;
     private final ArrayList<Integer> bonemealMarkers;
     private final ArrayList<AdjoiningTemplateData> adjoiningTemplates;
-    
+
     private class AdjoiningTemplateData
     {
         RuinTemplate adjoiningTemplate;
@@ -49,20 +45,20 @@ public class RuinTemplate
         int relativeZ;
         float spawnchance;
     }
-    
+
     public RuinTemplate(PrintWriter out, String filename, String simpleName, boolean debug) throws Exception
     {
         // load in the given file as a template
         name = simpleName;
         debugPrinter = out;
         debugging = debug;
-        ArrayList<String> lines = new ArrayList<String>();
-        rules = new ArrayList<RuinTemplateRule>();
-        layers = new ArrayList<RuinTemplateLayer>();
-        biomes = new HashSet<String>();
-        bonemealMarkers = new ArrayList<Integer>();
-        adjoiningTemplates = new ArrayList<AdjoiningTemplateData>();
-        
+        ArrayList<String> lines = new ArrayList<>();
+        rules = new ArrayList<>();
+        layers = new ArrayList<>();
+        biomes = new HashSet<>();
+        bonemealMarkers = new ArrayList<>();
+        adjoiningTemplates = new ArrayList<>();
+
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String read = br.readLine();
         while (read != null)
@@ -110,7 +106,7 @@ public class RuinTemplate
     {
         return blockID == Blocks.air || blockID == Blocks.snow_layer || blockID == Blocks.web || isPlant(blockID, world, pos) || preserveBlock(blockID);
     }
-    
+
     private boolean isPlant(Block blockID, World world, BlockPos pos)
     {
         return blockID instanceof IShearable || blockID instanceof BlockBush || blockID instanceof IPlantable || blockID.isLeaves(world.getBlockState(pos), world, pos)
@@ -157,12 +153,12 @@ public class RuinTemplate
                 return false;
             }
         }
-        
+
         if (acceptedSurfaces.length == 0)
         {
             return true;
         }
-        
+
         for (Block b : acceptedSurfaces)
         {
             if (id == b)
@@ -172,13 +168,13 @@ public class RuinTemplate
         }
         return false;
     }
-    
+
     public int checkArea(World world, int xBase, int y, int zBase, int rotate)
     {
         return checkArea(world, xBase, y, zBase, rotate, 0);
     }
 
-    public int checkArea(World world, int xBase, int y, int zBase, int rotate, int additionalYRangeChecked)
+    private int checkArea(World world, int xBase, int y, int zBase, int rotate, int additionalYRangeChecked)
     {
         // setup some variable defaults (north/south)
         int x = xBase + w_off;
@@ -195,20 +191,20 @@ public class RuinTemplate
             xDim = length;
             zDim = width;
         }
-        
+
         // guess the top Y coordinate of the structure box, for checking top to bottom
         final int topYguess = y + height - embed + additionalYRangeChecked;
-        
+
         // set a lowest height value at which surface search is aborted
         final int minimalCheckedY = y - height - embed - additionalYRangeChecked;
-        
+
         // surface heights of the proposed site, -1 means 'out of range, consider overhang'
         final int[][] heightMap = new int[xDim][zDim];
-        
+
         Block curBlock;
-        final int lastX = x+xDim;
-        final int lastZ = z+zDim;
-        
+        final int lastX = x + xDim;
+        final int lastZ = z + zDim;
+
         for (int ix = x; ix < lastX; ix++)
         {
             for (int iz = z; iz < lastZ; iz++)
@@ -223,7 +219,7 @@ public class RuinTemplate
                     {
                         if (isAcceptableSurface(curBlock))
                         {
-                            heightMap[ix-x][iz-z] = iy;
+                            heightMap[ix - x][iz - z] = iy;
                             foundSurface = true;
                             break;
                         }
@@ -236,11 +232,11 @@ public class RuinTemplate
                 }
                 if (!foundSurface)
                 {
-                    heightMap[ix-x][iz-z] = -1;
+                    heightMap[ix - x][iz - z] = -1;
                 }
             }
         }
-        
+
         // now compute a better y for the structure from the found surface heights
         int sum = 0;
         int vals = 0;
@@ -255,8 +251,8 @@ public class RuinTemplate
                 }
             }
         }
-        final int newY = vals > 0 ? (int) Math.ceil(sum/vals) : y;
-        
+        final int newY = vals > 0 ? (int) Math.ceil(sum / vals) : y;
+
         // check if the resulting levelling and overhang in the build site surface is acceptable
         int localOverhang = overhang;
         for (int[] row : heightMap)
@@ -316,12 +312,12 @@ public class RuinTemplate
         catch (Exception e)
         {
             debugPrinter.printf("An Exception was thrown while building Ruin: %s\n", getName());
-            System.err.println("Faulty Template name: "+getName());
-            System.err.println(e.getStackTrace());
+            System.err.println("Faulty Template name: " + getName());
+            e.printStackTrace();
             return -1;
         }
     }
-    
+
     private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate)
     {
         /*
@@ -332,18 +328,18 @@ public class RuinTemplate
         boolean eastwest;
         RuinTemplateLayer curlayer;
         RuinTemplateRule curRule;
-        
+
         // height sanity check
-        final int y = Math.max(Math.min(yBase, world.getActualHeight()-height), 8);
-        
+        final int y = Math.max(Math.min(yBase, world.getActualHeight() - height), 8);
+
         // initialize all these variables
-        final ArrayList<RuinRuleProcess> laterun = new ArrayList<RuinRuleProcess>();
-        final ArrayList<RuinRuleProcess> lastrun = new ArrayList<RuinRuleProcess>();
+        final ArrayList<RuinRuleProcess> laterun = new ArrayList<>();
+        final ArrayList<RuinRuleProcess> lastrun = new ArrayList<>();
         final Iterator<RuinTemplateLayer> layeriter = layers.iterator();
-        
+
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
         int yReturn = y + y_off;
-        
+
         // override rotation wishes if its locked by template
         if (preventRotation)
         {
@@ -418,10 +414,10 @@ public class RuinTemplate
             // we're done with this layer
             y_off++;
         }
-        
+
         // get the late runs and finish up
         doLateRuns(world, random, laterun, lastrun);
-        
+
         int xv, yv, zv;
         for (int x1 = 0; x1 < xDim; x1++)
         {
@@ -429,27 +425,27 @@ public class RuinTemplate
             {
                 for (int y1 = 0; y1 <= layers.size(); y1++)
                 {
-                    xv = x+x1;
-                    yv = y+y1;
-                    zv = z+z1;
+                    xv = x + x1;
+                    yv = y + y1;
+                    zv = z + z1;
                     BlockPos pos = new BlockPos(xv, yv, zv);
                     world.markAndNotifyBlock(pos, null, Blocks.air.getDefaultState(), world.getBlockState(pos), 2);
                 }
             }
         }
-        
-        for (int b = 0; b < bonemealMarkers.size(); b+=3)
+
+        for (int b = 0; b < bonemealMarkers.size(); b += 3)
         {
             int xi = bonemealMarkers.get(b);
-            int yi = bonemealMarkers.get(b+1);
-            int zi = bonemealMarkers.get(b+2);
+            int yi = bonemealMarkers.get(b + 1);
+            int zi = bonemealMarkers.get(b + 2);
             IBlockState state = world.getBlockState(new BlockPos(xi, yi, zi));
             Block growable = state.getBlock();
             debugPrinter.printf("Now considering bonemeal flag at [%d|%d|%d], block: %s\n", xi, yi, zi, growable);
             // verbatim rip of ItemDye.applyBonemeal method
             if (growable instanceof IGrowable)
             {
-                IGrowable igrowable = (IGrowable)growable;
+                IGrowable igrowable = (IGrowable) growable;
                 BlockPos pos = new BlockPos(xi, yi, zi);
                 if (igrowable.canGrow(world, pos, state, world.isRemote))
                 {
@@ -471,10 +467,10 @@ public class RuinTemplate
             if (randres < ad.spawnchance)
             {
                 int newrot = world.rand.nextInt(4);
-                int targetX = xBase+ad.relativeX;
-                int targetZ = zBase+ad.relativeZ;
+                int targetX = xBase + ad.relativeX;
+                int targetZ = zBase + ad.relativeZ;
                 int targetY = ad.adjoiningTemplate.checkArea(world, targetX, y, targetZ, newrot, ad.acceptableY);
-                if (targetY > 0 && Math.abs(y-targetY) <= ad.acceptableY)
+                if (targetY > 0 && Math.abs(y - targetY) <= ad.acceptableY)
                 {
                     if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, targetY, targetZ, newrot, false, true)))
                     {
@@ -490,7 +486,7 @@ public class RuinTemplate
                 }
                 else
                 {
-                    debugPrinter.printf("Adjoining area around [%d|%d|%d] was rejected, targetY:%d, diff:%d\n", targetX, y, targetZ, targetY, Math.abs(y-targetY));
+                    debugPrinter.printf("Adjoining area around [%d|%d|%d] was rejected, targetY:%d, diff:%d\n", targetX, y, targetZ, targetY, Math.abs(y - targetY));
                 }
             }
             else
@@ -498,7 +494,7 @@ public class RuinTemplate
                 debugPrinter.printf("Spawnchance [%.2f] too low. Random got [%.2f], no spawn\n", ad.spawnchance, randres);
             }
         }
-        
+
         return yReturn;
     }
 
@@ -508,7 +504,7 @@ public class RuinTemplate
         {
             rp.doBlock(world, random);
         }
-        
+
         for (RuinRuleProcess rp : lastrun)
         {
             rp.doBlock(world, random);
@@ -535,27 +531,27 @@ public class RuinTemplate
             xDim = length + 2 * lbuffer;
             zDim = width + 2 * lbuffer;
         }
-        
-        final int lastX = x+xDim;
-        final int lastZ = z+zDim;
-        final int lastY = y+leveling;
+
+        final int lastX = x + xDim;
+        final int lastZ = z + zDim;
+        final int lastY = y + leveling;
         for (int xi = x; xi < lastX; xi++)
         {
             for (int zi = z; zi < lastZ; zi++)
             {
                 // fill holes
-                for (int yi = y-leveling; yi <= y; yi++)
+                for (int yi = y - leveling; yi <= y; yi++)
                 {
-                	BlockPos pos = new BlockPos(xi, yi, zi);
+                    BlockPos pos = new BlockPos(xi, yi, zi);
                     if (isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
                     {
                         world.setBlockState(pos, fillBlockID.getDefaultState(), 2);
                     }
                 }
                 // flatten bumps
-                for (int yi = y+1; yi <= lastY; yi++)
+                for (int yi = y + 1; yi <= lastY; yi++)
                 {
-                	BlockPos pos = new BlockPos(xi, yi, zi);
+                    BlockPos pos = new BlockPos(xi, yi, zi);
                     if (!isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
                     {
                         world.setBlockState(pos, Blocks.air.getDefaultState(), 2);
@@ -572,7 +568,7 @@ public class RuinTemplate
 
         // the first rule added will always be the preserve block rule.
         rules.add(new RuinRuleAir(debugPrinter, this));
-        
+
         // now get the rest of the data
         final Iterator<String> i = lines.iterator();
         String line;
@@ -586,7 +582,7 @@ public class RuinTemplate
                 {
                     ruleCount = rules.size();
                     // add in data until we reach the end of the layer
-                    ArrayList<String> layerlines = new ArrayList<String>();
+                    ArrayList<String> layerlines = new ArrayList<>();
                     line = i.next();
                     while (!line.startsWith("endlayer"))
                     {
@@ -606,7 +602,7 @@ public class RuinTemplate
                     }
                     else
                     {
-                        String rulestring = line.substring(line.indexOf('=')+1);
+                        String rulestring = line.substring(line.indexOf('=') + 1);
                         rules.add(new RuinTemplateRule(debugPrinter, this, rulestring, debugging));
                     }
                 }
@@ -629,7 +625,7 @@ public class RuinTemplate
                     if (check.length > 1)
                     {
                         check = check[1].split(",");
-                        final HashSet<Block> acceptables = new HashSet<Block>();
+                        final HashSet<Block> acceptables = new HashSet<>();
                         Block b;
                         for (String aCheck : check)
                         {
@@ -639,7 +635,7 @@ public class RuinTemplate
                                 acceptables.add(b);
                             }
                         }
-                        
+
                         acceptedSurfaces = new Block[acceptables.size()];
                         acceptedSurfaces = acceptables.toArray(acceptedSurfaces);
                     }
@@ -650,7 +646,7 @@ public class RuinTemplate
                     if (check.length > 1)
                     {
                         check = check[1].split(",");
-                        final HashSet<Block> inacceptables = new HashSet<Block>();
+                        final HashSet<Block> inacceptables = new HashSet<>();
                         Block b;
                         for (String aCheck : check)
                         {
@@ -660,7 +656,7 @@ public class RuinTemplate
                                 inacceptables.add(b);
                             }
                         }
-                        
+
                         deniedSurfaces = new Block[inacceptables.size()];
                         deniedSurfaces = inacceptables.toArray(deniedSurfaces);
                     }
@@ -746,7 +742,7 @@ public class RuinTemplate
                 {
                     // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
                     String[] vals = line.split("=")[1].split(";");
-                    
+
                     File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + vals[0] + ".tml");
                     if (file.exists() && file.canRead())
                     {
@@ -763,7 +759,7 @@ public class RuinTemplate
                 }
             }
         }
-        
+
         if (acceptedSurfaces == null)
         {
             acceptedSurfaces = new Block[0];
@@ -772,7 +768,7 @@ public class RuinTemplate
         {
             deniedSurfaces = new Block[0];
         }
-        
+
         if (width % 2 == 1)
         {
             w_off = 0 - (width - 1) / 2;
@@ -790,7 +786,7 @@ public class RuinTemplate
             l_off = 0 - length / 2;
         }
     }
-    
+
     /**
      * Marks coordinates to be applied bonemeal to after spawning has finished and a block update was pushed
      */

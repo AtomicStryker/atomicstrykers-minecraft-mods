@@ -27,7 +27,7 @@ curseforge {
         releaseType = 'release'
         addGameVersion '1.9'
         mainArtifact(file('build/distributions/Ruins-1.9.zip')) {
-          displayName = 'Ruins (Structure Spawning System)'
+            displayName = 'Ruins (Structure Spawning System)'
         }
     }
 }

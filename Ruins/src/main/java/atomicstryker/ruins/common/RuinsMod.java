@@ -1,13 +1,5 @@
 package atomicstryker.ruins.common;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -40,28 +32,36 @@ import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "15.7";
-    
+    static final String modversion = "15.7";
+
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
     private ConcurrentLinkedQueue<int[]> currentlyGenerating;
-    
+
     @NetworkCheckHandler
-    public boolean checkModLists(Map<String,String> modList, Side side)
+    public boolean checkModLists(Map<String, String> modList, Side side)
     {
         return true;
     }
-    
+
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
-        generatorMap = new ConcurrentHashMap<Integer, WorldHandle>();
-        currentlyGenerating = new ConcurrentLinkedQueue<int[]>();
+        generatorMap = new ConcurrentHashMap<>();
+        currentlyGenerating = new ConcurrentLinkedQueue<>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -78,19 +78,19 @@ public class RuinsMod
 
     private long nextInfoTime;
 
-	@SubscribeEvent
+    @SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
         ItemStack is = event.entityPlayer.getHeldItemMainhand();
         if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
         {
-            nextInfoTime = System.currentTimeMillis() + 1000l;
+            nextInfoTime = System.currentTimeMillis() + 1000L;
             event.entityPlayer.addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
                     event.state.getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
         }
     }
 
-	@SubscribeEvent
+    @SubscribeEvent
     public void onBreak(BreakEvent event)
     {
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
@@ -98,7 +98,7 @@ public class RuinsMod
             ItemStack is = event.getPlayer().getHeldItemMainhand();
             if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
             {
-                nextInfoTime = System.currentTimeMillis() + 1000l;
+                nextInfoTime = System.currentTimeMillis() + 1000L;
                 event.getPlayer().addChatComponentMessage(
                         new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.state.getBlock().getLocalizedName(),
                                 GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
@@ -116,20 +116,20 @@ public class RuinsMod
             wh.generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
         }
     }
-    
+
     @SubscribeEvent
     public void onEntityEnteringChunk(EntityEvent.EnteringChunk event)
     {
         if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote)
         {
             TileEntityCommandBlock tecb;
-            ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<TileEntityCommandBlock>();
+            ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<>();
 
             for (int xoffset = -4; xoffset <= 4; xoffset++)
             {
                 for (int zoffset = -4; zoffset <= 4; zoffset++)
                 {
-                    for (TileEntity teo : event.entity.worldObj.getChunkFromChunkCoords(event.newChunkX+xoffset, event.newChunkZ+zoffset).getTileEntityMap().values())
+                    for (TileEntity teo : event.entity.worldObj.getChunkFromChunkCoords(event.newChunkX + xoffset, event.newChunkZ + zoffset).getTileEntityMap().values())
                     {
                         if (teo instanceof TileEntityCommandBlock)
                         {
@@ -146,18 +146,18 @@ public class RuinsMod
                     }
                 }
             }
-            
+
             for (TileEntityCommandBlock tecb2 : tecblistToDelete)
             {
                 // kill block
-            	BlockPos pos = tecb2.getPos();
+                BlockPos pos = tecb2.getPos();
                 System.out.printf("Ruins executed and killed Command Block at [%s]\n", pos);
                 event.entity.worldObj.setBlockToAir(pos);
             }
         }
     }
 
-    public class RuinsWorldGenerator implements IWorldGenerator
+    private class RuinsWorldGenerator implements IWorldGenerator
     {
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
@@ -166,7 +166,7 @@ public class RuinsMod
             {
                 return;
             }
-            
+
             int[] tuple = { chunkX, chunkZ };
             if (currentlyGenerating.contains(tuple))
             {
@@ -249,7 +249,7 @@ public class RuinsMod
         return wh;
     }
 
-    public static File getWorldSaveDir(World world)
+    private static File getWorldSaveDir(World world)
     {
         ISaveHandler worldsaver = world.getSaveHandler();
 
@@ -283,12 +283,12 @@ public class RuinsMod
     {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
-        	File file = FMLClientHandler.instance().getClient().mcDataDir;
-        	String abspath = file.getAbsolutePath();
-        	if (abspath.endsWith("."))
-        	{
-        		file = new File(abspath.substring(0, abspath.length()-1));
-        	}
+            File file = FMLClientHandler.instance().getClient().mcDataDir;
+            String abspath = file.getAbsolutePath();
+            if (abspath.endsWith("."))
+            {
+                file = new File(abspath.substring(0, abspath.length() - 1));
+            }
             return file;
         }
         return FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
@@ -302,7 +302,7 @@ public class RuinsMod
             File worlddir = getWorldSaveDir(world);
             worldHandle.fileHandle = new FileHandler(worlddir, world.provider.getDimension());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
-            
+
             worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().loadData(ChunkLoggerData.class, "ruinschunklogger");
             if (worldHandle.chunkLogger == null)
             {

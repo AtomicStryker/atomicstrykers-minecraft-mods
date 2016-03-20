@@ -1,43 +1,37 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-
 import com.google.common.io.Files;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.fml.common.registry.GameData;
 
-public class FileHandler
+import java.io.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
+
+class FileHandler
 {
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
-    private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<String, HashSet<RuinTemplate>>();
+    private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<>();
     private final int dimension;
-    protected HashMap<String, int[]> vars = new HashMap<String, int[]>();
+    private final HashMap<String, int[]> vars = new HashMap<>();
 
-    protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
-    protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
-    private int[] allowedDimensions = {-1, 0, 1};
+    int triesPerChunkNormal = 6, triesPerChunkNether = 6;
+    float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
+    private int[] allowedDimensions = { -1, 0, 1 };
 
     public boolean loaded;
-    public boolean disableLogging;
-    public File saveFolder;
-    
+    boolean disableLogging;
+    final File saveFolder;
+
     public float templateInstancesMinDistance = 75f;
-    public float anyRuinsMinDistance = 0f;
-    public static HashSet<Block> registeredTEBlocks = new HashSet<Block>();
-    
+    float anyRuinsMinDistance = 0f;
+    static final HashSet<Block> registeredTEBlocks = new HashSet<>();
+
     private int templateCount;
 
     public FileHandler(File worldPath, int dim)
@@ -70,12 +64,12 @@ public class FileHandler
             }
             try
             {
-                File log = new File(basedir, "ruins_log_dim_"+dimension+".txt");
+                File log = new File(basedir, "ruins_log_dim_" + dimension + ".txt");
                 if (log.exists())
                 {
                     if (!log.delete() || !log.createNewFile())
                     {
-                        throw new RuntimeException("Ruins crashed trying to access file: "+log.getAbsolutePath());
+                        throw new RuntimeException("Ruins crashed trying to access file: " + log.getAbsolutePath());
                     }
                 }
                 pw = new PrintWriter(new BufferedWriter(new FileWriter(log)));
@@ -103,7 +97,7 @@ public class FileHandler
             {
                 // load in the generic templates
                 // pw.println("Loading the generic ruins templates...");
-                HashSet<RuinTemplate> set = new HashSet<RuinTemplate>();
+                HashSet<RuinTemplate> set = new HashSet<>();
                 templates.put(RuinsMod.BIOME_ANY, set);
                 addRuins(pw, new File(templPath, RuinsMod.BIOME_ANY), RuinsMod.BIOME_ANY, set);
                 int[] val = new int[3];
@@ -154,13 +148,13 @@ public class FileHandler
             }
 
             loaded = true;
-            pw.println("Ruins mod loaded successfully for world "+saveFolder+", template files: "+templateCount);
+            pw.println("Ruins mod loaded successfully for world " + saveFolder + ", template files: " + templateCount);
             pw.flush();
             pw.close();
         }
     }
 
-    public RuinTemplate getTemplate(Random random, String biome)
+    RuinTemplate getTemplate(Random random, String biome)
     {
         try
         {
@@ -185,7 +179,7 @@ public class FileHandler
         }
     }
 
-    public boolean useGeneric(Random random, String biome)
+    boolean useGeneric(Random random, String biome)
     {
         int[] val = vars.get(biome);
         return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextInt(100) + 1 >= val[CHANCE]);
@@ -196,7 +190,7 @@ public class FileHandler
         // pw.println("Loading the " + bname + " ruins templates...");
         pw.flush();
         File path_biome = new File(dir, bname);
-        HashSet<RuinTemplate> set = new HashSet<RuinTemplate>();
+        HashSet<RuinTemplate> set = new HashSet<>();
         templates.put(bname, set);
         addRuins(pw, path_biome, bname, set);
         int[] val = new int[3];
@@ -241,12 +235,12 @@ public class FileHandler
             if (check[0].equals("tries_per_chunk_normal"))
             {
                 triesPerChunkNormal = Integer.parseInt(check[1]);
-                ruinsLog.println("tries_per_chunk_normal = "+triesPerChunkNormal);
+                ruinsLog.println("tries_per_chunk_normal = " + triesPerChunkNormal);
             }
             if (check[0].equals("chance_to_spawn_normal"))
             {
                 chanceToSpawnNormal = Float.parseFloat(check[1]);
-                ruinsLog.println("chance_to_spawn_normal = "+chanceToSpawnNormal);
+                ruinsLog.println("chance_to_spawn_normal = " + chanceToSpawnNormal);
             }
             if (check[0].equals("tries_per_chunk_nether"))
             {
@@ -263,12 +257,12 @@ public class FileHandler
             if (check[0].equals("templateInstancesMinDistance"))
             {
                 templateInstancesMinDistance = Float.parseFloat(check[1]);
-                ruinsLog.println("templateInstancesMinDistance = "+templateInstancesMinDistance);
+                ruinsLog.println("templateInstancesMinDistance = " + templateInstancesMinDistance);
             }
             if (check[0].equals("anyRuinsMinDistance"))
             {
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
-                ruinsLog.println("anyRuinsMinDistance = "+anyRuinsMinDistance);
+                ruinsLog.println("anyRuinsMinDistance = " + anyRuinsMinDistance);
             }
             if (check[0].equals("allowedDimensions") && check.length > 1)
             {
@@ -315,7 +309,7 @@ public class FileHandler
                             }
                         }
                     }
-                    
+
                     if (!found && !disableLogging)
                     {
                         System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
@@ -327,8 +321,8 @@ public class FileHandler
         }
         br.close();
     }
-    
-    private void addRuins(PrintWriter pw, File path, String name, HashSet<RuinTemplate> targetList) throws Exception
+
+    private void addRuins(PrintWriter pw, File path, String name, HashSet<RuinTemplate> targetList)
     {
         RuinTemplate r;
         BiomeGenBase bgb;
@@ -372,8 +366,8 @@ public class FileHandler
         }
         pw.flush();
     }
-    
-    public boolean allowsDimension(int dimensionId)
+
+    boolean allowsDimension(int dimensionId)
     {
         for (int i : allowedDimensions)
         {
@@ -384,7 +378,7 @@ public class FileHandler
         }
         return false;
     }
-    
+
     private void copyGlobalOptionsTo(File dir) throws Exception
     {
         File copyfile = new File(dir, "ruins.txt");
@@ -455,5 +449,5 @@ public class FileHandler
         pw.flush();
         pw.close();
     }
-    
+
 }

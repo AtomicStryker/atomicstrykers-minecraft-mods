@@ -1,7 +1,5 @@
 package atomicstryker.ruins.common;
 
-import java.util.ArrayList;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
@@ -16,24 +14,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
+
 public class CommandUndo extends CommandBase
 {
-    
-    private static ArrayList<TemplateArea> savedLocations = new ArrayList<TemplateArea>();
+
+    private static final ArrayList<TemplateArea> savedLocations = new ArrayList<>();
     private static RuinTemplate runningTemplateSpawn;
-    
+
     private class TemplateArea
     {
         Block[][][] blockArray;
         int[][][] metaArray;
         int xBase, yBase, zBase;
     }
-    
+
     public CommandUndo()
     {
         MinecraftForge.EVENT_BUS.register(this);
     }
-    
+
     @SubscribeEvent
     public void onSpawningRuin(EventRuinTemplateSpawn event)
     {
@@ -52,7 +52,7 @@ public class CommandUndo extends CommandBase
                 {
                     System.out.println("Ruins undo command caught adjacent template, saving it too..");
                 }
-                
+
                 RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
                 TemplateArea ta = new TemplateArea();
                 ta.xBase = data.xMin;
@@ -67,14 +67,14 @@ public class CommandUndo extends CommandBase
                     {
                         for (int z = 0; z < ta.blockArray[0][0].length; z++)
                         {
-                        	bstate = event.world.getBlockState(new BlockPos(ta.xBase+x, ta.yBase+y, ta.zBase+z));
+                            bstate = event.world.getBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z));
                             ta.blockArray[x][y][z] = bstate.getBlock();
                             ta.metaArray[x][y][z] = ta.blockArray[x][y][z].getMetaFromState(bstate);
                         }
                     }
                 }
                 savedLocations.add(ta);
-                
+
                 if (savedLocations.size() > 100)
                 {
                     // safety overflow valve in case something goes wrong
@@ -90,7 +90,7 @@ public class CommandUndo extends CommandBase
             }
         }
     }
-    
+
     @Override
     public String getCommandName()
     {
@@ -129,19 +129,16 @@ public class CommandUndo extends CommandBase
                         {
                             for (int z = 0; z < ta.blockArray[0][0].length; z++)
                             {
-                                w.setBlockState(new BlockPos(ta.xBase+x, ta.yBase+y, ta.zBase+z), ta.blockArray[x][y][z].getStateFromMeta(ta.metaArray[x][y][z]), 2);
+                                w.setBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z), ta.blockArray[x][y][z].getStateFromMeta(ta.metaArray[x][y][z]), 2);
                             }
                         }
                     }
-                    
+
                     // kill off the resulting entityItems instances
-                    for (Entity e : w.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1,
-                            ta.zBase - 1), new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))))
-                    {
-                        e.setDead();
-                    }
+                    w.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1, ta.zBase - 1),
+                            new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))).forEach(Entity::setDead);
                 }
-                sender.addChatMessage(new TextComponentTranslation("Cleared away "+savedLocations.size()+" template sites."));
+                sender.addChatMessage(new TextComponentTranslation("Cleared away " + savedLocations.size() + " template sites."));
                 savedLocations.clear();
             }
         }

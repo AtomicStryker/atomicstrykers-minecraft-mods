@@ -1,8 +1,5 @@
 package atomicstryker.ruins.common;
 
-import java.io.File;
-import java.io.PrintWriter;
-
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -13,7 +10,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 
-public class CommandTestTemplate extends CommandBase
+import java.io.File;
+import java.io.PrintWriter;
+
+class CommandTestTemplate extends CommandBase
 {
 
     public static RuinTemplate parsedRuin;
@@ -50,7 +50,7 @@ public class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos-1, zpos, RuinsMod.DIR_NORTH);
+                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos - 1, zpos, RuinsMod.DIR_NORTH);
                     parsedRuin = null;
                 }
                 else
@@ -61,36 +61,36 @@ public class CommandTestTemplate extends CommandBase
             }
             else
             {
-                tryBuild(sender, args, xpos, ypos-1, zpos);
+                tryBuild(sender, args, xpos, ypos - 1, zpos);
             }
         }
         else if (args.length >= 4)
         {
-        	try
-        	{
+            try
+            {
                 if (args[2].equals("_"))
                 {
-                    tryBuild(sender, args, (int)parseDouble(xpos, args[1], -30000000, 30000000, false), -1, 
-                    		(int)parseDouble(zpos, args[3], -30000000, 30000000, false));
+                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), -1,
+                            (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
                 }
                 else
                 {
-                    tryBuild(sender, args, (int)parseDouble(xpos, args[1], -30000000, 30000000, false), 
-                    		(int)parseDouble(ypos, args[2], -30000000, 30000000, false)-1, 
-                    		(int)parseDouble(zpos, args[3], -30000000, 30000000, false));
+                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false),
+                            (int) parseDouble(ypos, args[2], -30000000, 30000000, false) - 1,
+                            (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
                 }
-        	}
-        	catch (NumberInvalidException e)
-        	{
-        		sender.addChatMessage(new TextComponentTranslation("Invalid coordinates specified"));
-			}
+            }
+            catch (NumberInvalidException e)
+            {
+                sender.addChatMessage(new TextComponentTranslation("Invalid coordinates specified"));
+            }
         }
         else
         {
             sender.addChatMessage(new TextComponentTranslation("Command is only available for ingame player entities, or with coordinates specified"));
         }
     }
-    
+
     private void tryBuild(ICommandSender sender, String[] args, int x, int y, int z)
     {
         String target = args[0];
@@ -106,7 +106,7 @@ public class CommandTestTemplate extends CommandBase
             {
                 parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
                 int rotation = (args.length > 4) ? Integer.parseInt(args[4]) : RuinsMod.DIR_NORTH;
-                
+
                 if (parsedRuin != null)
                 {
                     if (y < 0)
@@ -119,7 +119,7 @@ public class CommandTestTemplate extends CommandBase
                             {
                                 continue;
                             }
-                            
+
                             if (parsedRuin.isAcceptableSurface(b))
                             {
                                 break;
@@ -128,7 +128,7 @@ public class CommandTestTemplate extends CommandBase
                             return;
                         }
                     }
-                    
+
                     if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
                     {
                         sender.addChatMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
