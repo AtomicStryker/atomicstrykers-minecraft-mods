@@ -1,7 +1,7 @@
 package atomicstryker.updatecheck.client;
 
 import atomicstryker.updatecheck.common.IProxy;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class UpdateCheckClient implements IProxy
@@ -11,7 +11,7 @@ public class UpdateCheckClient implements IProxy
     public void announce(String announcement)
     {
         /* getChatGUI, printChatMessage */
-        FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage(new ChatComponentText(announcement));
+        FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation(announcement));
     }
 
 }

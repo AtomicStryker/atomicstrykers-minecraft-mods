@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -87,9 +87,9 @@ public class UpdateCheckMod
                     {
                         if (!isLocalVersionUpToDate(curMod.getVersion(), tokens[1].trim()))
                         {
-                            announcements.add("A newer version of " + EnumChatFormatting.RED + curMod.getName() + EnumChatFormatting.RESET
-                                    + " is available: " + tokens[1].trim() + ", visit " + EnumChatFormatting.GOLD + "atomicstryker.net"
-                                    + EnumChatFormatting.RESET + " to get it.");
+                            announcements.add("A newer version of " + TextFormatting.RED + curMod.getName() + TextFormatting.RESET
+                                    + " is available: " + tokens[1].trim() + ", visit " + TextFormatting.GOLD + "atomicstryker.net"
+                                    + TextFormatting.RESET + " to get it.");
                         }
                         else
                         {
