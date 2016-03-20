@@ -7,6 +7,9 @@ else {
 	defaultTasks 'build'
 }
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 // each mod uses its project foldername
 def projname = projectDir.getName()
 
