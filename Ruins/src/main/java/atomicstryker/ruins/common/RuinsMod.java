@@ -32,6 +32,7 @@ import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
@@ -69,13 +70,26 @@ public class RuinsMod
     }
 
     @EventHandler
+    public void serverAboutToStarted(FMLServerAboutToStartEvent evt)
+    {
+    	//
+        // Remove generators registered by a previous server run. If the user 
+    	// starts a new single player session (e.g. in another save) the old 
+    	// generators get invalid (since they point to the old save folder).
+    	// 
+    	// This cleanup has to be done before the first generate call (before 
+    	// server start event), otherwise the spawn point block gets lost.
+    	//
+        generatorMap.clear();
+    }
+
+    
+    @EventHandler
     public void serverStarted(FMLServerStartingEvent evt)
     {
         evt.registerServerCommand(new CommandParseTemplate());
         evt.registerServerCommand(new CommandTestTemplate());
         evt.registerServerCommand(new CommandUndo());
-        // remove generators registered by a previous server
-        generatorMap.clear();
     }
 
     private long nextInfoTime;
