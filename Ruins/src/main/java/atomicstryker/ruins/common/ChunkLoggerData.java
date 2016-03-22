@@ -5,7 +5,7 @@ import net.minecraft.world.WorldSavedData;
 
 import java.util.ArrayList;
 
-class ChunkLoggerData extends WorldSavedData
+public class ChunkLoggerData extends WorldSavedData
 {
     private final ArrayList<Integer> xCoords;
     private final ArrayList<Integer> zCoords;
