@@ -38,6 +38,8 @@ public class RuinGenerator
 	private boolean modified;
 	// the dimension this generator is responsible for
 	private int dimension;
+	// controls whether to use multi-threaded initialisation/save or not
+	private boolean multithreaded = false;
 
 
     public RuinGenerator(FileHandler rh, World world)
@@ -47,6 +49,8 @@ public class RuinGenerator
     	error = false;
 
         fileHandler = rh;
+        multithreaded = fileHandler.isMultiThreaded();
+        
         stats = new RuinStats();
         registeredRuins = new ArrayList<RuinData>();
         
@@ -61,11 +65,13 @@ public class RuinGenerator
         
         if (ruinsDataFile.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
         {
-            loadSync();
+            if (multithreaded) loadAsync();
+            else loadSync();
         }
         else
         {
             System.err.println("Ruins attempted to load invalid worldname " + world.getWorldInfo().getWorldName() + " posfile");
+            error = true;
         }
     }
 
@@ -108,8 +114,9 @@ public class RuinGenerator
 	        {
 	            return;
 	        }
-	
-	        new FlushThread().start();
+	        FlushThread flushThread = new FlushThread();
+	        if (multithreaded) flushThread.start();
+	        else flushThread.run();
     	} catch (InterruptedException e) {
     		// system is shutting down before we've even initialised
     		// at least we will complain about it
