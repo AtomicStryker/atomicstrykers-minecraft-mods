@@ -119,17 +119,20 @@ public class SimplyHaxFlying
                 defaultWalkSpeed = pcb.getWalkSpeed();
             }
 
-            pcb.allowFlying = true;
+            if (pcb != null)
+            {
+                pcb.allowFlying = true;
 
-            if (sprintButton.isKeyDown())
-            {
-                pcb.setFlySpeed(maxflyspeed);
-                pcb.setPlayerWalkSpeed(sprintspeed);
-            }
-            else
-            {
-                pcb.setFlySpeed(defaultWalkSpeed);
-                pcb.setPlayerWalkSpeed(defaultWalkSpeed);
+                if (sprintButton.isKeyDown())
+                {
+                    pcb.setFlySpeed(maxflyspeed);
+                    pcb.setPlayerWalkSpeed(sprintspeed);
+                }
+                else
+                {
+                    pcb.setFlySpeed(defaultWalkSpeed);
+                    pcb.setPlayerWalkSpeed(defaultWalkSpeed);
+                }
             }
         }
     }
