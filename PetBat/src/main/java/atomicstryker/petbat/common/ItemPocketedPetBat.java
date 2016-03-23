@@ -5,7 +5,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemPocketedPetBat extends Item
@@ -20,14 +23,14 @@ public class ItemPocketedPetBat extends Item
     }
     
     @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public ActionResult<ItemStack> onItemRightClick(net.minecraft.item.ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
     {
         if (world.isRemote)
         {
             PetBatMod.proxy.displayGui(itemStack);
         }
-        
-        return itemStack;
+
+        return new ActionResult<>(EnumActionResult.PASS, itemStack);
     }
     
     @Override
@@ -82,7 +85,7 @@ public class ItemPocketedPetBat extends Item
     
     public static void writeBatNameToItemStack(ItemStack stack, String name)
     {
-        writeCompoundStringToItemStack(stack, "display", "Name", EnumChatFormatting.DARK_PURPLE + name);
+        writeCompoundStringToItemStack(stack, "display", "Name", TextFormatting.DARK_PURPLE + name);
     }
     
     public static String getBatNameFromItemStack(ItemStack stack)
@@ -134,7 +137,7 @@ public class ItemPocketedPetBat extends Item
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return EnumChatFormatting.DARK_PURPLE+super.getItemStackDisplayName(itemStack);
+        return TextFormatting.DARK_PURPLE+super.getItemStackDisplayName(itemStack);
     }
     
 }

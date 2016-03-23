@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraftforge.common.config.Configuration;
-
 import atomicstryker.petbat.common.network.BatNamePacket;
 import atomicstryker.petbat.common.network.NetworkHelper;
 import net.minecraft.entity.Entity;
@@ -14,13 +12,15 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -39,13 +39,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.1")
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.2")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
     private Item GLISTER_ITEM_ID;
-    
-    public final byte BAT_MAX_LVL = 7;
     
     private final String[] batNames = {
             "Lucius",
@@ -98,12 +96,12 @@ public class PetBatMod implements IProxy
     
     public String getLevelTitle(int level)
     {
-        return StatCollector.translateToLocal("translation.PetBat:batlevel"+level);
+        return I18n.translateToLocal("translation.PetBat:batlevel"+level);
     }
     
     public String getLevelDescription(int level)
     {
-        return StatCollector.translateToLocal("translation.PetBat:batlevel"+level+"desc");
+        return I18n.translateToLocal("translation.PetBat:batlevel"+level+"desc");
     }
     
     private Field entityBatFlightCoords;
@@ -191,27 +189,23 @@ public class PetBatMod implements IProxy
         {
             List<Entity> entityList = p.worldObj.getEntitiesWithinAABBExcludingEntity(p, p.getEntityBoundingBox().expand(10D, 10D, 10D));
             BlockPos coords = new BlockPos((int)(p.posX+0.5D), (int)(p.posY+1.5D), (int)(p.posZ+0.5D));
-            for (Entity ent : entityList)
-            {
-                if (ent instanceof EntityBat)
+            entityList.stream().filter(ent -> ent instanceof EntityBat).forEach(ent -> {
+                try
                 {
-                    try
-                    {
-                        entityBatFlightCoords.set(ent, coords);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
+                    entityBatFlightCoords.set(ent, coords);
                 }
-            }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            });
         }
     }
     
     @SubscribeEvent
     public void onEntityInteract(EntityInteractEvent event)
     {
-        if (event.target instanceof EntityBat)
+        if (event.getTarget() instanceof EntityBat)
         {
             EntityPlayer p = event.entityPlayer;
             if (!p.worldObj.isRemote)
@@ -220,9 +214,9 @@ public class PetBatMod implements IProxy
                 if (item != null && item.getItem() == TAME_ITEM_ID)
                 {
                     event.setCanceled(true);
-                    p.inventory.consumeInventoryItem(TAME_ITEM_ID);
+                    p.inventory.clearMatchingItems(TAME_ITEM_ID, -1, 1, null);
                     
-                    EntityBat b = (EntityBat) event.target;
+                    EntityBat b = (EntityBat) event.getTarget();
                     EntityPetBat newPet = new EntityPetBat(p.worldObj);
                     newPet.setLocationAndAngles(b.posX, b.posY, b.posZ, b.rotationYaw, b.rotationPitch);
                     newPet.setNames(p.getGameProfile().getName(), getRandomBatName());
@@ -234,14 +228,14 @@ public class PetBatMod implements IProxy
             }
         }
         
-        if (glisterBatEnabled && event.target instanceof EntityPetBat)
+        if (glisterBatEnabled && event.getTarget() instanceof EntityPetBat)
         {
             EntityPlayer p = event.entityPlayer;
             ItemStack item = p.inventory.getCurrentItem();
             if (item != null && item.getItem() == GLISTER_ITEM_ID)
             {
-                new GlisterBatAdapter((EntityPetBat) event.target);
-                p.inventory.consumeInventoryItem(GLISTER_ITEM_ID);
+                new GlisterBatAdapter((EntityPetBat) event.getTarget());
+                p.inventory.clearMatchingItems(GLISTER_ITEM_ID, -1, 1, null);
             }
         }
     }
@@ -252,7 +246,7 @@ public class PetBatMod implements IProxy
         if (event.target instanceof EntityPetBat)
         {
             EntityPetBat bat = (EntityPetBat) event.target;
-            if (bat.getOwnerName().equals(event.entityPlayer.getName()) && event.entityPlayer.getCurrentEquippedItem() == null)
+            if (bat.getOwnerName().equals(event.entityPlayer.getName()) && event.entityPlayer.getHeldItemMainhand() == null)
             {
                 bat.recallToOwner();
                 event.setCanceled(true);
@@ -369,11 +363,11 @@ public class PetBatMod implements IProxy
         if (event.entityLiving instanceof EntityPlayer)
         {
             EntityPlayer p = (EntityPlayer) event.entityLiving;
-            if (p.isEntityAlive() && p.getCurrentEquippedItem() != null && p.getCurrentEquippedItem().getItem().equals(itemPocketedBat))
+            if (p.isEntityAlive() && p.getHeldItemMainhand() != null && p.getHeldItemMainhand().getItem().equals(itemPocketedBat))
             {
-                if (p.getActivePotionEffect(Potion.nightVision) == null)
+                if (p.getActivePotionEffect(MobEffects.nightVision) == null)
                 {
-                    p.addPotionEffect(new PotionEffect(Potion.nightVision.id, 100));
+                    p.addPotionEffect(new PotionEffect(MobEffects.nightVision, 100));
                 }
             }
         }

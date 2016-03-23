@@ -6,10 +6,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class PetBatAIAttack extends EntityAIBase
 {
@@ -48,19 +51,15 @@ public class PetBatAIAttack extends EntityAIBase
         if (entityTarget instanceof EntityPlayer)
         {
             EntityPlayer p = (EntityPlayer) entityTarget;
-            if (entityTarget.getName().equals(petBat.getOwnerName()) && p.getHealth() < p.getMaxHealth()/2)
+            if (entityTarget.getName().equals(petBat.getOwnerName()) && p.getHealth() < p.getMaxHealth() / 2)
             {
                 petBat.recallToOwner();
                 return false;
             }
         }
-        
-        if (entityTarget != null && entityTarget.isEntityAlive())
-        {
-            return true;   
-        }
-        
-        return super.continueExecuting();
+
+        return entityTarget != null && entityTarget.isEntityAlive() || super.continueExecuting();
+
     }
     
     @Override
@@ -84,7 +83,7 @@ public class PetBatAIAttack extends EntityAIBase
 
         attackTick = Math.max(attackTick - 1, 0);
 
-        double maxReach = (double) (petBat.width * petBat.width * 5.0D);
+        double maxReach = petBat.width * petBat.width * 5.0D;
         if (petBat.getDistanceSq(entityTarget.posX, entityTarget.getEntityBoundingBox().maxY, entityTarget.posZ) <= maxReach
                 || (entityTarget.getEntityBoundingBox() != null && petBat.getEntityBoundingBox().intersectsWith(entityTarget.getEntityBoundingBox())))
         {
@@ -98,7 +97,7 @@ public class PetBatAIAttack extends EntityAIBase
                 {
                     entityTarget.setDead();
                     displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 16);
-                    petBat.worldObj.playSoundAtEntity(petBat, "random.burp", 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
+                    petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.entity_player_burp, SoundCategory.AMBIENT, 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
@@ -130,17 +129,19 @@ public class PetBatAIAttack extends EntityAIBase
     {
         for (int var3 = 0; var3 < power; ++var3)
         {
-            Vec3 var4 = new Vec3(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+            Vec3d var4 = new Vec3d(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
             var4.rotatePitch(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var4.rotateYaw(-petBat.rotationYaw * (float)Math.PI / 180.0F);
-            Vec3 var5 = new Vec3(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.3D, (double)(-petBat.getRNG().nextFloat()) * 0.6D - 0.3D, 0.6D);
+            Vec3d var5 = new Vec3d(((double)petBat.getRNG().nextFloat() - 0.5D) * 0.3D, (double)(-petBat.getRNG().nextFloat()) * 0.6D - 0.3D, 0.6D);
             var5.rotatePitch(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var5.rotateYaw(-petBat.rotationYaw * (float)Math.PI / 180.0F);
             var5 = var5.addVector(petBat.posX, petBat.posY + (double)petBat.getEyeHeight(), petBat.posZ);
-            petBat.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord, new int[] {Item.getIdFromItem(item.getItem()), item.getMetadata()});
+            petBat.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord, Item.getIdFromItem(item.getItem()),
+                    item.getMetadata());
         }
 
-        petBat.worldObj.playSoundAtEntity(petBat, "random.eat", 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2), (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
+        petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.entity_generic_eat, SoundCategory.AMBIENT, 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2),
+                (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
     }
     
 }

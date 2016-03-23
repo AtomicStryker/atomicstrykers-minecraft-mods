@@ -5,13 +5,16 @@ import java.util.Random;
 import atomicstryker.petbat.common.EntityPetBat;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 public class PetBatAIFlying extends EntityAIBase
 {
@@ -97,7 +100,7 @@ public class PetBatAIFlying extends EntityAIBase
                         ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(petBat.getOwnerEntity(), petBat.getName());
                         if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
                         {
-                            petBat.worldObj.playSoundAtEntity(petBat.getOwnerEntity(), "mob.slime.big", 1F, 1F);
+                            petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.entity_slime_attack, SoundCategory.AMBIENT, 1F, 1F);
                             petBat.setDeadWithoutRecall();
                         }
                         else
@@ -209,19 +212,19 @@ public class PetBatAIFlying extends EntityAIBase
         int x = 0;
         int y = 0;
         int z = 0;
-        Vec3 orig;
-        Vec3 dest;
-        MovingObjectPosition movingobjectposition;
+        Vec3d orig;
+        Vec3d dest;
+        RayTraceResult RayTraceResult;
         for (int i = 0; i < 10; i++)
         {
             x = petBat.getLastOwnerX() + rand.nextInt(7) - rand.nextInt(7);
             y = petBat.getLastOwnerY() + rand.nextInt(6) - 2 + BAT_OWNER_FOLLOW_Y_OFFSET;
             z = petBat.getLastOwnerZ() + rand.nextInt(7) - rand.nextInt(7);
 
-            orig = new Vec3(petBat.posX, petBat.posY, petBat.posZ);
-            dest = new Vec3(x + 0.5D, y + 0.5D, z + 0.5D);
-            movingobjectposition = petBat.worldObj.rayTraceBlocks(orig, dest, false, true, false);
-            if (movingobjectposition == null) // no collision detected, path is
+            orig = new Vec3d(petBat.posX, petBat.posY, petBat.posZ);
+            dest = new Vec3d(x + 0.5D, y + 0.5D, z + 0.5D);
+            RayTraceResult = petBat.worldObj.rayTraceBlocks(orig, dest, false, true, false);
+            if (RayTraceResult == null) // no collision detected, path is
                                               // free
             {
                 break;
@@ -243,9 +246,8 @@ public class PetBatAIFlying extends EntityAIBase
     private void checkTakeOffConditions()
     {
         // block it was hanging from is no more
-        if (!petBat.worldObj.getBlockState(new BlockPos(
-        		MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ))
-        ).getBlock().isNormalCube())
+        IBlockState ib = petBat.worldObj.getBlockState(new BlockPos( MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ)));
+        if (!ib.getBlock().isNormalCube(ib))
         {
             takeOff();
         }
@@ -283,6 +285,6 @@ public class PetBatAIFlying extends EntityAIBase
     {
         petBat.setIsBatHanging(false);
         petBat.setPosition(petBat.posX, petBat.posY - 1D, petBat.posZ);
-        petBat.worldObj.playAuxSFXAtEntity((EntityPlayer) null, 1015, new BlockPos((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ), 0);
+        petBat.worldObj.playAuxSFXAtEntity(null, 1015, new BlockPos((int) petBat.posX, (int) petBat.posY, (int) petBat.posZ), 0);
     }
 }

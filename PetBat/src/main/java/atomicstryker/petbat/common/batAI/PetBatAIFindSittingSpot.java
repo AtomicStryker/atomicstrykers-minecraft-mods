@@ -1,8 +1,9 @@
 package atomicstryker.petbat.common.batAI;
 
 import atomicstryker.petbat.common.EntityPetBat;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PetBatAIFindSittingSpot extends EntityAIBase
@@ -39,13 +40,8 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
     
     private boolean checkOwnerNearby()
     {
-        if (petBat.getOwnerEntity() != null
-        && petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_ALLOWED_SQ)
-        {
-            return false;
-        }
-        
-        return true;
+        return !(petBat.getOwnerEntity() != null
+                && petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_ALLOWED_SQ);
     }
 
     @Override
@@ -132,10 +128,14 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                         break;
                     }
                     
-                    if (w.isAirBlock(new BlockPos(curX, y, curZ)) && w.isAirBlock(new BlockPos(curX, y-1, curZ)) && w.getBlockState(new BlockPos(curX, y+1, curZ)).getBlock().isNormalCube())
+                    if (w.isAirBlock(new BlockPos(curX, y, curZ)) && w.isAirBlock(new BlockPos(curX, y-1, curZ)))
                     {
-                        foundSpot(curX, y, curZ);
-                        return;
+                        IBlockState ib = w.getBlockState(new BlockPos(curX, y+1, curZ));
+                        if (ib.getBlock().isNormalCube(ib))
+                        {
+                            foundSpot(curX, y, curZ);
+                            return;
+                        }
                     }
                     
                     switch (direction)

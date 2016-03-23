@@ -6,7 +6,7 @@ import atomicstryker.petbat.common.batAI.PetBatAIFlying;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,16 +14,23 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -42,6 +49,10 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     private int lastOwnerZ;
 
     private BlockPos hangSpot;
+
+    private static final DataParameter<Byte> BAT_FLAGS = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.BYTE);
+    private static final DataParameter<Byte> IS_STAYING = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.BYTE);
+    private static final DataParameter<Integer> BAT_XP = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.VARINT);
 
     public EntityPetBat(World par1World)
     {
@@ -81,9 +92,9 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     protected void entityInit()
     {
         super.entityInit();
-        dataWatcher.addObject(16, new Byte((byte) 0));
-        dataWatcher.addObject(17, new Integer((int) 0));
-        dataWatcher.addObject(18, new Byte((byte) 0));
+        dataWatcher.register(BAT_FLAGS, (byte) 0);
+        dataWatcher.register(IS_STAYING, (byte) 0);
+        dataWatcher.register(BAT_XP, 0);
     }
 
     public void setNames(String ownerName, String petName)
@@ -107,9 +118,9 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
      * Used by PetBat Renderer to display Bat Name
      */
     @Override
-    public IChatComponent getDisplayName()
+    public ITextComponent getDisplayName()
     {
-        return new ChatComponentText(petName);
+        return new TextComponentTranslation(petName);
     }
 
     public EntityPlayer getOwnerEntity()
@@ -166,15 +177,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     public boolean getHasTarget()
     {
-        if (getAttackTarget() != null && getAttackTarget().isEntityAlive())
-        {
-            return true;
-        }
-        if (getFoodAttackTarget() != null && getFoodAttackTarget().isEntityAlive())
-        {
-            return true;
-        }
-        return false;
+        return getAttackTarget() != null && getAttackTarget().isEntityAlive() || getFoodAttackTarget() != null && getFoodAttackTarget().isEntityAlive();
     }
 
     @Override
@@ -211,14 +214,14 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public boolean interact(EntityPlayer player)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, ItemStack stack)
     {
         if (getIsBatHanging() && player.getName().equals(ownerName))
         {
             setIsBatStaying(!getIsBatStaying());
-            player.addChatMessage(new ChatComponentText(petName + ": " + 
-            (getIsBatStaying() ? StatCollector.translateToLocal("translation.PetBat:staying")
-                    : StatCollector.translateToLocal("translation.PetBat:notstaying"))));
+            player.addChatMessage(new TextComponentTranslation(petName + ": " + 
+            (getIsBatStaying() ? I18n.translateToLocal("translation.PetBat:staying")
+                    : I18n.translateToLocal("translation.PetBat:notstaying"))));
             return true;
         }
         return false;
@@ -289,11 +292,11 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack))
                 {
-                    worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
+                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1F, 1F);
                 }
                 else
                 {
-                    worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
+                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1F, 1F);
                     worldObj.spawnEntityInWorld(new EntityItem(worldObj, owner.posX, owner.posY, owner.posZ, batstack));
                 }
             }
@@ -309,21 +312,21 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    protected String getLivingSound()
+    protected SoundEvent getAmbientSound()
     {
-        return "mob.bat.idle";
+        return SoundEvents.entity_bat_ambient;
     }
 
     @Override
-    protected String getHurtSound()
+    protected SoundEvent getHurtSound()
     {
-        return "mob.bat.hurt";
+        return SoundEvents.entity_bat_hurt;
     }
 
     @Override
-    protected String getDeathSound()
+    protected SoundEvent getDeathSound()
     {
-        return "mob.bat.death";
+        return SoundEvents.entity_bat_death;
     }
 
     @Override
@@ -334,22 +337,22 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     public boolean getIsBatHanging()
     {
-        return (this.dataWatcher.getWatchableObjectByte(16) & 1) != 0;
+        return (this.dataWatcher.get(BAT_FLAGS) & 1) != 0;
     }
 
     public void setIsBatHanging(boolean par1)
     {
         setHangingSpot(null);
 
-        byte var2 = this.dataWatcher.getWatchableObjectByte(16);
+        byte var2 = this.dataWatcher.get(BAT_FLAGS);
 
         if (par1)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte) (var2 | 1)));
+            dataWatcher.set(BAT_FLAGS, (byte) (var2 | 1));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte) (var2 & -2)));
+            dataWatcher.set(BAT_FLAGS, (byte) (var2 & -2));
         }
     }
 
@@ -363,29 +366,29 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         if (!worldObj.isRemote)
         {
-            setBatExperience(Integer.valueOf(getBatExperience() + xp));
+            setBatExperience(getBatExperience() + xp);
         }
     }
 
     public int getBatExperience()
     {
-        return dataWatcher.getWatchableObjectInt(17);
+        return dataWatcher.get(BAT_XP);
     }
 
     public void setBatExperience(int value)
     {
-        dataWatcher.updateObject(17, value);
-        getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(16d + (2 * PetBatMod.instance().getLevelFromExperience(value)));
+        dataWatcher.set(BAT_XP, value);
+        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(16d + (2 * PetBatMod.instance().getLevelFromExperience(value)));
     }
 
     public boolean getIsBatStaying()
     {
-        return dataWatcher.getWatchableObjectByte(18) != 0;
+        return dataWatcher.get(IS_STAYING) != 0;
     }
 
     public void setIsBatStaying(boolean cond)
     {
-        dataWatcher.updateObject(18, (byte) (cond ? 1 : 0));
+        dataWatcher.set(IS_STAYING, (byte) (cond ? 1 : 0));
     }
 
     public int getBatLevel()
@@ -421,7 +424,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
                 {
-                    worldObj.playSoundAtEntity(owner, "mob.slime.big", 1F, 1F);
+                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1F, 1F);
                     setDeadWithoutRecall();
                 }
                 else
@@ -480,7 +483,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
     
     @Override
-    protected void updateFallState(double distance, boolean onground, Block block, BlockPos pos)
+    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
     {
     }
 
@@ -494,8 +497,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.dataWatcher.updateObject(16, Byte.valueOf(nbt.getByte("BatFlags")));
-        dataWatcher.updateObject(17, Integer.valueOf(nbt.getInteger("BatXP")));
+        this.dataWatcher.set(BAT_FLAGS, nbt.getByte("BatFlags"));
+        dataWatcher.set(BAT_XP, nbt.getInteger("BatXP"));
         this.ownerName = nbt.getString("ownerName");
         this.petName = nbt.getString("petName");
         lastOwnerX = nbt.getInteger("lastOwnerX");
@@ -507,7 +510,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        nbt.setByte("BatFlags", this.dataWatcher.getWatchableObjectByte(16));
+        nbt.setByte("BatFlags", this.dataWatcher.get(BAT_FLAGS));
         nbt.setInteger("BatXP", getBatExperience());
         nbt.setString("ownerName", this.ownerName);
         nbt.setString("petName", this.petName);

@@ -6,7 +6,7 @@ import atomicstryker.petbat.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class BatNamePacket implements IPacket
@@ -36,7 +36,7 @@ public class BatNamePacket implements IPacket
     {
         user = ByteBufUtils.readUTF8String(bytes);
         batName = ByteBufUtils.readUTF8String(bytes);
-        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
     }
     
     class ScheduledCode implements Runnable
@@ -44,12 +44,12 @@ public class BatNamePacket implements IPacket
         @Override
         public void run()
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
             if (p != null)
             {
-                if (p.getCurrentEquippedItem() != null && p.getCurrentEquippedItem().getItem() == PetBatMod.instance().itemPocketedBat)
+                if (p.getHeldItemMainhand() != null && p.getHeldItemMainhand().getItem() == PetBatMod.instance().itemPocketedBat)
                 {
-                    ItemPocketedPetBat.writeBatNameToItemStack(p.getCurrentEquippedItem(), batName);
+                    ItemPocketedPetBat.writeBatNameToItemStack(p.getHeldItemMainhand(), batName);
                 }
             }
         }
