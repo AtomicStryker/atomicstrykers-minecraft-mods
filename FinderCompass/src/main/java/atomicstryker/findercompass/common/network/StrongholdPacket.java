@@ -6,8 +6,9 @@ import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class StrongholdPacket implements IPacket
 {
@@ -74,10 +75,10 @@ public class StrongholdPacket implements IPacket
         }
         else // server received stronghold request
         {
-            EntityPlayerMP p = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(username);
+            EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(username);
             if (p != null)
             {
-                BlockPos result = p.worldObj.getStrongholdPos("Stronghold", new BlockPos(p));
+                BlockPos result = ((WorldServer)p.worldObj).getChunkProvider().getStrongholdGen(p.worldObj, "Stronghold", new BlockPos(p));
                 if (result != null)
                 {
                     FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(result.getX(), result.getY(), result.getZ()), p);

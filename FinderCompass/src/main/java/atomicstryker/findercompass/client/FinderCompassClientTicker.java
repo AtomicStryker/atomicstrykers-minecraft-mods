@@ -11,11 +11,13 @@ import atomicstryker.findercompass.common.FinderCompassMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -62,7 +64,7 @@ public class FinderCompassClientTicker
         {
             if (!FinderCompassMod.instance.itemEnabled)
             {
-                if (tick.player.getCurrentEquippedItem() != null && tick.player.getCurrentEquippedItem().getItem() == COMPASS_ITEM_ID)
+                if (tick.player.getHeldItemMainhand() != null && tick.player.getHeldItemMainhand().getItem() == COMPASS_ITEM_ID)
                 {
                     if (mc.gameSettings.keyBindAttack.isKeyDown())
                     {
@@ -70,8 +72,7 @@ public class FinderCompassClientTicker
                         {
                             repeat = true;
                             switchSetting();
-                            tick.player.worldObj.playSound(tick.player.posX + 0.5D, tick.player.posY + 0.5D, tick.player.posZ + 0.5D, "random.click",
-                                    0.3F, 0.6F, false);
+                            tick.player.worldObj.playSound(null, new BlockPos(tick.player), SoundEvents.ui_button_click, SoundCategory.BLOCKS, 0.3F, 0.6F);
                         }
                     }
                     else
@@ -116,8 +117,8 @@ public class FinderCompassClientTicker
 
         if (mc.theWorld != null)
         {
-            mc.theWorld.playSound(mc.thePlayer.posX + 0.5D, mc.thePlayer.posY + 0.5D, mc.thePlayer.posZ + 0.5D, "random.click", 0.3F, 0.6F, false);
-            mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Finder Compass Mode: " + currentSetting.getName()));
+            mc.theWorld.playSound(null, new BlockPos(mc.thePlayer), SoundEvents.ui_button_click, SoundCategory.BLOCKS, 0.3F, 0.6F);
+            mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
 
@@ -131,7 +132,7 @@ public class FinderCompassClientTicker
         settingList.clear();
         new DefaultConfigFilePrinter().parseConfig(new BufferedReader(new InputStreamReader(dataIn)), settingList);
         mc.ingameGUI.getChatGUI().printChatMessage(
-                new ChatComponentText("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
+                new TextComponentTranslation("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
     }
 
     public void onFoundChunkCoordinates(BlockPos input, Block b, int meta)

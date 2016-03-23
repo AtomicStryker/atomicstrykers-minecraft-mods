@@ -25,20 +25,20 @@ import net.minecraft.launchwrapper.IClassTransformer;
 public class FCTransformer implements IClassTransformer
 {
     
-    /*  net.minecraft.client.renderer.entity.RenderItem */
-    private String classNameToModify = "bjh";
+    /*  net.minecraft.client.renderer.RenderItem */
+    private String classNameToModify = "brz";
       
-    /* (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resources/model/IBakedModel;)V */
-    private String methodDescriptorToModify = "(Lzx;Lboq;)V";
+    /* (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V */
+    private String methodDescriptorToModify = "(Ladq;Lbxo;)V";
     
-    /* net.minecraft.client.renderer.entity.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a */
+    /* net.minecraft.client.renderer.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a */
     private String methodNameToModify = "a"; // this is actually unneeded because a is too generic
     
-    /* (Lnet/minecraft/client/resources/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V */
-    private String targetNodeDescriptor = "(Lboq;Lzx;)V";
+    /* (Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V */
+    private String targetNodeDescriptor = "(Lbxo;Ladq;)V";
     
     /* (Lnet/minecraft/item/ItemStack;)V */
-    private String itemStackVoidDescriptor = "(Lzx;)V";
+    private String itemStackVoidDescriptor = "(Ladq;)V";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -48,11 +48,11 @@ public class FCTransformer implements IClassTransformer
         {
             return handleWorldTransform(bytes, true);
         }
-        else if (name.equals("net.minecraft.client.renderer.entity.RenderItem")) // MCP testing
+        else if (name.equals("net.minecraft.client.renderer.RenderItem")) // MCP testing
         {
             methodNameToModify = "renderItem";
-            methodDescriptorToModify = "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resources/model/IBakedModel;)V";
-            targetNodeDescriptor = "(Lnet/minecraft/client/resources/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V";
+            methodDescriptorToModify = "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V";
+            targetNodeDescriptor = "(Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V";
             itemStackVoidDescriptor = "(Lnet/minecraft/item/ItemStack;)V";
             return handleWorldTransform(bytes, false);
         }
