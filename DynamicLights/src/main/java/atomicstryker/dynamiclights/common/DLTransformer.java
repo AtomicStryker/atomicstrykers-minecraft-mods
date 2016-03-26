@@ -52,7 +52,7 @@ public class DLTransformer implements IClassTransformer
         else if (name.equals("net.minecraft.world.World")) // MCP testing
         {
             computeLightValueMethodName = "getRawLight";
-            goalInvokeDesc = "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I";
+            goalInvokeDesc = "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)I";
             return handleWorldTransform(bytes, false);
         }
         
