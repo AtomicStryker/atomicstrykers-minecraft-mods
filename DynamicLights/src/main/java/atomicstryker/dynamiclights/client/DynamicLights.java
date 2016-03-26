@@ -1,13 +1,8 @@
 package atomicstryker.dynamiclights.client;
 
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -26,6 +21,15 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import org.lwjgl.input.Keyboard;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * 
@@ -75,7 +79,7 @@ public class DynamicLights
     {
         globalLightsOff = false;
         mcinstance = FMLClientHandler.instance().getClient();
-        worldLightsMap = new ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>>();
+        worldLightsMap = new ConcurrentHashMap<>();
         MinecraftForge.EVENT_BUS.register(this);
         nextKeyTriggerTime = System.currentTimeMillis();
     }
@@ -111,7 +115,7 @@ public class DynamicLights
             
             if (mcinstance.currentScreen == null && toggleButton.isPressed() && System.currentTimeMillis() >= nextKeyTriggerTime)
             {
-                nextKeyTriggerTime = System.currentTimeMillis() + 1000l;
+                nextKeyTriggerTime = System.currentTimeMillis() + 1000L;
                 globalLightsOff = !globalLightsOff;
                 mcinstance.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
                 
@@ -149,6 +153,7 @@ public class DynamicLights
      * @param pos BlockPos instance of target coords
      * @return max(Block.getLightValue, Dynamic Light)
      */
+    @SuppressWarnings("unused")
     public static int getLightValue(IBlockState blockState, IBlockAccess world, BlockPos pos)
     {
         int vanillaValue = blockState.getBlock().getLightValue(world.getBlockState(pos));
@@ -162,6 +167,7 @@ public class DynamicLights
         {
             instance.lastWorld = world;
             instance.lastList = instance.worldLightsMap.get(world);
+            hackRenderGlobalConcurrently();
         }
         
         int dynamicValue = 0;
@@ -183,7 +189,35 @@ public class DynamicLights
         }
         return Math.max(vanillaValue, dynamicValue);
     }
-    
+
+    @SuppressWarnings("unchecked")
+    private static void hackRenderGlobalConcurrently()
+    {
+        try
+        {
+            for (Field f : RenderGlobal.class.getDeclaredFields())
+            {
+                if (Set.class.isAssignableFrom(f.getType()))
+                {
+                    ParameterizedType fieldType = (ParameterizedType) f.getGenericType();
+                    if (BlockPos.class.equals(fieldType.getActualTypeArguments()[0]))
+                    {
+                        f.setAccessible(true);
+                        Set<BlockPos> setLightUpdates = (Set<BlockPos>) f.get(instance.mcinstance.renderGlobal);
+                        ConcurrentSkipListSet<BlockPos> cs = new ConcurrentSkipListSet<>(setLightUpdates);
+                        f.set(instance.mcinstance.renderGlobal, cs);
+                        System.out.println("Dynamic Lights successfully hacked Set RenderGlobal.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
+                        return;
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Exposed method to register active Dynamic Light Sources with. Does all the necessary
      * checks, prints errors if any occur, creates new World entries in the worldLightsMap
@@ -212,7 +246,7 @@ public class DynamicLights
                 }
                 else
                 {
-                    lightList = new ConcurrentLinkedQueue<DynamicLightSourceContainer>();
+                    lightList = new ConcurrentLinkedQueue<>();
                     lightList.add(newLightContainer);
                     instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().worldObj, lightList);
                 }
