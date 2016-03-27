@@ -67,7 +67,7 @@ public class CommandUndo extends CommandBase
                     {
                         for (int z = 0; z < ta.blockArray[0][0].length; z++)
                         {
-                            bstate = event.world.getBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z));
+                            bstate = event.getWorld().getBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z));
                             ta.blockArray[x][y][z] = bstate.getBlock();
                             ta.metaArray[x][y][z] = ta.blockArray[x][y][z].getMetaFromState(bstate);
                         }

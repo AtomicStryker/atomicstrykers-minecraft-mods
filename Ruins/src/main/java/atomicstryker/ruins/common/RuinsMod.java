@@ -81,12 +81,13 @@ public class RuinsMod
     @SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
-        ItemStack is = event.entityPlayer.getHeldItemMainhand();
+        ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
         if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000L;
-            event.entityPlayer.addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.state.getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
+            event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
+                    event.getState().getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.getState().getBlock()).toString(), event.getState().getBlock().getMetaFromState(
+                            event.getState()))));
         }
     }
 
@@ -100,8 +101,8 @@ public class RuinsMod
             {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
                 event.getPlayer().addChatComponentMessage(
-                        new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.state.getBlock().getLocalizedName(),
-                                GameData.getBlockRegistry().getNameForObject(event.state.getBlock()).toString(), event.state.getBlock().getMetaFromState(event.state))));
+                        new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
+                                GameData.getBlockRegistry().getNameForObject(event.getState().getBlock()).toString(), event.getState().getBlock().getMetaFromState(event.getState()))));
                 event.setCanceled(true);
             }
         }
@@ -110,17 +111,17 @@ public class RuinsMod
     @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt)
     {
-        WorldHandle wh = getWorldHandle(evt.world);
+        WorldHandle wh = getWorldHandle(evt.getWorld());
         if (wh != null)
         {
-            wh.generator.flushPosFile(evt.world.getWorldInfo().getWorldName());
+            wh.generator.flushPosFile(evt.getWorld().getWorldInfo().getWorldName());
         }
     }
 
     @SubscribeEvent
     public void onEntityEnteringChunk(EntityEvent.EnteringChunk event)
     {
-        if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote)
+        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().worldObj.isRemote)
         {
             TileEntityCommandBlock tecb;
             ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<>();
@@ -129,7 +130,7 @@ public class RuinsMod
             {
                 for (int zoffset = -4; zoffset <= 4; zoffset++)
                 {
-                    for (TileEntity teo : event.entity.worldObj.getChunkFromChunkCoords(event.newChunkX + xoffset, event.newChunkZ + zoffset).getTileEntityMap().values())
+                    for (TileEntity teo : event.getEntity().worldObj.getChunkFromChunkCoords(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values())
                     {
                         if (teo instanceof TileEntityCommandBlock)
                         {
@@ -139,7 +140,7 @@ public class RuinsMod
                                 // strip prefix from command
                                 tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
                                 // call command block execution
-                                tecb.getCommandBlockLogic().trigger(event.entity.worldObj);
+                                tecb.getCommandBlockLogic().trigger(event.getEntity().worldObj);
                                 tecblistToDelete.add(tecb);
                             }
                         }
@@ -152,7 +153,7 @@ public class RuinsMod
                 // kill block
                 BlockPos pos = tecb2.getPos();
                 System.out.printf("Ruins executed and killed Command Block at [%s]\n", pos);
-                event.entity.worldObj.setBlockToAir(pos);
+                event.getEntity().worldObj.setBlockToAir(pos);
             }
         }
     }

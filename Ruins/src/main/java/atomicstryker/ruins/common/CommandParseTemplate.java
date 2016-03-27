@@ -25,7 +25,7 @@ public class CommandParseTemplate extends CommandBase
     {
         if (event.getPlayer() == player)
         {
-            new World2TemplateParser(player, event.pos.getX(), event.pos.getY(), event.pos.getZ(), templateName).start();
+            new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName).start();
             player = null;
             event.setCanceled(true);
         }
