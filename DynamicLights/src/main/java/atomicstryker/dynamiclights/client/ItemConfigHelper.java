@@ -12,7 +12,7 @@ public class ItemConfigHelper
     
     public ItemConfigHelper(String configLine, int defaultValue)
     {
-        dataMap = new HashMap<ItemData, Integer>();
+        dataMap = new HashMap<>();
         for (String s : configLine.split(","))
         {
             try

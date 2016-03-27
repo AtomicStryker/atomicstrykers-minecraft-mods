@@ -33,7 +33,7 @@ import net.minecraftforge.fml.common.registry.GameData;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.8", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.9", dependencies = "required-after:DynamicLights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;
@@ -57,7 +57,7 @@ public class PlayerOthersLightSource
     {
         mcinstance = FMLClientHandler.instance().getClient();
         nextUpdate = System.currentTimeMillis();
-        trackedPlayers = new ArrayList<OtherPlayerAdapter>();
+        trackedPlayers = new ArrayList<>();
         threadRunning = false;
     }
     
@@ -67,11 +67,11 @@ public class PlayerOthersLightSource
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
-        itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON OTHERS] Syntax: ItemID[-MetaValue]:LightValue, seperated by commas";
+        itemsList.setComment("Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON OTHERS] Syntax: ItemID[-MetaValue]:LightValue, seperated by commas");
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
-        updateI.comment = "Update Interval time for all other player entities in milliseconds. The lower the better and costlier.";
+        updateI.setComment("Update Interval time for all other player entities in milliseconds. The lower the better and costlier.");
         updateInterval = updateI.getInt();
         
         config.save();
@@ -116,7 +116,7 @@ public class PlayerOthersLightSource
         @Override
         public void run()
         {
-            ArrayList<OtherPlayerAdapter> newList = new ArrayList<OtherPlayerAdapter>();
+            ArrayList<OtherPlayerAdapter> newList = new ArrayList<>();
             
             Entity ent;
             for (Object o : list)

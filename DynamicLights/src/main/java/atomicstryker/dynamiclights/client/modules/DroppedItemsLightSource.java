@@ -35,7 +35,7 @@ import net.minecraftforge.fml.common.registry.GameData;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.0.9", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_dropItems", name = "Dynamic Lights on ItemEntities", version = "1.1.0", dependencies = "required-after:DynamicLights")
 public class DroppedItemsLightSource
 {
     private Minecraft mcinstance;
@@ -60,7 +60,7 @@ public class DroppedItemsLightSource
     {
         mcinstance = FMLClientHandler.instance().getClient();
         nextUpdate = System.currentTimeMillis();
-        trackedItems = new ArrayList<EntityItemAdapter>();
+        trackedItems = new ArrayList<>();
         threadRunning = false;
     }
     
@@ -70,15 +70,15 @@ public class DroppedItemsLightSource
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
-        itemsList.comment = "Item IDs that shine light when dropped in the World.";
+        itemsList.setComment("Item IDs that shine light when dropped in the World.");
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
-        updateI.comment = "Update Interval time for all Item entities in milliseconds. The lower the better and costlier.";
+        updateI.setComment("Update Interval time for all Item entities in milliseconds. The lower the better and costlier.");
         updateInterval = updateI.getInt();
         
         Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "torch,lava_bucket");
-        notWaterProofList.comment = "Item IDs that do not shine light when dropped and in water, have to be present in LightItems.";
+        notWaterProofList.setComment("Item IDs that do not shine light when dropped and in water, have to be present in LightItems.");
         notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
         
         config.save();
@@ -123,7 +123,7 @@ public class DroppedItemsLightSource
         @Override
         public void run()
         {
-            ArrayList<EntityItemAdapter> newList = new ArrayList<EntityItemAdapter>();
+            ArrayList<EntityItemAdapter> newList = new ArrayList<>();
             
             Entity ent;
             for (Object o : list)

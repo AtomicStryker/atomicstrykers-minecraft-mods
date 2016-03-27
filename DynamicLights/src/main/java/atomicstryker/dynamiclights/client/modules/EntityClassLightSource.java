@@ -43,13 +43,13 @@ public class EntityClassLightSource
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        lightValueMap = new HashMap<Class<? extends Entity>, Integer>();
+        lightValueMap = new HashMap<>();
         
         config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
-        updateI.comment = "Update Interval time for all Entities in milliseconds. The lower the better and costlier.";
+        updateI.setComment("Update Interval time for all Entities in milliseconds. The lower the better and costlier.");
         updateInterval = updateI.getInt();
         
         config.save();
@@ -62,7 +62,7 @@ public class EntityClassLightSource
     {
         mcinstance = FMLClientHandler.instance().getClient();
         nextUpdate = System.currentTimeMillis();
-        trackedItems = new ArrayList<EntityLightAdapter>();
+        trackedItems = new ArrayList<>();
         threadRunning = false;
     }
     
@@ -118,7 +118,7 @@ public class EntityClassLightSource
         @Override
         public void run()
         {
-            ArrayList<EntityLightAdapter> newList = new ArrayList<EntityLightAdapter>();
+            ArrayList<EntityLightAdapter> newList = new ArrayList<>();
             int light;
             
             for (Entity ent : list)

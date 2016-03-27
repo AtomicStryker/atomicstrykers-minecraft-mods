@@ -36,7 +36,7 @@ import net.minecraftforge.fml.common.registry.GameData;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.0.9", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.1.0", dependencies = "required-after:DynamicLights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;
@@ -59,7 +59,7 @@ public class EntityLivingEquipmentLightSource
     {
         mcinstance = FMLClientHandler.instance().getClient();
         nextUpdate = System.currentTimeMillis();
-        trackedEntities = new ArrayList<EntityLightAdapter>();
+        trackedEntities = new ArrayList<>();
         threadRunning = false;
     }
     
@@ -69,11 +69,11 @@ public class EntityLivingEquipmentLightSource
         config.load();
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
-        updateI.comment = "Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.";
+        updateI.setComment("Update Interval time for all EntityLiving in milliseconds. The lower the better and costlier.");
         updateInterval = updateI.getInt();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
-        itemsList.comment = "Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas";
+        itemsList.setComment("Item and Armor IDs that shine light when found on any EntityLiving. Syntax: ItemID:LightValue, seperated by commas");
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         config.save();
@@ -155,7 +155,7 @@ public class EntityLivingEquipmentLightSource
         @Override
         public void run()
         {
-            ArrayList<EntityLightAdapter> newList = new ArrayList<EntityLightAdapter>();
+            ArrayList<EntityLightAdapter> newList = new ArrayList<>();
             
             Entity ent;
             for (Object o : list)
@@ -192,10 +192,7 @@ public class EntityLivingEquipmentLightSource
                 }
             }
             // any remaining adapters were not targeted again, which probably means they dont burn anymore. The tick will finish them off.
-            for (EntityLightAdapter adapter : trackedEntities)
-            {
-                adapter.onTick();
-            }
+            trackedEntities.forEach(EntityLightAdapter::onTick);
             
             trackedEntities = newList;
             threadRunning = false;

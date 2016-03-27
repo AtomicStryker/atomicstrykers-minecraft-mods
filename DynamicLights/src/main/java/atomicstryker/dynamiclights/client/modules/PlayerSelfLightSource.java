@@ -78,11 +78,11 @@ public class PlayerSelfLightSource implements IDynamicLightSource
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14,golden_horse_armor=15");
-        itemsList.comment = "Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON YOURSELF]";
+        itemsList.setComment("Item IDs that shine light while held. Armor Items also work when worn. [ONLY ON YOURSELF]");
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "torch,lava_bucket");
-        notWaterProofList.comment = "Item IDs that do not shine light when held in water, have to be present in LightItems.";
+        notWaterProofList.setComment("Item IDs that do not shine light when held in water, have to be present in LightItems.");
         notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
         
         config.save();

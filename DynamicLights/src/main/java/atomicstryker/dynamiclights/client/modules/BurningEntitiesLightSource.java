@@ -32,7 +32,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
  * Burning Entites can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.5", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.7", dependencies = "required-after:DynamicLights")
 public class BurningEntitiesLightSource
 {
     private Minecraft mcinstance;
@@ -46,12 +46,12 @@ public class BurningEntitiesLightSource
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        lightValueMap = new HashMap<Class<? extends Entity>, Integer>();
+        lightValueMap = new HashMap<>();
         config = new Configuration(evt.getSuggestedConfigurationFile());
         config.load();
         
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
-        updateI.comment = "Update Interval time for all burning EntityLiving, Arrows and Fireballs in milliseconds. The lower the better and costlier.";
+        updateI.setComment("Update Interval time for all burning EntityLiving, Arrows and Fireballs in milliseconds. The lower the better and costlier.");
         updateInterval = updateI.getInt();
         
         config.save();
@@ -64,7 +64,7 @@ public class BurningEntitiesLightSource
     {
         mcinstance = FMLClientHandler.instance().getClient();
         nextUpdate = System.currentTimeMillis();
-        trackedEntities = new ArrayList<EntityLightAdapter>();
+        trackedEntities = new ArrayList<>();
         threadRunning = false;
     }
     
@@ -97,7 +97,7 @@ public class BurningEntitiesLightSource
         @Override
         public void run()
         {
-            ArrayList<EntityLightAdapter> newList = new ArrayList<EntityLightAdapter>();
+            ArrayList<EntityLightAdapter> newList = new ArrayList<>();
             
             Entity ent;
             for (Object o : list)
@@ -153,10 +153,7 @@ public class BurningEntitiesLightSource
                 }
             }
             // any remaining adapters were not targeted again, which probably means they dont burn anymore. The tick will finish them off.
-            for (EntityLightAdapter adapter : trackedEntities)
-            {
-                adapter.onTick();
-            }
+            trackedEntities.forEach(EntityLightAdapter::onTick);
             
             trackedEntities = newList;
             threadRunning = false;

@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.4.0")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.4.1")
 public class DynamicLights
 {
     private Minecraft mcinstance;

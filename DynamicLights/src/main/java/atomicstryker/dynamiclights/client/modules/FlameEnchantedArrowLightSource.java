@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * Those can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_flameArrows", name = "Dynamic Lights on Flame enchanted Arrows", version = "1.0.0", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_flameArrows", name = "Dynamic Lights on Flame enchanted Arrows", version = "1.0.1", dependencies = "required-after:DynamicLights")
 public class FlameEnchantedArrowLightSource
 {
     
@@ -34,9 +34,9 @@ public class FlameEnchantedArrowLightSource
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event)
     {
-        if (event.entity instanceof EntityArrow)
+        if (event.getEntity() instanceof EntityArrow)
         {
-            EntityArrow arrow = (EntityArrow) event.entity;
+            EntityArrow arrow = (EntityArrow) event.getEntity();
             if (arrow.shootingEntity != null && arrow.shootingEntity instanceof EntityPlayer)
             {
                 EntityPlayer shooter = (EntityPlayer) arrow.shootingEntity;

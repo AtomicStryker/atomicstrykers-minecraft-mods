@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.registry.GameData;
  * Offers Dynamic Light functionality emulating portable or static Flood Lights
  *
  */
-@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.2", dependencies = "required-after:DynamicLights")
+@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.3", dependencies = "required-after:DynamicLights")
 public class FloodLightSource
 {
     private EntityPlayer thePlayer;
@@ -59,7 +59,7 @@ public class FloodLightSource
         config.load();
         
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "FloodLightItems", "ender_eye");
-        itemsList.comment = "Item IDs that shine floodlight while held.";
+        itemsList.setComment("Item IDs that shine floodlight while held.");
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
         
         simpleMode = config.get(Configuration.CATEGORY_GENERAL, "simpleMode", true, "instead of simulating a cone of light (EXPENSIVE!!), simulates a single point light").getBoolean(true);
