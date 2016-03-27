@@ -35,10 +35,10 @@ public class CompassSetting
     {
         displayedName = name;
         noEnderEyeNeedle = false;
-        customNeedles = new HashMap<CompassTargetData, int[]>();
-        customNeedleTargets = new ConcurrentHashMap<CompassTargetData, BlockPos>();
-        newFoundTargets = new HashMap<CompassTargetData, BlockPos>();
-        compassWorkers = new HashMap<CompassTargetData, ThreadCompassWorker>();
+        customNeedles = new HashMap<>();
+        customNeedleTargets = new ConcurrentHashMap<>();
+        newFoundTargets = new HashMap<>();
+        compassWorkers = new HashMap<>();
     }
     
     public void setHasStrongholdNeedle(boolean input)
@@ -73,13 +73,7 @@ public class CompassSetting
     
     public void onDisableThisConfig()
     {
-        for (ThreadCompassWorker worker : compassWorkers.values())
-        {
-            if (worker != null && worker.isAlive())
-            {
-                worker.interrupt();
-            }
-        }
+        compassWorkers.values().stream().filter(worker -> worker != null && worker.isAlive()).forEach(ThreadCompassWorker::interrupt);
     }
 
     public String getName()

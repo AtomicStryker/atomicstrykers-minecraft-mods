@@ -208,10 +208,7 @@ public class DefaultConfigFilePrinter
         if (printBlocks)
         {
             System.err.println("For your Finder Compass ID convenience, following a dump of all currently registered block IDs:");
-            for (Object o : GameData.getBlockRegistry().getKeys())
-            {
-                System.out.println(o);
-            }
+            GameData.getBlockRegistry().getKeys().forEach(System.out::println);
         }
     }
 }

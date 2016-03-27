@@ -27,7 +27,7 @@ public class ItemFinderCompass extends Item
         {
             FinderCompassClientTicker.instance.switchSetting();
         }
-        return new ActionResult(EnumActionResult.PASS, itemStack);
+        return new ActionResult<>(EnumActionResult.PASS, itemStack);
     }
     
     @Override

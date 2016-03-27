@@ -55,7 +55,7 @@ public class FinderCompassMod
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        settingList = new ArrayList<CompassSetting>();
+        settingList = new ArrayList<>();
 
         compassConfig = evt.getSuggestedConfigurationFile();
         Configuration itemConfig = new Configuration(new File(compassConfig.getAbsolutePath().replace("FinderCompass", "FinderCompassItemConfig")));
