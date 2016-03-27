@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
@@ -92,7 +93,8 @@ public class AStarStatic
 	 */
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
-		return !worldObj.getBlockState(new BlockPos(ix, iy, iz)).getBlock().getMaterial().isSolid();
+		IBlockState is = worldObj.getBlockState(new BlockPos(ix, iy, iz));
+		return !is.getBlock().getMaterial(is).isSolid();
 	}
 	
 	public static int getIntCoordFromDoubleCoord(double input)
@@ -199,7 +201,8 @@ public class AStarStatic
 	
 	public static boolean isLadder(World world, Block blockID, int x, int y, int z)
 	{
-	    return blockID.isLadder(world, new BlockPos(x, y, z), null);
+		BlockPos pos = new BlockPos(x, y, z);
+	    return blockID.isLadder(world.getBlockState(pos), world, pos, null);
 	}
 	
 	/**

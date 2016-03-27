@@ -11,8 +11,11 @@ import atomicstryker.magicyarn.common.network.PathPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -72,14 +75,14 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             {
                 clientTicker.path.addAll(0, given);
             }
-            
-            mcinstance.theWorld.playSoundAtEntity(mcinstance.thePlayer, "random.levelup", 1.0F, 1.0F);
+
+            mcinstance.theWorld.playSound(mcinstance.thePlayer, new BlockPos(mcinstance.thePlayer), SoundEvents.entity_player_levelup, SoundCategory.MASTER, 1.0F, 1.0F);
             
             sendPathToServer(mcinstance.thePlayer.getGameProfile().getName(), clientTicker.path);
         }
         else if (!noSound)
         {
-            mcinstance.theWorld.playSoundAtEntity(mcinstance.thePlayer, "random.bowhit", 1.0F, 1.0F);
+            mcinstance.theWorld.playSound(mcinstance.thePlayer, new BlockPos(mcinstance.thePlayer), SoundEvents.entity_arrow_hit, SoundCategory.MASTER, 1.0F, 1.0F);
         }
     }
 
@@ -105,7 +108,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
     @Override
     public void onNoPathAvailable()
     {
-        mcinstance.theWorld.playSoundAtEntity(mcinstance.thePlayer, "random.bowhit", 1.0F, 1.0F);
+        mcinstance.theWorld.playSound(mcinstance.thePlayer, new BlockPos(mcinstance.thePlayer), SoundEvents.entity_arrow_hit, SoundCategory.MASTER, 1.0F, 1.0F);
     }
     
     private void resetPaths()
@@ -136,7 +139,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             {       
                 origin = new AStarNode((int)Math.floor(player.posX), (int)Math.floor(player.posY)-1, (int)Math.floor(player.posZ), 0, null);
                 System.out.println("Magic Yarn Origin set from null to ["+origin.x+"|"+origin.y+"|"+origin.z+"]");
-                world.playSound(player.posX, player.posY, player.posZ, "random.orb", 1.0F, 1.0F, false);
+                world.playSound(player, new BlockPos(player), SoundEvents.entity_experience_orb_pickup, SoundCategory.MASTER, 1.0F, 1.0F);
                 clientTicker.showPath = false;
             }
             else // start set
@@ -161,7 +164,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                             if (clientTicker.path.get(i).equals(target))
                             {
                                 System.out.println("Magic Yarn being cut shorter!");
-                                world.playSoundAtEntity(player, "random.break", 1.0F, 1.0F);
+                                world.playSound(player, new BlockPos(player), SoundEvents.entity_item_break, SoundCategory.MASTER, 1.0F, 1.0F);
                                 soundplayed = true;
                                 idx = i;
                                 break;
@@ -183,7 +186,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
                         System.out.println("Magic Yarn preparing for next target");
                         if (!soundplayed)
                         {
-                            world.playSound(player.posX, player.posY, player.posZ, "random.pop", 1.0F, 1.0F, false);
+                            world.playSound(player, new BlockPos(player), SoundEvents.entity_item_pickup, SoundCategory.MASTER, 1.0F, 1.0F);
                         }
                         clientTicker.showPath = false;
                     }
@@ -201,7 +204,7 @@ public class MagicYarnClient implements IProxy, IAStarPathedEntity
             {
                 resetPaths();
                 System.out.println("Magic Yarn full reset");
-                world.playSound(player.posX, player.posY, player.posZ, "random.fizz", 1.0F, 1.0F, false);
+                world.playSound(player, new BlockPos(player), SoundEvents.item_bucket_empty_lava, SoundCategory.MASTER, 1.0F, 1.0F);
             }
         }
     }

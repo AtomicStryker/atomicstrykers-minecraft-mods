@@ -1,10 +1,14 @@
 package atomicstryker.magicyarn.common;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemMagicYarn extends Item
@@ -24,20 +28,23 @@ public class ItemMagicYarn extends Item
 	}
 
 	@Override
-	public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityPlayer player, int useTime)
-	{	    
-		int var5 = this.getMaxItemUseDuration(itemstack) - useTime;
+	public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase user, int timeLeft)
+	{
+		int var5 = this.getMaxItemUseDuration(itemstack) - timeLeft;
 		float var6 = (float)var5 / 20.0F;
 		var6 = (var6 * var6 + var6 * 2.0F) / 3.0F;
-		
-		MagicYarn.proxy.onPlayerUsedYarn(world, player, var6);
+
+		if (user instanceof EntityPlayer)
+		{
+			MagicYarn.proxy.onPlayerUsedYarn(world, (EntityPlayer) user, var6);
+		}
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3)
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
 	{
-		var3.setItemInUse(var1, this.getMaxItemUseDuration(var1));
-		return var1;
+		player.setActiveHand(hand);
+		return new ActionResult(EnumActionResult.SUCCESS, itemStack);
 	}
 
 	@Override
@@ -55,6 +62,6 @@ public class ItemMagicYarn extends Item
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return EnumChatFormatting.GOLD+super.getItemStackDisplayName(itemStack);
+        return TextFormatting.GOLD+super.getItemStackDisplayName(itemStack);
     }
 }

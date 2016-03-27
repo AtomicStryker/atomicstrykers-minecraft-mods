@@ -6,7 +6,7 @@ import atomicstryker.magicyarn.common.MagicYarn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -61,7 +61,7 @@ public class MPMagicYarn
                 else if (mcinstance.currentScreen == null && !messageShown)
                 {
                     messageShown = true;
-                    mcinstance.thePlayer.addChatMessage(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
+                    mcinstance.thePlayer.addChatMessage(new TextComponentTranslation("This server has Magic Yarn installed. Craft the Item!"));
                 }
             }
             else
@@ -77,7 +77,7 @@ public class MPMagicYarn
             {
                 if (!serverDoesNotHaveMod)
                 {
-                    ItemStack curItem = mcinstance.thePlayer.getCurrentEquippedItem();
+                    ItemStack curItem = mcinstance.thePlayer.getHeldItemMainhand();
                     if (curItem != null && curItem.getItem() == MagicYarn.instance.magicYarn)
                     {
                         mcinstance.displayGuiScreen(new GuiNavigateToPlayer()); 
@@ -85,7 +85,7 @@ public class MPMagicYarn
                     else if (!messageShown)
                     {
                         messageShown = true;
-                        mcinstance.thePlayer.addChatMessage(new ChatComponentText("This server has Magic Yarn installed. Craft the Item!"));
+                        mcinstance.thePlayer.addChatMessage(new TextComponentTranslation("This server has Magic Yarn installed. Craft the Item!"));
                     }
                 }
                 else if (mcinstance.currentScreen == null)
@@ -99,7 +99,7 @@ public class MPMagicYarn
     public void onServerHasMod()
     {
         serverDoesNotHaveMod = false;
-        //mcinstance.thePlayer.addChatMessage(new ChatComponentText("Magic Yarn found on server."));
+        //mcinstance.thePlayer.addChatMessage(new TextComponentTranslation("Magic Yarn found on server."));
     }
     
     public boolean getHasServerMod()

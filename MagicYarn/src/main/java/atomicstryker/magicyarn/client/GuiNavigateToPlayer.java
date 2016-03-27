@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class GuiNavigateToPlayer extends GuiScreen
@@ -81,7 +81,7 @@ public class GuiNavigateToPlayer extends GuiScreen
             {
                 EntityPlayer target = (EntityPlayer) playerList[button.id-BUTTON_TO_PLAYER_ID_OFFSET];
                 MagicYarnClient.instance.tryPathToPlayer(target);
-                mc.thePlayer.addChatMessage(new ChatComponentText("Trying to path to "+target.getGameProfile().getName()));
+                mc.thePlayer.addChatMessage(new TextComponentTranslation("Trying to path to "+target.getGameProfile().getName()));
                 mc.displayGuiScreen(null);
             }
         }

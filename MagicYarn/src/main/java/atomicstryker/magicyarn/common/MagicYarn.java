@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = "magicyarn", name = "Magic Yarn", version = "1.1.6")
+@Mod(modid = "magicyarn", name = "Magic Yarn", version = "1.1.7")
 public class MagicYarn implements IProxy
 {
     
@@ -67,9 +67,9 @@ public class MagicYarn implements IProxy
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (!event.world.isRemote && event.entity instanceof EntityPlayerMP)
+        if (!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayerMP)
         {
-            networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.entity);
+            networkHelper.sendPacketToPlayer(new HandshakePacket(), (EntityPlayerMP) event.getEntity());
         }
     }
 
