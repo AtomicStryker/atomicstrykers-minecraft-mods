@@ -189,7 +189,7 @@ public class PetBatAIFlying extends EntityAIBase
         petBat.motionY += (Math.signum(diffY) * 0.7D - petBat.motionY) * 0.1D;
         petBat.motionZ += (Math.signum(diffZ) * 0.5D - petBat.motionZ) * 0.1D;
         float var7 = (float) (Math.atan2(petBat.motionZ, petBat.motionX) * 180.0D / Math.PI) - 90.0F;
-        float var8 = MathHelper.wrapAngleTo180_float(var7 - petBat.rotationYaw);
+        float var8 = MathHelper.wrapDegrees(var7 - petBat.rotationYaw);
         petBat.setMoveForward(0.5F);
         petBat.rotationYaw += var8;
     }

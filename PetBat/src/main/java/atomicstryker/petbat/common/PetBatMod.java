@@ -1,10 +1,5 @@
 package atomicstryker.petbat.common;
 
-import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
 import atomicstryker.petbat.common.network.BatNamePacket;
 import atomicstryker.petbat.common.network.NetworkHelper;
 import net.minecraft.entity.Entity;
@@ -15,7 +10,6 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
@@ -39,7 +33,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.2")
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+@Mod(modid = "PetBat", name = "Pet Bat", version = "1.4.3")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -183,7 +182,7 @@ public class PetBatMod implements IProxy
     @SubscribeEvent
     public void onPlayerLeftClick(BreakSpeed event)
     {
-        EntityPlayer p = event.entityPlayer;
+        EntityPlayer p = event.getEntityPlayer();
         ItemStack item = p.inventory.getCurrentItem();
         if (item != null && item.getItem() == TAME_ITEM_ID)
         {
@@ -207,7 +206,7 @@ public class PetBatMod implements IProxy
     {
         if (event.getTarget() instanceof EntityBat)
         {
-            EntityPlayer p = event.entityPlayer;
+            EntityPlayer p = event.getEntityPlayer();
             if (!p.worldObj.isRemote)
             {
                 ItemStack item = p.inventory.getCurrentItem();
@@ -230,7 +229,7 @@ public class PetBatMod implements IProxy
         
         if (glisterBatEnabled && event.getTarget() instanceof EntityPetBat)
         {
-            EntityPlayer p = event.entityPlayer;
+            EntityPlayer p = event.getEntityPlayer();
             ItemStack item = p.inventory.getCurrentItem();
             if (item != null && item.getItem() == GLISTER_ITEM_ID)
             {
@@ -243,10 +242,10 @@ public class PetBatMod implements IProxy
     @SubscribeEvent
     public void onPlayerAttacksEntity(AttackEntityEvent event)
     {
-        if (event.target instanceof EntityPetBat)
+        if (event.getTarget() instanceof EntityPetBat)
         {
-            EntityPetBat bat = (EntityPetBat) event.target;
-            if (bat.getOwnerName().equals(event.entityPlayer.getName()) && event.entityPlayer.getHeldItemMainhand() == null)
+            EntityPetBat bat = (EntityPetBat) event.getTarget();
+            if (bat.getOwnerName().equals(event.getEntityPlayer().getName()) && event.getEntityPlayer().getHeldItemMainhand() == null)
             {
                 bat.recallToOwner();
                 event.setCanceled(true);
@@ -263,15 +262,15 @@ public class PetBatMod implements IProxy
     @SubscribeEvent
     public void onItemToss(ItemTossEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.getEntity().worldObj.isRemote)
         {
-            EntityItem itemDropped = event.entityItem;
+            EntityItem itemDropped = event.getEntityItem();
             System.out.println("PlayerDropsEvent iterating over drop "+itemDropped);
             EntityItem foundItem;
             final Item id = itemDropped.getEntityItem().getItem();
             if (id == itemPocketedBat)
             {
-                final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.worldObj, itemDropped.getEntityItem(), event.player);
+                final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.worldObj, itemDropped.getEntityItem(), event.getPlayer());
                 if (bat.getHealth() > 1)
                 {
                     bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
@@ -325,7 +324,7 @@ public class PetBatMod implements IProxy
                         foundItem = (EntityItem) o;
                         if (foundItem.getEntityItem().getItem() == itemPocketedBat) // inert bat lying around
                         {
-                            final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.worldObj, foundItem.getEntityItem(), event.player);
+                            final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.worldObj, foundItem.getEntityItem(), event.getPlayer());
                             bat.setPosition(foundItem.posX, foundItem.posY, foundItem.posZ);
                             foundItem.worldObj.spawnEntityInWorld(bat);
                             bat.setHealth(bat.getMaxHealth()); // set full entity health
@@ -347,7 +346,7 @@ public class PetBatMod implements IProxy
     public void onPlayerDropsEvent(PlayerDropsEvent event)
     {
         // iterate drops, remove all batflutes
-        final Iterator<EntityItem> iter = event.drops.iterator();
+        final Iterator<EntityItem> iter = event.getDrops().iterator();
         while (iter.hasNext())
         {
             if (iter.next().getEntityItem().getItem() == itemBatFlute)
@@ -360,9 +359,9 @@ public class PetBatMod implements IProxy
     @SubscribeEvent
     public void onEntityLivingUpdate(LivingUpdateEvent event)
     {
-        if (event.entityLiving instanceof EntityPlayer)
+        if (event.getEntityLiving() instanceof EntityPlayer)
         {
-            EntityPlayer p = (EntityPlayer) event.entityLiving;
+            EntityPlayer p = (EntityPlayer) event.getEntityLiving();
             if (p.isEntityAlive() && p.getHeldItemMainhand() != null && p.getHeldItemMainhand().getItem().equals(itemPocketedBat))
             {
                 if (p.getActivePotionEffect(MobEffects.nightVision) == null)

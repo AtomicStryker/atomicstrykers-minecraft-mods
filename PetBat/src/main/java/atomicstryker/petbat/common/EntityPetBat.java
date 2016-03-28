@@ -92,9 +92,9 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     protected void entityInit()
     {
         super.entityInit();
-        dataWatcher.register(BAT_FLAGS, (byte) 0);
-        dataWatcher.register(IS_STAYING, (byte) 0);
-        dataWatcher.register(BAT_XP, 0);
+        dataManager.register(BAT_FLAGS, (byte) 0);
+        dataManager.register(IS_STAYING, (byte) 0);
+        dataManager.register(BAT_XP, 0);
     }
 
     public void setNames(String ownerName, String petName)
@@ -337,22 +337,22 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     public boolean getIsBatHanging()
     {
-        return (this.dataWatcher.get(BAT_FLAGS) & 1) != 0;
+        return (this.dataManager.get(BAT_FLAGS) & 1) != 0;
     }
 
     public void setIsBatHanging(boolean par1)
     {
         setHangingSpot(null);
 
-        byte var2 = this.dataWatcher.get(BAT_FLAGS);
+        byte var2 = this.dataManager.get(BAT_FLAGS);
 
         if (par1)
         {
-            dataWatcher.set(BAT_FLAGS, (byte) (var2 | 1));
+            dataManager.set(BAT_FLAGS, (byte) (var2 | 1));
         }
         else
         {
-            dataWatcher.set(BAT_FLAGS, (byte) (var2 & -2));
+            dataManager.set(BAT_FLAGS, (byte) (var2 & -2));
         }
     }
 
@@ -372,23 +372,23 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     public int getBatExperience()
     {
-        return dataWatcher.get(BAT_XP);
+        return dataManager.get(BAT_XP);
     }
 
     public void setBatExperience(int value)
     {
-        dataWatcher.set(BAT_XP, value);
+        dataManager.set(BAT_XP, value);
         getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(16d + (2 * PetBatMod.instance().getLevelFromExperience(value)));
     }
 
     public boolean getIsBatStaying()
     {
-        return dataWatcher.get(IS_STAYING) != 0;
+        return dataManager.get(IS_STAYING) != 0;
     }
 
     public void setIsBatStaying(boolean cond)
     {
-        dataWatcher.set(IS_STAYING, (byte) (cond ? 1 : 0));
+        dataManager.set(IS_STAYING, (byte) (cond ? 1 : 0));
     }
 
     public int getBatLevel()
@@ -497,8 +497,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.dataWatcher.set(BAT_FLAGS, nbt.getByte("BatFlags"));
-        dataWatcher.set(BAT_XP, nbt.getInteger("BatXP"));
+        this.dataManager.set(BAT_FLAGS, nbt.getByte("BatFlags"));
+        dataManager.set(BAT_XP, nbt.getInteger("BatXP"));
         this.ownerName = nbt.getString("ownerName");
         this.petName = nbt.getString("petName");
         lastOwnerX = nbt.getInteger("lastOwnerX");
@@ -510,7 +510,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        nbt.setByte("BatFlags", this.dataWatcher.get(BAT_FLAGS));
+        nbt.setByte("BatFlags", this.dataManager.get(BAT_FLAGS));
         nbt.setInteger("BatXP", getBatExperience());
         nbt.setString("ownerName", this.ownerName);
         nbt.setString("petName", this.petName);
