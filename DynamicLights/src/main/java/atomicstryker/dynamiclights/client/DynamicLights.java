@@ -204,6 +204,10 @@ public class DynamicLights
                     {
                         f.setAccessible(true);
                         Set<BlockPos> setLightUpdates = (Set<BlockPos>) f.get(instance.mcinstance.renderGlobal);
+                        if (setLightUpdates instanceof ConcurrentSkipListSet)
+                        {
+                            return;
+                        }
                         ConcurrentSkipListSet<BlockPos> cs = new ConcurrentSkipListSet<>(setLightUpdates);
                         f.set(instance.mcinstance.renderGlobal, cs);
                         System.out.println("Dynamic Lights successfully hacked Set RenderGlobal.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
