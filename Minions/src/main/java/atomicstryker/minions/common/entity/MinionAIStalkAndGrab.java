@@ -68,7 +68,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
 
         if (this.grabDelay == maxGrabDelay)
         {
-            target.mountEntity(theMinion);
+            target.startRiding(theMinion);
             resetTask();
         }
     }

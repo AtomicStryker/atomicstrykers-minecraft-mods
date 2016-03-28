@@ -14,8 +14,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
@@ -142,10 +142,10 @@ public abstract class BlockTask
         if (isWorking())
         {
             worker.faceBlock(posX, posY, posZ);
-            worker.getDataWatcher().updateObject(16, Integer.valueOf(1));
-            worker.getDataWatcher().updateObject(17, Integer.valueOf(posX));
-            worker.getDataWatcher().updateObject(18, Integer.valueOf(posY));
-            worker.getDataWatcher().updateObject(19, Integer.valueOf(posZ));
+            worker.getDataManager().set(EntityMinion.IS_WORKING, (byte)1);
+            worker.getDataManager().set(EntityMinion.X_BLOCKTASK, posX);
+            worker.getDataManager().set(EntityMinion.Y_BLOCKTASK, posY);
+            worker.getDataManager().set(EntityMinion.Z_BLOCKTASK, posZ);
         }
 
         if (!workerReachedBlock)
@@ -185,7 +185,8 @@ public abstract class BlockTask
         this.worker.setWorking(true);
         //this.worker.setPathToEntity(null);
 
-        worker.adaptItem(worker.worldObj.getBlockState(new BlockPos(posX, posY, posZ)).getBlock().getMaterial());
+        IBlockState is = worker.worldObj.getBlockState(new BlockPos(posX, posY, posZ));
+        worker.adaptItem(is.getBlock().getMaterial(is));
     }
 
     /**
@@ -268,12 +269,13 @@ public abstract class BlockTask
      */
     protected List<ItemStack> getItemStacksFromWorldBlock(World world, int i, int j, int k)
     {
-        Block block = world.getBlockState(new BlockPos(i, j, k)).getBlock();
-        Material m = block.getMaterial();
+        IBlockState is = world.getBlockState(new BlockPos(i, j, k));
+        Block block = is.getBlock();
+        Material m = block.getMaterial(is);
         
         if (block == Blocks.air || m == Material.water || m == Material.lava || m == Material.leaves || m == Material.plants)
         {
-            return new ArrayList<ItemStack>();
+            return new ArrayList<>();
         }
         
         BlockPos pos = new BlockPos(i, j, k);

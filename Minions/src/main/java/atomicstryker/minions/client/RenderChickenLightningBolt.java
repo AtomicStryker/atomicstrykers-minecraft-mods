@@ -37,7 +37,7 @@ public class RenderChickenLightningBolt
 	@SubscribeEvent
 	public void onRenderWorldLast(RenderWorldLastEvent event)
 	{
-	    float frame = event.partialTicks;
+	    float frame = event.getPartialTicks();
 		Entity entity = Minecraft.getMinecraft().thePlayer;
 		
 		interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)frame;
@@ -53,10 +53,10 @@ public class RenderChickenLightningBolt
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texO);
-		tessellator.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+		tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
         short j = 0xF000F0 >> 16 & 65535;
         short k = 0xF000F0 & 65535;
-		tessellator.getWorldRenderer().lightmap(j, k);
+		tessellator.getBuffer().lightmap(j, k);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
 			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.getRotationX(), ActiveRenderInfo.getRotationXZ(), ActiveRenderInfo.getRotationZ(), ActiveRenderInfo.getRotationXY(), 0);
@@ -64,8 +64,8 @@ public class RenderChickenLightningBolt
         tessellator.draw();
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texI);
-		tessellator.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
-		tessellator.getWorldRenderer().lightmap(j, k);
+		tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+		tessellator.getBuffer().lightmap(j, k);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{
 			renderBolt(bolt, tessellator, frame, ActiveRenderInfo.getRotationX(), ActiveRenderInfo.getRotationXZ(), ActiveRenderInfo.getRotationZ(), ActiveRenderInfo.getRotationXY(), 1);
@@ -116,52 +116,52 @@ public class RenderChickenLightningBolt
         	Vector3 startvec = rendersegment.startpoint.point;
         	Vector3 endvec = rendersegment.endpoint.point;
         	
-            tessellator.getWorldRenderer().putColorRGBA(0, 255, 255, 255, Math.round(255 / (mainalpha * rendersegment.light)));
+            tessellator.getBuffer().putColorRGBA(0, 255, 255, 255, Math.round(255 / (mainalpha * rendersegment.light)));
             
-            //tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
-            tessellator.getWorldRenderer().pos(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z).tex(0.5, 0).endVertex();
+            //tessellator.getBuffer()().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
+            tessellator.getBuffer().pos(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z).tex(0.5, 0).endVertex();
             
-            //tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
-            tessellator.getWorldRenderer().pos(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z).tex(0.5, 0).endVertex();
+            //tessellator.getBuffer()().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
+            tessellator.getBuffer().pos(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z).tex(0.5, 0).endVertex();
             
-            //tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
-            tessellator.getWorldRenderer().pos(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z).tex(0.5, 1).endVertex();
+            //tessellator.getBuffer()().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+            tessellator.getBuffer().pos(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z).tex(0.5, 1).endVertex();
             
-            //tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
-            tessellator.getWorldRenderer().pos(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z).tex(0.5, 1).endVertex();
+            //tessellator.getBuffer()().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+            tessellator.getBuffer().pos(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z).tex(0.5, 1).endVertex();
             
             if(rendersegment.next == null)
             {
             	Vector3 roundend = rendersegment.endpoint.point.copy().add(rendersegment.diff.copy().normalize().multiply(width));
             	                
-                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z, 0, 0);
-                tessellator.getWorldRenderer().pos(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z).tex(0, 0).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z, 0, 0);
+                tessellator.getBuffer().pos(roundend.x - diff2.x, roundend.y - diff2.y, roundend.z - diff2.z).tex(0, 0).endVertex();
                 
-                //tessellator.getWorldRenderer().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
-                tessellator.getWorldRenderer().pos(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z).tex(0.5, 0).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z, 0.5, 0);
+                tessellator.getBuffer().pos(endvec.x - diff2.x, endvec.y - diff2.y, endvec.z - diff2.z).tex(0.5, 0).endVertex();
                 
-                //tessellator.getWorldRenderer().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
-                tessellator.getWorldRenderer().pos(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z).tex(0.5, 1).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z, 0.5, 1);
+                tessellator.getBuffer().pos(endvec.x + diff2.x, endvec.y + diff2.y, endvec.z + diff2.z).tex(0.5, 1).endVertex();
                 
-                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z, 0, 1);
-                tessellator.getWorldRenderer().pos(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z).tex(0, 1).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z, 0, 1);
+                tessellator.getBuffer().pos(roundend.x + diff2.x, roundend.y + diff2.y, roundend.z + diff2.z).tex(0, 1).endVertex();
             }
             
             if(rendersegment.prev == null)
             {
             	Vector3 roundend = rendersegment.startpoint.point.copy().subtract(rendersegment.diff.copy().normalize().multiply(width));
             	                
-                //tessellator.getWorldRenderer().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
-                tessellator.getWorldRenderer().pos(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z).tex(0.5, 0).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z, 0.5, 0);
+                tessellator.getBuffer().pos(startvec.x - diff1.x, startvec.y - diff1.y, startvec.z - diff1.z).tex(0.5, 0).endVertex();
                 
-                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z, 0, 0);
-                tessellator.getWorldRenderer().pos(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z).tex(0, 0).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z, 0, 0);
+                tessellator.getBuffer().pos(roundend.x - diff1.x, roundend.y - diff1.y, roundend.z - diff1.z).tex(0, 0).endVertex();
                 
-                //tessellator.getWorldRenderer().addVertexWithUV(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z, 0, 1);
-                tessellator.getWorldRenderer().pos(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z).tex(0, 1).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z, 0, 1);
+                tessellator.getBuffer().pos(roundend.x + diff1.x, roundend.y + diff1.y, roundend.z + diff1.z).tex(0, 1).endVertex();
                 
-                //tessellator.getWorldRenderer().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
-                tessellator.getWorldRenderer().pos(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z).tex(0.5, 1).endVertex();
+                //tessellator.getBuffer()().addVertexWithUV(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z, 0.5, 1);
+                tessellator.getBuffer().pos(startvec.x + diff1.x, startvec.y + diff1.y, startvec.z + diff1.z).tex(0.5, 1).endVertex();
             }
         }
 	}

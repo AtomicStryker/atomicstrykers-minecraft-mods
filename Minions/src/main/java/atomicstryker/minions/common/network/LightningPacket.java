@@ -8,9 +8,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -66,7 +66,7 @@ public class LightningPacket implements IPacket
         }
         else
         {
-            MinecraftServer.getServer().addScheduledTask(new ScheduledCodeServer());
+            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCodeServer());
         }
     }
     
@@ -92,7 +92,7 @@ public class LightningPacket implements IPacket
         {
             Vector3 start = new Vector3(sx, sy, sz);
             Vector3 end = new Vector3(ex, ey, ez);
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
             if (player != null)
             {                
                 if (MinionsCore.instance.hasPlayerWillPower(player))

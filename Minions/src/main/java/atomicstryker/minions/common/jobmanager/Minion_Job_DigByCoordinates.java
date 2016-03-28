@@ -8,8 +8,8 @@ import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**

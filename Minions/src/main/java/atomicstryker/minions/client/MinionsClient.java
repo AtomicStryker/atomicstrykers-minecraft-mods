@@ -2,6 +2,7 @@ package atomicstryker.minions.client;
 
 import java.util.ArrayList;
 
+import net.minecraft.util.math.RayTraceResult;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -37,12 +38,10 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -72,7 +71,7 @@ public class MinionsClient
     private KeyBinding menuKey;
     
     private static CuboidRegion selection = new CuboidRegion();
-    private static ArrayList<PointCube> additionalCubes = new ArrayList<PointCube>();
+    private static ArrayList<PointCube> additionalCubes = new ArrayList<>();
     
     public MinionsClient()
     {
@@ -86,7 +85,7 @@ public class MinionsClient
     {
         if (mc.currentScreen == null && isSelectingMineArea)
         {
-            renderSelections(event.partialTicks);
+            renderSelections(event.getPartialTicks());
         }
     }
     
@@ -109,10 +108,7 @@ public class MinionsClient
         
         selection.render();
 
-        for (PointCube additionalCube : additionalCubes)
-        {
-            additionalCube.render();
-        }
+        additionalCubes.forEach(PointCube::render);
         
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         GL11.glPopMatrix();
@@ -156,7 +152,7 @@ public class MinionsClient
                 isSelectingMineArea = false;
                 deleteSelection();
             }
-            else if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK)
+            else if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
             {
                 int x = mc.objectMouseOver.getBlockPos().getX();
                 int y = mc.objectMouseOver.getBlockPos().getY();
@@ -226,7 +222,7 @@ public class MinionsClient
                 {
                     lastStaffLightningBoltTime = System.currentTimeMillis();
                     Entity p = mc.getRenderViewEntity();
-                    MovingObjectPosition pos = p.rayTrace(10, renderTick);
+                    RayTraceResult pos = p.rayTrace(10, renderTick);
                     if (pos != null)
                     {
                         Vector3 startvec = Vector3.fromEntityCenter(p).add(0, 0.68D, 0);
@@ -296,7 +292,7 @@ public class MinionsClient
         Minecraft mcinstance = FMLClientHandler.instance().getClient();
         
         // this raytrace does not hit entities since 1.7!
-        MovingObjectPosition targetObjectMouseOver = mcinstance.getRenderViewEntity().rayTrace(30.0D, 1.0F);
+        RayTraceResult targetObjectMouseOver = mcinstance.getRenderViewEntity().rayTrace(30.0D, 1.0F);
         // List<EntityMinion> minions = MinionsCore.masterNames.get(playerEnt.getGameProfile().getName());
         MinionsCore.debugPrint("OnMastersGloveRightClick Master: "+playerEnt.getName());
         
@@ -321,7 +317,7 @@ public class MinionsClient
                 MinionsCore.instance.networkHelper.sendPacketToServer(new DropAllPacket(playerEnt.getName(), target.getEntityId()));
             }
         }
-        else if (targetObjectMouseOver.typeOfHit == MovingObjectType.BLOCK)
+        else if (targetObjectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
         {
             int x = targetObjectMouseOver.getBlockPos().getX();
             int y = targetObjectMouseOver.getBlockPos().getY() +1;
@@ -433,11 +429,11 @@ public class MinionsClient
 
             if (MinionsCore.instance.evilDeedXPCost != -1)
             {
-                mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Server says you don't have enough XP for Evil Deeds"));
+                mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Server says you don't have enough XP for Evil Deeds"));
             }
             else
             {
-                mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("Server says Minions are unobtainable through Evil Deeds here"));
+                mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Server says Minions are unobtainable through Evil Deeds here"));
             }
         }
     }
@@ -448,7 +444,7 @@ public class MinionsClient
         Entity target = mc.theWorld.getEntityByID(targetID);
         if (minion != null && target != null)
         {
-            target.mountEntity(minion);
+            target.startRiding(minion);
         }
     }
     

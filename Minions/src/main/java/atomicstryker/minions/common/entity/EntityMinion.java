@@ -11,6 +11,7 @@ import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.jobmanager.BlockTask;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -25,12 +26,16 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -74,14 +79,21 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     private Chunk lastChunk;
     private Ticket chunkLoadingTicket;
 
+    public static final DataParameter<Byte> IS_WORKING = EntityDataManager.createKey(EntityMinion.class, DataSerializers.BYTE);
+    public static final DataParameter<Integer> X_BLOCKTASK = EntityDataManager.createKey(EntityMinion.class, DataSerializers.VARINT);
+    public static final DataParameter<Integer> Y_BLOCKTASK = EntityDataManager.createKey(EntityMinion.class, DataSerializers.VARINT);
+    public static final DataParameter<Integer> Z_BLOCKTASK = EntityDataManager.createKey(EntityMinion.class, DataSerializers.VARINT);
+    protected static final DataParameter<String> MASTER_NAME = EntityDataManager.createKey(EntityMinion.class, DataSerializers.STRING);
+    protected static final DataParameter<Byte> HELD_ITEM = EntityDataManager.createKey(EntityMinion.class, DataSerializers.BYTE);
+
     public EntityMinion(World var1)
     {
         super(var1);
         this.isImmuneToFire = true;
 
         this.moveSpeed = 1.2F;
-        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.225D);
-        getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(MinionsCore.instance.minionFollowRange);
+        getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.225D);
+        getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(MinionsCore.instance.minionFollowRange);
 
         this.pathPlanner = new AStarPathPlanner(worldObj, this);
 
@@ -130,19 +142,19 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         super.entityInit();
         /* boolean isWorking for SwingProgress and Sounds, set by AS_BlockTask */
-        this.dataWatcher.addObject(16, new Integer(0));
-        this.dataWatcher.addObject(17, new Integer(0)); // x blocktask
-        this.dataWatcher.addObject(18, new Integer(0)); // y blocktask
-        this.dataWatcher.addObject(19, new Integer(0)); // z blocktask
-        this.dataWatcher.addObject(20, "undef"); // masterUserName
-        this.dataWatcher.addObject(21, new Integer(0)); // heldItem Index
+        dataManager.register(IS_WORKING, (byte)0);
+        dataManager.register(X_BLOCKTASK, 0);
+        dataManager.register(Y_BLOCKTASK, 0);
+        dataManager.register(Z_BLOCKTASK, 0);
+        dataManager.register(MASTER_NAME, "undef");
+        dataManager.register(HELD_ITEM, (byte)0);
     }
 
     public void setWorking(boolean b)
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(16, b ? 1 : 0);
+            dataManager.set(IS_WORKING, b ? (byte)1 : (byte)0);
         }
     }
 
@@ -150,13 +162,13 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(20, name);
+            dataManager.set(MASTER_NAME, name);
         }
     }
 
     public String getMasterUserName()
     {
-        String s = dataWatcher.getWatchableObjectString(20);
+        String s = dataManager.get(MASTER_NAME);
         return s.equals("") ? "undef" : s;
     }
 
@@ -293,7 +305,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             }
         }
 
-        if (this.riddenByEntity != null && this.riddenByEntity.equals(master) && this.getNavigator().noPath())
+        if (getPassengers().contains(master) && this.getNavigator().noPath())
         {
             this.rotationYaw = this.rotationPitch = 0;
         }
@@ -316,11 +328,11 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             despawnTime = -1l;
         }
 
-        if (this.dataWatcher.getWatchableObjectInt(16) != 0)
+        if (dataManager.get(IS_WORKING) != 0)
         {
-            int x = this.dataWatcher.getWatchableObjectInt(17);
-            int y = this.dataWatcher.getWatchableObjectInt(18);
-            int z = this.dataWatcher.getWatchableObjectInt(19);
+            int x = dataManager.get(X_BLOCKTASK);
+            int y = dataManager.get(Y_BLOCKTASK);
+            int z = dataManager.get(Z_BLOCKTASK);
             Block blockID = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
 
             swingProgress += (0.17F * 0.5 * workSpeed);
@@ -335,8 +347,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                 long curTime = System.currentTimeMillis();
                 if (curTime - timeLastSound > (500L / workSpeed))
                 {
-                    worldObj.playSound(posX, posY, posZ, blockID.stepSound.getStepSound(), (blockID.stepSound.getVolume() + 1.0F) / 2.0F,
-                            blockID.stepSound.getFrequency() * 0.8F, false);
+                    SoundType soundtype = blockID.getSoundType();
+                    playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.35F, soundtype.getPitch());
                     timeLastSound = curTime;
                 }
             }
@@ -562,9 +574,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     @Override
     public boolean attackEntityFrom(DamageSource var1, float var2)
     {
-        if (this.riddenByEntity != null)
+        if (!this.getPassengers().isEmpty())
         {
-            this.riddenByEntity.mountEntity(null);
+            removePassengers();
             return true;
         }
 
@@ -581,14 +593,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                 // worldObj.playSoundAtEntity(this, "minions:minionsqueak",
                 // 1.0F, 1.0F);
                 return true;
-            }
-            else if (var1.getEntity() instanceof EntityPlayer)
-            {
-                if (this.riddenByEntity != null)
-                {
-                    this.riddenByEntity.mountEntity(null);
-                    return true;
-                }
             }
         }
 
@@ -640,18 +644,12 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         setWorking(false);
     }
 
-    public IChatComponent getDisplayName()
+    public ITextComponent getDisplayName()
     {
         // return ""+(Math.sqrt((this.motionX * this.motionX) + (this.motionZ *
         // this.motionZ)));
         // return ""+currentState+"/"+nextState;
         return null;
-    }
-
-    @Override
-    public ItemStack getHeldItem()
-    {
-        return HeldItem.values()[dataWatcher.getWatchableObjectInt(21)].item;
     }
 
     private enum HeldItem
@@ -670,7 +668,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(21, HeldItem.Axe.ordinal());
+            dataManager.set(HELD_ITEM, (byte)HeldItem.Axe.ordinal());
+            setHeldItem(EnumHand.MAIN_HAND, HeldItem.values()[dataManager.get(HELD_ITEM)].item);
         }
     }
 
@@ -678,7 +677,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(21, HeldItem.Pickaxe.ordinal());
+            dataManager.set(HELD_ITEM, (byte)HeldItem.Pickaxe.ordinal());
+            setHeldItem(EnumHand.MAIN_HAND, HeldItem.values()[dataManager.get(HELD_ITEM)].item);
         }
     }
 
@@ -686,7 +686,8 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
     {
         if (!worldObj.isRemote)
         {
-            dataWatcher.updateObject(21, HeldItem.Shovel.ordinal());
+            dataManager.set(HELD_ITEM, (byte)HeldItem.Shovel.ordinal());
+            setHeldItem(EnumHand.MAIN_HAND, HeldItem.values()[dataManager.get(HELD_ITEM)].item);
         }
     }
 

@@ -12,8 +12,8 @@ import java.math.RoundingMode;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class Vector3
 {
@@ -71,7 +71,7 @@ public class Vector3
 		return new Vector3(e.getPos().add(0.5, 0.5, 0.5));
 	}
 
-	public static Vector3 fromVec3(Vec3 vec)
+	public static Vector3 fromVec3(Vec3d vec)
 	{
 		return new Vector3(vec.xCoord, vec.yCoord, vec.zCoord);
 	}
@@ -225,9 +225,9 @@ public class Vector3
 		return this;
 	}
 
-	public Vec3 toVec3D()
+	public Vec3d toVec3D()
 	{
-		return new Vec3(x, y, z);
+		return new Vec3d(x, y, z);
 	}
 
 	public double angle(Vector3 vec)

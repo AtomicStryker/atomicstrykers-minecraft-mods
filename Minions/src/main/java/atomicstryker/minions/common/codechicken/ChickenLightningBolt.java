@@ -21,11 +21,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ChickenLightningBolt
@@ -190,7 +190,7 @@ public class ChickenLightningBolt
 		particleMaxAge = fadetime + rand.nextInt(fadetime) - (fadetime / 2);
 		particleAge = -(int)(length*speed);
 		
-		boundingBox = AxisAlignedBB.fromBounds(
+		boundingBox = new AxisAlignedBB(
                 Math.min(start.x, end.x), Math.min(start.y, end.y), Math.min(start.z, end.z), 
                 Math.max(start.x, end.x), Math.max(start.y, end.y), Math.max(start.z, end.z))
                 .expand(length / 2, length / 2, length / 2);
@@ -294,14 +294,14 @@ public class ChickenLightningBolt
 	
 	private float rayTraceResistance(Vector3 start, Vector3 end, float prevresistance)
 	{
-		MovingObjectPosition mop = world.rayTraceBlocks(start.toVec3D(), end.toVec3D());
+		RayTraceResult mop = world.rayTraceBlocks(start.toVec3D(), end.toVec3D());
 		
 		if(mop == null)
 		{
 			return prevresistance;
 		}
 		
-		if(mop.typeOfHit == MovingObjectType.BLOCK)
+		if(mop.typeOfHit == Type.BLOCK)
 		{
 			Block blockID = world.getBlockState(mop.getBlockPos()).getBlock();
 			
@@ -320,8 +320,8 @@ public class ChickenLightningBolt
 	
 	private void vecBBDamageSegment(Vector3 start, Vector3 end, List<Entity> entitylist)
 	{
-		Vec3 start3D = start.toVec3D();
-		Vec3 end3D = end.toVec3D();
+		Vec3d start3D = start.toVec3D();
+		Vec3d end3D = end.toVec3D();
 		
 		for(int i = 0; i < entitylist.size(); i++)
 		{

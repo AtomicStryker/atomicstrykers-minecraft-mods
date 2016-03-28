@@ -5,7 +5,7 @@ import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class FollowPacket implements IPacket
@@ -30,7 +30,7 @@ public class FollowPacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         user = ByteBufUtils.readUTF8String(bytes);
-        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
     }
     
     class ScheduledCode implements Runnable
@@ -39,7 +39,7 @@ public class FollowPacket implements IPacket
         @Override
         public void run()
         {
-            EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
             if (player != null)
             {
                 MinionsCore.instance.orderMinionsToFollow(player);

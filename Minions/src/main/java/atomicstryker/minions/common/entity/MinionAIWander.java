@@ -2,7 +2,7 @@ package atomicstryker.minions.common.entity;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 public class MinionAIWander extends EntityAIBase
 {
@@ -28,13 +28,13 @@ public class MinionAIWander extends EntityAIBase
     public boolean shouldExecute()
     {
         if (entity.getCurrentTask() != null
-        || entity.riddenByEntity != null)
+        || !entity.getPassengers().isEmpty())
         {
             return false;
         }
         else if (nextMoveTime < System.currentTimeMillis())
         {
-            Vec3 vec3 = RandomPositionGenerator.findRandomTarget(this.entity, 6, 4);
+            Vec3d vec3 = RandomPositionGenerator.findRandomTarget(this.entity, 6, 4);
 
             if (vec3 == null)
             {

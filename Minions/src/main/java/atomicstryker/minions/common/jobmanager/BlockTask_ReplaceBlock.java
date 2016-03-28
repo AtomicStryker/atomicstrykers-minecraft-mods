@@ -3,7 +3,7 @@ package atomicstryker.minions.common.jobmanager;
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
 
 /**

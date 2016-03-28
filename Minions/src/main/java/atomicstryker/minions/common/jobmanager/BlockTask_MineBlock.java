@@ -8,7 +8,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
 
 /**
@@ -84,7 +84,7 @@ public class BlockTask_MineBlock extends BlockTask
     	checkDangers();
     	
     	blockState = worker.worldObj.getBlockState(pos); // check against interference mining
-    	if (blockState.getBlock() != Blocks.air && blockState.getBlock().getBlockHardness(worker.worldObj, pos) >= 0F)
+    	if (blockState.getBlock() != Blocks.air && blockState.getBlock().getBlockHardness(blockState, worker.worldObj, pos) >= 0F)
     	{
     	    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
     	    
@@ -140,7 +140,8 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForDanger(int x, int y, int z, boolean putFloor)
     {
-    	Block checkBlockID = worker.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
+        IBlockState is = worker.worldObj.getBlockState(new BlockPos(x, y, z));
+    	Block checkBlockID = is.getBlock();
     	boolean replaceBlock = false;
     	
     	if (checkBlockID == Blocks.air)
@@ -150,7 +151,7 @@ public class BlockTask_MineBlock extends BlockTask
     			replaceBlock = true;
     		}
     	}
-    	else if (!checkBlockID.getMaterial().isSolid() && checkBlockID != Blocks.torch)
+    	else if (!checkBlockID.getMaterial(is).isSolid() && checkBlockID != Blocks.torch)
     	{
     		replaceBlock = true;
     	}

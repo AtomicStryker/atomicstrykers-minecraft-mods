@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import atomicstryker.minions.common.entity.EntityMinion;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**

@@ -53,11 +53,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.S29PacketSoundEffect;
+import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
@@ -68,6 +70,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -148,9 +151,9 @@ public class MinionsCore
             evilDeedXPCost = cfg.get(Configuration.CATEGORY_GENERAL, "evilDeedXPCost", 2).getInt();
             minionsPerPlayer = cfg.get(Configuration.CATEGORY_GENERAL, "minionsAmountPerPlayer", 4).getInt();
             
-            cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostSmall", "1.5").comment = "Food cost per tick of casting lightning";
+            cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostSmall", "1.5").setComment("Food cost per tick of casting lightning");
             exhaustAmountSmall = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostSmall", "1.5").getString());
-            cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").comment = "Food cost of summoning Minions and giving complex orders";
+            cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").setComment("Food cost of summoning Minions and giving complex orders");
             exhaustAmountBig = Float.valueOf(cfg.get(Configuration.CATEGORY_GENERAL, "FoodCostBig", "20").getString());
             
             secondsWithoutMasterDespawn = cfg.get(Configuration.CATEGORY_GENERAL, "automaticDespawnDelay", 300, "Time in seconds after which a Minion without a Master ingame despawns").getInt();
@@ -193,9 +196,9 @@ public class MinionsCore
     @SubscribeEvent
     public void onEntityJoinsWorld(EntityJoinWorldEvent event)
     {
-        if (!event.world.isRemote && event.entity instanceof EntityPlayerMP)
+        if (!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayerMP)
         {
-            EntityPlayerMP p = (EntityPlayerMP) event.entity;
+            EntityPlayerMP p = (EntityPlayerMP) event.getEntity();
             networkHelper.sendPacketToPlayer(new RequestXPSettingPacket(evilDeedXPCost), p);
             
             MinionsCore.instance.prepareMinionHolder(p.getGameProfile().getName());
@@ -212,7 +215,7 @@ public class MinionsCore
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event)
     {
-        if (!event.world.isRemote)
+        if (!event.getWorld().isRemote)
         {
             runningJobList.clear();
             getMinionMap().clear();
@@ -296,7 +299,7 @@ public class MinionsCore
         while (iterator.hasNext())
         {
             Block iter = iterator.next();
-            if (iter instanceof BlockLog || iter instanceof BlockOldLog || iter.getLocalizedName().contains("log"))
+            if (iter instanceof BlockLog || iter.getLocalizedName().contains("log"))
             {
                 debugPrint("Minions found viable TreeBlock: "+iter);
                 foundTreeBlocks.add(iter);
@@ -492,7 +495,7 @@ public class MinionsCore
     {
         for (EntityMinion minion : getMinionsForMaster(playerEnt))
         {
-            if (minion.riddenByEntity == null)
+            if (minion.getPassengers().isEmpty())
             {
                 minion.targetEntityToGrab = target;
                 sendSoundToClients(minion, "minions:grabanimalorder");
@@ -504,10 +507,10 @@ public class MinionsCore
     public void orderMinionToDrop(EntityPlayer playerEnt, EntityMinion minion)
     {
         MinionsCore.debugPrint("Minion got drop order: "+minion);
-        if (minion.riddenByEntity != null)
+        if (!minion.getPassengers().isEmpty())
         {
             sendSoundToClients(minion, "minions:foryou");
-            minion.riddenByEntity.mountEntity(null);
+            minion.removePassengers();
         }
         else if (minion.inventory.containsItems())
         {
@@ -765,16 +768,15 @@ public class MinionsCore
         }
     }
     
-    public void sendSoundToClients(Entity ent, String string)
+    public void sendSoundToClients(Entity ent, String resource)
     {
-        MinionsCore.debugPrint("sendSoundToClients "+ent+", "+string);
-        if (!ent.worldObj.isRemote && MinecraftServer.getServer() != null)
+        MinionsCore.debugPrint("sendSoundToClients "+ent+", "+resource);
+        SoundEvent sound = new SoundEvent(new ResourceLocation(resource));
+        SoundCategory category = SoundCategory.AMBIENT;
+        if (!ent.worldObj.isRemote && FMLCommonHandler.instance().getMinecraftServerInstance() != null)
         {
-            MinecraftServer
-                    .getServer()
-                    .getConfigurationManager()
-                    .sendToAllNear(ent.posX, ent.posY, ent.posZ, 16D, ent.dimension,
-                            new S29PacketSoundEffect(string, ent.posX, ent.posY, ent.posZ, 1f, 1f));
+            FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().sendToAllNearExcept(null, ent.posX, ent.posY, ent.posZ, 16D, ent.dimension,
+                            new SPacketSoundEffect(sound, category, ent.posX, ent.posY, ent.posZ, 1f, 1f));
         }
     }
     

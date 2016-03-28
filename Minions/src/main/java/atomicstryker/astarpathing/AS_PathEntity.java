@@ -3,7 +3,7 @@ package atomicstryker.astarpathing;
 import net.minecraft.entity.Entity;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Extension of the Minecraft PathEntity to try and fix some of its horrible shortcomings
@@ -53,7 +53,7 @@ public class AS_PathEntity extends PathEntity
     }
     
     @Override
-    public Vec3 getPosition(Entity var1)
+    public Vec3d getPosition(Entity var1)
     {
     	if (super.isFinished()) return null;
     	return super.getPosition(var1);

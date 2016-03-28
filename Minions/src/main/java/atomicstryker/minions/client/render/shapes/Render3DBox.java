@@ -38,38 +38,38 @@ public class Render3DBox {
             tempColor.prepareRender();
 
             // Draw bottom face
-            Tessellator.getInstance().getWorldRenderer().begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            Tessellator.getInstance().getBuffer().begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
             tempColor.prepareColor();
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y1, z1).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y1, z1).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y1, z2).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y1, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y1, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y1, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y1, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y1, z2).endVertex();
             Tessellator.getInstance().draw();
 
             // Draw top face
-            Tessellator.getInstance().getWorldRenderer().begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            Tessellator.getInstance().getBuffer().begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
             tempColor.prepareColor();
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y2, z1).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y2, z1).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y2, z2).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y2, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y2, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y2, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y2, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y2, z2).endVertex();
             Tessellator.getInstance().draw();
 
             // Draw join top and bottom faces
-            Tessellator.getInstance().getWorldRenderer().begin(GL11.GL_LINES, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            Tessellator.getInstance().getBuffer().begin(GL11.GL_LINES, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
             tempColor.prepareColor();
 
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y1, z1).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y2, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y1, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y2, z1).endVertex();
 
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y1, z1).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y2, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y1, z1).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y2, z1).endVertex();
 
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y1, z2).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x2, y2, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y1, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x2, y2, z2).endVertex();
 
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y1, z2).endVertex();
-            Tessellator.getInstance().getWorldRenderer().pos(x1, y2, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y1, z2).endVertex();
+            Tessellator.getInstance().getBuffer().pos(x1, y2, z2).endVertex();
 
             Tessellator.getInstance().draw();
         }

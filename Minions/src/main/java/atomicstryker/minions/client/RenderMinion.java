@@ -1,5 +1,8 @@
 package atomicstryker.minions.client;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.scoreboard.IScoreCriteria;
+import net.minecraft.util.EnumBlockRenderType;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
@@ -44,12 +47,14 @@ public class RenderMinion extends RenderLiving<EntityLiving>
         float var4 = 1.0F;
         GL11.glScalef(var4, var4, var4);
         
-        this.model.carryAnimation = (var1.riddenByEntity != null);
-        
-        if ((var1.getDataWatcher().getWatchableObjectByte(0) & 1 << 1) != 0)
+        this.model.carryAnimation = (!var1.getPassengers().isEmpty());
+
+        /*
+        if (var1.getFlag(1))
         {
             GL11.glTranslatef(0.0F, 0.3125F, 0.0F);
         }
+        */
     }
     
     /*
@@ -116,7 +121,7 @@ public class RenderMinion extends RenderLiving<EntityLiving>
         @Override
         public void doRenderLayer(EntityLiving entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
         {
-            ItemStack itemstack = entitylivingbaseIn.getHeldItem();
+            ItemStack itemstack = entitylivingbaseIn.getHeldItemMainhand();
 
             if (itemstack != null)
             {
@@ -127,7 +132,7 @@ public class RenderMinion extends RenderLiving<EntityLiving>
                 Item item = itemstack.getItem();
                 Minecraft minecraft = Minecraft.getMinecraft();
 
-                if (item instanceof ItemBlock && Block.getBlockFromItem(item).getRenderType() == 2)
+                if (item instanceof ItemBlock && Block.getBlockFromItem(item).getRenderType(null) == EnumBlockRenderType.MODEL)
                 {
                     GlStateManager.translate(0.0F, 0.1875F, -0.3125F);
                     GlStateManager.rotate(20.0F, 1.0F, 0.0F, 0.0F);
@@ -136,7 +141,7 @@ public class RenderMinion extends RenderLiving<EntityLiving>
                     GlStateManager.scale(-f8, -f8, f8);
                 }
 
-                minecraft.getItemRenderer().renderItem(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON);
+                minecraft.getItemRenderer().renderItem(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND);
                 GlStateManager.popMatrix();
             }
         }

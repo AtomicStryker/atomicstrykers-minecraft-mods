@@ -5,7 +5,7 @@ import atomicstryker.minions.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class MinionSpawnPacket implements IPacket
@@ -42,7 +42,7 @@ public class MinionSpawnPacket implements IPacket
         x = bytes.readInt();
         y = bytes.readInt();
         z = bytes.readInt();
-        MinecraftServer.getServer().addScheduledTask(new ScheduledCode());
+        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
     }
     
     class ScheduledCode implements Runnable
@@ -51,7 +51,7 @@ public class MinionSpawnPacket implements IPacket
         @Override
         public void run()
         {
-            EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(user);
+            EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
             if (player != null)
             {
                 if (MinionsCore.instance.spawnMinionsForPlayer(player, x, y, z))

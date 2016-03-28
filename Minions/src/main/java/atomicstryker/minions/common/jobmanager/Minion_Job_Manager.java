@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public abstract class Minion_Job_Manager
 {
@@ -67,10 +67,7 @@ public abstract class Minion_Job_Manager
             workerList.add(m);
             m.returningGoods = m.followingMaster = false;
             
-            if (m.riddenByEntity != null)
-            {
-                m.riddenByEntity.mountEntity(null);
-            }
+            m.removePassengers();
             
             if (masterName == null)
             {
@@ -217,11 +214,6 @@ public abstract class Minion_Job_Manager
     
     /**
      * event coming back from an issued Blocktask, useful in recursive tasks or similar
-     * 
-     * @param worker Minion having finished a BlockTask
-     * @param x coordinate of task
-     * @param y coordinate of task
-     * @param z coordinate of task
      */
     public void onTaskFinished(BlockTask task, int x, int y, int z)
     {

@@ -5,8 +5,8 @@ import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 
@@ -44,10 +44,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
         m.isStripMining = true;
 
         m.giveTask(null, true);
-        if (m.riddenByEntity != null)
-        {
-            m.riddenByEntity.mountEntity(null);
-        }
+        m.removePassengers();
 
         if (masterName == null)
         {

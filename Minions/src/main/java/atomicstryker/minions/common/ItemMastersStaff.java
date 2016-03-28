@@ -1,11 +1,15 @@
 package atomicstryker.minions.common;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 /**
@@ -27,9 +31,9 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityPlayer player, int ticksHeld)
+    public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase user, int ticksHeld)
     {
-        if (world.isRemote)
+        if (world.isRemote && user instanceof EntityPlayer)
         {
             int ticksLeftFromMax = this.getMaxItemUseDuration(itemstack) - ticksHeld;
             float pointStrength = (float) ticksLeftFromMax / 20.0F;
@@ -38,12 +42,12 @@ public class ItemMastersStaff extends Item
             if (pointStrength > 1.0F)
             {
                 // full power!
-                MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, player);
+                MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, (EntityPlayer)user);
             }
             else
             {
                 // shorter tap
-                MinionsCore.proxy.onMastersGloveRightClick(itemstack, world, player);
+                MinionsCore.proxy.onMastersGloveRightClick(itemstack, world, (EntityPlayer) user);
             }
         }
     }
@@ -61,15 +65,15 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
     {
-        player.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
-        return itemStack;
+        player.setActiveHand(hand);
+        return new ActionResult(EnumActionResult.SUCCESS, itemStack);
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return EnumChatFormatting.RED + super.getItemStackDisplayName(itemStack);
+        return TextFormatting.RED + super.getItemStackDisplayName(itemStack);
     }
 }

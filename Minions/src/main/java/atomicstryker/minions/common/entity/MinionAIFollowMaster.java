@@ -1,10 +1,11 @@
 package atomicstryker.minions.common.entity;
 
 import atomicstryker.minions.common.MinionsCore;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class MinionAIFollowMaster extends EntityAIBase
 {
@@ -94,10 +95,13 @@ public class MinionAIFollowMaster extends EntityAIBase
                         {
                             for (int zIter = 0; zIter <= 4; ++zIter)
                             {
+                                IBlockState a = theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y - 1, z + zIter));
+                                IBlockState b = theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y, z + zIter));
+                                IBlockState c = theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y + 1, z + zIter));
                                 if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3)
-                                        && theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y - 1, z + zIter)).getBlock().isNormalCube()
-                                        && !theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y, z + zIter)).getBlock().isNormalCube()
-                                        && !theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y + 1, z + zIter)).getBlock().isNormalCube())
+                                        && a.getBlock().isNormalCube(a)
+                                        && !b.getBlock().isNormalCube(b)
+                                        && !c.getBlock().isNormalCube(c))
                                 {
                                     theMinion.setLocationAndAngles((double) (x + xIter) + 0.5D, (double) y, (double) (z + zIter) + 0.5D,
                                             theMinion.rotationYaw, theMinion.rotationPitch);
