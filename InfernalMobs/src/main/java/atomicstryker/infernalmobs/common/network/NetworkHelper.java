@@ -52,7 +52,7 @@ public class NetworkHelper
         clientOutboundChannel = channelPair.get(Side.CLIENT);
         serverOutboundChannel = channelPair.get(Side.SERVER);
         
-        registeredClasses = new HashSet<Class<? extends IPacket>>(handledPacketClasses.length);
+        registeredClasses = new HashSet<>(handledPacketClasses.length);
         Collections.addAll(registeredClasses, handledPacketClasses);
     }
     

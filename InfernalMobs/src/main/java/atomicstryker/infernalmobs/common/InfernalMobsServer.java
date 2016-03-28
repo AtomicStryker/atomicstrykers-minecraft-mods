@@ -11,7 +11,7 @@ public class InfernalMobsServer implements ISidedProxy
     
     public InfernalMobsServer()
     {
-        rareMobsServer = new ConcurrentHashMap<EntityLivingBase, MobModifier>();
+        rareMobsServer = new ConcurrentHashMap<>();
     }
     
     @Override

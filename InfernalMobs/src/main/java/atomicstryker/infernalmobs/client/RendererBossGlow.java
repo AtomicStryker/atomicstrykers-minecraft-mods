@@ -23,7 +23,7 @@ public class RendererBossGlow
         {
             lastRender = System.currentTimeMillis();
             
-            renderBossGlow(event.partialTicks);
+            renderBossGlow(event.getPartialTicks());
         }
     }
     
@@ -40,20 +40,14 @@ public class RendererBossGlow
         f.setPosition(var7, var9, var11);
         
         Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
-        for (EntityLivingBase ent : mobsmap.keySet())
-        {
-            if (ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVector()))
-            && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.getEntityBoundingBox()))
-            && ent.isEntityAlive())
-            {
-                mc.renderGlobal.spawnParticle(EnumParticleTypes.SPELL_MOB.getParticleID(),
-                        EnumParticleTypes.SPELL_MOB.getShouldIgnoreRange(), ent.posX + (ent.worldObj.rand.nextDouble() - 0.5D) * (double)ent.width,
-                        ent.posY + ent.worldObj.rand.nextDouble() * (double)ent.height - 0.25D,
-                        ent.posZ + (ent.worldObj.rand.nextDouble() - 0.5D) * (double)ent.width,
+        mobsmap.keySet().stream().filter(ent -> ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVector()))
+                && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.getEntityBoundingBox()))
+                && ent.isEntityAlive()).forEach(ent -> mc.renderGlobal.spawnParticle(EnumParticleTypes.SPELL_MOB.getParticleID(),
+                        EnumParticleTypes.SPELL_MOB.getShouldIgnoreRange(), ent.posX + (ent.worldObj.rand.nextDouble() - 0.5D) * (double) ent.width,
+                        ent.posY + ent.worldObj.rand.nextDouble() * (double) ent.height - 0.25D,
+                        ent.posZ + (ent.worldObj.rand.nextDouble() - 0.5D) * (double) ent.width,
                         (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D,
                         -ent.worldObj.rand.nextDouble(),
-                        (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D);
-            }
-        }
+                        (ent.worldObj.rand.nextDouble() - 0.5D) * 2.0D));
     }
 }

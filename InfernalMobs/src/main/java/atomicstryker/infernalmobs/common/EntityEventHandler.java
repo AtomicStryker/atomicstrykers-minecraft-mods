@@ -46,29 +46,29 @@ public class EntityEventHandler
                         "Anti Mob farming mechanic. Might cause overhead if enabled.").getBoolean(true);
         mobFarmCheckIntervals =
                 config.get(Configuration.CATEGORY_GENERAL, "AntiMobFarmCheckInterval", 30,
-                        "time in seconds between mob check intervals. Higher values cost more performance, but might be more accurate.").getInt() * 1000l;
+                        "time in seconds between mob check intervals. Higher values cost more performance, but might be more accurate.").getInt() * 1000L;
         mobFarmDamageTrigger =
                 (float) config.get(Configuration.CATEGORY_GENERAL, "mobFarmDamageThreshold", 150D,
                         "Damage in chunk per interval that triggers anti farm effects").getDouble(150D);
         config.save();
 
-        damageMap = new HashMap<ChunkCoordIntPair, Float>();
+        damageMap = new HashMap<>();
         nextMapEvaluation = System.currentTimeMillis();
     }
 
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event)
     {
-        if (event.entity instanceof EntityLivingBase)
+        if (event.getEntity() instanceof EntityLivingBase)
         {
-            String savedMods = event.entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
+            String savedMods = event.getEntity().getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
             if (!savedMods.equals(""))
             {
-                InfernalMobsCore.instance().addEntityModifiersByString((EntityLivingBase) event.entity, savedMods);
+                InfernalMobsCore.instance().addEntityModifiersByString((EntityLivingBase) event.getEntity(), savedMods);
             }
             else
             {
-                InfernalMobsCore.instance().processEntitySpawn((EntityLivingBase) event.entity);
+                InfernalMobsCore.instance().processEntitySpawn((EntityLivingBase) event.getEntity());
             }
         }
     }
@@ -76,9 +76,9 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingDeath(LivingDeathEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.getEntity().worldObj.isRemote)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
                 if (mod.onDeath())
@@ -92,12 +92,12 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingSetAttackTarget(LivingSetAttackTargetEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.getEntity().worldObj.isRemote)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
-                mod.onSetAttackTarget(event.target);
+                mod.onSetAttackTarget(event.getTarget());
             }
         }
     }
@@ -115,25 +115,25 @@ public class EntityEventHandler
     public void onEntityLivingHurt(LivingHurtEvent event)
     {
         // dont allow masochism
-        if (event.source.getEntity() != event.entityLiving)
+        if (event.getSource().getEntity() != event.getEntityLiving())
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
-                event.ammount = mod.onHurt(event.entityLiving, event.source, event.ammount);
+                event.setAmount(mod.onHurt(event.getEntityLiving(), event.getSource(), event.getAmount()));
             }
 
             /*
              * We use the Hook two-sided, both with the Mob as possible target
              * and attacker
              */
-            Entity attacker = event.source.getEntity();
+            Entity attacker = event.getSource().getEntity();
             if (attacker != null && attacker instanceof EntityLivingBase)
             {
                 mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) attacker);
                 if (mod != null)
                 {
-                    event.ammount = mod.onAttack(event.entityLiving, event.source, event.ammount);
+                    event.setAmount(mod.onAttack(event.getEntityLiving(), event.getSource(), event.getAmount()));
                 }
             }
 
@@ -142,10 +142,10 @@ public class EntityEventHandler
                 /*
                  * check for an environmental/automated damage type, aka mob farms
                  */
-                if (event.source == DamageSource.cactus || event.source == DamageSource.drown || event.source == DamageSource.fall
-                        || event.source == DamageSource.inWall || event.source == DamageSource.lava || event.source.getEntity() instanceof FakePlayer)
+                if (event.getSource() == DamageSource.cactus || event.getSource() == DamageSource.drown || event.getSource() == DamageSource.fall
+                        || event.getSource() == DamageSource.inWall || event.getSource() == DamageSource.lava || event.getSource().getEntity() instanceof FakePlayer)
                 {
-                    ChunkCoordIntPair cpair = new ChunkCoordIntPair((int) event.entityLiving.posX, (int) event.entityLiving.posZ);
+                    ChunkCoordIntPair cpair = new ChunkCoordIntPair((int) event.getEntityLiving().posX, (int) event.getEntityLiving().posZ);
                     Float value = damageMap.get(cpair);
                     if (value == null)
                     {
@@ -155,7 +155,7 @@ public class EntityEventHandler
                             {
                                 if (Math.abs(e.getKey().chunkZPos - cpair.chunkZPos) < 3)
                                 {
-                                    e.setValue(e.getValue() + event.ammount);
+                                    e.setValue(e.getValue() + event.getAmount());
                                     break;
                                 }
                             }
@@ -163,7 +163,7 @@ public class EntityEventHandler
                     }
                     else
                     {
-                        damageMap.put(cpair, value + event.ammount);
+                        damageMap.put(cpair, value + event.getAmount());
                     }
                 }
             }
@@ -173,12 +173,12 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingFall(LivingFallEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.getEntity().worldObj.isRemote)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
-                event.setCanceled(mod.onFall(event.distance));
+                event.setCanceled(mod.onFall(event.getDistance()));
             }
         }
     }
@@ -186,12 +186,12 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.getEntity().worldObj.isRemote)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
-                mod.onJump(event.entityLiving);
+                mod.onJump(event.getEntityLiving());
             }
         }
     }
@@ -199,12 +199,12 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingUpdate(LivingEvent.LivingUpdateEvent event)
     {
-        if (!event.entityLiving.worldObj.isRemote)
+        if (!event.getEntityLiving().worldObj.isRemote)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
-                mod.onUpdate(event.entityLiving);
+                mod.onUpdate(event.getEntityLiving());
             }
 
             if (antiMobFarm && System.currentTimeMillis() > nextMapEvaluation)
@@ -230,7 +230,7 @@ public class EntityEventHandler
                                 + maxC.getCenterXPos() + ", " + maxC.getCenterZPosition());
                         if (maxDamage > mobFarmDamageTrigger)
                         {
-                            MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.entityLiving.worldObj.getChunkFromChunkCoords(maxC.chunkXPos,
+                            MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.getEntityLiving().worldObj.getChunkFromChunkCoords(maxC.chunkXPos,
                                     maxC.chunkZPos), mobFarmCheckIntervals, maxDamage));
                         }
                     }
@@ -257,13 +257,13 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingDrops(LivingDropsEvent event)
     {
-        if (!event.entity.worldObj.isRemote)
+        if (!event.getEntity().worldObj.isRemote)
         {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.entityLiving);
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
             {
-                mod.onDropItems(event.entityLiving, event.source, event.drops, event.lootingLevel, event.recentlyHit, event.lootingLevel);
-                InfernalMobsCore.removeEntFromElites(event.entityLiving);
+                mod.onDropItems(event.getEntityLiving(), event.getSource(), event.getDrops(), event.getLootingLevel(), event.isRecentlyHit(), event.getLootingLevel());
+                InfernalMobsCore.removeEntFromElites(event.getEntityLiving());
             }
         }
     }

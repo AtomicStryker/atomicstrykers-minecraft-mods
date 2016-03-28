@@ -55,7 +55,7 @@ public class InfernalMobsClient implements ISidedProxy
     public void load()
     {
         nextPacketTime = 0;
-        rareMobsClient = new ConcurrentHashMap<EntityLivingBase, MobModifier>();
+        rareMobsClient = new ConcurrentHashMap<>();
         
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
         MinecraftForge.EVENT_BUS.register(this);
@@ -67,10 +67,10 @@ public class InfernalMobsClient implements ISidedProxy
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event)
     {
-        if (event.world.isRemote && mc.thePlayer != null
-                && (event.entity instanceof EntityMob || (event.entity instanceof EntityLivingBase && event.entity instanceof IMob)))
+        if (event.getWorld().isRemote && mc.thePlayer != null
+                && (event.getEntity() instanceof EntityMob || (event.getEntity() instanceof EntityLivingBase && event.getEntity() instanceof IMob)))
         {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.getName(), event.entity
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.thePlayer.getName(), event.getEntity()
                     .getEntityId(), (byte) 0));
         }
     }
@@ -80,7 +80,7 @@ public class InfernalMobsClient implements ISidedProxy
         if (System.currentTimeMillis() > nextPacketTime)
         {
             InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.thePlayer.getName(), ent.getEntityId(), 0f, 0f));
-            nextPacketTime = System.currentTimeMillis() + 100l;
+            nextPacketTime = System.currentTimeMillis() + 100L;
         }
     }
 
@@ -88,12 +88,12 @@ public class InfernalMobsClient implements ISidedProxy
     public void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event)
     {
         if (InfernalMobsCore.instance().getIsHealthBarDisabled() || 
-                event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || mc.ingameGUI.getBossOverlay().shouldPlayEndBossMusic()) // TODO probably needs more logic
+                event.getType() != RenderGameOverlayEvent.ElementType.BOSSHEALTH || mc.ingameGUI.getBossOverlay().shouldPlayEndBossMusic()) // TODO probably needs more logic
         {
             return;
         }
 
-        Entity ent = getEntityCrosshairOver(event.partialTicks, mc);
+        Entity ent = getEntityCrosshairOver(event.getPartialTicks(), mc);
         boolean retained = false;
         
         if (ent == null && System.currentTimeMillis() < healthBarRetainTime)
@@ -152,7 +152,7 @@ public class InfernalMobsClient implements ISidedProxy
                 if (!retained)
                 {
                     retainedTarget = target;
-                    healthBarRetainTime = System.currentTimeMillis() + 3000l;
+                    healthBarRetainTime = System.currentTimeMillis() + 3000L;
                 }
                 
             }
@@ -296,7 +296,7 @@ public class InfernalMobsClient implements ISidedProxy
     @SubscribeEvent
     public void onTick(RenderGameOverlayEvent.Pre event)
     {
-        if (event.type == RenderGameOverlayEvent.ElementType.AIR)
+        if (event.getType() == RenderGameOverlayEvent.ElementType.AIR)
         {
             if (!mc.thePlayer.isInsideOfMaterial(Material.water) && airOverrideValue != -999)
             {

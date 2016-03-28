@@ -102,7 +102,7 @@ public class MM_Ender extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
 
-            if (mob.worldObj.getCubes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.worldObj.isAnyLiquid(mob.getEntityBoundingBox()))
+            if (mob.worldObj.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.worldObj.isAnyLiquid(mob.getEntityBoundingBox()))
             {
                 success = true;
             }

@@ -1,3 +1,6 @@
+1.6.8
+- updated for forge 1805+
+
 1.6.7
 - updated for mc 1.9
 

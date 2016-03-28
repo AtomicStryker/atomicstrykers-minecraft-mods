@@ -82,7 +82,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.GameData;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.7")
+@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.8")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -139,14 +139,14 @@ public class InfernalMobsCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
-        dropIdListElite = new ArrayList<ItemStack>();
-        dropIdListUltra = new ArrayList<ItemStack>();
-        dropIdListInfernal = new ArrayList<ItemStack>();
+        dropIdListElite = new ArrayList<>();
+        dropIdListUltra = new ArrayList<>();
+        dropIdListInfernal = new ArrayList<>();
         nextExistCheckTime = System.currentTimeMillis();
-        classesAllowedMap = new HashMap<String, Boolean>();
-        classesForcedMap = new HashMap<String, Boolean>();
-        classesHealthMap = new HashMap<String, Float>();
-        dimensionBlackList = new ArrayList<Integer>();
+        classesAllowedMap = new HashMap<>();
+        classesForcedMap = new HashMap<>();
+        classesHealthMap = new HashMap<>();
+        dimensionBlackList = new ArrayList<>();
 
         config = new Configuration(evt.getSuggestedConfigurationFile());
         loadMods();
@@ -187,7 +187,7 @@ public class InfernalMobsCore
      */
     private void loadMods()
     {
-        mobMods = new ArrayList<Class<? extends MobModifier>>();
+        mobMods = new ArrayList<>();
 
         mobMods.add(MM_1UP.class);
         mobMods.add(MM_Alchemist.class);
@@ -546,11 +546,11 @@ public class InfernalMobsCore
             {
                 if (lastMod == null)
                 {
-                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] {}).newInstance();
+                    nextMod = possibleMods.get(index).getConstructor(new Class[] {}).newInstance();
                 }
                 else
                 {
-                    nextMod = (MobModifier) possibleMods.get(index).getConstructor(new Class[] { MobModifier.class }).newInstance(lastMod);
+                    nextMod = possibleMods.get(index).getConstructor(new Class[] { MobModifier.class }).newInstance(lastMod);
                 }
             }
             catch (Exception e)
@@ -645,11 +645,11 @@ public class InfernalMobsCore
                 {
                     if (lastMod == null)
                     {
-                        nextMod = (MobModifier) c.getConstructor(new Class[] {}).newInstance();
+                        nextMod = c.getConstructor(new Class[] {}).newInstance();
                     }
                     else
                     {
-                        nextMod = (MobModifier) c.getConstructor(new Class[] {MobModifier.class }).newInstance(lastMod);
+                        nextMod = c.getConstructor(new Class[] {MobModifier.class }).newInstance(lastMod);
                     }
                 }
                 catch (Exception e)
@@ -763,7 +763,7 @@ public class InfernalMobsCore
     {
         if (enchantmentList == null)
         {
-            enchantmentList = new ArrayList<Enchantment>(26); // 26 is the vanilla enchantment count as of 1.9
+            enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
             for (Enchantment enchantment : Enchantment.enchantmentRegistry)
             {
                 if (enchantment != null && enchantment.type != null)
@@ -865,14 +865,8 @@ public class InfernalMobsCore
         {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
             Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
-            for (EntityLivingBase mob : mobsmap.keySet())
-            {
-                if (mob.isDead || !mob.worldObj.loadedEntityList.contains(mob))
-                {
-                    // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.getEntityId()+" from rareMobs");
-                    removeEntFromElites(mob);
-                }
-            }
+            // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.getEntityId()+" from rareMobs");
+            mobsmap.keySet().stream().filter(mob -> mob.isDead || !mob.worldObj.loadedEntityList.contains(mob)).forEach(InfernalMobsCore::removeEntFromElites);
         }
         
         if (!tick.world.isRemote)
