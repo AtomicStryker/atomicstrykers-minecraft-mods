@@ -455,3 +455,6 @@ a: setAccessible now true
 
 15.7
 + updated to mc 1.9
+
+15.8
++ fixes concurrent modification crash happening with new ruinstrigger command logic

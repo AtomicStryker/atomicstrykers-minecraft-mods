@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    static final String modversion = "15.7";
+    static final String modversion = "15.8";
 
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
@@ -124,7 +124,7 @@ public class RuinsMod
         if (event.getEntity() instanceof EntityPlayer && !event.getEntity().worldObj.isRemote)
         {
             TileEntityCommandBlock tecb;
-            ArrayList<TileEntityCommandBlock> tecblistToDelete = new ArrayList<>();
+            ArrayList<TileEntityCommandBlock> tecblist = new ArrayList<>();
 
             for (int xoffset = -4; xoffset <= 4; xoffset++)
             {
@@ -139,17 +139,17 @@ public class RuinsMod
                             {
                                 // strip prefix from command
                                 tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
-                                // call command block execution
-                                tecb.getCommandBlockLogic().trigger(event.getEntity().worldObj);
-                                tecblistToDelete.add(tecb);
+                                tecblist.add(tecb);
                             }
                         }
                     }
                 }
             }
 
-            for (TileEntityCommandBlock tecb2 : tecblistToDelete)
+            for (TileEntityCommandBlock tecb2 : tecblist)
             {
+                // call command block execution
+                tecb2.getCommandBlockLogic().trigger(event.getEntity().worldObj);
                 // kill block
                 BlockPos pos = tecb2.getPos();
                 System.out.printf("Ruins executed and killed Command Block at [%s]\n", pos);
