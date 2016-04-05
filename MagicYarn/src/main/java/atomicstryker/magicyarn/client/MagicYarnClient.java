@@ -1,8 +1,5 @@
 package atomicstryker.magicyarn.client;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.IAStarPathedEntity;
 import atomicstryker.magicyarn.common.IProxy;
@@ -20,6 +17,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class MagicYarnClient implements IProxy, IAStarPathedEntity
 {

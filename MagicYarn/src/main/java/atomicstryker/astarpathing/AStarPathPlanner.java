@@ -1,9 +1,8 @@
 package atomicstryker.astarpathing;
 
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
-
-import net.minecraft.world.World;
 
 /**
  * Control Class for AstarPath, creates workers and manages returns

@@ -1,9 +1,9 @@
 package atomicstryker.magicyarn.common;
 
-import java.io.File;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+
+import java.io.File;
 
 public interface IProxy
 {

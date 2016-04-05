@@ -1,7 +1,5 @@
 package atomicstryker.magicyarn.common;
 
-import java.io.File;
-
 import atomicstryker.magicyarn.common.network.HandshakePacket;
 import atomicstryker.magicyarn.common.network.NetworkHelper;
 import atomicstryker.magicyarn.common.network.PathPacket;
@@ -23,6 +21,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.io.File;
+
 @Mod(modid = "magicyarn", name = "Magic Yarn", version = "1.1.7")
 public class MagicYarn implements IProxy
 {
@@ -43,7 +43,7 @@ public class MagicYarn implements IProxy
         networkHelper = new NetworkHelper("AS_MY", HandshakePacket.class, PathPacket.class);
         
         magicYarn = new ItemMagicYarn().setUnlocalizedName("magicyarn");
-        GameRegistry.registerItem(magicYarn, "magicyarn");
+        GameRegistry.register(magicYarn);
         
         proxy.preInit(evt.getSuggestedConfigurationFile());
         

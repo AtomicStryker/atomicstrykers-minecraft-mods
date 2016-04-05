@@ -1,8 +1,5 @@
 package atomicstryker.magicyarn.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarPathPlanner;
 import net.minecraft.client.Minecraft;
@@ -11,6 +8,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClientTickHandler
 {
