@@ -1,58 +1,13 @@
 package atomicstryker.infernalmobs.common;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.apache.logging.log4j.Level;
-
+import atomicstryker.infernalmobs.common.mods.*;
+import atomicstryker.infernalmobs.common.network.*;
 import com.google.common.collect.Lists;
-
-import atomicstryker.infernalmobs.common.mods.MM_1UP;
-import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
-import atomicstryker.infernalmobs.common.mods.MM_Berserk;
-import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
-import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
-import atomicstryker.infernalmobs.common.mods.MM_Choke;
-import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
-import atomicstryker.infernalmobs.common.mods.MM_Darkness;
-import atomicstryker.infernalmobs.common.mods.MM_Ender;
-import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
-import atomicstryker.infernalmobs.common.mods.MM_Fiery;
-import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
-import atomicstryker.infernalmobs.common.mods.MM_Gravity;
-import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
-import atomicstryker.infernalmobs.common.mods.MM_Ninja;
-import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
-import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
-import atomicstryker.infernalmobs.common.mods.MM_Regen;
-import atomicstryker.infernalmobs.common.mods.MM_Rust;
-import atomicstryker.infernalmobs.common.mods.MM_Sapper;
-import atomicstryker.infernalmobs.common.mods.MM_Sprint;
-import atomicstryker.infernalmobs.common.mods.MM_Sticky;
-import atomicstryker.infernalmobs.common.mods.MM_Storm;
-import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
-import atomicstryker.infernalmobs.common.mods.MM_Weakness;
-import atomicstryker.infernalmobs.common.mods.MM_Webber;
-import atomicstryker.infernalmobs.common.mods.MM_Wither;
-import atomicstryker.infernalmobs.common.network.AirPacket;
-import atomicstryker.infernalmobs.common.network.HealthPacket;
-import atomicstryker.infernalmobs.common.network.KnockBackPacket;
-import atomicstryker.infernalmobs.common.network.MobModsPacket;
-import atomicstryker.infernalmobs.common.network.NetworkHelper;
-import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityOwnable;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
@@ -80,7 +35,9 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.fml.common.registry.GameData;
+import org.apache.logging.log4j.Level;
+
+import java.util.*;
 
 @Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.6.8")
 public class InfernalMobsCore
@@ -353,13 +310,13 @@ public class InfernalMobsCore
     private Object parseOrFind(String s)
     {
     	ResourceLocation rl = new ResourceLocation(s);
-        Item item = GameData.getItemRegistry().getObject(rl);
+        Item item = Item.itemRegistry.getObject(rl);
         if (item != null)
         {
             return item;
         }
 
-        Block block = GameData.getBlockRegistry().getObject(rl);
+        Block block = Block.blockRegistry.getObject(rl);
         if (block != Blocks.air)
         {
             return block;

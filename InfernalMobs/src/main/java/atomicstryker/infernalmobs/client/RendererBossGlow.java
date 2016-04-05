@@ -1,7 +1,5 @@
 package atomicstryker.infernalmobs.client;
 
-import java.util.Map;
-
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.client.Minecraft;
@@ -11,6 +9,8 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.Map;
 
 public class RendererBossGlow
 {

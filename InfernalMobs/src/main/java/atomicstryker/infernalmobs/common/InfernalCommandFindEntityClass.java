@@ -1,9 +1,5 @@
 package atomicstryker.infernalmobs.common;
 
-import java.util.Collection;
-
-import org.apache.logging.log4j.Level;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -11,6 +7,9 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.logging.log4j.Level;
+
+import java.util.Collection;
 
 public class InfernalCommandFindEntityClass extends CommandBase
 {
