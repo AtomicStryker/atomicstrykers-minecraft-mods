@@ -1,22 +1,17 @@
 package atomicstryker.dynamiclights.common;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Iterator;
-
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 
-import net.minecraft.launchwrapper.IClassTransformer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Iterator;
 
 /**
  * 

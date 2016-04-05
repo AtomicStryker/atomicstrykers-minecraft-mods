@@ -22,7 +22,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.registry.GameData;
 
 /**
  * 
@@ -175,7 +174,7 @@ public class FloodLightSource
     {
         if (stack != null)
         {
-            int r = itemsMap.retrieveValue(GameData.getItemRegistry().getNameForObject(stack.getItem()), stack.getItemDamage());
+            int r = itemsMap.retrieveValue(stack.getItem().getRegistryName(), stack.getItemDamage());
             return r < 0 ? 0 : r;
         }
         return 0;

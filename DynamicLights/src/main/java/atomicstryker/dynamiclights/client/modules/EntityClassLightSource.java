@@ -1,10 +1,5 @@
 package atomicstryker.dynamiclights.client.modules;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import net.minecraft.client.Minecraft;
@@ -19,6 +14,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
