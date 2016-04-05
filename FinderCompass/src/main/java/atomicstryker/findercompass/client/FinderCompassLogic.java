@@ -1,14 +1,14 @@
 package atomicstryker.findercompass.client;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class FinderCompassLogic
 {

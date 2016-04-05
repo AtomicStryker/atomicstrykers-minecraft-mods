@@ -1,8 +1,8 @@
 package atomicstryker.findercompass.client.coremod;
 
-import java.util.Map;
-
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+
+import java.util.Map;
 
 public class FCFMLCorePlugin implements IFMLLoadingPlugin
 {

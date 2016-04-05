@@ -1,10 +1,5 @@
 package atomicstryker.findercompass.common.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
@@ -12,6 +7,11 @@ import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class HandshakePacket implements IPacket
 {

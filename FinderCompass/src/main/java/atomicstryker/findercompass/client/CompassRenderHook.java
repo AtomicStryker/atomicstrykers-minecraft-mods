@@ -1,9 +1,5 @@
 package atomicstryker.findercompass.client;
 
-import java.util.Map.Entry;
-
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import net.minecraft.client.Minecraft;
@@ -11,6 +7,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Map.Entry;
 
 public class CompassRenderHook
 {

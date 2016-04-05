@@ -1,10 +1,5 @@
 package atomicstryker.findercompass.client;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
 import atomicstryker.findercompass.common.FinderCompassMod;
@@ -23,6 +18,11 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class FinderCompassClientTicker
 {

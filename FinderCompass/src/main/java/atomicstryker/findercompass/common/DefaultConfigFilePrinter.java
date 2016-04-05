@@ -1,18 +1,12 @@
 package atomicstryker.findercompass.common;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-
 import atomicstryker.findercompass.client.CompassSetting;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameData;
+
+import java.io.*;
+import java.util.ArrayList;
 
 public class DefaultConfigFilePrinter
 {
@@ -149,7 +143,7 @@ public class DefaultConfigFilePrinter
                             int prefixoffset = 0;
                             String[] splitString = buffer.split(":");
                             String blockID = splitString[0];
-                            if (blockID.equals("minecraft") || GameData.getBlockRegistry().getObject(new ResourceLocation(blockID)) == Blocks.air)
+                            if (blockID.equals("minecraft") || Block.blockRegistry.getObject(new ResourceLocation(blockID)) == Blocks.air)
                             {
                                 prefixoffset = 1;
                                 blockID = splitString[0]+":"+splitString[1];
@@ -176,7 +170,7 @@ public class DefaultConfigFilePrinter
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
-                            block = GameData.getBlockRegistry().getObject(new ResourceLocation(blockID));
+                            block = Block.blockRegistry.getObject(new ResourceLocation(blockID));
                             if (block != Blocks.air)
                             {
                             	System.err.println("Finder Compass resolved "+blockID+" to "+block);
@@ -208,7 +202,7 @@ public class DefaultConfigFilePrinter
         if (printBlocks)
         {
             System.err.println("For your Finder Compass ID convenience, following a dump of all currently registered block IDs:");
-            GameData.getBlockRegistry().getKeys().forEach(System.out::println);
+            Block.blockRegistry.getKeys().forEach(System.out::println);
         }
     }
 }
