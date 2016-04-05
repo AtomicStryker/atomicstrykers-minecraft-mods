@@ -6,6 +6,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,7 +14,6 @@ import net.minecraft.tileentity.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -237,7 +237,7 @@ class World2TemplateParser extends Thread
                     {
                         NBTTagCompound tc = new NBTTagCompound();
                         te.writeToNBT(tc);
-                        temp.data = "teBlock;" + GameData.getBlockRegistry().getNameForObject(temp.block).toString() + ";" + tc.toString() + "-" + temp.meta;
+                        temp.data = "teBlock;" + Block.blockRegistry.getNameForObject(temp.block).toString() + ";" + tc.toString() + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.mob_spawner)
                     {
@@ -284,7 +284,7 @@ class World2TemplateParser extends Thread
                         }
 
                         StringBuilder sb = new StringBuilder("IInventory;");
-                        sb.append(GameData.getBlockRegistry().getNameForObject(temp.block));
+                        sb.append(Block.blockRegistry.getNameForObject(temp.block));
                         sb.append(';');
                         for (int index = 0; index < invItems.size(); index++)
                         {
@@ -297,16 +297,16 @@ class World2TemplateParser extends Thread
                                 {
                                     //ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
                                     //TODO: Is this correct? i dont remember which case this code was handling
-                                    ident = GameData.getItemRegistry().getNameForObject(cs.getItem()).toString();
+                                    ident = Item.itemRegistry.getNameForObject(cs.getItem()).toString();
                                 }
                                 else
                                 {
-                                    ident = GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
+                                    ident = Item.itemRegistry.getNameForObject(stack.getItem()).toString();
                                 }
                             }
                             else
                             {
-                                ident = GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
+                                ident = Item.itemRegistry.getNameForObject(stack.getItem()).toString();
                             }
                             if (ident != null)
                             {
@@ -411,22 +411,22 @@ class World2TemplateParser extends Thread
 
     private String convertSignStrings(String prefix, TileEntitySign sign)
     {
-        String a = sign.signText[0].getUnformattedTextForChat();
+        String a = sign.signText[0].getUnformattedText();
         if (a.equals(""))
         {
             a = "null";
         }
-        String b = sign.signText[1].getUnformattedTextForChat();
+        String b = sign.signText[1].getUnformattedText();
         if (b.equals(""))
         {
             b = "null";
         }
-        String c = sign.signText[2].getUnformattedTextForChat();
+        String c = sign.signText[2].getUnformattedText();
         if (c.equals(""))
         {
             c = "null";
         }
-        String d = sign.signText[3].getUnformattedTextForChat();
+        String d = sign.signText[3].getUnformattedText();
         if (d.equals(""))
         {
             d = "null";
@@ -549,7 +549,7 @@ class World2TemplateParser extends Thread
         @Override
         public String toString()
         {
-            return spawnRule + ",100," + ((data != null) ? data : GameData.getBlockRegistry().getNameForObject(block).toString() + "-" + meta);
+            return spawnRule + ",100," + ((data != null) ? data : Block.blockRegistry.getNameForObject(block).toString() + "-" + meta);
         }
 
         @Override

@@ -28,7 +28,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -86,7 +85,7 @@ public class RuinsMod
         {
             nextInfoTime = System.currentTimeMillis() + 1000L;
             event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.getState().getBlock().getLocalizedName(), GameData.getBlockRegistry().getNameForObject(event.getState().getBlock()).toString(), event.getState().getBlock().getMetaFromState(
+                    event.getState().getBlock().getLocalizedName(), event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(
                             event.getState()))));
         }
     }
@@ -102,7 +101,7 @@ public class RuinsMod
                 nextInfoTime = System.currentTimeMillis() + 1000L;
                 event.getPlayer().addChatComponentMessage(
                         new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
-                                GameData.getBlockRegistry().getNameForObject(event.getState().getBlock()).toString(), event.getState().getBlock().getMetaFromState(event.getState()))));
+                                event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
                 event.setCanceled(true);
             }
         }

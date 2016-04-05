@@ -20,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -259,7 +258,7 @@ public class RuinTemplateRule
     private Block tryFindingBlockOfName(String blockName)
     {
         // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
-        return GameData.getBlockRegistry().getObject(new ResourceLocation(blockName));
+        return Block.blockRegistry.getObject(new ResourceLocation(blockName));
     }
 
     @SuppressWarnings("unused")
@@ -999,7 +998,7 @@ public class RuinTemplateRule
     private Object tryFindingObject(String s)
     {
         ResourceLocation rl = new ResourceLocation(s);
-        Item item = GameData.getItemRegistry().getObject(rl);
+        Item item = Item.itemRegistry.getObject(rl);
         if (item != null)
         {
             if (item instanceof ItemBlock)
@@ -1009,7 +1008,7 @@ public class RuinTemplateRule
             return item;
         }
 
-        Block block = GameData.getBlockRegistry().getObject(rl);
+        Block block = Block.blockRegistry.getObject(rl);
         if (block != Blocks.air)
         {
             return block;

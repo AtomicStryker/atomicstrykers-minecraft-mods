@@ -3,7 +3,6 @@ package atomicstryker.ruins.common;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameData;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -165,7 +164,7 @@ class CustomRotationMapping
     private Block tryFindingBlockOfName(ResourceLocation blockName)
     {
         // it returns Blocks.air when nothing is found, ok
-        return GameData.getBlockRegistry().getObject(blockName);
+        return Block.blockRegistry.getObject(blockName);
     }
 
 }

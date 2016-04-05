@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.registry.GameData;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -629,7 +628,7 @@ public class RuinTemplate
                         Block b;
                         for (String aCheck : check)
                         {
-                            b = GameData.getBlockRegistry().getObject(new ResourceLocation(aCheck));
+                            b = Block.blockRegistry.getObject(new ResourceLocation(aCheck));
                             if (b != Blocks.air)
                             {
                                 acceptables.add(b);
@@ -650,7 +649,7 @@ public class RuinTemplate
                         Block b;
                         for (String aCheck : check)
                         {
-                            b = GameData.getBlockRegistry().getObject(new ResourceLocation(aCheck));
+                            b = Block.blockRegistry.getObject(new ResourceLocation(aCheck));
                             if (b != Blocks.air)
                             {
                                 inacceptables.add(b);
