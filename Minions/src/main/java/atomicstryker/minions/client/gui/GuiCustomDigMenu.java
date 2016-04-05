@@ -1,10 +1,9 @@
 package atomicstryker.minions.client.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.minions.client.MinionsClient;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Minions Custom Dig Menu, allows you to choose your desired Dimensions

@@ -1,12 +1,5 @@
 package atomicstryker.minions.client;
 
-import java.util.ArrayList;
-
-import net.minecraft.util.math.RayTraceResult;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.client.gui.GuiMinionMenu;
 import atomicstryker.minions.client.render.LineColor;
@@ -16,19 +9,7 @@ import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.network.AssignChestPacket;
-import atomicstryker.minions.common.network.ChopTreesPacket;
-import atomicstryker.minions.common.network.CustomDigPacket;
-import atomicstryker.minions.common.network.DigOreVeinPacket;
-import atomicstryker.minions.common.network.DigStairwellPacket;
-import atomicstryker.minions.common.network.DropAllPacket;
-import atomicstryker.minions.common.network.FollowPacket;
-import atomicstryker.minions.common.network.LightningPacket;
-import atomicstryker.minions.common.network.MinionSpawnPacket;
-import atomicstryker.minions.common.network.MovetoPacket;
-import atomicstryker.minions.common.network.PickupEntPacket;
-import atomicstryker.minions.common.network.SoundPacket;
-import atomicstryker.minions.common.network.StripminePacket;
+import atomicstryker.minions.common.network.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -41,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -48,6 +30,11 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
 
 public class MinionsClient
 {

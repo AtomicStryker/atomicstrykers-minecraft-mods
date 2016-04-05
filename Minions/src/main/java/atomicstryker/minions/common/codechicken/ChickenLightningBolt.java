@@ -5,16 +5,6 @@ package atomicstryker.minions.common.codechicken;
  * Available at: http://www.minecraftforum.net/topic/909223-125-smp-chickenbones-mods/
  */
 
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,6 +17,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ChickenLightningBolt
 {

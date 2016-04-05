@@ -6,10 +6,6 @@ package atomicstryker.minions.client;
  * Available at: http://www.minecraftforum.net/topic/909223-125-smp-chickenbones-mods/
  */
 
-import java.util.Iterator;
-
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt.Segment;
 import atomicstryker.minions.common.codechicken.Vector3;
@@ -21,6 +17,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Iterator;
 
 public class RenderChickenLightningBolt
 {

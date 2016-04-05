@@ -1,7 +1,5 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.List;
-
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -10,6 +8,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
+
+import java.util.List;
 
 /**
  * Blocktask for destroying and stashing a single Block

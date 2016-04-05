@@ -1,10 +1,5 @@
 package atomicstryker.minions.client;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.scoreboard.IScoreCriteria;
-import net.minecraft.util.EnumBlockRenderType;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -18,7 +13,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Minion Render Class, allows displaying of a Minion Description and it's item

@@ -1,11 +1,11 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Minion Job class for scanning for Trees and then keeping track of the minions harvesting them.

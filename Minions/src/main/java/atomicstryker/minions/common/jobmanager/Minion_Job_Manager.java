@@ -8,13 +8,13 @@ package atomicstryker.minions.common.jobmanager;
  * @author AtomicStryker
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public abstract class Minion_Job_Manager
 {

@@ -1,15 +1,14 @@
 package atomicstryker.minions.client.render.shapes;
 
-import java.util.List;
-
-import net.minecraft.client.renderer.VertexBuffer;
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.LineInfo;
 import atomicstryker.minions.client.render.points.PointRectangle;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 /**
  * Draws the top and bottom rings of

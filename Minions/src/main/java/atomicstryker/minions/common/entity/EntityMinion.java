@@ -1,13 +1,6 @@
 package atomicstryker.minions.common.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import atomicstryker.astarpathing.AS_PathEntity;
-import atomicstryker.astarpathing.AStarNode;
-import atomicstryker.astarpathing.AStarPathPlanner;
-import atomicstryker.astarpathing.AStarStatic;
-import atomicstryker.astarpathing.IAStarPathedEntity;
+import atomicstryker.astarpathing.*;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.jobmanager.BlockTask;
 import net.minecraft.block.Block;
@@ -41,6 +34,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Minion Entity class, this is where the evil magic happens

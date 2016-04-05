@@ -1,9 +1,5 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.entity.Entity;
@@ -11,6 +7,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Minion Job class for digging out a NxN sized space, automatically digging a support stairwell if one is needed

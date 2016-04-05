@@ -1,11 +1,11 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.HashSet;
-
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.HashSet;
 
 /**
  * Blocktask for destroying any number of interconnected Blocks

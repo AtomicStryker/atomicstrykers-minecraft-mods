@@ -1,16 +1,15 @@
 package atomicstryker.minions.client.gui;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import org.lwjgl.opengl.GL11;
-
 import atomicstryker.minions.common.EvilDeed;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.EvilDeedPacket;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.translation.I18n;
+import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Evil Deed selection menu

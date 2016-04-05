@@ -1,8 +1,5 @@
 package atomicstryker.minions.common.jobmanager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.common.MinionsCore;
@@ -17,6 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Blocktask super schematic. By default a Blocktask doesnt change the Block.

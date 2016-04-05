@@ -1,49 +1,12 @@
 package atomicstryker.minions.common;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import com.google.common.collect.Lists;
-
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.jobmanager.BlockTask_MineOreVein;
-import atomicstryker.minions.common.jobmanager.Minion_Job_DigByCoordinates;
-import atomicstryker.minions.common.jobmanager.Minion_Job_DigMineStairwell;
-import atomicstryker.minions.common.jobmanager.Minion_Job_Manager;
-import atomicstryker.minions.common.jobmanager.Minion_Job_StripMine;
-import atomicstryker.minions.common.jobmanager.Minion_Job_TreeHarvest;
-import atomicstryker.minions.common.network.AssignChestPacket;
-import atomicstryker.minions.common.network.ChopTreesPacket;
-import atomicstryker.minions.common.network.CustomDigPacket;
-import atomicstryker.minions.common.network.DigOreVeinPacket;
-import atomicstryker.minions.common.network.DigStairwellPacket;
-import atomicstryker.minions.common.network.DropAllPacket;
-import atomicstryker.minions.common.network.EvilDeedPacket;
-import atomicstryker.minions.common.network.FollowPacket;
-import atomicstryker.minions.common.network.HasMinionsPacket;
-import atomicstryker.minions.common.network.HaxPacket;
-import atomicstryker.minions.common.network.LightningPacket;
-import atomicstryker.minions.common.network.MinionMountPacket;
-import atomicstryker.minions.common.network.MinionSpawnPacket;
-import atomicstryker.minions.common.network.MovetoPacket;
-import atomicstryker.minions.common.network.NetworkHelper;
-import atomicstryker.minions.common.network.PickupEntPacket;
-import atomicstryker.minions.common.network.RequestXPSettingPacket;
-import atomicstryker.minions.common.network.SoundPacket;
-import atomicstryker.minions.common.network.StripminePacket;
-import atomicstryker.minions.common.network.UnsummonPacket;
+import atomicstryker.minions.common.jobmanager.*;
+import atomicstryker.minions.common.network.*;
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockOldLog;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +17,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketSoundEffect;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -82,8 +44,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 @Mod(modid = "minions", name = "Minions", version = "1.9.8")
@@ -175,7 +142,7 @@ public class MinionsCore
         initializeSettingsFile(new File(configpath));
         
         itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff");
-        GameRegistry.registerItem(itemMastersStaff, "masterstaff");
+        GameRegistry.register(itemMastersStaff);
         
         MinecraftForge.EVENT_BUS.register(this);
         EntityRegistry.registerModEntity(EntityMinion.class, "AS_EntityMinion", 1, this, 25, 5, true);
@@ -295,7 +262,7 @@ public class MinionsCore
     
     private void getViableTreeBlocks()
     {
-        Iterator<Block> iterator = GameData.getBlockRegistry().iterator();
+        Iterator<Block> iterator = Block.blockRegistry.iterator();
         while (iterator.hasNext())
         {
             Block iter = iterator.next();
@@ -727,7 +694,7 @@ public class MinionsCore
                         lineString = lineString.trim();
                         if (lineString.startsWith("registerBlockIDasTreeBlock:"))
                         {
-                            Block id = GameData.getBlockRegistry().getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
+                            Block id = Block.blockRegistry.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
                             if (id != Blocks.air)
                             {
                                 foundTreeBlocks.add(id);
@@ -736,7 +703,7 @@ public class MinionsCore
                         }
                         else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
                         {
-                            Block id = GameData.getBlockRegistry().getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
+                            Block id = Block.blockRegistry.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
                             if (id != Blocks.air)
                             {
                                 configWorthlessBlocks.add(id);
