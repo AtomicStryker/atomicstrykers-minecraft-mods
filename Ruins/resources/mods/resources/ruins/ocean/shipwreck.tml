@@ -17,8 +17,8 @@ preserve_plants=0
 
 rule1=0,100,minecraft:mossy_cobblestone-0
 rule2=0,100,minecraft:planks-0
-rule3=0,25,ChestGenHook:dungeonChest:5-5
-rule4=0,25,ChestGenHook:dungeonChest:5-4
+rule3=0,25,ChestGenHook:chests/simple_dungeon-5
+rule4=0,25,ChestGenHook:chests/simple_dungeon-4
 rule5=0,100,minecraft:log-0
 rule6=0,100,preserveBlock
 
