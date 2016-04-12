@@ -45,7 +45,6 @@ public class MobModsPacket implements IPacket
         for (int i = 0; i < len; i++) chars[i] = bytes.readChar();
         stringData = String.valueOf(chars);
         entID = bytes.readInt();
-        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
         
         if (sentFromServer != 0)
         {
