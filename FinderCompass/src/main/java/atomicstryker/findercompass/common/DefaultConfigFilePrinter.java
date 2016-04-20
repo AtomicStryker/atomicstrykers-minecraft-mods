@@ -143,7 +143,7 @@ public class DefaultConfigFilePrinter
                             int prefixoffset = 0;
                             String[] splitString = buffer.split(":");
                             String blockID = splitString[0];
-                            if (blockID.equals("minecraft") || Block.blockRegistry.getObject(new ResourceLocation(blockID)) == Blocks.air)
+                            if (blockID.equals("minecraft") || Block.REGISTRY.getObject(new ResourceLocation(blockID)) == Blocks.AIR)
                             {
                                 prefixoffset = 1;
                                 blockID = splitString[0]+":"+splitString[1];
@@ -170,8 +170,8 @@ public class DefaultConfigFilePrinter
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
-                            block = Block.blockRegistry.getObject(new ResourceLocation(blockID));
-                            if (block != Blocks.air)
+                            block = Block.REGISTRY.getObject(new ResourceLocation(blockID));
+                            if (block != Blocks.AIR)
                             {
                             	System.err.println("Finder Compass resolved "+blockID+" to "+block);
                                 CompassTargetData key = new CompassTargetData(block, configInts[8]);
@@ -202,7 +202,7 @@ public class DefaultConfigFilePrinter
         if (printBlocks)
         {
             System.err.println("For your Finder Compass ID convenience, following a dump of all currently registered block IDs:");
-            Block.blockRegistry.getKeys().forEach(System.out::println);
+            Block.REGISTRY.getKeys().forEach(System.out::println);
         }
     }
 }

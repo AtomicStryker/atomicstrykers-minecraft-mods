@@ -63,7 +63,7 @@ public class MM_Gravity extends MobModifier
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
             
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_irongolem_attack, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_IRONGOLEM_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             
             if (mob.worldObj.isRemote || !(target instanceof EntityPlayerMP))
             {

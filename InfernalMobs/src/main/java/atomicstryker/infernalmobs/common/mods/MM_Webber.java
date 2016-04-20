@@ -71,11 +71,11 @@ public class MM_Webber extends MobModifier
         if (time > lastAbilityUse+coolDown)
         {
             int offset;
-            if (target.worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock() == Blocks.air)
+            if (target.worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock() == Blocks.AIR)
             {
                 offset = -1;
             }
-            else if (target.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.air)
+            else if (target.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR)
             {
                 offset = 0;
             }
@@ -85,8 +85,8 @@ public class MM_Webber extends MobModifier
             }
             
             lastAbilityUse = time;
-            target.worldObj.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.web.getStateFromMeta( 0));
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_spider_ambient, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            target.worldObj.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.WEB.getStateFromMeta( 0));
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
     }
     

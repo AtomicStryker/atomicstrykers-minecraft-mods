@@ -60,22 +60,22 @@ public class MM_Alchemist extends MobModifier
             double diffZ = target.posZ + target.motionZ - mob.posZ;
             float distance = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
             
-            PotionType potiontype = PotionTypes.harming;
+            PotionType potiontype = PotionTypes.HARMING;
 
-            if (distance >= 8.0F && !target.isPotionActive(MobEffects.moveSlowdown))
+            if (distance >= 8.0F && !target.isPotionActive(MobEffects.SLOWNESS))
             {
-                potiontype = PotionTypes.slowness;
+                potiontype = PotionTypes.SLOWNESS;
             }
-            else if (target.getHealth() >= 8.0F && !target.isPotionActive(MobEffects.poison))
+            else if (target.getHealth() >= 8.0F && !target.isPotionActive(MobEffects.POISON))
             {
-                potiontype = PotionTypes.poison;
+                potiontype = PotionTypes.POISON;
             }
-            else if (distance <= 3.0F && !target.isPotionActive(MobEffects.weakness) && mob.getRNG().nextFloat() < 0.25F)
+            else if (distance <= 3.0F && !target.isPotionActive(MobEffects.WEAKNESS) && mob.getRNG().nextFloat() < 0.25F)
             {
-                potiontype = PotionTypes.weakness;
+                potiontype = PotionTypes.WEAKNESS;
             }
 
-            EntityPotion potion = new EntityPotion(mob.worldObj, mob, PotionUtils.addPotionToItemStack(new ItemStack(Items.splash_potion), potiontype));
+            EntityPotion potion = new EntityPotion(mob.worldObj, mob, PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
             
             potion.rotationPitch -= -20.0F;
 

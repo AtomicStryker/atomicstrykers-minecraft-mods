@@ -64,7 +64,7 @@ public class BlockTask_MineBlock extends BlockTask
     	blockState = worker.worldObj.getBlockState(pos);
     	//if (blockID > 13) System.out.println("Reached Block["+blockID+"], name "+Block.blocksList[blockID].getBlockName());
     	
-    	if (blockState.getBlock() == Blocks.air)
+    	if (blockState.getBlock() == Blocks.AIR)
     	{
     		this.onFinishedTask();
     	}
@@ -84,7 +84,7 @@ public class BlockTask_MineBlock extends BlockTask
     	checkDangers();
     	
     	blockState = worker.worldObj.getBlockState(pos); // check against interference mining
-    	if (blockState.getBlock() != Blocks.air && blockState.getBlock().getBlockHardness(blockState, worker.worldObj, pos) >= 0F)
+    	if (blockState.getBlock() != Blocks.AIR && blockState.getBlock().getBlockHardness(blockState, worker.worldObj, pos) >= 0F)
     	{
     	    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
     	    
@@ -119,7 +119,7 @@ public class BlockTask_MineBlock extends BlockTask
     private void checkBlockForCaveIn(int x, int y, int z)
     {
     	Block checkBlockID = worker.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
-        if (checkBlockID == Blocks.sand || checkBlockID == Blocks.gravel)
+        if (checkBlockID == Blocks.SAND || checkBlockID == Blocks.GRAVEL)
         {
             int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
                     (EntityPlayerMP) worker.master, pos);
@@ -127,8 +127,8 @@ public class BlockTask_MineBlock extends BlockTask
             {
                 putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
                 
-                this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-                this.worker.worldObj.setBlockState(pos, Blocks.dirt.getDefaultState(), 3);
+                this.worker.inventory.consumeInventoryItem(Blocks.DIRT);
+                this.worker.worldObj.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
             }
         }
 	}
@@ -144,14 +144,14 @@ public class BlockTask_MineBlock extends BlockTask
     	Block checkBlockID = is.getBlock();
     	boolean replaceBlock = false;
     	
-    	if (checkBlockID == Blocks.air)
+    	if (checkBlockID == Blocks.AIR)
     	{
     		if (putFloor)
     		{
     			replaceBlock = true;
     		}
     	}
-    	else if (!checkBlockID.getMaterial(is).isSolid() && checkBlockID != Blocks.torch)
+    	else if (!checkBlockID.getMaterial(is).isSolid() && checkBlockID != Blocks.TORCH)
     	{
     		replaceBlock = true;
     	}
@@ -162,7 +162,7 @@ public class BlockTask_MineBlock extends BlockTask
     	            (EntityPlayerMP) worker.master, pos);
             if (event != -1)
             {
-                if (checkBlockID != Blocks.air)
+                if (checkBlockID != Blocks.AIR)
                 {
                     List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
                     if (this.worker.worldObj.setBlockToAir(pos))
@@ -171,8 +171,8 @@ public class BlockTask_MineBlock extends BlockTask
                     }
                 }
                 
-                this.worker.inventory.consumeInventoryItem(Blocks.dirt);
-                this.worker.worldObj.setBlockState(pos, Blocks.dirt.getDefaultState(), 3);
+                this.worker.inventory.consumeInventoryItem(Blocks.DIRT);
+                this.worker.worldObj.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
             }
     	}
     }

@@ -97,7 +97,7 @@ public class PetBatAIAttack extends EntityAIBase
                 {
                     entityTarget.setDead();
                     displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 16);
-                    petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.entity_player_burp, SoundCategory.AMBIENT, 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
+                    petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.AMBIENT, 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
@@ -140,7 +140,7 @@ public class PetBatAIAttack extends EntityAIBase
                     item.getMetadata());
         }
 
-        petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.entity_generic_eat, SoundCategory.AMBIENT, 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2),
+        petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.AMBIENT, 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2),
                 (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
     }
     

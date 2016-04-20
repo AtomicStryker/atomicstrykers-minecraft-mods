@@ -103,7 +103,7 @@ public class RuinTemplate
 
     public boolean isIgnoredBlock(Block blockID, World world, BlockPos pos)
     {
-        return blockID == Blocks.air || blockID == Blocks.snow_layer || blockID == Blocks.web || isPlant(blockID, world, pos) || preserveBlock(blockID);
+        return blockID == Blocks.AIR || blockID == Blocks.SNOW_LAYER || blockID == Blocks.WEB || isPlant(blockID, world, pos) || preserveBlock(blockID);
     }
 
     private boolean isPlant(Block blockID, World world, BlockPos pos)
@@ -116,26 +116,26 @@ public class RuinTemplate
     {
         if (preserveWater)
         {
-            if (blockID == Blocks.flowing_water)
+            if (blockID == Blocks.FLOWING_WATER)
             {
                 return true;
             }
-            if (blockID == Blocks.water)
+            if (blockID == Blocks.WATER)
             {
                 return true;
             }
-            if (blockID == Blocks.ice)
+            if (blockID == Blocks.ICE)
             {
                 return true;
             }
         }
         if (preserveLava)
         {
-            if (blockID == Blocks.flowing_lava)
+            if (blockID == Blocks.FLOWING_LAVA)
             {
                 return true;
             }
-            if (blockID == Blocks.lava)
+            if (blockID == Blocks.LAVA)
             {
                 return true;
             }
@@ -396,12 +396,12 @@ public class RuinTemplate
                     if (curRule.runLater())
                     {
                         laterun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.air.getDefaultState(), 2);
+                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.AIR.getDefaultState(), 2);
                     }
                     else if (curRule.runLast())
                     {
                         lastrun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.air.getDefaultState(), 2);
+                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.AIR.getDefaultState(), 2);
                     }
                     else
                     {
@@ -428,7 +428,7 @@ public class RuinTemplate
                     yv = y + y1;
                     zv = z + z1;
                     BlockPos pos = new BlockPos(xv, yv, zv);
-                    world.markAndNotifyBlock(pos, null, Blocks.air.getDefaultState(), world.getBlockState(pos), 2);
+                    world.markAndNotifyBlock(pos, null, Blocks.AIR.getDefaultState(), world.getBlockState(pos), 2);
                 }
             }
         }
@@ -553,7 +553,7 @@ public class RuinTemplate
                     BlockPos pos = new BlockPos(xi, yi, zi);
                     if (!isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
                     {
-                        world.setBlockState(pos, Blocks.air.getDefaultState(), 2);
+                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
                     }
                 }
             }
@@ -628,8 +628,8 @@ public class RuinTemplate
                         Block b;
                         for (String aCheck : check)
                         {
-                            b = Block.blockRegistry.getObject(new ResourceLocation(aCheck));
-                            if (b != Blocks.air)
+                            b = Block.REGISTRY.getObject(new ResourceLocation(aCheck));
+                            if (b != Blocks.AIR)
                             {
                                 acceptables.add(b);
                             }
@@ -649,8 +649,8 @@ public class RuinTemplate
                         Block b;
                         for (String aCheck : check)
                         {
-                            b = Block.blockRegistry.getObject(new ResourceLocation(aCheck));
-                            if (b != Blocks.air)
+                            b = Block.REGISTRY.getObject(new ResourceLocation(aCheck));
+                            if (b != Blocks.AIR)
                             {
                                 inacceptables.add(b);
                             }
@@ -721,7 +721,7 @@ public class RuinTemplate
                 {
                     /*
                      * random_height_offset=-10,0 Moves the ruin down up to 10
-                     * blocks.
+                     * Blocks.
                      */
                     String[] check = line.split("=");
                     String[] bounds = check[1].split(",");

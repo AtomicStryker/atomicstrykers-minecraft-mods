@@ -338,7 +338,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                 worldObj.playAuxSFXAtEntity(null, 2006, new BlockPos(x, y, z), rand.nextInt(10));
             }
 
-            if (blockID != Blocks.air)
+            if (blockID != Blocks.AIR)
             {
                 long curTime = System.currentTimeMillis();
                 if (curTime - timeLastSound > (500L / workSpeed))
@@ -650,7 +650,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     private enum HeldItem
     {
-        Axe(new ItemStack(Items.iron_axe, 1)), Pickaxe(new ItemStack(Items.iron_pickaxe, 1)), Shovel(new ItemStack(Items.iron_shovel, 1));
+        Axe(new ItemStack(Items.IRON_AXE, 1)), Pickaxe(new ItemStack(Items.IRON_PICKAXE, 1)), Shovel(new ItemStack(Items.IRON_SHOVEL, 1));
 
         final ItemStack item;
 
@@ -689,13 +689,13 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
     public void adaptItem(Material mat)
     {
-        if (mat == Material.clay || mat == Material.grass || mat == Material.ground || mat == Material.sand || mat == Material.snow
-                || mat == Material.sponge)
+        if (mat == Material.CLAY || mat == Material.GRASS || mat == Material.GROUND || mat == Material.SAND || mat == Material.SNOW
+                || mat == Material.SPONGE)
         {
             setHeldItemShovel();
         }
-        else if (mat == Material.cactus || mat == Material.cloth || mat == Material.leaves || mat == Material.plants || mat == Material.vine
-                || mat == Material.web || mat == Material.wood)
+        else if (mat == Material.CACTUS || mat == Material.CLOTH || mat == Material.LEAVES || mat == Material.PLANTS || mat == Material.VINE
+                || mat == Material.CACTUS || mat == Material.WOOD)
         {
             setHeldItemAxe();
         }

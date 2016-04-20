@@ -114,9 +114,9 @@ class FileHandler
              * BiomeGenBase
              */
             BiomeGenBase bgb;
-            for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
+            for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
             {
-                bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                bgb = BiomeGenBase.REGISTRY.getObject(rl);
                 if (bgb != null)
                 {
                     try
@@ -277,8 +277,8 @@ class FileHandler
                 String[] blocks = check[1].split(",");
                 for (String b : blocks)
                 {
-                    Block bl = Block.blockRegistry.getObject(new ResourceLocation(b));
-                    if (bl != Blocks.air)
+                    Block bl = Block.REGISTRY.getObject(new ResourceLocation(b));
+                    if (bl != Blocks.AIR)
                     {
                         registeredTEBlocks.add(bl);
                     }
@@ -293,9 +293,9 @@ class FileHandler
                 {
                     boolean found = false;
                     BiomeGenBase bgb;
-                    for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
+                    for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
                     {
-                        bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                        bgb = BiomeGenBase.REGISTRY.getObject(rl);
                         if (bgb != null && bgb.getBiomeName().equals(check[0]))
                         {
                             int[] val = vars.get(bgb.getBiomeName());
@@ -336,9 +336,9 @@ class FileHandler
                     targetList.add(r);
                     for (String biomeName : r.getBiomesToSpawnIn())
                     {
-                        for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
+                        for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
                         {
-                            bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                            bgb = BiomeGenBase.REGISTRY.getObject(rl);
                             if (bgb != null && bgb.getBiomeName().equals(biomeName))
                             {
                                 if (!biomeName.equals(name))
@@ -437,9 +437,9 @@ class FileHandler
         pw.println();
         // print all the biomes!
         BiomeGenBase bgb;
-        for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
+        for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
         {
-            bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+            bgb = BiomeGenBase.REGISTRY.getObject(rl);
             if (bgb != null)
             {
                 pw.println("specific_" + bgb.getBiomeName() + "=75");

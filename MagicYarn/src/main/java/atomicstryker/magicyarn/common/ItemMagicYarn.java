@@ -44,7 +44,7 @@ public class ItemMagicYarn extends Item
 	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
 	{
 		player.setActiveHand(hand);
-		return new ActionResult(EnumActionResult.SUCCESS, itemStack);
+		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStack);
 	}
 
 	@Override

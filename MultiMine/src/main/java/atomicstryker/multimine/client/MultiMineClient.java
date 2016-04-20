@@ -136,7 +136,7 @@ public class MultiMineClient
         World world = thePlayer.worldObj;
         IBlockState state = world.getBlockState(new BlockPos(x, y, z));
         Block block = state.getBlock();
-        if (block != Blocks.air)
+        if (block != Blocks.AIR)
         {
             SoundType soundtype = block.getSoundType();
             mc.getSoundHandler()
@@ -206,7 +206,7 @@ public class MultiMineClient
                 {
                     w.sendBlockBreakProgress(player.getEntityId(), pos, -1);
 
-                    if (block.getBlock() != Blocks.air)
+                    if (block.getBlock() != Blocks.AIR)
                     {
                         if (!notClientsBlock && block.getBlock().removedByPlayer(w.getBlockState(pos), w, pos, player, true))
                         {

@@ -36,7 +36,7 @@ public class MM_Quicksand extends MobModifier
         && ++ticker == 50)
         {
             ticker = 0;
-            getMobTarget().addPotionEffect(new PotionEffect(MobEffects.moveSlowdown, 45, 0));
+            getMobTarget().addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 45, 0));
         }
         
         return super.onUpdate(mob);

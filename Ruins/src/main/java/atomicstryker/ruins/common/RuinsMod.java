@@ -81,7 +81,7 @@ public class RuinsMod
     public void onBreakSpeed(BreakSpeed event)
     {
         ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
-        if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
+        if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000L;
             event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
@@ -96,7 +96,7 @@ public class RuinsMod
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
         {
             ItemStack is = event.getPlayer().getHeldItemMainhand();
-            if (is != null && is.getItem() == Items.stick && System.currentTimeMillis() > nextInfoTime)
+            if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
             {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
                 event.getPlayer().addChatComponentMessage(

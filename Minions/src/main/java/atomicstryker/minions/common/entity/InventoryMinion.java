@@ -59,7 +59,7 @@ public class InventoryMinion implements IInventory
 
     /**
      * This function stores as many items of an ItemStack as possible in a matching slot and returns the quantity of
-     * left over items.
+     * left over Items.
      */
     private int storePartialItemStack(ItemStack par1ItemStack)
     {

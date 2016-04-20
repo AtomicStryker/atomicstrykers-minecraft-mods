@@ -99,7 +99,7 @@ class CustomRotationMapping
                     for (String s : ids)
                     {
                         b = tryFindingBlockOfName(new ResourceLocation(s));
-                        if (b != Blocks.air)
+                        if (b != Blocks.AIR)
                         {
                             currentBlockIDs.add(b);
                         }
@@ -163,8 +163,8 @@ class CustomRotationMapping
 
     private Block tryFindingBlockOfName(ResourceLocation blockName)
     {
-        // it returns Blocks.air when nothing is found, ok
-        return Block.blockRegistry.getObject(blockName);
+        // it returns Blocks.AIR when nothing is found, ok
+        return Block.REGISTRY.getObject(blockName);
     }
 
 }

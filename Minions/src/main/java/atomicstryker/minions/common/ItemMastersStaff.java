@@ -27,7 +27,7 @@ public class ItemMastersStaff extends Item
         super();
         this.maxStackSize = 1;
         
-        this.setCreativeTab(CreativeTabs.tabCombat);
+        this.setCreativeTab(CreativeTabs.COMBAT);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ItemMastersStaff extends Item
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
     {
         player.setActiveHand(hand);
-        return new ActionResult(EnumActionResult.SUCCESS, itemStack);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStack);
     }
 
     @Override

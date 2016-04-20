@@ -60,7 +60,7 @@ public class MM_Cloaking extends MobModifier
         if (time > nextAbilityUse)
         {
             nextAbilityUse = time+coolDown;
-            mob.addPotionEffect(new PotionEffect(MobEffects.invisibility, 200));
+            mob.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 200));
         }
     }
     

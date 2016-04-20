@@ -65,7 +65,7 @@ public class RenderMinion extends RenderLiving<EntityLiving>
             this.model.bipedRightArm.postRender(0.0625F);
             GL11.glTranslatef(0.0F, 0.1F, 0.0F);
             float scale;
-            if (heldItem.getItem() instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(heldItem.getItem()).getRenderType()))
+            if (heldItem.getItem() instanceof ItemBlock && RenderBlocks.RENDERITEMIN3D(Block.getBlockFromItem(heldItem.getItem()).getRenderType()))
             {
                 scale = 0.5F;
                 GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);

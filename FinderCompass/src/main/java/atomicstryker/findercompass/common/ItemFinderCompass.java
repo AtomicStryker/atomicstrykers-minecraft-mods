@@ -17,7 +17,7 @@ public class ItemFinderCompass extends Item
     public ItemFinderCompass()
     {
         super();
-        setCreativeTab(CreativeTabs.tabTools);
+        setCreativeTab(CreativeTabs.TOOLS);
     }
     
     @Override

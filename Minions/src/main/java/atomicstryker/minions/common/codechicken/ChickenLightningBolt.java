@@ -298,7 +298,7 @@ public class ChickenLightningBolt
 		{
 			Block blockID = world.getBlockState(mop.getBlockPos()).getBlock();
 			
-			if(blockID == Blocks.air)
+			if(blockID == Blocks.AIR)
 			{
 				return prevresistance;
 			}

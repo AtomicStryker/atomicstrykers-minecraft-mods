@@ -132,8 +132,8 @@ public class MM_Ender extends MobModifier
                 mob.worldObj.spawnParticle(EnumParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
             }
             
-            mob.worldObj.playSound(null, new BlockPos(oldX, oldY, oldZ), SoundEvents.entity_endermen_teleport, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_endermen_teleport, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.worldObj.playSound(null, new BlockPos(oldX, oldY, oldZ), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
         return true;
     }

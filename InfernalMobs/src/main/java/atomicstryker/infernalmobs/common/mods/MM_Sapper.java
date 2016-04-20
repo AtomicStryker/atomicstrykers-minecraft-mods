@@ -34,9 +34,9 @@ public class MM_Sapper extends MobModifier
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity()))
         {
             EntityLivingBase ent = (EntityLivingBase)source.getEntity();
-            if (!ent.isPotionActive(MobEffects.hunger))
+            if (!ent.isPotionActive(MobEffects.HUNGER))
             {
-                ent.addPotionEffect(new PotionEffect(MobEffects.hunger, 120, 0));
+                ent.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 120, 0));
             }
         }
         
@@ -48,9 +48,9 @@ public class MM_Sapper extends MobModifier
     {
         if (entity != null
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity)
-        && !entity.isPotionActive(MobEffects.poison))
+        && !entity.isPotionActive(MobEffects.POISON))
         {
-            entity.addPotionEffect(new PotionEffect(MobEffects.hunger, 120, 0));
+            entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 120, 0));
         }
         
         return super.onAttack(entity, source, damage);

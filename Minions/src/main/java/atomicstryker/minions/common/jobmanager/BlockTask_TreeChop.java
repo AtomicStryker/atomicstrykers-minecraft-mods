@@ -85,7 +85,7 @@ public class BlockTask_TreeChop extends BlockTask
     		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
             if (event != -1)
             {
-                worker.worldObj.setBlockState(tempCoords, Blocks.air.getStateFromMeta(0));
+                worker.worldObj.setBlockState(tempCoords, Blocks.AIR.getStateFromMeta(0));
             }
     	}
     	
@@ -93,7 +93,7 @@ public class BlockTask_TreeChop extends BlockTask
     	{
     		tempCoords = leaveBlockList.get(0);
     		IBlockState state = worker.worldObj.getBlockState(tempCoords);
-    		if (state.getBlock() != Blocks.air)
+    		if (state.getBlock() != Blocks.AIR)
     		{
     	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
     	    	{
@@ -101,7 +101,7 @@ public class BlockTask_TreeChop extends BlockTask
     	    		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
     	            if (event != -1)
     	            {
-    	                worker.worldObj.setBlockState(tempCoords, Blocks.air.getStateFromMeta(0));
+    	                worker.worldObj.setBlockState(tempCoords, Blocks.AIR.getStateFromMeta(0));
     	            }
     	    	}
     		}

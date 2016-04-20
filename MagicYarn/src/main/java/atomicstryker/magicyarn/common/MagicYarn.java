@@ -61,7 +61,7 @@ public class MagicYarn implements IProxy
     {
         proxy.init();
         
-        GameRegistry.addRecipe(new ItemStack(magicYarn, 1), "###", "#X#", "###", 'X', Items.compass, '#', Blocks.wool);
+        GameRegistry.addRecipe(new ItemStack(magicYarn, 1), "###", "#X#", "###", 'X', Items.COMPASS, '#', Blocks.WOOL);
     }
     
     @SubscribeEvent

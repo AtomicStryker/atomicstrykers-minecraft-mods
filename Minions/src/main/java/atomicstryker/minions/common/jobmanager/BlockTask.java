@@ -273,7 +273,7 @@ public abstract class BlockTask
         Block block = is.getBlock();
         Material m = block.getMaterial(is);
         
-        if (block == Blocks.air || m == Material.water || m == Material.lava || m == Material.leaves || m == Material.plants)
+        if (block == Blocks.AIR || m == Material.WATER || m == Material.LAVA || m == Material.LEAVES || m == Material.PLANTS)
         {
             return new ArrayList<>();
         }

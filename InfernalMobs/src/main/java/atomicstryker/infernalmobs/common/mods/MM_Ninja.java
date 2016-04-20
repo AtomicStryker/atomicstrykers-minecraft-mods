@@ -98,7 +98,7 @@ public class MM_Ninja extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
             
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_generic_explode, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             mob.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, oldX, oldY, oldZ, 0D, 0D, 0D);
         }
         else

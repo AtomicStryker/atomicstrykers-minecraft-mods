@@ -35,10 +35,10 @@ public class MM_Poisonous extends MobModifier
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity()))
         {
             EntityLivingBase ent = (EntityLivingBase)source.getEntity();
-            if (!ent.isPotionActive(MobEffects.poison)
+            if (!ent.isPotionActive(MobEffects.POISON)
             && !(source instanceof EntityDamageSourceIndirect))
             {
-                ent.addPotionEffect(new PotionEffect(MobEffects.poison, 120, 0));
+                ent.addPotionEffect(new PotionEffect(MobEffects.POISON, 120, 0));
             }
         }
         
@@ -50,9 +50,9 @@ public class MM_Poisonous extends MobModifier
     {
         if (entity != null
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity)
-        && !entity.isPotionActive(MobEffects.poison))
+        && !entity.isPotionActive(MobEffects.POISON))
         {
-            entity.addPotionEffect(new PotionEffect(MobEffects.poison, 120, 0));
+            entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 120, 0));
         }
         
         return super.onAttack(entity, source, damage);

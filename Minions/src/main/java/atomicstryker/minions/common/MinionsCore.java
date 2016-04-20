@@ -242,27 +242,27 @@ public class MinionsCore
     public boolean isBlockValueable(Block blockID)
     {
 
-        return !(blockID == Blocks.air
-                || blockID == Blocks.dirt
-                || blockID == Blocks.grass
-                || blockID == Blocks.stone
-                || blockID == Blocks.cobblestone
-                || blockID == Blocks.gravel
-                || blockID == Blocks.sand
-                || blockID == Blocks.leaves
-                || blockID == Blocks.obsidian
-                || blockID == Blocks.bedrock
-                || blockID == Blocks.stone_brick_stairs
-                || blockID == Blocks.netherrack
-                || blockID == Blocks.soul_sand
-                || blockID == Blocks.snow
+        return !(blockID == Blocks.AIR
+                || blockID == Blocks.DIRT
+                || blockID == Blocks.GRASS
+                || blockID == Blocks.STONE
+                || blockID == Blocks.COBBLESTONE
+                || blockID == Blocks.GRAVEL
+                || blockID == Blocks.SAND
+                || blockID == Blocks.LEAVES
+                || blockID == Blocks.OBSIDIAN
+                || blockID == Blocks.BEDROCK
+                || blockID == Blocks.STONE_BRICK_STAIRS
+                || blockID == Blocks.NETHERRACK
+                || blockID == Blocks.SOUL_SAND
+                || blockID == Blocks.SNOW
                 || configWorthlessBlocks.contains(blockID));
 
     }
     
     private void getViableTreeBlocks()
     {
-        Iterator<Block> iterator = Block.blockRegistry.iterator();
+        Iterator<Block> iterator = Block.REGISTRY.iterator();
         while (iterator.hasNext())
         {
             Block iter = iterator.next();
@@ -694,8 +694,8 @@ public class MinionsCore
                         lineString = lineString.trim();
                         if (lineString.startsWith("registerBlockIDasTreeBlock:"))
                         {
-                            Block id = Block.blockRegistry.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
-                            if (id != Blocks.air)
+                            Block id = Block.REGISTRY.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
+                            if (id != Blocks.AIR)
                             {
                                 foundTreeBlocks.add(id);
                                 System.out.println("Config: registered additional tree block ID "+id);
@@ -703,8 +703,8 @@ public class MinionsCore
                         }
                         else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
                         {
-                            Block id = Block.blockRegistry.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
-                            if (id != Blocks.air)
+                            Block id = Block.REGISTRY.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":")+1)));
+                            if (id != Blocks.AIR)
                             {
                                 configWorthlessBlocks.add(id);
                                 System.out.println("Config: registered additional worthless block ID "+id);

@@ -310,14 +310,14 @@ public class InfernalMobsCore
     private Object parseOrFind(String s)
     {
     	ResourceLocation rl = new ResourceLocation(s);
-        Item item = Item.itemRegistry.getObject(rl);
+        Item item = Item.REGISTRY.getObject(rl);
         if (item != null)
         {
             return item;
         }
 
-        Block block = Block.blockRegistry.getObject(rl);
-        if (block != Blocks.air)
+        Block block = Block.REGISTRY.getObject(rl);
+        if (block != Blocks.AIR)
         {
             return block;
         }
@@ -721,7 +721,7 @@ public class InfernalMobsCore
         if (enchantmentList == null)
         {
             enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
-            for (Enchantment enchantment : Enchantment.enchantmentRegistry)
+            for (Enchantment enchantment : Enchantment.REGISTRY)
             {
                 if (enchantment != null && enchantment.type != null)
                 {

@@ -35,7 +35,7 @@ public class MM_Wither extends MobModifier
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity())
         && !(source instanceof EntityDamageSourceIndirect))
         {
-            ((EntityLivingBase)source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.wither, 120, 0));
+            ((EntityLivingBase)source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.WITHER, 120, 0));
         }
         
         return super.onHurt(mob, source, damage);
@@ -47,7 +47,7 @@ public class MM_Wither extends MobModifier
         if (entity != null
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity))
         {
-            entity.addPotionEffect(new PotionEffect(MobEffects.wither, 120, 0));
+            entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 120, 0));
         }
         
         return super.onAttack(entity, source, damage);

@@ -304,9 +304,9 @@ class RuinGenerator
             System.out.println("    Leveling:                    " + stats.LevelingFails);
 
             BiomeGenBase bgb;
-            for (ResourceLocation rl : BiomeGenBase.biomeRegistry.getKeys())
+            for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
             {
-                bgb = BiomeGenBase.biomeRegistry.getObject(rl);
+                bgb = BiomeGenBase.REGISTRY.getObject(rl);
                 if (bgb != null)
                 {
                     Integer i = stats.biomes.get(bgb.getBiomeName());
@@ -397,7 +397,7 @@ class RuinGenerator
                 for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--)
                 {
                     final Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                    if (b == Blocks.air)
+                    if (b == Blocks.AIR)
                     {
                         // now find the first non-air block from here
                         for (; y > -1; y--)

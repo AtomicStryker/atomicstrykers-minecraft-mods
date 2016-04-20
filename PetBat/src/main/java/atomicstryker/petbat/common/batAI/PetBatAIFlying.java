@@ -100,7 +100,7 @@ public class PetBatAIFlying extends EntityAIBase
                         ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(petBat.getOwnerEntity(), petBat.getName());
                         if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
                         {
-                            petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.entity_slime_attack, SoundCategory.AMBIENT, 1F, 1F);
+                            petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
                             petBat.setDeadWithoutRecall();
                         }
                         else

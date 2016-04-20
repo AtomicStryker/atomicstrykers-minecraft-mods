@@ -36,7 +36,7 @@ class World2TemplateParser extends Thread
      * templates.
      */
     private final BlockData templateHelperBlock;
-    private final BlockData nothing = new BlockData(Blocks.air, 0, null, 0);
+    private final BlockData nothing = new BlockData(Blocks.AIR, 0, null, 0);
 
     /**
      * Starting point for the template parse scan
@@ -114,7 +114,7 @@ class World2TemplateParser extends Thread
     @Override
     public void run()
     {
-        failed = templateHelperBlock.block == Blocks.air;
+        failed = templateHelperBlock.block == Blocks.AIR;
 
         if (!failed)
         {
@@ -219,7 +219,7 @@ class World2TemplateParser extends Thread
                     temp.data = null;
                     temp.spawnRule = 0;
 
-                    if (temp.block == Blocks.air || temp.equals(templateHelperBlock))
+                    if (temp.block == Blocks.AIR || temp.equals(templateHelperBlock))
                     {
                         currentLayer[xi][zi] = nothing;
                         continue;
@@ -237,9 +237,9 @@ class World2TemplateParser extends Thread
                     {
                         NBTTagCompound tc = new NBTTagCompound();
                         te.writeToNBT(tc);
-                        temp.data = "teBlock;" + Block.blockRegistry.getNameForObject(temp.block).toString() + ";" + tc.toString() + "-" + temp.meta;
+                        temp.data = "teBlock;" + Block.REGISTRY.getNameForObject(temp.block).toString() + ";" + tc.toString() + "-" + temp.meta;
                     }
-                    else if (temp.block == Blocks.mob_spawner)
+                    else if (temp.block == Blocks.MOB_SPAWNER)
                     {
                         try
                         {
@@ -255,16 +255,16 @@ class World2TemplateParser extends Thread
                             e.printStackTrace();
                         }
                     }
-                    else if (temp.block == Blocks.torch || temp.block == Blocks.redstone_torch)
+                    else if (temp.block == Blocks.TORCH || temp.block == Blocks.REDSTONE_TORCH)
                     {
                         // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
                         temp.spawnRule = (temp.meta == 0 || temp.meta == 5) ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
-                    else if (temp.block == Blocks.piston_head || temp.block == Blocks.piston_extension)
+                    else if (temp.block == Blocks.PISTON_HEAD || temp.block == Blocks.PISTON_EXTENSION)
                     {
                         temp.spawnRule = SPAWN_RULE_EXISTSADJACENT;
                     }
-                    else if (temp.block == Blocks.wooden_button || temp.block == Blocks.stone_button)
+                    else if (temp.block == Blocks.WOODEN_BUTTON || temp.block == Blocks.STONE_BUTTON)
                     {
                         // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
                         temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
@@ -284,7 +284,7 @@ class World2TemplateParser extends Thread
                         }
 
                         StringBuilder sb = new StringBuilder("IInventory;");
-                        sb.append(Block.blockRegistry.getNameForObject(temp.block));
+                        sb.append(Block.REGISTRY.getNameForObject(temp.block));
                         sb.append(';');
                         for (int index = 0; index < invItems.size(); index++)
                         {
@@ -297,16 +297,16 @@ class World2TemplateParser extends Thread
                                 {
                                     //ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
                                     //TODO: Is this correct? i dont remember which case this code was handling
-                                    ident = Item.itemRegistry.getNameForObject(cs.getItem()).toString();
+                                    ident = Item.REGISTRY.getNameForObject(cs.getItem()).toString();
                                 }
                                 else
                                 {
-                                    ident = Item.itemRegistry.getNameForObject(stack.getItem()).toString();
+                                    ident = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
                                 }
                             }
                             else
                             {
-                                ident = Item.itemRegistry.getNameForObject(stack.getItem()).toString();
+                                ident = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
                             }
                             if (ident != null)
                             {
@@ -343,11 +343,11 @@ class World2TemplateParser extends Thread
                             temp.data = temp.data + "-" + temp.meta;
                         }
                     }
-                    else if (temp.block == Blocks.chest)
+                    else if (temp.block == Blocks.CHEST)
                     {
                         temp.data = "ChestGenHook:chests/simple_dungeon-" + temp.meta;
                     }
-                    else if (temp.block == Blocks.command_block)
+                    else if (temp.block == Blocks.COMMAND_BLOCK)
                     {
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
                         if (tec != null)
@@ -355,19 +355,19 @@ class World2TemplateParser extends Thread
                             temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getName();
                         }
                     }
-                    else if (temp.block == Blocks.standing_sign)
+                    else if (temp.block == Blocks.STANDING_SIGN)
                     {
                         TileEntitySign tes = (TileEntitySign) te;
                         temp.data = convertSignStrings("StandingSign:", tes) + "-" + temp.meta;
                         temp.spawnRule = SPAWN_RULE_EXISTSBELOW;
                     }
-                    else if (temp.block == Blocks.wall_sign)
+                    else if (temp.block == Blocks.WALL_SIGN)
                     {
                         TileEntitySign tes = (TileEntitySign) te;
                         temp.data = convertSignStrings("WallSign:", tes) + "-" + temp.meta;
                         temp.spawnRule = SPAWN_RULE_EXISTSADJACENT;
                     }
-                    else if (temp.block == Blocks.skull)
+                    else if (temp.block == Blocks.SKULL)
                     {
                         TileEntitySkull tes = (TileEntitySkull) te;
                         int skulltype = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 0);
@@ -549,7 +549,7 @@ class World2TemplateParser extends Thread
         @Override
         public String toString()
         {
-            return spawnRule + ",100," + ((data != null) ? data : Block.blockRegistry.getNameForObject(block).toString() + "-" + meta);
+            return spawnRule + ",100," + ((data != null) ? data : Block.REGISTRY.getNameForObject(block).toString() + "-" + meta);
         }
 
         @Override

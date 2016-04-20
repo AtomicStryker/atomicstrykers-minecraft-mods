@@ -42,7 +42,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
             }
             
             String result = "Found Entity classes: ";
-            final Collection<String> classes = EntityList.classToStringMapping.values();
+            final Collection<String> classes = EntityList.CLASS_TO_NAME.values();
             boolean found = false;
             for (String entclass : classes)
             {

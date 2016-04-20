@@ -109,7 +109,7 @@ public class InfernalMobsClient implements ISidedProxy
                 askServerHealth(ent);
 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(Gui.icons);
+                this.mc.getTextureManager().bindTexture(Gui.ICONS);
                 GL11.glDisable(GL11.GL_BLEND);
 
                 EntityLivingBase target = (EntityLivingBase) ent;
@@ -146,7 +146,7 @@ public class InfernalMobsClient implements ISidedProxy
                 }
 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(Gui.icons);
+                this.mc.getTextureManager().bindTexture(Gui.ICONS);
                 
                 if (!retained)
                 {
@@ -297,7 +297,7 @@ public class InfernalMobsClient implements ISidedProxy
     {
         if (event.getType() == RenderGameOverlayEvent.ElementType.AIR)
         {
-            if (!mc.thePlayer.isInsideOfMaterial(Material.water) && airOverrideValue != -999)
+            if (!mc.thePlayer.isInsideOfMaterial(Material.WATER) && airOverrideValue != -999)
             {
                 final ScaledResolution res = new ScaledResolution(mc);
                 GL11.glEnable(GL11.GL_BLEND);

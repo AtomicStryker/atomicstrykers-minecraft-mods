@@ -18,9 +18,9 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -145,10 +145,10 @@ public class PetBatMod implements IProxy
         }
         
         itemPocketedBat = new ItemPocketedPetBat().setUnlocalizedName("fed_pet_bat");
-        GameRegistry.registerItem(itemPocketedBat, "fed_pet_bat");
+        GameRegistry.register(itemPocketedBat);
         
         itemBatFlute = new ItemBatFlute().setUnlocalizedName("bat_flute");
-        GameRegistry.registerItem(itemBatFlute, "bat_flute");
+        GameRegistry.register(itemBatFlute);
         
         networkHelper = new NetworkHelper("AS_PB", BatNamePacket.class);
         
@@ -170,8 +170,8 @@ public class PetBatMod implements IProxy
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
         glisterBatEnabled = Loader.isModLoaded("DynamicLights");
-        TAME_ITEM_ID = Items.pumpkin_pie;
-        GLISTER_ITEM_ID = Items.glowstone_dust;
+        TAME_ITEM_ID = Items.PUMPKIN_PIE;
+        GLISTER_ITEM_ID = Items.GLOWSTONE_DUST;
     }
 	
 	public boolean getPetBatInventoryTeleportEnabled()
@@ -202,7 +202,7 @@ public class PetBatMod implements IProxy
     }
     
     @SubscribeEvent
-    public void onEntityInteract(EntityInteractEvent event)
+    public void onEntityInteract(EntityInteractSpecific event)
     {
         if (event.getTarget() instanceof EntityBat)
         {
@@ -364,9 +364,9 @@ public class PetBatMod implements IProxy
             EntityPlayer p = (EntityPlayer) event.getEntityLiving();
             if (p.isEntityAlive() && p.getHeldItemMainhand() != null && p.getHeldItemMainhand().getItem().equals(itemPocketedBat))
             {
-                if (p.getActivePotionEffect(MobEffects.nightVision) == null)
+                if (p.getActivePotionEffect(MobEffects.NIGHT_VISION) == null)
                 {
-                    p.addPotionEffect(new PotionEffect(MobEffects.nightVision, 100));
+                    p.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 100));
                 }
             }
         }

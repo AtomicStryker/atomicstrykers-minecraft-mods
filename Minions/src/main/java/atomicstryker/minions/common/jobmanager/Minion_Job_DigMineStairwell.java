@@ -118,22 +118,22 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		
 	    	if (currentSegment == 1 && xDiff == 0 && zDiff == 0)
 	    	{
-	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.cobblestone, 0));
+	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.COBBLESTONE, 0));
 	    		return true;
 	    	}
 	    	else if (currentSegment == 2 && xDiff == 4 && zDiff == 0)
 	    	{
-	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.cobblestone, 0));
+	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.COBBLESTONE, 0));
 	    		return true;
 	    	}
 	    	else if (currentSegment == 3 && xDiff == 4 && zDiff == 4)
 	    	{
-	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.cobblestone, 0));
+	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.COBBLESTONE, 0));
 	    		return true;
 	    	}
 	    	else if (currentSegment == 4 && xDiff == 0 && zDiff == 4)
 	    	{
-	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.cobblestone, 0));
+	    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.COBBLESTONE, 0));
 	    		return true;
 	    	}
     	}
@@ -148,7 +148,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     	
     	if (currentSegment == 1 && ((xDiff-1) == (currentDepth%4)) && zDiff == 0)
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.STONE_STAIRS, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 2 && xDiff == 4 &&
@@ -156,7 +156,7 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		|| (zDiff == 2 && currentDepth%4 == 0)
     		|| (zDiff == 3 && currentDepth%4 == 1)))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.STONE_STAIRS, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 3 && zDiff == 4 &&
@@ -164,12 +164,12 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
     		|| (xDiff == 2 && currentDepth%4 == 3)
     		|| (xDiff == 1 && currentDepth%4 == 0)))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.STONE_STAIRS, getCurrentStairMeta()));
     		return true;
     	}
     	else if (currentSegment == 4 && xDiff == 0 && areModsCounterPosed(zDiff, currentDepth))
     	{
-    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.stone_stairs, getCurrentStairMeta()));
+    		this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, x, startY-currentDepth, z, Blocks.STONE_STAIRS, getCurrentStairMeta()));
     		return true;
     	}
     	

@@ -154,7 +154,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
     		if (hasJobs)
     		{    			
     			BlockTask job = this.jobQueue.get(0);
-    			if (worldObj.getBlockState(new BlockPos(job.posX, job.posY, job.posZ)).getBlock() == Blocks.air
+    			if (worldObj.getBlockState(new BlockPos(job.posX, job.posY, job.posZ)).getBlock() == Blocks.AIR
     			&& job instanceof BlockTask_MineBlock
     			&& ((BlockTask_MineBlock)job).disableDangerCheck)
     			{
@@ -222,7 +222,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
 
 			i--;
 			//System.out.println("Now checking: ["+x+"|"+y+"|"+z+"]");
-			if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.air)
+			if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR)
 			{
 				BlockTask_MineBlock mineTask = new BlockTask_MineBlock(this, null, x, y, z);
 				if (!blocksToMine.contains(mineTask))
@@ -450,7 +450,7 @@ public class Minion_Job_DigByCoordinates extends Minion_Job_Manager
             			&& zFin <= maxZ
             			&& yFin <= maxY)
             			{
-            				if (worldObj.getBlockState(new BlockPos(xFin, yFin, zFin)).getBlock() != Blocks.air)
+            				if (worldObj.getBlockState(new BlockPos(xFin, yFin, zFin)).getBlock() != Blocks.AIR)
             				{
                 				mineTask = new BlockTask_MineBlock(this, null, xFin, yFin, zFin, true);
                         		if (blocksToMine.contains(mineTask) && !jobQueue.contains(mineTask))

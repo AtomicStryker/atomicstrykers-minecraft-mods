@@ -31,7 +31,7 @@ public class SimplyHaxEntityDump
             dumped = true;
             System.out.println("Simply Hax Entity Dump following, these are the exact Mobspawner names");
             Entry<String, Class<?>> e;
-            for (Object o : EntityList.stringToClassMapping.entrySet())
+            for (Object o : EntityList.NAME_TO_CLASS.entrySet())
             {
                 e = (Entry<String, Class<?>>) o;
                 System.out.printf("[%s] maps to [%s]\n", e.getKey(), e.getValue().getName());

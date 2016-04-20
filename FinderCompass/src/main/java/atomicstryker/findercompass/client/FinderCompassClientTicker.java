@@ -49,7 +49,7 @@ public class FinderCompassClientTicker
 
     public void onLoad()
     {
-        COMPASS_ITEM_ID = Items.compass;
+        COMPASS_ITEM_ID = Items.COMPASS;
         
         ItemModelMesher mesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
         mesher.register(COMPASS_ITEM_ID, 0, new ModelResourceLocation("compass", "inventory"));
@@ -72,7 +72,7 @@ public class FinderCompassClientTicker
                         {
                             repeat = true;
                             switchSetting();
-                            tick.player.worldObj.playSound(null, new BlockPos(tick.player), SoundEvents.ui_button_click, SoundCategory.BLOCKS, 0.3F, 0.6F);
+                            tick.player.worldObj.playSound(null, new BlockPos(tick.player), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
                         }
                     }
                     else
@@ -117,7 +117,7 @@ public class FinderCompassClientTicker
 
         if (mc.theWorld != null)
         {
-            mc.theWorld.playSound(null, new BlockPos(mc.thePlayer), SoundEvents.ui_button_click, SoundCategory.BLOCKS, 0.3F, 0.6F);
+            mc.theWorld.playSound(null, new BlockPos(mc.thePlayer), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
             mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Finder Compass Mode: " + currentSetting.getName()));
         }
     }

@@ -50,11 +50,11 @@ public class MM_Sticky extends MobModifier
                 && !(source instanceof EntityDamageSourceIndirect))
                 {
                     nextAbilityUse = time+coolDown;
-                    EntityItem drop = p.dropPlayerItemWithRandomChoice(p.inventory.decrStackSize(p.inventory.currentItem, 1), false);
+                    EntityItem drop = p.dropItem(p.inventory.decrStackSize(p.inventory.currentItem, 1), false);
                     if (drop != null)
                     {
                         drop.setPickupDelay(50);
-                        mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+                        mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
                     }
                 }
             }

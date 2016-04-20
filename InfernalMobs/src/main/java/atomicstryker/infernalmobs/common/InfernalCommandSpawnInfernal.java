@@ -47,7 +47,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                     modifier = modifier + " " + args[i];
                 }
                 
-                final Class<? extends EntityLivingBase> entClass = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(args[3]);
+                final Class<? extends EntityLivingBase> entClass = (Class<? extends EntityLivingBase>) EntityList.NAME_TO_CLASS.get(args[3]);
                 if (entClass != null)
                 {
                     EntityLivingBase mob = entClass.getConstructor(World.class).newInstance(sender.getEntityWorld());

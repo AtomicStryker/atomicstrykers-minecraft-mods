@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
@@ -23,7 +24,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.fml.common.registry.GameData;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -193,7 +193,7 @@ public class MultiMineServer
 
     private boolean isBlockBanned(Block block, int meta)
     {
-        final String ident = GameData.getBlockRegistry().getNameForObject(block).toString() + "-" + meta;
+        final String ident = Block.REGISTRY.getNameForObject(block).toString() + "-" + meta;
         Boolean result = blacklistedBlocksAndTools.get(ident);
         if (result != null)
         {
@@ -219,7 +219,7 @@ public class MultiMineServer
                 continue;
             }
 
-            final String ident = GameData.getItemRegistry().getNameForObject(item.getItem()).toString() + "-" + item.getItemDamage();
+            final String ident = Item.REGISTRY.getNameForObject(item.getItem()).toString() + "-" + item.getItemDamage();
             Boolean result = blacklistedBlocksAndTools.get(ident);
             if (result != null && result)
             {

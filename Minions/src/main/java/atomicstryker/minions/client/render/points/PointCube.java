@@ -7,7 +7,7 @@ import atomicstryker.minions.common.util.Vector3;
 /**
  * Stores data about a cube surrounding a
  * block in the world. Used to store info
- * about the selector blocks. Keeps track
+ * about the selector Blocks. Keeps track
  * of color, x/y/z values, and rendering.
  * 
  * @author yetanotherx

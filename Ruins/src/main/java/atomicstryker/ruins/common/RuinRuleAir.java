@@ -20,9 +20,9 @@ public class RuinRuleAir extends RuinTemplateRule
     {
         // This will preserve blocks correctly.
         if (!owner.preserveBlock(world.getBlockState(new BlockPos(x, y, z)).getBlock()))
-        //if (canReplace(Blocks.air, world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y ,z))
+        //if (canReplace(Blocks.AIR, world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y ,z))
         {
-            world.setBlockState(new BlockPos(x, y, z), Blocks.air.getDefaultState(), 2);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
         }
     }
 

@@ -33,7 +33,7 @@ public class MM_Darkness extends MobModifier
         && (source.getEntity() instanceof EntityLivingBase)
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity()))
         {
-            ((EntityLivingBase)source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.blindness, 120, 0));
+            ((EntityLivingBase)source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 120, 0));
         }
         
         return super.onHurt(mob, source, damage);
@@ -45,7 +45,7 @@ public class MM_Darkness extends MobModifier
         if (entity != null
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity))
         {
-            entity.addPotionEffect(new PotionEffect(MobEffects.blindness, 120, 0));
+            entity.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 120, 0));
         }
         
         return super.onAttack(entity, source, damage);

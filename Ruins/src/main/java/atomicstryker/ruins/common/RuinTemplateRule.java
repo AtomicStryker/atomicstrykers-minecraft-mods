@@ -104,7 +104,7 @@ public class RuinTemplateRule
                     if (isNumber(data[0])) // torch-5
                     {
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
-                        blockIDs[i] = Blocks.air;
+                        blockIDs[i] = Blocks.AIR;
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
                     }
@@ -115,7 +115,7 @@ public class RuinTemplateRule
                         blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
 
                         blockIDs[i] = tryFindingBlockOfName(data[0]);
-                        if (blockIDs[i] == Blocks.air)
+                        if (blockIDs[i] == Blocks.AIR)
                         {
                             if (!data[0].equals("air"))
                             {
@@ -161,14 +161,14 @@ public class RuinTemplateRule
                     if (isNumber(blockRules[i + 2]))
                     {
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
-                        blockIDs[i] = Blocks.air;
+                        blockIDs[i] = Blocks.AIR;
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
                     }
                     else
                     {
                         blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
-                        if (blockIDs[i] == Blocks.air && !data[0].equals("air"))
+                        if (blockIDs[i] == Blocks.AIR && !data[0].equals("air"))
                         {
                             //debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
                             blockIDs[i] = null;
@@ -258,7 +258,7 @@ public class RuinTemplateRule
     private Block tryFindingBlockOfName(String blockName)
     {
         // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
-        return Block.blockRegistry.getObject(new ResourceLocation(blockName));
+        return Block.REGISTRY.getObject(new ResourceLocation(blockName));
     }
 
     @SuppressWarnings("unused")
@@ -524,20 +524,20 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("EasyChest"))
         {
-            addEasyChest(world, random, x, y, z, rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate), random.nextInt(3) + 3);
+            addEasyChest(world, random, x, y, z, rotateMetadata(Blocks.CHEST, blockMDs[blocknum], rotate), random.nextInt(3) + 3);
         }
         else if (dataString.startsWith("MediumChest"))
         {
-            addMediumChest(world, random, x, y, z, rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate), random.nextInt(4) + 3);
+            addMediumChest(world, random, x, y, z, rotateMetadata(Blocks.CHEST, blockMDs[blocknum], rotate), random.nextInt(4) + 3);
         }
         else if (dataString.startsWith("HardChest"))
         {
-            addHardChest(world, random, x, y, z, rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate), random.nextInt(5) + 3);
+            addHardChest(world, random, x, y, z, rotateMetadata(Blocks.CHEST, blockMDs[blocknum], rotate), random.nextInt(5) + 3);
         }
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
-            addChestGenChest(world, random, x, y, z, s[1], rotateMetadata(Blocks.chest, blockMDs[blocknum], rotate));
+            addChestGenChest(world, random, x, y, z, s[1], rotateMetadata(Blocks.CHEST, blockMDs[blocknum], rotate));
         }
         else if (dataString.startsWith("IInventory;"))
         {
@@ -590,9 +590,9 @@ public class RuinTemplateRule
             int meta = blockMDs[blocknum];
             if (rotate != RuinsMod.DIR_NORTH)
             {
-                meta = rotateMetadata(Blocks.standing_sign, blockMDs[blocknum], rotate);
+                meta = rotateMetadata(Blocks.STANDING_SIGN, blockMDs[blocknum], rotate);
             }
-            world.setBlockState(new BlockPos(x, y, z), Blocks.standing_sign.getStateFromMeta(meta), 2);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.STANDING_SIGN.getStateFromMeta(meta), 2);
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             if (tes != null && tes.signText != null)
             {
@@ -608,9 +608,9 @@ public class RuinTemplateRule
             int meta = blockMDs[blocknum];
             if (rotate != RuinsMod.DIR_NORTH)
             {
-                meta = rotateMetadata(Blocks.wall_sign, blockMDs[blocknum], rotate);
+                meta = rotateMetadata(Blocks.WALL_SIGN, blockMDs[blocknum], rotate);
             }
-            world.setBlockState(new BlockPos(x, y, z), Blocks.wall_sign.getStateFromMeta(meta), 2);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.WALL_SIGN.getStateFromMeta(meta), 2);
             TileEntitySign tes = (TileEntitySign) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             if (tes != null && tes.signText != null)
             {
@@ -623,12 +623,12 @@ public class RuinTemplateRule
         else if (dataString.startsWith("Skull:"))
         {
             // standard case Skull:2:8-3
-            world.setBlockState(new BlockPos(x, y, z), Blocks.skull.getStateFromMeta(rotateFloorSkull(blockMDs[blocknum], rotate)), 2);
+            world.setBlockState(new BlockPos(x, y, z), Blocks.SKULL.getStateFromMeta(rotateFloorSkull(blockMDs[blocknum], rotate)), 2);
             String[] splits = dataString.split(":");
             TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
             int rot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
-            ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.standing_sign, rot, rotate), 1);
+            ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.STANDING_SIGN, rot, rotate), 1);
 
             // is a player head saved?
             // looks like Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
@@ -676,7 +676,7 @@ public class RuinTemplateRule
         {
             return 1;
         }
-        return CustomRotationMapping.getMapping(Blocks.skull, meta, rot);
+        return CustomRotationMapping.getMapping(Blocks.SKULL, meta, rot);
     }
 
     private int getBlockNum(Random random)
@@ -689,12 +689,12 @@ public class RuinTemplateRule
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
         world.spawnEntityInWorld(entityendercrystal);
-        world.setBlockState(new BlockPos(x, y, z), Blocks.bedrock.getDefaultState(), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.BEDROCK.getDefaultState(), 2);
     }
 
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.mob_spawner.getDefaultState(), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.MOB_SPAWNER.getDefaultState(), 2);
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (mobspawner != null)
         {
@@ -702,7 +702,7 @@ public class RuinTemplateRule
             if (test == null)
             {
                 System.err.println("Warning: Ruins Mod could not find an Entity [" + id + "] set for a Mob Spawner");
-                for (String entString : EntityList.classToStringMapping.values())
+                for (String entString : EntityList.CLASS_TO_NAME.values())
                 {
                     if (entString.contains(id))
                     {
@@ -785,7 +785,7 @@ public class RuinTemplateRule
 
     private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.CHEST.getStateFromMeta(meta), 2);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
@@ -803,7 +803,7 @@ public class RuinTemplateRule
 
     private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.CHEST.getStateFromMeta(meta), 2);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
@@ -828,7 +828,7 @@ public class RuinTemplateRule
 
     private void addHardChest(World world, Random random, int x, int y, int z, int meta, int items)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.CHEST.getStateFromMeta(meta), 2);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
@@ -853,7 +853,7 @@ public class RuinTemplateRule
 
     private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int meta)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.chest.getStateFromMeta(meta), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.CHEST.getStateFromMeta(meta), 2);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
@@ -998,7 +998,7 @@ public class RuinTemplateRule
     private Object tryFindingObject(String s)
     {
         ResourceLocation rl = new ResourceLocation(s);
-        Item item = Item.itemRegistry.getObject(rl);
+        Item item = Item.REGISTRY.getObject(rl);
         if (item != null)
         {
             if (item instanceof ItemBlock)
@@ -1008,8 +1008,8 @@ public class RuinTemplateRule
             return item;
         }
 
-        Block block = Block.blockRegistry.getObject(rl);
-        if (block != Blocks.air)
+        Block block = Block.REGISTRY.getObject(rl);
+        if (block != Blocks.AIR)
         {
             return block;
         }
@@ -1018,7 +1018,7 @@ public class RuinTemplateRule
 
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int rotate)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.command_block.getDefaultState(), 2);
+        world.setBlockState(new BlockPos(x, y, z), Blocks.COMMAND_BLOCK.getDefaultState(), 2);
         command = findAndRotateRelativeCommandBlockCoords(command, rotate);
         TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (tecb != null)
@@ -1105,39 +1105,39 @@ public class RuinTemplateRule
             return null;
         case 2:
         case 3:
-            return new ItemStack(Items.bread);
+            return new ItemStack(Items.BREAD);
         case 4:
         case 5:
-            return new ItemStack(Items.wheat, random.nextInt(8) + 8);
+            return new ItemStack(Items.WHEAT, random.nextInt(8) + 8);
         case 6:
-            return new ItemStack(Items.iron_hoe);
+            return new ItemStack(Items.IRON_HOE);
         case 7:
-            return new ItemStack(Items.iron_shovel);
+            return new ItemStack(Items.IRON_SHOVEL);
         case 8:
         case 9:
-            return new ItemStack(Items.string, random.nextInt(3) + 1);
+            return new ItemStack(Items.STRING, random.nextInt(3) + 1);
         case 10:
         case 11:
         case 12:
-            return new ItemStack(Items.wheat_seeds, random.nextInt(8) + 8);
+            return new ItemStack(Items.WHEAT_SEEDS, random.nextInt(8) + 8);
         case 13:
         case 14:
         case 15:
-            return new ItemStack(Items.bowl, random.nextInt(2) + 1);
+            return new ItemStack(Items.BOWL, random.nextInt(2) + 1);
         case 16:
-            return new ItemStack(Items.bucket);
+            return new ItemStack(Items.BUCKET);
         case 17:
-            return new ItemStack(Items.apple);
+            return new ItemStack(Items.APPLE);
         case 18:
         case 19:
-            return new ItemStack(Items.bone, random.nextInt(4) + 1);
+            return new ItemStack(Items.BONE, random.nextInt(4) + 1);
         case 20:
         case 21:
-            return new ItemStack(Items.egg, random.nextInt(2) + 1);
+            return new ItemStack(Items.EGG, random.nextInt(2) + 1);
         case 22:
-            return new ItemStack(Items.coal, random.nextInt(5) + 3);
+            return new ItemStack(Items.COAL, random.nextInt(5) + 3);
         case 23:
-            return new ItemStack(Items.iron_ingot, random.nextInt(5) + 3);
+            return new ItemStack(Items.IRON_INGOT, random.nextInt(5) + 3);
         default:
             return getLootStack(random);
         }
@@ -1155,40 +1155,40 @@ public class RuinTemplateRule
             return null;
         case 4:
         case 5:
-            return new ItemStack(Items.leather_boots);
+            return new ItemStack(Items.LEATHER_BOOTS);
         case 6:
         case 7:
-            return new ItemStack(Items.leather_leggings);
+            return new ItemStack(Items.LEATHER_LEGGINGS);
         case 8:
         case 9:
-            return new ItemStack(Items.flint_and_steel);
+            return new ItemStack(Items.FLINT_AND_STEEL);
         case 10:
         case 11:
-            return new ItemStack(Items.iron_axe);
+            return new ItemStack(Items.IRON_AXE);
         case 12:
-            return new ItemStack(Items.iron_sword);
+            return new ItemStack(Items.IRON_SWORD);
         case 13:
-            return new ItemStack(Items.iron_pickaxe);
+            return new ItemStack(Items.IRON_PICKAXE);
         case 14:
         case 15:
-            return new ItemStack(Items.iron_helmet);
+            return new ItemStack(Items.IRON_HELMET);
         case 16:
-            return new ItemStack(Items.iron_chestplate);
+            return new ItemStack(Items.IRON_CHESTPLATE);
         case 17:
         case 18:
-            return new ItemStack(Items.book, random.nextInt(3) + 1);
+            return new ItemStack(Items.BOOK, random.nextInt(3) + 1);
         case 19:
-            return new ItemStack(Items.compass);
+            return new ItemStack(Items.COMPASS);
         case 20:
-            return new ItemStack(Items.clock);
+            return new ItemStack(Items.CLOCK);
         case 21:
-            return new ItemStack(Items.redstone, random.nextInt(12) + 12);
+            return new ItemStack(Items.REDSTONE, random.nextInt(12) + 12);
         case 22:
-            return new ItemStack(Items.golden_apple);
+            return new ItemStack(Items.GOLDEN_APPLE);
         case 23:
-            return new ItemStack(Items.mushroom_stew, random.nextInt(2) + 1);
+            return new ItemStack(Items.MUSHROOM_STEW, random.nextInt(2) + 1);
         default:
-            return new ItemStack(Items.diamond, random.nextInt(4));
+            return new ItemStack(Items.DIAMOND, random.nextInt(4));
         }
     }
 
@@ -1198,7 +1198,7 @@ public class RuinTemplateRule
         // this method is unused if the direction is NORTH
         int tempdata = 0;
 
-        if (blockID == Blocks.rail || blockID == Blocks.golden_rail || blockID == Blocks.detector_rail || blockID == Blocks.activator_rail)
+        if (blockID == Blocks.RAIL || blockID == Blocks.GOLDEN_RAIL || blockID == Blocks.DETECTOR_RAIL || blockID == Blocks.ACTIVATOR_RAIL)
         {
             // minecart tracks
             switch (dir)
@@ -1337,7 +1337,7 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.dark_oak_door || blockID == Blocks.iron_door)
+        else if (blockID == Blocks.DARK_OAK_DOOR || blockID == Blocks.IRON_DOOR)
         {
             // doors
             if (metadata - 8 >= 0)
@@ -1407,11 +1407,11 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.torch || blockID == Blocks.stone_button || blockID == Blocks.wooden_button || blockID == Blocks.lever || blockID == Blocks.unlit_redstone_torch
-                || blockID == Blocks.redstone_torch)
+        else if (blockID == Blocks.TORCH || blockID == Blocks.STONE_BUTTON || blockID == Blocks.WOODEN_BUTTON || blockID == Blocks.LEVER || blockID == Blocks.UNLIT_REDSTONE_TORCH
+                || blockID == Blocks.REDSTONE_TORCH)
         {
             tempdata = 0;
-            if (blockID == Blocks.lever || blockID == Blocks.stone_button || blockID == Blocks.wooden_button)
+            if (blockID == Blocks.LEVER || blockID == Blocks.STONE_BUTTON || blockID == Blocks.WOODEN_BUTTON)
             {
                 if (metadata - 8 > 0)
                 {
@@ -1419,7 +1419,7 @@ public class RuinTemplateRule
                     metadata -= 8;
                 }
                 // now see if it's a floor switch
-                if (blockID == Blocks.lever && (metadata == 5 || metadata == 6))
+                if (blockID == Blocks.LEVER && (metadata == 5 || metadata == 6))
                 {
                     // we'll leave this as-is
                     return metadata + tempdata;
@@ -1488,7 +1488,7 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.vine)
+        else if (blockID == Blocks.VINE)
         {
             /*
              * meta readout N: 8 E: 1 S: 2 W: 4
@@ -1552,7 +1552,7 @@ public class RuinTemplateRule
         /*
          * pumpkins NESW - 2 3 0 1
          */
-        else if (blockID == Blocks.pumpkin || blockID == Blocks.lit_pumpkin)
+        else if (blockID == Blocks.PUMPKIN || blockID == Blocks.LIT_PUMPKIN)
         {
             switch (dir)
             {
@@ -1609,7 +1609,7 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.bed)
+        else if (blockID == Blocks.BED)
         {
             if (metadata - 8 >= 0)
             {
@@ -1672,7 +1672,7 @@ public class RuinTemplateRule
                 }
             }
         }
-        else if (blockID == Blocks.standing_sign)
+        else if (blockID == Blocks.STANDING_SIGN)
         {
             switch (dir)
             {
@@ -1877,7 +1877,7 @@ public class RuinTemplateRule
          * Base NESW = 0 1 2 3 in 2 least significant bits
          * Additonal data unrelated to rotation in higher bits
          */
-        else if (blockID == Blocks.unpowered_repeater || blockID == Blocks.unpowered_comparator || blockID == Blocks.powered_repeater || blockID == Blocks.powered_comparator)
+        else if (blockID == Blocks.UNPOWERED_REPEATER || blockID == Blocks.UNPOWERED_COMPARATOR || blockID == Blocks.POWERED_REPEATER || blockID == Blocks.POWERED_COMPARATOR)
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
@@ -1941,7 +1941,7 @@ public class RuinTemplateRule
          * Least significant 2 bits cover rotation, rest is data
          * (connected to:) N E S W -> 1 2 0 3
          */
-        if (blockID == Blocks.trapdoor)
+        if (blockID == Blocks.TRAPDOOR)
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
@@ -2005,7 +2005,7 @@ public class RuinTemplateRule
          * Least significant 2 bits cover rotation, rest is data
          * (connected to:) N E S W -> 2 3 0 1
          */
-        if (blockID == Blocks.tripwire_hook || blockID == Blocks.dark_oak_fence_gate || blockID == Blocks.end_portal_frame)
+        if (blockID == Blocks.TRIPWIRE_HOOK || blockID == Blocks.DARK_OAK_FENCE_GATE || blockID == Blocks.END_PORTAL_FRAME)
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
@@ -2069,7 +2069,7 @@ public class RuinTemplateRule
          * Least significant 2 bits cover rotation, rest is data
          * (connected to:) N E S W -> 0 1 2 3
          */
-        if (blockID == Blocks.cocoa)
+        if (blockID == Blocks.COCOA)
         {
             int rotbits = metadata & 0x03;
             int databits = metadata & 0xFC;
@@ -2132,7 +2132,7 @@ public class RuinTemplateRule
         /*
          * Least significant bit covers rotation NS or EW, rest is data
          */
-        if (blockID == Blocks.anvil)
+        if (blockID == Blocks.ANVIL)
         {
             int rotbits = metadata & 0x01;
             int databits = metadata & 0xFE;
@@ -2154,7 +2154,7 @@ public class RuinTemplateRule
          * various wood types: 0-3, 4-7, 8-11 and 'only bark' variants 12-15
          * can be simplified to 0 1 2 3
          */
-        if (blockID == Blocks.log || blockID == Blocks.log2)
+        if (blockID == Blocks.LOG || blockID == Blocks.LOG2)
         {
             int offset = metadata % 4; // for wood type
             int rot = metadata / 4; // simplify to meta-meta

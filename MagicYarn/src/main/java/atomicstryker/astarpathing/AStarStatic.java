@@ -45,7 +45,7 @@ public class AStarStatic
 	{
 	    Block id = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
 
-	    if (id == Blocks.ladder && isPassableBlock(worldObj, x, y+1, z))
+	    if (id == Blocks.LADDER && isPassableBlock(worldObj, x, y+1, z))
 	    {
 	        return true;
 	    }
@@ -58,7 +58,7 @@ public class AStarStatic
 	    
 	    if (isPassableBlock(worldObj, x, y-1, z))
 	    {
-	        if (id == Blocks.air
+	        if (id == Blocks.AIR
 	        || id.isPassable(worldObj, new BlockPos(x, y-1, z)))
 	        {
 	            // is not a traversable fluid, dont allow navigating

@@ -19,11 +19,11 @@ public class ItemPocketedPetBat extends Item
         super();
         maxStackSize = 1;
         setMaxDamage(28);
-        setCreativeTab(CreativeTabs.tabCombat);
+        setCreativeTab(CreativeTabs.COMBAT);
     }
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(net.minecraft.item.ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
     {
         if (world.isRemote)
         {

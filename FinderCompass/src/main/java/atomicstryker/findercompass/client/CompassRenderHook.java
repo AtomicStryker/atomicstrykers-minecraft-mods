@@ -19,7 +19,7 @@ public class CompassRenderHook
 
     public static void renderItemHook(ItemStack stack)
     {
-        if (stack.getItem() == Items.compass || stack.getItem() == FinderCompassMod.instance.compass)
+        if (stack.getItem() == Items.COMPASS || stack.getItem() == FinderCompassMod.instance.compass)
         {
             if (mc == null)
             {

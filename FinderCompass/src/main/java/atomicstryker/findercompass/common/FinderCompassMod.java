@@ -91,7 +91,7 @@ public class FinderCompassMod
         if (itemEnabled)
         {
             GameRegistry.addRecipe(new ItemStack(compass),
-                    " # ", "#X#", " # ", '#', Items.diamond, 'X', Items.compass);
+                    " # ", "#X#", " # ", '#', Items.DIAMOND, 'X', Items.COMPASS);
         }
         
         if (FinderCompassClientTicker.instance != null)

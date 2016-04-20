@@ -292,11 +292,11 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack))
                 {
-                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1F, 1F);
+                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                 }
                 else
                 {
-                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1F, 1F);
+                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                     worldObj.spawnEntityInWorld(new EntityItem(worldObj, owner.posX, owner.posY, owner.posZ, batstack));
                 }
             }
@@ -314,19 +314,19 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_bat_ambient;
+        return SoundEvents.ENTITY_BAT_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_bat_hurt;
+        return SoundEvents.ENTITY_BAT_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_bat_death;
+        return SoundEvents.ENTITY_BAT_DEATH;
     }
 
     @Override
@@ -424,7 +424,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
                 {
-                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.entity_slime_attack, SoundCategory.HOSTILE, 1F, 1F);
+                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                     setDeadWithoutRecall();
                 }
                 else
