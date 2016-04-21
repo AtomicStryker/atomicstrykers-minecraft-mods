@@ -14,8 +14,8 @@ preserve_water=1
 
 rule1=0,100,preserveBlock
 rule2=0,90,planks,planks,planks,planks-1
-rule3=0,50,ChestGenHook:chests/simple_dungeon-5
-rule4=0,50,ChestGenHook:chests/simple_dungeon-4
+rule3=0,50,ChestGenHook:chests/simple_dungeon:5-5
+rule4=0,50,ChestGenHook:chests/simple_dungeon:5-4
 rule5=2,98,log-1
 rule6=0,50,glass
 rule7=1,80,log-1

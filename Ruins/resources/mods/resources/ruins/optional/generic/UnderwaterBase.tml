@@ -30,8 +30,8 @@ rule16=0,100,sandstone-2
 rule17=0,100,bed-3
 rule18=0,100,bed-11
 rule19=0,100,stone_slab-9
-rule20=0,100,ChestGenHook:chests/stronghold_library-3
-rule21=0,100,ChestGenHook:chests/stronghold_library-2
+rule20=0,100,ChestGenHook:chests/stronghold_library:5-3
+rule21=0,100,ChestGenHook:chests/stronghold_library:5-2
 rule22=0,100,crafting_table
 rule23=0,100,furnace-2
 rule24=0,100,sandstone_stairs-5
@@ -54,7 +54,7 @@ rule40=0,100,yellow_flower
 rule41=0,100,glowstone
 rule42=0,100,sandstone_stairs-7
 rule43=0,100,glass
-rule44=0,100,ChestGenHook:chests/stronghold_library-5
+rule44=0,100,ChestGenHook:chests/stronghold_library:5-5
 
 
 layer
