@@ -231,17 +231,16 @@ preserve_plants=0
 #
 # Ruins 9.0 exposes minecraft ChestGenHook for your meddling. Usage:
 #
-# Example 7: rule1=0,100,ChestGenHook:dungeonChest:10
-# This spawns a chest and tells the Minecraft generator to fill it with "10" items of the "dungeonChest" preset.
-# This might include extremely powerful items added by mods.
+# Example 7: rule1=0,100,ChestGenHook:chests/simple_dungeon:10
+# This spawns a chest and tells the Minecraft generator to fill it with "10" itemstacks of the "chests/simple_dungeon" loot preset.
+# This might include extremely powerful items added by mods. Note: The algorithm spreads out the itemstacks, it might be more than 10
+# items in this particular case, e.g. 5 pieces of bread count as 1 itemstack, yet will be spread out over 5 slots.
 #
-#	here is the complete list (as of mc 1.4.7) of ChestGen presets:
-#   "mineshaftCorridor"; "pyramidDesertyChest"; "pyramidJungleChest"; "pyramidJungleDispenser"; "strongholdCorridor";
-#   "strongholdLibrary"; "strongholdCrossing"; "villageBlacksmith"; "bonusChest"; "dungeonChest";
+#	see http://minecraft.gamepedia.com/Loot_table#List_of_loot_tables for possible loot tables (as of MC 1.9)
 #
 #	As of 10.6, all chest rules can also append a metadata/rotation int similar to a chest block ID
-#	example: rule1=0,100,ChestGenHook:dungeonChest:10-5
-#	for a chest filled with dungeon loot and rotated to meta 5.
+#	example: rule1=0,100,ChestGenHook:chests/simple_dungeon:10-5
+#	for a chest filled with dungeon chest loot and rotated to meta 5.
 #
 #
 # Ruins 10.3 adds Command Block Support. Usage:

@@ -1,5 +1,6 @@
 package atomicstryker.ruins.common;
 
+import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
@@ -18,15 +19,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -537,7 +540,8 @@ public class RuinTemplateRule
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
-            addChestGenChest(world, random, x, y, z, s[1], rotateMetadata(Blocks.CHEST, blockMDs[blocknum], rotate));
+            int targetCount = s.length > 1 ? Integer.valueOf(s[2].split("-")[0]) : 0;
+            addChestGenChest(world, random, x, y, z, s[1], targetCount, rotateMetadata(Blocks.CHEST, blockMDs[blocknum], rotate));
         }
         else if (dataString.startsWith("IInventory;"))
         {
@@ -851,14 +855,124 @@ public class RuinTemplateRule
         }
     }
 
-    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int meta)
+    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int targetCount, int meta)
     {
         world.setBlockState(new BlockPos(x, y, z), Blocks.CHEST.getStateFromMeta(meta), 2);
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            chest.setLoot(new ResourceLocation("minecraft", gen), random.nextLong());
+            ResourceLocation lootTable = new ResourceLocation("minecraft", gen);
+            //chest.setLoot(lootTable, random.nextLong());
+
+            LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
+
+            LootContext.Builder lootContextBuilder = new LootContext.Builder((WorldServer) world);
+
+            List<ItemStack> lootFromPools = loottable.generateLootForPools(random, lootContextBuilder.build());
+            int toRemove = lootFromPools.size() - targetCount;
+            debugPrinter.println("addChestGenChest running with gen[" + gen + "], loot pool size " + lootFromPools.size() + ", targetCount " + targetCount);
+            if (targetCount > 0 && toRemove > 0)
+            {
+                Collections.shuffle(lootFromPools);
+                Iterator<ItemStack> iter = lootFromPools.iterator();
+                while (toRemove > 0)
+                {
+                    iter.next();
+                    iter.remove();
+                    toRemove--;
+                }
+            }
+            debugPrinter.println("addChestGenChest post removal loot pool size " + lootFromPools.size());
+
+            List<Integer> emptySlotsRandomized = getEmptySlotsRandomized(chest, random);
+            shuffleItems(lootFromPools, emptySlotsRandomized.size(), random);
+
+            for (ItemStack itemstack : lootFromPools)
+            {
+                if (emptySlotsRandomized.isEmpty())
+                {
+                    return;
+                }
+
+                if (itemstack == null)
+                {
+                    chest.setInventorySlotContents(emptySlotsRandomized.remove(emptySlotsRandomized.size() - 1), null);
+                }
+                else
+                {
+                    chest.setInventorySlotContents(emptySlotsRandomized.remove(emptySlotsRandomized.size() - 1), itemstack);
+                }
+            }
         }
+    }
+
+    private List<Integer> getEmptySlotsRandomized(IInventory inventory, Random rand)
+    {
+        List<Integer> list = Lists.<Integer>newArrayList();
+
+        for (int i = 0; i < inventory.getSizeInventory(); ++i)
+        {
+            if (inventory.getStackInSlot(i) == null)
+            {
+                list.add(i);
+            }
+        }
+
+        Collections.shuffle(list, rand);
+        return list;
+    }
+
+    private void shuffleItems(List<ItemStack> stacks, int targetSize, Random rand)
+    {
+        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+        Iterator<ItemStack> iterator = stacks.iterator();
+
+        while (iterator.hasNext())
+        {
+            ItemStack itemstack = iterator.next();
+
+            if (itemstack.stackSize <= 0)
+            {
+                iterator.remove();
+            }
+            else if (itemstack.stackSize > 1)
+            {
+                list.add(itemstack);
+                iterator.remove();
+            }
+        }
+
+        targetSize = targetSize - stacks.size();
+
+        while (targetSize > 0 && ((List) list).size() > 0)
+        {
+            ItemStack itemstack2 = list.remove(MathHelper.getRandomIntegerInRange(rand, 0, list.size() - 1));
+            int i = MathHelper.getRandomIntegerInRange(rand, 1, itemstack2.stackSize / 2);
+            itemstack2.stackSize -= i;
+            ItemStack itemstack1 = itemstack2.copy();
+            itemstack1.stackSize = i;
+
+            if (itemstack2.stackSize > 1 && rand.nextBoolean())
+            {
+                list.add(itemstack2);
+            }
+            else
+            {
+                stacks.add(itemstack2);
+            }
+
+            if (itemstack1.stackSize > 1 && rand.nextBoolean())
+            {
+                list.add(itemstack1);
+            }
+            else
+            {
+                stacks.add(itemstack1);
+            }
+        }
+
+        stacks.addAll(list);
+        Collections.shuffle(stacks, rand);
     }
 
     private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, ArrayList<String> nbtTags, int rotateMetadata)

@@ -345,7 +345,7 @@ class World2TemplateParser extends Thread
                     }
                     else if (temp.block == Blocks.CHEST)
                     {
-                        temp.data = "ChestGenHook:chests/simple_dungeon-" + temp.meta;
+                        temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
                     }
                     else if (temp.block == Blocks.COMMAND_BLOCK)
                     {
