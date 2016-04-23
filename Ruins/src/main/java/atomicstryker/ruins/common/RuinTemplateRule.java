@@ -49,6 +49,8 @@ public class RuinTemplateRule
     public enum SpecialFlags
     {
         COMMANDBLOCK,
+        COMMANDBLOCKCHAIN,
+        COMMANDBLOCKREPEATING,
         ADDBONEMEAL
     }
 
@@ -73,9 +75,21 @@ public class RuinTemplateRule
         String[] data;
 
         // Command Block special case, contains basically any character that breaks this
-        if (blockRules[2].startsWith("CommandBlock:"))
+        if (blockRules[2].startsWith("CommandBlock"))
         {
-            String[] commandrules = rule.split("CommandBlock:");
+            String prefix = "CommandBlock:";
+            SpecialFlags type = SpecialFlags.COMMANDBLOCK;
+            if (blockRules[2].startsWith("CommandBlockRepeating"))
+            {
+                type = SpecialFlags.COMMANDBLOCKREPEATING;
+                prefix = "CommandBlockRepeating:";
+            }
+            else if (blockRules[2].startsWith("CommandBlockChain"))
+            {
+                type = SpecialFlags.COMMANDBLOCKCHAIN;
+                prefix = "CommandBlockChain:";
+            }
+            String[] commandrules = rule.split(prefix);
             int count = commandrules.length - 1; // -1 because there is a prefix part we ignore
             blockIDs = new Block[count];
             blockMDs = new int[count];
@@ -85,11 +99,11 @@ public class RuinTemplateRule
             {
                 blockIDs[i] = null;
                 blockMDs[i] = 0;
-                specialFlags[i] = SpecialFlags.COMMANDBLOCK;
+                specialFlags[i] = type;
                 // readd the splitout string for the parsing, offset by 1 because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
                 blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
-                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i]);
+                debugPrinter.println("template " + owner.getName() + " contains Command Block type " + type + ", command: " + blockStrings[i]);
             }
         }
         // not command blocks
@@ -571,7 +585,7 @@ public class RuinTemplateRule
         {
             spawnEnderCrystal(world, x, y, z);
         }
-        else if (specialFlags[blocknum] == SpecialFlags.COMMANDBLOCK)
+        else if (specialFlags[blocknum] == SpecialFlags.COMMANDBLOCK || specialFlags[blocknum] == SpecialFlags.COMMANDBLOCKCHAIN || specialFlags[blocknum] == SpecialFlags.COMMANDBLOCKREPEATING)
         {
             int lastIdx = dataString.lastIndexOf(":");
             String sender;
@@ -586,7 +600,7 @@ public class RuinTemplateRule
                 command = dataString.substring(0, lastIdx);
                 sender = dataString.substring(lastIdx + 1, dataString.length());
             }
-            addCommandBlock(world, x, y, z, command, sender, rotate);
+            addCommandBlock(world, x, y, z, command, specialFlags[blocknum], sender, rotate);
         }
         else if (dataString.startsWith("StandingSign:"))
         {
@@ -1130,9 +1144,18 @@ public class RuinTemplateRule
         return null;
     }
 
-    private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int rotate)
+    private void addCommandBlock(World world, int x, int y, int z, String command, SpecialFlags type, String sender, int rotate)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.COMMAND_BLOCK.getDefaultState(), 2);
+        Block b = Blocks.COMMAND_BLOCK;
+        if (type == SpecialFlags.COMMANDBLOCKCHAIN)
+        {
+            b = Blocks.CHAIN_COMMAND_BLOCK;
+        }
+        else if (type == SpecialFlags.COMMANDBLOCKREPEATING)
+        {
+            b = Blocks.REPEATING_COMMAND_BLOCK;
+        }
+        world.setBlockState(new BlockPos(x, y, z), b.getDefaultState(), 2);
         command = findAndRotateRelativeCommandBlockCoords(command, rotate);
         TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (tecb != null)

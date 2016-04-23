@@ -247,6 +247,7 @@ preserve_plants=0
 # Example 8: rule1=0,100,CommandBlock:command:sender
 # command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
 # you can provide several alternative command blocks seperated by commata, however you may not mix command blocks and other blocks in one rule
+# Ruins 16.0 adds support for the two new command blocks, use "CommandBlockRepeating:" and "CommandBlockChain:" for them
 #
 # Ruins 12.1 adds Standing Signs. Usage:
 # Example 9: rule1=0,100,StandingSign:a|b|c|d-4

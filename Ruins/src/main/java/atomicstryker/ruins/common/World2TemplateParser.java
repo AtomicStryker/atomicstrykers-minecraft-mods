@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -347,12 +348,25 @@ class World2TemplateParser extends Thread
                     {
                         temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
                     }
-                    else if (temp.block == Blocks.COMMAND_BLOCK)
+                    else if (temp.block instanceof BlockCommandBlock)
                     {
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
                         if (tec != null)
                         {
-                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getName();
+                            String type;
+                            if (temp.block == Blocks.REPEATING_COMMAND_BLOCK)
+                            {
+                                type = "CommandBlockRepeating:";
+                            }
+                            else if (temp.block == Blocks.CHAIN_COMMAND_BLOCK)
+                            {
+                                type = "CommandBlockChain:";
+                            }
+                            else
+                            {
+                                type = "CommandBlock:";
+                            }
+                            temp.data = type + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getName();
                         }
                     }
                     else if (temp.block == Blocks.STANDING_SIGN)
