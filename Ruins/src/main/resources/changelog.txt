@@ -462,6 +462,3 @@ a: setAccessible now true
 15.9
 + reworked chestgenhook with new mc 1.9 system to basically provide the old functionality with the new loot tables
 + fixed up documentation of chestgenhook to explain the new inner workings
-
-16.0
-+ adds support for the new command block types
