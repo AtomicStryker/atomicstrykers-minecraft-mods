@@ -146,6 +146,8 @@ class FileHandler
                 printErrorToLog(pw, e, "There was an error when loading the options file.  Defaults will be used instead.");
             }
 
+            registeredTEBlocks.add(Blocks.CHAIN_COMMAND_BLOCK);
+            registeredTEBlocks.add(Blocks.REPEATING_COMMAND_BLOCK);
             loaded = true;
             pw.println("Ruins mod loaded successfully for world " + saveFolder + ", template files: " + templateCount);
             pw.flush();
