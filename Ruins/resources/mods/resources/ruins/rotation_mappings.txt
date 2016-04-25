@@ -67,7 +67,7 @@ WEST-6-4
 WEST-7-5
 
 # pistons, ladders, wall signs, furnaces, chests, dispensers, droppers, hoppers
-BlockID=sticky_piston;piston;ladder;wall_sign;furnace;chest;dispenser;dropper;hopper;trapped_chest
+BlockID=sticky_piston;piston;ladder;wall_sign;lit_furnace;furnace;chest;dispenser;dropper;hopper;trapped_chest
 # DUNESW: 0 1 2 5 3 4
 # DUNESW: 8 9 10 13 11 12 (Extended Pistons, is lower value + 8)
 
@@ -233,3 +233,22 @@ SOUTH-9-10
 SOUTH-10-9
 SOUTH-11-12
 SOUTH-12-11
+
+# Impulse / Classic Command Block
+# N E S W = 4 2 5 3
+BlockID=command_block
+
+EAST-2-5
+EAST-4-2
+EAST-3-4
+EAST-5-3
+
+SOUTH-2-3
+SOUTH-4-5
+SOUTH-3-2
+SOUTH-5-4
+
+WEST-2-4
+WEST-4-3
+WEST-3-5
+WEST-5-2

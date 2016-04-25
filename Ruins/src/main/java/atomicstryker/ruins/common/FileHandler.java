@@ -51,11 +51,11 @@ class FileHandler
             File basedir;
             try
             {
-                basedir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
+                basedir = RuinsMod.getMinecraftBaseDir();
             }
             catch (Exception e)
             {
-                System.err.println("Could not access the main Minecraft mods directory; error: " + e);
+                System.err.println("Could not access the main Minecraft directory; error: " + e);
                 System.err.println("The ruins mod could not be loaded.");
                 e.printStackTrace();
                 loaded = true;
@@ -63,7 +63,7 @@ class FileHandler
             }
             try
             {
-                File log = new File(basedir, "ruins_log_dim_" + dimension + ".txt");
+                File log = new File(basedir, "logs/ruins_log_dim_" + dimension + ".txt");
                 if (log.exists())
                 {
                     if (!log.delete() || !log.createNewFile())
@@ -82,7 +82,7 @@ class FileHandler
                 return;
             }
 
-            final File templPath = new File(basedir, "resources/ruins");
+            final File templPath = new File(basedir, "mods/resources/ruins");
             if (!templPath.exists())
             {
                 System.out.println("Could not access the resources path for the ruins templates, file doesn't exist!");
@@ -387,11 +387,11 @@ class FileHandler
         {
             return;
         }
-        File modsdir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
-        File basefile = new File(modsdir, "ruins.txt");
+        File configdir = new File(RuinsMod.getMinecraftBaseDir(), "config");
+        File basefile = new File(configdir, "ruins.txt");
         if (!basefile.exists())
         {
-            createDefaultGlobalOptions(modsdir);
+            createDefaultGlobalOptions(configdir);
         }
         Files.copy(basefile, copyfile);
     }

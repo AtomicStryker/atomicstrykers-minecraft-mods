@@ -465,3 +465,9 @@ a: setAccessible now true
 
 16.0
 + added support for chain and repeat command blocks by handling them as "teBlock" types automatically (they dont need RUINSTRIGGER)
++ added meta value support for command blocks, works as anywhere else, add "-n" with n=meta to the rule end
++ added command block rotation mappings to the mappings file
++ moved global config to configs folder (from mods folder)
++ moved logfiles to logs folder (from mods folder)
++ Ruins positions file and world specific config files remain in each world save folder
++ Jordan_Peacock's untested 1.9 templates set is now the default template set

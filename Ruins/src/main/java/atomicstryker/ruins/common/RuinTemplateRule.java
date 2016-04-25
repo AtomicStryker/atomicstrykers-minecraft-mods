@@ -84,12 +84,19 @@ public class RuinTemplateRule
             for (int i = 0; i < count; i++)
             {
                 blockIDs[i] = null;
-                blockMDs[i] = 0;
+                blockMDs[i] = RuinsMod.DIR_NORTH;
+                if (commandrules[i + 1].charAt(commandrules[i + 1].length()-2) == '-') // case meta value "-n" present (impulse command block)
+                {
+                    String meta = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1); // needed because char to int conversion is bad here
+                    blockMDs[i] = Integer.valueOf(meta);
+                    // strip the last 2 chars from the string or else parsing the command will fail
+                    commandrules[i + 1] = commandrules[i + 1].substring(0, commandrules[i + 1].length()-3);
+                }
                 specialFlags[i] = SpecialFlags.COMMANDBLOCK;
                 // readd the splitout string for the parsing, offset by 1 because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
                 blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
-                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i]);
+                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i]);
             }
         }
         // not command blocks
@@ -586,7 +593,7 @@ public class RuinTemplateRule
                 command = dataString.substring(0, lastIdx);
                 sender = dataString.substring(lastIdx + 1, dataString.length());
             }
-            addCommandBlock(world, x, y, z, command, sender, rotate);
+            addCommandBlock(world, x, y, z, command, sender, blockMDs[blocknum], rotate);
         }
         else if (dataString.startsWith("StandingSign:"))
         {
@@ -1130,9 +1137,10 @@ public class RuinTemplateRule
         return null;
     }
 
-    private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int rotate)
+    private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int meta, int rotate)
     {
-        world.setBlockState(new BlockPos(x, y, z), Blocks.COMMAND_BLOCK.getDefaultState(), 2);
+        meta = rotate != RuinsMod.DIR_NORTH ? rotateMetadata(Blocks.COMMAND_BLOCK, meta, rotate) : meta;
+        world.setBlockState(new BlockPos(x, y, z), Blocks.COMMAND_BLOCK.getStateFromMeta(meta), 2);
         command = findAndRotateRelativeCommandBlockCoords(command, rotate);
         TileEntityCommandBlock tecb = (TileEntityCommandBlock) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (tecb != null)
