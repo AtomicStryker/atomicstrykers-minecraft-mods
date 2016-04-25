@@ -1,7 +1,14 @@
+# Castle (Modified)
+# Updated to MC 1.9: 21 Apr 2016
+
 weight=1
-unique=1
+
+uniqueMinDistance=3000
+
 embed_into_distance=0
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=19,31,30
 allowable_overhang=4
 max_leveling=4
@@ -33,7 +40,7 @@ rule19=0,100,wheat-6
 rule20=0,100,wheat-4
 rule21=0,100,wheat-3
 rule22=0,100,stonebrick-3
-rule23=0,100,MediumChest-3
+rule23=0,100,ChestGenHook:chests/village_blacksmith:3-3
 rule24=0,100,stone_brick_stairs
 rule25=0,100,stone_brick_stairs-1
 rule26=0,100,stone_brick_stairs-2
@@ -43,7 +50,7 @@ rule29=0,100,pumpkin-3
 rule30=0,100,bookshelf
 rule31=0,100,stone_slab
 rule32=0,100,lava
-rule33=0,100,MediumChest-2
+rule33=0,100,ChestGenHook:chests/spawn_bonus_chest:3-2
 rule34=0,100,fire-15
 rule35=0,100,water
 rule36=0,100,brown_mushroom

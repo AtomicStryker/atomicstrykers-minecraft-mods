@@ -1,7 +1,12 @@
+# Altar
+# Updated to MC 1.9: 21 Apr 2016
+
 weight=1
 unique=1
 embed_into_distance=0
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=13,20,20
 allowable_overhang=0
 max_cut_in=2
@@ -36,7 +41,7 @@ rule22=0,100,stone_stairs-4
 rule23=0,100,stone_stairs-7
 rule24=0,100,stone_stairs-6
 rule25=0,100,stone_brick_stairs-5
-rule26=0,100,mob_spawner
+rule26=0,100,MobSpawner:Skeleton,MobSpawner:Zombie,MobSpawner:Spider
 rule27=0,100,stone_brick_stairs-4
 rule28=2,100,torch-1
 rule29=2,100,torch-2

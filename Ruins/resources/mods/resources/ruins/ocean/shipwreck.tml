@@ -1,12 +1,15 @@
 
 # Created by Ruins mod version 13.0 Ingame Parser
 # authoring Player: AtomicStryker
+# Updated to MC 1.9: 21 Apr 2016
 
 biomesToSpawnIn=ocean,deep ocean,kelp forest,ocean oil field,oceanic abyss,coral reef
 weight=5
 embed_into_distance=1
 acceptable_target_blocks=
-unacceptable_target_blocks=flowing_lava,lava
+
+unacceptable_target_blocks=flowing_lava,lava,Natura:Cloud
+
 dimensions=13,26,8
 allowable_overhang=12
 max_leveling=5
@@ -17,8 +20,8 @@ preserve_plants=0
 
 rule1=0,100,minecraft:mossy_cobblestone-0
 rule2=0,100,minecraft:planks-0
-rule3=0,25,ChestGenHook:chests/simple_dungeon:5-5
-rule4=0,25,ChestGenHook:chests/simple_dungeon:5-4
+rule3=0,25,ChestGenHook:chests/simple_dungeon:3-5
+rule4=0,25,ChestGenHook:chests/simple_dungeon:3-4
 rule5=0,100,minecraft:log-0
 rule6=0,100,preserveBlock
 

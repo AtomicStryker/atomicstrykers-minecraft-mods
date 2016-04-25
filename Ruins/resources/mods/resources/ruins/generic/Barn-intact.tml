@@ -1,7 +1,9 @@
 weight=1
 unique=1
 embed_into_distance=0
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=12,15,11
 cut_in_buffer=0
 max_leveling=2

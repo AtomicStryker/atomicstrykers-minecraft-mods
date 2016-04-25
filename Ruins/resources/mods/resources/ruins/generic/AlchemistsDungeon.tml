@@ -1,10 +1,14 @@
-
-
+# Alchemist's Dungeon
+# Updated to MC 1.9: 21 Apr 2016
 
 weight=1
-unique=1
+
+uniqueMinDistance=3000
+
 embed_into_distance=13
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=13,22,52
 cut_in_buffer=0
 max_leveling=5
@@ -21,13 +25,13 @@ rule3=0,100,brick_block
 rule4=0,100,web,air,air,air,air,air,air,air
 rule5=0,100,brick_stairs
 rule6=0,100,crafting_table,air
-rule7=0,100,HardChest,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air
-rule8=0,100,MediumChest,MediumMobSpawn,iron_block,double_stone_slab,stone_slab,tnt,planks,planks,UprightMobSpawn,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air
+rule7=0,100,ChestGenHook:chests/simple_dungeon:3,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air
+rule8=0,100,ChestGenHook:chests/village_blacksmith:3,MobSpawner:Skeleton,iron_block,double_stone_slab,stone_slab,tnt,planks,planks,MobSpawner:Zombie,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air,air
 rule9=0,100,bookshelf,bookshelf,bookshelf,bookshelf,bookshelf,bookshelf,bookshelf,air,air,web
 rule10=0,100,iron_bars
 rule11=0,100,double_stone_slab
 rule12=0,100,stone_slab
-rule13=0,100,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,MediumMobSpawn,double_stone_slab,iron_bars
+rule13=0,100,MobSpawner:Skeleton,MobSpawner:Zombie,MobSpawner:Spider,MobSpawner:Creeper,double_stone_slab,iron_bars
 rule14=0,100,cauldron,cauldron,cauldron,air
 rule15=0,100,iron_door-2
 rule16=0,100,iron_door

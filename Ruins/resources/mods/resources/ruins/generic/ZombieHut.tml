@@ -4,19 +4,21 @@
 weight=1
 embed_into_distance=0
 acceptable_target_blocks=
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=4,7,5
 allowable_overhang=0
 max_leveling=2
 leveling_buffer=0
 preserve_water=0
 preserve_lava=0
-preserve_plants=0
+preserve_plants=1
 
 rule1=0,100,minecraft:cobblestone-0
 rule2=0,100,minecraft:mossy_cobblestone-0
 rule3=0,100,MobSpawner:Zombie
-rule4=0,100,ChestGenHook:chests/simple_dungeon:5-2
+rule4=0,100,ChestGenHook:chests/simple_dungeon:1-2
 rule5=0,100,minecraft:stone_stairs-2
 rule6=0,100,minecraft:stone_stairs-0
 rule7=0,100,minecraft:stone_stairs-3

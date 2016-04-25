@@ -1,11 +1,16 @@
 # Created by Ruins mod version 12.8 Ingame Parser
 # authoring Player: AtomicStryker
+# Updated to MC 1.9: 21 Apr 2016
 
 weight=1
-unique=1
+
+uniqueMinDistance=3000
+
 embed_into_distance=8
 acceptable_target_blocks=
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=12,11,9
 allowable_overhang=0
 max_leveling=4
@@ -22,8 +27,8 @@ rule5=0,100,minecraft:tripwire_hook-7
 rule6=0,100,minecraft:tripwire-4
 rule7=0,100,minecraft:stone_brick_stairs-3
 rule8=0,100,minecraft:stone_brick_stairs-1
-rule9=0,100,ChestGenHook:chests/simple_dungeon:5-3
-rule10=0,100,ChestGenHook:chests/simple_dungeon:5-3
+rule9=0,100,ChestGenHook:chests/simple_dungeon:1-3
+rule10=0,100,ChestGenHook:chests/simple_dungeon:1-3
 rule11=0,100,minecraft:stone_brick_stairs-0
 rule12=0,100,minecraft:tripwire_hook-5
 rule13=0,100,minecraft:stonebrick-2

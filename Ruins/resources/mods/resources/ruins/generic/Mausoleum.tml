@@ -1,10 +1,15 @@
 # Author: Jeheace
 # From: Minecraft Forums
+# Updated to MC 1.9: 21 Apr 2016
 
 weight=1
-unique=1
+
+uniqueMinDistance=3000
+
 embed_into_distance=0
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=7,14,14
 allowable_overhang=1
 max_leveling=2
@@ -17,7 +22,7 @@ rule1=0,100,preserveBlock
 rule2=0,100,cobblestone,mossy_cobblestone
 rule3=0,100,stone_slab
 rule4=0,100,MobSpawner:Zombie
-rule5=0,100,MediumChest,HardChest
+rule5=0,100,ChestGenHook:chests/pyramid_jungle_chest,ChestGenHook:chests/pyramid_desert_chest
 
 layer
 1,1,2,2,2,2,2,2,2,2,2,2,2,1

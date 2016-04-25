@@ -3,14 +3,16 @@
 
 weight=2
 embed_into_distance=0
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
+
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+
 dimensions=7,9,15
 allowable_overhang=0
 max_leveling=2
 leveling_buffer=0
 preserve_water=0
 preserve_lava=0
-preserve_plants=0
+preserve_plants=1
 
 rule1=0,100,air,cobblestone,mossy_cobblestone
 rule2=0,100,cobblestone,mossy_cobblestone
