@@ -654,17 +654,19 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("teBlock;"))
         {
+            debugPrinter.println("teBlock about to be placed: " + dataString);
             // examples: teBlock;minecraft:trapped_chest;{...nbt json...}, teBlock;minecraft:trapped_chest;{...nbt json...}-4
             String[] in = dataString.split(";");
-            Object o = tryFindingObject(in[1]);
-            BlockPos p = new BlockPos(x, y, z);
-            if (o instanceof Block)
+            Block b = Block.REGISTRY.getObject(new ResourceLocation(in[1]));
+            debugPrinter.println("teBlock object from [" + in[1] + "]: " + b);
+            if (b != Blocks.AIR)
             {
+                BlockPos p = new BlockPos(x, y, z);
                 try
                 {
                     NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
                     debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
-                    world.setBlockState(p, ((Block) o).getStateFromMeta(blockMDs[blocknum]), rotate);
+                    world.setBlockState(p, b.getStateFromMeta(blockMDs[blocknum]), rotate);
                     TileEntity tenew = TileEntity.createTileEntity(world.getMinecraftServer(), tc);
                     world.removeTileEntity(p);
                     world.setTileEntity(p, tenew);

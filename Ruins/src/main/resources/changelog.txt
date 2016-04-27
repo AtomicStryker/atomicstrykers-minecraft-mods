@@ -471,3 +471,4 @@ a: setAccessible now true
 + moved logfiles to logs folder (from mods folder)
 + Ruins positions file and world specific config files remain in each world save folder
 + Jordan_Peacock's untested 1.9 templates set is now the default template set
++ (hotfix) fixed teBlock not working on ItemBlock / ItemBlockSpecial types
