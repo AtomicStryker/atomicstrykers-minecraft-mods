@@ -4,7 +4,7 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class AirPacket implements IPacket
 {
@@ -28,7 +28,7 @@ public class AirPacket implements IPacket
     public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
     {
         air = bytes.readInt();
-        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
+        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
     }
     
     class ScheduledCode implements Runnable

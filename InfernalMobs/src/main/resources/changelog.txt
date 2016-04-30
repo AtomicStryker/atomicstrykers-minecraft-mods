@@ -1,3 +1,6 @@
+1.6.9
+- fixes some clientside packet logic calling serverside code (and crashing)
+
 1.6.8
 - updated for forge 1805+
 
