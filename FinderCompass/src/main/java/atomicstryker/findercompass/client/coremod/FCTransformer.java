@@ -20,16 +20,16 @@ public class FCTransformer implements IClassTransformer
 {
     
     /*  net.minecraft.client.renderer.RenderItem */
-    private String classNameToModify = "brz";
+    private String classNameToModify = "brw";
       
     /* (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V */
-    private String methodDescriptorToModify = "(Ladq;Lbxo;)V";
+    private String methodDescriptorToModify = "(Ladq;Lbxl;)V";
     
     /* net.minecraft.client.renderer.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a */
     private String methodNameToModify = "a"; // this is actually unneeded because a is too generic
     
     /* (Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V */
-    private String targetNodeDescriptor = "(Lbxo;Ladq;)V";
+    private String targetNodeDescriptor = "(Lbxl;Ladq;)V";
     
     /* (Lnet/minecraft/item/ItemStack;)V */
     private String itemStackVoidDescriptor = "(Ladq;)V";
