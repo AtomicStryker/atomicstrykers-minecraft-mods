@@ -472,3 +472,6 @@ a: setAccessible now true
 + Ruins positions file and world specific config files remain in each world save folder
 + Jordan_Peacock's untested 1.9 templates set is now the default template set
 + (hotfix) fixed teBlock not working on ItemBlock / ItemBlockSpecial types
+
+16.1
++ updated to mc 1.9.4

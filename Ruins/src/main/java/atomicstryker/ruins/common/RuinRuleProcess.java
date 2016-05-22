@@ -1,8 +1,8 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.world.World;
-
 import java.util.Random;
+
+import net.minecraft.world.World;
 
 class RuinRuleProcess
 {

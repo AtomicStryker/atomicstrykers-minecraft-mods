@@ -1,5 +1,13 @@
 package atomicstryker.ruins.common;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -31,18 +39,10 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    static final String modversion = "16.0";
+    static final String modversion = "16.1";
 
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
@@ -303,7 +303,7 @@ public class RuinsMod
             worldHandle.fileHandle = new FileHandler(worlddir, world.provider.getDimension());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
 
-            worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().loadData(ChunkLoggerData.class, "ruinschunklogger");
+            worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().getOrLoadData(ChunkLoggerData.class, "ruinschunklogger");
             if (worldHandle.chunkLogger == null)
             {
                 worldHandle.chunkLogger = new ChunkLoggerData("ruinschunklogger");

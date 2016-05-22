@@ -1,9 +1,9 @@
 package atomicstryker.ruins.common;
 
+import java.util.ArrayList;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldSavedData;
-
-import java.util.ArrayList;
 
 public class ChunkLoggerData extends WorldSavedData
 {
@@ -42,7 +42,7 @@ public class ChunkLoggerData extends WorldSavedData
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
         int[] xsave = new int[xCoords.size()];
         int[] zsave = new int[zCoords.size()];
@@ -53,6 +53,7 @@ public class ChunkLoggerData extends WorldSavedData
         }
         nbt.setIntArray("xcoords", xsave);
         nbt.setIntArray("zcoords", zsave);
+        return nbt;
     }
 
     public boolean catchChunkBug(int chunkX, int chunkZ)

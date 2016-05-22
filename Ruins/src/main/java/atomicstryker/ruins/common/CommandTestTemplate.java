@@ -1,5 +1,8 @@
 package atomicstryker.ruins.common;
 
+import java.io.File;
+import java.io.PrintWriter;
+
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -9,9 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.io.File;
-import java.io.PrintWriter;
 
 class CommandTestTemplate extends CommandBase
 {

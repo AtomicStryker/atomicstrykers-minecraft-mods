@@ -1,16 +1,22 @@
 package atomicstryker.ruins.common;
 
-import com.google.common.io.Files;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.BiomeGenBase;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+
+import com.google.common.io.Files;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
 
 class FileHandler
 {
@@ -111,12 +117,12 @@ class FileHandler
 
             /*
              * dynamic Biome config loader, gets all information straight from
-             * BiomeGenBase
+             * Biome
              */
-            BiomeGenBase bgb;
-            for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
+            Biome bgb;
+            for (ResourceLocation rl : Biome.REGISTRY.getKeys())
             {
-                bgb = BiomeGenBase.REGISTRY.getObject(rl);
+                bgb = Biome.REGISTRY.getObject(rl);
                 if (bgb != null)
                 {
                     try
@@ -294,10 +300,10 @@ class FileHandler
                 if (check.length > 1)
                 {
                     boolean found = false;
-                    BiomeGenBase bgb;
-                    for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
+                    Biome bgb;
+                    for (ResourceLocation rl : Biome.REGISTRY.getKeys())
                     {
-                        bgb = BiomeGenBase.REGISTRY.getObject(rl);
+                        bgb = Biome.REGISTRY.getObject(rl);
                         if (bgb != null && bgb.getBiomeName().equals(check[0]))
                         {
                             int[] val = vars.get(bgb.getBiomeName());
@@ -326,7 +332,7 @@ class FileHandler
     private void addRuins(PrintWriter pw, File path, String name, HashSet<RuinTemplate> targetList)
     {
         RuinTemplate r;
-        BiomeGenBase bgb;
+        Biome bgb;
         File[] listFiles = path.listFiles();
         if (listFiles != null)
         {
@@ -338,9 +344,9 @@ class FileHandler
                     targetList.add(r);
                     for (String biomeName : r.getBiomesToSpawnIn())
                     {
-                        for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
+                        for (ResourceLocation rl : Biome.REGISTRY.getKeys())
                         {
-                            bgb = BiomeGenBase.REGISTRY.getObject(rl);
+                            bgb = Biome.REGISTRY.getObject(rl);
                             if (bgb != null && bgb.getBiomeName().equals(biomeName))
                             {
                                 if (!biomeName.equals(name))
@@ -438,10 +444,10 @@ class FileHandler
         pw.println("teblocks=");
         pw.println();
         // print all the biomes!
-        BiomeGenBase bgb;
-        for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
+        Biome bgb;
+        for (ResourceLocation rl : Biome.REGISTRY.getKeys())
         {
-            bgb = BiomeGenBase.REGISTRY.getObject(rl);
+            bgb = Biome.REGISTRY.getObject(rl);
             if (bgb != null)
             {
                 pw.println("specific_" + bgb.getBiomeName() + "=75");

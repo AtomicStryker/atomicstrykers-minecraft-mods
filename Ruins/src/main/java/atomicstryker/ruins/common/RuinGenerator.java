@@ -1,16 +1,22 @@
 package atomicstryker.ruins.common;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Random;
+import java.util.concurrent.ConcurrentSkipListSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.io.*;
-import java.util.Random;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 class RuinGenerator
 {
@@ -209,7 +215,7 @@ class RuinGenerator
     private void createBuilding(World world, Random random, int x, int z, boolean nether)
     {
         final int rotate = random.nextInt(4);
-        final BiomeGenBase biome = world.getBiomeGenForCoordsBody(new BlockPos(x, 0, z));
+        final Biome biome = world.getBiomeForCoordsBody(new BlockPos(x, 0, z));
         String biomeID = biome.getBiomeName();
 
         if (fileHandler.useGeneric(random, biomeID))
@@ -303,10 +309,10 @@ class RuinGenerator
             System.out.println("    Min Dist fail:               " + stats.minDistFails);
             System.out.println("    Leveling:                    " + stats.LevelingFails);
 
-            BiomeGenBase bgb;
-            for (ResourceLocation rl : BiomeGenBase.REGISTRY.getKeys())
+            Biome bgb;
+            for (ResourceLocation rl : Biome.REGISTRY.getKeys())
             {
-                bgb = BiomeGenBase.REGISTRY.getObject(rl);
+                bgb = Biome.REGISTRY.getObject(rl);
                 if (bgb != null)
                 {
                     Integer i = stats.biomes.get(bgb.getBiomeName());

@@ -1,7 +1,20 @@
 package atomicstryker.ruins.common;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -16,7 +29,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.*;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityCommandBlock;
+import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -26,12 +44,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import java.io.PrintWriter;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RuinTemplateRule
 {
@@ -667,7 +679,7 @@ public class RuinTemplateRule
                     NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
                     debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
                     world.setBlockState(p, b.getStateFromMeta(blockMDs[blocknum]), rotate);
-                    TileEntity tenew = TileEntity.createTileEntity(world.getMinecraftServer(), tc);
+                    TileEntity tenew = TileEntity.create(tc);
                     world.removeTileEntity(p);
                     world.setTileEntity(p, tenew);
                 }
@@ -953,7 +965,7 @@ public class RuinTemplateRule
 
         targetSize = targetSize - stacks.size();
 
-        while (targetSize > 0 && ((List) list).size() > 0)
+        while (targetSize > 0 && list.size() > 0)
         {
             ItemStack itemstack2 = list.remove(MathHelper.getRandomIntegerInRange(rand, 0, list.size() - 1));
             int i = MathHelper.getRandomIntegerInRange(rand, 1, itemstack2.stackSize / 2);
@@ -999,7 +1011,7 @@ public class RuinTemplateRule
             {
                 TileEntityChest chest = (TileEntityChest) te;
                 String[] input = itemDataWithoutNBT.split(":");
-                chest.setLoot(new ResourceLocation("minecraft", input[1]), random.nextLong());
+                chest.setLootTable(new ResourceLocation("minecraft", input[1]), random.nextLong());
             }
             else
             {
