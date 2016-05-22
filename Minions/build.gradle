@@ -8,7 +8,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 plugins {
@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227878'
         releaseType = 'release'
-        addGameVersion '1.9'
-        mainArtifact(file('build/distributions/Minions-1.9.zip')) {
+        addGameVersion '1.9.4'
+        mainArtifact(file('build/distributions/Minions-1.9.4.zip')) {
           displayName = 'Minecraft Minions'
         }
     }

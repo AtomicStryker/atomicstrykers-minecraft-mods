@@ -8,7 +8,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 plugins {
@@ -24,7 +24,7 @@ curseforge {
     project {
         id = '227894'
         releaseType = 'release'
-        addGameVersion '1.9'
+        addGameVersion '1.9.4'
         mainArtifact(file('build/libs/SimplyHax-1.9.jar')) {
           displayName = 'Simply Hax'
         }
