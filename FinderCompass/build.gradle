@@ -25,7 +25,7 @@ curseforge {
         id = '227885'
         releaseType = 'release'
         addGameVersion '1.9.4'
-        mainArtifact(file('build/libs/FinderCompass-1.9.jar')) {
+        mainArtifact(file('build/libs/FinderCompass-1.9.4.jar')) {
           displayName = 'Finder Compass'
         }
     }
