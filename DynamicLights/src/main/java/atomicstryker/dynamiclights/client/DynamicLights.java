@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * API that does't suck. It also uses Forge events to register dropped Items.
  *
  */
-@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.4.1")
+@Mod(modid = "DynamicLights", name = "Dynamic Lights", version = "1.4.2")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -156,7 +156,7 @@ public class DynamicLights
     @SuppressWarnings("unused")
     public static int getLightValue(IBlockState blockState, IBlockAccess world, BlockPos pos)
     {
-        int vanillaValue = blockState.getBlock().getLightValue(world.getBlockState(pos));
+        int vanillaValue = blockState.getLightValue(world, pos);
         
         if (instance == null || instance.globalLightsOff || world instanceof WorldServer)
         {

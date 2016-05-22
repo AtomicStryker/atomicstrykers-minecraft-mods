@@ -1,3 +1,6 @@
+1.4.2
+- updated for MC 1.9.4
+
 1.4.1
 - updated to work with forge past 1805
 

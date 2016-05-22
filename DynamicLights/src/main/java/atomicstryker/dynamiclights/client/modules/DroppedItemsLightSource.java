@@ -197,7 +197,7 @@ public class DroppedItemsLightSource
                 BlockPos pos = new BlockPos(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
                 IBlockState is = entity.worldObj.getBlockState(pos);
                 if (notWaterProof
-                && is.getBlock().getMaterial(is).isLiquid())
+                && is.getMaterial().isLiquid())
                 {
                     lightLevel = 0;
                 }

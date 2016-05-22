@@ -212,7 +212,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource
             int y = MathHelper.floor_double(thePlayer.posY + thePlayer.getEyeHeight());
             int z = MathHelper.floor_double(thePlayer.posZ + 0.5D);
             IBlockState is = thePlayer.worldObj.getBlockState(new BlockPos(x, y, z));
-            return is.getBlock().getMaterial(is).isLiquid();
+            return is.getMaterial().isLiquid();
         }
         return false;
     }
