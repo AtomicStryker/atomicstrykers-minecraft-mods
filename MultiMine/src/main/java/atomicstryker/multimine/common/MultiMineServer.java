@@ -1,9 +1,18 @@
 package atomicstryker.multimine.common;
 
-import atomicstryker.multimine.common.network.PartialBlockPacket;
-import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
+import java.util.Set;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import atomicstryker.multimine.common.network.PartialBlockPacket;
+import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,9 +33,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 public class MultiMineServer
 {
@@ -130,7 +136,7 @@ public class MultiMineServer
                             return;
                         }
 
-                        player.worldObj.playAuxSFXAtEntity(player, 2001, pos, Block.getStateId(iblockstate));
+                        player.worldObj.playEvent(2001, pos, Block.getStateId(iblockstate));
 
                         ItemStack itemstack = player.getHeldItemMainhand();
                         boolean canHarvest = iblockstate.getBlock().canHarvestBlock(player.worldObj, pos, player);

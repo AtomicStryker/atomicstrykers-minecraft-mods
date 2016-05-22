@@ -1,28 +1,34 @@
 package atomicstryker.multimine.common.fmlmagic;
 
-import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraft.launchwrapper.IClassTransformer;
 
 public class MMTransformer implements IClassTransformer
 {
     /* Obfuscated Names for PlayerControllerMP Transformation */
 
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bkt";
-    private final String playerControllerMPJavaClassNameO = "bkt";
+    private final String playerControllerMPClassNameO = "bkr";
+    private final String playerControllerMPJavaClassNameO = "bkr";
 
     /* onPlayerDamageBlock / func_180512_c */
     private final String playerControllerMPtargetMethodNameO = "b";
 
     /* method desc of onPlayerDamageBlock / func_180512_c  */
-    private final String methodDescO = "(Lcj;Lcq;)Z";
+    private final String methodDescO = "(Lcl;Lcs;)Z";
     private final String methodDesc = "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)Z";
 
     /* method desc of call to client hook */
-    private final String methodDescCallO = "(Lcj;F)F";
+    private final String methodDescCallO = "(Lcl;F)F";
     private final String methodDescCall = "(Lnet/minecraft/util/math/BlockPos;F)F";
 
     /* curBlockDamageMP / field_78770_f */

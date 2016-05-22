@@ -1,5 +1,8 @@
 package atomicstryker.multimine.client;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
@@ -18,9 +21,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
-
-import java.lang.reflect.Field;
-import java.util.Map;
 
 public class MultiMineClient
 {
