@@ -2,7 +2,6 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -80,14 +79,12 @@ public class MM_Ender extends MobModifier
         int x = MathHelper.floor_double(mob.posX);
         int y = MathHelper.floor_double(mob.posY);
         int z = MathHelper.floor_double(mob.posZ);
-        Block blockID;
 
         boolean hitGround = false;
         while (!hitGround && y < 96)
         {
             IBlockState bs = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z));
-            blockID = bs.getBlock();
-            if (blockID.getMaterial(bs).blocksMovement())
+            if (bs.getMaterial().blocksMovement())
             {
                 hitGround = true;
             }
@@ -102,7 +99,7 @@ public class MM_Ender extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
 
-            if (mob.worldObj.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.worldObj.isAnyLiquid(mob.getEntityBoundingBox()))
+            if (mob.worldObj.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.worldObj.containsAnyLiquid(mob.getEntityBoundingBox()))
             {
                 success = true;
             }

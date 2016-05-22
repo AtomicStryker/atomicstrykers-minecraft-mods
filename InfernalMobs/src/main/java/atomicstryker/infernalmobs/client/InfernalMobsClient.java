@@ -1,5 +1,9 @@
 package atomicstryker.infernalmobs.client;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.lwjgl.opengl.GL11;
+
 import atomicstryker.infernalmobs.common.ISidedProxy;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
@@ -27,9 +31,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.opengl.GL11;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 public class InfernalMobsClient implements ISidedProxy
 {

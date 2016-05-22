@@ -1,20 +1,26 @@
 package atomicstryker.infernalmobs.common;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class EntityEventHandler
 {
@@ -23,7 +29,7 @@ public class EntityEventHandler
     private final long mobFarmCheckIntervals;
     private final float mobFarmDamageTrigger;
 
-    private final HashMap<ChunkCoordIntPair, Float> damageMap;
+    private final HashMap<Tuple<Integer, Integer>, Float> damageMap;
     private long nextMapEvaluation;
 
     /**
@@ -139,15 +145,15 @@ public class EntityEventHandler
                 if (event.getSource() == DamageSource.cactus || event.getSource() == DamageSource.drown || event.getSource() == DamageSource.fall
                         || event.getSource() == DamageSource.inWall || event.getSource() == DamageSource.lava || event.getSource().getEntity() instanceof FakePlayer)
                 {
-                    ChunkCoordIntPair cpair = new ChunkCoordIntPair((int) event.getEntityLiving().posX, (int) event.getEntityLiving().posZ);
+                    Tuple<Integer, Integer> cpair = new Tuple<Integer, Integer>((int) event.getEntityLiving().posX, (int) event.getEntityLiving().posZ);
                     Float value = damageMap.get(cpair);
                     if (value == null)
                     {
-                        for (Entry<ChunkCoordIntPair, Float> e : damageMap.entrySet())
+                        for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet())
                         {
-                            if (Math.abs(e.getKey().chunkXPos - cpair.chunkXPos) < 3)
+                            if (Math.abs(e.getKey().getFirst() - cpair.getFirst()) < 3)
                             {
-                                if (Math.abs(e.getKey().chunkZPos - cpair.chunkZPos) < 3)
+                                if (Math.abs(e.getKey().getSecond() - cpair.getSecond()) < 3)
                                 {
                                     e.setValue(e.getValue() + event.getAmount());
                                     break;
@@ -207,8 +213,8 @@ public class EntityEventHandler
                 {
                     float maxDamage = 0f;
                     float val;
-                    ChunkCoordIntPair maxC = null;
-                    for (Entry<ChunkCoordIntPair, Float> e : damageMap.entrySet())
+                    Tuple<Integer, Integer> maxC = null;
+                    for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet())
                     {
                         val = e.getValue();
                         if (val > maxDamage)
@@ -221,11 +227,11 @@ public class EntityEventHandler
                     if (maxC != null)
                     {
                         System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords "
-                                + maxC.getCenterXPos() + ", " + maxC.getCenterZPosition());
+                                + maxC.getFirst() + ", " + maxC.getSecond());
                         if (maxDamage > mobFarmDamageTrigger)
                         {
-                            MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.getEntityLiving().worldObj.getChunkFromChunkCoords(maxC.chunkXPos,
-                                    maxC.chunkZPos), mobFarmCheckIntervals, maxDamage));
+                            MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.getEntityLiving().worldObj.getChunkFromChunkCoords(maxC.getFirst(),
+                                    maxC.getSecond()), mobFarmCheckIntervals, maxDamage));
                         }
                     }
                     damageMap.clear();

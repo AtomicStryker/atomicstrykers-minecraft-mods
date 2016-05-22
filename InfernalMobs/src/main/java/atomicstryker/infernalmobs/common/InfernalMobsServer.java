@@ -1,8 +1,8 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.entity.EntityLivingBase;
-
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.minecraft.entity.EntityLivingBase;
 
 public class InfernalMobsServer implements ISidedProxy
 {

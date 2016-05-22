@@ -55,7 +55,7 @@ public class MM_Ghastly extends MobModifier
             double diffZ = target.posZ - mob.posZ;
             mob.renderYawOffset = mob.rotationYaw = -((float)Math.atan2(diffX, diffZ)) * 180.0F / (float)Math.PI;
 
-            mob.worldObj.playAuxSFXAtEntity(null, 1008, new BlockPos((int)mob.posX, (int)mob.posY, (int)mob.posZ), 0);
+            mob.worldObj.playEvent(null, 1008, new BlockPos((int)mob.posX, (int)mob.posY, (int)mob.posZ), 0);
             EntityLargeFireball entFB = new EntityLargeFireball(mob.worldObj, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
             Vec3d mobLook = mob.getLook(1.0F);

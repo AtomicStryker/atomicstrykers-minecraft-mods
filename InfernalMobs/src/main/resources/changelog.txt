@@ -1,3 +1,6 @@
+1.7.0
+- updated for mc 1.9.4
+
 1.6.9
 - fixes some clientside packet logic calling serverside code (and crashing)
 

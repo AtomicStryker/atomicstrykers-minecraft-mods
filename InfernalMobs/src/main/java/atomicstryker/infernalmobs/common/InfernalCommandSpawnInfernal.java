@@ -1,5 +1,7 @@
 package atomicstryker.infernalmobs.common;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -9,7 +11,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.apache.logging.log4j.Level;
 
 public class InfernalCommandSpawnInfernal extends CommandBase
 {

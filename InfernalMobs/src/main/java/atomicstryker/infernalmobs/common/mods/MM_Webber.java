@@ -85,7 +85,7 @@ public class MM_Webber extends MobModifier
             }
             
             lastAbilityUse = time;
-            target.worldObj.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.WEB.getStateFromMeta( 0));
+            target.worldObj.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.WEB.getDefaultState());
             mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
     }

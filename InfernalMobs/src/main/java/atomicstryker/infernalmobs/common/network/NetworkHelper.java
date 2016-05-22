@@ -1,5 +1,9 @@
 package atomicstryker.infernalmobs.common.network;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,10 +15,6 @@ import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashSet;
 
 /**
  * 
