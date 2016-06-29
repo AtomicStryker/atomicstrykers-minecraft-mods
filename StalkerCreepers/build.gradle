@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227886'
         releaseType = 'release'
-        addGameVersion '1.9.4'
-        mainArtifact(file('build/distributions/StalkerCreepers-1.9.4.zip')) {
+        addGameVersion '1.10'
+        mainArtifact(file('build/distributions/StalkerCreepers-1.10.zip')) {
           displayName = 'Stalker Creepers'
         }
     }

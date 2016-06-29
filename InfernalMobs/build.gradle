@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227875'
         releaseType = 'release'
-        addGameVersion '1.9.4'
-        mainArtifact(file('build/libs/InfernalMobs-1.9.4.jar')) {
+        addGameVersion '1.10'
+        mainArtifact(file('build/libs/InfernalMobs-1.10.jar')) {
           displayName = 'AtomicStryker\'s Infernal Mobs'
         }
     }
