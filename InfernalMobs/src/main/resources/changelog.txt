@@ -1,3 +1,6 @@
+1.7.1
+- updated for mc 1.10
+
 1.7.0
 - updated for mc 1.9.4
 
