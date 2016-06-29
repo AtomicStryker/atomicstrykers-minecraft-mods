@@ -1,2 +1,0 @@
-Requires Forge ModLoader (is included in Forge, can be aquired seperately aswell).
-To install, copy the contents of the /setup/ folder into your /.minecraft/ folder, so that /mods/ goes into /mods/ etc
