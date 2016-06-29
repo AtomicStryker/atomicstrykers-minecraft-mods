@@ -30,7 +30,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.9.4")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.10")
 public class FinderCompassMod
 {
 
