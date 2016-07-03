@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227887'
         releaseType = 'release'
-        addGameVersion '1.10'
-        mainArtifact(file('build/distributions/MultiMine-1.10.zip')) {
+        addGameVersion '1.10.2'
+        mainArtifact(file('build/distributions/MultiMine-1.10.2.zip')) {
             displayName = 'Multi Mine'
         }
     }
