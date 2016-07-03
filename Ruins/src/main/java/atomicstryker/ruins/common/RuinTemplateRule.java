@@ -32,6 +32,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityCommandBlock;
+import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
@@ -1007,11 +1008,13 @@ public class RuinTemplateRule
                 debugPrinter.println("About to construct IInventory, itemData [" + itemDataWithoutNBT + "]");
             }
 
-            if (te instanceof TileEntityChest && itemDataWithoutNBT.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
+            if (itemDataWithoutNBT.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
             {
-                TileEntityChest chest = (TileEntityChest) te;
                 String[] input = itemDataWithoutNBT.split(":");
-                chest.setLootTable(new ResourceLocation("minecraft", input[1]), random.nextLong());
+                ResourceLocation lootTable = new ResourceLocation("minecraft", input[1]);
+                LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
+                LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)world);
+                loottable.fillInventory((IInventory) te, random, lootcontext$builder.build());
             }
             else
             {
