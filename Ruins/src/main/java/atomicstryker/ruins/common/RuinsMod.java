@@ -162,7 +162,7 @@ public class RuinsMod
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
         {
-            if (world.isRemote)
+            if (world.isRemote || !world.getWorldInfo().isMapFeaturesEnabled())
             {
                 return;
             }
