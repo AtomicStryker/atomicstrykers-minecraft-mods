@@ -30,7 +30,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.10")
+@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.10a")
 public class FinderCompassMod
 {
 
@@ -94,7 +94,7 @@ public class FinderCompassMod
                     " # ", "#X#", " # ", '#', Items.DIAMOND, 'X', Items.COMPASS);
         }
         
-        if (FinderCompassClientTicker.instance != null)
+        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
             FinderCompassClientTicker.instance.onLoad();
         }
@@ -114,7 +114,7 @@ public class FinderCompassMod
             configurator.parseConfig(new BufferedReader(new FileReader(needleConfig)), settingList);
             System.out.println("Finder compass config fully parsed, loaded "+settingList.size()+" settings");
             
-            if (FinderCompassClientTicker.instance != null)
+            if (FMLCommonHandler.instance().getEffectiveSide().isClient())
             {
                 FinderCompassClientTicker.instance.switchSetting();
             }

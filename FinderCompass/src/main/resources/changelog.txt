@@ -1,3 +1,6 @@
+1.10a
+fixes issue that prevents load on dedicated servers
+
 1.10
 updated for MC 1.10
 
