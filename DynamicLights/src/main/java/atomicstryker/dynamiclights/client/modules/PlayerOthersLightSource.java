@@ -32,7 +32,7 @@ import java.util.List;
  * Handheld Items and Armor can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_otherPlayers", name = "Dynamic Lights Other Player Light", version = "1.0.9", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_otherplayers", name = "Dynamic Lights Other Player Light", version = "1.0.9", dependencies = "required-after:dynamiclights")
 public class PlayerOthersLightSource
 {
     private Minecraft mcinstance;

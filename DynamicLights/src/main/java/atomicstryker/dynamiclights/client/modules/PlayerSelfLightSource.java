@@ -43,7 +43,7 @@ import java.util.List;
  * get stuck in the on or off state inside your own code. It will not revert to off on its own.
  *
  */
-@Mod(modid = "DynamicLights_thePlayer", name = "Dynamic Lights Player Light", version = "1.1.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_theplayer", name = "Dynamic Lights Player Light", version = "1.1.3", dependencies = "required-after:dynamiclights")
 public class PlayerSelfLightSource implements IDynamicLightSource
 {
     private EntityPlayer thePlayer;

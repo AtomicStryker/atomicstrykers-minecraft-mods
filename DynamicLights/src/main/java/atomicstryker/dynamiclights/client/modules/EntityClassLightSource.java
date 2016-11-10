@@ -28,7 +28,7 @@ import java.util.List;
  * Dropped Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_entityClasses", name = "Dynamic Lights on specified Entities", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_entityclasses", name = "Dynamic Lights on specified Entities", version = "1.0.1", dependencies = "required-after:dynamiclights")
 public class EntityClassLightSource
 {
     private Minecraft mcinstance;

@@ -1,3 +1,6 @@
+1.4.4
+- preparing for 1.11, lowercasing modid
+
 1.4.3
 - updated for MC 1.10
 

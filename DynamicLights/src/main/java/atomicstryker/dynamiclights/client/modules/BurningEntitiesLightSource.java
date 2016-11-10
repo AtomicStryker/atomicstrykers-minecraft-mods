@@ -32,7 +32,7 @@ import java.util.List;
  * Burning Entites can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_onFire", name = "Dynamic Lights on burning", version = "1.0.7", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_onfire", name = "Dynamic Lights on burning", version = "1.0.7", dependencies = "required-after:dynamiclights")
 public class BurningEntitiesLightSource
 {
     private Minecraft mcinstance;

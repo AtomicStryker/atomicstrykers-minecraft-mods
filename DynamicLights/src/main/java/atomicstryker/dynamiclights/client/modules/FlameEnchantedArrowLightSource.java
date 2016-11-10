@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * Those can give off Light through this Module.
  *
  */
-@Mod(modid = "DynamicLights_flameArrows", name = "Dynamic Lights on Flame enchanted Arrows", version = "1.0.1", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_flamearrows", name = "Dynamic Lights on Flame enchanted Arrows", version = "1.0.1", dependencies = "required-after:dynamiclights")
 public class FlameEnchantedArrowLightSource
 {
     

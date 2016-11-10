@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
  * Offers Dynamic Light functionality emulating portable or static Flood Lights
  *
  */
-@Mod(modid = "DynamicLights_floodLights", name = "Dynamic Lights Flood Light", version = "1.0.3", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_floodlights", name = "Dynamic Lights Flood Light", version = "1.0.3", dependencies = "required-after:dynamiclights")
 public class FloodLightSource
 {
     private EntityPlayer thePlayer;

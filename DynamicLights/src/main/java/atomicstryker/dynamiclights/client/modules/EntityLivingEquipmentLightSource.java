@@ -35,7 +35,7 @@ import java.util.List;
  * armor and held Itemstacks. Lights up golden armor and torch Zombies
  *
  */
-@Mod(modid = "DynamicLights_mobEquipment", name = "Dynamic Lights on Mob Equipment", version = "1.1.0", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_mobequipment", name = "Dynamic Lights on Mob Equipment", version = "1.1.0", dependencies = "required-after:dynamiclights")
 public class EntityLivingEquipmentLightSource
 {
     private Minecraft mcinstance;

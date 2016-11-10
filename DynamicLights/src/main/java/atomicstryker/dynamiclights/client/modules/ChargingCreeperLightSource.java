@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  *         explode. Those can give off Light through this Module.
  * 
  */
-@Mod(modid = "DynamicLights_creepers", name = "Dynamic Lights on Creepers", version = "1.0.6", dependencies = "required-after:DynamicLights")
+@Mod(modid = "dynamiclights_creepers", name = "Dynamic Lights on Creepers", version = "1.0.6", dependencies = "required-after:dynamiclights")
 public class ChargingCreeperLightSource
 {
 
