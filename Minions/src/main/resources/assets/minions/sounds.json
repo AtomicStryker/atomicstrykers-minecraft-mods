@@ -1,0 +1,252 @@
+{
+  "babysealclubbing": {
+    "category": "player",
+    "sounds": [
+      "minions:babysealclubbing"
+    ]
+  },
+  "BaseBallBatJingle": {
+    "category": "player",
+    "sounds": [
+      "minions:BaseBallBatJingle"
+    ]
+  },
+  "bolt": {
+    "category": "player",
+    "sounds": [
+      "minions:bolt1",
+	  "minions:bolt2",
+	  "minions:bolt3",
+	  "minions:bolt4"
+    ]
+  },
+  "boo": {
+    "category": "player",
+    "sounds": [
+      "minions:boo"
+    ]
+  },
+  "boomheadshot": {
+    "category": "player",
+    "sounds": [
+      "minions:boomheadshot"
+    ]
+  },
+  "chicken": {
+    "category": "player",
+    "sounds": [
+      "minions:chicken"
+    ]
+  },
+  "cornholio": {
+    "category": "player",
+    "sounds": [
+      "minions:cornholio"
+    ]
+  },
+  "corporatesupremacy": {
+    "category": "player",
+    "sounds": [
+      "minions:corporatesupremacy"
+    ]
+  },
+  "crysomemore": {
+    "category": "player",
+    "sounds": [
+      "minions:crysomemore"
+    ]
+  },
+  "denied": {
+    "category": "player",
+    "sounds": [
+      "minions:denied"
+    ]
+  },
+  "evillaugh": {
+    "category": "player",
+    "sounds": [
+      "minions:evillaugh"
+    ]
+  },
+  "fart": {
+    "category": "player",
+    "sounds": [
+      "minions:fart1",
+	  "minions:fart2"
+    ]
+  },
+  "FFF": {
+    "category": "player",
+    "sounds": [
+      "minions:FFF"
+    ]
+  },
+  "foryou": {
+    "category": "player",
+    "sounds": [
+      "minions:foryou1",
+	  "minions:foryou2",
+	  "minions:foryou3",
+	  "minions:foryou4"
+    ]
+  },
+  "gong": {
+    "category": "player",
+    "sounds": [
+      "minions:gong"
+    ]
+  },
+  "grabanimalorder": {
+    "category": "player",
+    "sounds": [
+      "minions:grabanimalorder"
+    ]
+  },
+  "graveyard": {
+    "category": "player",
+    "sounds": [
+      "minions:graveyard"
+    ]
+  },
+  "haha": {
+    "category": "player",
+    "sounds": [
+      "minions:haha"
+    ]
+  },
+  "keyboardcat": {
+    "category": "player",
+    "sounds": [
+      "minions:keyboardcat"
+    ]
+  },
+  "laughter2": {
+    "category": "player",
+    "sounds": [
+      "minions:laughter2"
+    ]
+  },
+  "leeroy": {
+    "category": "player",
+    "sounds": [
+      "minions:leeroy"
+    ]
+  },
+  "march": {
+    "category": "player",
+    "sounds": [
+      "minions:march"
+    ]
+  },
+  "minionspawn": {
+    "category": "player",
+    "sounds": [
+      "minions:minionspawn"
+    ]
+  },
+  "minionsqueak": {
+    "category": "player",
+    "sounds": [
+      "minions:minionsqueak"
+    ]
+  },
+  "nooo": {
+    "category": "player",
+    "sounds": [
+      "minions:nooo"
+    ]
+  },
+  "ohyeah": {
+    "category": "player",
+    "sounds": [
+      "minions:ohyeah"
+    ]
+  },
+  "orderfollowplayer": {
+    "category": "player",
+    "sounds": [
+      "minions:orderfollowplayer"
+    ]
+  },
+  "ordermineshaft": {
+    "category": "player",
+    "sounds": [
+      "minions:ordermineshaft1",
+	  "minions:ordermineshaft2",
+	  "minions:ordermineshaft3"
+    ]
+  },
+  "ordertreecutting": {
+    "category": "player",
+    "sounds": [
+      "minions:ordertreecutting1",
+	  "minions:ordertreecutting2",
+	  "minions:ordertreecutting3",
+	  "minions:ordertreecutting4"
+    ]
+  },
+  "pfft": {
+    "category": "player",
+    "sounds": [
+      "minions:pfft"
+    ]
+  },
+  "radios": {
+    "category": "player",
+    "sounds": [
+      "minions:radios"
+    ]
+  },
+  "randomorder": {
+    "category": "player",
+    "sounds": [
+      "minions:randomorder1",
+	  "minions:randomorder2",
+	  "minions:randomorder3",
+	  "minions:randomorder4",
+	  "minions:randomorder5"
+    ]
+  },
+  "republicans": {
+    "category": "player",
+    "sounds": [
+      "minions:republicans"
+    ]
+  },
+  "romance": {
+    "category": "player",
+    "sounds": [
+      "minions:romance"
+    ]
+  },
+  "spawnsatanistcult": {
+    "category": "player",
+    "sounds": [
+      "minions:spawnsatanistcult"
+    ]
+  },
+  "superstarme": {
+    "category": "player",
+    "sounds": [
+      "minions:superstarme"
+    ]
+  },
+  "teabagnuns": {
+    "category": "player",
+    "sounds": [
+      "minions:teabagnuns"
+    ]
+  },
+  "thegodsarepleaseedwithyoursacrifice": {
+    "category": "player",
+    "sounds": [
+      "minions:thegodsarepleaseedwithyoursacrifice"
+    ]
+  },
+  "thegodshaverewardedyouroffering": {
+    "category": "hostile",
+    "sounds": [
+	  "minions:thegodshaverewardedyouroffering"
+    ]
+  }
+}
