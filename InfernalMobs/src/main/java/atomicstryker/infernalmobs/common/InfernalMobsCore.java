@@ -81,7 +81,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-@Mod(modid = "InfernalMobs", name = "Infernal Mobs", version = "1.7.1")
+@Mod(modid = "infernalmobs", name = "Infernal Mobs", version = "1.7.1")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -107,7 +107,7 @@ public class InfernalMobsCore
     
     private ArrayList<Integer> dimensionBlackList;
 
-    @Instance("InfernalMobs")
+    @Instance("infernalmobs")
     private static InfernalMobsCore instance;
 
     public static InfernalMobsCore instance()

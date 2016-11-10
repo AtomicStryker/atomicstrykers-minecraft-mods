@@ -680,7 +680,7 @@ public class RuinTemplateRule
                     NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
                     debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
                     world.setBlockState(p, b.getStateFromMeta(blockMDs[blocknum]), rotate);
-                    TileEntity tenew = TileEntity.func_190200_a(world, tc);
+                    TileEntity tenew = TileEntity.create(world, tc);
                     world.removeTileEntity(p);
                     world.setTileEntity(p, tenew);
                 }

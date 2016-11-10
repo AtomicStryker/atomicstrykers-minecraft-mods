@@ -15,10 +15,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "AS_MultiMine", name = "Multi Mine", version = "1.5.4")
+@Mod(modid = "multimine", name = "Multi Mine", version = "1.5.4")
 public class MultiMine
 {
-    @Instance("AS_MultiMine")
+    @Instance("multimine")
     private static MultiMine instance;
 
     private boolean blockRegenEnabled;

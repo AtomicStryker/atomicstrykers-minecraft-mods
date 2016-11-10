@@ -39,7 +39,7 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
+@Mod(modid = "ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:extrabiomes")
 public class RuinsMod
 {
     static final String modversion = "16.2";
