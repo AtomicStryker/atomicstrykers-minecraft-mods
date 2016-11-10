@@ -30,11 +30,11 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Mod(modid = "FinderCompass", name = "Finder Compass", version = "1.10a")
+@Mod(modid = "findercompass", name = "Finder Compass", version = "1.10.2")
 public class FinderCompassMod
 {
 
-    @Instance(value = "FinderCompass")
+    @Instance(value = "findercompass")
     public static FinderCompassMod instance;
     
     public ArrayList<CompassSetting> settingList;
@@ -58,14 +58,14 @@ public class FinderCompassMod
         settingList = new ArrayList<>();
 
         compassConfig = evt.getSuggestedConfigurationFile();
-        Configuration itemConfig = new Configuration(new File(compassConfig.getAbsolutePath().replace("FinderCompass", "FinderCompassItemConfig")));
+        Configuration itemConfig = new Configuration(new File(compassConfig.getAbsolutePath().replace("findercompass", "FinderCompassItemConfig")));
         itemConfig.load();
         itemEnabled = itemConfig.get(Configuration.CATEGORY_GENERAL, "isFinderCompassNewItem", false).getBoolean(false);
         itemConfig.save();
         
         if (itemEnabled)
         {
-            compass = (ItemFinderCompass) new ItemFinderCompass().setUnlocalizedName("finder_compass");
+            compass = (ItemFinderCompass) new ItemFinderCompass().setUnlocalizedName("finder_compass").setRegistryName("findercompass", "finder_compass");
             GameRegistry.register(compass);
         }
         

@@ -1,3 +1,6 @@
+1.10.2
+update to current forge builds and lowercase modid
+
 1.10a
 fixes issue that prevents load on dedicated servers
 
