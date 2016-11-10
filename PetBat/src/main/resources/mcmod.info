@@ -1,0 +1,16 @@
+[
+{
+  "modid": "PetBat",
+  "name": "Pet Bat",
+  "description": "Amazing Pet Bats!",
+  "mcversion": "${mcversion}",
+  "url": "http://www.atomicstryker.net/",
+  "authors": [
+    "AtomicStryker"
+  ],
+  "logoFile": "assets/petbat/textures/gui/logo.png",
+  "dependencies": [
+	"Forge"
+  ]
+}
+]
