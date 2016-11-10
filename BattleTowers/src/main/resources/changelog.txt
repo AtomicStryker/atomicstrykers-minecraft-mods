@@ -1,0 +1,176 @@
+1.5.5
+- it actually made things much worse by duplicating all tower entries every world load
+- fixed tower entries being duplicated on load
+
+1.5.4
+- properly synchronized tower list access, should stop too many towers spawning
+- or will make everything much, much worse
+
+1.5.3
+- implemented the chestgenhook ruins has for battletower chests, by default the top 3 stages have 3, 5 and 7 dungeon loot items
+
+1.5.2
+- updated to mc 1.8
+
+1.5.1
+- added Comparable Interface to Towerposition class (some java version demands it?)
+
+1.5.0
+- fixed issue with tower items being parsed before all mods *should* have finished loading
+
+1.4.9
+- moved config loading to preinit from modsloaded
+
+1.4.8
+- updated to mc 1.7.10
+
+1.4.7
+- added Channel Handler which does nothing so FML would stop complaining about Packets
+
+1.4.6
+- removed sound loading as it is unneeded since 172
+- moved config parsing to postinit, fixes mod items not working for chests
+
+1.4.5
+- fixed stairs blocktypes
+- fixed tower collapse message being sent for nonexploding underground towers
+
+1.4.4
+- fixed crash upon sending golem death chat packet
+
+1.4.3
+- update to mc 1.7.2
+- delete your config files, the new ones only take names
+
+1.4.2
+- added towerFallDestroysMobSpawners option in config
+
+1.4.1
+- now allows the use of unlocalized strings instead of item id's in config
+- improved handling of invalid items in config
+
+1.4.0
+- fixed spawn coordinates errors by self-caused concurrent spawning
+- fixed error with spawn coordinates being forgotten
+- improved logging
+
+1.3.9
+- fixed nether towers to have netherbrick stairs, sandstone towers to sandstone stairs
+- added configurable minimum Battletower distance from spawn
+- added config setting noGolemExplosions to disable explosive "stomp", however damage still gets dealt when hiding below angry golem
+- added autogenerating persistant Battletower Positions config file, located in World Save folder. See file content for info
+- setting minDistanceBetweenTowers <= 0 in config will now completely disable the randomized automatic generation
+- added console command /spawnbattletower, spawns a battletower with golem, arguments x,y,z,type,underground
+- added console command /deletebattletower, deletes a battletower and removes Golem if present, arguments x,z
+- added console command /regeneratebattletower, re-spawns a battletower and Golem if present, arguments x,z
+- added console command /regenerateallbattletowers, re-spawns all logged Battletowers and present Golems
+- added console command /deleteallbattletowers, de-spawns all logged Battletowers and all Golems
+- note despawning towers will not remove side effect blocks (eg fillings under the tower socket)
+
+1.3.8
+- update to mc 1.6.4
+
+1.3.7
+- added chunkprovider names to config (to exclude modded dimensions from getting towers)
+- added battletower golem global entity id (configurable) and as spawnable egg
+- fixed sleeping golems having the awake texture and vice versa
+- buffed battletower golem melee attack to 7 (from 3), now equals enderman
+- buffed battletower regeneration upon cowardism slightly (now heals 20 hp when executing frustration stomp)
+- enabled minecrafts new pathing AI for battletowers (it failed last time i tried but i forgot the reason so here goes)
+- fixed and reenabled golem death message
+
+1.3.6
+- fixed golem being attacked by non players not waking up
+- update to mc 1.6.2
+
+1.3.5
+- update to mc 1.6.1
+
+1.3.4
+- fixed issue where first floor items were being overridden by second floor items
+
+1.3.3
+- update to mc 1.5.2
+
+1.3.2 (rev2)
+- improved config parsing, now skips and logs invalid entries instead of crashing
+
+1.3.2
+- found and fixed the chest item crash ... again
+
+1.3.1
+- update to mc 1.5.1
+
+1.3.0
+- update to mc 1.5
+
+1.2.9
+- found and fixed the chest item crash and disappearance issue
+- buffed item spawn chances across the board
+
+1.2.8
+- added biome registration to config to allow blocking towers from biomes of choice
+- you'll have to create a "dummy" world with your biomes to setup the config
+- fixed spaces in config categories, causes bugs with Forge Configuration
+- this unfortunately means old config categories are incompatible (remove the spaces from the categories!)
+
+1.2.7 (second revision)
+- fixed loot Blocks being restricted to IDs below 256
+
+1.2.7
+- update to Minecraft 1.4.6
+
+1.2.6
+- fixed crash upon MC saving Golem Fireballs
+
+1.2.5
+- made sure underground towers dont start lower than 15
+
+1.2.4
+- rewritten some parts of golem AI, found the hanging sounds and fixed them - REMOVE THE OLD SOUNDS FROM YOUR RESOURCES FOLDER
+- added Cave Spiders to Battletowers Mobspawner List (MWAHAHAHA)
+- made Item spawn attempts per floor configurable (was 3)
+- improved floor/item spawning. Golem floor will always have the top notch loot
+- added underground Battletowers, chance configurable
+- made crumbling towers stop at y=70, that means underground towers shouldnt explode at all
+
+1.2.3
+- update to Minecraft 1.4.4
+
+1.2.2
+- changed sounds yet again. Made a dormant Golem emit spooky sounds.
+
+1.2.1
+- fixed sounds crashing
+
+1.2.0
+- updated to Minecraft 1.4.2 and Forge 6
+
+1.1.9
+- updated to Minecraft 1.4 and Forge 5
+
+1.1.8B (hotfix)
+- fixed NoSuchElement crash with Tower Destroyers tick
+
+1.1.8
+- synchronized Tower Destroyers for crash prevention
+- fixed timer code derp in Server Ticks (ran every tick, not every second)
+- updated Configuration code to have current FML compliant code
+- Configuration file changed. To prevent incompatibility problems, i changed it's name to "Battletowers.cfg". You can delete the old one.
+
+1.1.7
+- fixed endless loop that could occur when trying to generate BattleTowers
+- fixed BattleTowers trying to generate in Nether
+- moved sounds back into the /resource/ folder. They didnt work inside the zip
+
+1.1.6
+- fixed NoSuchMethod Sound crash in Golems on Serverside
+
+1.1.5:
+- synchronized WorldGen for BattleTowers, meaning there shouldnt be any next-to-each-other Towers, ever again. This also generally decreases their occurance.
+- moved Sound files into the zip, away from /resources/
+- fixed Golem not reacting if you attacked him from far away
+- fixed issue preventing BattleTowers from loading on a dedicated server
+
+1.1.4:
+- fixed Battletowers spawning too close together (goddamnit Minecraft, i cant even depend on you to compute the distance between 2 points correctly?)

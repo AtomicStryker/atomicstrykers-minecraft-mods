@@ -1,0 +1,7 @@
+A little info on how Items in the config work:
+
+	/*
+	 *  Example setting string: redstone-0-50-1-4; pig_saddle-20-1-1
+	 *  Spawns Redstone, Item Damage 0, with 50 percent chance, at least 1, max 4
+	 *  Also Spawns Saddle, Item Damage 0, with 20 percent chance, at least 1, max 1
+	 */
