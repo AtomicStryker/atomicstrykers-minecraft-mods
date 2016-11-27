@@ -105,6 +105,20 @@ public class Minion_Job_DigMineStairwell extends Minion_Job_Manager
 				}
 			}
 		}
+		
+		//Encapsulating the stairwell (i.e. making walls)
+		//Walls for the x axis
+		for(int a = -1; a <= 5; a++)
+		{
+			this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, startX-1, startY-currentDepth, startZ+a, Blocks.cobblestone, 0));
+			this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, startX+5, startY-currentDepth, startZ+a, Blocks.cobblestone, 0));
+		} 
+		//walls for the z axis
+		for(int a = 0; a <= 4; a++)
+		{
+			this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, startX+a, startY-currentDepth, startZ-1, Blocks.cobblestone, 0));
+			this.jobQueue.add(new BlockTask_ReplaceBlock(this, null, startX+a, startY-currentDepth, startZ+5, Blocks.cobblestone, 0));
+		}
     	
     	return true;
     }
