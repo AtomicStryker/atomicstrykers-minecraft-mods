@@ -1,3 +1,6 @@
+1.7.2
+- fixed crash with fake player camera entities
+
 1.7.1
 - updated for mc 1.10
 

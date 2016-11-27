@@ -6,6 +6,7 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.Vec3d;
@@ -30,7 +31,7 @@ public class RendererBossGlow
     private void renderBossGlow(float renderTick)
     {
         Minecraft mc = Minecraft.getMinecraft();
-        EntityLivingBase viewEnt = (EntityLivingBase) mc.getRenderViewEntity();
+        Entity viewEnt = mc.getRenderViewEntity();
         Vec3d curPos = viewEnt.getPositionVector();
         
         Frustum f = new Frustum();
