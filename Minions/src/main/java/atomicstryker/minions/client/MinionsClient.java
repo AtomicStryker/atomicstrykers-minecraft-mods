@@ -163,13 +163,24 @@ public class MinionsClient
 
                 if (mineAreaShape == 0) // mineshaft
                 {
+                //  Below changes complement the suggested changes in DigMineStairwell.java, BorisSFR
+                    setSelectionPoint(0, x-1, y, z-1);  //changed x and z from +0 to -1
+                    setSelectionPoint(1, x+5, y, z+5);  //changed x and z from +4 to +5
+                
+                /*  Below is an alternate to above but will need to offset things in DigMineStairwell.java   
                     setSelectionPoint(0, x, y, z);
-                    setSelectionPoint(1, x+4, y, z+4);
-
+                    setSelectionPoint(1, x+6, y, z+6);
+                */
                     deleteAdditionalCubes();
                     addAdditionalCube(x+1, y-1, z);
                     addAdditionalCube(x+2, y-2, z);
                     addAdditionalCube(x+3, y-3, z);
+                
+                /*  If using the code in Comments the below code needs to be used
+                    addAdditionalCube(x+1, y-1, z+1);
+                    addAdditionalCube(x+2, y-2, z+1);
+                    addAdditionalCube(x+3, y-3, z+1);
+                */
                 }
                 else if (mineAreaShape == 1) // stripmine
                 {
