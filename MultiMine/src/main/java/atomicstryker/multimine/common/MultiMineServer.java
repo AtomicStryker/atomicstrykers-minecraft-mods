@@ -167,6 +167,10 @@ public class MultiMineServer
                         {
                             iblockstate.getBlock().dropXpOnBlockBreak(player.worldObj, pos, event);
                         }
+                        if (removed)
+                        {
+                            player.worldObj.setBlockToAir(pos);
+                        }
 
                         partiallyMinedBlocks.remove(iterBlock);
                         blockRegenQueue.remove(iterBlock);

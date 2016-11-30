@@ -1,3 +1,6 @@
+1.5.5
+- bugfix regarding updated blocks (eg water sources)
+
 1.5.4
 - updated to mc 1.10
 
