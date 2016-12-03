@@ -119,7 +119,7 @@ public class PetBatAIAttack extends EntityAIBase
                     {
                         xKnock = (Math.random() - Math.random()) * 0.01D;
                     }
-                    petBat.knockBack(entityTarget, 4, xKnock, zKnock);
+                    petBat.knockBack(entityTarget, 0, xKnock, zKnock);
                 }
             }
         }

@@ -38,7 +38,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.3")
+@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.4")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -152,7 +152,7 @@ public class PetBatMod implements IProxy
         
         networkHelper = new NetworkHelper("AS_PB", BatNamePacket.class);
         
-        EntityRegistry.registerModEntity(EntityPetBat.class, "petbat", 1, this, 25, 5, true);
+        EntityRegistry.registerModEntity(EntityPetBat.class, "petbat", 1, this, 32, 3, false);
         
         MinecraftForge.EVENT_BUS.register(this);
         

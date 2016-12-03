@@ -8,7 +8,7 @@ public class PetBatAIOwnerAttacks extends EntityAITarget
 {
     private EntityPetBat batEnt;
     private EntityLivingBase theTarget;
-    
+
     public PetBatAIOwnerAttacks(EntityPetBat bat)
     {
         super(bat, false);
@@ -22,24 +22,33 @@ public class PetBatAIOwnerAttacks extends EntityAITarget
         if (batEnt.getOwnerEntity() != null)
         {
             theTarget = batEnt.getOwnerEntity().getLastAttacker();
+            if (theTarget instanceof EntityPetBat)
+            {
+                EntityPetBat otherBat = (EntityPetBat) theTarget;
+                if (otherBat.getOwnerName().equals(batEnt.getOwnerName()))
+                {
+                    theTarget = null;
+                    return false;
+                }
+            }
             return this.isSuitableTarget(theTarget, false);
         }
-        
+
         return false;
     }
-    
+
     @Override
     public boolean continueExecuting()
     {
         return (theTarget != null && theTarget.isEntityAlive());
     }
-    
+
     @Override
     public void resetTask()
     {
         theTarget = null;
     }
-    
+
     @Override
     public void startExecuting()
     {

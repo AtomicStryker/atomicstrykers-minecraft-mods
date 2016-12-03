@@ -1,3 +1,7 @@
+1.4.4
+fixed ridiculous bat knockback on attack
+fixed laggy bat movement even in single player
+
 1.4.3
 updated to forge 1805+
 
