@@ -30,7 +30,7 @@ public class SimplyHaxEntityDump
             System.out.println("Simply Hax Entity Dump following, these are the exact Mobspawner names");
             for (ResourceLocation rsl : EntityList.getEntityNameList())
             {
-                System.out.printf("[%s] resource location%n", rsl);
+                System.out.printf("[%s] as entity resource location%n", rsl);
 
             }
         }
