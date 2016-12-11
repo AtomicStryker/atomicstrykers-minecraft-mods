@@ -13,16 +13,22 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 public class StrongholdPacket implements IPacket
 {
 
-    public StrongholdPacket() {}
-    
-    private int x,y,z;
+    public StrongholdPacket()
+    {
+    }
+
+    private int x, y, z;
     private String username;
-    
+
     /**
      * Server responding with stronghold location
-     * @param a x coord
-     * @param b y coord
-     * @param c z coord
+     * 
+     * @param a
+     *            x coord
+     * @param b
+     *            y coord
+     * @param c
+     *            z coord
      */
     public StrongholdPacket(int a, int b, int c)
     {
@@ -31,10 +37,12 @@ public class StrongholdPacket implements IPacket
         z = c;
         username = "";
     }
-    
+
     /**
      * User requesting stronghold location
-     * @param s username
+     * 
+     * @param s
+     *            username
      */
     public StrongholdPacket(String s)
     {
@@ -49,9 +57,10 @@ public class StrongholdPacket implements IPacket
         bytes.writeInt(x);
         bytes.writeInt(y);
         bytes.writeInt(z);
-        //encode username into outgoing bytestream
+        // encode username into outgoing bytestream
         bytes.writeShort(username.length());
-        for (char c : username.toCharArray()) bytes.writeChar(c);
+        for (char c : username.toCharArray())
+            bytes.writeChar(c);
     }
 
     @Override
@@ -64,13 +73,15 @@ public class StrongholdPacket implements IPacket
         // retrieve username from incoming bytestream
         short len = bytes.readShort();
         char[] chars = new char[len];
-        for (int i = 0; i < len; i++) chars[i] = bytes.readChar();
+        for (int i = 0; i < len; i++)
+            chars[i] = bytes.readChar();
         username = String.valueOf(chars);
-        
+
         if (username.equals("")) // client received stronghold answer
         {
             FinderCompassLogic.strongholdCoords = new BlockPos(x, y, z);
-            //System.out.printf("Finder Compass server sent Stronghold coords: [%d|%d|%d]\n", x, y, z);
+            // System.out.printf("Finder Compass server sent Stronghold coords:
+            // [%d|%d|%d]\n", x, y, z);
             FinderCompassLogic.hasStronghold = true;
         }
         else // server received stronghold request
@@ -78,7 +89,7 @@ public class StrongholdPacket implements IPacket
             EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(username);
             if (p != null)
             {
-                BlockPos result = ((WorldServer)p.worldObj).getChunkProvider().getStrongholdGen(p.worldObj, "Stronghold", new BlockPos(p));
+                BlockPos result = ((WorldServer) p.world).getChunkProvider().getStrongholdGen(p.world, "Stronghold", new BlockPos(p), false);
                 if (result != null)
                 {
                     FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(result.getX(), result.getY(), result.getZ()), p);

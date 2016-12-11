@@ -36,7 +36,7 @@ public class FinderCompassLogic
 
     public void onTick()
     {
-        if (mc.theWorld != null && mc.thePlayer != null)
+        if (mc.world != null && mc.player != null)
         {
             boolean isNewSecond = false;
             boolean is15SecInterval = false;
@@ -48,11 +48,11 @@ public class FinderCompassLogic
                 nextTime = System.currentTimeMillis() + 1000L;
             }
 
-            if ((int) mc.thePlayer.posX != this.x || (int) mc.thePlayer.posY != this.y || (int) mc.thePlayer.posZ != this.z)
+            if ((int) mc.player.posX != this.x || (int) mc.player.posY != this.y || (int) mc.player.posZ != this.z)
             {
-                x = (int) mc.thePlayer.posX;
-                y = (int) mc.thePlayer.posY;
-                z = (int) mc.thePlayer.posZ;
+                x = (int) mc.player.posX;
+                y = (int) mc.player.posY;
+                z = (int) mc.player.posZ;
                 movement = true;
             }
 
@@ -64,7 +64,7 @@ public class FinderCompassLogic
                 FinderCompassLogic.hasStronghold = false;
                 if (serverHasFinderCompass)
                 {
-                    FinderCompassMod.instance.networkHelper.sendPacketToServer(new StrongholdPacket(mc.thePlayer.getGameProfile().getName()));
+                    FinderCompassMod.instance.networkHelper.sendPacketToServer(new StrongholdPacket(mc.player.getGameProfile().getName()));
                 }
             }
 

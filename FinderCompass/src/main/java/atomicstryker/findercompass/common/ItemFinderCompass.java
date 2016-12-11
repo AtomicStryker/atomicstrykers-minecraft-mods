@@ -19,21 +19,22 @@ public class ItemFinderCompass extends Item
         super();
         setCreativeTab(CreativeTabs.TOOLS);
     }
-    
+
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+        ItemStack itemStack = player.getHeldItem(hand);
         if (world.isRemote)
         {
             FinderCompassClientTicker.instance.switchSetting();
         }
         return new ActionResult<>(EnumActionResult.PASS, itemStack);
     }
-    
+
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return TextFormatting.GOLD+super.getItemStackDisplayName(itemStack);
+        return TextFormatting.GOLD + super.getItemStackDisplayName(itemStack);
     }
 
 }
