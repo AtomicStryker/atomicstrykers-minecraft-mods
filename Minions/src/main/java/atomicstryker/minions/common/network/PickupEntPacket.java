@@ -49,7 +49,7 @@ public class PickupEntPacket implements IPacket
             EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
             if (player != null)
             {
-                Entity target = player.worldObj.getEntityByID(targetID);
+                Entity target = player.world.getEntityByID(targetID);
                 if (target instanceof EntityAnimal || target instanceof EntityPlayer)
                 {
                     MinionsCore.instance.orderMinionToPickupEntity(player, (EntityLivingBase) target);

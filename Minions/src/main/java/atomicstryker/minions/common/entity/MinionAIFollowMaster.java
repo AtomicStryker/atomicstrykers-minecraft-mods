@@ -87,17 +87,17 @@ public class MinionAIFollowMaster extends EntityAIBase
                 {
                     if (theMinion.getDistanceSqToEntity(theMinion.master) >= followRangeSq)
                     {
-                        int x = MathHelper.floor_double(theMinion.master.posX) - 2;
-                        int z = MathHelper.floor_double(theMinion.master.posZ) - 2;
-                        int y = MathHelper.floor_double(theMinion.master.getEntityBoundingBox().minY);
+                        int x = MathHelper.floor(theMinion.master.posX) - 2;
+                        int z = MathHelper.floor(theMinion.master.posZ) - 2;
+                        int y = MathHelper.floor(theMinion.master.getEntityBoundingBox().minY);
 
                         for (int xIter = 0; xIter <= 4; ++xIter)
                         {
                             for (int zIter = 0; zIter <= 4; ++zIter)
                             {
-                                IBlockState a = theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y - 1, z + zIter));
-                                IBlockState b = theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y, z + zIter));
-                                IBlockState c = theMinion.worldObj.getBlockState(new BlockPos(x + xIter, y + 1, z + zIter));
+                                IBlockState a = theMinion.world.getBlockState(new BlockPos(x + xIter, y - 1, z + zIter));
+                                IBlockState b = theMinion.world.getBlockState(new BlockPos(x + xIter, y, z + zIter));
+                                IBlockState c = theMinion.world.getBlockState(new BlockPos(x + xIter, y + 1, z + zIter));
                                 if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3)
                                         && a.getBlock().isNormalCube(a)
                                         && !b.getBlock().isNormalCube(b)

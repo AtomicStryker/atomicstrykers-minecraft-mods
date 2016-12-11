@@ -14,7 +14,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 /**
- * Minion Inventory Class, has some standalone extras compared to a player inventory but no armor
+ * Minion Inventory Class, has some standalone extras compared to a player
+ * inventory but no armor
  * 
  * 
  * @author AtomicStryker
@@ -30,12 +31,15 @@ public class InventoryMinion implements IInventory
     {
         this.minion = var1;
     }
-    
+
     private int storeItemStack(ItemStack par1ItemStack)
     {
         for (int i = 0; i < this.mainInventory.length; ++i)
         {
-            if (this.mainInventory[i] != null && this.mainInventory[i].getItem() == par1ItemStack.getItem() && this.mainInventory[i].isStackable() && this.mainInventory[i].stackSize < this.mainInventory[i].getMaxStackSize() && this.mainInventory[i].stackSize < this.getInventoryStackLimit() && (!this.mainInventory[i].getHasSubtypes() || this.mainInventory[i].getItemDamage() == par1ItemStack.getItemDamage()) && ItemStack.areItemStackTagsEqual(this.mainInventory[i], par1ItemStack))
+            if (this.mainInventory[i] != null && this.mainInventory[i].getItem() == par1ItemStack.getItem() && this.mainInventory[i].isStackable()
+                    && this.mainInventory[i].getCount() < this.mainInventory[i].getMaxStackSize() && this.mainInventory[i].getCount() < this.getInventoryStackLimit()
+                    && (!this.mainInventory[i].getHasSubtypes() || this.mainInventory[i].getItemDamage() == par1ItemStack.getItemDamage())
+                    && ItemStack.areItemStackTagsEqual(this.mainInventory[i], par1ItemStack))
             {
                 return i;
             }
@@ -43,7 +47,7 @@ public class InventoryMinion implements IInventory
 
         return -1;
     }
-    
+
     private int getFirstEmptyStack()
     {
         for (int i = 0; i < this.mainInventory.length; ++i)
@@ -58,13 +62,13 @@ public class InventoryMinion implements IInventory
     }
 
     /**
-     * This function stores as many items of an ItemStack as possible in a matching slot and returns the quantity of
-     * left over Items.
+     * This function stores as many items of an ItemStack as possible in a
+     * matching slot and returns the quantity of left over Items.
      */
     private int storePartialItemStack(ItemStack par1ItemStack)
     {
         Item item = par1ItemStack.getItem();
-        int i = par1ItemStack.stackSize;
+        int i = par1ItemStack.getCount();
         int j;
 
         if (par1ItemStack.getMaxStackSize() == 1)
@@ -79,7 +83,7 @@ public class InventoryMinion implements IInventory
             {
                 if (this.mainInventory[j] == null)
                 {
-                    this.mainInventory[j] = ItemStack.copyItemStack(par1ItemStack);
+                    this.mainInventory[j] = par1ItemStack.copy();
                 }
 
                 return 0;
@@ -106,20 +110,20 @@ public class InventoryMinion implements IInventory
 
                     if (par1ItemStack.hasTagCompound())
                     {
-                        this.mainInventory[j].setTagCompound((NBTTagCompound)par1ItemStack.getTagCompound().copy());
+                        this.mainInventory[j].setTagCompound((NBTTagCompound) par1ItemStack.getTagCompound().copy());
                     }
                 }
 
                 int k = i;
 
-                if (i > this.mainInventory[j].getMaxStackSize() - this.mainInventory[j].stackSize)
+                if (i > this.mainInventory[j].getMaxStackSize() - this.mainInventory[j].getCount())
                 {
-                    k = this.mainInventory[j].getMaxStackSize() - this.mainInventory[j].stackSize;
+                    k = this.mainInventory[j].getMaxStackSize() - this.mainInventory[j].getCount();
                 }
 
-                if (k > this.getInventoryStackLimit() - this.mainInventory[j].stackSize)
+                if (k > this.getInventoryStackLimit() - this.mainInventory[j].getCount())
                 {
-                    k = this.getInventoryStackLimit() - this.mainInventory[j].stackSize;
+                    k = this.getInventoryStackLimit() - this.mainInventory[j].getCount();
                 }
 
                 if (k == 0)
@@ -129,17 +133,17 @@ public class InventoryMinion implements IInventory
                 else
                 {
                     i -= k;
-                    this.mainInventory[j].stackSize += k;
-                    this.mainInventory[j].animationsToGo = 5;
+                    this.mainInventory[j].grow(k);
+                    this.mainInventory[j].setAnimationsToGo(5);
                     return i;
                 }
             }
         }
     }
-    
+
     public boolean addItemStackToInventory(final ItemStack par1ItemStack)
     {
-        if (par1ItemStack != null && par1ItemStack.stackSize != 0 && par1ItemStack.getItem() != null)
+        if (par1ItemStack != null && par1ItemStack.getCount() != 0 && par1ItemStack.getItem() != null)
         {
             try
             {
@@ -151,9 +155,9 @@ public class InventoryMinion implements IInventory
 
                     if (i >= 0)
                     {
-                        this.mainInventory[i] = ItemStack.copyItemStack(par1ItemStack);
-                        this.mainInventory[i].animationsToGo = 5;
-                        par1ItemStack.stackSize = 0;
+                        this.mainInventory[i] = par1ItemStack.copy();
+                        this.mainInventory[i].setAnimationsToGo(5);
+                        par1ItemStack.setCount(0);
                         return true;
                     }
                     else
@@ -165,12 +169,12 @@ public class InventoryMinion implements IInventory
                 {
                     do
                     {
-                        i = par1ItemStack.stackSize;
-                        par1ItemStack.stackSize = this.storePartialItemStack(par1ItemStack);
+                        i = par1ItemStack.getCount();
+                        par1ItemStack.setCount(storePartialItemStack(par1ItemStack));
                     }
-                    while (par1ItemStack.stackSize > 0 && par1ItemStack.stackSize < i);
+                    while (par1ItemStack.getCount() > 0 && par1ItemStack.getCount() < i);
 
-                    return par1ItemStack.stackSize < i;
+                    return par1ItemStack.getCount() < i;
                 }
             }
             catch (Throwable throwable)
@@ -187,7 +191,7 @@ public class InventoryMinion implements IInventory
             return false;
         }
     }
-    
+
     public NBTTagList writeToNBT(NBTTagList par1NBTTagList)
     {
         NBTTagCompound nbttagcompound;
@@ -197,7 +201,7 @@ public class InventoryMinion implements IInventory
             if (this.mainInventory[i] != null)
             {
                 nbttagcompound = new NBTTagCompound();
-                nbttagcompound.setByte("Slot", (byte)i);
+                nbttagcompound.setByte("Slot", (byte) i);
                 this.mainInventory[i].writeToNBT(nbttagcompound);
                 par1NBTTagList.appendTag(nbttagcompound);
             }
@@ -205,7 +209,7 @@ public class InventoryMinion implements IInventory
 
         return par1NBTTagList;
     }
-    
+
     public void readFromNBT(NBTTagList par1NBTTagList)
     {
         this.mainInventory = new ItemStack[24];
@@ -214,7 +218,7 @@ public class InventoryMinion implements IInventory
         {
             NBTTagCompound nbttagcompound = par1NBTTagList.getCompoundTagAt(i);
             int j = nbttagcompound.getByte("Slot") & 255;
-            ItemStack itemstack = ItemStack.loadItemStackFromNBT(nbttagcompound);
+            ItemStack itemstack = new ItemStack(nbttagcompound);
 
             if (itemstack != null)
             {
@@ -225,7 +229,7 @@ public class InventoryMinion implements IInventory
             }
         }
     }
-    
+
     public boolean consumeInventoryItem(Object item)
     {
         int i = this.getFirstSlotWithItem(item);
@@ -236,7 +240,8 @@ public class InventoryMinion implements IInventory
         }
         else
         {
-            if (--this.mainInventory[i].stackSize <= 0)
+            mainInventory[i].shrink(1);
+            if (mainInventory[i].getCount() <= 0)
             {
                 this.mainInventory[i] = null;
             }
@@ -244,7 +249,7 @@ public class InventoryMinion implements IInventory
             return true;
         }
     }
-    
+
     private int getFirstSlotWithItem(Object item)
     {
         for (int i = 0; i < this.mainInventory.length; ++i)
@@ -260,7 +265,7 @@ public class InventoryMinion implements IInventory
 
         return -1;
     }
-    
+
     public void dropAllItems()
     {
         int var1;
@@ -279,7 +284,7 @@ public class InventoryMinion implements IInventory
     {
         return this.getFirstEmptyStack() != 0;
     }
-    
+
     public void putAllItemsToInventory(IInventory returnChestOrInventory)
     {
         int var1;
@@ -293,11 +298,11 @@ public class InventoryMinion implements IInventory
                 }
                 else if (returnChestOrInventory instanceof TileEntityChest)
                 {
-                    TileEntityChest returnChest = (TileEntityChest)returnChestOrInventory;
+                    TileEntityChest returnChest = (TileEntityChest) returnChestOrInventory;
                     if (returnChest.adjacentChestXNeg != null && addItemStackToInventory(returnChest.adjacentChestXNeg, this.mainInventory[var1])
-                    || returnChest.adjacentChestXPos != null && addItemStackToInventory(returnChest.adjacentChestXPos, this.mainInventory[var1])
-                    || returnChest.adjacentChestZNeg != null && addItemStackToInventory(returnChest.adjacentChestZNeg, this.mainInventory[var1])
-                    || returnChest.adjacentChestZPos != null && addItemStackToInventory(returnChest.adjacentChestZPos, this.mainInventory[var1]))
+                            || returnChest.adjacentChestXPos != null && addItemStackToInventory(returnChest.adjacentChestXPos, this.mainInventory[var1])
+                            || returnChest.adjacentChestZNeg != null && addItemStackToInventory(returnChest.adjacentChestZNeg, this.mainInventory[var1])
+                            || returnChest.adjacentChestZPos != null && addItemStackToInventory(returnChest.adjacentChestZPos, this.mainInventory[var1]))
                     {
                         this.mainInventory[var1] = null;
                     }
@@ -311,7 +316,7 @@ public class InventoryMinion implements IInventory
         }
         minion.inventoryFull = false;
     }
-    
+
     private boolean addItemStackToInventory(IInventory inv, ItemStack item)
     {
         int index;
@@ -320,9 +325,9 @@ public class InventoryMinion implements IInventory
             index = getInvFirstEmptyStack(inv);
             if (index >= 0)
             {
-                inv.setInventorySlotContents(index, ItemStack.copyItemStack(item));
-                inv.getStackInSlot(index).animationsToGo = 5;
-                item.stackSize = 0;
+                inv.setInventorySlotContents(index, item.copy());
+                inv.getStackInSlot(index).setAnimationsToGo(5);
+                item.setCount(0);
                 return true;
             }
             else
@@ -334,19 +339,19 @@ public class InventoryMinion implements IInventory
         {
             do
             {
-                index = item.stackSize;
-                item.stackSize = storePartialItemStackInChest(inv, item);
+                index = item.getCount();
+                item.setCount(storePartialItemStackInChest(inv, item));
             }
-            while (item.stackSize > 0 && item.stackSize < index);
+            while (item.getCount() > 0 && item.getCount() < index);
 
-            return item.stackSize < index;
+            return item.getCount() < index;
         }
     }
-    
+
     private int storePartialItemStackInChest(IInventory inv, ItemStack item)
     {
         Item itemID = item.getItem();
-        int stacksize = item.stackSize;
+        int stacksize = item.getCount();
         int index;
         if (item.getMaxStackSize() == 1)
         {
@@ -359,7 +364,7 @@ public class InventoryMinion implements IInventory
             {
                 if (inv.getStackInSlot(index) == null)
                 {
-                    inv.setInventorySlotContents(index, ItemStack.copyItemStack(item));
+                    inv.setInventorySlotContents(index, item.copy());
                 }
 
                 return 0;
@@ -384,19 +389,19 @@ public class InventoryMinion implements IInventory
                     inv.setInventorySlotContents(index, new ItemStack(itemID, 0, item.getItemDamage()));
                     if (item.hasTagCompound())
                     {
-                        inv.getStackInSlot(index).setTagCompound((NBTTagCompound)item.getTagCompound().copy());
+                        inv.getStackInSlot(index).setTagCompound((NBTTagCompound) item.getTagCompound().copy());
                     }
                 }
 
                 int remainingsize = stacksize;
-                if (stacksize > inv.getStackInSlot(index).getMaxStackSize() - inv.getStackInSlot(index).stackSize)
+                if (stacksize > inv.getStackInSlot(index).getMaxStackSize() - inv.getStackInSlot(index).getCount())
                 {
-                    remainingsize = inv.getStackInSlot(index).getMaxStackSize() - inv.getStackInSlot(index).stackSize;
+                    remainingsize = inv.getStackInSlot(index).getMaxStackSize() - inv.getStackInSlot(index).getCount();
                 }
 
-                if (remainingsize > inv.getInventoryStackLimit() - inv.getStackInSlot(index).stackSize)
+                if (remainingsize > inv.getInventoryStackLimit() - inv.getStackInSlot(index).getCount())
                 {
-                    remainingsize = inv.getInventoryStackLimit() - inv.getStackInSlot(index).stackSize;
+                    remainingsize = inv.getInventoryStackLimit() - inv.getStackInSlot(index).getCount();
                 }
 
                 if (remainingsize == 0)
@@ -406,14 +411,14 @@ public class InventoryMinion implements IInventory
                 else
                 {
                     stacksize -= remainingsize;
-                    inv.getStackInSlot(index).stackSize += remainingsize;
-                    inv.getStackInSlot(index).animationsToGo = 5;
+                    inv.getStackInSlot(index).grow(remainingsize);
+                    inv.getStackInSlot(index).setAnimationsToGo(5);
                     return stacksize;
                 }
             }
         }
     }
-    
+
     private int getInvFirstEmptyStack(IInventory inv)
     {
         for (int index = 0; index < inv.getSizeInventory(); ++index)
@@ -426,17 +431,14 @@ public class InventoryMinion implements IInventory
 
         return -1;
     }
-    
+
     private int storeItemStackInInv(IInventory inv, ItemStack item)
     {
         for (int index = 0; index < inv.getSizeInventory(); ++index)
         {
-            if (inv.getStackInSlot(index) != null
-            && inv.getStackInSlot(index).getItem() == item.getItem()
-            && inv.getStackInSlot(index).isStackable()
-            && inv.getStackInSlot(index).stackSize < inv.getStackInSlot(index).getMaxStackSize()
-            && inv.getStackInSlot(index).stackSize < inv.getInventoryStackLimit()
-            && (!inv.getStackInSlot(index).getHasSubtypes() || inv.getStackInSlot(index).getItemDamage() == item.getItemDamage()))
+            if (inv.getStackInSlot(index) != null && inv.getStackInSlot(index).getItem() == item.getItem() && inv.getStackInSlot(index).isStackable()
+                    && inv.getStackInSlot(index).getCount() < inv.getStackInSlot(index).getMaxStackSize() && inv.getStackInSlot(index).getCount() < inv.getInventoryStackLimit()
+                    && (!inv.getStackInSlot(index).getHasSubtypes() || inv.getStackInSlot(index).getItemDamage() == item.getItemDamage()))
             {
                 return index;
             }
@@ -444,7 +446,7 @@ public class InventoryMinion implements IInventory
 
         return -1;
     }
-    
+
     @Override
     public ItemStack decrStackSize(int par1, int par2)
     {
@@ -459,7 +461,7 @@ public class InventoryMinion implements IInventory
         {
             ItemStack itemstack;
 
-            if (aitemstack[par1].stackSize <= par2)
+            if (aitemstack[par1].getCount() <= par2)
             {
                 itemstack = aitemstack[par1];
                 aitemstack[par1] = null;
@@ -469,7 +471,7 @@ public class InventoryMinion implements IInventory
             {
                 itemstack = aitemstack[par1].splitStack(par2);
 
-                if (aitemstack[par1].stackSize == 0)
+                if (aitemstack[par1].getCount() == 0)
                 {
                     aitemstack[par1] = null;
                 }
@@ -482,7 +484,7 @@ public class InventoryMinion implements IInventory
             return null;
         }
     }
-    
+
     @Override
     public ItemStack removeStackFromSlot(int par1)
     {
@@ -505,13 +507,13 @@ public class InventoryMinion implements IInventory
     {
         return this.mainInventory.length + 4;
     }
-    
+
     @Override
     public ItemStack getStackInSlot(int par1)
     {
         return mainInventory[par1];
     }
-    
+
     @Override
     public int getInventoryStackLimit()
     {
@@ -524,12 +526,6 @@ public class InventoryMinion implements IInventory
         this.inventoryChanged = true;
     }
 
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
-    {
-        return false;
-    }
-    
     @Override
     public boolean isItemValidForSlot(int par1, ItemStack par2ItemStack)
     {
@@ -585,5 +581,17 @@ public class InventoryMinion implements IInventory
     public void clear()
     {
     }
-    
+
+    @Override
+    public boolean isEmpty()
+    {
+        return !containsItems();
+    }
+
+    @Override
+    public boolean isUsableByPlayer(EntityPlayer player)
+    {
+        return false;
+    }
+
 }

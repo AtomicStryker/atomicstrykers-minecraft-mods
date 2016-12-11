@@ -53,7 +53,7 @@ public class ClientProxy implements IProxy
     {
         if (tick.phase == Phase.END)
         {
-            client.onPlayerTick(tick.player.worldObj);
+            client.onPlayerTick(tick.player.world);
         }
     }
     

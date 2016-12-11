@@ -61,7 +61,7 @@ public class BlockTask_MineBlock extends BlockTask
     {
     	super.onReachedTaskBlock();
     	
-    	blockState = worker.worldObj.getBlockState(pos);
+    	blockState = worker.world.getBlockState(pos);
     	//if (blockID > 13) System.out.println("Reached Block["+blockID+"], name "+Block.blocksList[blockID].getBlockName());
     	
     	if (blockState.getBlock() == Blocks.AIR)
@@ -83,16 +83,16 @@ public class BlockTask_MineBlock extends BlockTask
     	
     	checkDangers();
     	
-    	blockState = worker.worldObj.getBlockState(pos); // check against interference mining
-    	if (blockState.getBlock() != Blocks.AIR && blockState.getBlock().getBlockHardness(blockState, worker.worldObj, pos) >= 0F)
+    	blockState = worker.world.getBlockState(pos); // check against interference mining
+    	if (blockState.getBlock() != Blocks.AIR && blockState.getBlock().getBlockHardness(blockState, worker.world, pos) >= 0F)
     	{
-    	    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
+    	    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.world, posX, posY, posZ);
     	    
-            int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+            int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), 
                     (EntityPlayerMP) worker.master, pos);
             if (event != -1)
             {
-                if (worker.worldObj.setBlockToAir(pos))
+                if (worker.world.setBlockToAir(pos))
                 {
                     putBlockHarvestInWorkerInventory(stackList);
                 }
@@ -118,17 +118,17 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForCaveIn(int x, int y, int z)
     {
-    	Block checkBlockID = worker.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
+    	Block checkBlockID = worker.world.getBlockState(new BlockPos(x, y, z)).getBlock();
         if (checkBlockID == Blocks.SAND || checkBlockID == Blocks.GRAVEL)
         {
-            int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+            int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), 
                     (EntityPlayerMP) worker.master, pos);
             if (event != -1)
             {
-                putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ));
+                putBlockHarvestInWorkerInventory(getItemStacksFromWorldBlock(worker.world, posX, posY, posZ));
                 
                 this.worker.inventory.consumeInventoryItem(Blocks.DIRT);
-                this.worker.worldObj.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
+                this.worker.world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
             }
         }
 	}
@@ -140,7 +140,7 @@ public class BlockTask_MineBlock extends BlockTask
     
     private void checkBlockForDanger(int x, int y, int z, boolean putFloor)
     {
-        IBlockState is = worker.worldObj.getBlockState(new BlockPos(x, y, z));
+        IBlockState is = worker.world.getBlockState(new BlockPos(x, y, z));
     	Block checkBlockID = is.getBlock();
     	boolean replaceBlock = false;
     	
@@ -158,21 +158,21 @@ public class BlockTask_MineBlock extends BlockTask
     	
     	if (replaceBlock)
     	{
-    	    int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), 
+    	    int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), 
     	            (EntityPlayerMP) worker.master, pos);
             if (event != -1)
             {
                 if (checkBlockID != Blocks.AIR)
                 {
-                    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.worldObj, posX, posY, posZ);
-                    if (this.worker.worldObj.setBlockToAir(pos))
+                    List<ItemStack> stackList = getItemStacksFromWorldBlock(worker.world, posX, posY, posZ);
+                    if (this.worker.world.setBlockToAir(pos))
                     {
                         putBlockHarvestInWorkerInventory(stackList);
                     }
                 }
                 
                 this.worker.inventory.consumeInventoryItem(Blocks.DIRT);
-                this.worker.worldObj.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
+                this.worker.world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 3);
             }
     	}
     }

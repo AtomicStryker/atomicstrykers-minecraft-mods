@@ -37,7 +37,7 @@ public class RenderChickenLightningBolt
 	public void onRenderWorldLast(RenderWorldLastEvent event)
 	{
 	    float frame = event.getPartialTicks();
-		Entity entity = Minecraft.getMinecraft().thePlayer;
+		Entity entity = Minecraft.getMinecraft().player;
 		
 		interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)frame;
 		interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)frame;

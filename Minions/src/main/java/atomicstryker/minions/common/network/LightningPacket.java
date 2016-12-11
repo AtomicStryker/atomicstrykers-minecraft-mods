@@ -78,9 +78,9 @@ public class LightningPacket implements IPacket
         {
             Vector3 start = new Vector3(sx, sy, sz);
             Vector3 end = new Vector3(ex, ey, ez);
-            EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
-            long randomizer = player.worldObj.rand.nextLong();
-            spawnLightningBolt(player.worldObj, player, start, end, randomizer);
+            EntityPlayer player = FMLClientHandler.instance().getClient().player;
+            long randomizer = player.world.rand.nextLong();
+            spawnLightningBolt(player.world, player, start, end, randomizer);
         }
     }
     
@@ -97,12 +97,12 @@ public class LightningPacket implements IPacket
             {                
                 if (MinionsCore.instance.hasPlayerWillPower(player))
                 {
-                    long randomizer = player.worldObj.rand.nextLong();
+                    long randomizer = player.world.rand.nextLong();
                     
                     cache.user = "server";
                     MinionsCore.instance.networkHelper.sendPacketToAllAroundPoint(cache, new TargetPoint(player.dimension, sx, sy, sz, 32D));
                     
-                    spawnLightningBolt(player.worldObj, player, start, end, randomizer);
+                    spawnLightningBolt(player.world, player, start, end, randomizer);
                     
                     MinionsCore.instance.exhaustPlayerSmall(player);                
                 }

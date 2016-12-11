@@ -51,15 +51,15 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
             masterName = m.getMasterUserName();
         }
 
-        worldObj = m.worldObj;
+        worldObj = m.world;
 
         startX = this.pointOfOrigin.getX();
         startY = this.pointOfOrigin.getY();
         startZ = this.pointOfOrigin.getZ();
 
         Entity boss = m.master;
-        int bossX = MathHelper.floor_double(boss.posX);
-        int bossZ = MathHelper.floor_double(boss.posZ);
+        int bossX = MathHelper.floor(boss.posX);
+        int bossZ = MathHelper.floor(boss.posZ);
 
         if (Math.abs(startX - bossX) > Math.abs(startZ - bossZ))
         {

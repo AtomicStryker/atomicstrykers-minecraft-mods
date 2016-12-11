@@ -29,10 +29,10 @@ public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
     {
     	super.onFinishedTask();
     	
-    	int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, new BlockPos(posX, posY, posZ));
+    	int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, new BlockPos(posX, posY, posZ));
         if (event != -1)
         {
-            worker.worldObj.setBlockState(new BlockPos(posX,  posY,  posZ),  blockToPlace.getStateFromMeta( metaToPlace));
+            worker.world.setBlockState(new BlockPos(posX,  posY,  posZ),  blockToPlace.getStateFromMeta( metaToPlace));
         }
     }
 }

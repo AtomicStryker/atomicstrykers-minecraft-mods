@@ -91,7 +91,7 @@ public class MultiMineServer
         MultiMine.instance().debugPrint("multi mine client " + player + " sent progress packet: " + value);
 
         final BlockPos pos = new BlockPos(x, y, z);
-        final IBlockState iblockstate = player.worldObj.getBlockState(pos);
+        final IBlockState iblockstate = player.world.getBlockState(pos);
         final Block block = iblockstate.getBlock();
         if (isUsingBannedItem(player) || isBlockBanned(block, block.getMetaFromState(iblockstate)))
         {
@@ -119,16 +119,16 @@ public class MultiMineServer
                 // send the newly advanced partialblock to all relevant players
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock);
 
-                if (iterBlock.isFinished() && !block.isAir(player.worldObj.getBlockState(pos), player.worldObj, pos))
+                if (iterBlock.isFinished() && !block.isAir(player.world.getBlockState(pos), player.world, pos))
                 {
                     MultiMine.instance().debugPrint("Server finishing partial block at: [" + x + "|" + y + "|" + z + "]");
                     // and if its done, destroy the world block
-                    player.worldObj.sendBlockBreakProgress(player.getEntityId(), pos, -1);
+                    player.world.sendBlockBreakProgress(player.getEntityId(), pos, -1);
 
-                    final int event = ForgeHooks.onBlockBreakEvent(player.worldObj, player.interactionManager.getGameType(), player, pos);
+                    final int event = ForgeHooks.onBlockBreakEvent(player.world, player.interactionManager.getGameType(), player, pos);
                     if (event != -1)
                     {
-                        TileEntity tileentity = player.worldObj.getTileEntity(pos);
+                        TileEntity tileentity = player.world.getTileEntity(pos);
 
                         ItemStack stack = player.getHeldItemMainhand();
                         if (stack != null && stack.getItem().onBlockStartBreak(stack, pos, player))
@@ -136,40 +136,40 @@ public class MultiMineServer
                             return;
                         }
 
-                        player.worldObj.playEvent(2001, pos, Block.getStateId(iblockstate));
+                        player.world.playEvent(2001, pos, Block.getStateId(iblockstate));
 
                         ItemStack itemstack = player.getHeldItemMainhand();
-                        boolean canHarvest = iblockstate.getBlock().canHarvestBlock(player.worldObj, pos, player);
+                        boolean canHarvest = iblockstate.getBlock().canHarvestBlock(player.world, pos, player);
 
                         if (itemstack != null)
                         {
-                            itemstack.onBlockDestroyed(player.worldObj, iblockstate, pos, player);
-                            if (itemstack.stackSize == 0)
+                            itemstack.onBlockDestroyed(player.world, iblockstate, pos, player);
+                            if (itemstack.getCount() == 0)
                             {
                                 player.setHeldItem(EnumHand.MAIN_HAND, null);
                             }
                         }
 
-                        iblockstate.getBlock().onBlockHarvested(player.worldObj, pos, iblockstate, player);
-                        boolean removed = iblockstate.getBlock().removedByPlayer(player.worldObj.getBlockState(pos), player.worldObj, pos, player, canHarvest);
+                        iblockstate.getBlock().onBlockHarvested(player.world, pos, iblockstate, player);
+                        boolean removed = iblockstate.getBlock().removedByPlayer(player.world.getBlockState(pos), player.world, pos, player, canHarvest);
                         if (removed)
                         {
-                            iblockstate.getBlock().onBlockDestroyedByPlayer(player.worldObj, pos, iblockstate);
+                            iblockstate.getBlock().onBlockDestroyedByPlayer(player.world, pos, iblockstate);
                         }
 
                         if (removed && canHarvest)
                         {
-                            iblockstate.getBlock().harvestBlock(player.worldObj, player, pos, iblockstate, tileentity, itemstack);
+                            iblockstate.getBlock().harvestBlock(player.world, player, pos, iblockstate, tileentity, itemstack);
                         }
 
                         // Drop experiance
                         if (removed && event > 0)
                         {
-                            iblockstate.getBlock().dropXpOnBlockBreak(player.worldObj, pos, event);
+                            iblockstate.getBlock().dropXpOnBlockBreak(player.world, pos, event);
                         }
                         if (removed)
                         {
-                            player.worldObj.setBlockToAir(pos);
+                            player.world.setBlockToAir(pos);
                         }
 
                         partiallyMinedBlocks.remove(iterBlock);
@@ -266,7 +266,7 @@ public class MultiMineServer
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
-        int dimension = player.worldObj.provider.getDimension();
+        int dimension = player.world.provider.getDimension();
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
         if (partiallyMinedBlocks != null)
         {

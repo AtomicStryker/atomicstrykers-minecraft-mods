@@ -41,7 +41,7 @@ public class GuiMinionMenu extends GuiScreen
 		{
 		    this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 0, "Missing Deed config file!"));
 		}
-        else if (mc.thePlayer.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
+        else if (mc.player.experienceLevel >= MinionsCore.instance.evilDeedXPCost)
         {
         	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 0, "Commit to Evil"));
         }
@@ -67,7 +67,7 @@ public class GuiMinionMenu extends GuiScreen
         	{
         		if (MinionsClient.hasMinionsSMPOverride)
         		{
-        			MinionsCore.instance.networkHelper.sendPacketToServer(new UnsummonPacket(mc.thePlayer.getName()));
+        			MinionsCore.instance.networkHelper.sendPacketToServer(new UnsummonPacket(mc.player.getName()));
         			mc.displayGuiScreen(null);
         		}
         		else
@@ -108,7 +108,7 @@ public class GuiMinionMenu extends GuiScreen
     	if (var1 == 'i' && cheatCount == 6) cheatCount++;
     	if (var1 == 'l' && cheatCount == 7)
         {
-    	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.thePlayer.getName())); // cheater!!!!
+    	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.player.getName())); // cheater!!!!
             mc.displayGuiScreen(null);
         }
     }

@@ -26,7 +26,7 @@ public class ItemMastersStaff extends Item
     {
         super();
         this.maxStackSize = 1;
-        
+
         this.setCreativeTab(CreativeTabs.COMBAT);
     }
 
@@ -42,7 +42,7 @@ public class ItemMastersStaff extends Item
             if (pointStrength > 1.0F)
             {
                 // full power!
-                MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, (EntityPlayer)user);
+                MinionsCore.proxy.onMastersGloveRightClickHeld(itemstack, world, (EntityPlayer) user);
             }
             else
             {
@@ -65,8 +65,9 @@ public class ItemMastersStaff extends Item
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+        ItemStack itemStack = player.getHeldItem(hand);
         player.setActiveHand(hand);
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStack);
     }

@@ -48,7 +48,7 @@ public class DropAllPacket implements IPacket
             EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
             if (player != null)
             {
-                Entity target = player.worldObj.getEntityByID(targetID);
+                Entity target = player.world.getEntityByID(targetID);
                 MinionsCore.debugPrint("DropAllPacket readBytes, "+user+", "+target);
                 if (target instanceof EntityMinion)
                 {

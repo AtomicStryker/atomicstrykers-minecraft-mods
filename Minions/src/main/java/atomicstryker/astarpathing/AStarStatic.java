@@ -99,7 +99,7 @@ public class AStarStatic
 	
 	public static int getIntCoordFromDoubleCoord(double input)
 	{
-		return MathHelper.floor_double(input);
+		return MathHelper.floor(input);
 	}
 	
 	/**

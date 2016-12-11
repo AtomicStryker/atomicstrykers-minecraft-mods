@@ -86,7 +86,7 @@ public class MinionsClient
         GL11.glDepthMask(false);
         GL11.glPushMatrix();
         
-        EntityPlayer player = mc.thePlayer;
+        EntityPlayer player = mc.player;
         double xGuess = player.prevPosX + (player.posX - player.prevPosX) * renderTick;
         double yGuess = player.prevPosY + (player.posY - player.prevPosY) * renderTick;
         double zGuess = player.prevPosZ + (player.posZ - player.prevPosZ) * renderTick;
@@ -133,8 +133,8 @@ public class MinionsClient
     {
         if (mc.currentScreen == null && isSelectingMineArea)
         {
-            if (mc.thePlayer.inventory.getCurrentItem() == null
-            || mc.thePlayer.inventory.getCurrentItem().getItem() != MinionsCore.instance.itemMastersStaff)
+            if (mc.player.inventory.getCurrentItem() == null
+            || mc.player.inventory.getCurrentItem().getItem() != MinionsCore.instance.itemMastersStaff)
             {
                 isSelectingMineArea = false;
                 deleteSelection();
@@ -145,8 +145,8 @@ public class MinionsClient
                 int y = mc.objectMouseOver.getBlockPos().getY();
                 int z = mc.objectMouseOver.getBlockPos().getZ();
                 
-                int bossX = MathHelper.floor_double(mc.thePlayer.posX);
-                int bossZ = MathHelper.floor_double(mc.thePlayer.posZ);
+                int bossX = MathHelper.floor(mc.player.posX);
+                int bossZ = MathHelper.floor(mc.player.posZ);
                 int xDirection;
                 int zDirection;
                 
@@ -201,11 +201,11 @@ public class MinionsClient
         if (mc.currentScreen == null)
         {
             if (Mouse.isButtonDown(0)
-            && mc.thePlayer.inventory.getCurrentItem() != null
-            && mc.thePlayer.inventory.getCurrentItem().getItem() == MinionsCore.instance.itemMastersStaff
+            && mc.player.inventory.getCurrentItem() != null
+            && mc.player.inventory.getCurrentItem().getItem() == MinionsCore.instance.itemMastersStaff
             && lastStaffLightningBoltTime + 100L < System.currentTimeMillis())
             {
-                if (MinionsCore.instance.hasPlayerWillPower(mc.thePlayer))
+                if (MinionsCore.instance.hasPlayerWillPower(mc.player))
                 {
                     lastStaffLightningBoltTime = System.currentTimeMillis();
                     Entity p = mc.getRenderViewEntity();
@@ -220,12 +220,12 @@ public class MinionsClient
                         Vector3 endvec = Vector3.fromVec3(pos.hitVec);
                         
                         MinionsCore.instance.networkHelper.sendPacketToServer(
-                                new LightningPacket(mc.thePlayer.getName(), startvec.x, startvec.y, startvec.z, endvec.x, endvec.y, endvec.z));
+                                new LightningPacket(mc.player.getName(), startvec.x, startvec.y, startvec.z, endvec.x, endvec.y, endvec.z));
                     }
                 }
                 else
                 {
-                    playFartSound(mc.thePlayer);
+                    playFartSound(mc.player);
                 }
             }
             
@@ -312,7 +312,7 @@ public class MinionsClient
             
             MinionsCore.debugPrint("OnMastersGloveRightClick coordinate mode, ["+x+"|"+y+"|"+z+"]");
 
-            if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y-1, z))
+            if (AStarStatic.isPassableBlock(playerEnt.world, x, y-1, z))
             {
                 y--;
             }
@@ -321,7 +321,7 @@ public class MinionsClient
             if (!hasAllMinionsSMPOverride)
             {
                 MinionsCore.instance.networkHelper.sendPacketToServer(new MinionSpawnPacket(playerEnt.getName(), x, y, z));
-                playerEnt.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y, z, 0.0D, 0.0D, 0.0D);
+                playerEnt.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y, z, 0.0D, 0.0D, 0.0D);
                 return;
             }
 
@@ -382,12 +382,12 @@ public class MinionsClient
             {
                 MinionsCore.instance.networkHelper.sendPacketToServer(new AssignChestPacket(playerEnt.getName(), playerEnt.isSneaking(), x, y, z));
             }
-            else if (AStarStatic.isPassableBlock(playerEnt.worldObj, x, y, z) && hasMinionsSMPOverride)
+            else if (AStarStatic.isPassableBlock(playerEnt.world, x, y, z) && hasMinionsSMPOverride)
             {
                 // check if player targets his own feet. if so, order minion carry
-                if (MathHelper.floor_double(playerEnt.posX) == x
-                        && MathHelper.floor_double(playerEnt.posZ) == z
-                        && Math.abs(MathHelper.floor_double(playerEnt.posY) - y) < 3)
+                if (MathHelper.floor(playerEnt.posX) == x
+                        && MathHelper.floor(playerEnt.posZ) == z
+                        && Math.abs(MathHelper.floor(playerEnt.posY) - y) < 3)
                 {
                     MinionsCore.instance.networkHelper.sendPacketToServer(new PickupEntPacket(playerEnt.getName(), playerEnt.getEntityId()));
                 }
@@ -427,8 +427,8 @@ public class MinionsClient
 
     public static void onMinionMountPacket(int minionID, int targetID)
     {
-        Entity minion = mc.theWorld.getEntityByID(minionID);
-        Entity target = mc.theWorld.getEntityByID(targetID);
+        Entity minion = mc.world.getEntityByID(minionID);
+        Entity target = mc.world.getEntityByID(targetID);
         if (minion != null && target != null)
         {
             target.startRiding(minion);

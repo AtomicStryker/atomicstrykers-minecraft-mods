@@ -1,5 +1,8 @@
 package atomicstryker.minions.common.jobmanager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import atomicstryker.astarpathing.AStarNode;
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.common.MinionsCore;
@@ -14,9 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Blocktask super schematic. By default a Blocktask doesnt change the Block.
@@ -82,7 +82,7 @@ public abstract class BlockTask
      */
     public void setWorker(EntityMinion input)
     {
-        MinionsCore.debugPrint("task "+this+" at ["+posX+"|"+posY+"|"+posZ+"] assigned to worker "+worker);
+        MinionsCore.debugPrint("task " + this + " at [" + posX + "|" + posY + "|" + posZ + "] assigned to worker " + worker);
         this.worker = input;
     }
 
@@ -122,7 +122,7 @@ public abstract class BlockTask
             {
                 worker.returningGoods = true;
                 worker.runInventoryDumpLogic();
-                MinionsCore.debugPrint("Blocktask "+this+" worker "+worker+" is full, sending to return goods");
+                MinionsCore.debugPrint("Blocktask " + this + " worker " + worker + " is full, sending to return goods");
             }
         }
         else if (!workerReachedBlock && System.currentTimeMillis() - taskTimeStarted > 1000L)
@@ -142,7 +142,7 @@ public abstract class BlockTask
         if (isWorking())
         {
             worker.faceBlock(posX, posY, posZ);
-            worker.getDataManager().set(EntityMinion.IS_WORKING, (byte)1);
+            worker.getDataManager().set(EntityMinion.IS_WORKING, (byte) 1);
             worker.getDataManager().set(EntityMinion.X_BLOCKTASK, posX);
             worker.getDataManager().set(EntityMinion.Y_BLOCKTASK, posY);
             worker.getDataManager().set(EntityMinion.Z_BLOCKTASK, posZ);
@@ -168,7 +168,8 @@ public abstract class BlockTask
      */
     public void onWorkerPathFailed()
     {
-        // System.out.println("BlockTask onWorkerPathFailed all paths failed, teleporting dat minion");
+        // System.out.println("BlockTask onWorkerPathFailed all paths failed,
+        // teleporting dat minion");
         worker.performTeleportToTarget();
         onReachedTaskBlock();
     }
@@ -183,9 +184,9 @@ public abstract class BlockTask
         workerReachedBlock = true;
         timeBlockReached = System.currentTimeMillis();
         this.worker.setWorking(true);
-        //this.worker.setPathToEntity(null);
+        // this.worker.setPathToEntity(null);
 
-        IBlockState is = worker.worldObj.getBlockState(new BlockPos(posX, posY, posZ));
+        IBlockState is = worker.world.getBlockState(new BlockPos(posX, posY, posZ));
         worker.adaptItem(is.getBlock().getMaterial(is));
     }
 
@@ -198,20 +199,20 @@ public abstract class BlockTask
         if (startedTask)
             return;
         startedTask = true;
-        MinionsCore.debugPrint("onStartedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], worker "+worker);
+        MinionsCore.debugPrint("onStartedTask " + this + " [" + this.posX + "|" + this.posY + "|" + this.posZ + "], worker " + worker);
 
         taskTimeStarted = System.currentTimeMillis();
         startMinionX = worker.posX;
         startMinionZ = worker.posZ;
-        
-        AStarNode[] possibleAccessNodes = getAccessNodesSorted(MathHelper.floor_double(worker.posX), MathHelper.floor_double(worker.posY) - 1, MathHelper.floor_double(worker.posZ));
+
+        AStarNode[] possibleAccessNodes = getAccessNodesSorted(MathHelper.floor(worker.posX), MathHelper.floor(worker.posY) - 1, MathHelper.floor(worker.posZ));
         if (possibleAccessNodes.length != 0)
         {
             this.worker.orderMinionToMoveTo(possibleAccessNodes, false);
         }
         else
         {
-            MinionsCore.debugPrint("Teleporting Minion to impathable task "+this);
+            MinionsCore.debugPrint("Teleporting Minion to impathable task " + this);
             worker.performTeleportToTarget();
         }
     }
@@ -222,9 +223,9 @@ public abstract class BlockTask
      */
     public void onFinishedTask()
     {
-        MinionsCore.debugPrint("onFinishedTask "+this+" ["+this.posX+"|"+this.posY+"|"+this.posZ+"], resetting minion "+worker);
+        MinionsCore.debugPrint("onFinishedTask " + this + " [" + this.posX + "|" + this.posY + "|" + this.posZ + "], resetting minion " + worker);
         this.worker.giveTask(null, true);
-        
+
         if (boss != null)
         {
             boss.onTaskFinished(this, posX, posY, posZ);
@@ -260,7 +261,7 @@ public abstract class BlockTask
      */
     private AStarNode[] getAccessNodesSorted(int workerX, int workerY, int workerZ)
     {
-        return AStarStatic.getAccessNodesSorted(worker.worldObj, posX, posY, posZ);
+        return AStarStatic.getAccessNodesSorted(worker.world, posX, posY, posZ);
     }
 
     /**
@@ -272,12 +273,12 @@ public abstract class BlockTask
         IBlockState is = world.getBlockState(new BlockPos(i, j, k));
         Block block = is.getBlock();
         Material m = block.getMaterial(is);
-        
+
         if (block == Blocks.AIR || m == Material.WATER || m == Material.LAVA || m == Material.LEAVES || m == Material.PLANTS)
         {
             return new ArrayList<>();
         }
-        
+
         BlockPos pos = new BlockPos(i, j, k);
         IBlockState state = world.getBlockState(pos);
         return block.getDrops(world, pos, state, state.getBlock().getMetaFromState(state));
@@ -292,7 +293,7 @@ public abstract class BlockTask
                 if (!this.worker.inventory.addItemStackToInventory(stackList.get(i)))
                 {
                     worker.inventoryFull = true;
-                    worker.worldObj.spawnEntityInWorld(new EntityItem(worker.worldObj, this.posX, this.posY, this.posZ, stackList.get(i)));
+                    worker.world.spawnEntity(new EntityItem(worker.world, this.posX, this.posY, this.posZ, stackList.get(i)));
                 }
             }
         }

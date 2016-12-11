@@ -1,5 +1,8 @@
 package atomicstryker.minions.common.jobmanager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -9,11 +12,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * BlockTask dummy to compute tree chopping time, give out the Items, and destroy the tree. The actual work is done in the threaded AS_TreeScanner
+ * BlockTask dummy to compute tree chopping time, give out the Items, and
+ * destroy the tree. The actual work is done in the threaded AS_TreeScanner
  * 
  * 
  * @author AtomicStryker
@@ -23,88 +24,88 @@ public class BlockTask_TreeChop extends BlockTask
 {
     private final ArrayList<BlockPos> treeBlockList;
     private final ArrayList<BlockPos> leaveBlockList;
-	
+
     public BlockTask_TreeChop(Minion_Job_Manager boss, EntityMinion input, int ix, int iy, int iz, ArrayList<BlockPos> treeBlocks, ArrayList<BlockPos> leaveBlocks)
     {
-    	super(boss, input, ix, iy, iz);
-    	
-    	treeBlockList = treeBlocks;
-    	leaveBlockList = leaveBlocks;
-    	this.setTaskDuration(1000L * treeBlockList.size());
+        super(boss, input, ix, iy, iz);
+
+        treeBlockList = treeBlocks;
+        leaveBlockList = leaveBlocks;
+        this.setTaskDuration(1000L * treeBlockList.size());
     }
 
     @Override
     public void onUpdate()
     {
-    	super.onUpdate();
+        super.onUpdate();
     }
-    
+
     @Override
     public void onFinishedTask()
     {
-    	super.onFinishedTask();
-    	
-    	// count tree wood blocks, place wood in minion inventory, destroy tree
-    	placeWoodInMinionInventory(this.worker);
-    	chopTree();
+        super.onFinishedTask();
+
+        // count tree wood blocks, place wood in minion inventory, destroy tree
+        placeWoodInMinionInventory(this.worker);
+        chopTree();
     }
-    
+
     @Override
     public void onReachedTaskBlock()
     {
         super.onReachedTaskBlock();
         worker.setHeldItemAxe();
     }
-    
+
     private void placeWoodInMinionInventory(EntityMinion output)
     {
         BlockPos c;
         for (int i = 0; i < treeBlockList.size(); i++)
         {
             c = treeBlockList.get(i);
-            List<ItemStack> stacks = getItemStacksFromWorldBlock(output.worldObj, c.getX(), c.getY(), c.getZ());
+            List<ItemStack> stacks = getItemStacksFromWorldBlock(output.world, c.getX(), c.getY(), c.getZ());
             for (ItemStack stack : stacks)
             {
                 if (!output.inventory.addItemStackToInventory(stack))
                 {
-                    EntityItem item = new EntityItem(output.worldObj, output.posX, output.posY - 0.30000001192092896D + (double)output.getEyeHeight(), output.posZ, stack);
+                    EntityItem item = new EntityItem(output.world, output.posX, output.posY - 0.30000001192092896D + (double) output.getEyeHeight(), output.posZ, stack);
                     item.setPickupDelay(40);
-                    output.worldObj.spawnEntityInWorld(item);
+                    output.world.spawnEntity(item);
                 }
             }
         }
     }
-    
+
     private void chopTree()
     {
-    	BlockPos tempCoords;
-    	for (int i = treeBlockList.size()-1; i >= 0; i--)
-    	{
-    		tempCoords = treeBlockList.get(i);
-    		
-    		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
+        BlockPos tempCoords;
+        for (int i = treeBlockList.size() - 1; i >= 0; i--)
+        {
+            tempCoords = treeBlockList.get(i);
+
+            int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
             if (event != -1)
             {
-                worker.worldObj.setBlockState(tempCoords, Blocks.AIR.getStateFromMeta(0));
+                worker.world.setBlockState(tempCoords, Blocks.AIR.getStateFromMeta(0));
             }
-    	}
-    	
-    	if (leaveBlockList.size() > 0)
-    	{
-    		tempCoords = leaveBlockList.get(0);
-    		IBlockState state = worker.worldObj.getBlockState(tempCoords);
-    		if (state.getBlock() != Blocks.AIR)
-    		{
-    	    	for (int i = leaveBlockList.size()-1; i >= 0; i--)
-    	    	{
-    	    		tempCoords = leaveBlockList.get(i);
-    	    		int event = ForgeHooks.onBlockBreakEvent(worker.worldObj, worker.worldObj.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
-    	            if (event != -1)
-    	            {
-    	                worker.worldObj.setBlockState(tempCoords, Blocks.AIR.getStateFromMeta(0));
-    	            }
-    	    	}
-    		}
-    	}
+        }
+
+        if (leaveBlockList.size() > 0)
+        {
+            tempCoords = leaveBlockList.get(0);
+            IBlockState state = worker.world.getBlockState(tempCoords);
+            if (state.getBlock() != Blocks.AIR)
+            {
+                for (int i = leaveBlockList.size() - 1; i >= 0; i--)
+                {
+                    tempCoords = leaveBlockList.get(i);
+                    int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, tempCoords);
+                    if (event != -1)
+                    {
+                        worker.world.setBlockState(tempCoords, Blocks.AIR.getStateFromMeta(0));
+                    }
+                }
+            }
+        }
     }
 }
