@@ -273,7 +273,7 @@ public class MultiMineClient
             itemStack.onBlockDestroyed(player.world, player.world.getBlockState(pos), pos, player);
             if (itemStack.getCount() == 0)
             {
-                player.setHeldItem(EnumHand.MAIN_HAND, null);
+                player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
             }
         }
     }

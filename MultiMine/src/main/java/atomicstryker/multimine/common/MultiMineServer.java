@@ -146,7 +146,7 @@ public class MultiMineServer
                             itemstack.onBlockDestroyed(player.world, iblockstate, pos, player);
                             if (itemstack.getCount() == 0)
                             {
-                                player.setHeldItem(EnumHand.MAIN_HAND, null);
+                                player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                             }
                         }
 
