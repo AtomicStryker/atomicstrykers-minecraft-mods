@@ -26,6 +26,7 @@ minecraft {
     version = xmlproperties.@mcversion
 	runDir = "eclipse/assets"
     mappings = xmlproperties.@mcpversion
+    makeObfSourceJar = false
 }
 
 // check for specified dependencies on other projects or jars
