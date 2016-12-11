@@ -59,6 +59,8 @@ public class FinderCompassMod
 
         compassConfig = evt.getSuggestedConfigurationFile();
         Configuration itemConfig = new Configuration(new File(compassConfig.getAbsolutePath().replace("findercompass", "FinderCompassItemConfig")));
+        System.out.println("Finder compass needle config location: " + compassConfig.getAbsolutePath());
+        System.out.println("Finder compass item config location: " + itemConfig.getConfigFile().getAbsolutePath());
         itemConfig.load();
         itemEnabled = itemConfig.get(Configuration.CATEGORY_GENERAL, "isFinderCompassNewItem", false).getBoolean(false);
         itemConfig.save();
@@ -104,14 +106,13 @@ public class FinderCompassMod
     public void onModsLoaded(FMLPostInitializationEvent event)
     {
         DefaultConfigFilePrinter configurator = new DefaultConfigFilePrinter();
-        File needleConfig = new File(compassConfig.getAbsolutePath());
-        if (!needleConfig.exists())
+        if (!compassConfig.exists())
         {
-            configurator.writeDefaultFile(needleConfig);
+            configurator.writeDefaultFile(compassConfig);
         }
         try
         {
-            configurator.parseConfig(new BufferedReader(new FileReader(needleConfig)), settingList);
+            configurator.parseConfig(new BufferedReader(new FileReader(compassConfig)), settingList);
             System.out.println("Finder compass config fully parsed, loaded "+settingList.size()+" settings");
             
             if (FMLCommonHandler.instance().getEffectiveSide().isClient())
