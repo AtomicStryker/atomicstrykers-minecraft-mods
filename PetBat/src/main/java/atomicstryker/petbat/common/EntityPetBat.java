@@ -107,13 +107,13 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     {
         return ownerName;
     }
-    
+
     @Override
     public Team getTeam()
     {
-    	return worldObj.getScoreboard().getPlayersTeam(ownerName);
+        return world.getScoreboard().getPlayersTeam(ownerName);
     }
-    
+
     /**
      * Used by PetBat Renderer to display Bat Name
      */
@@ -183,17 +183,17 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (source.equals(DamageSource.inWall))
+        if (source.equals(DamageSource.IN_WALL))
         {
             return true;
         }
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             if (getIsBatHanging())
             {
                 setIsBatHanging(false);
             }
-            
+
             // if hit by owner
             if (source.getEntity() != null && source.getEntity().getName().equals(getOwnerName()))
             {
@@ -214,14 +214,13 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    public boolean processInteract(EntityPlayer player, EnumHand hand, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
         if (getIsBatHanging() && player.getName().equals(ownerName))
         {
             setIsBatStaying(!getIsBatStaying());
-            player.addChatMessage(new TextComponentTranslation(petName + ": " + 
-            (getIsBatStaying() ? I18n.translateToLocal("translation.PetBat:staying")
-                    : I18n.translateToLocal("translation.PetBat:notstaying"))));
+            player.sendMessage(
+                    new TextComponentTranslation(petName + ": " + (getIsBatStaying() ? I18n.translateToLocal("translation.PetBat:staying") : I18n.translateToLocal("translation.PetBat:notstaying"))));
             return true;
         }
         return false;
@@ -283,7 +282,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     public void setDead()
     {
-        if (this.owner != null && !worldObj.isRemote)
+        if (this.owner != null && !world.isRemote)
         {
             setHealth(1);
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
@@ -292,12 +291,12 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack))
                 {
-                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
+                    world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                 }
                 else
                 {
-                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
-                    worldObj.spawnEntityInWorld(new EntityItem(worldObj, owner.posX, owner.posY, owner.posZ, batstack));
+                    world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
+                    world.spawnEntity(new EntityItem(world, owner.posX, owner.posY, owner.posZ, batstack));
                 }
             }
         }
@@ -364,7 +363,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
      */
     private void addBatExperience(int xp)
     {
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             setBatExperience(getBatExperience() + xp);
         }
@@ -409,7 +408,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         if (this.getIsBatHanging())
         {
             this.motionX = this.motionY = this.motionZ = 0.0D;
-            this.posY = (double) MathHelper.floor_double(this.posY) + 1.0D - (double) this.height;
+            this.posY = (double) MathHelper.floor(this.posY) + 1.0D - (double) this.height;
         }
         else
         {
@@ -424,7 +423,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
                 ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
                 {
-                    worldObj.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
+                    world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                     setDeadWithoutRecall();
                 }
                 else
@@ -437,7 +436,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
 
     private void checkOwnerFlute()
     {
-        if (!fluteOut && owner != null && !worldObj.isRemote)
+        if (!fluteOut && owner != null && !world.isRemote)
         {
             boolean found = false;
             final Item fluteItem = PetBatMod.instance().itemBatFlute;
@@ -481,7 +480,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     public void fall(float distance, float damageMultiplier)
     {
     }
-    
+
     @Override
     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
     {

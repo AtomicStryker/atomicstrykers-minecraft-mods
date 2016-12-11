@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11;
 import atomicstryker.petbat.common.EntityPetBat;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
@@ -14,26 +13,26 @@ public class RenderPetBat extends RenderLiving<EntityPetBat>
     private ModelPetBat renderModel;
     private ResourceLocation tex = new ResourceLocation("petbat", "textures/model/petbat.png");
     private ResourceLocation texGlis = new ResourceLocation("petbat", "textures/model/petbat_glister.png");
-    
+
     public RenderPetBat(RenderManager manager)
     {
         super(manager, new ModelPetBat(), 0.25F);
         renderModel = new ModelPetBat();
         layerRenderers.add(renderModel);
     }
-    
+
     @Override
     protected void preRenderCallback(EntityPetBat par1EntityLivingBase, float par2)
     {
-    	GL11.glScalef(0.35F, 0.35F, 0.35F);
+        GL11.glScalef(0.35F, 0.35F, 0.35F);
     }
 
     @Override
-    protected void rotateCorpse(EntityPetBat par1EntityLivingBase, float par2, float par3, float par4)
+    protected void applyRotations(EntityPetBat par1EntityLivingBase, float par2, float par3, float par4)
     {
         this.rotateRenderedModel(par1EntityLivingBase, par2, par3, par4);
     }
-    
+
     private void rotateRenderedModel(EntityPetBat par1EntityPetBat, float par2, float par3, float par4)
     {
         if (!par1EntityPetBat.getIsBatHanging())
@@ -45,40 +44,32 @@ public class RenderPetBat extends RenderLiving<EntityPetBat>
             GL11.glTranslatef(0.0F, -0.1F, 0.0F);
         }
 
-        super.rotateCorpse(par1EntityPetBat, par2, par3, par4);
+        super.applyRotations(par1EntityPetBat, par2, par3, par4);
     }
-    
+
     @Override
-	public void renderName(EntityPetBat par1EntityLivingBase, double par2, double par4, double par6)
+    public void renderName(EntityPetBat par1EntityLivingBase, double par2, double par4, double par6)
     {
         String name = (par1EntityLivingBase).getName();
         if (!name.equals(""))
         {
-        	renderLivingLabel(par1EntityLivingBase, name, par2, par4-1D, par6, 64);
+            renderLivingLabel(par1EntityLivingBase, name, par2, par4 - 1D, par6, 64);
         }
         super.renderName(par1EntityLivingBase, par2, par4, par6);
     }
-    
+
     /*
      * should maybe already work by layerRenderers.add in constructor
-     * 
-    @Override
-    protected int shouldRenderPass(EntityLivingBase par1EntityLivingBase, int par2, float par3)
-    {
-        if (par2 == 2 && ((EntityPetBat)par1EntityLivingBase).getBatLevel() > 5)
-        {
-            setRenderPassModel(renderModel);
-            return 15;
-        }
-        
-        return -1;
-    }
-    */
+     * @Override protected int shouldRenderPass(EntityLivingBase
+     * par1EntityLivingBase, int par2, float par3) { if (par2 == 2 &&
+     * ((EntityPetBat)par1EntityLivingBase).getBatLevel() > 5) {
+     * setRenderPassModel(renderModel); return 15; } return -1; }
+     */
 
     @Override
     protected ResourceLocation getEntityTexture(EntityPetBat entity)
     {
-        return ((EntityPetBat)entity).glister ? texGlis : tex;
+        return ((EntityPetBat) entity).glister ? texGlis : tex;
     }
-    
+
 }

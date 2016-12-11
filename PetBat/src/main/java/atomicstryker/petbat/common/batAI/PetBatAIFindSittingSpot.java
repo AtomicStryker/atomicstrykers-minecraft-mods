@@ -110,7 +110,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
             
             startZ = (int)(petBat.posZ+0.5D);
             
-            World w = petBat.worldObj;
+            World w = petBat.world;
             for (int y = minY; y <= maxY; y++)
             {
                 curX = startX;

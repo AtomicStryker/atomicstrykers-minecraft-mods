@@ -18,17 +18,18 @@ public class ItemBatFlute extends Item
         maxStackSize = 1;
         setMaxDamage(0);
     }
-    
+
     @Override
     public boolean getShareTag()
     {
         return true;
     }
-    
+
     @Override
-    public ActionResult<ItemStack> onItemRightClick(net.minecraft.item.ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
         EntityPetBat bat;
+        ItemStack itemStack = player.getHeldItem(hand);
         if (itemStack.getTagCompound() != null)
         {
             String batname = itemStack.getTagCompound().getString("batName");
@@ -40,7 +41,7 @@ public class ItemBatFlute extends Item
                     if (bat.getName().equals(batname))
                     {
                         bat.recallToOwner();
-                        itemStack.stackSize = 0;
+                        itemStack.setCount(0);
                     }
                 }
             }
@@ -48,7 +49,6 @@ public class ItemBatFlute extends Item
         }
         return new ActionResult<>(EnumActionResult.FAIL, null);
     }
-    
 
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
@@ -56,5 +56,5 @@ public class ItemBatFlute extends Item
         String batname = itemStack.getTagCompound() != null ? (": " + itemStack.getTagCompound().getString("batName")) : ": unassigned";
         return TextFormatting.GOLD + super.getItemStackDisplayName(itemStack) + batname;
     }
-    
+
 }

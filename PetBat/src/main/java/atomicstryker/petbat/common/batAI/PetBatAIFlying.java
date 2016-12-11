@@ -100,7 +100,7 @@ public class PetBatAIFlying extends EntityAIBase
                         ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(petBat.getOwnerEntity(), petBat.getName());
                         if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
                         {
-                            petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
+                            petBat.world.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
                             petBat.setDeadWithoutRecall();
                         }
                         else
@@ -122,7 +122,7 @@ public class PetBatAIFlying extends EntityAIBase
 
             // target invalid or no free block
             if (currentFlightTarget != null
-                    && (!petBat.worldObj.isAirBlock(currentFlightTarget) || currentFlightTarget.getY() < 1))
+                    && (!petBat.world.isAirBlock(currentFlightTarget) || currentFlightTarget.getY() < 1))
             {
                 currentFlightTarget = null;
             }
@@ -223,7 +223,7 @@ public class PetBatAIFlying extends EntityAIBase
 
             orig = new Vec3d(petBat.posX, petBat.posY, petBat.posZ);
             dest = new Vec3d(x + 0.5D, y + 0.5D, z + 0.5D);
-            RayTraceResult = petBat.worldObj.rayTraceBlocks(orig, dest, false, true, false);
+            RayTraceResult = petBat.world.rayTraceBlocks(orig, dest, false, true, false);
             if (RayTraceResult == null) // no collision detected, path is
                                               // free
             {
@@ -238,7 +238,7 @@ public class PetBatAIFlying extends EntityAIBase
     {
         if (!petBat.getOwnerName().equals("") && System.currentTimeMillis() > nextOwnerCheckTime)
         {
-            petBat.setOwnerEntity(petBat.worldObj.getPlayerEntityByName(petBat.getOwnerName()));
+            petBat.setOwnerEntity(petBat.world.getPlayerEntityByName(petBat.getOwnerName()));
             nextOwnerCheckTime = System.currentTimeMillis() + OWNER_FIND_INTERVAL;
         }
     }
@@ -246,7 +246,7 @@ public class PetBatAIFlying extends EntityAIBase
     private void checkTakeOffConditions()
     {
         // block it was hanging from is no more
-        IBlockState ib = petBat.worldObj.getBlockState(new BlockPos( MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ)));
+        IBlockState ib = petBat.world.getBlockState(new BlockPos( MathHelper.floor(petBat.posX), (int) petBat.posY + 1, MathHelper.floor(petBat.posZ)));
         if (!ib.getBlock().isNormalCube(ib))
         {
             takeOff();
@@ -266,7 +266,7 @@ public class PetBatAIFlying extends EntityAIBase
             }
 
             // player scare
-            EntityPlayer nearest = petBat.worldObj.getClosestPlayerToEntity(petBat, 4.0D);
+            EntityPlayer nearest = petBat.world.getClosestPlayerToEntity(petBat, 4.0D);
             if (nearest != null && nearest != petBat.getOwnerEntity())
             {
                 takeOff();
@@ -285,6 +285,6 @@ public class PetBatAIFlying extends EntityAIBase
     {
         petBat.setIsBatHanging(false);
         petBat.setPosition(petBat.posX, petBat.posY - 1D, petBat.posZ);
-        petBat.worldObj.playSound(null, petBat.getPosition(), SoundEvents.ENTITY_BAT_TAKEOFF, SoundCategory.NEUTRAL, 0.05F, (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
+        petBat.world.playSound(null, petBat.getPosition(), SoundEvents.ENTITY_BAT_TAKEOFF, SoundCategory.NEUTRAL, 0.05F, (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
     }
 }

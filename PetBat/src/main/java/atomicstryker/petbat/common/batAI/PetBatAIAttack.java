@@ -97,7 +97,7 @@ public class PetBatAIAttack extends EntityAIBase
                 {
                     entityTarget.setDead();
                     displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 16);
-                    petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.AMBIENT, 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
+                    petBat.world.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.AMBIENT, 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
@@ -136,11 +136,11 @@ public class PetBatAIAttack extends EntityAIBase
             var5.rotatePitch(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var5.rotateYaw(-petBat.rotationYaw * (float)Math.PI / 180.0F);
             var5 = var5.addVector(petBat.posX, petBat.posY + (double)petBat.getEyeHeight(), petBat.posZ);
-            petBat.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord, Item.getIdFromItem(item.getItem()),
+            petBat.world.spawnParticle(EnumParticleTypes.ITEM_CRACK, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord, Item.getIdFromItem(item.getItem()),
                     item.getMetadata());
         }
 
-        petBat.worldObj.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.AMBIENT, 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2),
+        petBat.world.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.AMBIENT, 0.5F + 0.5F * (float)petBat.getRNG().nextInt(2),
                 (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
     }
     
