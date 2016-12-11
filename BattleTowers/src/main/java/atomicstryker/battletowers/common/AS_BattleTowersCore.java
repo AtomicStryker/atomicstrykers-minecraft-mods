@@ -114,9 +114,9 @@ public class AS_BattleTowersCore
 
         // EntityRegistry.registerGlobalEntityID(AS_EntityGolem.class,
         // "Battletower Golem", golemEntityID, 0xA0A0A0, 0x808080);
-        EntityRegistry.registerModEntity(new ResourceLocation("battletowers", "golem"), AS_EntityGolem.class, "Battletower Golem", 1, this, 25, 5, true);
+        EntityRegistry.registerModEntity(new ResourceLocation("battletowers", "golem"), AS_EntityGolem.class, "Battletower Golem", 1, this, 32, 3, false);
 
-        EntityRegistry.registerModEntity(new ResourceLocation("battletowers", "golemfireball"), AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 25, 5, true);
+        EntityRegistry.registerModEntity(new ResourceLocation("battletowers", "golemfireball"), AS_EntityGolemFireball.class, "Golem Fireball", 2, this, 32, 3, false);
 
         towerDestroyers = new HashSet<AS_TowerDestroyer>();
 

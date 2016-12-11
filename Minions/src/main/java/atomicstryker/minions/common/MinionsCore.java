@@ -173,7 +173,7 @@ public class MinionsCore
         GameRegistry.register(itemMastersStaff);
 
         MinecraftForge.EVENT_BUS.register(this);
-        EntityRegistry.registerModEntity(new ResourceLocation("minions", "minion"), EntityMinion.class, "AS_EntityMinion", 1, this, 25, 5, true);
+        EntityRegistry.registerModEntity(new ResourceLocation("minions", "minion"), EntityMinion.class, "AS_EntityMinion", 1, this, 32, 3, false);
 
         proxy.preInit(event);
 
