@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityCaveSpider;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
@@ -99,8 +104,7 @@ public class AS_WorldGenTower
             }
         }
 
-        // System.err.println("Snow: "+countSnow+" Sand: "+countSand+" Water:
-        // "+countWater+" else: "+countElse);
+        // System.err.println("Snow: "+countSnow+" Sand: "+countSand+" Water: "+countWater+" else: "+countElse);
 
         int[] nums = { countWater, countSnow, countSand, countFoliage, countElse };
         Arrays.sort(nums);
@@ -139,6 +143,7 @@ public class AS_WorldGenTower
         return towerChosen.ordinal();
     }
 
+    @SuppressWarnings("deprecation") // is needed because getDefaultState on stairs does not work
     public void generate(World world, int ix, int jy, int kz, int towerchoice, boolean underground)
     {
         TowerTypes towerChosen = TowerTypes.values()[towerchoice];
@@ -154,34 +159,22 @@ public class AS_WorldGenTower
         int floor = 1;
         boolean topFloor = false;
         int builderHeight = startingHeight;
-        for (; builderHeight < maximumHeight; builderHeight += 7) // builderHeight
-                                                                  // jumps
-                                                                  // floors
+        for (; builderHeight < maximumHeight; builderHeight += 7) // builderHeight jumps floors
         {
             if (builderHeight + 7 >= maximumHeight)
             {
                 topFloor = true;
             }
 
-            for (int floorIterator = 0; floorIterator < 7; floorIterator++) // build
-                                                                            // each
-                                                                            // floor
-                                                                            // height
-                                                                            // block
-                                                                            // till
-                                                                            // next
-                                                                            // floor
+            for (int floorIterator = 0; floorIterator < 7; floorIterator++) // build each floor height block till next floor
             {
                 if (floor == 1 && floorIterator < 4) // initial floor
                 {
                     floorIterator = 4;
                 }
-                for (int xIterator = -7; xIterator < 7; xIterator++) // do each
-                                                                     // X
+                for (int xIterator = -7; xIterator < 7; xIterator++) // do each X
                 {
-                    for (int zIterator = -7; zIterator < 7; zIterator++) // do
-                                                                         // each
-                                                                         // Z
+                    for (int zIterator = -7; zIterator < 7; zIterator++) // do each Z
                     {
                         int iCurrent = xIterator + ix;
                         int jCurrent = floorIterator + builderHeight;
@@ -189,18 +182,15 @@ public class AS_WorldGenTower
 
                         if (zIterator == -7) // last row, 14
                         {
-                            if (xIterator > -5 && xIterator < 4) // rear outer
-                                                                 // wall
+                            if (xIterator > -5 && xIterator < 4) // rear outer wall
                             {
                                 buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator);
                             }
                             continue;
                         }
-                        if (zIterator == -6 || zIterator == -5) // rows 12 and
-                                                                // 13
+                        if (zIterator == -6 || zIterator == -5) // rows 12 and 13
                         {
-                            if (xIterator == -5 || xIterator == 4) // outer wall
-                                                                   // parts
+                            if (xIterator == -5 || xIterator == 4) // outer wall parts
                             {
                                 buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator);
                                 continue;
@@ -211,29 +201,25 @@ public class AS_WorldGenTower
                                 {
                                     if (!(underground && floor == 1))
                                     {
-                                        world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), towerChosen.getStairBlockID().getDefaultState());
+                                        world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), towerChosen.getStairBlockID().getStateFromMeta(0));
                                     }
                                     if (floorIterator == 5)
                                     {
                                         world.setBlockState(new BlockPos(iCurrent - 7, jCurrent, zCurrent), towerFloorBlockID.getDefaultState());
                                     }
-                                    if (floorIterator == 6 && topFloor) // top
-                                                                        // ledge
-                                                                        // part
+                                    if (floorIterator == 6 && topFloor) // top ledge part
                                     {
                                         buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator);
                                     }
                                     continue;
                                 }
-                                if (xIterator < 4 && xIterator > -5) // tower
-                                                                     // insides
+                                if (xIterator < 4 && xIterator > -5) // tower insides
                                 {
                                     world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                                 }
                                 continue;
                             }
-                            if (zIterator != -5 || xIterator <= -5 || xIterator >= 5) // outside
-                                                                                      // tower
+                            if (zIterator != -5 || xIterator <= -5 || xIterator >= 5) // outside tower
                             {
                                 continue;
                             }
@@ -245,31 +231,23 @@ public class AS_WorldGenTower
                                 }
                                 else
                                 {
-                                    buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator); // under
-                                                                                                                                 // stairwell
+                                    buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator); // under stairwell
                                 }
                             }
                             else
                             {
-                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState()); // stairwell
-                                                                                                                                 // space
+                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState()); // stairwell space
                             }
                             continue;
                         }
-                        if (zIterator == -4 || zIterator == -3 || zIterator == 2 || zIterator == 3) // rows
-                                                                                                    // 11,
-                                                                                                    // 10,
-                                                                                                    // 5,
-                                                                                                    // 4
+                        if (zIterator == -4 || zIterator == -3 || zIterator == 2 || zIterator == 3) // rows 11, 10, 5, 4
                         {
-                            if (xIterator == -6 || xIterator == 5) // outer wall
-                                                                   // parts
+                            if (xIterator == -6 || xIterator == 5) // outer wall parts
                             {
                                 buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator);
                                 continue;
                             }
-                            if (xIterator <= -6 || xIterator >= 5) // outside
-                                                                   // tower
+                            if (xIterator <= -6 || xIterator >= 5) // outside tower
                             {
                                 continue;
                             }
@@ -278,9 +256,7 @@ public class AS_WorldGenTower
                                 buildFloorPiece(world, iCurrent, jCurrent, zCurrent, towerFloorBlockID, towerFloorMeta);
                                 continue;
                             }
-                            if (world.getBlockState(new BlockPos(iCurrent, jCurrent, zCurrent)).getBlock() != Blocks.CHEST) // tower
-                                                                                                                            // inside
-                                                                                                                            // space
+                            if (world.getBlockState(new BlockPos(iCurrent, jCurrent, zCurrent)).getBlock() != Blocks.CHEST) // tower inside space
                             {
                                 world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                             }
@@ -290,10 +266,7 @@ public class AS_WorldGenTower
                         {
                             if (xIterator == -7 || xIterator == 6)
                             {
-                                if (floorIterator < 0 || floorIterator > 3 || ((xIterator != -7 && xIterator != 6) || underground) || zIterator != -1 && zIterator != 0) // wall,
-                                                                                                                                                                         // short
-                                                                                                                                                                         // of
-                                                                                                                                                                         // window
+                                if (floorIterator < 0 || floorIterator > 3 || ((xIterator != -7 && xIterator != 6) || underground) || zIterator != -1 && zIterator != 0) // wall, short of window
                                 {
                                     buildWallPiece(world, iCurrent, jCurrent, zCurrent, towerWallBlockID, floor, floorIterator);
                                 }
@@ -414,7 +387,7 @@ public class AS_WorldGenTower
                     world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.AIR.getDefaultState());
                 }
             }
-            // chest petal
+            // chest pedestal
             world.setBlockState(new BlockPos(ix, builderHeight + 6, kz + 3), towerFloorBlockID.getDefaultState());
             world.setBlockState(new BlockPos(ix - 1, builderHeight + 6, kz + 3), towerFloorBlockID.getDefaultState());
 
@@ -462,8 +435,7 @@ public class AS_WorldGenTower
                 }
             }
 
-            // move lights builder a bit higher, to support non-opaque lights
-            // such as lamps
+            // move lights builder a bit higher, to support non-opaque lights such as lamps
             world.setBlockState(new BlockPos(ix + 3, builderHeight + 2, kz - 6), towerLightBlockID.getDefaultState());
             world.setBlockState(new BlockPos(ix - 4, builderHeight + 2, kz - 6), towerLightBlockID.getDefaultState());
             world.setBlockState(new BlockPos(ix + 1, builderHeight + 2, kz - 4), towerLightBlockID.getDefaultState());
@@ -471,9 +443,7 @@ public class AS_WorldGenTower
 
             if (towerChosen != TowerTypes.Null)
             {
-                for (int l3 = 0; l3 < (floor * 4 + towerChosen.ordinal()) - 8 && !topFloor; l3++) // random
-                                                                                                  // hole
-                                                                                                  // poker
+                for (int l3 = 0; l3 < (floor * 4 + towerChosen.ordinal()) - 8 && !topFloor; l3++) // random hole poker
                 {
                     int k4 = 5 - world.rand.nextInt(12);
                     int k5 = builderHeight + 5;
@@ -553,26 +523,32 @@ public class AS_WorldGenTower
 
     private ResourceLocation getMobType(Random random)
     {
-        switch (random.nextInt(4))
+        switch (random.nextInt(10))
         {
         case 0:
-        {
-            return new ResourceLocation("minecraft", "Skeleton");
-        }
         case 1:
-        {
-            return new ResourceLocation("minecraft", "Zombie");
-        }
         case 2:
         {
-            return new ResourceLocation("minecraft", "Spider");
+            return EntityList.getKey(EntitySkeleton.class);
         }
         case 3:
+        case 4:
+        case 5:
+        case 6:
         {
-            return new ResourceLocation("minecraft", "CaveSpider");
+            return EntityList.getKey(EntityZombie.class);
+        }
+        case 7:
+        case 8:
+        {
+            EntityList.getKey(EntitySpider.class);
+        }
+        case 9:
+        {
+            return EntityList.getKey(EntityCaveSpider.class);
         }
         default:
-            return new ResourceLocation("minecraft", "Zombie");
+            return EntityList.getKey(EntityZombie.class);
         }
     }
 
@@ -582,12 +558,7 @@ public class AS_WorldGenTower
         CobbleStone(Blocks.COBBLESTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 0, Blocks.STONE_STAIRS),
         CobbleStoneMossy(Blocks.MOSSY_COBBLESTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 0, Blocks.STONE_STAIRS),
         SandStone(Blocks.SANDSTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 1, Blocks.SANDSTONE_STAIRS),
-        Ice(Blocks.ICE, Blocks.AIR /* Blocks.GLOWSTONE */, Blocks.CLAY, 2, Blocks.OAK_STAIRS), // since
-                                                                                               // when
-                                                                                               // does
-                                                                                               // glowstone
-                                                                                               // melt
-                                                                                               // ice
+        Ice(Blocks.ICE, Blocks.AIR /* Blocks.GLOWSTONE */, Blocks.CLAY, 2, Blocks.OAK_STAIRS), // since when does glowstone melt ice
         SmoothStone(Blocks.STONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 3, Blocks.STONE_STAIRS),
         Netherrack(Blocks.NETHERRACK, Blocks.GLOWSTONE, Blocks.SOUL_SAND, 0, Blocks.NETHER_BRICK_STAIRS),
         Jungle(Blocks.MOSSY_COBBLESTONE, Blocks.WEB, Blocks.DIRT, 0, Blocks.JUNGLE_STAIRS);
