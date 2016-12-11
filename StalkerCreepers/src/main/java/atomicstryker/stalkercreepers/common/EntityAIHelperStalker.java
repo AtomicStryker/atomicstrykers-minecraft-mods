@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 @SuppressWarnings("unused")
 public class EntityAIHelperStalker
 {
-    @SuppressWarnings("unused")
+
     public static boolean isSeenByTarget(EntityLiving stalker)
     {
         EntityLivingBase seer = stalker.getAttackTarget();

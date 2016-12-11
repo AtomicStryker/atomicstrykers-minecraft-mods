@@ -98,13 +98,9 @@ public class MinionAIFollowMaster extends EntityAIBase
                                 IBlockState a = theMinion.world.getBlockState(new BlockPos(x + xIter, y - 1, z + zIter));
                                 IBlockState b = theMinion.world.getBlockState(new BlockPos(x + xIter, y, z + zIter));
                                 IBlockState c = theMinion.world.getBlockState(new BlockPos(x + xIter, y + 1, z + zIter));
-                                if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3)
-                                        && a.getBlock().isNormalCube(a)
-                                        && !b.getBlock().isNormalCube(b)
-                                        && !c.getBlock().isNormalCube(c))
+                                if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3) && a.isNormalCube() && !b.isNormalCube() && !c.isNormalCube())
                                 {
-                                    theMinion.setLocationAndAngles((double) (x + xIter) + 0.5D, (double) y, (double) (z + zIter) + 0.5D,
-                                            theMinion.rotationYaw, theMinion.rotationPitch);
+                                    theMinion.setLocationAndAngles((double) (x + xIter) + 0.5D, (double) y, (double) (z + zIter) + 0.5D, theMinion.rotationYaw, theMinion.rotationPitch);
                                     petPathfinder.clearPathEntity();
                                     return;
                                 }

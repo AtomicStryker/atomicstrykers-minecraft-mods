@@ -83,8 +83,7 @@ public class RuinTemplateRule
 
         String[] data;
 
-        // Command Block special case, contains basically any character that
-        // breaks this
+        // Command Block special case, contains basically any character that breaks this
         if (blockRules[2].startsWith("CommandBlock:"))
         {
             String[] commandrules = rule.split("CommandBlock:");
@@ -98,24 +97,11 @@ public class RuinTemplateRule
             {
                 blockIDs[i] = null;
                 blockMDs[i] = RuinsMod.DIR_NORTH;
-                if (commandrules[i + 1].charAt(commandrules[i + 1].length() - 2) == '-') // case
-                                                                                         // meta
-                                                                                         // value
-                                                                                         // "-n"
-                                                                                         // present
-                                                                                         // (impulse
-                                                                                         // command
-                                                                                         // block)
+                // case meta value "-n" present (impulse command block)
+                if (commandrules[i + 1].charAt(commandrules[i + 1].length() - 2) == '-')
                 {
-                    String meta = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1); // needed
-                                                                                                     // because
-                                                                                                     // char
-                                                                                                     // to
-                                                                                                     // int
-                                                                                                     // conversion
-                                                                                                     // is
-                                                                                                     // bad
-                                                                                                     // here
+                    String meta = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1);
+                    // needed because char to int conversion is bad here
                     blockMDs[i] = Integer.valueOf(meta);
                     // strip the last 2 chars from the string or else parsing
                     // the command will fail
@@ -454,6 +440,7 @@ public class RuinTemplateRule
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void placeBlock(World world, int blocknum, int x, int y, int z, int rotate)
     {
         int metadata = rotate != RuinsMod.DIR_NORTH ? rotateMetadata(blockIDs[blocknum], blockMDs[blocknum], rotate) : blockMDs[blocknum];
@@ -545,6 +532,7 @@ public class RuinTemplateRule
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     private void doSpecialBlock(World world, Random random, int x, int y, int z, int blocknum, int rotate, final String dataString)
     {
         if (dataString.equals("preserveBlock"))
@@ -1030,6 +1018,7 @@ public class RuinTemplateRule
         Collections.shuffle(stacks, rand);
     }
 
+    @SuppressWarnings("deprecation")
     private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, ArrayList<String> nbtTags, int rotateMetadata)
     {
         world.setBlockState(new BlockPos(x, y, z), block.getStateFromMeta(rotateMetadata), 2);
@@ -1188,6 +1177,7 @@ public class RuinTemplateRule
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int meta, int rotate)
     {
         meta = rotate != RuinsMod.DIR_NORTH ? rotateMetadata(Blocks.COMMAND_BLOCK, meta, rotate) : meta;

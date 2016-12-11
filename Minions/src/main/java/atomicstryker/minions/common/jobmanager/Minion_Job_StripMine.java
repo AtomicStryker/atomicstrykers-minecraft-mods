@@ -151,7 +151,7 @@ public class Minion_Job_StripMine extends Minion_Job_Manager
                         (EntityPlayerMP) workerList.get(0).master, new BlockPos(nextX-2*xDirection, startY, nextZ-2*zDirection));
                 if (event != -1)
                 {
-                    worldObj.setBlockState(new BlockPos(nextX-2*xDirection,  startY,  nextZ-2*zDirection),  Blocks.TORCH.getStateFromMeta( 0));
+                    worldObj.setBlockState(new BlockPos(nextX-2*xDirection,  startY,  nextZ-2*zDirection),  Blocks.TORCH.getDefaultState());
                 }
             }
         }

@@ -25,6 +25,7 @@ public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
     	metaToPlace = metaOrdered;
     }
     
+    @SuppressWarnings("deprecation")
     public void onFinishedTask()
     {
     	super.onFinishedTask();
@@ -32,7 +33,7 @@ public class BlockTask_ReplaceBlock extends BlockTask_MineBlock
     	int event = ForgeHooks.onBlockBreakEvent(worker.world, worker.world.getWorldInfo().getGameType(), (EntityPlayerMP) worker.master, new BlockPos(posX, posY, posZ));
         if (event != -1)
         {
-            worker.world.setBlockState(new BlockPos(posX,  posY,  posZ),  blockToPlace.getStateFromMeta( metaToPlace));
+            worker.world.setBlockState(new BlockPos(posX,  posY,  posZ),  blockToPlace.getStateFromMeta(metaToPlace));
         }
     }
 }

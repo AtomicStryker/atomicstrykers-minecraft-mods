@@ -187,7 +187,7 @@ public abstract class BlockTask
         // this.worker.setPathToEntity(null);
 
         IBlockState is = worker.world.getBlockState(new BlockPos(posX, posY, posZ));
-        worker.adaptItem(is.getBlock().getMaterial(is));
+        worker.adaptItem(is.getMaterial());
     }
 
     /**
@@ -272,7 +272,7 @@ public abstract class BlockTask
     {
         IBlockState is = world.getBlockState(new BlockPos(i, j, k));
         Block block = is.getBlock();
-        Material m = block.getMaterial(is);
+        Material m = is.getMaterial();
 
         if (block == Blocks.AIR || m == Material.WATER || m == Material.LAVA || m == Material.LEAVES || m == Material.PLANTS)
         {

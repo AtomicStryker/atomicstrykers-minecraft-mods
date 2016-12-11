@@ -11,9 +11,9 @@ import atomicstryker.petbat.common.network.BatNamePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 
 public class GuiPetBatRename extends GuiScreen
 {
@@ -33,7 +33,7 @@ public class GuiPetBatRename extends GuiScreen
     public GuiPetBatRename(ItemStack stack)
     {
         petBatItemStack = stack;
-        screenTitle = I18n.translateToLocal("translation.PetBat:gui_title");
+        screenTitle = I18n.format("translation.PetBat:gui_title");
 
         xp = stack.getTagCompound() != null ? stack.getTagCompound().getCompoundTag("petbatmod").getInteger("BatXP") : 0;
         xpToNext = PetBatMod.instance().getMissingExperienceToNextLevel(xp);
@@ -103,18 +103,18 @@ public class GuiPetBatRename extends GuiScreen
         this.drawCenteredString(this.fontRendererObj, this.screenTitle, x, 40, 0x0000AA);
 
         int y = 100;
-        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.translateToLocal("translation.PetBat:level")
+        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.format("translation.PetBat:level")
                 + TextFormatting.RESET + level + " " + levelTitle), x, y, 0xFFFFFF);
         y += 12;
         drawCenteredString(
                 fontRendererObj,
-                (TextFormatting.BOLD + I18n.translateToLocal("translation.PetBat:experience") + TextFormatting.RESET + xp + (xpToNext == -1
-                        ? "" : I18n.translateToLocal("translation.PetBat:missing_xp") + xpToNext)), x, y, 0xFFFFFF);
+                (TextFormatting.BOLD + I18n.format("translation.PetBat:experience") + TextFormatting.RESET + xp + (xpToNext == -1
+                        ? "" : I18n.format("translation.PetBat:missing_xp") + xpToNext)), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.translateToLocal("translation.PetBat:health")
+        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.format("translation.PetBat:health")
                 + TextFormatting.RESET + health + " / " + maxHealth), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.translateToLocal("translation.PetBat:attack_power")
+        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.format("translation.PetBat:attack_power")
                 + TextFormatting.RESET + attackStrength), x, y, 0xFFFFFF);
 
         y += 30;

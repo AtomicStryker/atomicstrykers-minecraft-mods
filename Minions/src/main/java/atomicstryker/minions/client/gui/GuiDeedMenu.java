@@ -1,15 +1,16 @@
 package atomicstryker.minions.client.gui;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import org.lwjgl.opengl.GL11;
+
 import atomicstryker.minions.common.EvilDeed;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.EvilDeedPacket;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.text.translation.I18n;
-import org.lwjgl.opengl.GL11;
-
-import java.util.ArrayList;
-import java.util.Random;
+import net.minecraft.client.resources.I18n;
 
 /**
  * Evil Deed selection menu
@@ -27,10 +28,10 @@ public class GuiDeedMenu extends GuiScreen
     @Override
     public void initGui()
     {
-        screenTitle = I18n.translateToLocal("minionsgui.chooseYourPart");
+        screenTitle = I18n.format("minionsgui.chooseYourPart");
         buttonList.clear();
 
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, I18n.translateToLocal("minionsgui.chickenout")));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, I18n.format("minionsgui.chickenout")));
 
         ArrayList<EvilDeed> copy = (ArrayList<EvilDeed>) MinionsCore.instance.evilDoings.clone();
         deedButtons = new ArrayList<EvilDeed>();
@@ -44,12 +45,12 @@ public class GuiDeedMenu extends GuiScreen
 
         buttonList.clear();
 
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, I18n.translateToLocal("minionsgui.nevermind")));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, I18n.format("minionsgui.nevermind")));
 
         for (int x = 0; x < 3; x++)
         {
             EvilDeed deed = deedButtons.get(x);
-            buttonList.add(new GuiButton(x + 1, width / 2 - 100, height / 4 + x * 40, I18n.translateToLocal(deed.getButtonText())));
+            buttonList.add(new GuiButton(x + 1, width / 2 - 100, height / 4 + x * 40, I18n.format(deed.getButtonText())));
         }
     }
 

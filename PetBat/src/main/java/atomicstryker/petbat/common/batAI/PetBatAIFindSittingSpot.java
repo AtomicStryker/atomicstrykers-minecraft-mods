@@ -131,7 +131,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                     if (w.isAirBlock(new BlockPos(curX, y, curZ)) && w.isAirBlock(new BlockPos(curX, y-1, curZ)))
                     {
                         IBlockState ib = w.getBlockState(new BlockPos(curX, y+1, curZ));
-                        if (ib.getBlock().isNormalCube(ib))
+                        if (ib.isNormalCube())
                         {
                             foundSpot(curX, y, curZ);
                             return;

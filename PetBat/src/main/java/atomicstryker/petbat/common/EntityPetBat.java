@@ -7,6 +7,7 @@ import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
 import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,7 +31,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -220,7 +220,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         {
             setIsBatStaying(!getIsBatStaying());
             player.sendMessage(
-                    new TextComponentTranslation(petName + ": " + (getIsBatStaying() ? I18n.translateToLocal("translation.PetBat:staying") : I18n.translateToLocal("translation.PetBat:notstaying"))));
+                    new TextComponentTranslation(petName + ": " + (getIsBatStaying() ? I18n.format("translation.PetBat:staying") : I18n.format("translation.PetBat:notstaying"))));
             return true;
         }
         return false;

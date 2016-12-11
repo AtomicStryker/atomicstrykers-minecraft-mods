@@ -134,11 +134,12 @@ public class MultiMineClient
     private void renderBlockDigParticles(int x, int y, int z)
     {
         World world = thePlayer.world;
-        IBlockState state = world.getBlockState(new BlockPos(x, y, z));
+        BlockPos bp = new BlockPos(x, y, z);
+        IBlockState state = world.getBlockState(bp);
         Block block = state.getBlock();
         if (block != Blocks.AIR)
         {
-            SoundType soundtype = block.getSoundType();
+            SoundType soundtype = block.getSoundType(state, world, bp, thePlayer);
             mc.getSoundHandler()
                     .playSound(new PositionedSoundRecord(soundtype.getHitSound(), SoundCategory.NEUTRAL, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, new BlockPos(x, y, z)));
             mc.effectRenderer.addBlockDestroyEffects(new BlockPos(x, y, z), state);
@@ -208,14 +209,15 @@ public class MultiMineClient
 
                     if (block.getBlock() != Blocks.AIR)
                     {
-                        if (!notClientsBlock && block.getBlock().removedByPlayer(w.getBlockState(pos), w, pos, player, true))
+                        IBlockState is = w.getBlockState(pos);
+                        if (!notClientsBlock && block.getBlock().removedByPlayer(is, w, pos, player, true))
                         {
                             block.getBlock().onBlockDestroyedByPlayer(w, pos, block);
                             block.getBlock().harvestBlock(w, player, pos, block, w.getTileEntity(pos), player.getHeldItemMainhand());
                         }
 
-                        w.playSound(null, pos, block.getBlock().getSoundType().getBreakSound(), SoundCategory.BLOCKS, block.getBlock().getSoundType().getVolume() + 1.0F / 2.0F,
-                                block.getBlock().getSoundType().getPitch() * 0.8F);
+                        SoundType st = block.getBlock().getSoundType(is, w, iterBlock.getPos(), player);
+                        w.playSound(null, pos, st.getBreakSound(), SoundCategory.BLOCKS, st.getVolume() + 1.0F / 2.0F, st.getPitch() * 0.8F);
                     }
                     onBlockMineFinishedDamagePlayerItem(player, x, y, z);
 

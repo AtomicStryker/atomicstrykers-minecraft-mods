@@ -5,7 +5,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.MathHelper;
 
 public class ModelPetBat extends ModelBase implements LayerRenderer<EntityPetBat>

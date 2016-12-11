@@ -247,7 +247,7 @@ public class PetBatAIFlying extends EntityAIBase
     {
         // block it was hanging from is no more
         IBlockState ib = petBat.world.getBlockState(new BlockPos( MathHelper.floor(petBat.posX), (int) petBat.posY + 1, MathHelper.floor(petBat.posZ)));
-        if (!ib.getBlock().isNormalCube(ib))
+        if (!ib.isNormalCube())
         {
             takeOff();
         }

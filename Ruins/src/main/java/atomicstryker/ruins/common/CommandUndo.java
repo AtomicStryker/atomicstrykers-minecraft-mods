@@ -112,6 +112,7 @@ public class CommandUndo extends CommandBase
         return 2;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {

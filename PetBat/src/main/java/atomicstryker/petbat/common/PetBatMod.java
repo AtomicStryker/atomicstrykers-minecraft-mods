@@ -7,6 +7,7 @@ import java.util.Random;
 
 import atomicstryker.petbat.common.network.BatNamePacket;
 import atomicstryker.petbat.common.network.NetworkHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityBat;
@@ -18,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -88,12 +88,12 @@ public class PetBatMod implements IProxy
 
     public String getLevelTitle(int level)
     {
-        return I18n.translateToLocal("translation.PetBat:batlevel" + level);
+        return I18n.format("translation.PetBat:batlevel" + level);
     }
 
     public String getLevelDescription(int level)
     {
-        return I18n.translateToLocal("translation.PetBat:batlevel" + level + "desc");
+        return I18n.format("translation.PetBat:batlevel" + level + "desc");
     }
 
     private Field entityBatFlightCoords;

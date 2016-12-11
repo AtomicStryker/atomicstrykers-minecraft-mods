@@ -13,6 +13,7 @@ import atomicstryker.minions.common.jobmanager.BlockTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -336,13 +337,16 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             int x = dataManager.get(X_BLOCKTASK);
             int y = dataManager.get(Y_BLOCKTASK);
             int z = dataManager.get(Z_BLOCKTASK);
-            Block blockID = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+            BlockPos bp = new BlockPos(x, y, z);
+            IBlockState is =  world.getBlockState(bp);
+            Block blockID = is.getBlock();
 
             swingProgress += (0.17F * 0.5 * workSpeed);
+            SoundType soundtype = blockID.getSoundType(is, world, bp, this);
+            
             if (swingProgress > 1.0F)
             {
                 swingProgress = 0;
-                SoundType soundtype = blockID.getSoundType();
                 playSound(soundtype.getBreakSound(), soundtype.getVolume(), soundtype.getPitch());
             }
 
@@ -351,7 +355,6 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                 long curTime = System.currentTimeMillis();
                 if (curTime - timeLastSound > (500L / workSpeed))
                 {
-                    SoundType soundtype = blockID.getSoundType();
                     playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.35F, soundtype.getPitch());
                     timeLastSound = curTime;
                 }
