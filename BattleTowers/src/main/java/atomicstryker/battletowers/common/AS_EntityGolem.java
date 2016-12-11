@@ -139,7 +139,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         {
             if (getIsDormant())
             {
-                world.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemAwaken, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
+                world.playSound(null, getPosition(), AS_BattleTowersCore.soundGolemAwaken, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
                         ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
             }
 
@@ -233,7 +233,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             }
             else if (rageCounter <= 0 && explosionAttack == 0)
             {
-                world.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemSpecial, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
+                world.playSound(null, getPosition(), AS_BattleTowersCore.soundGolemSpecial, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
                         ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
                 motionY += 0.9D;
                 explosionAttack = 1;
@@ -303,7 +303,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
             if (attackCounter == 10)
             {
-                world.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemCharge, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
+                world.playSound(null, getPosition(), AS_BattleTowersCore.soundGolemCharge, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
             }
             attackCounter++;
             if (attackCounter >= 20)
@@ -405,7 +405,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     {
         if (!this.getIsDormant())
         {
-            return AS_BattleTowersCore.instance.soundGolem;
+            return AS_BattleTowersCore.soundGolem;
         }
         else
         {
@@ -416,13 +416,13 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     @Override
     protected SoundEvent getHurtSound()
     {
-        return AS_BattleTowersCore.instance.soundGolemHurt;
+        return AS_BattleTowersCore.soundGolemHurt;
     }
 
     @Override
     protected SoundEvent getDeathSound()
     {
-        return AS_BattleTowersCore.instance.soundGolemDeath;
+        return AS_BattleTowersCore.soundGolemDeath;
     }
 
     @Override

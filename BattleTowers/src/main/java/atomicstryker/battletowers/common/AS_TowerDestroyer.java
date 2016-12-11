@@ -38,7 +38,7 @@ public class AS_TowerDestroyer
         this.triggerTime = time;
         this.lastExplosionSoundTime = time;
 
-        world.playSound(null, new BlockPos(xGolem, yGolem, zGolem), AS_BattleTowersCore.instance.soundTowerBreakStart, SoundCategory.HOSTILE, 4F, 1.0F);
+        world.playSound(null, new BlockPos(xGolem, yGolem, zGolem), AS_BattleTowersCore.soundTowerBreakStart, SoundCategory.HOSTILE, 4F, 1.0F);
     }
 
     public void update()
@@ -179,7 +179,7 @@ public class AS_TowerDestroyer
             }
             case 1:
             {
-                world.playSound(null, new BlockPos(xGolem, yGolem, zGolem), AS_BattleTowersCore.instance.soundTowerCrumble, SoundCategory.HOSTILE, 4F, 1.0F);
+                world.playSound(null, new BlockPos(xGolem, yGolem, zGolem), AS_BattleTowersCore.soundTowerCrumble, SoundCategory.HOSTILE, 4F, 1.0F);
                 break;
             }
             }

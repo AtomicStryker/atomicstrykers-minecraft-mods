@@ -211,11 +211,11 @@ public class AS_WorldGenTower
                                 {
                                     if (!(underground && floor == 1))
                                     {
-                                        world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), towerChosen.getStairBlockID().getStateFromMeta(0));
+                                        world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), towerChosen.getStairBlockID().getDefaultState());
                                     }
                                     if (floorIterator == 5)
                                     {
-                                        world.setBlockState(new BlockPos(iCurrent - 7, jCurrent, zCurrent), towerFloorBlockID.getStateFromMeta(0));
+                                        world.setBlockState(new BlockPos(iCurrent - 7, jCurrent, zCurrent), towerFloorBlockID.getDefaultState());
                                     }
                                     if (floorIterator == 6 && topFloor) // top
                                                                         // ledge
@@ -228,7 +228,7 @@ public class AS_WorldGenTower
                                 if (xIterator < 4 && xIterator > -5) // tower
                                                                      // insides
                                 {
-                                    world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getStateFromMeta(0));
+                                    world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                                 }
                                 continue;
                             }
@@ -251,7 +251,7 @@ public class AS_WorldGenTower
                             }
                             else
                             {
-                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getStateFromMeta(0)); // stairwell
+                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState()); // stairwell
                                                                                                                                  // space
                             }
                             continue;
@@ -282,7 +282,7 @@ public class AS_WorldGenTower
                                                                                                                             // inside
                                                                                                                             // space
                             {
-                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getStateFromMeta(0));
+                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                             }
                             continue;
                         }
@@ -299,7 +299,7 @@ public class AS_WorldGenTower
                                 }
                                 else
                                 {
-                                    world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getStateFromMeta(0));
+                                    world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                                 }
                                 continue;
                             }
@@ -313,7 +313,7 @@ public class AS_WorldGenTower
                             }
                             else
                             {
-                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getStateFromMeta(0));
+                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                             }
                             continue;
                         }
@@ -334,7 +334,7 @@ public class AS_WorldGenTower
                             }
                             else
                             {
-                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getStateFromMeta(0));
+                                world.setBlockState(new BlockPos(iCurrent, jCurrent, zCurrent), Blocks.AIR.getDefaultState());
                             }
                             continue;
                         }
@@ -378,8 +378,8 @@ public class AS_WorldGenTower
 
             if (floor == 2)
             {
-                world.setBlockState(new BlockPos(ix + 3, builderHeight, kz - 5), towerWallBlockID.getStateFromMeta(0));
-                world.setBlockState(new BlockPos(ix + 3, builderHeight - 1, kz - 5), towerWallBlockID.getStateFromMeta(0));
+                world.setBlockState(new BlockPos(ix + 3, builderHeight, kz - 5), towerWallBlockID.getDefaultState());
+                world.setBlockState(new BlockPos(ix + 3, builderHeight - 1, kz - 5), towerWallBlockID.getDefaultState());
             }
             if ((!underground && topFloor) || (underground && floor == 1))
             {
@@ -394,14 +394,14 @@ public class AS_WorldGenTower
             {
                 if (towerChosen != TowerTypes.Null)
                 {
-                    world.setBlockState(new BlockPos(ix + 2, builderHeight + 6, kz + 2), Blocks.MOB_SPAWNER.getStateFromMeta(0));
+                    world.setBlockState(new BlockPos(ix + 2, builderHeight + 6, kz + 2), Blocks.MOB_SPAWNER.getDefaultState());
                     TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix + 2, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
                         tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
                     }
 
-                    world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.MOB_SPAWNER.getStateFromMeta(0));
+                    world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.MOB_SPAWNER.getDefaultState());
                     tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix - 3, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
@@ -410,13 +410,13 @@ public class AS_WorldGenTower
                 }
                 else
                 {
-                    world.setBlockState(new BlockPos(ix + 2, builderHeight + 6, kz + 2), Blocks.AIR.getStateFromMeta(0));
-                    world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.AIR.getStateFromMeta(0));
+                    world.setBlockState(new BlockPos(ix + 2, builderHeight + 6, kz + 2), Blocks.AIR.getDefaultState());
+                    world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.AIR.getDefaultState());
                 }
             }
             // chest petal
-            world.setBlockState(new BlockPos(ix, builderHeight + 6, kz + 3), towerFloorBlockID.getStateFromMeta(0));
-            world.setBlockState(new BlockPos(ix - 1, builderHeight + 6, kz + 3), towerFloorBlockID.getStateFromMeta(0));
+            world.setBlockState(new BlockPos(ix, builderHeight + 6, kz + 3), towerFloorBlockID.getDefaultState());
+            world.setBlockState(new BlockPos(ix - 1, builderHeight + 6, kz + 3), towerFloorBlockID.getDefaultState());
 
             if (builderHeight + 56 >= 120 && floor == 1)
             {
@@ -458,16 +458,16 @@ public class AS_WorldGenTower
             {
                 for (int chestlength = 0; chestlength < 2; chestlength++)
                 {
-                    world.setBlockState(new BlockPos(ix - chestlength, builderHeight + 7, kz + 3), Blocks.AIR.getStateFromMeta(2));
+                    world.setBlockState(new BlockPos(ix - chestlength, builderHeight + 7, kz + 3), Blocks.CHEST.getStateFromMeta(2));
                 }
             }
 
             // move lights builder a bit higher, to support non-opaque lights
             // such as lamps
-            world.setBlockState(new BlockPos(ix + 3, builderHeight + 2, kz - 6), towerLightBlockID.getStateFromMeta(0));
-            world.setBlockState(new BlockPos(ix - 4, builderHeight + 2, kz - 6), towerLightBlockID.getStateFromMeta(0));
-            world.setBlockState(new BlockPos(ix + 1, builderHeight + 2, kz - 4), towerLightBlockID.getStateFromMeta(0));
-            world.setBlockState(new BlockPos(ix - 2, builderHeight + 2, kz - 4), towerLightBlockID.getStateFromMeta(0));
+            world.setBlockState(new BlockPos(ix + 3, builderHeight + 2, kz - 6), towerLightBlockID.getDefaultState());
+            world.setBlockState(new BlockPos(ix - 4, builderHeight + 2, kz - 6), towerLightBlockID.getDefaultState());
+            world.setBlockState(new BlockPos(ix + 1, builderHeight + 2, kz - 4), towerLightBlockID.getDefaultState());
+            world.setBlockState(new BlockPos(ix - 2, builderHeight + 2, kz - 4), towerLightBlockID.getDefaultState());
 
             if (towerChosen != TowerTypes.Null)
             {
@@ -486,7 +486,7 @@ public class AS_WorldGenTower
                     j6 += kz;
                     if (world.getBlockState(new BlockPos(k4, k5, j6)).getBlock() == towerFloorBlockID && world.getBlockState(new BlockPos(k4, k5 + 1, j6)).getBlock() != Blocks.MOB_SPAWNER)
                     {
-                        world.setBlockState(new BlockPos(k4, k5, j6), Blocks.AIR.getStateFromMeta(0));
+                        world.setBlockState(new BlockPos(k4, k5, j6), Blocks.AIR.getDefaultState());
                     }
                 }
             }
@@ -497,6 +497,7 @@ public class AS_WorldGenTower
         System.out.println("Battle Tower type " + towerChosen + " spawned at [ " + ix + " | " + kz + " ], underground: " + underground);
     }
 
+    @SuppressWarnings("deprecation")
     private void buildFloorPiece(World world, int i, int j, int k, Block towerFloorBlockID, int towerFloorMeta)
     {
         world.setBlockState(new BlockPos(i, j, k), towerFloorBlockID.getStateFromMeta(towerFloorMeta));
@@ -504,7 +505,7 @@ public class AS_WorldGenTower
 
     private void buildWallPiece(World world, int i, int j, int k, Block towerWallBlockID, int floor, int floorIterator)
     {
-        world.setBlockState(new BlockPos(i, j, k), towerWallBlockID.getStateFromMeta(0));
+        world.setBlockState(new BlockPos(i, j, k), towerWallBlockID.getDefaultState());
         if (floor == 1 && floorIterator == 4)
         {
             fillTowerBaseToGround(world, i, j, k, towerWallBlockID);
@@ -516,7 +517,7 @@ public class AS_WorldGenTower
         int y = j - 1;
         while (y > 0 && !isBuildableBlockID(world.getBlockState(new BlockPos(i, y, k)).getBlock()))
         {
-            world.setBlockState(new BlockPos(i, y, k), blocktype.getStateFromMeta(0));
+            world.setBlockState(new BlockPos(i, y, k), blocktype.getDefaultState());
             y--;
         }
     }

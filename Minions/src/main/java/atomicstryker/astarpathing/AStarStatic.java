@@ -1,5 +1,8 @@
 package atomicstryker.astarpathing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
@@ -7,9 +10,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Static parts of AStarPath calculation and translation
@@ -94,7 +94,7 @@ public class AStarStatic
 	public static boolean isPassableBlock(World worldObj, int ix, int iy, int iz)
 	{
 		IBlockState is = worldObj.getBlockState(new BlockPos(ix, iy, iz));
-		return !is.getBlock().getMaterial(is).isSolid();
+		return !is.getMaterial().isSolid();
 	}
 	
 	public static int getIntCoordFromDoubleCoord(double input)
