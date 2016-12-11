@@ -90,12 +90,12 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
-        if (lastWorld != FMLClientHandler.instance().getClient().theWorld || thePlayer != FMLClientHandler.instance().getClient().thePlayer)
+        if (lastWorld != FMLClientHandler.instance().getClient().world || thePlayer != FMLClientHandler.instance().getClient().player)
         {
-            thePlayer = FMLClientHandler.instance().getClient().thePlayer;
+            thePlayer = FMLClientHandler.instance().getClient().player;
             if (thePlayer != null)
             {
-                lastWorld = thePlayer.worldObj;
+                lastWorld = thePlayer.world;
             }
             else
             {
@@ -208,10 +208,10 @@ public class PlayerSelfLightSource implements IDynamicLightSource
     {
         if (thePlayer.isInWater())
         {
-            int x = MathHelper.floor_double(thePlayer.posX + 0.5D);
-            int y = MathHelper.floor_double(thePlayer.posY + thePlayer.getEyeHeight());
-            int z = MathHelper.floor_double(thePlayer.posZ + 0.5D);
-            IBlockState is = thePlayer.worldObj.getBlockState(new BlockPos(x, y, z));
+            int x = MathHelper.floor(thePlayer.posX + 0.5D);
+            int y = MathHelper.floor(thePlayer.posY + thePlayer.getEyeHeight());
+            int z = MathHelper.floor(thePlayer.posZ + 0.5D);
+            IBlockState is = thePlayer.world.getBlockState(new BlockPos(x, y, z));
             return is.getMaterial().isLiquid();
         }
         return false;

@@ -71,12 +71,12 @@ public class FloodLightSource
     {
         if (tick.phase == Phase.END)
         {
-            thePlayer = FMLClientHandler.instance().getClient().thePlayer;
+            thePlayer = FMLClientHandler.instance().getClient().player;
             if (thePlayer != null && thePlayer.isEntityAlive() && !DynamicLights.globalLightsOff())
             {
                 int lightLevel = Math.max(getLightFromItemStack(thePlayer.getHeldItemMainhand()), getLightFromItemStack(thePlayer.getHeldItemOffhand()));
                 
-                checkDummyInit(thePlayer.worldObj);
+                checkDummyInit(thePlayer.world);
                 
                 if (lightLevel > 0)
                 {
@@ -108,7 +108,7 @@ public class FloodLightSource
         thePlayer.rotationPitch -= pitchRot;
         thePlayer.rotationYaw -= yawRot;
         look = posvec.addVector(look.xCoord * 16d, look.yCoord * 16d, look.zCoord * 16d);
-        RayTraceResult mop = thePlayer.worldObj.rayTraceBlocks(posvec, look);
+        RayTraceResult mop = thePlayer.world.rayTraceBlocks(posvec, look);
         if (mop != null)
         {
         	BlockPos pos = mop.getBlockPos();

@@ -86,13 +86,13 @@ public class DroppedItemsLightSource
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
-        if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
+        if (mcinstance.world != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
         {
             nextUpdate = System.currentTimeMillis() + updateInterval;
             
             if (!threadRunning)
             {
-                Thread thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.world.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -194,8 +194,8 @@ public class DroppedItemsLightSource
             {
                 lightLevel = getLightFromItemStack(entity.getEntityItem());
                 
-                BlockPos pos = new BlockPos(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
-                IBlockState is = entity.worldObj.getBlockState(pos);
+                BlockPos pos = new BlockPos(MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ));
+                IBlockState is = entity.world.getBlockState(pos);
                 if (notWaterProof
                 && is.getMaterial().isLiquid())
                 {

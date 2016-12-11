@@ -71,13 +71,13 @@ public class BurningEntitiesLightSource
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
-        if (mcinstance.theWorld != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
+        if (mcinstance.world != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
         {
             nextUpdate = System.currentTimeMillis() + updateInterval;
             
             if (!threadRunning)
             {
-                Thread thread = new EntityListChecker(mcinstance.theWorld.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.world.loadedEntityList);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;

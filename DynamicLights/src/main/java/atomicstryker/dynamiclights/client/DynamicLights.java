@@ -1,5 +1,15 @@
 package atomicstryker.dynamiclights.client;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
+
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -21,59 +31,52 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import org.lwjgl.input.Keyboard;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * 
  * @author AtomicStryker
  * 
- * Rewritten and now-awesome Dynamic Lights Mod.
+ *         Rewritten and now-awesome Dynamic Lights Mod.
  * 
- * Instead of the crude base edits and inefficient giant loops of the original,
- * this Mod uses ASM transforming to hook into Minecraft with style and has an
- * API that does't suck. It also uses Forge events to register dropped Items.
+ *         Instead of the crude base edits and inefficient giant loops of the
+ *         original, this Mod uses ASM transforming to hook into Minecraft with
+ *         style and has an API that does't suck. It also uses Forge events to
+ *         register dropped Items.
  *
  */
-@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.4")
+@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.5")
 public class DynamicLights
 {
     private Minecraft mcinstance;
-    
+
     @Instance("dynamiclights")
     private static DynamicLights instance;
-    
+
     /*
-     * Optimization - instead of repeatedly getting the same List for the same World,
-     * just check once for World being equal.
+     * Optimization - instead of repeatedly getting the same List for the same
+     * World, just check once for World being equal.
      */
     private IBlockAccess lastWorld;
     private ConcurrentLinkedQueue<DynamicLightSourceContainer> lastList;
-    
+
     /**
-     * This Map contains a List of DynamicLightSourceContainer for each World. Since the client can only
-     * be in a single World, the other Lists just float idle when unused.
+     * This Map contains a List of DynamicLightSourceContainer for each World.
+     * Since the client can only be in a single World, the other Lists just
+     * float idle when unused.
      */
     private ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>> worldLightsMap;
-    
+
     /**
      * Keeps track of the toggle button.
      */
     private boolean globalLightsOff;
-    
+
     /**
      * The Keybinding instance to monitor
      */
     private KeyBinding toggleButton;
     private long nextKeyTriggerTime;
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -83,21 +86,21 @@ public class DynamicLights
         MinecraftForge.EVENT_BUS.register(this);
         nextKeyTriggerTime = System.currentTimeMillis();
     }
-    
+
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
         toggleButton = new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
     }
-    
+
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
-        if (tick.phase == Phase.END && mcinstance.theWorld != null)
+        if (tick.phase == Phase.END && mcinstance.world != null)
         {
-            ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(mcinstance.theWorld);
-            
+            ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(mcinstance.world);
+
             if (worldLights != null)
             {
                 Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
@@ -107,19 +110,21 @@ public class DynamicLights
                     if (tickedLightContainer.onUpdate())
                     {
                         iter.remove();
-                        mcinstance.theWorld.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ()));
-                        //System.out.println("Dynamic Lights killing off LightSource on dead Entity "+tickedLightContainer.getLightSource().getAttachmentEntity());
+                        mcinstance.world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ()));
+                        // System.out.println("Dynamic Lights killing off
+                        // LightSource on dead Entity
+                        // "+tickedLightContainer.getLightSource().getAttachmentEntity());
                     }
                 }
             }
-            
+
             if (mcinstance.currentScreen == null && toggleButton.isPressed() && System.currentTimeMillis() >= nextKeyTriggerTime)
             {
                 nextKeyTriggerTime = System.currentTimeMillis() + 1000L;
                 globalLightsOff = !globalLightsOff;
-                mcinstance.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Dynamic Lights globally "+(globalLightsOff?"off":"on")));
-                
-                World world = mcinstance.theWorld;
+                mcinstance.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Dynamic Lights globally " + (globalLightsOff ? "off" : "on")));
+
+                World world = mcinstance.world;
                 if (world != null)
                 {
                     if (worldLights != null)
@@ -133,43 +138,49 @@ public class DynamicLights
             }
         }
     }
-    
+
     /**
      * Used not only to toggle the Lights, but any Ticks in the sub-modules
-     * @return true when all computation and tracking should be suspended, false otherwise
+     * 
+     * @return true when all computation and tracking should be suspended, false
+     *         otherwise
      */
     public static boolean globalLightsOff()
     {
         return instance.globalLightsOff;
     }
-    
+
     /**
-     * Exposed method which is called by the transformed World.getRawLight method instead of
-     * Block.getLightValue. Loops active Dynamic Light Sources and if it finds
-     * one for the exact coordinates asked, returns the Light value from that source if higher.
+     * Exposed method which is called by the transformed World.getRawLight
+     * method instead of Block.getLightValue. Loops active Dynamic Light Sources
+     * and if it finds one for the exact coordinates asked, returns the Light
+     * value from that source if higher.
      * 
-     * @param blockState IBlockState queried
-     * @param world World queried
-     * @param pos BlockPos instance of target coords
+     * @param blockState
+     *            IBlockState queried
+     * @param world
+     *            World queried
+     * @param pos
+     *            BlockPos instance of target coords
      * @return max(Block.getLightValue, Dynamic Light)
      */
     @SuppressWarnings("unused")
     public static int getLightValue(IBlockState blockState, IBlockAccess world, BlockPos pos)
     {
         int vanillaValue = blockState.getLightValue(world, pos);
-        
+
         if (instance == null || instance.globalLightsOff || world instanceof WorldServer)
         {
             return vanillaValue;
         }
-        
+
         if (!world.equals(instance.lastWorld) || instance.lastList == null)
         {
             instance.lastWorld = world;
             instance.lastList = instance.worldLightsMap.get(world);
             hackRenderGlobalConcurrently();
         }
-        
+
         int dynamicValue = 0;
         if (instance.lastList != null && !instance.lastList.isEmpty())
         {
@@ -223,24 +234,31 @@ public class DynamicLights
     }
 
     /**
-     * Exposed method to register active Dynamic Light Sources with. Does all the necessary
-     * checks, prints errors if any occur, creates new World entries in the worldLightsMap
-     * @param lightToAdd IDynamicLightSource to register
+     * Exposed method to register active Dynamic Light Sources with. Does all
+     * the necessary checks, prints errors if any occur, creates new World
+     * entries in the worldLightsMap
+     * 
+     * @param lightToAdd
+     *            IDynamicLightSource to register
      */
     public static void addLightSource(IDynamicLightSource lightToAdd)
     {
-        //System.out.println("Calling addLightSource "+lightToAdd+", world "+lightToAdd.getAttachmentEntity().worldObj);
+        // System.out.println("Calling addLightSource "+lightToAdd+", world
+        // "+lightToAdd.getAttachmentEntity().world);
         if (lightToAdd.getAttachmentEntity() != null)
         {
             if (lightToAdd.getAttachmentEntity().isEntityAlive())
             {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
-                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().worldObj);
+                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().world);
                 if (lightList != null)
                 {
                     if (!lightList.contains(newLightContainer))
                     {
-                        //System.out.println("Successfully registered Dynamic Light on Entity: "+newLightContainer.getLightSource().getAttachmentEntity()+" in list "+lightList);
+                        // System.out.println("Successfully registered Dynamic
+                        // Light on Entity:
+                        // "+newLightContainer.getLightSource().getAttachmentEntity()+"
+                        // in list "+lightList);
                         lightList.add(newLightContainer);
                     }
                     else
@@ -252,7 +270,7 @@ public class DynamicLights
                 {
                     lightList = new ConcurrentLinkedQueue<>();
                     lightList.add(newLightContainer);
-                    instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().worldObj, lightList);
+                    instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().world, lightList);
                 }
             }
             else
@@ -265,17 +283,19 @@ public class DynamicLights
             System.err.println("Cannot add Dynamic Light: Attachment Entity is null!");
         }
     }
-    
+
     /**
-     * Exposed method to remove active Dynamic Light sources with. If it fails for whatever reason,
-     * it does so quietly.
-     * @param lightToRemove IDynamicLightSource you want removed.
+     * Exposed method to remove active Dynamic Light sources with. If it fails
+     * for whatever reason, it does so quietly.
+     * 
+     * @param lightToRemove
+     *            IDynamicLightSource you want removed.
      */
     public static void removeLightSource(IDynamicLightSource lightToRemove)
     {
         if (lightToRemove != null && lightToRemove.getAttachmentEntity() != null)
         {
-            World world = lightToRemove.getAttachmentEntity().worldObj;
+            World world = lightToRemove.getAttachmentEntity().world;
             if (world != null)
             {
                 DynamicLightSourceContainer iterContainer = null;
@@ -292,7 +312,7 @@ public class DynamicLights
                             break;
                         }
                     }
-                    
+
                     if (iterContainer != null)
                     {
                         world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(iterContainer.getX(), iterContainer.getY(), iterContainer.getZ()));
