@@ -32,13 +32,13 @@ public class CommandParseTemplate extends CommandBase
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "parseruin";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender var1)
+    public String getUsage(ICommandSender var1)
     {
         return "/parseruin TEMPLATENAME sets the Ruins World2Template parser to wait for the next block you break, which will be considered part of the template baseplate";
     }
@@ -57,19 +57,18 @@ public class CommandParseTemplate extends CommandBase
         {
             if (args.length != 1)
             {
-                player.addChatMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin funhouse"));
+                player.sendMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin funhouse"));
                 player = null;
             }
             else
             {
                 templateName = args[0];
-                player.addChatMessage(new TextComponentTranslation("Template parser ready to create " + templateName
-                        + ". Break any block of the baseplate now."));
+                player.sendMessage(new TextComponentTranslation("Template parser ready to create " + templateName + ". Break any block of the baseplate now."));
             }
         }
         else
         {
-            sender.addChatMessage(new TextComponentTranslation("Command only available for ingame player entities."));
+            sender.sendMessage(new TextComponentTranslation("Command only available for ingame player entities."));
         }
     }
 

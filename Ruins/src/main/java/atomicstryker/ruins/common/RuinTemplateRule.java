@@ -32,7 +32,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityCommandBlock;
-import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
@@ -61,8 +60,7 @@ public class RuinTemplateRule
     // just leave the field null for NONE
     public enum SpecialFlags
     {
-        COMMANDBLOCK,
-        ADDBONEMEAL
+        COMMANDBLOCK, ADDBONEMEAL
     }
 
     public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception
@@ -85,11 +83,13 @@ public class RuinTemplateRule
 
         String[] data;
 
-        // Command Block special case, contains basically any character that breaks this
+        // Command Block special case, contains basically any character that
+        // breaks this
         if (blockRules[2].startsWith("CommandBlock:"))
         {
             String[] commandrules = rule.split("CommandBlock:");
-            int count = commandrules.length - 1; // -1 because there is a prefix part we ignore
+            int count = commandrules.length - 1; // -1 because there is a prefix
+                                                 // part we ignore
             blockIDs = new Block[count];
             blockMDs = new int[count];
             blockStrings = new String[count];
@@ -98,15 +98,32 @@ public class RuinTemplateRule
             {
                 blockIDs[i] = null;
                 blockMDs[i] = RuinsMod.DIR_NORTH;
-                if (commandrules[i + 1].charAt(commandrules[i + 1].length()-2) == '-') // case meta value "-n" present (impulse command block)
+                if (commandrules[i + 1].charAt(commandrules[i + 1].length() - 2) == '-') // case
+                                                                                         // meta
+                                                                                         // value
+                                                                                         // "-n"
+                                                                                         // present
+                                                                                         // (impulse
+                                                                                         // command
+                                                                                         // block)
                 {
-                    String meta = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1); // needed because char to int conversion is bad here
+                    String meta = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1); // needed
+                                                                                                     // because
+                                                                                                     // char
+                                                                                                     // to
+                                                                                                     // int
+                                                                                                     // conversion
+                                                                                                     // is
+                                                                                                     // bad
+                                                                                                     // here
                     blockMDs[i] = Integer.valueOf(meta);
-                    // strip the last 2 chars from the string or else parsing the command will fail
-                    commandrules[i + 1] = commandrules[i + 1].substring(0, commandrules[i + 1].length()-3);
+                    // strip the last 2 chars from the string or else parsing
+                    // the command will fail
+                    commandrules[i + 1] = commandrules[i + 1].substring(0, commandrules[i + 1].length() - 3);
                 }
                 specialFlags[i] = SpecialFlags.COMMANDBLOCK;
-                // readd the splitout string for the parsing, offset by 1 because of the prefix string
+                // readd the splitout string for the parsing, offset by 1
+                // because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
                 blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
                 debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i]);
@@ -122,7 +139,8 @@ public class RuinTemplateRule
             for (int i = 0; i < numblocks; i++)
             {
                 data = blockRules[i + 2].split("-");
-                if (data.length > 1) // has '-' in it, like "torch-5" or "planks-3"
+                if (data.length > 1) // has '-' in it, like "torch-5" or
+                                     // "planks-3"
                 {
                     if (isNumber(data[0])) // torch-5
                     {
@@ -193,7 +211,9 @@ public class RuinTemplateRule
                         blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
                         if (blockIDs[i] == Blocks.AIR && !data[0].equals("air"))
                         {
-                            //debugPrinter.println("Rule [" + rule + "] in template " + owner.getName()+" has something special? Checking again later");
+                            // debugPrinter.println("Rule [" + rule + "] in
+                            // template " + owner.getName()+" has something
+                            // special? Checking again later");
                             blockIDs[i] = null;
                         }
                     }
@@ -216,12 +236,17 @@ public class RuinTemplateRule
     }
 
     /**
-     * Since NBT contents, especially books, wreak havoc with all the legacy and hardcoded string splitting going on, we replace
-     * them in their entirety for slightly less problematic hardcoded strings.
+     * Since NBT contents, especially books, wreak havoc with all the legacy and
+     * hardcoded string splitting going on, we replace them in their entirety
+     * for slightly less problematic hardcoded strings.
      *
-     * @param rule    which may or may not contain nbt tags
-     * @param nbttags a non null array list which after execution contains each nbt tag in order of occurence
-     * @return the input string except all nbt tags have been replaced with NBT1, NBT2 ... etc
+     * @param rule
+     *            which may or may not contain nbt tags
+     * @param nbttags
+     *            a non null array list which after execution contains each nbt
+     *            tag in order of occurence
+     * @return the input string except all nbt tags have been replaced with
+     *         NBT1, NBT2 ... etc
      */
     private String replaceNBTTags(String rule, ArrayList<String> nbttags)
     {
@@ -230,7 +255,7 @@ public class RuinTemplateRule
         {
             int closingIndex = openingIndex + 1;
             int bracketCounter = 1;
-            for (; ; closingIndex++)
+            for (;; closingIndex++)
             {
                 if (closingIndex == rule.length())
                 {
@@ -262,10 +287,13 @@ public class RuinTemplateRule
     }
 
     /**
-     * And the reverse, restore the glorious NBT tags into a string loaded with their placeholders
+     * And the reverse, restore the glorious NBT tags into a string loaded with
+     * their placeholders
      *
-     * @param str     string with nbt placeholders
-     * @param nbttags list with stored nbt tags
+     * @param str
+     *            string with nbt placeholders
+     * @param nbttags
+     *            list with stored nbt tags
      * @return original string with nbt tags
      */
     private String restoreNBTTags(String str, ArrayList<String> nbttags)
@@ -387,11 +415,9 @@ public class RuinTemplateRule
         BlockPos c = new BlockPos(x, y, z - 1);
         BlockPos d = new BlockPos(x - 1, y, z);
         if ((condition <= 0) ^ (
-                // Are -all- adjacent blocks air?
-                (owner.isIgnoredBlock(world.getBlockState(a).getBlock(), world, a))
-                        && (owner.isIgnoredBlock(world.getBlockState(b).getBlock(), world, b))
-                        && (owner.isIgnoredBlock(world.getBlockState(c).getBlock(), world, c))
-                        && (owner.isIgnoredBlock(world.getBlockState(d).getBlock(), world, d))))
+        // Are -all- adjacent blocks air?
+        (owner.isIgnoredBlock(world.getBlockState(a).getBlock(), world, a)) && (owner.isIgnoredBlock(world.getBlockState(b).getBlock(), world, b))
+                && (owner.isIgnoredBlock(world.getBlockState(c).getBlock(), world, c)) && (owner.isIgnoredBlock(world.getBlockState(d).getBlock(), world, d))))
         {
             return;
         }
@@ -651,14 +677,19 @@ public class RuinTemplateRule
             String[] splits = dataString.split(":");
             TileEntitySkull tes = (TileEntitySkull) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
-            int rot = Integer.valueOf(splits[2].split("-")[0]); // skull te's rotate like standing sign blocks
+            int rot = Integer.valueOf(splits[2].split("-")[0]); // skull te's
+                                                                // rotate like
+                                                                // standing sign
+                                                                // blocks
             ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, rotateMetadata(Blocks.STANDING_SIGN, rot, rotate), 1);
 
             // is a player head saved?
-            // looks like Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
+            // looks like
+            // Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
             if (splits.length > 3)
             {
-                // split segment like this: 1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
+                // split segment like this:
+                // 1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
                 String[] moresplits = splits[3].split("-");
                 UUID id = UUID.fromString(moresplits[0] + "-" + moresplits[1] + "-" + moresplits[2] + "-" + moresplits[3] + "-" + moresplits[4]);
                 GameProfile playerprofile = new GameProfile(id, moresplits[5]);
@@ -668,7 +699,8 @@ public class RuinTemplateRule
         else if (dataString.startsWith("teBlock;"))
         {
             debugPrinter.println("teBlock about to be placed: " + dataString);
-            // examples: teBlock;minecraft:trapped_chest;{...nbt json...}, teBlock;minecraft:trapped_chest;{...nbt json...}-4
+            // examples: teBlock;minecraft:trapped_chest;{...nbt json...},
+            // teBlock;minecraft:trapped_chest;{...nbt json...}-4
             String[] in = dataString.split(";");
             Block b = Block.REGISTRY.getObject(new ResourceLocation(in[1]));
             debugPrinter.println("teBlock object from [" + in[1] + "]: " + b);
@@ -714,31 +746,32 @@ public class RuinTemplateRule
     {
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
-        world.spawnEntityInWorld(entityendercrystal);
+        world.spawnEntity(entityendercrystal);
         world.setBlockState(new BlockPos(x, y, z), Blocks.BEDROCK.getDefaultState(), 2);
     }
 
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
+        ResourceLocation rsl = new ResourceLocation(id);
         world.setBlockState(new BlockPos(x, y, z), Blocks.MOB_SPAWNER.getDefaultState(), 2);
         TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (mobspawner != null)
         {
-            Entity test = EntityList.createEntityByName(id, world);
+            Entity test = EntityList.createEntityByIDFromName(rsl, world);
             if (test == null)
             {
                 System.err.println("Warning: Ruins Mod could not find an Entity [" + id + "] set for a Mob Spawner");
-                for (String entString : EntityList.CLASS_TO_NAME.values())
+                for (ResourceLocation entString : EntityList.getEntityNameList())
                 {
-                    if (entString.contains(id))
+                    if (entString.getResourcePath().contains(id))
                     {
-                        id = entString;
-                        System.err.println("Ruins Mod going close match [" + id + "]");
+                        rsl = entString;
+                        System.err.println("Ruins Mod going with containing match [" + id + "]");
                         break;
                     }
                 }
             }
-            mobspawner.getSpawnerBaseLogic().setEntityName(id);
+            mobspawner.getSpawnerBaseLogic().setEntityId(rsl);
         }
     }
 
@@ -884,7 +917,7 @@ public class RuinTemplateRule
         if (chest != null)
         {
             ResourceLocation lootTable = new ResourceLocation("minecraft", gen);
-            //chest.setLoot(lootTable, random.nextLong());
+            // chest.setLoot(lootTable, random.nextLong());
 
             LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
 
@@ -930,7 +963,7 @@ public class RuinTemplateRule
 
     private List<Integer> getEmptySlotsRandomized(IInventory inventory, Random rand)
     {
-        List<Integer> list = Lists.<Integer>newArrayList();
+        List<Integer> list = Lists.<Integer> newArrayList();
 
         for (int i = 0; i < inventory.getSizeInventory(); ++i)
         {
@@ -946,18 +979,18 @@ public class RuinTemplateRule
 
     private void shuffleItems(List<ItemStack> stacks, int targetSize, Random rand)
     {
-        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+        List<ItemStack> list = Lists.<ItemStack> newArrayList();
         Iterator<ItemStack> iterator = stacks.iterator();
 
         while (iterator.hasNext())
         {
             ItemStack itemstack = iterator.next();
 
-            if (itemstack.stackSize <= 0)
+            if (itemstack.getCount() <= 0)
             {
                 iterator.remove();
             }
-            else if (itemstack.stackSize > 1)
+            else if (itemstack.getCount() > 1)
             {
                 list.add(itemstack);
                 iterator.remove();
@@ -968,13 +1001,13 @@ public class RuinTemplateRule
 
         while (targetSize > 0 && list.size() > 0)
         {
-            ItemStack itemstack2 = list.remove(MathHelper.getRandomIntegerInRange(rand, 0, list.size() - 1));
-            int i = MathHelper.getRandomIntegerInRange(rand, 1, itemstack2.stackSize / 2);
-            itemstack2.stackSize -= i;
+            ItemStack itemstack2 = list.remove(MathHelper.getInt(rand, 0, list.size() - 1));
+            int i = MathHelper.getInt(rand, 1, itemstack2.getCount() / 2);
+            itemstack2.shrink(i);
             ItemStack itemstack1 = itemstack2.copy();
-            itemstack1.stackSize = i;
+            itemstack1.setCount(i);
 
-            if (itemstack2.stackSize > 1 && rand.nextBoolean())
+            if (itemstack2.getCount() > 1 && rand.nextBoolean())
             {
                 list.add(itemstack2);
             }
@@ -983,7 +1016,7 @@ public class RuinTemplateRule
                 stacks.add(itemstack2);
             }
 
-            if (itemstack1.stackSize > 1 && rand.nextBoolean())
+            if (itemstack1.getCount() > 1 && rand.nextBoolean())
             {
                 list.add(itemstack1);
             }
@@ -1013,7 +1046,7 @@ public class RuinTemplateRule
                 String[] input = itemDataWithoutNBT.split(":");
                 ResourceLocation lootTable = new ResourceLocation("minecraft", input[1]);
                 LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
-                LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)world);
+                LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer) world);
                 loottable.fillInventory((IInventory) te, random, lootcontext$builder.build());
             }
             else
@@ -1029,7 +1062,8 @@ public class RuinTemplateRule
 
     private void handleIInventory(IInventory inv, String itemDataWithoutNBT, ArrayList<String> nbtTags)
     {
-        // example string: minecraft:stone#1#4#0+minecraft:written_book#NBT1#0#1+minecraft:chest#1#0#2
+        // example string:
+        // minecraft:stone#1#4#0+minecraft:written_book#NBT1#0#1+minecraft:chest#1#0#2
         ItemStack putItem;
         ItemStack slotItemPrev;
         String[] itemStrings = itemDataWithoutNBT.split(Pattern.quote("+"));
@@ -1092,14 +1126,14 @@ public class RuinTemplateRule
                     }
                     else if (slotItemPrev.isItemEqual(putItem))
                     {
-                        int freeSize = slotItemPrev.getMaxStackSize() - slotItemPrev.stackSize;
-                        if (freeSize >= putItem.stackSize)
+                        int freeSize = slotItemPrev.getMaxStackSize() - slotItemPrev.getCount();
+                        if (freeSize >= putItem.getCount())
                         {
-                            slotItemPrev.stackSize += putItem.stackSize;
+                            slotItemPrev.grow(putItem.getCount());
                         }
                         else
                         {
-                            slotItemPrev.stackSize += freeSize;
+                            slotItemPrev.grow(freeSize);
                         }
                     }
                 }
@@ -1115,16 +1149,16 @@ public class RuinTemplateRule
                         }
                         else if (slotItemPrev.isItemEqual(putItem))
                         {
-                            int freeSize = slotItemPrev.getMaxStackSize() - slotItemPrev.stackSize;
-                            if (freeSize >= putItem.stackSize)
+                            int freeSize = slotItemPrev.getMaxStackSize() - slotItemPrev.getCount();
+                            if (freeSize >= putItem.getCount())
                             {
-                                slotItemPrev.stackSize += putItem.stackSize;
+                                slotItemPrev.grow(putItem.getCount());
                                 break;
                             }
                             else
                             {
-                                slotItemPrev.stackSize += freeSize;
-                                putItem.stackSize -= freeSize;
+                                slotItemPrev.grow(freeSize);
+                                putItem.shrink(freeSize);
                             }
                         }
                     }
@@ -1175,7 +1209,10 @@ public class RuinTemplateRule
             {
                 debugPrinter.println("About to parse command block command [" + command + "] for relative coordinates and try to rotate them");
             }
-            /* regex pattern to find each coordinate triple with at least x and z relative (with tilde), save xz numbers and y in groups */
+            /*
+             * regex pattern to find each coordinate triple with at least x and
+             * z relative (with tilde), save xz numbers and y in groups
+             */
             final Pattern coordinates = Pattern.compile("~(-?\\d*) (~?-?\\d*) ~(-?\\d*)");
             final Matcher coordinateMatcher = coordinates.matcher(command);
             final StringBuffer stringBuffer = new StringBuffer();
@@ -1189,25 +1226,23 @@ public class RuinTemplateRule
                 if (rotate == RuinsMod.DIR_EAST)
                 {
                     // z multiplied with -1 becomes x, x becomes z
-                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s",
-                            (tryToInvert(coordinateMatcher.group(3))), coordinateMatcher.group(2), coordinateMatcher.group(1)));
+                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s", (tryToInvert(coordinateMatcher.group(3))), coordinateMatcher.group(2), coordinateMatcher.group(1)));
                 }
                 else if (rotate == RuinsMod.DIR_WEST)
                 {
                     // x multiplied with -1 becomes z, z becomes x
-                    coordinateMatcher.appendReplacement(
-                            stringBuffer,
-                            String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2),
-                                    tryToInvert(coordinateMatcher.group(1))));
+                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2), tryToInvert(coordinateMatcher.group(1))));
                 }
                 else
                 {
                     // case DIR_SOUTH, just swap x and z numbers
-                    coordinateMatcher.appendReplacement(stringBuffer,
-                            String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2), coordinateMatcher.group(1)));
+                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2), coordinateMatcher.group(1)));
                 }
             }
-            /* rebuild the pattern with the changes. we have the technology. we can make it better */
+            /*
+             * rebuild the pattern with the changes. we have the technology. we
+             * can make it better
+             */
             coordinateMatcher.appendTail(stringBuffer);
             final String result = stringBuffer.toString();
             if (excessiveDebugging)
@@ -1222,7 +1257,8 @@ public class RuinTemplateRule
     /**
      * Possible inputs are "", "x", "-x" with int x
      *
-     * @param maybeNumber input string
+     * @param maybeNumber
+     *            input string
      * @return "-input" or "" if not applicable
      */
     private String tryToInvert(String maybeNumber)
@@ -2013,8 +2049,8 @@ public class RuinTemplateRule
             }
         }
         /*
-         * Base NESW = 0 1 2 3 in 2 least significant bits
-         * Additonal data unrelated to rotation in higher bits
+         * Base NESW = 0 1 2 3 in 2 least significant bits Additonal data
+         * unrelated to rotation in higher bits
          */
         else if (blockID == Blocks.UNPOWERED_REPEATER || blockID == Blocks.UNPOWERED_COMPARATOR || blockID == Blocks.POWERED_REPEATER || blockID == Blocks.POWERED_COMPARATOR)
         {
@@ -2077,8 +2113,8 @@ public class RuinTemplateRule
             }
         }
         /*
-         * Least significant 2 bits cover rotation, rest is data
-         * (connected to:) N E S W -> 1 2 0 3
+         * Least significant 2 bits cover rotation, rest is data (connected to:)
+         * N E S W -> 1 2 0 3
          */
         if (blockID == Blocks.TRAPDOOR)
         {
@@ -2141,8 +2177,8 @@ public class RuinTemplateRule
             }
         }
         /*
-         * Least significant 2 bits cover rotation, rest is data
-         * (connected to:) N E S W -> 2 3 0 1
+         * Least significant 2 bits cover rotation, rest is data (connected to:)
+         * N E S W -> 2 3 0 1
          */
         if (blockID == Blocks.TRIPWIRE_HOOK || blockID == Blocks.DARK_OAK_FENCE_GATE || blockID == Blocks.END_PORTAL_FRAME)
         {
@@ -2205,8 +2241,8 @@ public class RuinTemplateRule
             }
         }
         /*
-         * Least significant 2 bits cover rotation, rest is data
-         * (connected to:) N E S W -> 0 1 2 3
+         * Least significant 2 bits cover rotation, rest is data (connected to:)
+         * N E S W -> 0 1 2 3
          */
         if (blockID == Blocks.COCOA)
         {
@@ -2289,9 +2325,8 @@ public class RuinTemplateRule
             return metadata;
         }
         /*
-         * 3 Orientations: UP/DOWN, N/S, E/W
-         * various wood types: 0-3, 4-7, 8-11 and 'only bark' variants 12-15
-         * can be simplified to 0 1 2 3
+         * 3 Orientations: UP/DOWN, N/S, E/W various wood types: 0-3, 4-7, 8-11
+         * and 'only bark' variants 12-15 can be simplified to 0 1 2 3
          */
         if (blockID == Blocks.LOG || blockID == Blocks.LOG2)
         {

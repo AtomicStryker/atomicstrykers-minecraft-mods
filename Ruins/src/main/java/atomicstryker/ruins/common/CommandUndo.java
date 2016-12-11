@@ -41,7 +41,8 @@ public class CommandUndo extends CommandBase
         {
             if (event.isPrePhase)
             {
-                // firing the first template event, adjacents may or may not come
+                // firing the first template event, adjacents may or may not
+                // come
                 if (runningTemplateSpawn == null)
                 {
                     runningTemplateSpawn = event.template;
@@ -84,21 +85,23 @@ public class CommandUndo extends CommandBase
             }
             else if (runningTemplateSpawn == event.template)
             {
-                // finished spawning all adjacents, post event of initial template firing
+                // finished spawning all adjacents, post event of initial
+                // template firing
                 runningTemplateSpawn = null;
-                // since this is null the savedLocations will be cleared then the next spawn occurs
+                // since this is null the savedLocations will be cleared then
+                // the next spawn occurs
             }
         }
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "undoruin";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender var1)
+    public String getUsage(ICommandSender var1)
     {
         return "/undoruin restores the site of the last testruin command";
     }
@@ -117,7 +120,7 @@ public class CommandUndo extends CommandBase
         {
             if (savedLocations.isEmpty())
             {
-                sender.addChatMessage(new TextComponentTranslation("There is nothing cached to be undone..."));
+                sender.sendMessage(new TextComponentTranslation("There is nothing cached to be undone..."));
             }
             else
             {
@@ -138,13 +141,13 @@ public class CommandUndo extends CommandBase
                     w.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1, ta.zBase - 1),
                             new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))).forEach(Entity::setDead);
                 }
-                sender.addChatMessage(new TextComponentTranslation("Cleared away " + savedLocations.size() + " template sites."));
+                sender.sendMessage(new TextComponentTranslation("Cleared away " + savedLocations.size() + " template sites."));
                 savedLocations.clear();
             }
         }
         else
         {
-            sender.addChatMessage(new TextComponentTranslation("Command can only be run ingame..."));
+            sender.sendMessage(new TextComponentTranslation("Command can only be run ingame..."));
         }
     }
 

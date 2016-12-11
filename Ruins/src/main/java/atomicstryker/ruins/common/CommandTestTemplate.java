@@ -19,13 +19,13 @@ class CommandTestTemplate extends CommandBase
     public static RuinTemplate parsedRuin;
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "testruin";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender var1)
+    public String getUsage(ICommandSender var1)
     {
         return "/testruin TEMPLATENAME [X Y Z ROTATION] manually spawns the target Ruin of the templateparser folder, [] optional";
     }
@@ -55,8 +55,7 @@ class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    player.addChatMessage(new TextComponentTranslation(
-                            "You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
+                    player.sendMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
                 }
             }
             else
@@ -70,24 +69,22 @@ class CommandTestTemplate extends CommandBase
             {
                 if (args[2].equals("_"))
                 {
-                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), -1,
-                            (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
+                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), -1, (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
                 }
                 else
                 {
-                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false),
-                            (int) parseDouble(ypos, args[2], -30000000, 30000000, false) - 1,
+                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), (int) parseDouble(ypos, args[2], -30000000, 30000000, false) - 1,
                             (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
                 }
             }
             catch (NumberInvalidException e)
             {
-                sender.addChatMessage(new TextComponentTranslation("Invalid coordinates specified"));
+                sender.sendMessage(new TextComponentTranslation("Invalid coordinates specified"));
             }
         }
         else
         {
-            sender.addChatMessage(new TextComponentTranslation("Command is only available for ingame player entities, or with coordinates specified"));
+            sender.sendMessage(new TextComponentTranslation("Command is only available for ingame player entities, or with coordinates specified"));
         }
     }
 
@@ -124,14 +121,14 @@ class CommandTestTemplate extends CommandBase
                             {
                                 break;
                             }
-                            sender.addChatMessage(new TextComponentTranslation("Could not find acceptable Y coordinate"));
+                            sender.sendMessage(new TextComponentTranslation("Could not find acceptable Y coordinate"));
                             return;
                         }
                     }
 
                     if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
                     {
-                        sender.addChatMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                        sender.sendMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
                     }
                     else
                     {
@@ -145,7 +142,7 @@ class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    sender.addChatMessage(new TextComponentTranslation("Could not parse Ruin of file " + file));
+                    sender.sendMessage(new TextComponentTranslation("Could not parse Ruin of file " + file));
                 }
             }
             catch (Exception e)
@@ -155,7 +152,7 @@ class CommandTestTemplate extends CommandBase
         }
         else
         {
-            sender.addChatMessage(new TextComponentTranslation("Could not open/write file " + file));
+            sender.sendMessage(new TextComponentTranslation("Could not open/write file " + file));
         }
     }
 

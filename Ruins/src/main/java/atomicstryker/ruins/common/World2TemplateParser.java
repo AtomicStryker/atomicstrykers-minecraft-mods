@@ -106,7 +106,7 @@ class World2TemplateParser extends Thread
     public World2TemplateParser(EntityPlayer p, int a, int b, int c, String fName)
     {
         player = p;
-        world = p.worldObj;
+        world = p.world;
         x = a;
         y = b;
         z = c;
@@ -163,20 +163,19 @@ class World2TemplateParser extends Thread
             zLength = 1 + zmax - lowestZ;
 
             readBlocks(world);
-            player.addChatMessage(new TextComponentTranslation("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size()
-                    + ", xlen: " + xLength + ", zlen: " + zLength));
+            player.sendMessage(new TextComponentTranslation("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
 
             File templateFile = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/templateparser/" + fileName + ".tml");
             toFile(templateFile);
 
             if (!failed)
             {
-                player.addChatMessage(new TextComponentTranslation("Success writing templatefile " + templateFile));
+                player.sendMessage(new TextComponentTranslation("Success writing templatefile " + templateFile));
             }
         }
         else
         {
-            player.addChatMessage(new TextComponentTranslation("Template Parse fail, chosen Block was air WTF?!"));
+            player.sendMessage(new TextComponentTranslation("Template Parse fail, chosen Block was air WTF?!"));
         }
     }
 
@@ -263,7 +262,8 @@ class World2TemplateParser extends Thread
                     }
                     else if (temp.block == Blocks.TORCH || temp.block == Blocks.REDSTONE_TORCH)
                     {
-                        // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
+                        // if meta says FLOOR, add FLOOR dependency, alse
+                        // ADJACENT dependency
                         temp.spawnRule = (temp.meta == 0 || temp.meta == 5) ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
                     else if (temp.block == Blocks.PISTON_HEAD || temp.block == Blocks.PISTON_EXTENSION)
@@ -272,7 +272,8 @@ class World2TemplateParser extends Thread
                     }
                     else if (temp.block == Blocks.WOODEN_BUTTON || temp.block == Blocks.STONE_BUTTON)
                     {
-                        // if meta says FLOOR, add FLOOR dependency, alse ADJACENT dependency
+                        // if meta says FLOOR, add FLOOR dependency, alse
+                        // ADJACENT dependency
                         temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
                     else if (te instanceof IInventory && !isIInventoryEmpty((IInventory) te))
@@ -301,8 +302,10 @@ class World2TemplateParser extends Thread
                                 ItemStack cs = stack.getItem().getContainerItem(stack);
                                 if (cs != null)
                                 {
-                                    //ident = GameData.getBlockRegistry().getNameForObject(cs).toString();
-                                    //TODO: Is this correct? i dont remember which case this code was handling
+                                    // ident =
+                                    // GameData.getBlockRegistry().getNameForObject(cs).toString();
+                                    // TODO: Is this correct? i dont remember
+                                    // which case this code was handling
                                     ident = Item.REGISTRY.getNameForObject(cs.getItem()).toString();
                                 }
                                 else
@@ -329,7 +332,7 @@ class World2TemplateParser extends Thread
                             }
                             else
                             {
-                                sb.append(stack.stackSize);
+                                sb.append(stack.getCount());
                             }
                             sb.append('#');
                             sb.append(stack.getItemDamage());
@@ -521,8 +524,8 @@ class World2TemplateParser extends Thread
         {
             e.printStackTrace();
             failed = true;
-            player.addChatMessage(new TextComponentTranslation("Something broke! See server logfile for exception message and get it to AtomicStryker."));
-            player.addChatMessage(new TextComponentTranslation("First line of stacktrace: " + e.getMessage()));
+            player.sendMessage(new TextComponentTranslation("Something broke! See server logfile for exception message and get it to AtomicStryker."));
+            player.sendMessage(new TextComponentTranslation("First line of stacktrace: " + e.getMessage()));
         }
     }
 

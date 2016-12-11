@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:extrabiomes")
 public class RuinsMod
 {
-    static final String modversion = "16.2";
+    static final String modversion = "16.3";
 
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
@@ -84,9 +84,8 @@ public class RuinsMod
         if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000L;
-            event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]",
-                    event.getState().getBlock().getLocalizedName(), event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(
-                            event.getState()))));
+            event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
+                    event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
         }
     }
 
@@ -99,9 +98,8 @@ public class RuinsMod
             if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
             {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
-                event.getPlayer().addChatComponentMessage(
-                        new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
-                                event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+                event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
+                        event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
                 event.setCanceled(true);
             }
         }
@@ -120,7 +118,7 @@ public class RuinsMod
     @SubscribeEvent
     public void onEntityEnteringChunk(EntityEvent.EnteringChunk event)
     {
-        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().worldObj.isRemote)
+        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().world.isRemote)
         {
             TileEntityCommandBlock tecb;
             ArrayList<TileEntityCommandBlock> tecblist = new ArrayList<>();
@@ -129,7 +127,7 @@ public class RuinsMod
             {
                 for (int zoffset = -4; zoffset <= 4; zoffset++)
                 {
-                    for (TileEntity teo : event.getEntity().worldObj.getChunkFromChunkCoords(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values())
+                    for (TileEntity teo : event.getEntity().world.getChunkFromChunkCoords(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values())
                     {
                         if (teo instanceof TileEntityCommandBlock)
                         {
@@ -148,11 +146,11 @@ public class RuinsMod
             for (TileEntityCommandBlock tecb2 : tecblist)
             {
                 // call command block execution
-                tecb2.getCommandBlockLogic().trigger(event.getEntity().worldObj);
+                tecb2.getCommandBlockLogic().trigger(event.getEntity().world);
                 // kill block
                 BlockPos pos = tecb2.getPos();
                 System.out.printf("Ruins executed and killed Command Block at [%s]\n", pos);
-                event.getEntity().worldObj.setBlockToAir(pos);
+                event.getEntity().world.setBlockToAir(pos);
             }
         }
     }
@@ -264,7 +262,8 @@ public class RuinsMod
                     try
                     {
                         f.setAccessible(true);
-                        // System.out.println("Ruins mod determines World Save Dir to be at: "+saveLoc);
+                        // System.out.println("Ruins mod determines World Save
+                        // Dir to be at: "+saveLoc);
                         return (File) f.get(loader);
                     }
                     catch (Exception e)

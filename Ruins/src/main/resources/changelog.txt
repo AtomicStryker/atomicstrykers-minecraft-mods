@@ -479,3 +479,6 @@ a: setAccessible now true
 16.2
 + updated to mc 1.10
 (hotfix) made ChestGenHook work on all IInventory types
+
+16.3
++ updated to mc 1.11
