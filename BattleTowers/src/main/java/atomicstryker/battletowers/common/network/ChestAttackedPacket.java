@@ -47,7 +47,7 @@ public class ChestAttackedPacket implements IPacket
         EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(playerName);
         if (p != null)
         {
-            Entity e = p.worldObj.getEntityByID(golemEntityID);
+            Entity e = p.world.getEntityByID(golemEntityID);
             if (e != null && e instanceof AS_EntityGolem)
             {
                 AS_EntityGolem golem = (AS_EntityGolem) e;

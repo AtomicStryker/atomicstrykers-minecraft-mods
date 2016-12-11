@@ -15,13 +15,13 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "regeneratebattletower";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender icommandsender)
+    public String getUsage(ICommandSender icommandsender)
     {
         return "/regeneratebattletower re-spawns the nearest existing Battletower, given x,z coordinates";
     }
@@ -31,7 +31,7 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
     {
         if (astring.length < 2)
         {
-            throw new WrongUsageException("Invalid Usage of Battletower regenerate command, must provide x,z coordinates", (Object)astring);
+            throw new WrongUsageException("Invalid Usage of Battletower regenerate command, must provide x,z coordinates", (Object) astring);
         }
         else
         {
@@ -42,13 +42,13 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
                 TowerPosition tp = WorldGenHandler.deleteNearestTower(icommandsender.getEntityWorld(), x, z);
                 if (tp != null)
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower regenerated: "+tp.toString());
-                    for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, new AxisAlignedBB(tp.x-10, 0.0D, tp.z-10, tp.x+10, 255, tp.z+10)))
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower regenerated: " + tp.toString());
+                    for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, new AxisAlignedBB(tp.x - 10, 0.0D, tp.z - 10, tp.x + 10, 255, tp.z + 10)))
                     {
                         ((Entity) o).setDead();
                         break;
                     }
-                    
+
                     WorldGenHandler.generateTower(icommandsender.getEntityWorld(), tp.x, tp.y, tp.z, tp.type, tp.underground);
                 }
                 else
@@ -58,7 +58,7 @@ public class CommandRegenerateBattleTower extends CommandBattleTowers
             }
             catch (Exception e)
             {
-                throw new WrongUsageException("Invalid Usage of Battletower regenerate command, must provide x,z coordinates", (Object)astring);
+                throw new WrongUsageException("Invalid Usage of Battletower regenerate command, must provide x,z coordinates", (Object) astring);
             }
         }
     }

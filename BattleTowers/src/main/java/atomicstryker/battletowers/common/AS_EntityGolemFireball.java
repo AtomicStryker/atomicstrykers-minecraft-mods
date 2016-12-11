@@ -13,10 +13,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-
 public class AS_EntityGolemFireball extends Entity
 {
-	private boolean wasDeflected;
+    private boolean wasDeflected;
     public EntityLiving shooterEntity;
     public double accelerationX;
     public double accelerationY;
@@ -26,24 +25,24 @@ public class AS_EntityGolemFireball extends Entity
     {
         super(world);
         setSize(0.3F, 0.3F);
-		wasDeflected = false;
+        wasDeflected = false;
     }
 
     @Override
     protected void entityInit()
     {
     }
-	
+
     public AS_EntityGolemFireball(World world, EntityLiving entityliving, double diffX, double diffY, double diffZ)
     {
         this(world);
-        
+
         shooterEntity = entityliving;
         motionX = motionY = motionZ = 0.0D;
         diffX += rand.nextGaussian() * 0.4D;
         diffY += rand.nextGaussian() * 0.4D;
         diffZ += rand.nextGaussian() * 0.4D;
-        double targetDistance = MathHelper.sqrt_double(diffX * diffX + diffY * diffY + diffZ * diffZ);
+        double targetDistance = MathHelper.sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ);
         accelerationX = (diffX / targetDistance) * 0.1D;
         accelerationY = (diffY / targetDistance) * 0.1D;
         accelerationZ = (diffZ / targetDistance) * 0.1D;
@@ -55,18 +54,18 @@ public class AS_EntityGolemFireball extends Entity
     {
         super.onUpdate();
         this.setFire(1);
-        
+
         Vec3d curVec = new Vec3d(posX, posY, posZ);
         Vec3d nextVec = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
-        RayTraceResult collisionPosition = worldObj.rayTraceBlocks(curVec, nextVec);
+        RayTraceResult collisionPosition = world.rayTraceBlocks(curVec, nextVec);
         curVec = new Vec3d(posX, posY, posZ);
         nextVec = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
-        if(collisionPosition != null)
+        if (collisionPosition != null)
         {
             nextVec = new Vec3d(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
         }
         Entity hitEntity = null;
-        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double minDist = 0.0D;
         for (Object aList : list)
         {
@@ -89,40 +88,48 @@ public class AS_EntityGolemFireball extends Entity
             }
         }
 
-        if(hitEntity != null)
+        if (hitEntity != null)
         {
             collisionPosition = new RayTraceResult(hitEntity);
         }
-        if(collisionPosition != null)
+        if (collisionPosition != null)
         {
-            if(!worldObj.isRemote)
+            if (!world.isRemote)
             {
-                if(collisionPosition.entityHit != null)
+                if (collisionPosition.entityHit != null)
                 {
                     collisionPosition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity), 0);
                 }
-                worldObj.newExplosion(null, posX, posY, posZ, 1.0F, true, true);
+                world.newExplosion(null, posX, posY, posZ, 1.0F, true, true);
             }
             setDead();
         }
         posX += motionX;
         posY += motionY;
         posZ += motionZ;
-        float f = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ);
-        rotationYaw = (float)((Math.atan2(motionX, motionZ) * 180D) / 3.1415927410125732D);
-        for(rotationPitch = (float)((Math.atan2(motionY, f) * 180D) / 3.1415927410125732D); rotationPitch - prevRotationPitch < -180F; prevRotationPitch -= 360F) { }
-        for(; rotationPitch - prevRotationPitch >= 180F; prevRotationPitch += 360F) { }
-        for(; rotationYaw - prevRotationYaw < -180F; prevRotationYaw -= 360F) { }
-        for(; rotationYaw - prevRotationYaw >= 180F; prevRotationYaw += 360F) { }
+        float f = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);
+        rotationYaw = (float) ((Math.atan2(motionX, motionZ) * 180D) / 3.1415927410125732D);
+        for (rotationPitch = (float) ((Math.atan2(motionY, f) * 180D) / 3.1415927410125732D); rotationPitch - prevRotationPitch < -180F; prevRotationPitch -= 360F)
+        {
+        }
+        for (; rotationPitch - prevRotationPitch >= 180F; prevRotationPitch += 360F)
+        {
+        }
+        for (; rotationYaw - prevRotationYaw < -180F; prevRotationYaw -= 360F)
+        {
+        }
+        for (; rotationYaw - prevRotationYaw >= 180F; prevRotationYaw += 360F)
+        {
+        }
         rotationPitch = prevRotationPitch + (rotationPitch - prevRotationPitch) * 0.2F;
         rotationYaw = prevRotationYaw + (rotationYaw - prevRotationYaw) * 0.2F;
         float f1 = 0.95F;
-        if(isInWater())
+        if (isInWater())
         {
-            for(int k = 0; k < 4; k++)
+            for (int k = 0; k < 4; k++)
             {
                 float f3 = 0.25F;
-                worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * (double)f3, posY - motionY * (double)f3, posZ - motionZ * (double)f3, motionX, motionY, motionZ);
+                world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * (double) f3, posY - motionY * (double) f3, posZ - motionZ * (double) f3, motionX, motionY, motionZ);
             }
 
             f1 = 0.8F;
@@ -133,7 +140,7 @@ public class AS_EntityGolemFireball extends Entity
         motionX *= f1;
         motionY *= f1;
         motionZ *= f1;
-        worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY + 0.5D, posZ, 0.0D, 0.0D, 0.0D);
+        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY + 0.5D, posZ, 0.0D, 0.0D, 0.0D);
         setPosition(posX, posY, posZ);
     }
 
@@ -154,10 +161,10 @@ public class AS_EntityGolemFireball extends Entity
     {
         setBeenAttacked();
         Entity entity = damage.getEntity();
-        if(entity != null)
+        if (entity != null)
         {
             Vec3d vec3d = entity.getLookVec();
-            if(vec3d != null)
+            if (vec3d != null)
             {
                 motionX = vec3d.xCoord;
                 motionY = vec3d.yCoord;
@@ -165,12 +172,12 @@ public class AS_EntityGolemFireball extends Entity
                 accelerationX = motionX * 0.1D;
                 accelerationY = motionY * 0.1D;
                 accelerationZ = motionZ * 0.1D;
-				
-				wasDeflected = true;
+
+                wasDeflected = true;
             }
             return true;
         }
-		else
+        else
         {
             return false;
         }
@@ -185,5 +192,5 @@ public class AS_EntityGolemFireball extends Entity
     public void writeEntityToNBT(NBTTagCompound nbttagcompound)
     {
     }
-    
+
 }

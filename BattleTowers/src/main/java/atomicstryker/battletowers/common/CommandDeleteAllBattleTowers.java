@@ -10,13 +10,13 @@ public class CommandDeleteAllBattleTowers extends CommandBattleTowers
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "deleteallbattletowers";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender icommandsender)
+    public String getUsage(ICommandSender icommandsender)
     {
         return "/deleteallbattletowers deletes all existing Battletowers, as logged in save file";
     }
@@ -25,7 +25,7 @@ public class CommandDeleteAllBattleTowers extends CommandBattleTowers
     public void execute(MinecraftServer server, ICommandSender icommandsender, String[] astring)
     {
         WorldGenHandler.deleteAllTowers(icommandsender.getEntityWorld(), false);
-        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName()+": All Battletowers deleted");
+        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": All Battletowers deleted");
     }
 
 }

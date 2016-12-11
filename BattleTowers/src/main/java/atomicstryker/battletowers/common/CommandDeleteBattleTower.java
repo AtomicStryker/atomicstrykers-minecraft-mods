@@ -15,13 +15,13 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "deletebattletower";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender icommandsender)
+    public String getUsage(ICommandSender icommandsender)
     {
         return "/deletebattletower deletes the nearest existing Battletower, given x,z coordinates";
     }
@@ -31,7 +31,7 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
     {
         if (astring.length < 2)
         {
-            throw new WrongUsageException("Invalid Usage of Battletower delete command, must provide x,z coordinates", (Object)astring);
+            throw new WrongUsageException("Invalid Usage of Battletower delete command, must provide x,z coordinates", (Object) astring);
         }
         else
         {
@@ -42,8 +42,8 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
                 TowerPosition tp = WorldGenHandler.deleteNearestTower(icommandsender.getEntityWorld(), x, z);
                 if (tp != null)
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower deleted: "+tp.toString());
-                    for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, new AxisAlignedBB(tp.x-10, 0.0D, tp.z-10, tp.x+10, 255, tp.z+10)))
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower deleted: " + tp.toString());
+                    for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, new AxisAlignedBB(tp.x - 10, 0.0D, tp.z - 10, tp.x + 10, 255, tp.z + 10)))
                     {
                         ((Entity) o).setDead();
                         break;
@@ -51,12 +51,12 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
                 }
                 else
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName()+ ": no Battletower deleted, no valid target");
+                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": no Battletower deleted, no valid target");
                 }
             }
             catch (Exception e)
             {
-                throw new WrongUsageException("Invalid Usage of Battletower delete command, must provide x,z coordinates", (Object)astring);
+                throw new WrongUsageException("Invalid Usage of Battletower delete command, must provide x,z coordinates", (Object) astring);
             }
         }
     }

@@ -32,7 +32,7 @@ public class ClientTickHandler
         if (mc.currentScreen != null
         && mc.currentScreen instanceof GuiChest)
         {
-            List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, new AxisAlignedBB(mc.thePlayer.posX - 8D, mc.thePlayer.posY - 8D, mc.thePlayer.posZ - 8D, mc.thePlayer.posX + 8D, mc.thePlayer.posY + 8D, mc.thePlayer.posZ + 8D));
+            List<?> ents = mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, new AxisAlignedBB(mc.player.posX - 8D, mc.player.posY - 8D, mc.player.posZ - 8D, mc.player.posX + 8D, mc.player.posY + 8D, mc.player.posZ + 8D));
             if (!ents.isEmpty())
             {
                 for (int i = ents.size() - 1; i >= 0; i--)
@@ -40,7 +40,7 @@ public class ClientTickHandler
                     if (ents.get(i) instanceof AS_EntityGolem)
                     {
                         AS_EntityGolem golem = (AS_EntityGolem) ents.get(i);
-                        ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.getGameProfile().getName(), golem.getEntityId());
+                        ChestAttackedPacket packet = new ChestAttackedPacket(mc.player.getGameProfile().getName(), golem.getEntityId());
                         AS_BattleTowersCore.instance.networkHelper.sendPacketToServer(packet);
                         mc.displayGuiScreen(null);
                         break;
@@ -50,7 +50,7 @@ public class ClientTickHandler
         }
 
         if (!hackFailed
-        && mc.theWorld != null
+        && mc.world != null
         && mc.objectMouseOver != null
         && mc.objectMouseOver.typeOfHit == Type.BLOCK
         && mc.objectMouseOver != playerTarget)
@@ -61,16 +61,16 @@ public class ClientTickHandler
             int y = playerTarget.getBlockPos().getY();
             int z = playerTarget.getBlockPos().getZ();
 
-            if (mc.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.CHEST)
+            if (mc.world.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.CHEST)
             {
-                List<?> ents = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, new AxisAlignedBB(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
+                List<?> ents = mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, new AxisAlignedBB(x - 7D, y - 7D, z - 7D, x + 7D, y + 7D, z + 7D));
                 if (!ents.isEmpty())
                 {
                     for (int i = ents.size() - 1; i >= 0; i--)
                     {
                         if (ents.get(i) instanceof AS_EntityGolem)
                         {
-                            boolean multiplayer = mc.theWorld.isRemote;
+                            boolean multiplayer = mc.world.isRemote;
 
                             AS_EntityGolem golem = (AS_EntityGolem) ents.get(i);
                             Object progressHack;
@@ -91,13 +91,13 @@ public class ClientTickHandler
                             {
                                 if (multiplayer)
                                 {
-                                    ChestAttackedPacket packet = new ChestAttackedPacket(mc.thePlayer.getGameProfile().getName(), golem.getEntityId());
+                                    ChestAttackedPacket packet = new ChestAttackedPacket(mc.player.getGameProfile().getName(), golem.getEntityId());
                                     AS_BattleTowersCore.instance.networkHelper.sendPacketToServer(packet);
                                 }
                                 else
                                 {
                                     golem.setAwake();
-                                    golem.setAttackTarget(mc.thePlayer);
+                                    golem.setAttackTarget(mc.player);
                                 }
                             }
 

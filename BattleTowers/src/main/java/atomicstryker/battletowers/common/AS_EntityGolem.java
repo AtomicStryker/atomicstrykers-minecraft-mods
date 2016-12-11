@@ -31,21 +31,21 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnData
 {
-    
-    private final static DataParameter<Boolean> AWAKE = EntityDataManager.<Boolean>createKey(AS_EntityGolem.class, DataSerializers.BOOLEAN);
-    
+
+    private final static DataParameter<Boolean> AWAKE = EntityDataManager.<Boolean> createKey(AS_EntityGolem.class, DataSerializers.BOOLEAN);
+
     private int rageCounter;
     private int explosionAttack;
     private int towerID;
     private int drops;
     private int attackCounter;
-    
+
     private int towerX = -1;
     private int towerY = -1;
     private int towerZ = -1;
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	public AS_EntityGolem(World world)
+    public AS_EntityGolem(World world)
     {
         super(world);
         this.setSize(1.1F, 4.0F);
@@ -56,13 +56,15 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         drops = 1;
         setLocationAndAngles(posX, posY, posZ, 0.0F, 0.0F);
         attackCounter = 0;
-        
-        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(300.0d); // max health
+
+        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(300.0d); // max
+                                                                                     // health
         setHealth(getMaxHealth());
-        
-        getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(7.0d); // attack damage
+
+        getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(7.0d); // attack
+                                                                                      // damage
         getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3d); // movespeed
-        
+
         tasks.addTask(0, new EntityAISwimming(this));
         tasks.addTask(1, new EntityAIAttackMelee(this, 1.0d, true));
         tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
@@ -73,10 +75,10 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     public AS_EntityGolem(World world, int i)
     {
         this(world);
-		towerID = i;
-		this.updateGolemType();
+        towerID = i;
+        this.updateGolemType();
     }
-    
+
     @Override
     protected void updateAITasks()
     {
@@ -85,10 +87,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             super.updateAITasks();
         }
     }
-    
-    
+
     @Override
-	public void onLivingUpdate()
+    public void onLivingUpdate()
     {
         if (!this.getIsDormant())
         {
@@ -96,26 +97,26 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         }
     }
 
-	@Override
-	public void writeSpawnData(ByteBuf data)
-	{
-		data.writeInt(this.towerID);
-	}
+    @Override
+    public void writeSpawnData(ByteBuf data)
+    {
+        data.writeInt(this.towerID);
+    }
 
-	@Override
-	public void readSpawnData(ByteBuf data)
-	{
-		towerID = data.readInt();
-		this.updateGolemType();
-	}
+    @Override
+    public void readSpawnData(ByteBuf data)
+    {
+        towerID = data.readInt();
+        this.updateGolemType();
+    }
 
-	private void updateGolemType()
-	{
-		drops = 5 + towerID;
-		getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(7.0f + towerID);
-		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150f + 50f*towerID);
-		setHealth(getMaxHealth());
-	}
+    private void updateGolemType()
+    {
+        drops = 5 + towerID;
+        getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(7.0f + towerID);
+        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150f + 50f * towerID);
+        setHealth(getMaxHealth());
+    }
 
     @Override
     protected void entityInit()
@@ -126,7 +127,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
     public void setDormant()
     {
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             dataManager.set(AWAKE, true);
         }
@@ -134,94 +135,94 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
     public void setAwake()
     {
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             if (getIsDormant())
             {
-                worldObj.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemAwaken, SoundCategory.HOSTILE, getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+                world.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemAwaken, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
+                        ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
             }
-            
+
             dataManager.set(AWAKE, false);
         }
     }
 
     public boolean getIsDormant()
     {
-    	return dataManager.get(AWAKE);
+        return dataManager.get(AWAKE);
     }
-    
+
     @Override
     public boolean attackEntityFrom(DamageSource damageSource, float amount)
     {
-        if (damageSource.getEntity() != null
-        && damageSource.getEntity() instanceof EntityLivingBase)
+        if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityLivingBase)
         {
             setAwake();
             setAttackTarget((EntityLivingBase) damageSource.getEntity());
         }
-        
+
         return super.attackEntityFrom(damageSource, amount);
     }
 
-	@Override
+    @Override
     public void setDead()
     {
         super.setDead();
     }
 
-	@Override
+    @Override
     public void onDeath(DamageSource var1)
     {
-    	super.onDeath(var1);
-    	Entity entity = var1.getEntity();
+        super.onDeath(var1);
+        Entity entity = var1.getEntity();
 
-        if(scoreValue > 0 && entity != null)
+        if (scoreValue > 0 && entity != null)
         {
             entity.addToPlayerScore(this, scoreValue);
         }
-        if(!worldObj.isRemote)
+        if (!world.isRemote)
         {
             int i = drops;
-            for(int j = 0; j < i; j++)
+            for (int j = 0; j < i; j++)
             {
                 entityDropItem(new ItemStack(Items.DIAMOND, 1), 0f);
-				entityDropItem(new ItemStack(Items.REDSTONE, 1), 0f);
+                entityDropItem(new ItemStack(Items.REDSTONE, 1), 0f);
             }
 
             i = rand.nextInt(4) + 8;
-            for(int k = 0; k < i; k++)
+            for (int k = 0; k < i; k++)
             {
                 entityDropItem(new ItemStack(Blocks.CLAY, 1), 0f);
             }
-			if(getAttackTarget() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50)
-			{
-				AS_BattleTowersCore.onBattleTowerDestroyed(new AS_TowerDestroyer(worldObj, new BlockPos(towerX, towerY, towerZ), System.currentTimeMillis(), getAttackTarget()));
-			}
+            if (getAttackTarget() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50)
+            {
+                AS_BattleTowersCore.onBattleTowerDestroyed(new AS_TowerDestroyer(world, new BlockPos(towerX, towerY, towerZ), System.currentTimeMillis(), getAttackTarget()));
+            }
         }
-        worldObj.setEntityState(this, (byte)3);
+        world.setEntityState(this, (byte) 3);
     }
 
-	@Override
+    @Override
     public void knockBack(Entity entity, float i, double d, double d1)
     {
-        //moveSpeed = 0.25F + (float)((double)(450 - health) / 1750D);
-        if(rand.nextInt(5) == 0)
+        // moveSpeed = 0.25F + (float)((double)(450 - health) / 1750D);
+        if (rand.nextInt(5) == 0)
         {
             motionX *= 1.5D;
             motionZ *= 1.5D;
             motionY += 0.60000002384185791D;
         }
-        //rageCounter = 150;
+        // rageCounter = 150;
     }
-    
+
     @Override
     public void onUpdate()
     {
-        if(!this.getIsDormant())
-        {		
-			if(getAttackTarget() == null || !getAttackTarget().isEntityAlive())
+        if (!this.getIsDormant())
+        {
+            if (getAttackTarget() == null || !getAttackTarget().isEntityAlive())
             {
-			    setHealth(getMaxHealth());
+                setHealth(getMaxHealth());
                 rageCounter = 125;
                 explosionAttack = 0;
 
@@ -230,47 +231,48 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                     this.setDormant();
                 }
             }
-			else if(rageCounter <= 0 && explosionAttack == 0)
+            else if (rageCounter <= 0 && explosionAttack == 0)
             {
-                worldObj.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemSpecial, SoundCategory.HOSTILE, getSoundVolume() * 2.0F, ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
-			    motionY += 0.9D;
-			    explosionAttack = 1;
+                world.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemSpecial, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
+                        ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+                motionY += 0.9D;
+                explosionAttack = 1;
             }
-			else if((rageCounter <= -30 || onGround) && explosionAttack == 1)
+            else if ((rageCounter <= -30 || onGround) && explosionAttack == 1)
             {
-                if(getHealth() <= getMaxHealth()/2) // getEntityHealth
+                if (getHealth() <= getMaxHealth() / 2) // getEntityHealth
                 {
                     setHealth(getHealth() + 20);
                 }
 
-				if (!worldObj.isRemote && (this.posY - getAttackTarget().posY) > 0.3D)
-				{
-				    if (AS_BattleTowersCore.instance.noGolemExplosions)
-				    {
-				    	getAttackTarget().attackEntityFrom(DamageSource.causeMobDamage(this), 3.5f);
-				    }
-				    else
-				    {
-				        worldObj.createExplosion(this, posX, posY-0.3D, posZ, 4F, true);
-				    }
-				}
+                if (!world.isRemote && (this.posY - getAttackTarget().posY) > 0.3D)
+                {
+                    if (AS_BattleTowersCore.instance.noGolemExplosions)
+                    {
+                        getAttackTarget().attackEntityFrom(DamageSource.causeMobDamage(this), 3.5f);
+                    }
+                    else
+                    {
+                        world.createExplosion(this, posX, posY - 0.3D, posZ, 4F, true);
+                    }
+                }
                 rageCounter = 125;
                 explosionAttack = 0;
             }
         }
-        
+
         checkForVictim();
         super.onUpdate();
     }
-    
-	private void checkForVictim()
+
+    private void checkForVictim()
     {
-        if(this.getIsDormant())
+        if (this.getIsDormant())
         {
-            if (!worldObj.isRemote)
+            if (!world.isRemote)
             {
-                EntityPlayer entityplayer = worldObj.getClosestPlayerToEntity(this, 6D);
-                if(entityplayer != null && canEntityBeSeen(entityplayer))
+                EntityPlayer entityplayer = world.getClosestPlayerToEntity(this, 6D);
+                if (entityplayer != null && canEntityBeSeen(entityplayer))
                 {
                     setAwake();
                     setAttackTarget(entityplayer);
@@ -278,30 +280,30 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                 }
             }
         }
-		else if (getAttackTarget() != null)
+        else if (getAttackTarget() != null)
         {
-			if (towerY == -1)
-			{
-			    towerX = (int)posX;
-			    towerY = (int)posY;
-			    towerZ = (int)posZ;
-			}
-
-			boolean targetNearby = (getAttackTarget().getDistanceSqToEntity(this) < 6F*6F);
-
-            if(!targetNearby || explosionAttack == 1 || (((this.posY - getAttackTarget().posY) > 0.3D)))
+            if (towerY == -1)
             {
-                rageCounter-=2;
-                //System.out.println("Golem losing patience: "+rageCounter);
+                towerX = (int) posX;
+                towerY = (int) posY;
+                towerZ = (int) posZ;
             }
-			else
+
+            boolean targetNearby = (getAttackTarget().getDistanceSqToEntity(this) < 6F * 6F);
+
+            if (!targetNearby || explosionAttack == 1 || (((this.posY - getAttackTarget().posY) > 0.3D)))
+            {
+                rageCounter -= 2;
+                // System.out.println("Golem losing patience: "+rageCounter);
+            }
+            else
             {
                 rageCounter = 175;
             }
-            
+
             if (attackCounter == 10)
             {
-                worldObj.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemCharge, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
+                world.playSound(null, getPosition(), AS_BattleTowersCore.instance.soundGolemCharge, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
             }
             attackCounter++;
             if (attackCounter >= 20)
@@ -315,31 +317,31 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             attackCounter--;
         }
     }
-	
-	private void conjureFireBall()
-	{
-        if (!worldObj.isRemote)
+
+    private void conjureFireBall()
+    {
+        if (!world.isRemote)
         {
             double diffX = getAttackTarget().posX - posX;
-            double diffY = (getAttackTarget().getEntityBoundingBox().minY + (double)(getAttackTarget().height / 2.0F)) - (posY + height * 0.8D);
+            double diffY = (getAttackTarget().getEntityBoundingBox().minY + (double) (getAttackTarget().height / 2.0F)) - (posY + height * 0.8D);
             double diffZ = getAttackTarget().posZ - posZ;
-            
-            renderYawOffset = rotationYaw = (-(float)Math.atan2(diffX, diffZ) * 180F) / (float)Math.PI;
-            
-            worldObj.playSound(null, getPosition(), SoundEvents.ENTITY_GHAST_SHOOT, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
-            AS_EntityGolemFireball entityfireball = new AS_EntityGolemFireball(worldObj, this, diffX, diffY, diffZ);
+
+            renderYawOffset = rotationYaw = (-(float) Math.atan2(diffX, diffZ) * 180F) / (float) Math.PI;
+
+            world.playSound(null, getPosition(), SoundEvents.ENTITY_GHAST_SHOOT, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
+            AS_EntityGolemFireball entityfireball = new AS_EntityGolemFireball(world, this, diffX, diffY, diffZ);
             Vec3d vec3d = getLook(1.0F);
             entityfireball.posX = posX + vec3d.xCoord * 2D;
-            entityfireball.posY = posY + (height*0.8) + vec3d.yCoord * 0.5D;
+            entityfireball.posY = posY + (height * 0.8) + vec3d.yCoord * 0.5D;
             entityfireball.posZ = posZ + vec3d.zCoord * 2D;
-            worldObj.spawnEntityInWorld(entityfireball);
+            world.spawnEntity(entityfireball);
         }
-	}
+    }
 
     @Override
     protected boolean canDespawn()
     {
-    	return this.isDead;
+        return this.isDead;
     }
 
     @Override
@@ -347,16 +349,16 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     {
         if (towerY == -1)
         {
-            towerX = (int)posX;
-            towerY = (int)posY;
-            towerZ = (int)posZ;
+            towerX = (int) posX;
+            towerY = (int) posY;
+            towerZ = (int) posZ;
         }
-        
+
         super.writeEntityToNBT(nbttagcompound);
         nbttagcompound.setByte("isDormant", (byte) (this.getIsDormant() ? 1 : 0));
-        nbttagcompound.setByte("hasexplosionAttacked", (byte)explosionAttack);
-        nbttagcompound.setByte("rageCounter", (byte)rageCounter);
-        nbttagcompound.setByte("Drops", (byte)drops);
+        nbttagcompound.setByte("hasexplosionAttacked", (byte) explosionAttack);
+        nbttagcompound.setByte("rageCounter", (byte) rageCounter);
+        nbttagcompound.setByte("Drops", (byte) drops);
         nbttagcompound.setInteger("towerX", towerX);
         nbttagcompound.setInteger("towerY", towerY);
         nbttagcompound.setInteger("towerZ", towerZ);
@@ -368,40 +370,40 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         super.readEntityFromNBT(nbttagcompound);
         if ((nbttagcompound.getByte("isDormant") & 0xff) == 1)
         {
-        	this.setDormant();
+            this.setDormant();
         }
         else
         {
-        	this.setAwake();
+            this.setAwake();
         }
         explosionAttack = nbttagcompound.getByte("hasexplosionAttacked") & 0xff;
         rageCounter = nbttagcompound.getByte("rageCounter") & 0xff;
         drops = nbttagcompound.getByte("Drops") & 0xff;
-        
+
         towerX = nbttagcompound.getInteger("towerX");
         towerY = nbttagcompound.getInteger("towerY");
         towerZ = nbttagcompound.getInteger("towerZ");
     }
-    
+
     @Override
     public boolean attackEntityAsMob(Entity entity)
     {
-        if(onGround)
+        if (onGround)
         {
             double d = entity.posX - posX;
             double d1 = entity.posZ - posZ;
-            float f1 = MathHelper.sqrt_double(d * d + d1 * d1);
-            motionX = (d / (double)f1) * 0.5D * 0.20000000192092895D + motionX * 0.20000000098023224D;
-            motionZ = (d1 / (double)f1) * 0.5D * 0.10000000192092896D + motionZ * 0.20000000098023224D;
+            float f1 = MathHelper.sqrt(d * d + d1 * d1);
+            motionX = (d / (double) f1) * 0.5D * 0.20000000192092895D + motionX * 0.20000000098023224D;
+            motionZ = (d1 / (double) f1) * 0.5D * 0.10000000192092896D + motionZ * 0.20000000098023224D;
         }
-        
+
         return super.attackEntityAsMob(entity);
     }
 
     @Override
     protected SoundEvent getAmbientSound()
     {
-        if(!this.getIsDormant())
+        if (!this.getIsDormant())
         {
             return AS_BattleTowersCore.instance.soundGolem;
         }

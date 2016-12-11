@@ -12,13 +12,13 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "spawnbattletower";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender icommandsender)
+    public String getUsage(ICommandSender icommandsender)
     {
         return "/spawnbattletower spawns a Battletower with supplied data x,y,z,type,underground";
     }
@@ -28,7 +28,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
     {
         if (astring.length < 5)
         {
-            throw new WrongUsageException("Invalid Usage of Battletower spawn command", (Object)astring);
+            throw new WrongUsageException("Invalid Usage of Battletower spawn command", (Object) astring);
         }
         else
         {
@@ -44,7 +44,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
             }
             catch (Exception e)
             {
-                throw new WrongUsageException("Invalid Usage of Battletower spawn command", (Object)astring);
+                throw new WrongUsageException("Invalid Usage of Battletower spawn command", (Object) astring);
             }
         }
     }
