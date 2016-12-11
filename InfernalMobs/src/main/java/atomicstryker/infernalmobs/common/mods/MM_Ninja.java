@@ -58,9 +58,9 @@ public class MM_Ninja extends MobModifier
         Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 8.0D;
-        double destX = mob.posX + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;
-        double destY = mob.posY + (double)(mob.worldObj.rand.nextInt(16) - 4) - vector.yCoord * telDist;
-        double destZ = mob.posZ + (mob.worldObj.rand.nextDouble() - 0.5D) * 4.0D - vector.zCoord * telDist;
+        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;
+        double destY = mob.posY + (double)(mob.world.rand.nextInt(16) - 4) - vector.yCoord * telDist;
+        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.zCoord * telDist;
         return teleportTo(mob, destX, destY, destZ);
     }
     
@@ -72,14 +72,14 @@ public class MM_Ninja extends MobModifier
         mob.posX = destX;
         mob.posY = destY;
         mob.posZ = destZ;
-        int x = MathHelper.floor_double(mob.posX);
-        int y = MathHelper.floor_double(mob.posY);
-        int z = MathHelper.floor_double(mob.posZ);
+        int x = MathHelper.floor(mob.posX);
+        int y = MathHelper.floor(mob.posY);
+        int z = MathHelper.floor(mob.posZ);
 
         boolean hitGround = false;
         while (!hitGround && y < 96)
         {
-            IBlockState bs = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z));
+            IBlockState bs = mob.world.getBlockState(new BlockPos(x, y - 1, z));
             if (bs.getMaterial().blocksMovement())
             {
                 hitGround = true;
@@ -95,8 +95,8 @@ public class MM_Ninja extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
             
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
-            mob.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, oldX, oldY, oldZ, 0D, 0D, 0D);
+            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, oldX, oldY, oldZ, 0D, 0D, 0D);
         }
         else
         {

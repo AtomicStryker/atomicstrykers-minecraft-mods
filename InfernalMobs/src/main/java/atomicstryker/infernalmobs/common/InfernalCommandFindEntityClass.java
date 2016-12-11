@@ -1,7 +1,5 @@
 package atomicstryker.infernalmobs.common;
 
-import java.util.Collection;
-
 import org.apache.logging.log4j.Level;
 
 import net.minecraft.command.CommandBase;
@@ -10,19 +8,20 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class InfernalCommandFindEntityClass extends CommandBase
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "feclass";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/feclass X returns all currently registered Entities containing X in their classname's";
     }
@@ -32,7 +31,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
     {
         if (args.length == 0)
         {
-            throw new WrongUsageException("Invalid Usage of FindEntityClass command", (Object)args);
+            throw new WrongUsageException("Invalid Usage of FindEntityClass command", (Object) args);
         }
         else
         {
@@ -41,12 +40,12 @@ public class InfernalCommandFindEntityClass extends CommandBase
             {
                 classname = classname + " " + args[i];
             }
-            
+
             String result = "Found Entity classes: ";
-            final Collection<String> classes = EntityList.CLASS_TO_NAME.values();
             boolean found = false;
-            for (String entclass : classes)
+            for (ResourceLocation rsl : EntityList.getEntityNameList())
             {
+                String entclass = rsl.getResourcePath();
                 if (entclass.toLowerCase().contains(classname.toLowerCase()))
                 {
                     if (!found)
@@ -60,16 +59,16 @@ public class InfernalCommandFindEntityClass extends CommandBase
                     }
                 }
             }
-            
+
             if (!found)
             {
                 result += "Nothing found.";
             }
-            
-            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName()+ ": " + result);
+
+            FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName() + ": " + result);
         }
     }
-    
+
     @Override
     public int getRequiredPermissionLevel()
     {

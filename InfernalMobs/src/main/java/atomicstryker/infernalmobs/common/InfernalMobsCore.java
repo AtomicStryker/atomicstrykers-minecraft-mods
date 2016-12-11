@@ -101,10 +101,10 @@ public class InfernalMobsCore
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
     private double modHealthFactor;
-    
+
     private Entity infCheckA;
     private Entity infCheckB;
-    
+
     private ArrayList<Integer> dimensionBlackList;
 
     @Instance("infernalmobs")
@@ -173,7 +173,7 @@ public class InfernalMobsCore
         // lets use postInit so mod Blocks and Items are present
         loadConfig();
     }
-    
+
     @EventHandler
     public void serverStarted(FMLServerStartingEvent evt)
     {
@@ -236,64 +236,39 @@ public class InfernalMobsCore
     {
         config.load();
 
-        eliteRarity =
-                Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15, "One in THIS many Mobs will become atleast rare")
-                        .getString());
-        ultraRarity =
-                Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7,
-                        "One in THIS many already rare Mobs will become atleast ultra").getString());
-        infernoRarity =
-                Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7,
-                        "One in THIS many already ultra Mobs will become infernal").getString());
-        useSimpleEntityClassNames =
-                config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", true,
-                        "Use Entity class names instead of ingame Entity names for the config").getBoolean(true);
-        disableHealthBar =
-                config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false, "Disables the ingame Health and Name overlay").getBoolean(
-                        false);
-        modHealthFactor =
-                config.get(Configuration.CATEGORY_GENERAL, "mobHealthFactor", "1.0", "Multiplier applied ontop of all of the modified Mobs health")
-                        .getDouble(1.0D);
+        eliteRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "eliteRarity", 15, "One in THIS many Mobs will become atleast rare").getString());
+        ultraRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "ultraRarity", 7, "One in THIS many already rare Mobs will become atleast ultra").getString());
+        infernoRarity = Integer.parseInt(config.get(Configuration.CATEGORY_GENERAL, "infernoRarity", 7, "One in THIS many already ultra Mobs will become infernal").getString());
+        useSimpleEntityClassNames = config.get(Configuration.CATEGORY_GENERAL, "useSimpleEntityClassnames", true, "Use Entity class names instead of ingame Entity names for the config")
+                .getBoolean(true);
+        disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false, "Disables the ingame Health and Name overlay").getBoolean(false);
+        modHealthFactor = config.get(Configuration.CATEGORY_GENERAL, "mobHealthFactor", "1.0", "Multiplier applied ontop of all of the modified Mobs health").getDouble(1.0D);
 
-        parseItemsForList(
-                config.get(
-                        Configuration.CATEGORY_GENERAL,
-                        "droppedItemIDsElite",
+        parseItemsForList(config
+                .get(Configuration.CATEGORY_GENERAL, "droppedItemIDsElite",
                         "iron_shovel,iron_pickaxe,iron_axe,iron_sword,iron_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,iron_helmet,iron_chestplate,iron_leggings,iron_boots,cookie-0-6",
                         "List of equally likely to drop Items for Elites, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
-                        .getString(), instance.dropIdListElite);
+                .getString(), instance.dropIdListElite);
 
-        parseItemsForList(
-                config.get(
-                        Configuration.CATEGORY_GENERAL,
-                        "droppedItemIDsUltra",
+        parseItemsForList(config
+                .get(Configuration.CATEGORY_GENERAL, "droppedItemIDsUltra",
                         "bow,iron_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,iron_helmet,iron_chestplate,iron_leggings,iron_boots,golden_helmet,golden_chestplate,golden_leggings,golden_boots,golden_apple,blaze_powder-0-3,enchanted_book",
                         "List of equally likely to drop Items for Ultras, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
-                        .getString(), instance.dropIdListUltra);
+                .getString(), instance.dropIdListUltra);
 
-        parseItemsForList(
-                config.get(
-                        Configuration.CATEGORY_GENERAL,
-                        "droppedItemIDsInfernal",
+        parseItemsForList(config
+                .get(Configuration.CATEGORY_GENERAL, "droppedItemIDsInfernal",
                         "diamond-0-3,diamond_sword,diamond_shovel,diamond_pickaxe,diamond_axe,diamond_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,diamond_helmet,diamond_chestplate,diamond_leggings,diamond_boots,ender_pearl,enchanted_book",
                         "List of equally likely to drop Items for Infernals, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
-                        .getString(), instance.dropIdListInfernal);
+                .getString(), instance.dropIdListInfernal);
 
-        maxDamage =
-                config.get(Configuration.CATEGORY_GENERAL, "maxOneShotDamage", 10d,
-                        "highest amount of damage an Infernal Mob or reflecting Mod will do in a single strike").getDouble(10d);
+        maxDamage = config.get(Configuration.CATEGORY_GENERAL, "maxOneShotDamage", 10d, "highest amount of damage an Infernal Mob or reflecting Mod will do in a single strike").getDouble(10d);
 
-        parseIDsForList(
-                config.get(
-                        Configuration.CATEGORY_GENERAL,
-                        "dimensionIDBlackList",
-                        "",
-                        "List of DimensionIDs where InfernalMobs will NEVER spawn")
-                        .getString(), instance.dimensionBlackList);
+        parseIDsForList(config.get(Configuration.CATEGORY_GENERAL, "dimensionIDBlackList", "", "List of DimensionIDs where InfernalMobs will NEVER spawn").getString(), instance.dimensionBlackList);
 
         config.save();
     }
-    
+
     private void parseIDsForList(String dimensionIDs, ArrayList<Integer> list)
     {
         dimensionIDs = dimensionIDs.trim();
@@ -302,7 +277,7 @@ public class InfernalMobsCore
             String trimmedDimIDString = s.trim();
             if (s.length() == 0)
                 continue; // Skipping empty entries if list is empty at all
-            
+
             try
             {
                 Integer tDimID = Integer.parseInt(trimmedDimIDString);
@@ -337,12 +312,12 @@ public class InfernalMobsCore
 
                 if (itemOrBlock instanceof Block)
                 {
-                	Block block = (Block) itemOrBlock;
+                    Block block = (Block) itemOrBlock;
                     list.add(new ItemStack(block, stackSize + rand.nextInt(randomizer), imeta));
                 }
                 else
                 {
-                	Item item = (Item) itemOrBlock;
+                    Item item = (Item) itemOrBlock;
                     list.add(new ItemStack(item, stackSize + rand.nextInt(randomizer), imeta));
                 }
             }
@@ -351,7 +326,7 @@ public class InfernalMobsCore
 
     private Object parseOrFind(String s)
     {
-    	ResourceLocation rl = new ResourceLocation(s);
+        ResourceLocation rl = new ResourceLocation(s);
         Item item = Item.REGISTRY.getObject(rl);
         if (item != null)
         {
@@ -375,16 +350,16 @@ public class InfernalMobsCore
      */
     public void processEntitySpawn(EntityLivingBase entity)
     {
-        if (!entity.worldObj.isRemote)
+        if (!entity.world.isRemote)
         {
             if (!getIsRareEntity(entity))
             {
-                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.worldObj.rand.nextInt(eliteRarity) == 0))
+                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.world.rand.nextInt(eliteRarity) == 0))
                 {
                     try
                     {
                         Integer tEntityDim = entity.dimension;
-                        
+
                         // Skip Infernal-Spawn when Dimension is Blacklisted
                         if (!dimensionBlackList.contains(tEntityDim))
                         {
@@ -393,11 +368,13 @@ public class InfernalMobsCore
                             {
                                 proxy.getRareMobs().put(entity, mod);
                                 mod.onSpawningComplete(entity);
-                                // System.out.println("InfernalMobsCore modded mob: "+entity+", id "+entity.getEntityId()+": "+mod.getLinkedModName());
+                                // System.out.println("InfernalMobsCore modded
+                                // mob: "+entity+", id "+entity.getEntityId()+":
+                                // "+mod.getLinkedModName());
                             }
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         FMLLog.log("InfernalMobs", Level.ERROR, "processEntitySpawn() threw an exception");
                         e.printStackTrace();
@@ -409,21 +386,21 @@ public class InfernalMobsCore
 
     private boolean isClassAllowed(EntityLivingBase entity)
     {
-    	if (entity instanceof EntityMob || (entity instanceof IMob))
-    	{
-    		if (entity instanceof IEntityOwnable)
-    		{
-    			return false;
-    		}
-    		if (instance.checkEntityClassAllowed(entity))
-    		{
-    			return true;
-    		}
-    	}
-		return false;
-	}
+        if (entity instanceof EntityMob || (entity instanceof IMob))
+        {
+            if (entity instanceof IEntityOwnable)
+            {
+                return false;
+            }
+            if (instance.checkEntityClassAllowed(entity))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private String getEntityNameSafe(Entity entity)
+    private String getEntityNameSafe(Entity entity)
     {
         String result;
         try
@@ -433,8 +410,7 @@ public class InfernalMobsCore
         catch (Exception e)
         {
             result = entity.getClass().getSimpleName();
-            System.err.println("Entity of class " + result
-                    + " crashed when EntityList.getEntityString was queried, for shame! Using classname instead.");
+            System.err.println("Entity of class " + result + " crashed when EntityList.getEntityString was queried, for shame! Using classname instead.");
             System.err.println("If this message is spamming too much for your taste set useSimpleEntityClassnames true in your Infernal Mobs config");
         }
         return result;
@@ -514,18 +490,18 @@ public class InfernalMobsCore
     private MobModifier createMobModifiers(EntityLivingBase entity)
     {
         /* 2-5 modifications standard */
-        int number = 2 + entity.worldObj.rand.nextInt(3);
+        int number = 2 + entity.world.rand.nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
         ArrayList<Class<? extends MobModifier>> possibleMods = Lists.newArrayList(mobMods);
 
-        if (entity.worldObj.rand.nextInt(ultraRarity) == 0) // ultra mobs
+        if (entity.world.rand.nextInt(ultraRarity) == 0) // ultra mobs
         {
-            number += 3 + entity.worldObj.rand.nextInt(2);
+            number += 3 + entity.world.rand.nextInt(2);
 
-            if (entity.worldObj.rand.nextInt(infernoRarity) == 0) // infernal
-                                                                  // mobs
+            if (entity.world.rand.nextInt(infernoRarity) == 0) // infernal
+                                                               // mobs
             {
-                number += 3 + entity.worldObj.rand.nextInt(2);
+                number += 3 + entity.world.rand.nextInt(2);
             }
         }
 
@@ -534,7 +510,7 @@ public class InfernalMobsCore
                                                       // and have some
         {
             /* random index of mod list */
-            int index = entity.worldObj.rand.nextInt(possibleMods.size());
+            int index = entity.world.rand.nextInt(possibleMods.size());
             MobModifier nextMod = null;
 
             /*
@@ -619,7 +595,7 @@ public class InfernalMobsCore
             }
             else
             {
-                System.err.println("Infernal Mobs error, could not instantiate modifier "+savedMods);
+                System.err.println("Infernal Mobs error, could not instantiate modifier " + savedMods);
             }
         }
     }
@@ -648,7 +624,7 @@ public class InfernalMobsCore
                     }
                     else
                     {
-                        nextMod = c.getConstructor(new Class[] {MobModifier.class }).newInstance(lastMod);
+                        nextMod = c.getConstructor(new Class[] { MobModifier.class }).newInstance(lastMod);
                     }
                 }
                 catch (Exception e)
@@ -703,7 +679,8 @@ public class InfernalMobsCore
         if (ent != null)
         {
             addEntityModifiersByString((EntityLivingBase) ent, mods);
-            // System.out.println("Client added remote infernal mod on entity "+ent+", is now "+mod.getModName());
+            // System.out.println("Client added remote infernal mod on entity
+            // "+ent+", is now "+mod.getModName());
         }
     }
 
@@ -714,7 +691,7 @@ public class InfernalMobsCore
         {
             int xpDrop = EntityXPOrb.getXPSplit(xpValue);
             xpValue -= xpDrop;
-            mob.worldObj.spawnEntityInWorld(new EntityXPOrb(mob.worldObj, mob.posX, mob.posY, mob.posZ, xpDrop));
+            mob.world.spawnEntity(new EntityXPOrb(mob.world, mob.posX, mob.posY, mob.posZ, xpDrop));
         }
 
         dropRandomEnchantedItems(mob, mods);
@@ -735,19 +712,19 @@ public class InfernalMobsCore
                 {
                     if (item instanceof ItemEnchantedBook)
                     {
-                    	ItemEnchantedBook book = (ItemEnchantedBook) item;
+                        ItemEnchantedBook book = (ItemEnchantedBook) item;
                         itemStack = book.getEnchantedItemStack(getRandomEnchantment(mob.getRNG()));
                     }
                     else
                     {
                         int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                        enchantRandomly(mob.worldObj.rand, itemStack, item.getItemEnchantability(), usedStr);
-                        // EnchantmentHelper.addRandomEnchantment(mob.worldObj.rand,
+                        enchantRandomly(mob.world.rand, itemStack, item.getItemEnchantability(), usedStr);
+                        // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
                         // itemStack, item.getItemEnchantability());
                     }
                 }
-                EntityItem itemEnt = new EntityItem(mob.worldObj, mob.posX, mob.posY, mob.posZ, itemStack);
-                mob.worldObj.spawnEntityInWorld(itemEnt);
+                EntityItem itemEnt = new EntityItem(mob.world, mob.posX, mob.posY, mob.posZ, itemStack);
+                mob.world.spawnEntity(itemEnt);
                 modStr -= 5;
             }
             else
@@ -757,12 +734,14 @@ public class InfernalMobsCore
             }
         }
     }
-    
+
     private EnchantmentData getRandomEnchantment(Random rand)
     {
         if (enchantmentList == null)
         {
-            enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
+            enchantmentList = new ArrayList<>(26); // 26 is the vanilla
+                                                   // enchantment count as of
+                                                   // 1.9
             for (Enchantment enchantment : Enchantment.REGISTRY)
             {
                 if (enchantment != null && enchantment.type != null)
@@ -771,11 +750,11 @@ public class InfernalMobsCore
                 }
             }
         }
-        
+
         Enchantment e = enchantmentList.get(rand.nextInt(enchantmentList.size()));
         int min = e.getMinLevel();
         int range = e.getMaxLevel() - min;
-        int lvl = min + rand.nextInt(range+1);
+        int lvl = min + rand.nextInt(range + 1);
         EnchantmentData ed = new EnchantmentData(e, lvl);
         return ed;
     }
@@ -818,7 +797,7 @@ public class InfernalMobsCore
     private ItemStack getRandomItem(EntityLivingBase mob, int prefix)
     {
         ArrayList<ItemStack> list = (prefix == 0) ? instance.dropIdListElite : (prefix == 1) ? instance.dropIdListUltra : instance.dropIdListInfernal;
-        return list.size() > 0 ? list.get(mob.worldObj.rand.nextInt(list.size())).copy() : null;
+        return list.size() > 0 ? list.get(mob.world.rand.nextInt(list.size())).copy() : null;
     }
 
     public void sendVelocityPacket(EntityPlayerMP target, float xVel, float yVel, float zVel)
@@ -839,16 +818,14 @@ public class InfernalMobsCore
 
     public void sendHealthPacket(EntityLivingBase mob)
     {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new TargetPoint(
-                mob.dimension, mob.posX, mob.posY, mob.posZ, 32d));
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new TargetPoint(mob.dimension, mob.posX, mob.posY, mob.posZ, 32d));
     }
 
     public void sendHealthRequestPacket(EntityLivingBase mob)
     {
-        networkHelper.sendPacketToServer(new HealthPacket(FMLClientHandler.instance().getClient().thePlayer.getGameProfile().getName(), mob
-                .getEntityId(), 0f, 0f));
+        networkHelper.sendPacketToServer(new HealthPacket(FMLClientHandler.instance().getClient().player.getGameProfile().getName(), mob.getEntityId(), 0f, 0f));
     }
-    
+
     public void sendAirPacket(EntityPlayerMP target, int lastAir)
     {
         if (getIsEntityAllowedTarget(target))
@@ -864,14 +841,15 @@ public class InfernalMobsCore
         {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
             Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
-            // System.out.println("Removed unloaded Entity "+mob+" with ID "+mob.getEntityId()+" from rareMobs");
-            mobsmap.keySet().stream().filter(mob -> mob.isDead || !mob.worldObj.loadedEntityList.contains(mob)).forEach(InfernalMobsCore::removeEntFromElites);
+            // System.out.println("Removed unloaded Entity "+mob+" with ID
+            // "+mob.getEntityId()+" from rareMobs");
+            mobsmap.keySet().stream().filter(mob -> mob.isDead || !mob.world.loadedEntityList.contains(mob)).forEach(InfernalMobsCore::removeEntFromElites);
         }
-        
+
         if (!tick.world.isRemote)
         {
             infCheckA = null;
-            infCheckB = null;   
+            infCheckB = null;
         }
     }
 
@@ -884,7 +862,7 @@ public class InfernalMobsCore
     {
         return modHealthFactor;
     }
-    
+
     public float getLimitedDamage(float test)
     {
         return (float) Math.min(test, maxDamage);
@@ -894,9 +872,11 @@ public class InfernalMobsCore
     {
         return !(entity instanceof FakePlayer);
     }
-    
+
     /**
-     * By caching the last reflection pairing we make sure it doesn't trigger more than once (reflections battling each other, infinite loop, crash)
+     * By caching the last reflection pairing we make sure it doesn't trigger
+     * more than once (reflections battling each other, infinite loop, crash)
+     * 
      * @return true when inf loop is suspected, false otherwise
      */
     public boolean isInfiniteLoop(EntityLivingBase mob, Entity entity)

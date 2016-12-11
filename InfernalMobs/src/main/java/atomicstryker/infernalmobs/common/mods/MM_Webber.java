@@ -63,19 +63,19 @@ public class MM_Webber extends MobModifier
             return;
         }
         
-        int x = MathHelper.floor_double(target.posX);
-        int y = MathHelper.floor_double(target.posY);
-        int z = MathHelper.floor_double(target.posZ);
+        int x = MathHelper.floor(target.posX);
+        int y = MathHelper.floor(target.posY);
+        int z = MathHelper.floor(target.posZ);
         
         long time = System.currentTimeMillis();
         if (time > lastAbilityUse+coolDown)
         {
             int offset;
-            if (target.worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock() == Blocks.AIR)
+            if (target.world.getBlockState(new BlockPos(x, y-1, z)).getBlock() == Blocks.AIR)
             {
                 offset = -1;
             }
-            else if (target.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR)
+            else if (target.world.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR)
             {
                 offset = 0;
             }
@@ -85,8 +85,8 @@ public class MM_Webber extends MobModifier
             }
             
             lastAbilityUse = time;
-            target.worldObj.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.WEB.getDefaultState());
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            target.world.setBlockState(new BlockPos(x,  y+offset,  z),  Blocks.WEB.getDefaultState());
+            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
     }
     

@@ -41,15 +41,11 @@ public class EntityEventHandler
         Configuration config = InfernalMobsCore.instance().config;
 
         config.load();
-        antiMobFarm =
-                config.get(Configuration.CATEGORY_GENERAL, "AntiMobfarmingEnabled", true,
-                        "Anti Mob farming mechanic. Might cause overhead if enabled.").getBoolean(true);
-        mobFarmCheckIntervals =
-                config.get(Configuration.CATEGORY_GENERAL, "AntiMobFarmCheckInterval", 30,
-                        "time in seconds between mob check intervals. Higher values cost more performance, but might be more accurate.").getInt() * 1000L;
-        mobFarmDamageTrigger =
-                (float) config.get(Configuration.CATEGORY_GENERAL, "mobFarmDamageThreshold", 150D,
-                        "Damage in chunk per interval that triggers anti farm effects").getDouble(150D);
+        antiMobFarm = config.get(Configuration.CATEGORY_GENERAL, "AntiMobfarmingEnabled", true, "Anti Mob farming mechanic. Might cause overhead if enabled.").getBoolean(true);
+        mobFarmCheckIntervals = config
+                .get(Configuration.CATEGORY_GENERAL, "AntiMobFarmCheckInterval", 30, "time in seconds between mob check intervals. Higher values cost more performance, but might be more accurate.")
+                .getInt() * 1000L;
+        mobFarmDamageTrigger = (float) config.get(Configuration.CATEGORY_GENERAL, "mobFarmDamageThreshold", 150D, "Damage in chunk per interval that triggers anti farm effects").getDouble(150D);
         config.save();
 
         damageMap = new HashMap<>();
@@ -76,7 +72,7 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingDeath(LivingDeathEvent event)
     {
-        if (!event.getEntity().worldObj.isRemote)
+        if (!event.getEntity().world.isRemote)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
@@ -92,7 +88,7 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingSetAttackTarget(LivingSetAttackTargetEvent event)
     {
-        if (!event.getEntity().worldObj.isRemote)
+        if (!event.getEntity().world.isRemote)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
@@ -140,10 +136,11 @@ public class EntityEventHandler
             if (antiMobFarm)
             {
                 /*
-                 * check for an environmental/automated damage type, aka mob farms
+                 * check for an environmental/automated damage type, aka mob
+                 * farms
                  */
-                if (event.getSource() == DamageSource.cactus || event.getSource() == DamageSource.drown || event.getSource() == DamageSource.fall
-                        || event.getSource() == DamageSource.inWall || event.getSource() == DamageSource.lava || event.getSource().getEntity() instanceof FakePlayer)
+                if (event.getSource() == DamageSource.CACTUS || event.getSource() == DamageSource.DROWN || event.getSource() == DamageSource.FALL || event.getSource() == DamageSource.IN_WALL
+                        || event.getSource() == DamageSource.LAVA || event.getSource().getEntity() instanceof FakePlayer)
                 {
                     Tuple<Integer, Integer> cpair = new Tuple<Integer, Integer>((int) event.getEntityLiving().posX, (int) event.getEntityLiving().posZ);
                     Float value = damageMap.get(cpair);
@@ -173,7 +170,7 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingFall(LivingFallEvent event)
     {
-        if (!event.getEntity().worldObj.isRemote)
+        if (!event.getEntity().world.isRemote)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
@@ -186,7 +183,7 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event)
     {
-        if (!event.getEntity().worldObj.isRemote)
+        if (!event.getEntity().world.isRemote)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
@@ -199,7 +196,7 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingUpdate(LivingEvent.LivingUpdateEvent event)
     {
-        if (!event.getEntityLiving().worldObj.isRemote)
+        if (!event.getEntityLiving().world.isRemote)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
@@ -226,12 +223,11 @@ public class EntityEventHandler
 
                     if (maxC != null)
                     {
-                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords "
-                                + maxC.getFirst() + ", " + maxC.getSecond());
+                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getFirst() + ", " + maxC.getSecond());
                         if (maxDamage > mobFarmDamageTrigger)
                         {
-                            MinecraftForge.EVENT_BUS.post(new MobFarmDetectedEvent(event.getEntityLiving().worldObj.getChunkFromChunkCoords(maxC.getFirst(),
-                                    maxC.getSecond()), mobFarmCheckIntervals, maxDamage));
+                            MinecraftForge.EVENT_BUS
+                                    .post(new MobFarmDetectedEvent(event.getEntityLiving().world.getChunkFromChunkCoords(maxC.getFirst(), maxC.getSecond()), mobFarmCheckIntervals, maxDamage));
                         }
                     }
                     damageMap.clear();
@@ -257,7 +253,7 @@ public class EntityEventHandler
     @SubscribeEvent
     public void onEntityLivingDrops(LivingDropsEvent event)
     {
-        if (!event.getEntity().worldObj.isRemote)
+        if (!event.getEntity().world.isRemote)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)

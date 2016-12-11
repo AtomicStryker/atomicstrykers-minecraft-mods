@@ -9,17 +9,17 @@ import net.minecraft.util.DamageSource;
 
 public class MM_Choke extends MobModifier
 {
-    
+
     public MM_Choke()
     {
         super();
     }
-    
+
     public MM_Choke(MobModifier next)
     {
         super(next);
     }
-    
+
     private EntityLivingBase lastTarget;
     private int lastAir;
 
@@ -28,7 +28,7 @@ public class MM_Choke extends MobModifier
     {
         return "Choke";
     }
-    
+
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
@@ -61,9 +61,9 @@ public class MM_Choke extends MobModifier
                     if (lastAir < -19)
                     {
                         lastAir = 0;
-                        lastTarget.attackEntityFrom(DamageSource.drown, 2.0F);
+                        lastTarget.attackEntityFrom(DamageSource.DROWN, 2.0F);
                     }
-                    
+
                     updateAir();
                 }
             }
@@ -80,10 +80,10 @@ public class MM_Choke extends MobModifier
             lastAir += 60;
             updateAir();
         }
-        
+
         return damage;
     }
-    
+
     @Override
     public boolean onDeath()
     {
@@ -95,13 +95,13 @@ public class MM_Choke extends MobModifier
         }
         return false;
     }
-    
+
     private void updateAir()
     {
         lastTarget.setAir(lastAir);
         if (lastTarget instanceof EntityPlayerMP)
         {
-            InfernalMobsCore.instance().sendAirPacket((EntityPlayerMP)lastTarget, lastAir);
+            InfernalMobsCore.instance().sendAirPacket((EntityPlayerMP) lastTarget, lastAir);
         }
     }
 

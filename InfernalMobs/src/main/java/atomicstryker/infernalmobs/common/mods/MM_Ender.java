@@ -61,9 +61,9 @@ public class MM_Ender extends MobModifier
                         + (double) par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 16.0D;
-        double destX = mob.posX + (mob.worldObj.rand.nextDouble() - 0.5D) * 8.0D - vector.xCoord * telDist;
-        double destY = mob.posY + (double) (mob.worldObj.rand.nextInt(16) - 8) - vector.yCoord * telDist;
-        double destZ = mob.posZ + (mob.worldObj.rand.nextDouble() - 0.5D) * 8.0D - vector.zCoord * telDist;
+        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.xCoord * telDist;
+        double destY = mob.posY + (double) (mob.world.rand.nextInt(16) - 8) - vector.yCoord * telDist;
+        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.zCoord * telDist;
         return teleportTo(mob, destX, destY, destZ);
     }
 
@@ -76,14 +76,14 @@ public class MM_Ender extends MobModifier
         mob.posX = destX;
         mob.posY = destY;
         mob.posZ = destZ;
-        int x = MathHelper.floor_double(mob.posX);
-        int y = MathHelper.floor_double(mob.posY);
-        int z = MathHelper.floor_double(mob.posZ);
+        int x = MathHelper.floor(mob.posX);
+        int y = MathHelper.floor(mob.posY);
+        int z = MathHelper.floor(mob.posZ);
 
         boolean hitGround = false;
         while (!hitGround && y < 96)
         {
-            IBlockState bs = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z));
+            IBlockState bs = mob.world.getBlockState(new BlockPos(x, y - 1, z));
             if (bs.getMaterial().blocksMovement())
             {
                 hitGround = true;
@@ -99,7 +99,7 @@ public class MM_Ender extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
 
-            if (mob.worldObj.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.worldObj.containsAnyLiquid(mob.getEntityBoundingBox()))
+            if (mob.world.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.world.containsAnyLiquid(mob.getEntityBoundingBox()))
             {
                 success = true;
             }
@@ -120,17 +120,17 @@ public class MM_Ender extends MobModifier
             for (int i = 0; i < range; ++i)
             {
                 double var19 = (double) i / ((double) range - 1.0D);
-                float var21 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
-                float var22 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
-                float var23 = (mob.worldObj.rand.nextFloat() - 0.5F) * 0.2F;
-                double var24 = oldX + (mob.posX - oldX) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
-                double var26 = oldY + (mob.posY - oldY) * var19 + mob.worldObj.rand.nextDouble() * (double) mob.height;
-                double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.worldObj.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
-                mob.worldObj.spawnParticle(EnumParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
+                float var21 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
+                float var22 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
+                float var23 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
+                double var24 = oldX + (mob.posX - oldX) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
+                double var26 = oldY + (mob.posY - oldY) * var19 + mob.world.rand.nextDouble() * (double) mob.height;
+                double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
+                mob.world.spawnParticle(EnumParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
             }
             
-            mob.worldObj.playSound(null, new BlockPos(oldX, oldY, oldZ), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, new BlockPos(oldX, oldY, oldZ), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
         return true;
     }

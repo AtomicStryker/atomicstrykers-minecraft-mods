@@ -73,7 +73,7 @@ public class HealthPacket implements IPacket
                 EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(stringData);
                 if (p != null)
                 {
-                    Entity ent = p.worldObj.getEntityByID(entID);
+                    Entity ent = p.world.getEntityByID(entID);
                     if (ent != null && ent instanceof EntityLivingBase)
                     {
                         EntityLivingBase e = (EntityLivingBase) ent;

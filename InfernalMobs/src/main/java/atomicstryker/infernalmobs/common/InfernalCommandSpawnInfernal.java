@@ -7,8 +7,10 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -16,13 +18,13 @@ public class InfernalCommandSpawnInfernal extends CommandBase
 {
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "spawninfernal";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/spawninfernal x y z ENTCLASS X spawns an Infernal Mob of class ENTCLASS at x, y, z with Modifiers X";
     }
@@ -33,7 +35,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
     {
         if (args.length < 5)
         {
-            throw new WrongUsageException("Invalid Usage of SpawnInfernal command, too few arguments", (Object)args);
+            throw new WrongUsageException("Invalid Usage of SpawnInfernal command, too few arguments", (Object) args);
         }
         else
         {
@@ -47,31 +49,41 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                 {
                     modifier = modifier + " " + args[i];
                 }
-                
-                final Class<? extends EntityLivingBase> entClass = (Class<? extends EntityLivingBase>) EntityList.NAME_TO_CLASS.get(args[3]);
+
+                Class<? extends EntityLivingBase> entClass = null;
+                for (ResourceLocation rsl : EntityList.getEntityNameList())
+                {
+                    if (rsl.getResourcePath().contains(args[3]))
+                    {
+                        Object o = EntityList.getClass(rsl);
+                        if (o.getClass().isAssignableFrom(EntityLiving.class))
+                        {
+                            entClass = (Class<? extends EntityLivingBase>) o;
+                        }
+                    }
+                }
                 if (entClass != null)
                 {
                     EntityLivingBase mob = entClass.getConstructor(World.class).newInstance(sender.getEntityWorld());
-                    mob.setPosition(x+0.5, y+0.5, z+0.5);
-                    sender.getEntityWorld().spawnEntityInWorld(mob);
-                    
+                    mob.setPosition(x + 0.5, y + 0.5, z + 0.5);
+                    sender.getEntityWorld().spawnEntity(mob);
+
                     InfernalMobsCore.proxy.getRareMobs().remove(mob);
                     InfernalMobsCore.instance().addEntityModifiersByString(mob, modifier);
                     MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
                     if (mod != null)
                     {
-                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, sender.getName() 
-                                + " spawned: "+InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() 
-                                + " at [" + x + "|" + y + "|" + z + "]");
+                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO,
+                                sender.getName() + " spawned: " + InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() + " at [" + x + "|" + y + "|" + z + "]");
                     }
                     else
                     {
-                        throw new WrongUsageException("Error adding Infernal Modifier "+modifier+" to mob "+mob);
+                        throw new WrongUsageException("Error adding Infernal Modifier " + modifier + " to mob " + mob);
                     }
                 }
                 else
                 {
-                    throw new WrongUsageException("Invalid SpawnInfernal command, no Entity ["+args[3]+"] known");
+                    throw new WrongUsageException("Invalid SpawnInfernal command, no Entity [" + args[3] + "] known");
                 }
             }
             catch (Exception e)
@@ -81,7 +93,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
             }
         }
     }
-    
+
     @Override
     public int getRequiredPermissionLevel()
     {

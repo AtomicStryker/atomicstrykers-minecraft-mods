@@ -208,7 +208,7 @@ public abstract class MobModifier
         }
         else if (source.getEntity() != null)
         {
-            if (source.getEntity().worldObj.isRemote
+            if (source.getEntity().world.isRemote
             && source.getEntity() instanceof EntityPlayer)
             {
                 InfernalMobsCore.instance().sendHealthRequestPacket(mob);
@@ -251,7 +251,7 @@ public abstract class MobModifier
         {
             if (attackTarget == null)
             {
-                attackTarget = mob.worldObj.getClosestPlayerToEntity(mob, 7.5f);
+                attackTarget = mob.world.getClosestPlayerToEntity(mob, 7.5f);
             }
             
             if (attackTarget != null)
@@ -273,7 +273,7 @@ public abstract class MobModifier
      */
     public float getActualHealth(EntityLivingBase mob)
     {
-        if (!mob.worldObj.isRemote)
+        if (!mob.world.isRemote)
         {
             increaseHealthForMob(mob);
         }
@@ -286,7 +286,7 @@ public abstract class MobModifier
      */
     public void setHealthAlreadyHacked(EntityLivingBase mob)
     {
-        if (!mob.worldObj.isRemote)
+        if (!mob.world.isRemote)
         {
             actualMaxHealth = getActualMaxHealth(mob);
             healthHacked = true;

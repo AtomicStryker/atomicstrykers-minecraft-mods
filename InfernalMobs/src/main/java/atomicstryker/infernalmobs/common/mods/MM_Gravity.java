@@ -12,12 +12,12 @@ import net.minecraft.util.math.MathHelper;
 
 public class MM_Gravity extends MobModifier
 {
-    
+
     public MM_Gravity()
     {
         super();
     }
-    
+
     public MM_Gravity(MobModifier next)
     {
         super(next);
@@ -31,16 +31,15 @@ public class MM_Gravity extends MobModifier
 
     private long nextAbilityUse = 0L;
     private final static long coolDown = 5000L;
-    
+
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (getMobTarget() != null
-        && getMobTarget() instanceof EntityPlayer)
+        if (getMobTarget() != null && getMobTarget() instanceof EntityPlayer)
         {
             tryAbility(mob, getMobTarget());
         }
-        
+
         return super.onUpdate(mob);
     }
 
@@ -50,11 +49,11 @@ public class MM_Gravity extends MobModifier
         {
             return;
         }
-        
+
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse)
         {
-            nextAbilityUse = time+coolDown;
+            nextAbilityUse = time + coolDown;
 
             double diffX = target.posX - mob.posX;
             double diffZ;
@@ -62,57 +61,60 @@ public class MM_Gravity extends MobModifier
             {
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
-            
-            mob.worldObj.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_IRONGOLEM_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
-            
-            if (mob.worldObj.isRemote || !(target instanceof EntityPlayerMP))
+
+            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_IRONGOLEM_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+
+            if (mob.world.isRemote || !(target instanceof EntityPlayerMP))
             {
                 knockBack(target, diffX, diffZ);
             }
             else
             {
-                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayerMP) target, (float)diffX, (float)diffZ);
+                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayerMP) target, (float) diffX, (float) diffZ);
             }
         }
     }
-    
+
     public static void knockBack(EntityLivingBase target, double x, double z)
     {
         target.isAirBorne = true;
-        float normalizedPower = MathHelper.sqrt_double(x * x + z * z);
+        float normalizedPower = MathHelper.sqrt(x * x + z * z);
         float knockPower = 0.8F;
         target.motionX /= 2.0D;
         target.motionY /= 2.0D;
         target.motionZ /= 2.0D;
-        target.motionX -= x / (double)normalizedPower * (double)knockPower;
-        target.motionY += (double)knockPower;
-        target.motionZ -= z / (double)normalizedPower * (double)knockPower;
+        target.motionX -= x / (double) normalizedPower * (double) knockPower;
+        target.motionY += (double) knockPower;
+        target.motionZ -= z / (double) normalizedPower * (double) knockPower;
 
         if (target.motionY > 0.4000000059604645D)
         {
             target.motionY = 0.4000000059604645D;
         }
     }
-    
+
     @Override
     public Class<?>[] getModsNotToMixWith()
     {
         return modBans;
     }
+
     private static Class<?>[] modBans = { MM_Webber.class };
-    
+
     @Override
     protected String[] getModNameSuffix()
     {
         return suffix;
     }
+
     private static String[] suffix = { "ofRepulsion", "theFlipper" };
-    
+
     @Override
     protected String[] getModNamePrefix()
     {
         return prefix;
     }
+
     private static String[] prefix = { "repulsing", "sproing" };
-    
+
 }
