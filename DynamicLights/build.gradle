@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227874'
         releaseType = 'release'
-        addGameVersion '1.10.2'
-        mainArtifact(file('build/distributions/DynamicLights-1.10.2.zip')) {
+        addGameVersion '1.11'
+        mainArtifact(file('build/distributions/DynamicLights-1.11.zip')) {
           displayName = 'Dynamic Lights'
         }
     }
