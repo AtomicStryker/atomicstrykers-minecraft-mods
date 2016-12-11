@@ -1,7 +1,5 @@
 package atomicstryker.stalkercreepers.common;
 
-import java.util.Iterator;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -24,21 +22,21 @@ import net.minecraft.launchwrapper.IClassTransformer;
 public class SCTransformer implements IClassTransformer
 {
     /* Obfuscated Names for EntityAICreeperSwell Transformation */
-    
+
     /* class net.minecraft.src.EntityAICreeperSwell */
-    private final String entityAICreeperSwellClassNameO = "ut";
-    private final String entityAICreeperSwellJavaClassNameO = "ut";
+    private final String entityAICreeperSwellClassNameO = "vl";
+    private final String entityAICreeperSwellJavaClassNameO = "vl";
     /* class net.minecraft.src.EntityLiving */
-    private final String entityLivingJavaClassNameO = "sg";
+    private final String entityLivingJavaClassNameO = "sw";
     /* class net.minecraft.src.EntityCreeper */
-    private final String entityCreeperJavaClassNameO = "yp";
-    /*shouldExecute() / func_75250_a */
+    private final String entityCreeperJavaClassNameO = "zo";
+    /* shouldExecute() / func_75250_a */
     private final String shouldExecuteMethodNameO = "a";
-    /*swellingCreeper / field_75269_a */
+    /* swellingCreeper / field_75269_a */
     private final String swellingCreeperFieldNameO = "a";
-    
+
     /* MCP Names for EntityAICreeperSwell Transformation */
-    
+
     private final String entityAICreeperSwellClassName = "net.minecraft.entity.ai.EntityAICreeperSwell";
     private final String entityAICreeperSwellJavaClassName = "net/minecraft/entity/ai/EntityAICreeperSwell";
     private final String shouldExecuteMethodName = "shouldExecute";

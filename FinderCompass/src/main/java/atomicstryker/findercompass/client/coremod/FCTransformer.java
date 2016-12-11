@@ -1,12 +1,18 @@
 package atomicstryker.findercompass.client.coremod;
 
-import net.minecraft.launchwrapper.IClassTransformer;
+import java.util.Iterator;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
-import java.util.Iterator;
+import net.minecraft.launchwrapper.IClassTransformer;
 
 /**
  * 
@@ -19,20 +25,26 @@ import java.util.Iterator;
 public class FCTransformer implements IClassTransformer
 {
     
-    /*  net.minecraft.client.renderer.RenderItem */
-    private String classNameToModify = "bsu";
-      
-    /* (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V */
-    private String methodDescriptorToModify = "(Ladz;Lbyl;)V";
-    
-    /* net.minecraft.client.renderer.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a */
+    /* net.minecraft.client.renderer.RenderItem */
+    private String classNameToModify = "bve";
+
+    /*
+     * (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V
+     */
+    private String methodDescriptorToModify = "(Lafi;Lcbe;)V";
+
+    /*
+     * net.minecraft.client.renderer.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a
+     */
     private String methodNameToModify = "a"; // this is actually unneeded because a is too generic
-    
-    /* (Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V */
-    private String targetNodeDescriptor = "(Lbyl;Ladz;)V";
-    
+
+    /*
+     * (Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V
+     */
+    private String targetNodeDescriptor = "(Lcbe;Lafi;)V";
+
     /* (Lnet/minecraft/item/ItemStack;)V */
-    private String itemStackVoidDescriptor = "(Ladz;)V";
+    private String itemStackVoidDescriptor = "(Lafi;)V";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
