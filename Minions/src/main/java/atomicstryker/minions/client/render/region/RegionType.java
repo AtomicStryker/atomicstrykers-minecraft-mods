@@ -8,8 +8,5 @@ package atomicstryker.minions.client.render.region;
 public enum RegionType {
     
     CUBOID,
-    POLYGON,
-    ELLIPSOID,
-    CYLINDER
     
 }

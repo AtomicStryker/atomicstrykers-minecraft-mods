@@ -1,5 +1,9 @@
 package atomicstryker.minions.client;
 
+import java.util.Iterator;
+
+import org.lwjgl.opengl.GL11;
+
 /**
  * @author ChickenBones
  * RenderWirelessBolt class, part of Wireless Redstone, slightly changed
@@ -17,9 +21,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
-
-import java.util.Iterator;
 
 public class RenderChickenLightningBolt
 {
@@ -52,7 +53,7 @@ public class RenderChickenLightningBolt
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texO);
-		tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+		tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
         short j = 0xF000F0 >> 16 & 65535;
         short k = 0xF000F0 & 65535;
 		tessellator.getBuffer().lightmap(j, k);
@@ -63,7 +64,7 @@ public class RenderChickenLightningBolt
         tessellator.draw();
         
         Minecraft.getMinecraft().getTextureManager().bindTexture(texI);
-		tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+		tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
 		tessellator.getBuffer().lightmap(j, k);
 		for(ChickenLightningBolt bolt : ChickenLightningBolt.boltlist)
 		{

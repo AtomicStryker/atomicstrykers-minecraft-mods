@@ -5,10 +5,10 @@
       "minions:babysealclubbing"
     ]
   },
-  "BaseBallBatJingle": {
+  "baseballbatjingle": {
     "category": "player",
     "sounds": [
-      "minions:BaseBallBatJingle"
+      "minions:baseballbatjingle"
     ]
   },
   "bolt": {
@@ -75,10 +75,10 @@
 	  "minions:fart2"
     ]
   },
-  "FFF": {
+  "fff": {
     "category": "player",
     "sounds": [
-      "minions:FFF"
+      "minions:fff"
     ]
   },
   "foryou": {

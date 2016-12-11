@@ -1,5 +1,11 @@
 package atomicstryker.minions.client;
 
+import java.util.ArrayList;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import atomicstryker.astarpathing.AStarStatic;
 import atomicstryker.minions.client.gui.GuiMinionMenu;
 import atomicstryker.minions.client.render.LineColor;
@@ -9,9 +15,22 @@ import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.codechicken.ChickenLightningBolt;
 import atomicstryker.minions.common.codechicken.Vector3;
 import atomicstryker.minions.common.entity.EntityMinion;
-import atomicstryker.minions.common.network.*;
+import atomicstryker.minions.common.network.AssignChestPacket;
+import atomicstryker.minions.common.network.ChopTreesPacket;
+import atomicstryker.minions.common.network.CustomDigPacket;
+import atomicstryker.minions.common.network.DigOreVeinPacket;
+import atomicstryker.minions.common.network.DigStairwellPacket;
+import atomicstryker.minions.common.network.DropAllPacket;
+import atomicstryker.minions.common.network.FollowPacket;
+import atomicstryker.minions.common.network.LightningPacket;
+import atomicstryker.minions.common.network.MinionSpawnPacket;
+import atomicstryker.minions.common.network.MovetoPacket;
+import atomicstryker.minions.common.network.PickupEntPacket;
+import atomicstryker.minions.common.network.SoundPacket;
+import atomicstryker.minions.common.network.StripminePacket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -23,6 +42,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -30,11 +50,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
-import java.util.ArrayList;
 
 public class MinionsClient
 {
@@ -79,30 +94,43 @@ public class MinionsClient
     private void renderSelections(float renderTick)
     {
         RenderHelper.disableStandardItemLighting();  
-        
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDepthMask(false);
-        GL11.glPushMatrix();
-        
-        EntityPlayer player = mc.player;
-        double xGuess = player.prevPosX + (player.posX - player.prevPosX) * renderTick;
-        double yGuess = player.prevPosY + (player.posY - player.prevPosY) * renderTick;
-        double zGuess = player.prevPosZ + (player.posZ - player.prevPosZ) * renderTick;
-        GL11.glTranslated(-xGuess, -yGuess, -zGuess);
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-        
-        selection.render();
-
-        additionalCubes.forEach(PointCube::render);
-        
-        GL11.glDepthFunc(GL11.GL_LEQUAL);
-        GL11.glPopMatrix();
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
-        
+        try
+        {
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+            
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glDepthMask(false);
+            GL11.glPushMatrix();
+            GL11.glDisable(GL11.GL_FOG);
+            
+            try
+            {
+                Vec3d cameraPos = mc.getRenderViewEntity().getPositionEyes(renderTick);
+                cameraPos = cameraPos.addVector(0, -1.75D, 0); // dont ask i dont know why
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
+                selection.render(cameraPos);
+                for (PointCube pc : additionalCubes)
+                {
+                    pc.render(cameraPos);
+                }
+            }
+            catch (Exception e)
+            {
+            }
+            
+            GL11.glDepthFunc(GL11.GL_LEQUAL);
+            GL11.glPopMatrix();
+            GL11.glDepthMask(true);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+        }
+        catch (Exception ex) {}
         RenderHelper.enableStandardItemLighting();
     }
     

@@ -1,5 +1,8 @@
 package atomicstryker.minions.client;
 
+import org.lwjgl.opengl.GL11;
+
+import atomicstryker.minions.common.entity.EntityMinion;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -14,9 +17,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-
-import atomicstryker.minions.common.entity.EntityMinion;
 
 /**
  * Minion Render Class, allows displaying of a Minion Description and it's item
@@ -29,7 +29,7 @@ import atomicstryker.minions.common.entity.EntityMinion;
 public class RenderMinion extends RenderLiving<EntityMinion>
 {
 	private ModelMinion model;
-	private ResourceLocation tex = new ResourceLocation("minions", "textures/model/AS_EntityMinion.png");
+	private ResourceLocation tex = new ResourceLocation("minions", "textures/model/as_entityminion.png");
 	
     public RenderMinion(RenderManager manager, ModelBase var1, float var2)
     {

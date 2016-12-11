@@ -1,11 +1,14 @@
 package atomicstryker.minions.client.render.shapes;
 
+import org.lwjgl.opengl.GL11;
+
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.LineInfo;
 import atomicstryker.minions.common.util.Vector3;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Draws a rectangular prism around 2 corners
@@ -13,62 +16,68 @@ import org.lwjgl.opengl.GL11;
  * @author yetanotherx
  * @author lahwran
  */
-public class Render3DBox {
+public class Render3DBox
+{
 
-    protected atomicstryker.minions.client.render.LineColor color;
+    protected LineColor color;
     protected Vector3 first;
     protected Vector3 second;
 
-    public Render3DBox(LineColor color, Vector3 first, Vector3 second) {
+    public Render3DBox(LineColor color, Vector3 first, Vector3 second)
+    {
         this.color = color;
         this.first = first;
         this.second = second;
     }
 
-    public void render() {
-        double x1 = first.getX();
-        double y1 = first.getY();
-        double z1 = first.getZ();
-        double x2 = second.getX();
-        double y2 = second.getY();
-        double z2 = second.getZ();
+    public void render(Vec3d cameraPos)
+    {
+        double x1 = first.getX() - cameraPos.xCoord;
+        double y1 = first.getY() - cameraPos.yCoord;
+        double z1 = first.getZ() - cameraPos.zCoord;
+        double x2 = second.getX() - cameraPos.xCoord;
+        double y2 = second.getY() - cameraPos.yCoord;
+        double z2 = second.getZ() - cameraPos.zCoord;
 
-        for (LineInfo tempColor : color.getColors()) {
+        for (LineInfo tempColor : color.getColors())
+        {
             tempColor.prepareRender();
 
+            VertexBuffer buf = Tessellator.getInstance().getBuffer();
+
             // Draw bottom face
-            Tessellator.getInstance().getBuffer().begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            buf.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
             tempColor.prepareColor();
-            Tessellator.getInstance().getBuffer().pos(x1, y1, z1).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x2, y1, z1).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x2, y1, z2).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x1, y1, z2).endVertex();
+            buf.pos(x1, y1, z1).endVertex();
+            buf.pos(x2, y1, z1).endVertex();
+            buf.pos(x2, y1, z2).endVertex();
+            buf.pos(x1, y1, z2).endVertex();
             Tessellator.getInstance().draw();
 
             // Draw top face
-            Tessellator.getInstance().getBuffer().begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            buf.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
             tempColor.prepareColor();
-            Tessellator.getInstance().getBuffer().pos(x1, y2, z1).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x2, y2, z1).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x2, y2, z2).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x1, y2, z2).endVertex();
+            buf.pos(x1, y2, z1).endVertex();
+            buf.pos(x2, y2, z1).endVertex();
+            buf.pos(x2, y2, z2).endVertex();
+            buf.pos(x1, y2, z2).endVertex();
             Tessellator.getInstance().draw();
 
             // Draw join top and bottom faces
-            Tessellator.getInstance().getBuffer().begin(GL11.GL_LINES, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+            buf.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
             tempColor.prepareColor();
 
-            Tessellator.getInstance().getBuffer().pos(x1, y1, z1).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x1, y2, z1).endVertex();
+            buf.pos(x1, y1, z1).endVertex();
+            buf.pos(x1, y2, z1).endVertex();
 
-            Tessellator.getInstance().getBuffer().pos(x2, y1, z1).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x2, y2, z1).endVertex();
+            buf.pos(x2, y1, z1).endVertex();
+            buf.pos(x2, y2, z1).endVertex();
 
-            Tessellator.getInstance().getBuffer().pos(x2, y1, z2).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x2, y2, z2).endVertex();
+            buf.pos(x2, y1, z2).endVertex();
+            buf.pos(x2, y2, z2).endVertex();
 
-            Tessellator.getInstance().getBuffer().pos(x1, y1, z2).endVertex();
-            Tessellator.getInstance().getBuffer().pos(x1, y2, z2).endVertex();
+            buf.pos(x1, y1, z2).endVertex();
+            buf.pos(x1, y2, z2).endVertex();
 
             Tessellator.getInstance().draw();
         }

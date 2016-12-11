@@ -6,6 +6,7 @@ import atomicstryker.minions.client.render.shapes.Render3DBox;
 import atomicstryker.minions.client.render.shapes.Render3DGrid;
 import atomicstryker.minions.common.util.Vector3;
 import atomicstryker.minions.common.util.Vector3m;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Main controller for a cuboid-type region
@@ -13,48 +14,61 @@ import atomicstryker.minions.common.util.Vector3m;
  * @author yetanotherx
  * @author lahwran
  */
-public class CuboidRegion extends BaseRegion {
+public class CuboidRegion extends BaseRegion
+{
 
     protected PointCube firstPoint;
     protected PointCube secondPoint;
 
-    public CuboidRegion() {
+    public CuboidRegion()
+    {
     }
 
     @Override
-    public void render() {
-        if (firstPoint != null && secondPoint != null) {
-            firstPoint.render();
-            secondPoint.render();
+    public void render(Vec3d cameraPos)
+    {
+        if (firstPoint != null && secondPoint != null)
+        {
+            firstPoint.render(cameraPos);
+            secondPoint.render(cameraPos);
 
             Vector3[] bounds = this.calcBounds();
-            new Render3DBox(LineColor.CUBOIDBOX, bounds[0], bounds[1]).render();
-            new Render3DGrid(LineColor.CUBOIDGRID, bounds[0], bounds[1]).render();
+            new Render3DBox(LineColor.CUBOIDBOX, bounds[0], bounds[1]).render(cameraPos);
+            new Render3DGrid(LineColor.CUBOIDGRID, bounds[0], bounds[1]).render(cameraPos);
 
-        } else if (firstPoint != null) {
-            firstPoint.render();
-        } else if (secondPoint != null) {
-            secondPoint.render();
+        }
+        else if (firstPoint != null)
+        {
+            firstPoint.render(cameraPos);
+        }
+        else if (secondPoint != null)
+        {
+            secondPoint.render(cameraPos);
         }
     }
 
     @Override
-    public void setCuboidPoint(int id, int x, int y, int z) {
-        if (id == 0) {
+    public void setCuboidPoint(int id, int x, int y, int z)
+    {
+        if (id == 0)
+        {
             firstPoint = new PointCube(x, y, z);
             firstPoint.setColor(LineColor.CUBOIDPOINT1);
-        } else if (id == 1) {
+        }
+        else if (id == 1)
+        {
             secondPoint = new PointCube(x, y, z);
             secondPoint.setColor(LineColor.CUBOIDPOINT2);
         }
     }
-    
+
     public void wipePointCubes()
     {
-    	firstPoint = secondPoint = null;
+        firstPoint = secondPoint = null;
     }
 
-    protected Vector3m[] calcBounds() {
+    protected Vector3m[] calcBounds()
+    {
         float off = 0.02f;
         float off1 = 1 + off;
 
@@ -62,28 +76,35 @@ public class CuboidRegion extends BaseRegion {
         out[0] = new Vector3m(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         out[1] = new Vector3m(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
-        for (PointCube point : new PointCube[]{firstPoint, secondPoint}) {
-            if (point.getPoint().getX() + off1 > out[1].getX()) {
+        for (PointCube point : new PointCube[] { firstPoint, secondPoint })
+        {
+            if (point.getPoint().getX() + off1 > out[1].getX())
+            {
                 out[1].setX(point.getPoint().getX() + off1);
             }
 
-            if (point.getPoint().getX() - off < out[0].getX()) {
+            if (point.getPoint().getX() - off < out[0].getX())
+            {
                 out[0].setX(point.getPoint().getX() - off);
             }
 
-            if (point.getPoint().getY() + off1 > out[1].getY()) {
+            if (point.getPoint().getY() + off1 > out[1].getY())
+            {
                 out[1].setY(point.getPoint().getY() + off1);
             }
 
-            if (point.getPoint().getY() - off < out[0].getY()) {
+            if (point.getPoint().getY() - off < out[0].getY())
+            {
                 out[0].setY(point.getPoint().getY() - off);
             }
 
-            if (point.getPoint().getZ() + off1 > out[1].getZ()) {
+            if (point.getPoint().getZ() + off1 > out[1].getZ())
+            {
                 out[1].setZ(point.getPoint().getZ() + off1);
             }
 
-            if (point.getPoint().getZ() - off < out[0].getZ()) {
+            if (point.getPoint().getZ() - off < out[0].getZ())
+            {
                 out[0].setZ(point.getPoint().getZ() - off);
             }
         }
@@ -92,7 +113,8 @@ public class CuboidRegion extends BaseRegion {
     }
 
     @Override
-    public RegionType getType() {
+    public RegionType getType()
+    {
         return RegionType.CUBOID;
     }
 }
