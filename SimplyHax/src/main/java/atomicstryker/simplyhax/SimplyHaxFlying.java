@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "simplyhaxflying", name = "Simply Hax Flying", version = "1.10")
+@Mod(modid = "simplyhaxflying", name = "Simply Hax Flying", version = "1.11")
 public class SimplyHaxFlying
 {
 
@@ -112,9 +112,9 @@ public class SimplyHaxFlying
                 mc = FMLClientHandler.instance().getClient();
             }
 
-            if (mc.thePlayer != player)
+            if (mc.player != player)
             {
-                player = mc.thePlayer;
+                player = mc.player;
                 pcb = player.capabilities;
                 defaultWalkSpeed = pcb.getWalkSpeed();
             }
@@ -136,7 +136,7 @@ public class SimplyHaxFlying
             }
         }
     }
-    
+
     @SubscribeEvent
     public void onFall(LivingFallEvent event)
     {

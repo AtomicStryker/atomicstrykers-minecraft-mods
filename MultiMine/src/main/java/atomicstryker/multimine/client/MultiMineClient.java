@@ -85,7 +85,7 @@ public class MultiMineClient
     @SuppressWarnings("unused")
     public float eventPlayerDamageBlock(BlockPos pos, float blockCompletion)
     {
-        thePlayer = FMLClientHandler.instance().getClient().thePlayer;
+        thePlayer = FMLClientHandler.instance().getClient().player;
         boolean cachedProgressWasAhead = false;
         // see if we have multimine completion cached somewhere
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
@@ -133,7 +133,7 @@ public class MultiMineClient
      */
     private void renderBlockDigParticles(int x, int y, int z)
     {
-        World world = thePlayer.worldObj;
+        World world = thePlayer.world;
         IBlockState state = world.getBlockState(new BlockPos(x, y, z));
         Block block = state.getBlock();
         if (block != Blocks.AIR)
@@ -169,7 +169,7 @@ public class MultiMineClient
         updateCloudTickReading();
 
         EntityPlayer player = thePlayer;
-        World w = player.worldObj;
+        World w = player.world;
         BlockPos pos = new BlockPos(x, y, z);
         final IBlockState block = w.getBlockState(pos);
 
@@ -270,8 +270,8 @@ public class MultiMineClient
         if (itemStack != null)
         {
             BlockPos pos = new BlockPos(x, y, z);
-            itemStack.onBlockDestroyed(player.worldObj, player.worldObj.getBlockState(pos), pos, player);
-            if (itemStack.stackSize == 0)
+            itemStack.onBlockDestroyed(player.world, player.world.getBlockState(pos), pos, player);
+            if (itemStack.getCount() == 0)
             {
                 player.setHeldItem(EnumHand.MAIN_HAND, null);
             }
