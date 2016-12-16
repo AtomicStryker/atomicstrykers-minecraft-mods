@@ -6,7 +6,7 @@ public class CommonProxy
     {
         new MultiMineServer();
     }
-    
+
     public void onLoad()
     {
         // NOOP

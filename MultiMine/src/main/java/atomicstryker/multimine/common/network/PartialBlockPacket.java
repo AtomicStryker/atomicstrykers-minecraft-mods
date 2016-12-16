@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import atomicstryker.multimine.client.MultiMineClient;
+import atomicstryker.multimine.common.BlockPos;
 import atomicstryker.multimine.common.MultiMineServer;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -14,14 +15,14 @@ public class PartialBlockPacket implements IPacket
 {
 
     private String user;
-    private int x, y, z, value;
-    
+    private int x, y, z;
+    float value;
 
     public PartialBlockPacket()
     {
     }
 
-    public PartialBlockPacket(String username, int ix, int iy, int iz, int val)
+    public PartialBlockPacket(String username, int ix, int iy, int iz, float val)
     {
         user = username;
         x = ix;
@@ -37,7 +38,7 @@ public class PartialBlockPacket implements IPacket
         bytes.writeInt(x);
         bytes.writeInt(y);
         bytes.writeInt(z);
-        bytes.writeInt(value);
+        bytes.writeFloat(value);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class PartialBlockPacket implements IPacket
         x = bytes.readInt();
         y = bytes.readInt();
         z = bytes.readInt();
-        value = bytes.readInt();
+        value = bytes.readFloat();
         
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
@@ -58,7 +59,7 @@ public class PartialBlockPacket implements IPacket
             EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(user);
             if (player != null)
             {
-                MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);
+                MultiMineServer.instance().onClientSentPartialBlockPacket(player, new BlockPos(x, y, z), value);
             }
         }
     }

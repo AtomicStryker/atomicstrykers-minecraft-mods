@@ -2,62 +2,45 @@ package atomicstryker.multimine.common;
 
 public class PartiallyMinedBlock
 {
-    private final int x;
-    private final int y;
-    private final int z;
+    private final BlockPos pos = new BlockPos();
     private final int dimension;
-    private int progress;
+    private float progress;
     private long lastTimeMined;
-    
-    public PartiallyMinedBlock(int x, int y, int z, int dimension, int progress)
+
+    public PartiallyMinedBlock(int x, int y, int z, int dimension, float progress)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.x = x;
+        pos.y = y;
+        pos.z = z;
         this.dimension = dimension;
         this.progress = progress;
     }
 
-    public int getX()
+    public BlockPos getPos()
     {
-        return x;
+        return pos;
     }
-    
-    public int getY()
-    {
-        return y;
-    }
-    
-    public int getZ()
-    {
-        return z;
-    }
-    
+
     public int getDimension()
     {
         return dimension;
     }
-    
-    public int getProgress()
+
+    public float getProgress()
     {
         return progress;
     }
-    
-    public void setProgress(int i)
+
+    public void setProgress(float i)
     {
         progress = i;
     }
-    
-    public void advanceProgress()
-    {
-        progress++;
-    }
-    
+
     public boolean isFinished()
     {
-        return progress > 9;
+        return progress >= 1.0f;
     }
-    
+
     public long getLastTimeMined()
     {
         return lastTimeMined;
@@ -67,27 +50,22 @@ public class PartiallyMinedBlock
     {
         this.lastTimeMined = lastTimeMined;
     }
-    
+
     @Override
     public boolean equals(Object o)
     {
         if (o instanceof PartiallyMinedBlock)
         {
             PartiallyMinedBlock p = (PartiallyMinedBlock) o;
-            if (p.getX() == x
-            && p.getY() == y
-            && p.getZ() == z)
-            {
-                return true;
-            }
+            return p.getPos().equals(getPos());
         }
-        
+
         return false;
     }
-    
+
     @Override
     public int hashCode()
     {
-        return x*8123 + y + z*2546;
+        return pos.hashCode();
     }
 }
