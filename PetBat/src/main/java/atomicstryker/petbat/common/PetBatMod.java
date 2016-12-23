@@ -39,7 +39,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.4")
+@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.5")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -389,15 +389,13 @@ public class PetBatMod implements IProxy
 
     public ItemStack removeFluteFromPlayer(EntityPlayer player, String petName)
     {
-        Iterator<ItemStack> iter = player.inventory.mainInventory.iterator();
-        while (iter.hasNext())
-        {
-            ItemStack item = iter.next();
+        for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
+            ItemStack item = player.inventory.mainInventory.get(i);
             if (item.getItem() == itemBatFlute)
             {
                 if (item.getTagCompound().getString("batName").equals(petName))
                 {
-                    iter.remove();
+                    player.inventory.mainInventory.set(i, ItemStack.EMPTY);
                     return item;
                 }
             }
