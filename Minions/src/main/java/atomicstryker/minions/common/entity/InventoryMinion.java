@@ -362,7 +362,7 @@ public class InventoryMinion implements IInventory
             }
             else
             {
-                if (inv.getStackInSlot(index) == null)
+                if (inv.getStackInSlot(index) == ItemStack.EMPTY)
                 {
                     inv.setInventorySlotContents(index, item.copy());
                 }
@@ -384,7 +384,7 @@ public class InventoryMinion implements IInventory
             }
             else
             {
-                if (inv.getStackInSlot(index) == null)
+                if (inv.getStackInSlot(index) == ItemStack.EMPTY)
                 {
                     inv.setInventorySlotContents(index, new ItemStack(itemID, 0, item.getItemDamage()));
                     if (item.hasTagCompound())
@@ -423,7 +423,7 @@ public class InventoryMinion implements IInventory
     {
         for (int index = 0; index < inv.getSizeInventory(); ++index)
         {
-            if (inv.getStackInSlot(index) == null)
+            if (inv.getStackInSlot(index) == ItemStack.EMPTY)
             {
                 return index;
             }
@@ -436,7 +436,7 @@ public class InventoryMinion implements IInventory
     {
         for (int index = 0; index < inv.getSizeInventory(); ++index)
         {
-            if (inv.getStackInSlot(index) != null && inv.getStackInSlot(index).getItem() == item.getItem() && inv.getStackInSlot(index).isStackable()
+            if (inv.getStackInSlot(index) != ItemStack.EMPTY && inv.getStackInSlot(index).getItem() == item.getItem() && inv.getStackInSlot(index).isStackable()
                     && inv.getStackInSlot(index).getCount() < inv.getStackInSlot(index).getMaxStackSize() && inv.getStackInSlot(index).getCount() < inv.getInventoryStackLimit()
                     && (!inv.getStackInSlot(index).getHasSubtypes() || inv.getStackInSlot(index).getItemDamage() == item.getItemDamage()))
             {
@@ -454,17 +454,17 @@ public class InventoryMinion implements IInventory
 
         if (par1 >= this.mainInventory.length)
         {
-            return null;
+            return ItemStack.EMPTY;
         }
 
-        if (aitemstack[par1] != null)
+        if (aitemstack[par1] != ItemStack.EMPTY)
         {
             ItemStack itemstack;
 
             if (aitemstack[par1].getCount() <= par2)
             {
                 itemstack = aitemstack[par1];
-                aitemstack[par1] = null;
+                aitemstack[par1] = ItemStack.EMPTY;
                 return itemstack;
             }
             else
@@ -473,7 +473,7 @@ public class InventoryMinion implements IInventory
 
                 if (aitemstack[par1].getCount() == 0)
                 {
-                    aitemstack[par1] = null;
+                    aitemstack[par1] = ItemStack.EMPTY;
                 }
 
                 return itemstack;
@@ -481,14 +481,14 @@ public class InventoryMinion implements IInventory
         }
         else
         {
-            return null;
+            return ItemStack.EMPTY;
         }
     }
 
     @Override
     public ItemStack removeStackFromSlot(int par1)
     {
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override
