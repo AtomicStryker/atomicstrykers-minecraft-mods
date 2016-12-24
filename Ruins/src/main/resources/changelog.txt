@@ -482,3 +482,10 @@ a: setAccessible now true
 
 16.3
 + updated to mc 1.11
+
+16.4
++ adds missing fences rotation mappings (thanks Jordan)
++ adds a complete vanilla chestgenhook list
++ fixes chests being parsed as IInventory instances instead of chest rules
++ fixes empty slots being parsed as air blocks
++ fixes chestgenhooks not putting results into the IInventory

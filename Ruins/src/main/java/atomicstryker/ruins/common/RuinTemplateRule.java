@@ -904,8 +904,13 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) world.getTileEntity(new BlockPos(new BlockPos(x, y, z)));
         if (chest != null)
         {
-            ResourceLocation lootTable = new ResourceLocation("minecraft", gen);
-            // chest.setLoot(lootTable, random.nextLong());
+            ResourceLocation lootTable;
+            if (gen.contains(":")) {
+                String[] pair = gen.split(":");
+                lootTable = new ResourceLocation(pair[0], pair[1]);
+            } else {
+                lootTable = new ResourceLocation("minecraft", gen);
+            }
 
             LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
 
@@ -955,7 +960,7 @@ public class RuinTemplateRule
 
         for (int i = 0; i < inventory.getSizeInventory(); ++i)
         {
-            if (inventory.getStackInSlot(i) == null)
+            if (inventory.getStackInSlot(i) == ItemStack.EMPTY)
             {
                 list.add(i);
             }
@@ -1109,7 +1114,7 @@ public class RuinTemplateRule
                 if (targetslot != -1)
                 {
                     slotItemPrev = inv.getStackInSlot(targetslot);
-                    if (slotItemPrev == null)
+                    if (slotItemPrev == ItemStack.EMPTY)
                     {
                         inv.setInventorySlotContents(targetslot, putItem);
                     }
@@ -1131,7 +1136,7 @@ public class RuinTemplateRule
                     for (int slot = 0; slot < inv.getSizeInventory(); slot++)
                     {
                         slotItemPrev = inv.getStackInSlot(slot);
-                        if (slotItemPrev == null)
+                        if (slotItemPrev == ItemStack.EMPTY)
                         {
                             inv.setInventorySlotContents(slot, putItem);
                             break;

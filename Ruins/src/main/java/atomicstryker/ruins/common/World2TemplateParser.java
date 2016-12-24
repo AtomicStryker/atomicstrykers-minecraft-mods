@@ -276,6 +276,10 @@ class World2TemplateParser extends Thread
                         // ADJACENT dependency
                         temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
+                    else if (temp.block == Blocks.CHEST)
+                    {
+                        temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
+                    }
                     else if (te instanceof IInventory && !isIInventoryEmpty((IInventory) te))
                     {
                         IInventory inventory = (IInventory) te;
@@ -283,7 +287,7 @@ class World2TemplateParser extends Thread
                         final ArrayList<Integer> slots = new ArrayList<>();
                         for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
                         {
-                            if (inventory.getStackInSlot(slot) != null)
+                            if (inventory.getStackInSlot(slot) != ItemStack.EMPTY)
                             {
                                 invItems.add(inventory.getStackInSlot(slot));
                                 slots.add(slot);
@@ -352,10 +356,6 @@ class World2TemplateParser extends Thread
                             temp.data = temp.data + "-" + temp.meta;
                         }
                     }
-                    else if (temp.block == Blocks.CHEST)
-                    {
-                        temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
-                    }
                     else if (temp.block == Blocks.COMMAND_BLOCK)
                     {
                         TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
@@ -410,7 +410,7 @@ class World2TemplateParser extends Thread
     {
         for (int slot = 0; slot < inventory.getSizeInventory(); slot++)
         {
-            if (inventory.getStackInSlot(slot) != null)
+            if (inventory.getStackInSlot(slot) != ItemStack.EMPTY)
             {
                 return false;
             }
