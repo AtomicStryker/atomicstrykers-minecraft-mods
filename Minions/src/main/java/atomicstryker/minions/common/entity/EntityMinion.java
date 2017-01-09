@@ -121,7 +121,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         {
             lastChunk = world.getChunkFromBlockCoords(new BlockPos((int) posX, 0, (int) posZ));
             chunkLoadingTicket.bindEntity(this);
-            ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+            ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getPos());
         }
         else
         {
@@ -303,9 +303,9 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         {
             if (curChunk.xPosition != lastChunk.xPosition || curChunk.zPosition != lastChunk.zPosition)
             {
-                ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+                ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getPos());
                 lastChunk = curChunk;
-                ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getChunkCoordIntPair());
+                ForgeChunkManager.forceChunk(chunkLoadingTicket, lastChunk.getPos());
             }
         }
 
