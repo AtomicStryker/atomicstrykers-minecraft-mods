@@ -44,7 +44,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
  *         register dropped Items.
  *
  */
-@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.5")
+@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.6")
 public class DynamicLights
 {
     private Minecraft mcinstance;
