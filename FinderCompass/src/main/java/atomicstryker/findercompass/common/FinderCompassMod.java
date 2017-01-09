@@ -1,5 +1,12 @@
 package atomicstryker.findercompass.common;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Map;
+
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.HandshakePacket;
@@ -23,14 +30,7 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Map;
-
-@Mod(modid = "findercompass", name = "Finder Compass", version = "1.10.2")
+@Mod(modid = "findercompass", name = "Finder Compass", version = "1.11.2")
 public class FinderCompassMod
 {
 
