@@ -1,3 +1,6 @@
+1.4.6
+added custom Pet Bat sounds, curtesy (and request of) seanamor on github
+
 1.4.5
 fixed java.lang.UnsupportedOperationException on flute use
 

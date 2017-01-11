@@ -285,6 +285,6 @@ public class PetBatAIFlying extends EntityAIBase
     {
         petBat.setIsBatHanging(false);
         petBat.setPosition(petBat.posX, petBat.posY - 1D, petBat.posZ);
-        petBat.world.playSound(null, petBat.getPosition(), SoundEvents.ENTITY_BAT_TAKEOFF, SoundCategory.NEUTRAL, 0.05F, (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
+        petBat.world.playSound(null, petBat.getPosition(), PetBatMod.soundTakeoff, SoundCategory.NEUTRAL, 0.05F, (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
     }
 }
