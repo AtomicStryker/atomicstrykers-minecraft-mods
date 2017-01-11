@@ -18,9 +18,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -38,8 +40,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.5")
+@ObjectHolder("petbat")
+@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.6")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -111,6 +115,21 @@ public class PetBatMod implements IProxy
     @Instance(value = "petbat")
     private static PetBatMod instance;
 
+    @ObjectHolder("death")
+    public static final SoundEvent soundDeath = createSoundEvent("death");
+
+    @ObjectHolder("hit")
+    public static final SoundEvent soundHit = createSoundEvent("hit");
+
+    @ObjectHolder("idle")
+    public static final SoundEvent soundIdle = createSoundEvent("idle");
+
+    @ObjectHolder("loop")
+    public static final SoundEvent soundLoop = createSoundEvent("loop");
+
+    @ObjectHolder("takeoff")
+    public static final SoundEvent soundTakeoff = createSoundEvent("takeoff");
+
     public static PetBatMod instance()
     {
         return instance;
@@ -168,6 +187,29 @@ public class PetBatMod implements IProxy
         glisterBatEnabled = Loader.isModLoaded("dynamiclights");
         TAME_ITEM_ID = Items.PUMPKIN_PIE;
         GLISTER_ITEM_ID = Items.GLOWSTONE_DUST;
+    }
+
+    /**
+     * Create a {@link SoundEvent}.
+     *
+     * @param soundName
+     *            The SoundEvent's name without the modid prefix
+     * @return The SoundEvent
+     */
+    private static SoundEvent createSoundEvent(String soundName)
+    {
+        final ResourceLocation soundID = new ResourceLocation("petbat", soundName);
+        return new SoundEvent(soundID).setRegistryName(soundID);
+    }
+
+    @Mod.EventBusSubscriber
+    public static class RegistrationHandler
+    {
+        @SubscribeEvent
+        public static void registerSoundEvents(RegistryEvent.Register<SoundEvent> event)
+        {
+            event.getRegistry().registerAll(soundDeath, soundHit, soundIdle, soundLoop, soundTakeoff);
+        }
     }
 
     public boolean getPetBatInventoryTeleportEnabled()
