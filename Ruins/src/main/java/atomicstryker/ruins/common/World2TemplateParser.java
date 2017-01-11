@@ -276,10 +276,6 @@ class World2TemplateParser extends Thread
                         // ADJACENT dependency
                         temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
                     }
-                    else if (temp.block == Blocks.CHEST)
-                    {
-                        temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
-                    }
                     else if (te instanceof IInventory && !isIInventoryEmpty((IInventory) te))
                     {
                         IInventory inventory = (IInventory) te;
@@ -303,19 +299,8 @@ class World2TemplateParser extends Thread
                             String ident;
                             if (stack.getItem() instanceof ItemBlock)
                             {
-                                ItemStack cs = stack.getItem().getContainerItem(stack);
-                                if (cs != null)
-                                {
-                                    // ident =
-                                    // GameData.getBlockRegistry().getNameForObject(cs).toString();
-                                    // TODO: Is this correct? i dont remember
-                                    // which case this code was handling
-                                    ident = Item.REGISTRY.getNameForObject(cs.getItem()).toString();
-                                }
-                                else
-                                {
-                                    ident = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
-                                }
+                                ItemBlock itemBlock = (ItemBlock) stack.getItem();
+                                ident = Block.REGISTRY.getNameForObject(itemBlock.block).toString();
                             }
                             else
                             {
@@ -355,6 +340,10 @@ class World2TemplateParser extends Thread
                         {
                             temp.data = temp.data + "-" + temp.meta;
                         }
+                    }
+                    else if (temp.block == Blocks.CHEST)
+                    {
+                        temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
                     }
                     else if (temp.block == Blocks.COMMAND_BLOCK)
                     {
