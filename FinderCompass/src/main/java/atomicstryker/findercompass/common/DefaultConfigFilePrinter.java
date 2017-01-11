@@ -34,7 +34,7 @@ public class DefaultConfigFilePrinter
             pw.println("// MaxBlockY - maximum block height to scan");
             pw.println("// boolDelayed - boolean for scanning only every 15 seconds");
             pw.println("// [OPTIONAL] damageDropped - the system some mods like Redpower2 use to stack more than one block at the same blockID. You can specify the subvalue here");
-            pw.println("// damageDropped is optional and does not need to be set in order for a config line to work. You can let your line end with boolDelayed as before.");
+            pw.println("// damageDropped is optional and does not need to be set in order for a config line to work. You can let your line end with boolDelayed as before. -1 is the explicit meta for ANY damage");
             pw.println("//");
             pw.println("// to get minecraft IDs visit www.minecraftwiki.net/wiki/Data_values");
             pw.println("// to get an RGB color just google online RGB mixer");
@@ -165,7 +165,7 @@ public class DefaultConfigFilePrinter
                             }
                             else
                             {
-                                configInts[8] = 0;
+                                configInts[8] = -1;
                             }
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
