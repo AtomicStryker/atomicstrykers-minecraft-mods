@@ -1,0 +1,38 @@
+{
+  "death": {
+    "category": "neutral",
+    "sounds": [
+      "petbat:death"
+    ]
+  },
+  "hit": {
+    "category": "neutral",
+    "sounds": [
+      "petbat:hit1",
+	  "petbat:hit2",
+      "petbat:hit3",
+      "petbat:hit4"
+    ]
+  },
+  "idle": {
+    "category": "ambient",
+    "sounds": [
+      "petbat:idle1",
+	  "petbat:idle2",
+      "petbat:idle3",
+      "petbat:idle4"
+    ]
+  },
+  "loop": {
+    "category": "ambient",
+    "sounds": [
+	  "petbat:loop"
+    ]
+  },
+  "takeoff": {
+    "category": "ambient",
+    "sounds": [
+	  "petbat:takeoff"
+    ]
+  }
+}

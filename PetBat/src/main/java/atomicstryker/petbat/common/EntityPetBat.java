@@ -314,19 +314,19 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     @Override
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.ENTITY_BAT_AMBIENT;
+        return PetBatMod.soundIdle;
     }
 
     @Override
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.ENTITY_BAT_HURT;
+        return PetBatMod.soundHit;
     }
 
     @Override
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.ENTITY_BAT_DEATH;
+        return PetBatMod.soundDeath;
     }
 
     @Override

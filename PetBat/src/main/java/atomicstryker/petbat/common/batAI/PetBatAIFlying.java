@@ -247,7 +247,7 @@ public class PetBatAIFlying extends EntityAIBase
     {
         // block it was hanging from is no more
         IBlockState ib = petBat.worldObj.getBlockState(new BlockPos( MathHelper.floor_double(petBat.posX), (int) petBat.posY + 1, MathHelper.floor_double(petBat.posZ)));
-        if (!ib.getBlock().isNormalCube(ib))
+        if (!ib.isNormalCube())
         {
             takeOff();
         }
@@ -285,6 +285,6 @@ public class PetBatAIFlying extends EntityAIBase
     {
         petBat.setIsBatHanging(false);
         petBat.setPosition(petBat.posX, petBat.posY - 1D, petBat.posZ);
-        petBat.worldObj.playSound(null, petBat.getPosition(), SoundEvents.ENTITY_BAT_TAKEOFF, SoundCategory.NEUTRAL, 0.05F, (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
+        petBat.worldObj.playSound(null, petBat.getPosition(), PetBatMod.soundTakeoff, SoundCategory.NEUTRAL, 0.05F, (petBat.getRNG().nextFloat() - petBat.getRNG().nextFloat()) * 0.2F + 1.0F);
     }
 }
