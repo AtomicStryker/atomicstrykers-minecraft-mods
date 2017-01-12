@@ -261,6 +261,9 @@ public class RuinTemplateRule
         return rule;
     }
 
+    /** use regex so we dont get aliasing for NBT1, NBT10 etc */
+    private final Pattern patternNBT = Pattern.compile("(NBT\\d*)");
+
     /**
      * And the reverse, restore the glorious NBT tags into a string loaded with their placeholders
      *
@@ -270,12 +273,19 @@ public class RuinTemplateRule
      */
     private String restoreNBTTags(String str, ArrayList<String> nbttags)
     {
-        int nbtidx = 1;
-        for (String capture : nbttags)
+        Matcher matcher = patternNBT.matcher(str);
+        StringBuffer sb = new StringBuffer(str.length());
+        while (matcher.find())
         {
-            str = str.replace("NBT" + nbtidx++, capture);
+            String tag = matcher.group(0);
+            // strip "NBT", get the number out
+            int index = Integer.valueOf(tag.substring(3));
+            // list index is 1 less
+            matcher.appendReplacement(sb, nbttags.get(index - 1));
         }
-        return str;
+        matcher.appendTail(sb);
+        String result = sb.toString();
+        return result;
     }
 
     private Block tryFindingBlockOfName(String blockName)
@@ -1075,8 +1085,8 @@ public class RuinTemplateRule
                     try
                     {
                         hashsplit[1] = restoreNBTTags(hashsplit[1], nbtTags);
+                        debugPrinter.println("trying to apply nbt tag: " + hashsplit[1]);
                         putItem.setTagCompound(JsonToNBT.getTagFromJson(hashsplit[1]));
-                        debugPrinter.println("nbt tag applied: " + hashsplit[1]);
                     }
                     catch (NBTException e)
                     {
