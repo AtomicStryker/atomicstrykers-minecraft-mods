@@ -431,9 +431,10 @@ public class PetBatMod implements IProxy
 
     public ItemStack removeFluteFromPlayer(EntityPlayer player, String petName)
     {
-        for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+        for (int i = 0; i < player.inventory.mainInventory.length; i++)
+        {
             ItemStack item = player.inventory.mainInventory[i];
-            if (item.getItem() == itemBatFlute)
+            if (item != null && item.getItem() == itemBatFlute)
             {
                 if (item.getTagCompound().getString("batName").equals(petName))
                 {
