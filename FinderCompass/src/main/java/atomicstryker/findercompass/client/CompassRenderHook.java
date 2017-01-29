@@ -91,7 +91,7 @@ public class CompassRenderHook
 
         // alternative native ogl code
         GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
-        GL11.glColor4f(r, g, b, 0.75F); // set color
+        GL11.glColor4f(r, g, b, 0.85F); // set color
 
         // now draw each glorious needle as single quad
         GL11.glVertex3d(-0.03D, -0.04D, 0.0D); // lower left
