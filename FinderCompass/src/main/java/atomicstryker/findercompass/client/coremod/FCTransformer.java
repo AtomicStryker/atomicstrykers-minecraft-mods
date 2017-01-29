@@ -111,7 +111,8 @@ public class FCTransformer implements IClassTransformer
                     // this bytecode is equivalent to this line: CompassRenderHook.renderItemHook(itemStack);
 
                     // now write our hook in, after the target node
-                    m.instructions.insertBefore(targetNode, toInject);
+                    // it needs to be rendered afterwards for the semi-transparency of the needles to not perforate the compass
+                    m.instructions.insert(targetNode, toInject);
                 }
                 break;
             }

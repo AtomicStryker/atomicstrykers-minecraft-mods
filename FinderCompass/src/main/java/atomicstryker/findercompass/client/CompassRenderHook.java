@@ -36,34 +36,43 @@ public class CompassRenderHook
         
         // switch off ogl stuff that breaks our rendering needs
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_CULL_FACE);
+        // back-face culling can save some (tiny amount of) performance in third person perspective
+        GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_BLEND);
         
-        GL11.glTranslatef(0.54f, 0.52f, 0.522f); // translate to the middle of the icon and slightly towards the player
-        // these values were found by painful experimentation
+        // save modelview matrix for later restoration
+        GL11.glPushMatrix();
+        // translate to the pivot of the needle of the default compass icons
+        GL11.glTranslatef(0.53125f, 0.53125f, 0.53125f);
+        // these values were found by painful calculation of 8.5 / 16
         
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
         
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet())
         {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
+            GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
             drawNeedle(Tessellator.getInstance(), (float)configInts[0]/255f, (float)configInts[1]/255f, (float)configInts[2]/255f, computeNeedleHeading(entryTarget.getValue()));
         }
         
         if (css.isStrongholdNeedleEnabled() && FinderCompassLogic.hasStronghold)
         {
+            GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
             drawNeedle(Tessellator.getInstance(), strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.strongholdCoords));
         }
         
         // restore ogl state
         GL11.glPopAttrib();
         
-        // translate back
-        GL11.glTranslatef(-0.54f, -0.52f, -0.522f);
+        // restore modelview matrix
+        GL11.glPopMatrix();
     }
     
     private static void drawNeedle(Tessellator t, float r, float g, float b, float angle)
     {
+        // save modelview matrix for later restoration
+        GL11.glPushMatrix();
+        
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
         /*
@@ -92,8 +101,8 @@ public class CompassRenderHook
         
         GL11.glEnd(); // let ogl draw it
         
-        GL11.glRotatef(angle, 0, 0, 1f); // revert rotation for next needle
-        GL11.glTranslatef(0, 0, -0.01f); // translate slightly up
+        // restore modelview matrix
+        GL11.glPopMatrix();
     }
     
     private static float computeNeedleHeading(BlockPos coords)
