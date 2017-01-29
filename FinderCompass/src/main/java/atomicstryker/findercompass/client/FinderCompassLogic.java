@@ -15,9 +15,7 @@ public class FinderCompassLogic
 
     private final BlockPos NullChunk = new BlockPos(0, 0, 0);
 
-    private int x;
-    private int y;
-    private int z;
+    private BlockPos oldPos;
     private long nextTime;
     private int seccounter;
 
@@ -48,11 +46,10 @@ public class FinderCompassLogic
                 nextTime = System.currentTimeMillis() + 1000L;
             }
 
-            if ((int) mc.player.posX != this.x || (int) mc.player.posY != this.y || (int) mc.player.posZ != this.z)
+            BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+            if (!pos.equals(oldPos))
             {
-                x = (int) mc.player.posX;
-                y = (int) mc.player.posY;
-                z = (int) mc.player.posZ;
+                oldPos = pos;
                 movement = true;
             }
 
@@ -87,7 +84,8 @@ public class FinderCompassLogic
                     if (is15SecInterval || configInts[7] == 0)
                     {
                         coords =
-                                findNearestBlockChunkOfIDInRange(currentSetting, blockInts.getBlockID(), blockInts.getDamage(), x, y, z,
+                                findNearestBlockChunkOfIDInRange(currentSetting, blockInts.getBlockID(), blockInts.getDamage(),
+                                        pos.getX(), pos.getY(), pos.getZ(),
                                         configInts[3], configInts[4], configInts[5], configInts[6]);
                         if (coords != null && !coords.equals(NullChunk))
                         {
