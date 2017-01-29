@@ -72,6 +72,8 @@ public class CompassRenderHook
     {
         // save modelview matrix for later restoration
         GL11.glPushMatrix();
+        // make the needle cover roughly the same elliptical shape as the default pixelled one
+        GL11.glScalef(1.7875f, 0.8125f, 1f);
         
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
