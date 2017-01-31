@@ -399,6 +399,10 @@ public abstract class MobModifier
         if (bufferedEntityName == null)
         {
             String buffer = EntityList.getEntityString(target);
+            if (buffer == null)
+            {
+                buffer = "Monster";
+            }
             String[] subStrings = buffer.split("\\."); // in case of Package.Class.EntityName derps
             if (subStrings.length > 1)
             {
