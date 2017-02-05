@@ -43,7 +43,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder("petbat")
-@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.6")
+@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.7")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -222,7 +222,7 @@ public class PetBatMod implements IProxy
     {
         EntityPlayer p = event.getEntityPlayer();
         ItemStack item = p.inventory.getCurrentItem();
-        if (item != null && item.getItem() == TAME_ITEM_ID)
+        if (item.getItem() == TAME_ITEM_ID)
         {
             List<Entity> entityList = p.world.getEntitiesWithinAABBExcludingEntity(p, p.getEntityBoundingBox().expand(10D, 10D, 10D));
             BlockPos coords = new BlockPos((int) (p.posX + 0.5D), (int) (p.posY + 1.5D), (int) (p.posZ + 0.5D));
@@ -248,7 +248,7 @@ public class PetBatMod implements IProxy
             if (!p.world.isRemote)
             {
                 ItemStack item = p.inventory.getCurrentItem();
-                if (item != null && item.getItem() == TAME_ITEM_ID)
+                if (item.getItem() == TAME_ITEM_ID)
                 {
                     event.setCanceled(true);
                     p.inventory.clearMatchingItems(TAME_ITEM_ID, -1, 1, null);
@@ -269,7 +269,7 @@ public class PetBatMod implements IProxy
         {
             EntityPlayer p = event.getEntityPlayer();
             ItemStack item = p.inventory.getCurrentItem();
-            if (item != null && item.getItem() == GLISTER_ITEM_ID)
+            if (item.getItem() == GLISTER_ITEM_ID)
             {
                 new GlisterBatAdapter((EntityPetBat) event.getTarget());
                 p.inventory.clearMatchingItems(GLISTER_ITEM_ID, -1, 1, null);
@@ -283,7 +283,7 @@ public class PetBatMod implements IProxy
         if (event.getTarget() instanceof EntityPetBat)
         {
             EntityPetBat bat = (EntityPetBat) event.getTarget();
-            if (bat.getOwnerName().equals(event.getEntityPlayer().getName()) && event.getEntityPlayer().getHeldItemMainhand() == null)
+            if (bat.getOwnerName().equals(event.getEntityPlayer().getName()) && event.getEntityPlayer().getHeldItemMainhand() == ItemStack.EMPTY)
             {
                 bat.recallToOwner();
                 event.setCanceled(true);
@@ -407,7 +407,7 @@ public class PetBatMod implements IProxy
         if (event.getEntityLiving() instanceof EntityPlayer)
         {
             EntityPlayer p = (EntityPlayer) event.getEntityLiving();
-            if (p.isEntityAlive() && p.getHeldItemMainhand() != null && p.getHeldItemMainhand().getItem().equals(itemPocketedBat))
+            if (p.isEntityAlive() && p.getHeldItemMainhand().getItem().equals(itemPocketedBat))
             {
                 if (p.getActivePotionEffect(MobEffects.NIGHT_VISION) == null)
                 {
@@ -442,7 +442,7 @@ public class PetBatMod implements IProxy
                 }
             }
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override

@@ -1,3 +1,6 @@
+1.4.7
+cleaned up the 1.11.2 port for ItemStack.EMPTY logic
+
 1.4.6
 added custom Pet Bat sounds, curtesy (and request of) seanamor on github
 

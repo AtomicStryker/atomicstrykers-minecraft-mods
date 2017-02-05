@@ -56,7 +56,7 @@ public class ItemPocketedPetBat extends Item
     {
         if (batEnt.world.isRemote)
         {
-            return null;
+            return ItemStack.EMPTY;
         }
 
         ItemStack batstack = new ItemStack(PetBatMod.instance().itemPocketedBat);

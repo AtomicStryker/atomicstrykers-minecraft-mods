@@ -286,7 +286,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         {
             setHealth(1);
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
-            if (batstack != null)
+            if (batstack != ItemStack.EMPTY)
             {
                 PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack))
@@ -418,7 +418,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         if (isRecalled)
         {
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
-            if (batstack != null && owner != null)
+            if (batstack != ItemStack.EMPTY && owner != null)
             {
                 ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
                 if (owner.inventory.addItemStackToInventory(batstack))
@@ -442,7 +442,7 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             final Item fluteItem = PetBatMod.instance().itemBatFlute;
             for (ItemStack inventoryItem : owner.inventory.mainInventory)
             {
-                if (inventoryItem != null && inventoryItem.getItem() == fluteItem && inventoryItem.getTagCompound() != null)
+                if (inventoryItem.getItem() == fluteItem && inventoryItem.getTagCompound() != null)
                 {
                     if (inventoryItem.getTagCompound().getString("batName").equals(petName))
                     {

@@ -95,7 +95,7 @@ public class PetBatAIFlying extends EntityAIBase
                 if (PetBatMod.instance().getPetBatInventoryTeleportEnabled())
                 {
                     ItemStack batstack = ItemPocketedPetBat.fromBatEntity(petBat);
-                    if (batstack != null)
+                    if (batstack != ItemStack.EMPTY)
                     {
                         ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(petBat.getOwnerEntity(), petBat.getName());
                         if (petBat.getOwnerEntity().inventory.addItemStackToInventory(batstack))
