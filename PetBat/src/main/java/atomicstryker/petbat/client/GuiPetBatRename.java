@@ -50,7 +50,7 @@ public class GuiPetBatRename extends GuiScreen
     {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        textfield = new GuiTextField(0, fontRendererObj, this.width / 2 - 75, 60, 150, 20);
+        textfield = new GuiTextField(0, fontRenderer, this.width / 2 - 75, 60, 150, 20);
         textfield.setTextColor(-1);
         textfield.setMaxStringLength(30);
         textfield.setFocused(true);
@@ -100,25 +100,25 @@ public class GuiPetBatRename extends GuiScreen
         this.drawDefaultBackground();
 
         int x = this.width / 2;
-        this.drawCenteredString(this.fontRendererObj, this.screenTitle, x, 40, 0x0000AA);
+        this.drawCenteredString(this.fontRenderer, this.screenTitle, x, 40, 0x0000AA);
 
         int y = 100;
-        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.format("translation.PetBat:level")
+        drawCenteredString(fontRenderer, (TextFormatting.BOLD + I18n.format("translation.PetBat:level")
                 + TextFormatting.RESET + level + " " + levelTitle), x, y, 0xFFFFFF);
         y += 12;
         drawCenteredString(
-                fontRendererObj,
+                fontRenderer,
                 (TextFormatting.BOLD + I18n.format("translation.PetBat:experience") + TextFormatting.RESET + xp + (xpToNext == -1
                         ? "" : I18n.format("translation.PetBat:missing_xp") + xpToNext)), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.format("translation.PetBat:health")
+        drawCenteredString(fontRenderer, (TextFormatting.BOLD + I18n.format("translation.PetBat:health")
                 + TextFormatting.RESET + health + " / " + maxHealth), x, y, 0xFFFFFF);
         y += 12;
-        drawCenteredString(fontRendererObj, (TextFormatting.BOLD + I18n.format("translation.PetBat:attack_power")
+        drawCenteredString(fontRenderer, (TextFormatting.BOLD + I18n.format("translation.PetBat:attack_power")
                 + TextFormatting.RESET + attackStrength), x, y, 0xFFFFFF);
 
         y += 30;
-        drawCenteredString(fontRendererObj, TextFormatting.ITALIC + levelDesc, x, y, 0xC82536);
+        drawCenteredString(fontRenderer, TextFormatting.ITALIC + levelDesc, x, y, 0xC82536);
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float) (this.width / 2), 0.0F, 50.0F);

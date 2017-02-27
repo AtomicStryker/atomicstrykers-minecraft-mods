@@ -119,7 +119,7 @@ public class InfernalMobsClient implements ISidedProxy
 
                 ScaledResolution resolution = new ScaledResolution(mc);
                 int screenwidth = resolution.getScaledWidth();
-                FontRenderer fontR = mc.fontRendererObj;
+                FontRenderer fontR = mc.fontRenderer;
 
                 GuiIngame gui = mc.ingameGUI;
                 short lifeBarLength = 182;

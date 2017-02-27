@@ -117,7 +117,7 @@ public class GuiMinionMenu extends GuiScreen
     public void drawScreen(int var1, int var2, float var3)
     {
     	this.drawDefaultBackground();
-    	this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 40, 16777215);
+        this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 16777215);
     	/*
     	GL11.glPushMatrix();
     	GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);

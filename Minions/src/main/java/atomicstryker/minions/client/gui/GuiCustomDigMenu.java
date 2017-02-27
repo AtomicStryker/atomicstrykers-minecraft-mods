@@ -1,9 +1,10 @@
 package atomicstryker.minions.client.gui;
 
+import org.lwjgl.opengl.GL11;
+
 import atomicstryker.minions.client.MinionsClient;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.opengl.GL11;
 
 /**
  * Minions Custom Dig Menu, allows you to choose your desired Dimensions
@@ -120,10 +121,10 @@ public class GuiCustomDigMenu extends GuiScreen
     public void drawScreen(int var1, int var2, float var3)
     {
     	this.drawDefaultBackground();
-    	this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 40, 16777215);
+        this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 16777215);
     	
-    	this.drawCenteredString(this.fontRendererObj, "Width: "+this.xzSize, this.width / 2, this.height / 4 + 40, 16777215);
-    	this.drawCenteredString(this.fontRendererObj, "Height: "+this.ySize, this.width / 2, this.height / 4 + 80, 16777215);
+        this.drawCenteredString(this.fontRenderer, "Width: " + this.xzSize, this.width / 2, this.height / 4 + 40, 16777215);
+        this.drawCenteredString(this.fontRenderer, "Height: " + this.ySize, this.width / 2, this.height / 4 + 80, 16777215);
     	
     	GL11.glPushMatrix();
     	GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);

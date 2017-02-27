@@ -72,7 +72,7 @@ public class GuiDeedMenu extends GuiScreen
     public void drawScreen(int var1, int var2, float var3)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRendererObj, screenTitle, width / 2, 40, 16777215);
+        drawCenteredString(fontRenderer, screenTitle, width / 2, 40, 16777215);
         GL11.glPushMatrix();
         GL11.glTranslatef((float) (width / 2), 0.0F, 50.0F);
         GL11.glScalef(-93.75F, -93.75F, -93.75F);
