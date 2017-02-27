@@ -26,8 +26,8 @@ public class SCTransformer implements IClassTransformer
     /* class net.minecraft.src.EntityAICreeperSwell */
     private final String entityAICreeperSwellClassNameO = "vm";
     private final String entityAICreeperSwellJavaClassNameO = "vm";
-    /* class net.minecraft.src.EntityLiving */
-    private final String entityLivingJavaClassNameO = "sw";
+    /* class net.minecraft.src.EntityLivingBase */
+    private final String entityLivingBaseJavaClassNameO = "sv";
     /* class net.minecraft.src.EntityCreeper */
     private final String entityCreeperJavaClassNameO = "zp";
     /* shouldExecute() / func_75250_a */
@@ -41,7 +41,7 @@ public class SCTransformer implements IClassTransformer
     private final String entityAICreeperSwellJavaClassName = "net/minecraft/entity/ai/EntityAICreeperSwell";
     private final String shouldExecuteMethodName = "shouldExecute";
     private final String swellingCreeperFieldName = "swellingCreeper";
-    private final String entityLivingJavaClassName = "net/minecraft/entity/EntityLiving";
+    private final String entityLivingBaseJavaClassName = "net/minecraft/entity/EntityLivingBase";
     private final String entityCreeperJavaClassName = "net/minecraft/entity/monster/EntityCreeper";
     
     @Override
@@ -105,13 +105,14 @@ public class SCTransformer implements IClassTransformer
                     try
                     {
                         AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class)
-                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassNameO + ";)Z");
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingBaseJavaClassNameO + ";)Z");
                         toInject.add(node);
                     }
                     catch (NoSuchMethodException e)
                     {
                         AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class)
-                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassNameO + ";)Z", false);
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingBaseJavaClassNameO + ";)Z",
+                                        false);
                         toInject.add(node);
                     }
                 }
@@ -185,13 +186,13 @@ public class SCTransformer implements IClassTransformer
                     try
                     {
                         AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class)
-                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassName + ";)Z");
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingBaseJavaClassName + ";)Z");
                         toInject.add(node);
                     }
                     catch (NoSuchMethodException e)
                     {
                         AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class)
-                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingJavaClassName + ";)Z", false);
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingBaseJavaClassName + ";)Z", false);
                         toInject.add(node);
                     }
                 }
