@@ -26,8 +26,6 @@ public class SCTransformer implements IClassTransformer
     /* class net.minecraft.src.EntityAICreeperSwell */
     private final String entityAICreeperSwellClassNameO = "vm";
     private final String entityAICreeperSwellJavaClassNameO = "vm";
-    /* class net.minecraft.src.EntityLivingBase */
-    private final String entityLivingBaseJavaClassNameO = "sv";
     /* class net.minecraft.src.EntityCreeper */
     private final String entityCreeperJavaClassNameO = "zp";
     /* shouldExecute() / func_75250_a */
@@ -105,13 +103,13 @@ public class SCTransformer implements IClassTransformer
                     try
                     {
                         AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class)
-                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingBaseJavaClassNameO + ";)Z");
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityCreeperJavaClassNameO + ";)Z");
                         toInject.add(node);
                     }
                     catch (NoSuchMethodException e)
                     {
                         AbstractInsnNode node = MethodInsnNode.class.getConstructor(int.class, String.class, String.class, String.class, boolean.class)
-                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityLivingBaseJavaClassNameO + ";)Z",
+                                .newInstance(Opcodes.INVOKESTATIC, "atomicstryker/stalkercreepers/common/EntityAIHelperStalker", "isSeenByTarget", "(L" + entityCreeperJavaClassNameO + ";)Z",
                                         false);
                         toInject.add(node);
                     }

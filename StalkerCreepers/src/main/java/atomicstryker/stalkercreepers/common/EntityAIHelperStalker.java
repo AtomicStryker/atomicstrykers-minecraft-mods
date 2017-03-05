@@ -1,14 +1,14 @@
 package atomicstryker.stalkercreepers.common;
 
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.util.math.Vec3d;
 
 @SuppressWarnings("unused")
 public class EntityAIHelperStalker
 {
 
-    public static boolean isSeenByTarget(EntityLiving stalker)
+    public static boolean isSeenByTarget(EntityCreeper stalker)
     {
         EntityLivingBase seer = stalker.getAttackTarget();
         
