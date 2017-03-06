@@ -115,8 +115,15 @@ public class SimplyHaxFlying
             if (mc.player != player)
             {
                 player = mc.player;
-                pcb = player.capabilities;
-                defaultWalkSpeed = pcb.getWalkSpeed();
+                if (player != null)
+                {
+                    pcb = player.capabilities;
+                    defaultWalkSpeed = pcb.getWalkSpeed();
+                }
+                else
+                {
+                    pcb = null;
+                }
             }
 
             if (pcb != null)
