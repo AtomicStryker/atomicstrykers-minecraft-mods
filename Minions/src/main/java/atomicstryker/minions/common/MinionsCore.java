@@ -3,6 +3,7 @@ package atomicstryker.minions.common;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.common.collect.Lists;
 
@@ -82,7 +85,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = "minions", name = "Minions", version = "2.0.1")
+@Mod(modid = "minions", name = "Minions", version = "2.0.2")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -167,7 +170,8 @@ public class MinionsCore
 
         String configpath = event.getSuggestedConfigurationFile().getAbsolutePath();
         configpath = configpath.replaceFirst(".cfg", "_Advanced.cfg");
-        initializeSettingsFile(new File(configpath));
+        File advancedConfig = new File(configpath);
+        initializeSettingsFile(advancedConfig);
 
         itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff").setRegistryName("minions", "masterstaff");
         GameRegistry.register(itemMastersStaff);
@@ -703,57 +707,55 @@ public class MinionsCore
     {
         try
         {
-            if (settingsFile.exists())
+            if (!settingsFile.exists())
             {
-                System.out.println(settingsFile.getPath() + " found and opened");
-                BufferedReader var1 = new BufferedReader(new FileReader(settingsFile));
+                System.out.println(settingsFile.getPath() + " not present, deploying defaults!");
+                URL defaultConfigUrl = getClass().getResource("/assets/minions/minions_Advanced.cfg");
+                FileUtils.copyURLToFile(defaultConfigUrl, settingsFile);
+                System.out.println(settingsFile.getPath() + " write success!");
+            }
 
-                String lineString;
-                while ((lineString = var1.readLine()) != null)
+            BufferedReader br = new BufferedReader(new FileReader(settingsFile));
+            String lineString;
+            while ((lineString = br.readLine()) != null)
+            {
+                if (!lineString.startsWith("//"))
                 {
-                    if (!lineString.startsWith("//"))
+                    lineString = lineString.trim();
+                    if (lineString.startsWith("registerBlockIDasTreeBlock:"))
                     {
-                        lineString = lineString.trim();
-                        if (lineString.startsWith("registerBlockIDasTreeBlock:"))
+                        Block id = Block.REGISTRY.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":") + 1)));
+                        if (id != Blocks.AIR)
                         {
-                            Block id = Block.REGISTRY.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":") + 1)));
-                            if (id != Blocks.AIR)
-                            {
-                                foundTreeBlocks.add(id);
-                                System.out.println("Config: registered additional tree block ID " + id);
-                            }
-                        }
-                        else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
-                        {
-                            Block id = Block.REGISTRY.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":") + 1)));
-                            if (id != Blocks.AIR)
-                            {
-                                configWorthlessBlocks.add(id);
-                                System.out.println("Config: registered additional worthless block ID " + id);
-                            }
-                        }
-                        else
-                        {
-                            String[] stringArray = lineString.split(":");
-
-                            EvilDeed deed = new EvilDeed(stringArray[0], stringArray[1], Integer.parseInt(stringArray[2]));
-                            evilDoings.add(deed);
+                            foundTreeBlocks.add(id);
+                            System.out.println("Config: registered additional tree block ID " + id);
                         }
                     }
+                    else if (lineString.startsWith("registerBlockIDasWorthlessBlock:"))
+                    {
+                        Block id = Block.REGISTRY.getObject(new ResourceLocation(lineString.substring(lineString.indexOf(":") + 1)));
+                        if (id != Blocks.AIR)
+                        {
+                            configWorthlessBlocks.add(id);
+                            System.out.println("Config: registered additional worthless block ID " + id);
+                        }
+                    }
+                    else
+                    {
+                        String[] stringArray = lineString.split(":");
+
+                        EvilDeed deed = new EvilDeed(stringArray[0], stringArray[1], Integer.parseInt(stringArray[2]));
+                        evilDoings.add(deed);
+                    }
                 }
-
-                var1.close();
-
-                System.out.println(settingsFile.getPath() + " parsed, registered " + evilDoings.size() + " evil Deeds.");
             }
-            else
-            {
-                System.out.println("Could not open " + settingsFile.getPath() + ", you suck");
-            }
+            br.close();
+            System.out.println(settingsFile.getPath() + " parsed, registered " + evilDoings.size() + " evil Deeds.");
         }
-        catch (Exception var6)
+        catch (Exception exception)
         {
-            System.out.println("EXCEPTION BufferedReader: " + var6);
+            System.out.println("EXCEPTION Advanced Config: " + exception);
+            exception.printStackTrace();
         }
     }
 

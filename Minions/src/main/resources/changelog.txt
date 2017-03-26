@@ -1,3 +1,8 @@
+Update 2.0.2
+- fixed broken minion texture
+- changed distribution file to be just a jar file
+- now auto-copies an included advanced configuration file if none is present
+
 Update 2.0.1
 - updated to mc 1.11.2
 
