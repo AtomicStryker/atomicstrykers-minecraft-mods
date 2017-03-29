@@ -800,4 +800,16 @@ public class RuinTemplate
         bonemealMarkers.add(z);
     }
 
+    // these 2 methods are only here so mockito can intercept calls
+    protected Block tryFindingBlockOfName(String blockName)
+    {
+        // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
+        return Block.REGISTRY.getObject(new ResourceLocation(blockName));
+    }
+
+    public Block getAirBlock()
+    {
+        return Blocks.AIR;
+    }
+
 }

@@ -489,3 +489,6 @@ a: setAccessible now true
 + fixes chests being parsed as IInventory instances instead of chest rules
 + fixes empty slots being parsed as air blocks
 + fixes chestgenhooks not putting results into the IInventory
+
+16.5
++ added support for blocknames containing '-' characters

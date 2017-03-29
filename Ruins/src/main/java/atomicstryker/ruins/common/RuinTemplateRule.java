@@ -47,10 +47,10 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class RuinTemplateRule
 {
-    private final Block[] blockIDs;
-    private final int[] blockMDs;
-    private final String[] blockStrings;
-    private final SpecialFlags[] specialFlags;
+    protected final Block[] blockIDs;
+    protected final int[] blockMDs;
+    protected final String[] blockStrings;
+    protected final SpecialFlags[] specialFlags;
     private int chance = 100;
     private int condition = 0;
     final RuinTemplate owner;
@@ -128,7 +128,7 @@ public class RuinTemplateRule
                 if (data.length > 1) // has '-' in it, like "torch-5" or
                                      // "planks-3"
                 {
-                    if (isNumber(data[0])) // torch-5
+                    if (isNumber(data[0])) // 1-5
                     {
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
                         blockIDs[i] = Blocks.AIR;
@@ -136,13 +136,32 @@ public class RuinTemplateRule
                         blockStrings[i] = "";
                     }
                     else
-                    // planks-3 or ChestGenHook:strongholdLibrary:5-2
+                    // planks-3 or ChestGenHook:strongholdLibrary:5-2 or
+                    // chisel:sandstone-scribbles-1
                     {
+                        // compat cases: sand-scrib-1 or sand-scrib or
+                        // d-d-derp-addbonemeal or even d-d-derp-3-addbonemeal
+                        // need to rebuild data array
+                        while (data.length > 1 && !isNumber(data[1]) && !data[1].equals("addbonemeal"))
+                        {
+                            String[] newdata = new String[data.length - 1];
+                            newdata[0] = data[0] + "-" + data[1];
+                            for (int j = 1; j < data.length - 1; j++)
+                            {
+                                newdata[j] = data[j + 1];
+                            }
+                            // this loop should keep concatting data[0] until
+                            // data is [n, 3] or [n, addbonemeal] or [n, 3,
+                            // addbonemeal]
+                            // irregardless of how many '-' are contained in n
+                            data = newdata;
+                        }
+
                         blockStrings[i] = blockRules[i + 2];
                         blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
 
-                        blockIDs[i] = tryFindingBlockOfName(data[0]);
-                        if (blockIDs[i] == Blocks.AIR)
+                        blockIDs[i] = r.tryFindingBlockOfName(data[0]);
+                        if (blockIDs[i] == r.getAirBlock())
                         {
                             if (!data[0].equals("air"))
                             {
@@ -188,14 +207,14 @@ public class RuinTemplateRule
                     if (isNumber(blockRules[i + 2]))
                     {
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
-                        blockIDs[i] = Blocks.AIR;
+                        blockIDs[i] = r.getAirBlock();
                         blockMDs[i] = 0;
                         blockStrings[i] = "";
                     }
                     else
                     {
-                        blockIDs[i] = tryFindingBlockOfName(blockRules[i + 2]);
-                        if (blockIDs[i] == Blocks.AIR && !data[0].equals("air"))
+                        blockIDs[i] = r.tryFindingBlockOfName(blockRules[i + 2]);
+                        if (blockIDs[i] == r.getAirBlock() && !data[0].equals("air"))
                         {
                             // debugPrinter.println("Rule [" + rule + "] in
                             // template " + owner.getName()+" has something
@@ -300,12 +319,6 @@ public class RuinTemplateRule
         matcher.appendTail(sb);
         String result = sb.toString();
         return result;
-    }
-
-    private Block tryFindingBlockOfName(String blockName)
-    {
-        // debugPrinter.printf("%s mapped to %s\n", blockName, cachedBlock);
-        return Block.REGISTRY.getObject(new ResourceLocation(blockName));
     }
 
     @SuppressWarnings("unused")
