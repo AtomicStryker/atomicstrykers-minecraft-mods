@@ -217,7 +217,10 @@ public class MultiMineClient
                         }
 
                         SoundType st = block.getBlock().getSoundType(is, w, iterBlock.getPos(), player);
-                        w.playSound(null, pos, st.getBreakSound(), SoundCategory.BLOCKS, st.getVolume() + 1.0F / 2.0F, st.getPitch() * 0.8F);
+                        if (st != null)
+                        {
+                            w.playSound(null, pos, st.getBreakSound(), SoundCategory.BLOCKS, st.getVolume() + 1.0F / 2.0F, st.getPitch() * 0.8F);
+                        }
                     }
                     onBlockMineFinishedDamagePlayerItem(player, x, y, z);
 

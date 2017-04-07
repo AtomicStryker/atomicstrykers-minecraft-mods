@@ -25,7 +25,7 @@ curseforge {
         id = '227887'
         releaseType = 'release'
         addGameVersion '1.11.2'
-        mainArtifact(file('build/distributions/MultiMine-1.11.2.zip')) {
+        mainArtifact(file('build/libs/MultiMine-1.11.2.jar')) {
             displayName = 'Multi Mine'
         }
     }

@@ -1,3 +1,6 @@
+1.5.6 hotfix (compatible with 1.5.6)
+- fixes NPE when breaking sounds with undefined breaking sounds
+
 1.5.6
 - updated to mc 1.11.2
 
