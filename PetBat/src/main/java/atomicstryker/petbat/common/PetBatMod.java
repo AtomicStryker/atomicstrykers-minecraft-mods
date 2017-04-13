@@ -300,11 +300,13 @@ public class PetBatMod implements IProxy
     @SubscribeEvent
     public void onItemToss(ItemTossEvent event)
     {
-        System.out.println("onItemTossEvent hooked, isRemote: " + event.getEntity().worldObj.isRemote);
+        // System.out.println("onItemTossEvent hooked, isRemote: " +
+        // event.getEntity().worldObj.isRemote);
         if (!event.getEntity().worldObj.isRemote)
         {
             EntityItem itemDropped = event.getEntityItem();
-            System.out.println("PlayerDropsEvent iterating over drop " + itemDropped);
+            // System.out.println("PlayerDropsEvent iterating over drop " +
+            // itemDropped);
             EntityItem foundItem;
             final Item id = itemDropped.getEntityItem().getItem();
             if (id == itemPocketedBat)
