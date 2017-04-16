@@ -14,6 +14,7 @@ import com.google.common.collect.Maps;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -74,15 +75,20 @@ public class MultiMineServer
     }
 
     /**
-     * Called when a client has a block progression update. Update the
-     * already existing partial Block or create one if not present,
-     * and send that information back to all interested players.
+     * Called when a client has a block progression update. Update the already
+     * existing partial Block or create one if not present, and send that
+     * information back to all interested players.
      *
-     * @param player player doing the digging
-     * @param x      coordinate of Block
-     * @param y      coordinate of Block
-     * @param z      coordinate of Block
-     * @param value  block progression the client reported
+     * @param player
+     *            player doing the digging
+     * @param x
+     *            coordinate of Block
+     * @param y
+     *            coordinate of Block
+     * @param z
+     *            coordinate of Block
+     * @param value
+     *            block progression the client reported
      */
     public void onClientSentPartialBlockPacket(EntityPlayerMP player, int x, int y, int z, float value)
     {
@@ -157,7 +163,7 @@ public class MultiMineServer
                             iblockstate.getBlock().onBlockDestroyedByPlayer(player.world, pos, iblockstate);
                         }
 
-                        if (removed && canHarvest)
+                        if (removed && canHarvest && !(block instanceof BlockSkull))
                         {
                             iblockstate.getBlock().harvestBlock(player.world, player, pos, iblockstate, tileentity, itemstack);
                         }
@@ -186,7 +192,8 @@ public class MultiMineServer
         }
 
         // else send the new partialblock to all relevant players
-        // System.out.println("Server creating new partial block at: ["+x+"|"+y+"|"+z+"]");
+        // System.out.println("Server creating new partial block at:
+        // ["+x+"|"+y+"|"+z+"]");
 
         if (partiallyMinedBlocks.size() > 29)
         {
@@ -254,7 +261,8 @@ public class MultiMineServer
      * Tells all clients to delete this partially mined Block off their local
      * storage, the server exceeds the max amount of concurrent partial Blocks.
      *
-     * @param block partial Block to be deleted
+     * @param block
+     *            partial Block to be deleted
      */
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block)
     {
@@ -280,9 +288,10 @@ public class MultiMineServer
     /**
      * Helper method to get the correct partial Block list for a World Dimension
      *
-     * @param dim Dimension of the world
+     * @param dim
+     *            Dimension of the world
      * @return the List of partial Blocks for the dimension. Can be null, can be
-     * empty.
+     *         empty.
      */
     private List<PartiallyMinedBlock> getPartiallyMinedBlocksForDimension(int dim)
     {
@@ -294,7 +303,8 @@ public class MultiMineServer
      * a certain area. Overwrites their local partial Block instances with
      * whatever you send.
      *
-     * @param block PartiallyMinedBlock instance
+     * @param block
+     *            PartiallyMinedBlock instance
      */
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block)
     {
@@ -305,8 +315,10 @@ public class MultiMineServer
     /**
      * Sends a partial Block Packet to a particular player.
      *
-     * @param p     Player targeted
-     * @param block PartiallyMinedBlock instance
+     * @param p
+     *            Player targeted
+     * @param block
+     *            PartiallyMinedBlock instance
      */
     private void sendPartiallyMinedBlockToPlayer(EntityPlayerMP p, PartiallyMinedBlock block)
     {
@@ -328,7 +340,7 @@ public class MultiMineServer
             }
 
             PartiallyMinedBlock block;
-            for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext(); )
+            for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext();)
             {
                 block = iter.next();
                 if (isBlockGone(block))
@@ -371,9 +383,10 @@ public class MultiMineServer
      * Helper method to determine if a Block was removed by other means
      * (Explosion, Sand/Gravel falling, Pistons...)
      *
-     * @param block PartiallyMinedBlock to check
+     * @param block
+     *            PartiallyMinedBlock to check
      * @return true if the PartiallyMinedBlock Block coordinates return 0 in a
-     * getBlockId check, false otherwise
+     *         getBlockId check, false otherwise
      */
     private boolean isBlockGone(PartiallyMinedBlock block)
     {
