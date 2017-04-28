@@ -1,6 +1,7 @@
 package atomicstryker.findercompass.client;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.util.ChunkCoordinates;
@@ -54,6 +55,21 @@ public class CompassSetting
     public HashMap<CompassTargetData, int[]> getCustomNeedles()
     {
         return customNeedles;
+    }
+    
+    public CompassTargetData getCustomNeedle(String pOreDictName)
+    {
+    	CompassTargetData needle = null;
+    	if (pOreDictName != null){
+    		for (CompassTargetData entry : customNeedles.keySet()) {
+				if (entry.getOreDictName().equals(pOreDictName))
+				{
+					needle = entry;
+					break;
+				}
+			}
+    	}
+    	return needle;
     }
     
     public ConcurrentHashMap<CompassTargetData, ChunkCoordinates> getCustomNeedleTargets()
