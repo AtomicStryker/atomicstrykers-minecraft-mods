@@ -81,7 +81,7 @@ public class MM_Ender extends MobModifier
         int z = MathHelper.floor_double(mob.posZ);
 
         boolean hitGround = false;
-        while (!hitGround && y < 96)
+        while (!hitGround && y < 96 && y > 0)
         {
             IBlockState bs = mob.worldObj.getBlockState(new BlockPos(x, y - 1, z));
             if (bs.getMaterial().blocksMovement())
