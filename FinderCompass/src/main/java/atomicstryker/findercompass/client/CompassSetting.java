@@ -62,7 +62,7 @@ public class CompassSetting
     	CompassTargetData needle = null;
     	if (pOreDictName != null){
     		for (CompassTargetData entry : customNeedles.keySet()) {
-				if (entry.getOreDictName().equals(pOreDictName))
+				if (pOreDictName.equals(entry.getOreDictName()))
 				{
 					needle = entry;
 					break;
