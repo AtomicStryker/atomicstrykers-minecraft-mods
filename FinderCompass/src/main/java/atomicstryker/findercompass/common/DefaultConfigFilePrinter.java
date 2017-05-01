@@ -178,10 +178,12 @@ public class DefaultConfigFilePrinter
                                 configInts[8] = 0;
                                 damageSet = false;
                             }
-                            if (configInts[8] < 0){
+                            
+                            if (configInts[8] < 0) {
                             	damageSet = false;
                             	configInts[8]= 0;
                             }
+                            
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
@@ -290,8 +292,14 @@ public class DefaultConfigFilePrinter
 			} else {
 				int[] ids;
 				for(int damage = 0; (ids=OreDictionary.getOreIDs(new ItemStack(pBlock, 1, damage))).length > 0; damage++){
+					boolean added = false;
 					for(int id:ids){
+						int size = oreDictIDs.size();
 						oreDictIDs.add(id);
+						added = added || size != oreDictIDs.size();
+					}
+					if (!added){
+						break;
 					}
 				}
 			}
