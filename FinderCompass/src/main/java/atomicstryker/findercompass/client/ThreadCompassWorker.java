@@ -95,7 +95,7 @@ public class ThreadCompassWorker extends Thread
                     	{
                     		if (this.mcinstance.theWorld.getBlock(xIter, yIter, zIter) == blockData.getBlockID())
                     		{
-                    			if (blockData.getDamage() > 0 && mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) != blockData.getDamage())
+                    			if (blockData.useDamage() && mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) != blockData.getDamage())
                     			{
                     				continue;
                     			}
