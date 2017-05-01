@@ -120,7 +120,7 @@ public class CompassTargetData
         @Override
         public int hashCode()
         {
-            return blockID.getUnlocalizedName().hashCode();
+            return (blockID.getClass().getSimpleName() + ":" + damage).hashCode();
         }
     
     }
