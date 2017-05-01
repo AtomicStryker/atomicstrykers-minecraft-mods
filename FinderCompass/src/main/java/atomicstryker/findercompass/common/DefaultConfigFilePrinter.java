@@ -178,7 +178,10 @@ public class DefaultConfigFilePrinter
                                 configInts[8] = 0;
                                 damageSet = false;
                             }
-                            configInts[8]= Math.max(configInts[8],0);
+                            if (configInts[8] < 0){
+                            	damageSet = false;
+                            	configInts[8]= 0;
+                            }
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
