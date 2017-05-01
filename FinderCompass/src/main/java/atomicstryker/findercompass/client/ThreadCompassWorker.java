@@ -2,7 +2,9 @@ package atomicstryker.findercompass.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import atomicstryker.findercompass.common.CompassTargetData.BlockData;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChunkCoordinates;
@@ -23,13 +25,15 @@ public class ThreadCompassWorker extends Thread
 		mcinstance = mc;
 	}
 	
-	private Block block;
+	private Set<BlockData> mBlocks;
 	private int[] intArray;
+	private String mOreDictName;
 	
-	public void setupValues(Block b, int[] configInts)
+	public void setupValues(Set<BlockData> pBlocks, int[] configInts, String pOreDictName)
 	{
-	    block = b;
+	    mBlocks = pBlocks;
 		intArray = configInts;
+		mOreDictName = pOreDictName;
 	}
 	
 	public boolean isWorking()
@@ -43,19 +47,19 @@ public class ThreadCompassWorker extends Thread
 		isRunning = true;
 		
 		// search!
-		ChunkCoordinates result = findNearestBlockChunkOfIDInRange(block, intArray[0], intArray[1], intArray[2], intArray[3], intArray[4], intArray[5], intArray[6], intArray[7]);
+		ChunkCoordinates result = findNearestBlockChunkOfIDInRange(mBlocks, intArray[1], intArray[2], intArray[3], intArray[4], intArray[5], intArray[6], intArray[7]);
 		
 		if (result != null)
 		{
-		    FinderCompassClientTicker.instance.onFoundChunkCoordinates(result, block, intArray[0]);
+		    FinderCompassClientTicker.instance.onFoundChunkCoordinates(result, mBlocks, mOreDictName);
 		}
 		
 		isRunning = false;
 	}
 	
-    private ChunkCoordinates findNearestBlockChunkOfIDInRange(Block blockID, int meta, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
+    private ChunkCoordinates findNearestBlockChunkOfIDInRange(Set<BlockData> blocks, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
     {
-        List<ChunkCoordinates> blocksInRange = this.findBlocksOfIDInRange(blockID, meta, playerX, playerY, playerZ, xzRange, yRange, minY, maxY);
+        List<ChunkCoordinates> blocksInRange = this.findBlocksOfIDInRange(blocks, playerX, playerY, playerZ, xzRange, yRange, minY, maxY);
         ChunkCoordinates playerCoords = new ChunkCoordinates(playerX, playerY, playerZ);
         ChunkCoordinates resultCoords = new ChunkCoordinates(0, 0, 0);
         double minDist = 9999.0D;
@@ -75,7 +79,7 @@ public class ThreadCompassWorker extends Thread
         return resultCoords;
     }
 
-    private List<ChunkCoordinates> findBlocksOfIDInRange(Block blockID, int meta, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
+    private List<ChunkCoordinates> findBlocksOfIDInRange(Set<BlockData> blocks, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
     {
         ArrayList<ChunkCoordinates> resultList = new ArrayList<ChunkCoordinates>();
 
@@ -87,17 +91,20 @@ public class ThreadCompassWorker extends Thread
                 {
                     for (int xIter = playerX - xzRange; xIter <= playerX + xzRange; ++xIter)
                     {
-                        if (this.mcinstance.theWorld.getBlock(xIter, yIter, zIter) == blockID)
-                        {
-                            if (meta != -1 && mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) != meta)
-                            {
-                                continue;
-                            }
+                    	for (BlockData blockData : blocks)
+                    	{
+                    		if (this.mcinstance.theWorld.getBlock(xIter, yIter, zIter) == blockData.getBlockID())
+                    		{
+                    			if (blockData.getDamage() > 0 && mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) != blockData.getDamage())
+                    			{
+                    				continue;
+                    			}
                             
-                            ChunkCoordinates var13 = new ChunkCoordinates(xIter, yIter, zIter);
-                            resultList.add(var13);
-                        }
-                        Thread.yield();
+                    			ChunkCoordinates var13 = new ChunkCoordinates(xIter, yIter, zIter);
+                    			resultList.add(var13);
+                    		}
+                    		Thread.yield();
+                    	}
                     }
                 }
             }

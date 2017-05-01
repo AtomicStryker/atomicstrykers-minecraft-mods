@@ -7,11 +7,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import akka.dispatch.Foreach;
 import atomicstryker.findercompass.client.CompassSetting;
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
@@ -19,6 +21,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import scala.actors.threadpool.Arrays;
 
 public class DefaultConfigFilePrinter
 {
@@ -154,6 +157,7 @@ public class DefaultConfigFilePrinter
 								blockID = splitString[0] + ":" + splitString[1];
 							}
                             
+							boolean damageSet;
                             int[] configInts = new int[9];
                             configInts[0] = Integer.parseInt(splitString[prefixoffset+1]);
                             configInts[1] = Integer.parseInt(splitString[prefixoffset+2]);
@@ -167,15 +171,18 @@ public class DefaultConfigFilePrinter
                             if (splitString.length > prefixoffset+9)
                             {
                                 configInts[8] = Integer.parseInt(splitString[prefixoffset+9]);
+                                damageSet = true;
                             }
                             else
                             {
                                 configInts[8] = 0;
+                                damageSet = false;
                             }
+                            configInts[8]= Math.max(configInts[8],0);
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
-							Map<String, CompassTargetData> data = getBlocks(blockID, configInts[8]);
+							Map<String, CompassTargetData> data = getBlocks(blockID, configInts[8], damageSet);
 							for (Entry<String, CompassTargetData> blockData : data.entrySet()) {
 								CompassTargetData needle = currentSetting.getCustomNeedle(blockData.getKey());
 								if (needle != null)
@@ -218,7 +225,7 @@ public class DefaultConfigFilePrinter
         }
     }
     
-	private Map<String,CompassTargetData> getBlocks(String pBlockName, int pDamage) {
+	private Map<String,CompassTargetData> getBlocks(String pBlockName, int pDamage, boolean pDamageSet) {
 		Map<String, CompassTargetData> data = new HashMap<String, CompassTargetData>();
 
 		Block block = GameData.getBlockRegistry().getObject(pBlockName);
@@ -226,7 +233,7 @@ public class DefaultConfigFilePrinter
 			String oreDictName = null;
 			CompassTargetData compassTargetData =null;
 			
-			int[] blockIDs = OreDictionary.getOreIDs(new ItemStack(block, 1, pDamage));
+			Integer[] blockIDs = getOreDictIDs(block, pDamage, pDamageSet);
 			for (int oreBlockID : blockIDs) {
 				oreDictName = OreDictionary.getOreName(oreBlockID);
 				compassTargetData = data.get(oreDictName);
@@ -238,7 +245,7 @@ public class DefaultConfigFilePrinter
 					Item item = stack.getItem();
 					int damage = item.getDamage(stack);
 					block = GameData.getBlockRegistry().getObject(item.delegate.name());
-					compassTargetData.add(block, damage);
+					compassTargetData.add(block, damage, true);
 				}
 				
 				if (!compassTargetData.isEmpty()){
@@ -247,9 +254,9 @@ public class DefaultConfigFilePrinter
 			}
 			
 			if (compassTargetData == null){
-				compassTargetData = new CompassTargetData(block, pDamage, oreDictName);
+				compassTargetData = new CompassTargetData(block, pDamage, oreDictName, pDamageSet);
 				if (!compassTargetData.isEmpty()){
-					data.put(oreDictName, compassTargetData);
+					data.put(compassTargetData.getOreDictName(), compassTargetData);
 				}
 			}
 		} else {
@@ -259,7 +266,7 @@ public class DefaultConfigFilePrinter
 				Item item = stack.getItem();
 				int damage = item.getDamage(stack);
 				block = GameData.getBlockRegistry().getObject(item.delegate.name());
-				compassTargetData.add(block, damage);
+				compassTargetData.add(block, damage, true);
 			}
 			
 			if (!compassTargetData.isEmpty()){
@@ -268,5 +275,24 @@ public class DefaultConfigFilePrinter
 		}
 
 		return data;
+	}
+
+	private Integer[] getOreDictIDs(Block pBlock, int pDamage, boolean pDamageSet) {
+		Set<Integer> oreDictIDs = new HashSet<Integer>();
+		if (pBlock != null){
+			if (pDamageSet){
+				for(int id:OreDictionary.getOreIDs(new ItemStack(pBlock, 1, pDamage))){
+					oreDictIDs.add(id);
+				}
+			} else {
+				int[] ids;
+				for(int damage = 0; (ids=OreDictionary.getOreIDs(new ItemStack(pBlock, 1, damage))).length > 0; damage++){
+					for(int id:ids){
+						oreDictIDs.add(id);
+					}
+				}
+			}
+		}
+		return oreDictIDs.toArray(new Integer[]{});
 	}
 }

@@ -18,9 +18,14 @@ public class CompassTargetData
     
     public CompassTargetData(Block a, int b, String pOreName)
     {
+    	this(a, b, pOreName, true);
+    }
+    
+    public CompassTargetData(Block a, int b, String pOreName, boolean pWithDamage)
+    {
     	mOreDictName = pOreName != null ? pOreName : a.getUnlocalizedName();
     	if (a != null){
-    		mBlocks.add(new BlockData(a, b));
+    		mBlocks.add(new BlockData(a, b, pWithDamage));
     	}
     }
     
@@ -31,9 +36,9 @@ public class CompassTargetData
     	}
 	}
 
-	public void add(Block pBlock, int pDamage){
+	public void add(Block pBlock, int pDamage, boolean pUseDamage){
     	if (pBlock != null){
-    		mBlocks.add(new BlockData(pBlock, pDamage));
+    		mBlocks.add(new BlockData(pBlock, pDamage, pUseDamage));
     	}
     }
    
@@ -78,15 +83,21 @@ public class CompassTargetData
     public class BlockData{
         private final Block blockID;
         private final int damage;
+        private final boolean mUseDamage;
         
-        private BlockData(Block pBlock, int pDamage){
+        private BlockData(Block pBlock, int pDamage, boolean pWithDamage){
         	blockID = pBlock;
         	damage = pDamage;
+        	mUseDamage = pWithDamage;
         }
         
         public Block getBlockID()
         {
             return blockID;
+        }
+        
+        public boolean useDamage(){
+        	return mUseDamage;
         }
         
         public int getDamage()
