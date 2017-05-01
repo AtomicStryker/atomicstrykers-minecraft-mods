@@ -91,9 +91,10 @@ public class ThreadCompassWorker extends Thread
                 {
                     for (int xIter = playerX - xzRange; xIter <= playerX + xzRange; ++xIter)
                     {
+                    	Block blockInWorld = this.mcinstance.theWorld.getBlock(xIter, yIter, zIter);
                     	for (BlockData blockData : blocks)
                     	{
-                    		if (this.mcinstance.theWorld.getBlock(xIter, yIter, zIter) == blockData.getBlockID())
+                    		if (blockInWorld == blockData.getBlockID())
                     		{
                     			if (blockData.useDamage() && mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) != blockData.getDamage())
                     			{
