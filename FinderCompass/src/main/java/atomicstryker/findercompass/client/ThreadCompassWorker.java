@@ -96,13 +96,10 @@ public class ThreadCompassWorker extends Thread
                     	{
                     		if (blockInWorld == blockData.getBlockID())
                     		{
-                    			if (blockData.useDamage() && mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) != blockData.getDamage())
+                    			if (!blockData.useDamage() || mcinstance.theWorld.getBlockMetadata(xIter, yIter, zIter) == blockData.getDamage())
                     			{
-                    				continue;
+                    				resultList.add(new ChunkCoordinates(xIter, yIter, zIter));
                     			}
-                            
-                    			ChunkCoordinates var13 = new ChunkCoordinates(xIter, yIter, zIter);
-                    			resultList.add(var13);
                     		}
                     		Thread.yield();
                     	}

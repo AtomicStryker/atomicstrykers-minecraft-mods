@@ -179,10 +179,7 @@ public class DefaultConfigFilePrinter
                                 damageSet = false;
                             }
                             
-                            if (configInts[8] < 0) {
-                            	damageSet = false;
-                            	configInts[8]= 0;
-                            }
+							damageSet &= configInts[8] > -1;
                             
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
@@ -230,80 +227,75 @@ public class DefaultConfigFilePrinter
         }
     }
     
-	private Map<String,CompassTargetData> getBlocks(String pBlockName, int pDamage, boolean pDamageSet) {
+	private Map<String, CompassTargetData> getBlocks(String pBlockName, int pDamage, boolean pDamageSet) {
 		Map<String, CompassTargetData> data = new HashMap<String, CompassTargetData>();
 
 		Block block = GameData.getBlockRegistry().getObject(pBlockName);
 		if (block != Blocks.air) {
-			String oreDictName = null;
-			CompassTargetData compassTargetData =null;
-			
-			Integer[] blockIDs = getOreDictIDs(block, pDamage, pDamageSet);
-			for (int oreBlockID : blockIDs) {
-				oreDictName = OreDictionary.getOreName(oreBlockID);
-				compassTargetData = data.get(oreDictName);
-				if (compassTargetData == null){
-					compassTargetData = new CompassTargetData(oreDictName);
-				}
-				
-				for (ItemStack stack : OreDictionary.getOres(oreDictName)) {
-					Item item = stack.getItem();
-					int damage = item.getDamage(stack);
-					block = GameData.getBlockRegistry().getObject(item.delegate.name());
-					compassTargetData.add(block, damage, true);
-				}
-				
-				if (!compassTargetData.isEmpty()){
-					data.put(oreDictName, compassTargetData);
-				}
-			}
-			
-			if (compassTargetData == null){
-				compassTargetData = new CompassTargetData(block, pDamage, oreDictName, pDamageSet);
-				if (!compassTargetData.isEmpty()){
+			if (pDamage <= -1) {
+				CompassTargetData compassTargetData = new CompassTargetData(block, pDamage, pBlockName, false);
+				if (!compassTargetData.isEmpty()) {
 					data.put(compassTargetData.getOreDictName(), compassTargetData);
+				}
+			} else {
+				boolean anyAdded = false;
+				String oreDictName = null;
+				CompassTargetData compassTargetData = null;
+
+				int[] blockIDs = OreDictionary.getOreIDs(new ItemStack(block, 1, pDamage));
+				for (int oreBlockID : blockIDs) {
+					if (oreDictName == null){
+						oreDictName = OreDictionary.getOreName(oreBlockID);
+					}
+					
+					compassTargetData = data.get(oreDictName);
+					if (compassTargetData == null) {
+						compassTargetData = new CompassTargetData(oreDictName);
+					}
+
+					for (ItemStack stack : OreDictionary.getOres(oreDictName)) {
+						Item item = stack.getItem();
+						int damage = item.getDamage(stack);
+						block = GameData.getBlockRegistry().getObject(item.delegate.name());
+						compassTargetData.add(block, damage, true);
+						anyAdded = true;
+					}
+
+					if (!compassTargetData.isEmpty()) {
+						data.put(oreDictName, compassTargetData);
+					}
+					
+				}
+
+				// Nothing found in ore dictionary or no damage defined, add block with ignored damage
+				if (!anyAdded || !pDamageSet) {
+					String blockName = oreDictName == null ? pBlockName : oreDictName;
+					compassTargetData = data.get(blockName);
+					if (compassTargetData == null){
+						compassTargetData = new CompassTargetData(block, pDamage, pBlockName, pDamageSet);
+						if (!compassTargetData.isEmpty()) {
+							data.put(compassTargetData.getOreDictName(), compassTargetData);
+						}
+					} else {
+						compassTargetData.add(block, pDamage, pDamageSet);						
+					}
 				}
 			}
 		} else {
 			String oreDictName = pBlockName;
-			CompassTargetData compassTargetData = new CompassTargetData(oreDictName);			
+			CompassTargetData compassTargetData = new CompassTargetData(oreDictName);
 			for (ItemStack stack : OreDictionary.getOres(oreDictName)) {
 				Item item = stack.getItem();
 				int damage = item.getDamage(stack);
 				block = GameData.getBlockRegistry().getObject(item.delegate.name());
 				compassTargetData.add(block, damage, true);
 			}
-			
-			if (!compassTargetData.isEmpty()){
+
+			if (!compassTargetData.isEmpty()) {
 				data.put(oreDictName, compassTargetData);
 			}
 		}
 
 		return data;
-	}
-
-	private Integer[] getOreDictIDs(Block pBlock, int pDamage, boolean pDamageSet) {
-		Set<Integer> oreDictIDs = new HashSet<Integer>();
-		if (pBlock != null){
-			if (pDamageSet){
-				for(int id:OreDictionary.getOreIDs(new ItemStack(pBlock, 1, pDamage))){
-					oreDictIDs.add(id);
-				}
-			} else {
-				int[] ids;
-				for(int damage = 0; (ids=OreDictionary.getOreIDs(new ItemStack(pBlock, 1, damage))).length > 0; damage++){
-					boolean added = false;
-					for(int id:ids){
-						int size = oreDictIDs.size();
-						oreDictIDs.add(id);
-						added = added || size != oreDictIDs.size();
-					}
-					if (!added){
-						break;
-					}
-				}
-			}
-		}
-		return oreDictIDs.toArray(new Integer[]{});
 	}
 }
