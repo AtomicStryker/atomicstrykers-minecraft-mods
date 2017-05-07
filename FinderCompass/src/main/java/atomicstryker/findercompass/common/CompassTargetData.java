@@ -112,7 +112,7 @@ public class CompassTargetData
             if (o instanceof BlockData)
             {
             	BlockData comp = (BlockData)o;
-                return comp.getBlockID() == blockID && comp.getDamage() == damage;
+                return comp.getBlockID() == blockID && comp.getDamage() == damage && comp.useDamage() == mUseDamage;
             }
             return false;
         }
