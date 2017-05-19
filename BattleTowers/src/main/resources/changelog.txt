@@ -1,3 +1,7 @@
+1.5.6
+- fixed golem healing from death when "losing target"
+- fixed various problems (such as infinite explosions) from above problem
+
 1.5.5
 - it actually made things much worse by duplicating all tower entries every world load
 - fixed tower entries being duplicated on load
