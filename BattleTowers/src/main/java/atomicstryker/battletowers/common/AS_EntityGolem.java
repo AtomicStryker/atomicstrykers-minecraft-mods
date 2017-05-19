@@ -134,7 +134,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
     public void setAwake()
     {
-        if (!worldObj.isRemote)
+        if (!worldObj.isRemote && !isDead && getHealth() > 0F)
         {
             if (getIsDormant())
             {
@@ -173,6 +173,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     public void onDeath(DamageSource var1)
     {
     	super.onDeath(var1);
+    	setDormant();
     	Entity entity = var1.getEntity();
 
         if(scoreValue > 0 && entity != null)
@@ -193,7 +194,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             {
                 entityDropItem(new ItemStack(Blocks.CLAY, 1), 0f);
             }
-			if(getAttackTarget() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50)
+			if(getAttackTarget() != null && (AS_BattleTowersCore.instance.towerDestroyerEnabled != 0) && towerY > 50 && posY > 0)
 			{
 				AS_BattleTowersCore.onBattleTowerDestroyed(new AS_TowerDestroyer(worldObj, new BlockPos(towerX, towerY, towerZ), System.currentTimeMillis(), getAttackTarget()));
 			}
@@ -217,8 +218,15 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     @Override
     public void onUpdate()
     {
+        if (this.isDead || this.getHealth() <= 0F || this.posY < 0) {
+            this.setDead();
+            this.setDormant();
+            super.onUpdate();
+            return;
+        }
+        
         if(!this.getIsDormant())
-        {		
+        {            
 			if(getAttackTarget() == null || !getAttackTarget().isEntityAlive())
             {
 			    setHealth(getMaxHealth());
