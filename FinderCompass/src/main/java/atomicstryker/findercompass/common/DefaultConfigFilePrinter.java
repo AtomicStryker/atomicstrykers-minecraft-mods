@@ -7,11 +7,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import akka.dispatch.Foreach;
 import atomicstryker.findercompass.client.CompassSetting;
 import cpw.mods.fml.common.registry.GameData;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
+import scala.actors.threadpool.Arrays;
 
 public class DefaultConfigFilePrinter
 {
@@ -31,7 +41,7 @@ public class DefaultConfigFilePrinter
             pw.println("// Inside a Setting:");
             pw.println("// Lines may be added in the form BlockID:R:G:B:ScanrangeHor:ScanrangeVer:MinBlockY:MaxBlockY:boolDelayed[:damageDropped]");
             pw.println("//");
-            pw.println("// BlockID - the Block Name the compass should look for. Google Minecraft Data for correct values");
+            pw.println("// BlockID - the Block Name or Ore Dictionary Name the compass should look for. Google Minecraft Data for correct values or show ore dictionary names in game");
             pw.println("// R:G:B - the color values the needle should use");
             pw.println("// ScanrangeHor - scanrange -x,-z to +x,+z");
             pw.println("// ScanrangeVer - scanrange depth, '1' is visible blocks from a 1x2 tunnel");
@@ -39,7 +49,7 @@ public class DefaultConfigFilePrinter
             pw.println("// MaxBlockY - maximum block height to scan");
             pw.println("// boolDelayed - boolean for scanning only every 15 seconds");
             pw.println("// [OPTIONAL] damageDropped - the system some mods like Redpower2 use to stack more than one block at the same blockID. You can specify the subvalue here");
-            pw.println("// damageDropped is optional and does not need to be set in order for a config line to work. You can let your line end with boolDelayed as before.");
+            pw.println("// damageDropped is optional and only allowed for block names! It does not need to be set in order for a config line to work. You can let your line end with boolDelayed as before.");
             pw.println("//");
             pw.println("// to get minecraft IDs visit www.minecraftwiki.net/wiki/Data_values");
             pw.println("// to get an RGB color just google online RGB mixer");
@@ -78,7 +88,7 @@ public class DefaultConfigFilePrinter
             pw.println("NoEnderEyeNeedle");
             pw.println("//");
             pw.println("// this is Diamond = block id 56, with a needle color of {51,255,204}, it scans 15 blocks horizontally, 1 vertically, from 1-16 height, every second");
-            pw.println("diamond_ore:51:255:204:15:1:1:16:0");
+            pw.println("oreDiamond:51:255:204:15:1:1:16:0");
             pw.println("//");
             pw.println("// - lapis lazuli");
             pw.println("lapis_ore:55:70:220:15:1:1:100:0");
@@ -140,12 +150,14 @@ public class DefaultConfigFilePrinter
                             int prefixoffset = 0;
                             String[] splitString = buffer.split(":");
                             String blockID = splitString[0];
-                            if (blockID.equals("minecraft") || GameData.getBlockRegistry().getObject(blockID) == Blocks.air)
-                            {
-                                prefixoffset = 1;
-                                blockID = splitString[0]+":"+splitString[1];
-                            }
                             
+							if (splitString.length > 9 && (blockID.equals("minecraft")
+									|| GameData.getBlockRegistry().getObject(blockID) == Blocks.air)) {
+								prefixoffset = 1;
+								blockID = splitString[0] + ":" + splitString[1];
+							}
+                            
+							boolean damageSet;
                             int[] configInts = new int[9];
                             configInts[0] = Integer.parseInt(splitString[prefixoffset+1]);
                             configInts[1] = Integer.parseInt(splitString[prefixoffset+2]);
@@ -159,25 +171,35 @@ public class DefaultConfigFilePrinter
                             if (splitString.length > prefixoffset+9)
                             {
                                 configInts[8] = Integer.parseInt(splitString[prefixoffset+9]);
+                                damageSet = true;
                             }
                             else
                             {
-                                configInts[8] = -1;
+                                configInts[8] = 0;
+                                damageSet = false;
                             }
+                            
+							damageSet &= configInts[8] > -1;
+                            
                             System.out.println("Full readout: " + blockID + ":" + configInts[0] + ":" + configInts[1] + ":" + configInts[2] + ":" + configInts[3] + ":" + configInts[4] + ":"
                                     + configInts[5] + ":" + configInts[6] + ":" + configInts[7] + ":" + configInts[8]);
 
-                            block = GameData.getBlockRegistry().getObject(blockID);
-                            if (block != Blocks.air)
-                            {
-                                CompassTargetData key = new CompassTargetData(block, configInts[8]);
-                                currentSetting.getCustomNeedles().put(key, configInts);
-                            }
-                            else
-                            {
-                                System.err.println("Finder Compass could not find a Block "+blockID+", skipping that entry...");
-                                printBlocks = true;
-                            }
+							Map<String, CompassTargetData> data = getBlocks(blockID, configInts[8], damageSet);
+							for (Entry<String, CompassTargetData> blockData : data.entrySet()) {
+								CompassTargetData needle = currentSetting.getCustomNeedle(blockData.getKey());
+								if (needle != null)
+								{
+									needle.addAll(blockData.getValue());
+								} else {									
+									currentSetting.getCustomNeedles().put(blockData.getValue(), configInts);
+								}
+							}
+
+							if (data.isEmpty()) {
+								System.err.println("Finder Compass could not find a Block " + blockID
+										+ ", skipping that entry...");
+								printBlocks = true;
+							}
                         }
                         catch (Exception ex)
                         {
@@ -204,4 +226,76 @@ public class DefaultConfigFilePrinter
             }
         }
     }
+    
+	private Map<String, CompassTargetData> getBlocks(String pBlockName, int pDamage, boolean pDamageSet) {
+		Map<String, CompassTargetData> data = new HashMap<String, CompassTargetData>();
+
+		Block block = GameData.getBlockRegistry().getObject(pBlockName);
+		if (block != Blocks.air) {
+			if (pDamage <= -1) {
+				CompassTargetData compassTargetData = new CompassTargetData(block, pDamage, pBlockName, false);
+				if (!compassTargetData.isEmpty()) {
+					data.put(compassTargetData.getOreDictName(), compassTargetData);
+				}
+			} else {
+				boolean anyAdded = false;
+				String oreDictName = null;
+				CompassTargetData compassTargetData = null;
+
+				int[] blockIDs = OreDictionary.getOreIDs(new ItemStack(block, 1, pDamage));
+				for (int oreBlockID : blockIDs) {
+					if (oreDictName == null){
+						oreDictName = OreDictionary.getOreName(oreBlockID);
+					}
+					
+					compassTargetData = data.get(oreDictName);
+					if (compassTargetData == null) {
+						compassTargetData = new CompassTargetData(oreDictName);
+					}
+
+					for (ItemStack stack : OreDictionary.getOres(oreDictName)) {
+						Item item = stack.getItem();
+						int damage = item.getDamage(stack);
+						block = GameData.getBlockRegistry().getObject(item.delegate.name());
+						compassTargetData.add(block, damage, true);
+						anyAdded = true;
+					}
+
+					if (!compassTargetData.isEmpty()) {
+						data.put(oreDictName, compassTargetData);
+					}
+					
+				}
+
+				// Nothing found in ore dictionary or no damage defined, add block with ignored damage
+				if (!anyAdded || !pDamageSet) {
+					String blockName = oreDictName == null ? pBlockName : oreDictName;
+					compassTargetData = data.get(blockName);
+					if (compassTargetData == null){
+						compassTargetData = new CompassTargetData(block, pDamage, pBlockName, pDamageSet);
+						if (!compassTargetData.isEmpty()) {
+							data.put(compassTargetData.getOreDictName(), compassTargetData);
+						}
+					} else {
+						compassTargetData.add(block, pDamage, pDamageSet);						
+					}
+				}
+			}
+		} else {
+			String oreDictName = pBlockName;
+			CompassTargetData compassTargetData = new CompassTargetData(oreDictName);
+			for (ItemStack stack : OreDictionary.getOres(oreDictName)) {
+				Item item = stack.getItem();
+				int damage = item.getDamage(stack);
+				block = GameData.getBlockRegistry().getObject(item.delegate.name());
+				compassTargetData.add(block, damage, true);
+			}
+
+			if (!compassTargetData.isEmpty()) {
+				data.put(oreDictName, compassTargetData);
+			}
+		}
+
+		return data;
+	}
 }

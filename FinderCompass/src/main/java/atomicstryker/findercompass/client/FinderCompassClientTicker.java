@@ -4,8 +4,17 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Set;
 
-import net.minecraft.block.Block;
+import atomicstryker.findercompass.common.CompassTargetData;
+import atomicstryker.findercompass.common.CompassTargetData.BlockData;
+import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
+import atomicstryker.findercompass.common.FinderCompassMod;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -14,14 +23,6 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import atomicstryker.findercompass.common.CompassTargetData;
-import atomicstryker.findercompass.common.DefaultConfigFilePrinter;
-import atomicstryker.findercompass.common.FinderCompassMod;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class FinderCompassClientTicker
 {
@@ -145,10 +146,10 @@ public class FinderCompassClientTicker
                 new ChatComponentText("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
     }
 
-    public void onFoundChunkCoordinates(ChunkCoordinates input, Block b, int meta)
+    public void onFoundChunkCoordinates(ChunkCoordinates input, Set<BlockData> blocks, String pOreDictName)
     {
         // System.out.println("onFoundChunkCoordinates ["+input.posX+"|"+input.posZ+"] for ID "+b+", damage "+meta);
-        CompassTargetData key = new CompassTargetData(b, meta);
+        CompassTargetData key = new CompassTargetData(blocks, pOreDictName);
         currentSetting.getNewFoundTargets().put(key, input);
     }
 }

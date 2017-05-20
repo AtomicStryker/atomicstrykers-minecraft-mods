@@ -2,13 +2,14 @@ package atomicstryker.findercompass.client;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChunkCoordinates;
 import atomicstryker.findercompass.common.CompassTargetData;
+import atomicstryker.findercompass.common.CompassTargetData.BlockData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChunkCoordinates;
 
 public class FinderCompassLogic
 {
@@ -87,8 +88,8 @@ public class FinderCompassLogic
                     if (is15SecInterval || configInts[7] == 0)
                     {
                         coords =
-                                findNearestBlockChunkOfIDInRange(currentSetting, blockInts.getBlockID(), blockInts.getDamage(), x, y, z,
-                                        configInts[3], configInts[4], configInts[5], configInts[6]);
+                                findNearestBlockChunkOfIDInRange(currentSetting, blockInts.getBlocks(), blockInts.getOreDictName(),
+                                		x, y, z, configInts[3], configInts[4], configInts[5], configInts[6]);
                         if (coords != null && !coords.equals(NullChunk))
                         {
                             if (currentSetting.getCustomNeedleTargets().containsKey(blockInts))
@@ -117,10 +118,10 @@ public class FinderCompassLogic
      * @param currentSetting
      */
     private ChunkCoordinates findNearestBlockChunkOfIDInRange(CompassSetting currentSetting,
-            Block blockID, int meta, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
+           Set<BlockData> blocks, String pOreDictName, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
     {
-        int[] configInts = { meta, playerX, playerY, playerZ, xzRange, yRange, minY, maxY };
-        CompassTargetData key = new CompassTargetData(blockID, meta);
+        int[] configInts = { -1, playerX, playerY, playerZ, xzRange, yRange, minY, maxY };
+        CompassTargetData key = new CompassTargetData(blocks, pOreDictName);
 
         ThreadCompassWorker worker = (ThreadCompassWorker) currentSetting.getCompassWorkers().get(key);
         if (worker == null || !worker.isWorking())
@@ -129,7 +130,7 @@ public class FinderCompassLogic
             worker.setPriority(Thread.MIN_PRIORITY);
             currentSetting.getCompassWorkers().put(key, worker);
 
-            worker.setupValues(blockID, configInts);
+            worker.setupValues(blocks, configInts, pOreDictName);
             worker.start();
         }
 
