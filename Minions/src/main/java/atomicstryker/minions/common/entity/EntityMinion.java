@@ -640,12 +640,13 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         setWorking(false);
     }
 
+    @Override
     public IChatComponent getDisplayName()
     {
         // return ""+(Math.sqrt((this.motionX * this.motionX) + (this.motionZ *
         // this.motionZ)));
         // return ""+currentState+"/"+nextState;
-        return null;
+        return super.getDisplayName();
     }
 
     @Override
