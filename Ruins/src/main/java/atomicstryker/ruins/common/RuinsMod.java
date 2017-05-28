@@ -32,6 +32,7 @@ import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
@@ -42,7 +43,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "AS_Ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:ExtraBiomes")
 public class RuinsMod
 {
-    public static final String modversion = "15.4";
+    public static final String modversion = "15.4.1";
     
     public final static String TEMPLATE_EXT = "tml";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
@@ -68,6 +69,21 @@ public class RuinsMod
         new CustomRotationMapping(new File(getMinecraftBaseDir(), "mods/resources/ruins"));
     }
 
+    @EventHandler
+    public void serverAboutToStarted(FMLServerAboutToStartEvent evt)
+    {
+    	//
+        // Remove generators registered by a previous server run. If the user 
+    	// starts a new single player session (e.g. in another save) the old 
+    	// generators get invalid (since they point to the old save folder).
+    	// 
+    	// This cleanup has to be done before the first generate call (before 
+    	// server start event), otherwise the spawn point block gets lost.
+    	//
+        generatorMap.clear();
+    }
+
+    
     @EventHandler
     public void serverStarted(FMLServerStartingEvent evt)
     {
@@ -198,33 +214,49 @@ public class RuinsMod
 
     private void generateNether(World world, Random random, int chunkX, int chunkZ)
     {
-        WorldHandle wh = getWorldHandle(world);
-        if (wh.fileHandle != null)
-        {
-            for (; !wh.fileHandle.loaded; Thread.yield())
-            {
-            }
-            wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
-        }
+    	try {
+	        WorldHandle wh = getWorldHandle(world);
+	        if (wh.fileHandle != null)
+	        {
+	        	wh.waitLoaded();
+	        	wh.generator.generateNether(world, random, chunkX, 0, chunkZ);
+	        }
+    	} catch (InterruptedException e) {
+    		// shutting down?
+			e.printStackTrace();
+    	}
     }
 
     private void generateSurface(World world, Random random, int chunkX, int chunkZ)
     {
-        WorldHandle wh = getWorldHandle(world);
-        if (wh.fileHandle != null)
-        {
-            for (; !wh.fileHandle.loaded; Thread.yield())
-            {
-            }
-            wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
-        }
+    	try {
+	        WorldHandle wh = getWorldHandle(world);
+	        if (wh.fileHandle != null)
+	        {
+	        	wh.waitLoaded();
+	            wh.generator.generateNormal(world, random, chunkX, 0, chunkZ);
+	        }
+    	} catch (InterruptedException e) {
+    		// shutting down?
+			e.printStackTrace();
+    	}
     }
 
     private class WorldHandle
     {
-        FileHandler fileHandle;
+		FileHandler fileHandle;
         RuinGenerator generator;
         ChunkLoggerData chunkLogger;
+		int dimension;
+		private boolean loaded = false;
+		
+		public void waitLoaded() throws InterruptedException {
+			if (!loaded) {
+				fileHandle.waitLoaded();
+				generator.waitLoaded();
+				loaded = true;
+			}
+		}
     }
 
     private WorldHandle getWorldHandle(World world)
@@ -289,6 +321,7 @@ public class RuinsMod
 
     public static int getBiomeFromName(String name)
     {
+
         for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
         {
             if (BiomeGenBase.getBiomeGenArray()[i] != null && BiomeGenBase.getBiomeGenArray()[i].biomeName.equalsIgnoreCase(name))
@@ -305,6 +338,7 @@ public class RuinsMod
         // load in defaults
         try
         {
+        	worldHandle.dimension = world.provider.dimensionId;
             File worlddir = getWorldSaveDir(world);
             worldHandle.fileHandle = new FileHandler(worlddir);
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);

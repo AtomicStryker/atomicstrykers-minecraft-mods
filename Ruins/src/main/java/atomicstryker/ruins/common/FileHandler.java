@@ -23,164 +23,230 @@ public class FileHandler
     private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
     private final ArrayList<HashSet<RuinTemplate>> templates = new ArrayList<HashSet<RuinTemplate>>();
     private final ArrayList<Exclude> excluded = new ArrayList<Exclude>();
-    protected int[][] vars;
+    private int[][] vars;
 
-    protected int triesPerChunkNormal = 6, triesPerChunkNether = 6;
-    protected float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
+    private int triesPerChunkNormal = 6, triesPerChunkNether = 6;
+    private float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
     private int[] allowedDimensions = {-1, 0, 1};
 
-    public boolean loaded;
-    public boolean disableLogging;
-    public File saveFolder;
+    private boolean disableLogging;
+    private File saveFolder;
     
-    public float templateInstancesMinDistance = 75f;
-    public float anyRuinsMinDistance = 0f;
-    public static HashSet<Block> registeredTEBlocks = new HashSet<Block>();
+    private float templateInstancesMinDistance = 75f;
+    private float anyRuinsMinDistance = 0f;
+    private static HashSet<Block> registeredTEBlocks = new HashSet<Block>();
     
     private int templateCount;
 
-    public FileHandler(File worldPath)
+    /** Ruins config entry. Indicates whether to use sync or async loading/storing of templates. 
+     * Default: enabled*/
+    private boolean multithreaded = true;
+    
+    /** indicates whether configuration and templates have been successfully loaded. */
+    private boolean loaded;
+
+    /** indicates whether a critical error occurred during initialisation. */
+    private boolean error;
+    
+    /** log print stream during initialisation */
+	private PrintWriter log;
+	
+	/** minecraft base directory (aka. workDir) */
+	private File mcBasedir;
+
+    FileHandler(File worldPath)
     {
-        saveFolder = worldPath;
-        loaded = false;
+        saveFolder =  worldPath;
         templateCount = 0;
-        new LoaderThread().start();
-    }
+        loaded = false;
 
-    private class LoaderThread extends Thread
-    {
-        @Override
-        public void run()
-        {
-            // create the vars array fitting to the number of Biomes present
-            int biomeAmountPlusOne = RuinsMod.BIOME_NONE + 1;
-            vars = new int[3][biomeAmountPlusOne];
-            for (int j = 0; j < vars[0].length; j++)
-            {
-                vars[CHANCE][j] = 75;
-            }
-
-            // fill up the template arraylist
-            for (int fill = 0; fill < biomeAmountPlusOne; fill++)
-            {
-                templates.add(new HashSet<RuinTemplate>());
-            }
-
-            PrintWriter pw;
-            File basedir = null;
-            try
-            {
-                basedir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
-            }
-            catch (Exception e)
-            {
-                System.err.println("Could not access the main Minecraft mods directory; error: " + e);
-                System.err.println("The ruins mod could not be loaded.");
-                e.printStackTrace();
-                loaded = true;
-                return;
-            }
-            try
-            {
-                File log = new File(basedir, "ruins_log.txt");
-                if (log.exists())
-                {
-                    log.delete();
-                    log.createNewFile();
-                }
-                pw = new PrintWriter(new BufferedWriter(new FileWriter(log)));
-            }
-            catch (Exception e)
-            {
-                System.err.println("There was an error when creating the log file.");
-                System.err.println("The ruins mod could not be loaded.");
-                e.printStackTrace();
-                loaded = true;
-                return;
-            }
-
-            final File templPath = new File(basedir, "resources/ruins");
-            if (!templPath.exists())
-            {
-                System.out.println("Could not access the resources path for the ruins templates, file doesn't exist!");
-                System.err.println("The ruins mod could not be loaded.");
-                pw.close();
-                loaded = true;
-                return;
-            }
-
-            try
-            {
-                // load in the generic templates
-                // pw.println("Loading the generic ruins templates...");
-                addRuins(pw, new File(templPath, "generic"), RuinsMod.BIOME_NONE);
-                vars[COUNT][RuinsMod.BIOME_NONE] = templates.get(RuinsMod.BIOME_NONE).size();
-                recalcBiomeWeight(RuinsMod.BIOME_NONE);
-            }
-            catch (Exception e)
-            {
-                printErrorToLog(pw, e, "There was an error when loading the generic ruins templates:");
-            }
-
-            /*
-             * dynamic Biome config loader, gets all information straight from
-             * BiomeGenBase
-             */
-            BiomeGenBase bgb;
-            for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
-            {
-                bgb = BiomeGenBase.getBiomeGenArray()[x];
-                if (bgb != null)
-                {
-                    try
-                    {
-                        loadSpecificTemplates(pw, templPath, bgb.biomeID, bgb.biomeName);
-                        // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
-                    }
-                    catch (Exception e)
-                    {
-                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.biomeName + " ruins templates:");
-                    }
-                }
-            }
-
-            /*
-             * Find and load the excluded file. If this does not exist, no
-             * worries.
-             */
-            try
-            {
-                pw.println();
-                pw.println("Loading excluded list from: " + saveFolder.getCanonicalPath());
-                readExclusions(saveFolder, pw);
-            }
-            catch (Exception e)
-            {
-                pw.println("No exclusions found for this world.");
-            }
-
-            /*
-             * Now load in the main options file. All of these will revert to
-             * defaults if the file could not be loaded.
-             */
-            try
-            {
-                pw.println();
-                pw.println("Loading options from: " + saveFolder.getCanonicalPath());
-                readPerWorldOptions(saveFolder, pw);
-            }
-            catch (Exception e)
-            {
-                printErrorToLog(pw, e, "There was an error when loading the options file.  Defaults will be used instead.");
-            }
-
-            loaded = true;
-            pw.println("Ruins mod loaded successfully for world "+saveFolder+", template files: "+templateCount);
-            pw.flush();
-            pw.close();
+        //
+        // Initialisation is split into a synchronous part, initialising 
+        // essentials, and an optionally asynchronous part, loading templates.
+        //
+        error = !initEssentials();
+        if (!error) {
+	        if (multithreaded) loadAsync();
+	        else loadSync();
         }
     }
 
+    /**
+     * This method initialises the log and loads the configuration.
+     * @return Indicates whether initialisation was successful.
+     */
+    private boolean initEssentials() {
+        try
+        {
+            mcBasedir = new File(RuinsMod.getMinecraftBaseDir(), "mods");
+        }
+        catch (Throwable e)
+        {
+            System.err.println("Could not access the main Minecraft mods directory; error: " + e);
+            System.err.println("The ruins mod could not be loaded.");
+            e.printStackTrace();
+            return false;
+        }
+        
+        try
+        {
+            File logFile = new File(mcBasedir, "ruins_log.txt");
+            if (logFile.exists())
+            {
+                logFile.delete();
+                logFile.createNewFile();
+            }
+            log = new PrintWriter(new BufferedWriter(new FileWriter(logFile)));
+        }
+        catch (Throwable e)
+        {
+            System.err.println("There was an error when creating the log file.");
+            System.err.println("The ruins mod could not be loaded.");
+            e.printStackTrace();
+            return false;
+        }
+        
+        
+        try {
+	    	// create the vars array fitting to the number of Biomes present
+	        int biomeAmountPlusOne = RuinsMod.BIOME_NONE + 1;
+	        vars = new int[3][biomeAmountPlusOne];
+	        for (int j = 0; j < vars[0].length; j++)
+	        {
+	            vars[CHANCE][j] = 75;
+	        }
+	
+	        // initialise the template arraylist
+	        for (int fill = 0; fill < biomeAmountPlusOne; fill++)
+	        {
+	            templates.add(new HashSet<RuinTemplate>());
+	        }
+        } catch (Throwable e) {
+        	printErrorToLog(e, "failed to instantiate structures for biome specific data.");
+        	return false;
+        }
+
+        
+        /*
+         * Now load in the main options file. All of these will revert to
+         * defaults if the file could not be loaded.
+         */
+        try
+        {
+            log.println();
+            log.println("Loading options from: " + getSaveFolder().getCanonicalPath());
+            readPerWorldOptions(getSaveFolder(), log);
+        }
+        catch (Throwable e)
+        {
+            printErrorToLog(e, "There was an error when loading the options file.  Defaults will be used instead.");
+        }
+        return true;
+	}
+
+
+	private void loadAsync() {
+        // load asynchronously
+        new Thread(){
+        	public void run() {
+       			loadSync();
+        	}
+        }.start();
+    }
+    
+    synchronized
+    private void loadSync() {
+		try {
+			load();
+    	} finally {
+    		// we need to have a guaranteed result whether its success or error.
+    		if (!loaded) error = true;
+    		notifyAll();
+    	}
+    }
+    
+    
+    
+    synchronized
+    private void load()
+    {
+
+        final File templPath = new File(mcBasedir, "resources/ruins");
+        if (!templPath.exists())
+        {
+            error = true;
+            System.out.println("Could not access the resources path for the ruins templates, file doesn't exist!");
+            System.err.println("The ruins mod could not be loaded.");
+            log.close();
+            return;
+        }
+
+        try
+        {
+            // load in the generic templates
+            // pw.println("Loading the generic ruins templates...");
+            addRuins(log, new File(templPath, "generic"), RuinsMod.BIOME_NONE);
+            vars[COUNT][RuinsMod.BIOME_NONE] = templates.get(RuinsMod.BIOME_NONE).size();
+            recalcBiomeWeight(RuinsMod.BIOME_NONE);
+        }
+        catch (Throwable e)
+        {
+            printErrorToLog(e, "There was an error when loading the generic ruins templates:");
+        }
+
+        
+        /*
+         * dynamic Biome config loader, gets all information straight from
+         * BiomeGenBase
+         */
+        BiomeGenBase bgb;
+        for (int x = 0; x < BiomeGenBase.getBiomeGenArray().length; x++)
+        {
+            bgb = BiomeGenBase.getBiomeGenArray()[x];
+            if (bgb != null)
+            {
+                try
+                {
+                    loadSpecificTemplates(log, templPath, bgb.biomeID, bgb.biomeName);
+                    // log.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
+                }
+                catch (Throwable e)
+                {
+                    printErrorToLog(e, "There was an error when loading the " + bgb.biomeName + " ruins templates:");
+                }
+            }
+        }
+
+        /*
+         * Find and load the excluded file. If this does not exist, no
+         * worries.
+         */
+        try
+        {
+            log.println();
+            log.println("Loading excluded list from: " + getSaveFolder().getCanonicalPath());
+            readExclusions(getSaveFolder(), log);
+        }
+        catch (Throwable e)
+        {
+            log.println("No exclusions found for this world.");
+        }
+
+        loaded = true;
+
+        log.println("Ruins mod loaded successfully for world "+getSaveFolder()+", template files: "+templateCount);
+        log.close(); // close flushes
+    }
+
+
+    synchronized
+    public void waitLoaded() throws InterruptedException {
+    	while(!loaded && !error) {
+    		wait();
+    	}
+	}
+
+    synchronized
     public RuinTemplate getTemplate(Random random, int biome)
     {
         try
@@ -201,13 +267,13 @@ public class FileHandler
             }
             return retval;
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             return null;
         }
     }
 
-    public boolean useGeneric(Random random, int biome)
+	public boolean useGeneric(Random random, int biome)
     {
         return biome == RuinsMod.BIOME_NONE || random.nextInt(100) + 1 >= vars[CHANCE][biome];
     }
@@ -238,7 +304,7 @@ public class FileHandler
         }
     }
 
-    public void writeExclusions(File dir) throws Exception
+    private void writeExclusions(File dir) throws Exception
     {
         final File file = new File(dir, "excl.txt");
         final PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
@@ -262,12 +328,12 @@ public class FileHandler
         recalcBiomeWeight(biome);
     }
 
-    private void printErrorToLog(PrintWriter pw, Exception e, String msg)
+    private void printErrorToLog(Throwable e, String msg)
     {
-        pw.println();
-        pw.println(msg);
-        e.printStackTrace(pw);
-        pw.flush();
+        log.println();
+        log.println(msg);
+        e.printStackTrace(log);
+        log.flush();
     }
 
     private void recalcBiomeWeight(int biome)
@@ -293,6 +359,19 @@ public class FileHandler
         while (read != null)
         {
             check = read.split("=");
+            if (check[0].equals("multi_threaded"))
+            {
+            	int v;
+            	try {
+            		v = Integer.parseInt(check[1]);
+            	} catch (Throwable e) {
+            		log.println("error reading value for config property multi_threaded");
+            		e.printStackTrace(log);
+            		v = 1;
+            	}
+                multithreaded = (v == 0 ? false : true);
+                ruinsLog.println("multi_threaded = " + multithreaded);
+            }
             if (check[0].equals("tries_per_chunk_normal"))
             {
                 triesPerChunkNormal = Integer.parseInt(check[1]);
@@ -337,13 +416,15 @@ public class FileHandler
             if (check[0].equals("teblocks") && check.length > 1)
             {
                 String[] blocks = check[1].split(",");
-                for (String b : blocks)
-                {
-                    Block bl = GameData.getBlockRegistry().getObject(b);
-                    if (bl != Blocks.air)
-                    {
-                        registeredTEBlocks.add(bl);
-                    }
+                synchronized (registeredTEBlocks) {
+	                for (String b : blocks)
+	                {
+	                    Block bl = GameData.getBlockRegistry().getObject(b);
+	                    if (bl != Blocks.air)
+	                    {
+	                        registeredTEBlocks.add(bl);
+	                    }
+	                }
                 }
             }
 
@@ -364,7 +445,7 @@ public class FileHandler
                         }
                     }
 
-                    if (!found && !disableLogging)
+                    if (!found && !isDisableLogging())
                     {
                         System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
                     }
@@ -382,6 +463,7 @@ public class FileHandler
         final BufferedReader br = new BufferedReader(new FileReader(file));
         String read = br.readLine();
         String[] check;
+
         while (read != null)
         {
             if (read.startsWith("excl="))
@@ -406,6 +488,7 @@ public class FileHandler
         RuinTemplate r;
         String candidate;
         BiomeGenBase bgb;
+
         if (path.listFiles() != null)
         {
             for (File f : path.listFiles())
@@ -437,7 +520,7 @@ public class FileHandler
                     // pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                     templateCount++;
                 }
-                catch (Exception e)
+                catch (Throwable e)
                 {
                     pw.println();
                     pw.println("There was a problem loading the file: " + f.getName());
@@ -450,6 +533,7 @@ public class FileHandler
             pw.println("Did not find any Building data for " + path + ", creating empty folder for it: " + (path.mkdir() ? "success" : "failed"));
         }
         pw.flush();
+        
     }
     
     public boolean allowsDimension(int dimensionId)
@@ -538,6 +622,11 @@ public class FileHandler
         pw.println("# tileentity blocks, those (nonvanilla)blocks which cannot function without storing their nbt data, full name as stick dictates, seperated by commata");
         pw.println("teblocks=");
         pw.println();
+        pw.println("# whether to use asynchronous initialisation and save or not.");
+        pw.println("# 1 := enabled, 0 := disabled.");
+        pw.println("multi_threaded=1");
+        pw.println();
+
         // print all the biomes!
         for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
         {
@@ -549,5 +638,53 @@ public class FileHandler
         pw.flush();
         pw.close();
     }
+
+	public float getAnyRuinsMinDistance() {
+		return anyRuinsMinDistance;
+	}
+
+	public float getTemplateInstancesMinDistance() {
+		return templateInstancesMinDistance;
+	}
+
+	public boolean isDisableLogging() {
+		return disableLogging;
+	}
+
+	public int getTriesPerChunkNormal() {
+		return triesPerChunkNormal;
+	}
+
+	public float getChanceToSpawnNormal() {
+		return chanceToSpawnNormal;
+	}
+
+	public int getTriesPerChunkNether() {
+		return triesPerChunkNether;
+	}
+
+	public float getChanceToSpawnNether() {
+		return chanceToSpawnNether;
+	}
+
+	public HashSet<Block> getRegisteredTEBlocks() {
+		return registeredTEBlocks;
+	}
+
+	public File getSaveFolder() {
+		return saveFolder;
+	}
+
+	public boolean isMultiThreaded() {
+		return multithreaded;
+	}
+	
+	public static boolean isRegisteredTEBlock(Block block) {
+		synchronized (FileHandler.registeredTEBlocks) {
+			return FileHandler.registeredTEBlocks.contains(block);
+		}
+	}
+
+
     
 }
