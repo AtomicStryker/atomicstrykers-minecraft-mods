@@ -22,7 +22,7 @@ rule1=0,100,preserveBlock
 rule2=0,100,cobblestone,mossy_cobblestone
 rule3=0,100,stone_slab
 rule4=0,100,MobSpawner:Zombie
-rule5=0,100,ChestGenHook:chests/pyramid_jungle_chest:1-2,ChestGenHook:chests/pyramid_desert_chest:1-2
+rule5=0,100,ChestGenHook:chests/jungle_temple:1-2,ChestGenHook:chests/desert_pyramid:1-2
 
 layer
 1,1,2,2,2,2,2,2,2,2,2,2,2,1
