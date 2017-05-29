@@ -19,7 +19,7 @@ rule1=0,100,dirt
 rule2=2,50,vine-1
 rule3=2,50,vine-8
 rule4=0,100,mossy_cobblestone
-rule5=0,75,MobSpawner:CaveSpider,MobSpawner:Spider
+rule5=0,75,MobSpawner:Cave_Spider,MobSpawner:Spider
 rule6=2,50,vine-2
 
 
