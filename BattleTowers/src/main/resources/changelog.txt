@@ -1,3 +1,6 @@
+1.5.7
+- stops listening to worldgen while performing manual tower generation or deletion, prevents side effect deadlocks
+
 1.5.6
 - fixed golem healing from death when "losing target"
 - fixed various problems (such as infinite explosions) from above problem
