@@ -8,7 +8,7 @@ uniqueMinDistance=3000
 
 embed_into_distance=0
 
-unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone
+unacceptable_target_blocks=flowing_water,water,flowing_lava,lava,Natura:Cloud,red_mushroom_block,brown_mushroom_block,planks,cobblestone,end_stone,obsidian,purpur_block,iron_bars,purpur_slab,purpur_pillar,netherrack,soul_sand,quartz_ore
 
 dimensions=7,14,14
 allowable_overhang=1
