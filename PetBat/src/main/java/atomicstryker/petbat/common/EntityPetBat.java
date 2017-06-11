@@ -1,5 +1,7 @@
 package atomicstryker.petbat.common;
 
+import javax.annotation.Nullable;
+
 import atomicstryker.petbat.common.batAI.PetBatAIAttack;
 import atomicstryker.petbat.common.batAI.PetBatAIFindSittingSpot;
 import atomicstryker.petbat.common.batAI.PetBatAIFlying;
@@ -317,7 +319,8 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    protected SoundEvent getHurtSound()
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource damageSource)
     {
         return PetBatMod.soundHit;
     }

@@ -17,18 +17,18 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for PlayerControllerMP Transformation */
 
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bnp";
-    private final String playerControllerMPJavaClassNameO = "bnp";
+    private final String playerControllerMPClassNameO = "bry";
+    private final String playerControllerMPJavaClassNameO = "bry";
 
     /* onPlayerDamageBlock / func_180512_c */
     private final String playerControllerMPtargetMethodNameO = "b";
 
     /* method desc of onPlayerDamageBlock / func_180512_c */
-    private final String methodDescO = "(Lco;Lcv;)Z";
+    private final String methodDescO = "(Let;Lfa;)Z";
     private final String methodDesc = "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)Z";
 
     /* method desc of call to client hook */
-    private final String methodDescCallO = "(Lco;F)F";
+    private final String methodDescCallO = "(Let;F)F";
     private final String methodDescCall = "(Lnet/minecraft/util/math/BlockPos;F)F";
 
     /* curBlockDamageMP / field_78770_f */

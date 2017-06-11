@@ -5,8 +5,8 @@ import org.lwjgl.opengl.GL11;
 import atomicstryker.minions.client.render.LineColor;
 import atomicstryker.minions.client.render.LineInfo;
 import atomicstryker.minions.common.util.Vector3;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.Vec3d;
 
@@ -43,7 +43,7 @@ public class Render3DBox
         {
             tempColor.prepareRender();
 
-            VertexBuffer buf = Tessellator.getInstance().getBuffer();
+            BufferBuilder buf = Tessellator.getInstance().getBuffer();
 
             // Draw bottom face
             buf.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);

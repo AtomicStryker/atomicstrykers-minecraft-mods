@@ -1,5 +1,7 @@
 package atomicstryker.battletowers.common;
 
+import javax.annotation.Nullable;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -179,7 +181,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
         if (scoreValue > 0 && entity != null)
         {
-            entity.addToPlayerScore(this, scoreValue);
+        	// addToPlayerScore
+            entity.func_191956_a(this, scoreValue, var1);
         }
         if (!world.isRemote)
         {
@@ -423,7 +426,8 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     }
 
     @Override
-    protected SoundEvent getHurtSound()
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource damageSource)
     {
         return AS_BattleTowersCore.soundGolemHurt;
     }

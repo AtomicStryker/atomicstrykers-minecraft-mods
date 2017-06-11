@@ -1,9 +1,9 @@
 package atomicstryker.battletowers.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -34,7 +34,7 @@ public class AS_RenderFireball extends Render<Entity>
         GlStateManager.scale(this.scale, this.scale, this.scale);
         TextureAtlasSprite textureatlassprite = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(Items.FIRE_CHARGE);
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer worldrenderer = tessellator.getBuffer();
+        BufferBuilder worldrenderer = tessellator.getBuffer();
         float f = textureatlassprite.getMinU();
         float f1 = textureatlassprite.getMaxU();
         float f2 = textureatlassprite.getMinV();
