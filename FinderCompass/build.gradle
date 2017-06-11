@@ -8,7 +8,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 plugins {
@@ -24,8 +24,8 @@ curseforge {
     project {
         id = '227885'
         releaseType = 'release'
-        addGameVersion '1.11.2'
-        mainArtifact(file('build/libs/FinderCompass-1.11.2.jar')) {
+        addGameVersion '1.12'
+        mainArtifact(file('build/libs/FinderCompass-1.12.jar')) {
           displayName = 'Finder Compass'
         }
     }

@@ -8,10 +8,9 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
-
 plugins {
     id 'com.matthewprenger.cursegradle' version '1.0.1'
 }
@@ -25,8 +24,8 @@ curseforge {
     project {
         id = '227873'
         releaseType = 'release'
-        addGameVersion '1.11.2'
-        mainArtifact(file('build/distributions/Ruins-1.11.2.zip')) {
+        addGameVersion '1.12'
+        mainArtifact(file('build/distributions/Ruins-1.12.zip')) {
             displayName = 'Ruins (Structure Spawning System)'
         }
     }
