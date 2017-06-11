@@ -18,7 +18,10 @@ public class ItemConfigHelper
             try
             {
                 String[] duo = s.split("=");
-                dataMap.put(fromString(duo[0]), duo.length > 1 ? Integer.parseInt(duo[1]) : defaultValue);
+                ItemData id = fromString(duo[0]);
+                int val = duo.length > 1 ? Integer.parseInt(duo[1]) : defaultValue;
+                dataMap.put(id, val);
+                System.out.println(String.format("Instanced Dynamic Lights config: %s with light value [%d]", id.toString(), val));
             }
             catch (Exception e)
             {
@@ -82,7 +85,7 @@ public class ItemConfigHelper
         final int startMeta;
         final int endMeta;
         
-        public ItemData(String name, int startmetarange, int endmetarange)
+        private ItemData(String name, int startmetarange, int endmetarange)
         {
             nameOf = name;
             startMeta = startmetarange;
@@ -92,7 +95,7 @@ public class ItemConfigHelper
         @Override
         public String toString()
         {
-            return nameOf+" "+startMeta+" "+endMeta;
+            return String.format("Item [%s], meta [%d] to [%d]", nameOf, startMeta, endMeta);
         }
         
         public boolean matches(String name, int meta)
