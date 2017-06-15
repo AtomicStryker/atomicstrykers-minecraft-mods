@@ -41,6 +41,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     private int towerID;
     private int drops;
     private int attackCounter;
+    private int noTargetCountdown;
 
     private int towerX = -1;
     private int towerY = -1;
@@ -124,14 +125,14 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     protected void entityInit()
     {
         super.entityInit();
-        dataManager.register(AWAKE, true); // dormant dataManager
+        dataManager.register(AWAKE, false); // dormant dataManager
     }
 
     public void setDormant()
     {
         if (!world.isRemote && !isDead && getHealth() > 0F)
         {
-            dataManager.set(AWAKE, true);
+            dataManager.set(AWAKE, false);
         }
     }
 
@@ -141,17 +142,18 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         {
             if (getIsDormant())
             {
+                noTargetCountdown = 90;
                 world.playSound(null, getPosition(), AS_BattleTowersCore.soundGolemAwaken, SoundCategory.HOSTILE, getSoundVolume() * 2.0F,
                         ((rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
             }
 
-            dataManager.set(AWAKE, false);
+            dataManager.set(AWAKE, true);
         }
     }
 
     public boolean getIsDormant()
     {
-        return dataManager.get(AWAKE);
+        return dataManager.get(AWAKE) == false;
     }
 
     @Override
@@ -181,7 +183,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
 
         if (scoreValue > 0 && entity != null)
         {
-        	// addToPlayerScore
+            // addToPlayerScore
             entity.func_191956_a(this, scoreValue, var1);
         }
         if (!world.isRemote)
@@ -234,13 +236,17 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
         {
             if (getAttackTarget() == null || !getAttackTarget().isEntityAlive())
             {
-                setHealth(getMaxHealth());
-                rageCounter = 125;
-                explosionAttack = 0;
-
-                if (this.onGround)
+                noTargetCountdown--;
+                if (noTargetCountdown < 1)
                 {
-                    this.setDormant();
+                    setHealth(getMaxHealth());
+                    rageCounter = 125;
+                    explosionAttack = 0;
+
+                    if (this.onGround)
+                    {
+                        this.setDormant();
+                    }
                 }
             }
             else if (rageCounter <= 0 && explosionAttack == 0)
@@ -271,6 +277,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                 rageCounter = 125;
                 explosionAttack = 0;
             }
+            noTargetCountdown = 90;
         }
 
         checkForVictim();
