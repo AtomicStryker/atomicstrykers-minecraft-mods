@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "simplyhaxflying", name = "Simply Hax Flying", version = "1.11")
+@Mod(modid = "simplyhaxflying", name = "Simply Hax Flying", version = "1.12")
 public class SimplyHaxFlying
 {
 

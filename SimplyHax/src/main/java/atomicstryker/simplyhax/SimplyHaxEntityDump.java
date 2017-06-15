@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod(modid = "simplyhaxentitydump", name = "Simply Hax Entity Dump", version = "1.11")
+@Mod(modid = "simplyhaxentitydump", name = "Simply Hax Entity Dump", version = "1.12")
 public class SimplyHaxEntityDump
 {
 

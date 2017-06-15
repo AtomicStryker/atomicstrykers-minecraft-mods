@@ -1,3 +1,6 @@
+1.12
+- updated for MC 1.12
+
 1.10
 - updated for MC 1.10
 
