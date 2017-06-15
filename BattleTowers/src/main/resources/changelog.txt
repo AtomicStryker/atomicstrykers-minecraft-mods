@@ -1,3 +1,6 @@
+1.5.8
+- tentative fix for golems falling through floor bug when hit by a reflected fireball
+
 1.5.7
 - stops listening to worldgen while performing manual tower generation or deletion, prevents side effect deadlocks
 

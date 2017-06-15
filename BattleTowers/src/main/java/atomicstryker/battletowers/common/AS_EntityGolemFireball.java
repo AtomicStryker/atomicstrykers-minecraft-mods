@@ -98,7 +98,9 @@ public class AS_EntityGolemFireball extends Entity
             {
                 if (collisionPosition.entityHit != null)
                 {
-                    collisionPosition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity), 0);
+                    // this causes the fall through floor bug?!?!?!
+                    // collisionPosition.entityHit.attackEntityFrom(DamageSource.causeMobDamage(shooterEntity),
+                    // 0);
                 }
                 world.newExplosion(null, posX, posY, posZ, 1.0F, true, true);
             }
