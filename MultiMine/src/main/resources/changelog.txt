@@ -1,3 +1,6 @@
+1.5.7
+- disables Multi Mine on blocks with custom breaking by default (Skulls, Signs, Chests..)
+
 1.5.6 hotfix (compatible with 1.5.6)
 - fixes Skull Blocks dropping twice
 

@@ -86,6 +86,17 @@ public class MultiMineClient
     public float eventPlayerDamageBlock(BlockPos pos, float blockCompletion)
     {
         thePlayer = FMLClientHandler.instance().getClient().player;
+
+        /*
+         * completely disable multi mine on blocks with custom breaking, such as
+         * skulls, chests, signs
+         */
+        IBlockState state = thePlayer.world.getBlockState(pos);
+        if (state.hasCustomBreakingProgress())
+        {
+            return blockCompletion;
+        }
+
         boolean cachedProgressWasAhead = false;
         // see if we have multimine completion cached somewhere
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
