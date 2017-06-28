@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -39,14 +40,18 @@ public class RuinTemplate
     private boolean preventRotation = false;
     private final ArrayList<Integer> bonemealMarkers;
     private final ArrayList<AdjoiningTemplateData> adjoiningTemplates;
+    
+    private static Hashtable<String,RuinTemplate> knownTemplates = new Hashtable<>();
 
     private class AdjoiningTemplateData
     {
-        RuinTemplate adjoiningTemplate;
+        ArrayList<RuinTemplate> adjoiningTemplates;
         int relativeX;
         int acceptableY;
         int relativeZ;
         float spawnchance;
+        boolean useRelativeY;
+        int relativeY;
     }
 
     public RuinTemplate(PrintWriter out, String filename, String simpleName, boolean debug) throws Exception
@@ -465,26 +470,30 @@ public class RuinTemplate
 
         for (AdjoiningTemplateData ad : adjoiningTemplates)
         {
-            debugPrinter.printf("Considering to spawn adjoining %s of Ruin %s...\n", ad.adjoiningTemplate.getName(), getName());
+        	RuinTemplate adTemplate = ad.adjoiningTemplates.get((int)(world.rand.nextFloat() * ad.adjoiningTemplates.size()));
+        	
+            debugPrinter.printf("Considering to spawn adjoining %s of Ruin %s...\n", adTemplate.getName(), getName());
             float randres = (world.rand.nextFloat() * 100);
             if (randres < ad.spawnchance)
             {
                 int newrot = world.rand.nextInt(4);
                 int targetX = xBase + ad.relativeX;
                 int targetZ = zBase + ad.relativeZ;
-                int targetY = ad.adjoiningTemplate.checkArea(world, targetX, y, targetZ, newrot, ad.acceptableY);
-                if (targetY > 0 && Math.abs(y - targetY) <= ad.acceptableY)
+                int targetY;
+                if (ad.useRelativeY) targetY = y + ad.relativeY;
+                else targetY = adTemplate.checkArea(world, targetX, y, targetZ, newrot, ad.acceptableY);
+                if (targetY > 0 && targetY < world.getActualHeight() && (ad.useRelativeY || Math.abs(y - targetY) <= ad.acceptableY))
                 {
-                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, targetY, targetZ, newrot, false, true)))
+                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, adTemplate, targetX, targetY, targetZ, newrot, false, true)))
                     {
                         debugPrinter.printf("Forge Event came back negative, no spawn\n");
                         continue;
                     }
-                    debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
-                    int finalY = ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot);
+                    debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", adTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
+                    int finalY = adTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot);
                     if (finalY > 0)
                     {
-                        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, finalY, targetZ, newrot, false, false));
+                        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, adTemplate, targetX, finalY, targetZ, newrot, false, false));
                     }
                 }
                 else
@@ -743,22 +752,41 @@ public class RuinTemplate
                 }
                 else if (line.startsWith("adjoining_template"))
                 {
-                    // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
+                    // syntax: adjoining_template=<template>[,<template>[,..]];<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>[;<useRelativeY>;<relativeY>]
                     String[] vals = line.split("=")[1].split(";");
+                    String[] templateNames = vals[0].split(",");
 
-                    File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + vals[0] + ".tml");
-                    if (file.exists() && file.canRead())
+                    AdjoiningTemplateData data = new AdjoiningTemplateData();
+                    data.adjoiningTemplates = new ArrayList<RuinTemplate>();
+                    data.relativeX = Integer.parseInt(vals[1]);
+                    data.acceptableY = Integer.parseInt(vals[2]);
+                    data.relativeZ = Integer.parseInt(vals[3]);
+                    data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+                    data.useRelativeY = vals.length > 6 ? Integer.parseInt(vals[5]) == 1 : false;
+                    data.relativeY = vals.length > 6 ? Integer.parseInt(vals[6]) : 0;
+
+                    for(String templateName : templateNames)
                     {
-                        RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
-                        AdjoiningTemplateData data = new AdjoiningTemplateData();
-                        data.adjoiningTemplate = adjTempl;
-                        data.relativeX = Integer.parseInt(vals[1]);
-                        data.acceptableY = Integer.parseInt(vals[2]);
-                        data.relativeZ = Integer.parseInt(vals[3]);
-                        data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
-
-                        adjoiningTemplates.add(data);
+                    	if (knownTemplates.containsKey(templateName))
+                    	{
+                    		data.adjoiningTemplates.add(knownTemplates.get(templateName));
+                    	}
+                    	else
+                    	{
+		                    File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + templateName + ".tml");
+		                    if (file.exists() && file.canRead())
+		                    {
+		                        RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
+		                        knownTemplates.put(templateName, adjTempl);
+		                        data.adjoiningTemplates.add(adjTempl);
+		                    }
+                    	}
                     }
+                    
+                    if (data.adjoiningTemplates.size() > 0)
+                	{
+                    	adjoiningTemplates.add(data);
+                	}
                 }
             }
         }
