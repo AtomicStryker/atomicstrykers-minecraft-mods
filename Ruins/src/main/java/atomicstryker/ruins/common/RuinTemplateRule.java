@@ -1192,7 +1192,7 @@ public class RuinTemplateRule
         {
             if (item instanceof ItemBlock)
             {
-                return ((ItemBlock) item).block;
+                return ((ItemBlock) item).getBlock();
             }
             return item;
         }

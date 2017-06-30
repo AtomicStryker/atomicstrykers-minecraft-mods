@@ -172,10 +172,10 @@ EAST-4-3
 WEST-3-4
 WEST-4-3
 
-# Hay bale/block (using log logic); added 2014-10-23 by Jordan_Greywolf 
+# Hay bale/block and bone block (using log logic); added 2014-10-23 by Jordan_Greywolf, updated by Jordan_Peacock 
 # 4 = Hay_Block: E/W
 # 8 = Hay_Block: N/S
-BlockID=hay_block
+BlockID=hay_block;bone_block
 
 EAST-4-8
 EAST-8-4
@@ -280,3 +280,23 @@ WEST-4-7
 WEST-5-4
 WEST-6-5
 WEST-7-6
+
+# glazed terracotta in 1.12 (added 6/20/2017), by Jordan_Peacock
+# N E S W = 0 1 2 3
+
+BlockID=white_glazed_terracotta;orange_glazed_terracotta;magenta_glazed_terracotta;light_blue_glazed_terracotta;yellow_glazed_terracotta;lime_glazed_terracotta;pink_glazed_terracotta;gray_glazed_terracotta;silver_glazed_terracotta;cyan_glazed_terracotta;purple_glazed_terracotta;blue_glazed_terracotta;brown_glazed_terracotta;green_glazed_terracotta;red_glazed_terracotta;black_glazed_terracotta
+
+EAST-0-1
+EAST-1-2
+EAST-2-3
+EAST-3-0
+
+SOUTH-0-2
+SOUTH-1-3
+SOUTH-2-0
+SOUTH-3-1
+
+WEST-0-3
+WEST-1-0
+WEST-2-1
+WEST-3-2

@@ -300,7 +300,7 @@ class World2TemplateParser extends Thread
                             if (stack.getItem() instanceof ItemBlock)
                             {
                                 ItemBlock itemBlock = (ItemBlock) stack.getItem();
-                                ident = Block.REGISTRY.getNameForObject(itemBlock.block).toString();
+                                ident = Block.REGISTRY.getNameForObject(itemBlock.getBlock()).toString();
                             }
                             else
                             {
