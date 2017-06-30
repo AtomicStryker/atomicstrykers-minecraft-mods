@@ -197,10 +197,10 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
             }
 
             // if hit by owner
-            if (source.getEntity() != null && source.getEntity().getName().equals(getOwnerName()))
+            if (source.getTrueSource() != null && source.getTrueSource().getName().equals(getOwnerName()))
             {
                 // and in combat with something else
-                if (source.getEntity() != getAttackTarget())
+                if (source.getTrueSource() != getAttackTarget())
                 {
                     // ignore the hit
                     return true;

@@ -21,7 +21,7 @@ public class PetBatAIOwnerAttacks extends EntityAITarget
     {
         if (batEnt.getOwnerEntity() != null)
         {
-            theTarget = batEnt.getOwnerEntity().getLastAttacker();
+            theTarget = batEnt.getOwnerEntity().getLastAttackedEntity();
             if (theTarget instanceof EntityPetBat)
             {
                 EntityPetBat otherBat = (EntityPetBat) theTarget;
@@ -38,7 +38,7 @@ public class PetBatAIOwnerAttacks extends EntityAITarget
     }
 
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return (theTarget != null && theTarget.isEntityAlive());
     }

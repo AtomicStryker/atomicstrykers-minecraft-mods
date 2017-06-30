@@ -308,10 +308,10 @@ public class PetBatMod implements IProxy
             // System.out.println("PlayerDropsEvent iterating over drop " +
             // itemDropped);
             EntityItem foundItem;
-            final Item id = itemDropped.getEntityItem().getItem();
+            final Item id = itemDropped.getItem().getItem();
             if (id == itemPocketedBat)
             {
-                final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.world, itemDropped.getEntityItem(), event.getPlayer());
+                final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(itemDropped.world, itemDropped.getItem(), event.getPlayer());
                 if (bat.getHealth() > 1)
                 {
                     bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
@@ -329,7 +329,7 @@ public class PetBatMod implements IProxy
                         if (o instanceof EntityItem)
                         {
                             foundItem = (EntityItem) o;
-                            if (foundItem.getEntityItem().getItem() == TAME_ITEM_ID)
+                            if (foundItem.getItem().getItem() == TAME_ITEM_ID)
                             {
                                 bat.setPosition(itemDropped.posX, itemDropped.posY, itemDropped.posZ);
                                 itemDropped.world.spawnEntity(bat);
@@ -337,8 +337,8 @@ public class PetBatMod implements IProxy
                                                                    // entity
                                                                    // health
                                 event.setCanceled(true);
-                                foundItem.getEntityItem().shrink(1);
-                                if (foundItem.getEntityItem().getCount() < 1)
+                                foundItem.getItem().shrink(1);
+                                if (foundItem.getItem().getCount() < 1)
                                 {
                                     foundItem.setDead(); // destroy pie item
                                 }
@@ -365,12 +365,12 @@ public class PetBatMod implements IProxy
                     else if (o instanceof EntityItem)
                     {
                         foundItem = (EntityItem) o;
-                        if (foundItem.getEntityItem().getItem() == itemPocketedBat) // inert
-                                                                                    // bat
-                                                                                    // lying
-                                                                                    // around
+                        if (foundItem.getItem().getItem() == itemPocketedBat) // inert
+                                                                              // bat
+                                                                              // lying
+                                                                              // around
                         {
-                            final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.world, foundItem.getEntityItem(), event.getPlayer());
+                            final EntityPetBat bat = ItemPocketedPetBat.toBatEntity(foundItem.world, foundItem.getItem(), event.getPlayer());
                             bat.setPosition(foundItem.posX, foundItem.posY, foundItem.posZ);
                             foundItem.world.spawnEntity(bat);
                             bat.setHealth(bat.getMaxHealth()); // set full
@@ -396,7 +396,7 @@ public class PetBatMod implements IProxy
         final Iterator<EntityItem> iter = event.getDrops().iterator();
         while (iter.hasNext())
         {
-            if (iter.next().getEntityItem().getItem() == itemBatFlute)
+            if (iter.next().getItem().getItem() == itemBatFlute)
             {
                 iter.remove();
             }
@@ -433,7 +433,8 @@ public class PetBatMod implements IProxy
 
     public ItemStack removeFluteFromPlayer(EntityPlayer player, String petName)
     {
-        for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
+        for (int i = 0; i < player.inventory.mainInventory.size(); i++)
+        {
             ItemStack item = player.inventory.mainInventory.get(i);
             if (item.getItem() == itemBatFlute)
             {

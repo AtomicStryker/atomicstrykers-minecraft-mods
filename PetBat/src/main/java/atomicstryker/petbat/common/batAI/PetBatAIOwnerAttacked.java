@@ -21,7 +21,7 @@ public class PetBatAIOwnerAttacked extends EntityAITarget
     {
         if (batEnt.getOwnerEntity() != null)
         {
-            theOwnerAttacker = batEnt.getOwnerEntity().getAITarget();
+            theOwnerAttacker = batEnt.getOwnerEntity().getRevengeTarget();
             return theOwnerAttacker != batEnt.getOwnerEntity() && isSuitableTarget(theOwnerAttacker, false);
         }
         

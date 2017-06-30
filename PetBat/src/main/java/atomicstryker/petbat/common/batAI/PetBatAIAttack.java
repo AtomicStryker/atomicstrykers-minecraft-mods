@@ -46,7 +46,7 @@ public class PetBatAIAttack extends EntityAIBase
     }
     
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         if (entityTarget instanceof EntityPlayer)
         {
@@ -58,7 +58,7 @@ public class PetBatAIAttack extends EntityAIBase
             }
         }
 
-        return entityTarget != null && entityTarget.isEntityAlive() || super.continueExecuting();
+        return entityTarget != null && entityTarget.isEntityAlive() || super.shouldContinueExecuting();
 
     }
     
@@ -85,7 +85,7 @@ public class PetBatAIAttack extends EntityAIBase
 
         double maxReach = petBat.width * petBat.width * 5.0D;
         if (petBat.getDistanceSq(entityTarget.posX, entityTarget.getEntityBoundingBox().maxY, entityTarget.posZ) <= maxReach
-                || (entityTarget.getEntityBoundingBox() != null && petBat.getEntityBoundingBox().intersectsWith(entityTarget.getEntityBoundingBox())))
+                || (entityTarget.getEntityBoundingBox() != null && petBat.getEntityBoundingBox().intersects(entityTarget.getEntityBoundingBox())))
         {
             if (entityTarget instanceof EntityItem)
             {
@@ -96,14 +96,14 @@ public class PetBatAIAttack extends EntityAIBase
                 else if (attackTick == 1)
                 {
                     entityTarget.setDead();
-                    displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 16);
+                    displayEatingEffects(((EntityItem) entityTarget).getItem(), 16);
                     petBat.world.playSound(null, new BlockPos(petBat), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.AMBIENT, 0.5F, petBat.getRNG().nextFloat() * 0.1F + 0.9F);
                     petBat.heal(18);
                     petBat.setFoodAttackTarget(null);
                 }
                 else if (attackTick % 3 == 0)
                 {
-                    displayEatingEffects(((EntityItem) entityTarget).getEntityItem(), 5);
+                    displayEatingEffects(((EntityItem) entityTarget).getItem(), 5);
                 }
             }
             else
@@ -136,7 +136,7 @@ public class PetBatAIAttack extends EntityAIBase
             var5.rotatePitch(-petBat.rotationPitch * (float)Math.PI / 180.0F);
             var5.rotateYaw(-petBat.rotationYaw * (float)Math.PI / 180.0F);
             var5 = var5.addVector(petBat.posX, petBat.posY + (double)petBat.getEyeHeight(), petBat.posZ);
-            petBat.world.spawnParticle(EnumParticleTypes.ITEM_CRACK, var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord, Item.getIdFromItem(item.getItem()),
+            petBat.world.spawnParticle(EnumParticleTypes.ITEM_CRACK, var5.x, var5.y, var5.z, var4.x, var4.y + 0.05D, var4.z, Item.getIdFromItem(item.getItem()),
                     item.getMetadata());
         }
 
