@@ -73,7 +73,7 @@ public class Vector3
 
 	public static Vector3 fromVec3(Vec3d vec)
 	{
-		return new Vector3(vec.xCoord, vec.yCoord, vec.zCoord);
+		return new Vector3(vec.x, vec.y, vec.z);
 	}
 
 	public Vector3 set(double d, double d1, double d2)

@@ -301,7 +301,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         Chunk curChunk = world.getChunkFromBlockCoords(new BlockPos((int) posX, 0, (int) posZ));
         if (chunkLoadingTicket != null && curChunk != null && lastChunk != null)
         {
-            if (curChunk.xPosition != lastChunk.xPosition || curChunk.zPosition != lastChunk.zPosition)
+            if (curChunk.x != lastChunk.x || curChunk.z != lastChunk.z)
             {
                 ForgeChunkManager.unforceChunk(chunkLoadingTicket, lastChunk.getPos());
                 lastChunk = curChunk;
@@ -396,7 +396,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
                     if (nextUp != null)
                     {
                         ((AS_PathEntity) getNavigator().getPath()).advancePathIndex();
-                        this.setPositionAndUpdate(nextUp.xCoord + 0.5, nextUp.yCoord + 0.5, nextUp.zCoord + 0.5);
+                        this.setPositionAndUpdate(nextUp.x + 0.5, nextUp.y + 0.5, nextUp.z + 0.5);
                         this.motionX = 0;
                         this.motionZ = 0;
                         pathPlanner.getPath(doubleToInt(this.posX), doubleToInt(this.posY) - 1, doubleToInt(this.posZ), currentTarget.getX(), currentTarget.getY(), currentTarget.getZ(), false);
@@ -507,18 +507,18 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         {
             EntityItem itemEnt = (EntityItem) collider;
 
-            if (itemEnt.getEntityItem() != null)
+            if (itemEnt.getItem() != null)
             {
                 if (itemEnt.ticksExisted > 200)
                 {
-                    if (this.inventory.addItemStackToInventory(itemEnt.getEntityItem()))
+                    if (this.inventory.addItemStackToInventory(itemEnt.getItem()))
                     {
                         collider.setDead();
                     }
                     else
                     {
                         this.inventoryFull = true;
-                        this.world.spawnEntity(new EntityItem(world, this.posX, this.posY, this.posZ, itemEnt.getEntityItem()));
+                        this.world.spawnEntity(new EntityItem(world, this.posX, this.posY, this.posZ, itemEnt.getItem()));
                     }
                 }
             }
@@ -585,10 +585,10 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
             return true;
         }
 
-        if (var1.getEntity() != null && timelastSqueak + timeSqueakIntervals < System.currentTimeMillis())
+        if (var1.getTrueSource() != null && timelastSqueak + timeSqueakIntervals < System.currentTimeMillis())
         {
             timelastSqueak = System.currentTimeMillis();
-            if (master != null && var1.getEntity().getEntityId() == master.getEntityId())
+            if (master != null && var1.getTrueSource().getEntityId() == master.getEntityId())
             {
                 workBoostTime = System.currentTimeMillis();
                 workSpeed = 2.0F;

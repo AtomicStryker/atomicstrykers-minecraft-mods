@@ -32,12 +32,12 @@ public class Render3DGrid
     public void render(Vec3d cameraPos)
     {
 
-        double x1 = first.getX() - cameraPos.xCoord;
-        double y1 = first.getY() - cameraPos.yCoord;
-        double z1 = first.getZ() - cameraPos.zCoord;
-        double x2 = second.getX() - cameraPos.xCoord;
-        double y2 = second.getY() - cameraPos.yCoord;
-        double z2 = second.getZ() - cameraPos.zCoord;
+        double x1 = first.getX() - cameraPos.x;
+        double y1 = first.getY() - cameraPos.y;
+        double z1 = first.getZ() - cameraPos.z;
+        double x2 = second.getX() - cameraPos.x;
+        double y2 = second.getY() - cameraPos.y;
+        double z2 = second.getZ() - cameraPos.z;
 
         for (LineInfo tempColor : color.getColors())
         {

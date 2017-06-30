@@ -42,9 +42,9 @@ public class MinionAIWander extends EntityAIBase
             }
             else
             {
-                this.xPosition = vec3.xCoord;
-                this.yPosition = vec3.yCoord;
-                this.zPosition = vec3.zCoord;
+                this.xPosition = vec3.x;
+                this.yPosition = vec3.y;
+                this.zPosition = vec3.z;
                 nextMoveTime = System.currentTimeMillis() + (long) (moveTimeIntervals * entity.getRNG().nextFloat());
                 return true;
             }
@@ -56,7 +56,7 @@ public class MinionAIWander extends EntityAIBase
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return entity.getCurrentTask() == null && !this.entity.getNavigator().noPath();
     }

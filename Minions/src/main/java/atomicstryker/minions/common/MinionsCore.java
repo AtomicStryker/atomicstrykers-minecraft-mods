@@ -83,7 +83,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 @Mod(modid = "minions", name = "Minions", version = "2.0.2")
 public class MinionsCore
@@ -174,7 +174,7 @@ public class MinionsCore
         initializeSettingsFile(advancedConfig);
 
         itemMastersStaff = (new ItemMastersStaff()).setUnlocalizedName("masterstaff").setRegistryName("minions", "masterstaff");
-        GameRegistry.register(itemMastersStaff);
+        ForgeRegistries.ITEMS.register(itemMastersStaff);
 
         MinecraftForge.EVENT_BUS.register(this);
         EntityRegistry.registerModEntity(new ResourceLocation("minions", "minion"), EntityMinion.class, "AS_EntityMinion", 1, this, 32, 3, false);
@@ -825,7 +825,7 @@ public class MinionsCore
                     // re-register their own tickets
                     // note: im 99% sure forge does this by itself. but
                     // whatevers
-                    ForgeChunkManager.fetchDormantChunk(ChunkPos.asLong(c.chunkXPos, c.chunkZPos), world);
+                    ForgeChunkManager.fetchDormantChunk(ChunkPos.asLong(c.x, c.z), world);
                 }
                 // get rid of these old tickets
                 ForgeChunkManager.releaseTicket(t);

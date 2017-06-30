@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -281,7 +282,9 @@ public abstract class BlockTask
 
         BlockPos pos = new BlockPos(i, j, k);
         IBlockState state = world.getBlockState(pos);
-        return block.getDrops(world, pos, state, state.getBlock().getMetaFromState(state));
+        NonNullList<ItemStack> drops = NonNullList.create();
+        block.getDrops(drops, world, pos, state, 0);
+        return drops;
     }
 
     protected void putBlockHarvestInWorkerInventory(List<ItemStack> stackList)

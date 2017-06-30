@@ -40,7 +40,7 @@ public class MinionAIStalkAndGrab extends EntityAIBase
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return target != null && target.isEntityAlive() && this.grabDelay < maxGrabDelay;
     }

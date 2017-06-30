@@ -44,7 +44,7 @@ public class MinionAIFollowMaster extends EntityAIBase
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return !this.petPathfinder.noPath() && this.theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.maxDist * this.maxDist)
                 && shouldFollowMaster();

@@ -45,7 +45,7 @@ public class SoundPacket implements IPacket
         @Override
         public void run()
         {
-            Entity e = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(dimension).getEntityByID(entID);
+            Entity e = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension).getEntityByID(entID);
             if (e != null)
             {
                 MinionsCore.instance.sendSoundToClients(e, sound);
