@@ -6,7 +6,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class CommandSpawnBattleTower extends CommandBattleTowers
 {
@@ -40,7 +39,7 @@ public class CommandSpawnBattleTower extends CommandBattleTowers
                 int type = Integer.valueOf(astring[3]);
                 boolean underground = Boolean.valueOf(astring[4]);
                 WorldGenHandler.generateTower(icommandsender.getEntityWorld(), x, y, z, type, underground);
-                FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower spawned");
+                AS_BattleTowersCore.LOGGER.log(Level.INFO, icommandsender.getName() + ": Battletower spawned");
             }
             catch (Exception e)
             {

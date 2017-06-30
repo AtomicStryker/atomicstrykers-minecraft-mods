@@ -9,7 +9,6 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class CommandDeleteBattleTower extends CommandBattleTowers
 {
@@ -42,7 +41,7 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
                 TowerPosition tp = WorldGenHandler.deleteNearestTower(icommandsender.getEntityWorld(), x, z);
                 if (tp != null)
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletower deleted: " + tp.toString());
+                    AS_BattleTowersCore.LOGGER.log(Level.INFO, icommandsender.getName() + ": Battletower deleted: " + tp.toString());
                     for (Object o : icommandsender.getEntityWorld().getEntitiesWithinAABB(AS_EntityGolem.class, new AxisAlignedBB(tp.x - 10, 0.0D, tp.z - 10, tp.x + 10, 255, tp.z + 10)))
                     {
                         ((Entity) o).setDead();
@@ -51,7 +50,7 @@ public class CommandDeleteBattleTower extends CommandBattleTowers
                 }
                 else
                 {
-                    FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": no Battletower deleted, no valid target");
+                    AS_BattleTowersCore.LOGGER.log(Level.INFO, icommandsender.getName() + ": no Battletower deleted, no valid target");
                 }
             }
             catch (Exception e)

@@ -159,10 +159,10 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     @Override
     public boolean attackEntityFrom(DamageSource damageSource, float amount)
     {
-        if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityLivingBase)
+        if (damageSource.getTrueSource() != null && damageSource.getTrueSource() instanceof EntityLivingBase)
         {
             setAwake();
-            setAttackTarget((EntityLivingBase) damageSource.getEntity());
+            setAttackTarget((EntityLivingBase) damageSource.getTrueSource());
         }
 
         return super.attackEntityFrom(damageSource, amount);
@@ -179,12 +179,11 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
     {
         super.onDeath(var1);
         setDormant();
-        Entity entity = var1.getEntity();
+        Entity entity = var1.getTrueSource();
 
         if (scoreValue > 0 && entity != null)
         {
-            // addToPlayerScore
-            entity.func_191956_a(this, scoreValue, var1);
+            entity.awardKillScore(this, scoreValue, var1);
         }
         if (!world.isRemote)
         {
@@ -350,9 +349,9 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
             world.playSound(null, getPosition(), SoundEvents.ENTITY_GHAST_SHOOT, SoundCategory.HOSTILE, getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
             AS_EntityGolemFireball entityfireball = new AS_EntityGolemFireball(world, this, diffX, diffY, diffZ);
             Vec3d vec3d = getLook(1.0F);
-            entityfireball.posX = posX + vec3d.xCoord * 2D;
-            entityfireball.posY = posY + (height * 0.8) + vec3d.yCoord * 0.5D;
-            entityfireball.posZ = posZ + vec3d.zCoord * 2D;
+            entityfireball.posX = posX + vec3d.x * 2D;
+            entityfireball.posY = posY + (height * 0.8) + vec3d.y * 0.5D;
+            entityfireball.posZ = posZ + vec3d.z * 2D;
             world.spawnEntity(entityfireball);
         }
     }

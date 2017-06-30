@@ -62,10 +62,10 @@ public class AS_EntityGolemFireball extends Entity
         nextVec = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
         if (collisionPosition != null)
         {
-            nextVec = new Vec3d(collisionPosition.hitVec.xCoord, collisionPosition.hitVec.yCoord, collisionPosition.hitVec.zCoord);
+            nextVec = new Vec3d(collisionPosition.hitVec.x, collisionPosition.hitVec.y, collisionPosition.hitVec.z);
         }
         Entity hitEntity = null;
-        List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
+        List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().offset(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
         double minDist = 0.0D;
         for (Object aList : list)
         {
@@ -162,15 +162,15 @@ public class AS_EntityGolemFireball extends Entity
     public boolean attackEntityFrom(DamageSource damage, float i)
     {
         setBeenAttacked();
-        Entity entity = damage.getEntity();
+        Entity entity = damage.getTrueSource();
         if (entity != null)
         {
             Vec3d vec3d = entity.getLookVec();
             if (vec3d != null)
             {
-                motionX = vec3d.xCoord;
-                motionY = vec3d.yCoord;
-                motionZ = vec3d.zCoord;
+                motionX = vec3d.x;
+                motionY = vec3d.y;
+                motionZ = vec3d.z;
                 accelerationX = motionX * 0.1D;
                 accelerationY = motionY * 0.1D;
                 accelerationZ = motionZ * 0.1D;

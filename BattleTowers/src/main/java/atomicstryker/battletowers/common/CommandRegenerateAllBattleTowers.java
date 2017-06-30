@@ -4,7 +4,6 @@ import org.apache.logging.log4j.Level;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class CommandRegenerateAllBattleTowers extends CommandBattleTowers
 {
@@ -25,7 +24,7 @@ public class CommandRegenerateAllBattleTowers extends CommandBattleTowers
     public void execute(MinecraftServer server, ICommandSender icommandsender, String[] astring)
     {
         WorldGenHandler.deleteAllTowers(icommandsender.getEntityWorld(), true);
-        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, icommandsender.getName() + ": Battletowers regenerated");
+        AS_BattleTowersCore.LOGGER.log(Level.INFO, icommandsender.getName() + ": Battletowers regenerated");
     }
 
 }

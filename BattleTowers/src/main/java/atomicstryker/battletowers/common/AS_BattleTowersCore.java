@@ -3,6 +3,8 @@ package atomicstryker.battletowers.common;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
+
 import atomicstryker.battletowers.common.network.ChestAttackedPacket;
 import atomicstryker.battletowers.common.network.LoginPacket;
 import atomicstryker.battletowers.common.network.NetworkHelper;
@@ -50,6 +52,8 @@ public class AS_BattleTowersCore
 
     @SidedProxy(clientSide = "atomicstryker.battletowers.client.ClientProxy", serverSide = "atomicstryker.battletowers.common.CommonProxy")
     public static CommonProxy proxy;
+    
+    public static Logger LOGGER;
 
     public TowerStageItemManager[] floorItemManagers = new TowerStageItemManager[10];
     public Configuration configuration;
@@ -92,6 +96,8 @@ public class AS_BattleTowersCore
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ServerTickHandler());
+        
+        LOGGER = event.getModLog();
     }
 
     @SubscribeEvent
