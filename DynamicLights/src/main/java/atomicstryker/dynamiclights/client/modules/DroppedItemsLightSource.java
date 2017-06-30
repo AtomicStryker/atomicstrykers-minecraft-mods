@@ -1,5 +1,9 @@
 package atomicstryker.dynamiclights.client.modules;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
@@ -22,16 +26,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * 
  * @author AtomicStryker
  *
- * Offers Dynamic Light functionality to EntityItem instances.
- * Dropped Torches and such can give off Light through this Module.
+ *         Offers Dynamic Light functionality to EntityItem instances. Dropped
+ *         Torches and such can give off Light through this Module.
  *
  */
 @Mod(modid = "dynamiclights_dropitems", name = "Dynamic Lights on ItemEntities", version = "1.1.0", dependencies = "required-after:dynamiclights")
@@ -43,17 +43,17 @@ public class DroppedItemsLightSource
     private ArrayList<EntityItemAdapter> trackedItems;
     private boolean threadRunning;
     private Configuration config;
-    
+
     private ItemConfigHelper itemsMap;
     private ItemConfigHelper notWaterProofItems;
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
         config = new Configuration(evt.getSuggestedConfigurationFile());
         MinecraftForge.EVENT_BUS.register(this);
     }
-    
+
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
@@ -62,34 +62,34 @@ public class DroppedItemsLightSource
         trackedItems = new ArrayList<>();
         threadRunning = false;
     }
-    
+
     @EventHandler
     public void modsLoaded(FMLPostInitializationEvent evt)
     {
         config.load();
-        
+
         Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
         itemsList.setComment("Item IDs that shine light when dropped in the World.");
         itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
-        
+
         Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
         updateI.setComment("Update Interval time for all Item entities in milliseconds. The lower the better and costlier.");
         updateInterval = updateI.getInt();
-        
+
         Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "torch,lava_bucket");
         notWaterProofList.setComment("Item IDs that do not shine light when dropped and in water, have to be present in LightItems.");
         notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
-        
+
         config.save();
     }
-    
+
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent tick)
     {
         if (mcinstance.world != null && System.currentTimeMillis() > nextUpdate && !DynamicLights.globalLightsOff())
         {
             nextUpdate = System.currentTimeMillis() + updateInterval;
-            
+
             if (!threadRunning)
             {
                 Thread thread = new EntityListChecker(mcinstance.world.loadedEntityList);
@@ -99,8 +99,8 @@ public class DroppedItemsLightSource
             }
         }
     }
-    
-	private int getLightFromItemStack(ItemStack stack)
+
+    private int getLightFromItemStack(ItemStack stack)
     {
         if (stack != null)
         {
@@ -109,21 +109,21 @@ public class DroppedItemsLightSource
         }
         return 0;
     }
-    
+
     private class EntityListChecker extends Thread
     {
         private final Object[] list;
-        
+
         public EntityListChecker(List<Entity> input)
         {
             list = input.toArray();
         }
-        
+
         @Override
         public void run()
         {
             ArrayList<EntityItemAdapter> newList = new ArrayList<>();
-            
+
             Entity ent;
             for (Object o : list)
             {
@@ -138,7 +138,8 @@ public class DroppedItemsLightSource
                     while (iter.hasNext())
                     {
                         adapter = iter.next();
-                        if (adapter.getAttachmentEntity().equals(ent)) // already tracked!
+                        if (adapter.getAttachmentEntity().equals(ent)) // already
+                                                                       // tracked!
                         {
                             adapter.onTick(); // execute a tick
                             newList.add(adapter); // put them in the new list
@@ -147,7 +148,7 @@ public class DroppedItemsLightSource
                             break;
                         }
                     }
-                    
+
                     if (!found) // wasnt already tracked
                     {
                         // make new, tick, put in new list
@@ -157,32 +158,33 @@ public class DroppedItemsLightSource
                     }
                 }
             }
-            // any remaining adapters were not in the loaded entities. The main Dynamic Lights mod will kill them.
+            // any remaining adapters were not in the loaded entities. The main
+            // Dynamic Lights mod will kill them.
             trackedItems = newList;
             threadRunning = false;
         }
-        
+
     }
-    
+
     private class EntityItemAdapter implements IDynamicLightSource
     {
-        
+
         private EntityItem entity;
         private int lightLevel;
         private boolean enabled;
         private boolean notWaterProof;
-        
-		public EntityItemAdapter(EntityItem eI)
+
+        public EntityItemAdapter(EntityItem eI)
         {
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.retrieveValue(eI.getEntityItem().getItem().getRegistryName(), eI.getEntityItem().getItemDamage()) == 1;
+            notWaterProof = notWaterProofItems.retrieveValue(eI.getItem().getItem().getRegistryName(), eI.getItem().getItemDamage()) == 1;
         }
-        
+
         /**
-         * Since they are IDynamicLightSource instances, they will already receive updates! Why do we need
-         * to do this? Because seperate Thread!
+         * Since they are IDynamicLightSource instances, they will already
+         * receive updates! Why do we need to do this? Because seperate Thread!
          */
         public void onTick()
         {
@@ -192,17 +194,16 @@ public class DroppedItemsLightSource
             }
             else
             {
-                lightLevel = getLightFromItemStack(entity.getEntityItem());
-                
+                lightLevel = getLightFromItemStack(entity.getItem());
+
                 BlockPos pos = new BlockPos(MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ));
                 IBlockState is = entity.world.getBlockState(pos);
-                if (notWaterProof
-                && is.getMaterial().isLiquid())
+                if (notWaterProof && is.getMaterial().isLiquid())
                 {
                     lightLevel = 0;
                 }
             }
-            
+
             if (!enabled && lightLevel > 0)
             {
                 enableLight();
@@ -212,19 +213,19 @@ public class DroppedItemsLightSource
                 disableLight();
             }
         }
-        
+
         private void enableLight()
         {
             DynamicLights.addLightSource(this);
             enabled = true;
         }
-        
+
         private void disableLight()
         {
             DynamicLights.removeLightSource(this);
             enabled = false;
         }
-     
+
         @Override
         public Entity getAttachmentEntity()
         {

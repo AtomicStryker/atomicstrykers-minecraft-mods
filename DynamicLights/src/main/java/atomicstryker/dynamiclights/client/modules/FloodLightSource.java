@@ -107,7 +107,7 @@ public class FloodLightSource
         Vec3d look = thePlayer.getLook(1.0f);
         thePlayer.rotationPitch -= pitchRot;
         thePlayer.rotationYaw -= yawRot;
-        look = posvec.addVector(look.xCoord * 16d, look.yCoord * 16d, look.zCoord * 16d);
+        look = posvec.addVector(look.x * 16d, look.y * 16d, look.z * 16d);
         RayTraceResult mop = thePlayer.world.rayTraceBlocks(posvec, look);
         if (mop != null)
         {
