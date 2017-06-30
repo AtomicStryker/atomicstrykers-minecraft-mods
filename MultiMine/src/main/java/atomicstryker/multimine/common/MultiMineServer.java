@@ -390,7 +390,7 @@ public class MultiMineServer
      */
     private boolean isBlockGone(PartiallyMinedBlock block)
     {
-        return serverInstance.worldServerForDimension(block.getDimension()).isAirBlock(block.getPos());
+        return serverInstance.getWorld(block.getDimension()).isAirBlock(block.getPos());
     }
 
     /**
