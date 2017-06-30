@@ -62,7 +62,7 @@ public class FinderCompassClientTicker
     {
         if (tick.phase == Phase.END && compassLogic != null)
         {
-            if (!FinderCompassMod.instance.itemEnabled)
+            if (!FinderCompassMod.itemEnabled)
             {
                 if (tick.player.getHeldItemMainhand() != null && tick.player.getHeldItemMainhand().getItem() == COMPASS_ITEM_ID)
                 {

@@ -89,7 +89,7 @@ public class StrongholdPacket implements IPacket
             EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(username);
             if (p != null)
             {
-                BlockPos result = ((WorldServer) p.world).getChunkProvider().getStrongholdGen(p.world, "Stronghold", new BlockPos(p), false);
+                BlockPos result = ((WorldServer) p.world).getChunkProvider().getNearestStructurePos(p.world, "Stronghold", new BlockPos(p), false);
                 if (result != null)
                 {
                     FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(result.getX(), result.getY(), result.getZ()), p);
