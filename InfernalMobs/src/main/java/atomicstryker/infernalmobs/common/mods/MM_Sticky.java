@@ -37,16 +37,16 @@ public class MM_Sticky extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityPlayer))
+        if (source.getTrueSource() != null
+        && (source.getTrueSource() instanceof EntityPlayer))
         {
-            EntityPlayer p = (EntityPlayer)source.getEntity();
+            EntityPlayer p = (EntityPlayer)source.getTrueSource();
             ItemStack weapon = p.inventory.getStackInSlot(p.inventory.currentItem);
             if (weapon != null)
             {
                 long time = System.currentTimeMillis();
                 if (time > nextAbilityUse
-                && source.getEntity() != null
+                && source.getTrueSource() != null
                 && !(source instanceof EntityDamageSourceIndirect))
                 {
                     nextAbilityUse = time+coolDown;

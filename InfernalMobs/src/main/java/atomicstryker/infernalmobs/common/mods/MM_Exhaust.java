@@ -27,10 +27,10 @@ public class MM_Exhaust extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityPlayer))
+        if (source.getTrueSource() != null
+        && (source.getTrueSource() instanceof EntityPlayer))
         {
-            ((EntityPlayer)source.getEntity()).addExhaustion(1F);
+            ((EntityPlayer)source.getTrueSource()).addExhaustion(1F);
         }
         
         return super.onHurt(mob, source, damage);

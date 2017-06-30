@@ -40,13 +40,13 @@ public class MM_Ender extends MobModifier
     {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
-        && source.getEntity() != null
-        && source.getEntity() != mob
-        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())
-        && teleportToEntity(mob, source.getEntity()))
+        && source.getTrueSource() != null
+        && source.getTrueSource() != mob
+        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())
+        && teleportToEntity(mob, source.getTrueSource()))
         {
             nextAbilityUse = time + coolDown;
-            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
+            source.getTrueSource().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
 
             return super.onHurt(mob, source, 0);
         }
@@ -61,9 +61,9 @@ public class MM_Ender extends MobModifier
                         + (double) par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 16.0D;
-        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.xCoord * telDist;
-        double destY = mob.posY + (double) (mob.world.rand.nextInt(16) - 8) - vector.yCoord * telDist;
-        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.zCoord * telDist;
+        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.x * telDist;
+        double destY = mob.posY + (double) (mob.world.rand.nextInt(16) - 8) - vector.y * telDist;
+        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.z * telDist;
         return teleportTo(mob, destX, destY, destZ);
     }
 

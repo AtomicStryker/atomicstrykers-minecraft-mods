@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
@@ -68,7 +69,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -115,6 +115,8 @@ public class InfernalMobsCore
         return instance;
     }
 
+    public static Logger LOGGER;
+
     public String getNBTTag()
     {
         return "InfernalMobsMod";
@@ -154,6 +156,8 @@ public class InfernalMobsCore
         MinecraftForge.EVENT_BUS.register(this);
 
         networkHelper = new NetworkHelper("AS_IF", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
+
+        LOGGER = evt.getModLog();
     }
 
     @EventHandler
@@ -282,11 +286,11 @@ public class InfernalMobsCore
             {
                 Integer tDimID = Integer.parseInt(trimmedDimIDString);
                 list.add(tDimID);
-                FMLLog.log("InfernalMobs", Level.INFO, String.format("DimensionID %d is now Blacklisted for InfernalMobs spawn", tDimID));
+                LOGGER.log(Level.INFO, String.format("DimensionID %d is now Blacklisted for InfernalMobs spawn", tDimID));
             }
             catch (Exception e)
             {
-                FMLLog.log("InfernalMobs", Level.ERROR, String.format("Configured DimensionID %s is not an integer! All values must be numeric. Ignoring entry", trimmedDimIDString));
+                LOGGER.log(Level.ERROR, String.format("Configured DimensionID %s is not an integer! All values must be numeric. Ignoring entry", trimmedDimIDString));
             }
         }
     }
@@ -376,7 +380,7 @@ public class InfernalMobsCore
                     }
                     catch (Exception e)
                     {
-                        FMLLog.log("InfernalMobs", Level.ERROR, "processEntitySpawn() threw an exception");
+                        LOGGER.log(Level.ERROR, "processEntitySpawn() threw an exception");
                         e.printStackTrace();
                     }
                 }
@@ -712,8 +716,7 @@ public class InfernalMobsCore
                 {
                     if (item instanceof ItemEnchantedBook)
                     {
-                        ItemEnchantedBook book = (ItemEnchantedBook) item;
-                        itemStack = book.getEnchantedItemStack(getRandomEnchantment(mob.getRNG()));
+                        itemStack = ItemEnchantedBook.getEnchantedItemStack(getRandomEnchantment(mob.getRNG()));
                     }
                     else
                     {
@@ -782,7 +785,7 @@ public class InfernalMobsCore
             {
                 remainStr--;
                 EnchantmentData eData = (EnchantmentData) iter.next();
-                itemStack.addEnchantment(eData.enchantmentobj, eData.enchantmentLevel);
+                itemStack.addEnchantment(eData.enchantment, eData.enchantmentLevel);
             }
         }
     }

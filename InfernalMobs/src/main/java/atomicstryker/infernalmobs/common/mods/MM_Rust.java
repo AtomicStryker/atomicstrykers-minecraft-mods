@@ -28,14 +28,14 @@ public class MM_Rust extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityPlayer)
+        if (source.getTrueSource() != null
+        && (source.getTrueSource() instanceof EntityPlayer)
         && !(source instanceof EntityDamageSourceIndirect))
         {
-            EntityPlayer p = (EntityPlayer)source.getEntity();
+            EntityPlayer p = (EntityPlayer)source.getTrueSource();
             if (p.inventory.getCurrentItem() != null)
             {
-                p.inventory.getCurrentItem().damageItem(4, (EntityLivingBase) source.getEntity());
+                p.inventory.getCurrentItem().damageItem(4, (EntityLivingBase) source.getTrueSource());
             }
         }
         

@@ -206,10 +206,10 @@ public abstract class MobModifier
         {
             amount = nextMod.onHurt(mob, source, amount);
         }
-        else if (source.getEntity() != null)
+        else if (source.getTrueSource() != null)
         {
-            if (source.getEntity().world.isRemote
-            && source.getEntity() instanceof EntityPlayer)
+            if (source.getTrueSource().world.isRemote
+            && source.getTrueSource() instanceof EntityPlayer)
             {
                 InfernalMobsCore.instance().sendHealthRequestPacket(mob);
             }

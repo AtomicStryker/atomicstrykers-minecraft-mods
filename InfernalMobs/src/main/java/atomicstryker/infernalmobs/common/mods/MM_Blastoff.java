@@ -47,10 +47,10 @@ public class MM_Blastoff extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && source.getEntity() instanceof EntityLivingBase)
+        if (source.getTrueSource() != null
+        && source.getTrueSource() instanceof EntityLivingBase)
         {
-            tryAbility(mob, (EntityLivingBase) source.getEntity());
+            tryAbility(mob, (EntityLivingBase) source.getTrueSource());
         }
         
         return super.onHurt(mob, source, damage);

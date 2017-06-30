@@ -12,7 +12,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class InfernalCommandSpawnInfernal extends CommandBase
 {
@@ -73,7 +72,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                     MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
                     if (mod != null)
                     {
-                        FMLCommonHandler.instance().getFMLLogger().log(Level.INFO,
+                        InfernalMobsCore.LOGGER.log(Level.INFO,
                                 sender.getName() + " spawned: " + InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() + " at [" + x + "|" + y + "|" + z + "]");
                     }
                     else

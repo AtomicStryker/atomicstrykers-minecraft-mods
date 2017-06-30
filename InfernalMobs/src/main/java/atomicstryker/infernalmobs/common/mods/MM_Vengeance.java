@@ -27,11 +27,11 @@ public class MM_Vengeance extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && source.getEntity() != mob
-        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity()))
+        if (source.getTrueSource() != null
+        && source.getTrueSource() != mob
+        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource()))
         {
-            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob),
+            source.getTrueSource().attackEntityFrom(DamageSource.causeMobDamage(mob),
                     InfernalMobsCore.instance().getLimitedDamage(Math.max(damage / 2, 1)));
         }
 

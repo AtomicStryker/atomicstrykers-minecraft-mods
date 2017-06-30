@@ -29,11 +29,11 @@ public class MM_Sapper extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityLivingBase)
-        && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity()))
+        if (source.getTrueSource() != null
+        && (source.getTrueSource() instanceof EntityLivingBase)
+        && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getTrueSource()))
         {
-            EntityLivingBase ent = (EntityLivingBase)source.getEntity();
+            EntityLivingBase ent = (EntityLivingBase)source.getTrueSource();
             if (!ent.isPotionActive(MobEffects.HUNGER))
             {
                 ent.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 120, 0));

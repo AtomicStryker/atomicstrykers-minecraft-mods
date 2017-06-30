@@ -59,9 +59,9 @@ public class MM_Ghastly extends MobModifier
             EntityLargeFireball entFB = new EntityLargeFireball(mob.world, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
             Vec3d mobLook = mob.getLook(1.0F);
-            entFB.posX = mob.posX + mobLook.xCoord * spawnOffset;
+            entFB.posX = mob.posX + mobLook.x * spawnOffset;
             entFB.posY = mob.posY + (double) (mob.height / 2.0F) + 0.5D;
-            entFB.posZ = mob.posZ + mobLook.zCoord * spawnOffset;
+            entFB.posZ = mob.posZ + mobLook.z * spawnOffset;
             mob.world.spawnEntity(entFB);
         }
     }

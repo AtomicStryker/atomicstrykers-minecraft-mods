@@ -111,7 +111,7 @@ public class EntityEventHandler
     public void onEntityLivingHurt(LivingHurtEvent event)
     {
         // dont allow masochism
-        if (event.getSource().getEntity() != event.getEntityLiving())
+        if (event.getSource().getTrueSource() != event.getEntityLiving())
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
             if (mod != null)
@@ -123,7 +123,7 @@ public class EntityEventHandler
              * We use the Hook two-sided, both with the Mob as possible target
              * and attacker
              */
-            Entity attacker = event.getSource().getEntity();
+            Entity attacker = event.getSource().getTrueSource();
             if (attacker != null && attacker instanceof EntityLivingBase)
             {
                 mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) attacker);
@@ -140,7 +140,7 @@ public class EntityEventHandler
                  * farms
                  */
                 if (event.getSource() == DamageSource.CACTUS || event.getSource() == DamageSource.DROWN || event.getSource() == DamageSource.FALL || event.getSource() == DamageSource.IN_WALL
-                        || event.getSource() == DamageSource.LAVA || event.getSource().getEntity() instanceof FakePlayer)
+                        || event.getSource() == DamageSource.LAVA || event.getSource().getTrueSource() instanceof FakePlayer)
                 {
                     Tuple<Integer, Integer> cpair = new Tuple<Integer, Integer>((int) event.getEntityLiving().posX, (int) event.getEntityLiving().posZ);
                     Float value = damageMap.get(cpair);

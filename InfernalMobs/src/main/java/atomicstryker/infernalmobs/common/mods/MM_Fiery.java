@@ -27,11 +27,11 @@ public class MM_Fiery extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && (source.getEntity() instanceof EntityLivingBase)
+        if (source.getTrueSource() != null
+        && (source.getTrueSource() instanceof EntityLivingBase)
         && !(source instanceof EntityDamageSourceIndirect))
         {
-            source.getEntity().setFire(3);
+            source.getTrueSource().setFire(3);
         }
         
         mob.extinguish();

@@ -45,8 +45,8 @@ public class MM_Cloaking extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (source.getEntity() != null
-        && source.getEntity() instanceof EntityLivingBase)
+        if (source.getTrueSource() != null
+        && source.getTrueSource() instanceof EntityLivingBase)
         {
             tryAbility(mob);
         }

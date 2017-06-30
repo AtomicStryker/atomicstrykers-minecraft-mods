@@ -28,7 +28,7 @@ public class MM_Lifesteal extends MobModifier
     @Override
     public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
     {
-        EntityLivingBase mob = (EntityLivingBase) source.getEntity();
+        EntityLivingBase mob = (EntityLivingBase) source.getTrueSource();
         if (entity != null
         && mob.getHealth() < getActualMaxHealth(mob))
         {

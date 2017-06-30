@@ -75,7 +75,7 @@ public class MM_Choke extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (lastTarget != null && source.getSourceOfDamage() == lastTarget && lastAir != -999)
+        if (lastTarget != null && source.getTrueSource() == lastTarget && lastAir != -999)
         {
             lastAir += 60;
             updateAir();

@@ -40,13 +40,13 @@ public class MM_Ninja extends MobModifier
     {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
-        && source.getEntity() != null
-        && source.getEntity() != mob
-        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())
-        && teleportToEntity(mob, source.getEntity()))
+        && source.getTrueSource() != null
+        && source.getTrueSource() != mob
+        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())
+        && teleportToEntity(mob, source.getTrueSource()))
         {
             nextAbilityUse = time+coolDown;
-            source.getEntity().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
+            source.getTrueSource().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
             return super.onHurt(mob, source, 0);
         }
         
@@ -58,9 +58,9 @@ public class MM_Ninja extends MobModifier
         Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double)(mob.height / 2.0F) - par1Entity.posY + (double)par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 8.0D;
-        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.xCoord * telDist;
-        double destY = mob.posY + (double)(mob.world.rand.nextInt(16) - 4) - vector.yCoord * telDist;
-        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.zCoord * telDist;
+        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.x * telDist;
+        double destY = mob.posY + (double)(mob.world.rand.nextInt(16) - 4) - vector.y * telDist;
+        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.z * telDist;
         return teleportTo(mob, destX, destY, destZ);
     }
     

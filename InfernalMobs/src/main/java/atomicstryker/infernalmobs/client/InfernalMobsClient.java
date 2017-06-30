@@ -179,15 +179,15 @@ public class InfernalMobsClient implements ISidedProxy
                 }
 
                 final Vec3d viewEntityLookVec = mc.getRenderViewEntity().getLook(renderTick);
-                final Vec3d actualReachVector = viewEntPositionVec.addVector(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance,
-                        viewEntityLookVec.zCoord * reachDistance);
+                final Vec3d actualReachVector = viewEntPositionVec.addVector(viewEntityLookVec.x * reachDistance, viewEntityLookVec.y * reachDistance,
+                        viewEntityLookVec.z * reachDistance);
                 float expandBBvalue = 1.0F;
                 double lowestDistance = reachDist2;
                 Entity iterEnt;
                 Entity pointedEntity = null;
                 for (Object obj : mc.world.getEntitiesWithinAABBExcludingEntity(mc.getRenderViewEntity(),
                         mc.getRenderViewEntity().getEntityBoundingBox()
-                                .addCoord(viewEntityLookVec.xCoord * reachDistance, viewEntityLookVec.yCoord * reachDistance, viewEntityLookVec.zCoord * reachDistance)
+                                .offset(viewEntityLookVec.x * reachDistance, viewEntityLookVec.y * reachDistance, viewEntityLookVec.z * reachDistance)
                                 .expand((double) expandBBvalue, (double) expandBBvalue, (double) expandBBvalue)))
                 {
                     iterEnt = (Entity) obj;
@@ -197,7 +197,7 @@ public class InfernalMobsClient implements ISidedProxy
                         AxisAlignedBB entHitBox = iterEnt.getEntityBoundingBox().expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
                         RayTraceResult interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
 
-                        if (entHitBox.isVecInside(viewEntPositionVec))
+                        if (entHitBox.contains(viewEntPositionVec))
                         {
                             if (0.0D < lowestDistance || lowestDistance == 0.0D)
                             {

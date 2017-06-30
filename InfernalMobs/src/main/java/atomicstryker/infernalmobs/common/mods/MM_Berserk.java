@@ -30,7 +30,7 @@ public class MM_Berserk extends MobModifier
     {
         if (entity != null)
         {
-            source.getEntity().attackEntityFrom(DamageSource.GENERIC, damage);
+            source.getTrueSource().attackEntityFrom(DamageSource.GENERIC, damage);
             damage *= 2;
             damage = InfernalMobsCore.instance().getLimitedDamage(damage);
         }
