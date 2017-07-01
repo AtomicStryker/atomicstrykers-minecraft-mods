@@ -1,0 +1,4 @@
+The mod will attempt to set this up by itself when the folder is not present already.
+If that fails for some reason:
+
+The folder "ruins_config" found next to this readme goes into your .minecraft/config/ folder (applies on both client and server)

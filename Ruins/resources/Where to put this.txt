@@ -1,1 +1,0 @@
-Make it so that the content of the /mods/ folder here lands in your minecraft/mods/ folders. (applies on both client and server)

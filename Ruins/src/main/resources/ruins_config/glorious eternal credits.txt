@@ -1,0 +1,11 @@
+As promised, may this textfile serve as a reminder to the shining beacon of Minecraftforum User "Blue001"
+who took upon himself the arduous task of reorganizing the Ruin templates file structure, resulting in
+faster loading times for all whom it may concern.
+
+Credit also goes to MCF User "jsmith" for providing an additional set of Ruin templates for everyone.
+
+Praises (and support requests) be upon Jordan_Peacock for fixing up an untested 1.9 patch for the old
+templates which i've made the new default just because.
+
+Finally, much gratefullness and wows go to Saeldur of the Minecraftforge IRC channel, who used his regex
+and python prowess for justice and converting the 1.6 template block IDs to the new 1.7 name based format.

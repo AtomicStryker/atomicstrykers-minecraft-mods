@@ -1,0 +1,302 @@
+#
+# This file contains the Block Rotation Mappings Ruins might need
+# <- lines starting with this symbol are considered comments and disregarded by the parser
+# empty lines are allowed.
+#
+# To enable the Rotation of new or custom Blocks in Minecraft, you need to put Mappings
+# for possible metadata occurences and the metadata after they have been rotated in a
+# direction in here.
+#
+#
+# Mappings are to follow this standard:
+# First, the block ID must be given by the GameData.blockRegistry key
+#
+#
+# If a multitude of Blocks share the same rotation logic, you can provide them all at once, seperated by semicoli.
+# see stairs below
+#
+# Any mappings below such a line are considered part of that BlockID until another BlockID is introduced.
+#
+# A mapping is a Direction EAST, SOUTH or WEST, followed by the unrotated metadata, followed by the resulting metadata.
+# These are seperated by '-'
+#
+# EAST-8-1
+#
+# That line means: if the Ruins Mod needs to rotate a Vine EAST, and the unrotated vine has metadata
+# 8, the new metadata should be 1.
+#
+# You need to map any and all possible Rotations, with three Directions that aren't NORTH (= no rotation) and a
+# Block that has 4 possible metadata values (such as Vines) that means you need to have 12 mappings.
+#
+# Other Blocks may have a lot more than that.
+#
+# Below, some mappings. Do not remove those! In the future, new mappings will be added in this file!
+#
+#
+
+# mc vanilla Stair Blocks
+# normal NESW: 0 2 1 3
+# inverted NESW: 4 6 5 7
+BlockID=oak_stairs;stone_stairs;brick_stairs;stone_brick_stairs;nether_brick_stairs;sandstone_stairs;spruce_stairs;birch_stairs;jungle_stairs;quartz_stairs;dark_oak_stairs;acacia_stairs
+
+EAST-0-2
+EAST-1-3
+EAST-2-1
+EAST-3-0
+EAST-4-6
+EAST-5-7
+EAST-6-5
+EAST-7-4
+
+SOUTH-0-1
+SOUTH-1-0
+SOUTH-2-3
+SOUTH-3-2
+SOUTH-4-5
+SOUTH-5-4
+SOUTH-6-7
+SOUTH-7-6
+
+WEST-0-3
+WEST-1-2
+WEST-2-0
+WEST-3-1
+WEST-4-7
+WEST-5-6
+WEST-6-4
+WEST-7-5
+
+# pistons, ladders, wall signs, furnaces, chests, dispensers, droppers, hoppers
+BlockID=sticky_piston;piston;ladder;wall_sign;lit_furnace;furnace;chest;dispenser;dropper;hopper;trapped_chest
+# DUNESW: 0 1 2 5 3 4
+# DUNESW: 8 9 10 13 11 12 (Extended Pistons, is lower value + 8)
+
+EAST-2-5
+EAST-5-3
+EAST-3-4
+EAST-4-2
+
+EAST-10-13
+EAST-13-11
+EAST-11-12
+EAST-12-10
+
+SOUTH-2-3
+SOUTH-5-4
+SOUTH-3-2
+SOUTH-4-5
+
+SOUTH-10-11
+SOUTH-13-12
+SOUTH-11-10
+SOUTH-12-13
+
+WEST-4-3
+WEST-5-2
+WEST-2-4
+WEST-3-5
+
+WEST-12-11
+WEST-13-10
+WEST-10-12
+WEST-11-13
+
+# Mushroom blocks, courtesy of Arrrg
+# They can point in all 8 directions and have center, inside, and stem parts.
+# inside Nw N Ne W center E Sw S Se stem: 0 1 2 3 4 5 6 7 8 9 10
+BlockID=brown_mushroom_block;red_mushroom_block
+
+EAST-0-0
+EAST-1-3
+EAST-2-6
+EAST-3-9
+EAST-4-2
+EAST-5-5
+EAST-6-8
+EAST-7-1
+EAST-8-4
+EAST-9-7
+EAST-10-10
+
+SOUTH-0-0
+SOUTH-1-9
+SOUTH-2-8
+SOUTH-3-7
+SOUTH-4-6
+SOUTH-5-5
+SOUTH-6-4
+SOUTH-7-3
+SOUTH-8-2
+SOUTH-9-1
+SOUTH-10-10
+
+WEST-0-0
+WEST-1-7
+WEST-2-4
+WEST-3-1
+WEST-4-8
+WEST-5-5
+WEST-6-2
+WEST-7-9
+WEST-8-6
+WEST-9-3
+WEST-10-10
+
+# Skulls, atleast wall mounted ones. floor mounted ones are constant 1
+# rotation for those is done via tileentity, codebased by Ruins
+# N E S W = 2 4 3 5
+BlockID=skull
+
+EAST-2-4
+EAST-4-3
+EAST-3-5
+EAST-5-2
+
+SOUTH-2-3
+SOUTH-4-5
+SOUTH-3-2
+SOUTH-5-4
+
+WEST-2-5
+WEST-4-2
+WEST-3-4
+WEST-5-3
+
+# Quartz Pillars
+# 0,1 alldirectional, 2 vertical, 3 north-south, 4 east-west
+BlockID=quartz_block
+
+EAST-3-4
+EAST-4-3
+
+WEST-3-4
+WEST-4-3
+
+# Hay bale/block and bone block (using log logic); added 2014-10-23 by Jordan_Greywolf, updated by Jordan_Peacock 
+# 4 = Hay_Block: E/W
+# 8 = Hay_Block: N/S
+BlockID=hay_block;bone_block
+
+EAST-4-8
+EAST-8-4
+
+WEST-4-8
+WEST-8-4
+
+# Pixelmon mod, provided by shadowsyllvet http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/1282339-1-7-10-ruins-structure-spawning-system?comment=1992
+BlockID=pixelmon:PC Block;pixelmon:PokeHealer;pixelmon:Fossil Machine Block;pixelmon:Moltres Shrine;pixelmon:Zapdos Shrine;pixelmon:Articuno Shrine
+#NESW 0321
+
+EAST-0-3
+EAST-1-0
+EAST-2-1
+EAST-3-2
+
+WEST-0-1
+WEST-1-2
+WEST-2-3
+WEST-3-0
+
+SOUTH-0-2
+SOUTH-1-3
+SOUTH-2-0
+SOUTH-3-1
+
+BlockID=pixelmon:Trading Machine;pixelmon:CloningMachine
+
+#BaseMain NESW 0321
+#BaseAtt NESW 9-11-10-12
+#TopAll NESW 8-8-8-8
+EAST-0-3
+EAST-1-0
+EAST-2-1
+EAST-3-2
+EAST-9-11
+EAST-11-10
+EAST-10-12
+EAST-12-9
+
+WEST-0-1
+WEST-1-2
+WEST-2-3
+WEST-3-0
+WEST-9-12
+WEST-12-10
+WEST-10-11
+WEST-11-9
+
+SOUTH-0-2
+SOUTH-1-3
+SOUTH-2-0
+SOUTH-3-1
+SOUTH-9-10
+SOUTH-10-9
+SOUTH-11-12
+SOUTH-12-11
+
+# Impulse / Classic Command Block
+# N E S W = 4 2 5 3
+BlockID=command_block
+
+EAST-2-5
+EAST-4-2
+EAST-3-4
+EAST-5-3
+
+SOUTH-2-3
+SOUTH-4-5
+SOUTH-3-2
+SOUTH-5-4
+
+WEST-2-4
+WEST-4-3
+WEST-3-5
+WEST-5-2
+
+# fencegates and doors in 1.8
+# 1230,5674
+BlockID=fence_gate;spruce_fence_gate;birch_fence_gate;jungle_fence_gate;dark_oak_fence_gate;acacia_fence_gate;wooden_door;spruce_door;birch_door;jungle_door;dark_oak_door;acacia_door
+EAST-0-1
+EAST-1-2
+EAST-2-3
+EAST-3-0
+EAST-4-5
+EAST-5-6
+EAST-6-7
+EAST-7-4
+SOUTH-0-2
+SOUTH-1-3
+SOUTH-2-0
+SOUTH-3-1
+SOUTH-4-6
+SOUTH-5-7
+SOUTH-6-4
+SOUTH-7-5
+WEST-0-3
+WEST-1-0
+WEST-2-1
+WEST-3-2
+WEST-4-7
+WEST-5-4
+WEST-6-5
+WEST-7-6
+
+# glazed terracotta in 1.12 (added 6/20/2017), by Jordan_Peacock
+# N E S W = 0 1 2 3
+
+BlockID=white_glazed_terracotta;orange_glazed_terracotta;magenta_glazed_terracotta;light_blue_glazed_terracotta;yellow_glazed_terracotta;lime_glazed_terracotta;pink_glazed_terracotta;gray_glazed_terracotta;silver_glazed_terracotta;cyan_glazed_terracotta;purple_glazed_terracotta;blue_glazed_terracotta;brown_glazed_terracotta;green_glazed_terracotta;red_glazed_terracotta;black_glazed_terracotta
+
+EAST-0-1
+EAST-1-2
+EAST-2-3
+EAST-3-0
+
+SOUTH-0-2
+SOUTH-1-3
+SOUTH-2-0
+SOUTH-3-1
+
+WEST-0-3
+WEST-1-0
+WEST-2-1
+WEST-3-2

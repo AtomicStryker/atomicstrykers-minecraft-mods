@@ -1,0 +1,101 @@
+
+# Created by Ruins mod version 12.6 Ingame Parser
+# authoring Player: AtomicStryker
+
+weight=1
+embed_into_distance=0
+acceptable_target_blocks=stone,grass,dirt,sand,gravel,snow_layer,clay
+dimensions=6,7,7
+allowable_overhang=0
+max_cut_in=2
+cut_in_buffer=1
+max_leveling=2
+leveling_buffer=1
+preserve_water=0
+preserve_lava=0
+preserve_plants=0
+
+rule1=0,100,minecraft:dirt-2
+rule2=0,100,minecraft:stained_hardened_clay-1
+rule3=0,100,CommandBlock:/summon Villager ~0 ~1 ~0 {Profession:2,CustomName:PRIEST FORD,CustomNameVisible:1,Offers:{Recipes:[{maxUses:1000,buy:{id:367,Count:32},sell:{id:388,Count:1}},{maxUses:1000,buy:{id:388,Count:7},sell:{id:381,Count:2}},{maxUses:1000,buy:{id:388,Count:3},buyB:{id:261,Count:1},sell:{id:261,Count:1,tag:{ench:[{id:51,lvl:1}],display:{Name:"Ouroboros Bow",Lore:["Don't ask me to explain","what a snake eating it's tail","has to do with a bow.","I'm sure it's profound and junk."]}}}},{maxUses:1000,buy:{id:388,Count:2},sell:{id:268,Count:1,tag:{ench:[{id:17,lvl:3}],display:{Name:Wooden Stake,Lore:["The murder in your eyes","Is just the will to stay alive","You gotta fightem","I WILL END YOU","Cause there's no humanity","When the dead come back to feed","You gotta fightem","fight 'em!"]}}}},{maxUses:1000,buy:{id:388,Count:5},buyB:{id:272,Count:1},sell:{id:272,Count:1,tag:{ench:[{id:18,lvl:5}],display:{Name:Barbarian Sword,Lore:["The warriors of the continent of","Abus Prime favor stone swords","for their low cost to replace.","They wear through many weapons","in their centuries long war against","the spiders of Cauld."]}}}},{maxUses:1000,buy:{id:388,Count:10},buyB:{id:267,Count:1},sell:{id:267,Count:1,tag:{ench:[{id:16,lvl:5},{id:34,lvl:5}],display:{Name:Knight's Sword,Lore:["Become a part of the Klok","Become a gear"]}}}},{maxUses:1000,buy:{id:388,Count:15},buyB:{id:283,Count:1},sell:{id:283,Count:1,tag:{ench:[{id:19,lvl:10},{id:21,lvl:10},{id:34,lvl:10}],display:{Name:Lottery Sword,Lore:["WOW! LOOT GALORE!","If...I can just figure out","where the hell it landed..."]}}}},{maxUses:1000,buy:{id:388,Count:20},buyB:{id:276,Count:1},sell:{id:276,Count:1,tag:{ench:[{id:16,lvl:4},{id:17,lvl:4},{id:18,lvl:4},{id:21,lvl:3},{id:7,lvl:3}],display:{Name:Banesword,Lore:["Spiders, Undead, regular people,","this thing does it all!","Now someone find me a dragon..."]}}}},{maxUses:1000,buy:{id:388,Count:25},buyB:{id:261,Count:1},sell:{id:261,Count:1,tag:{ench:[{id:48,lvl:5},{id:50,lvl:10},{id:51,lvl:1},{id:21,lvl:3},{id:34,lvl:10}],display:{Name:Sun Bow,Lore:["Talk to him? But the Orb of Ra","is in Egypt. I can't...","He's a Sun God, Rainie.","He's the Sun. He's out there","RIGHT NOW. See him? Talk to","him before he sets.","...but ask politely..."]}}}},]}}:@,CommandBlock:/summon Villager ~0 ~1 ~0 {Profession:2,CustomName:PRIEST TOYOTA,CustomNameVisible:1,Offers:{Recipes:[{maxUses:1000,buy:{id:367,Count:32},sell:{id:388,Count:1}},{maxUses:1000,buy:{id:388,Count:7},sell:{id:381,Count:2}},{maxUses:1000,buy:{id:388,Count:3},buyB:{id:261,Count:1},sell:{id:261,Count:1,tag:{ench:[{id:51,lvl:1}],display:{Name:"Ouroboros Bow",Lore:["Don't ask me to explain","what a snake eating it's tail","has to do with a bow.","I'm sure it's profound and junk."]}}}},{maxUses:1000,buy:{id:388,Count:2},sell:{id:268,Count:1,tag:{ench:[{id:17,lvl:3}],display:{Name:Wooden Stake,Lore:["The murder in your eyes","Is just the will to stay alive","You gotta fightem","I WILL END YOU","Cause there's no humanity","When the dead come back to feed","You gotta fightem","fight 'em!"]}}}},{maxUses:1000,buy:{id:388,Count:5},buyB:{id:272,Count:1},sell:{id:272,Count:1,tag:{ench:[{id:18,lvl:5}],display:{Name:Barbarian Sword,Lore:["The warriors of the continent of","Abus Prime favor stone swords","for their low cost to replace.","They wear through many weapons","in their centuries long war against","the spiders of Cauld."]}}}},{maxUses:1000,buy:{id:388,Count:10},buyB:{id:267,Count:1},sell:{id:267,Count:1,tag:{ench:[{id:16,lvl:5},{id:34,lvl:5}],display:{Name:Knight's Sword,Lore:["Become a part of the Klok","Become a gear"]}}}},{maxUses:1000,buy:{id:388,Count:15},buyB:{id:283,Count:1},sell:{id:283,Count:1,tag:{ench:[{id:19,lvl:10},{id:21,lvl:10},{id:34,lvl:10}],display:{Name:Lottery Sword,Lore:["WOW! LOOT GALORE!","If...I can just figure out","where the hell it landed..."]}}}},{maxUses:1000,buy:{id:388,Count:20},buyB:{id:276,Count:1},sell:{id:276,Count:1,tag:{ench:[{id:16,lvl:4},{id:17,lvl:4},{id:18,lvl:4},{id:21,lvl:3},{id:7,lvl:3}],display:{Name:Banesword,Lore:["Spiders, Undead, regular people,","this thing does it all!","Now someone find me a dragon..."]}}}},{maxUses:1000,buy:{id:388,Count:25},buyB:{id:261,Count:1},sell:{id:261,Count:1,tag:{ench:[{id:48,lvl:5},{id:50,lvl:10},{id:51,lvl:1},{id:21,lvl:3},{id:34,lvl:10}],display:{Name:Sun Bow,Lore:["Talk to him? But the Orb of Ra","is in Egypt. I can't...","He's a Sun God, Rainie.","He's the Sun. He's out there","RIGHT NOW. See him? Talk to","him before he sets.","...but ask politely..."]}}}},]}}:@
+rule4=0,100,minecraft:hardened_clay-0
+rule5=0,100,minecraft:glass-0
+rule6=2,100,minecraft:wooden_button-1
+rule7=0,100,minecraft:acacia_stairs-4
+rule8=2,100,WallSign:we can throw:you into if:you sin.:Don't test us.-2
+rule9=2,100,WallSign:Remember...:we have an:ACTUAL portal:to hell-2
+rule10=0,100,minecraft:wooden_door-2
+rule11=2,100,minecraft:torch-2
+rule12=0,100,minecraft:stained_glass-12
+rule13=0,100,minecraft:cake-0
+rule14=2,100,WallSign:If Priest:is not here:press button:for service-5
+rule15=0,100,minecraft:wooden_door-8
+rule16=2,100,WallSign:Only heretics:cakedance.Stone:a cakedancer:today!-5
+rule17=2,100,WallSign:The Holy:Skycake:is your friend:in hard times-5
+rule18=2,100,WallSign:The Holy:Skycake:SEES ALL:null-5
+rule19=2,100,minecraft:torch-3
+rule20=2,100,minecraft:torch-2
+rule21=0,100,MobSpawner:NightCrawler
+rule22=0,100,MobSpawner:CaveSpider
+rule23=0,100,air
+
+layer
+1,1,1,1,1,1,1
+1,2,2,2,2,2,1
+1,2,2,3,2,2,1
+1,2,2,2,2,2,1
+1,2,2,2,2,2,1
+1,2,2,2,2,2,1
+1,1,1,1,1,1,1
+endlayer
+
+layer
+0,0,0,0,0,0,0
+0,4,4,4,4,4,0
+0,4,5,6,5,4,0
+0,4,8,7,0,4,0
+0,4,9,0,0,4,0
+0,4,4,10,4,4,0
+0,0,0,0,0,0,0
+endlayer
+
+layer
+0,0,0,11,0,0,0
+0,4,12,4,12,4,0
+0,12,13,14,13,12,0
+0,12,0,0,0,12,0
+0,12,0,0,0,12,0
+0,4,12,15,12,4,0
+0,0,0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0,0,0
+0,0,4,4,4,0,0
+0,4,17,4,16,4,0
+19,4,0,18,0,4,0
+0,4,0,11,0,4,0
+0,0,4,4,4,0,0
+0,0,0,0,0,0,0
+endlayer
+
+layer
+23,23,23,23,23,23,23
+23,23,23,23,23,23,23
+23,23,23,23,23,23,23
+23,23,23,23,23,23,23
+23,23,23,23,23,23,23
+23,23,23,23,23,23,23
+23,23,23,23,23,23,23
+endlayer
+
+layer
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,22,21,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+endlayer
+
