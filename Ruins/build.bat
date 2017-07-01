@@ -1,1 +1,1 @@
-gradle makezip -x test
+gradle -x test

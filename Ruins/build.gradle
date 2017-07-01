@@ -25,7 +25,7 @@ curseforge {
         id = '227873'
         releaseType = 'release'
         addGameVersion '1.12'
-        mainArtifact(file('build/distributions/Ruins-1.12.zip')) {
+        mainArtifact(file('build/libs/Ruins-1.12.jar')) {
             displayName = 'Ruins (Structure Spawning System)'
         }
     }

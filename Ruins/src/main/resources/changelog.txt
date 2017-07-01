@@ -492,3 +492,8 @@ a: setAccessible now true
 
 16.5
 + added support for blocknames containing '-' characters
+
+16.6
++ MOVED THE TEMPLATE FOLDER, RUINS NOW COMES AS JAR
++ runtime location is now ".minecraft/config/ruins_config/" instead of ".minecraft/mods/resources/ruins/"
++ upon launch, the mod checks if that folder exists. If not, it extracts the default ruleset from the jar

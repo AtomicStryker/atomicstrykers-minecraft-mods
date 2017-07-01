@@ -746,7 +746,7 @@ public class RuinTemplate
                     // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
                     String[] vals = line.split("=")[1].split(";");
 
-                    File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + vals[0] + ".tml");
+                    File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + vals[0] + ".tml");
                     if (file.exists() && file.canRead())
                     {
                         RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);

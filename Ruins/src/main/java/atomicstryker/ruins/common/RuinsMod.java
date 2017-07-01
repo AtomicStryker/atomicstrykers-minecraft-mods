@@ -42,7 +42,10 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:extrabiomes")
 public class RuinsMod
 {
-    static final String modversion = "16.5";
+    static final String modversion = "16.6";
+    
+    public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config";
+    public static final String TEMPLATE_PATH_JAR = "ruins_config";
 
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
@@ -63,8 +66,9 @@ public class RuinsMod
         currentlyGenerating = new ConcurrentLinkedQueue<>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
-
-        new CustomRotationMapping(new File(getMinecraftBaseDir(), "mods/resources/ruins"));
+        
+        ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
+        new CustomRotationMapping(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
     @EventHandler

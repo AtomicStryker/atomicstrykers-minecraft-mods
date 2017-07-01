@@ -96,7 +96,7 @@ class CommandTestTemplate extends CommandBase
             target = "templateparser/" + target;
         }
 
-        File file = new File(RuinsMod.getMinecraftBaseDir(), "mods/resources/ruins/" + target + ".tml");
+        File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + target + ".tml");
         if (file.exists() && file.canWrite())
         {
             try

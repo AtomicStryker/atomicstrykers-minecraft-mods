@@ -88,7 +88,7 @@ class FileHandler
                 return;
             }
 
-            final File templPath = new File(basedir, "mods/resources/ruins");
+            final File templPath = new File(basedir, RuinsMod.TEMPLATE_PATH_MC_EXTRACTED);
             if (!templPath.exists())
             {
                 System.out.println("Could not access the resources path for the ruins templates, file doesn't exist!");
