@@ -44,7 +44,7 @@ public class RuinsMod
 {
     static final String modversion = "16.6";
     
-    public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config";
+    public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
     public static final String TEMPLATE_PATH_JAR = "ruins_config";
 
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
