@@ -104,16 +104,16 @@ public class WorldGenHandler implements IWorldGenerator
 
     private boolean getIsBiomeAllowed(Biome target)
     {
-        if (biomesMap.containsKey(target.getBiomeName()))
+        if (biomesMap.containsKey(target.getRegistryName().getResourcePath()))
         {
-            return biomesMap.get(target.getBiomeName());
+            return biomesMap.get(target.getRegistryName().getResourcePath());
         }
 
         Configuration config = AS_BattleTowersCore.instance.configuration;
         config.load();
-        boolean result = config.get("BiomeSpawnAllowed", target.getBiomeName(), true).getBoolean(true);
+        boolean result = config.get("BiomeSpawnAllowed", target.getRegistryName().getResourcePath(), true).getBoolean(true);
         config.save();
-        biomesMap.put(target.getBiomeName(), result);
+        biomesMap.put(target.getRegistryName().getResourcePath(), result);
         return result;
     }
 
