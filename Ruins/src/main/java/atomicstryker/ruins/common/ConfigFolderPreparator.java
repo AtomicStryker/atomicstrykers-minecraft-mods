@@ -38,8 +38,9 @@ public class ConfigFolderPreparator
         {
             copyJarResourceToFolder((JarURLConnection) url.openConnection(), targetDir);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
+            System.err.println("Ruins couldn't prepare template defaults for some reason:");
             e.printStackTrace();
         }
     }

@@ -216,7 +216,7 @@ class RuinGenerator
     {
         final int rotate = random.nextInt(4);
         final Biome biome = world.getBiomeForCoordsBody(new BlockPos(x, 0, z));
-        String biomeID = biome.getBiomeName();
+        String biomeID = biome.getRegistryName().getResourcePath();
 
         if (fileHandler.useGeneric(random, biomeID))
         {
@@ -267,7 +267,7 @@ class RuinGenerator
 
                 if (!fileHandler.disableLogging)
                 {
-                    System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getBiomeName(), x, y, z);
+                    System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getRegistryName().getResourcePath(), x, y, z);
                 }
                 stats.NumCreated++;
 
@@ -315,10 +315,10 @@ class RuinGenerator
                 bgb = Biome.REGISTRY.getObject(rl);
                 if (bgb != null)
                 {
-                    Integer i = stats.biomes.get(bgb.getBiomeName());
+                    Integer i = stats.biomes.get(bgb.getRegistryName().getResourcePath());
                     if (i != null)
                     {
-                        System.out.println(bgb.getBiomeName() + ": " + i + " Biome building attempts");
+                        System.out.println(bgb.getRegistryName().getResourcePath() + ": " + i + " Biome building attempts");
                     }
                 }
             }

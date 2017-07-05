@@ -165,7 +165,7 @@ class World2TemplateParser extends Thread
             readBlocks(world);
             player.sendMessage(new TextComponentTranslation("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
 
-            File templateFile = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "/templateparser/" + fileName + ".tml");
+            File templateFile = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/" + fileName + ".tml");
             toFile(templateFile);
 
             if (!failed)

@@ -127,12 +127,12 @@ class FileHandler
                 {
                     try
                     {
-                        loadSpecificTemplates(pw, templPath, bgb.getBiomeName());
+                        loadSpecificTemplates(pw, templPath, bgb.getRegistryName().getResourcePath());
                         // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
                     }
                     catch (Exception e)
                     {
-                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.getBiomeName() + " ruins templates:");
+                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.getRegistryName().getResourcePath() + " ruins templates:");
                     }
                 }
             }
@@ -304,14 +304,14 @@ class FileHandler
                     for (ResourceLocation rl : Biome.REGISTRY.getKeys())
                     {
                         bgb = Biome.REGISTRY.getObject(rl);
-                        if (bgb != null && bgb.getBiomeName().equals(check[0]))
+                        if (bgb != null && bgb.getRegistryName().getResourcePath().equals(check[0]))
                         {
-                            int[] val = vars.get(bgb.getBiomeName());
+                            int[] val = vars.get(bgb.getRegistryName().getResourcePath());
                             if (val != null)
                             {
                                 val[CHANCE] = Integer.parseInt(check[1]);
                                 found = true;
-                                vars.put(bgb.getBiomeName(), val);
+                                vars.put(bgb.getRegistryName().getResourcePath(), val);
                                 break;
                             }
                         }
@@ -347,7 +347,7 @@ class FileHandler
                         for (ResourceLocation rl : Biome.REGISTRY.getKeys())
                         {
                             bgb = Biome.REGISTRY.getObject(rl);
-                            if (bgb != null && bgb.getBiomeName().equals(biomeName))
+                            if (bgb != null && bgb.getRegistryName().getResourcePath().equals(biomeName))
                             {
                                 if (!biomeName.equals(name))
                                 {
@@ -450,7 +450,7 @@ class FileHandler
             bgb = Biome.REGISTRY.getObject(rl);
             if (bgb != null)
             {
-                pw.println("specific_" + bgb.getBiomeName() + "=75");
+                pw.println("specific_" + bgb.getRegistryName().getResourcePath() + "=75");
             }
         }
         pw.flush();
