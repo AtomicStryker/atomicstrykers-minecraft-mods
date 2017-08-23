@@ -30,12 +30,12 @@ public class DLTransformer implements IClassTransformer
 {
     
     /* net/minecraft/world/World */
-    private String classNameWorld = "ams";
+    private String classNameWorld = "amu";
 
     /*
      * (Lnet/minecraft/util/BlockPos;Lnet/minecraft/world/EnumSkyBlock;)I / func_175638_a
      */
-    private String targetMethodDesc = "(Let;Lamy;)I";
+    private String targetMethodDesc = "(Let;Lana;)I";
 
     /* net/minecraft/world/World.getRawLight / func_175638_a */
     private String computeLightValueMethodName = "a";
@@ -43,7 +43,7 @@ public class DLTransformer implements IClassTransformer
     /*
      * (Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
      */
-    private String goalInvokeDesc = "(Lawr;Lamw;Let;)I";
+    private String goalInvokeDesc = "(Lawt;Lamy;Let;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)

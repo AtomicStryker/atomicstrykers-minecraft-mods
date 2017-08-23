@@ -17,8 +17,8 @@ public class MMTransformer implements IClassTransformer
     /* Obfuscated Names for PlayerControllerMP Transformation */
 
     /* net.minecraft.client.multiplayer.PlayerControllerMP */
-    private final String playerControllerMPClassNameO = "bry";
-    private final String playerControllerMPJavaClassNameO = "bry";
+    private final String playerControllerMPClassNameO = "bsa";
+    private final String playerControllerMPJavaClassNameO = "bsa";
 
     /* onPlayerDamageBlock / func_180512_c */
     private final String playerControllerMPtargetMethodNameO = "b";

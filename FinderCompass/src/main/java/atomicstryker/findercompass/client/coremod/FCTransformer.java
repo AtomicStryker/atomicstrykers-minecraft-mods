@@ -26,13 +26,13 @@ public class FCTransformer implements IClassTransformer
 {
     
     /* net.minecraft.client.renderer.RenderItem */
-    private String classNameToModify = "bzu";
+    private String classNameToModify = "bzw";
 
     /*
      * (Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model
      * /IBakedModel;)V / func_180454_a
      */
-    private String methodDescriptorToModify = "(Lain;Lcfw;)V";
+    private String methodDescriptorToModify = "(Laip;Lcfy;)V";
 
     /*
      * net.minecraft.client.renderer.RenderItem.renderItem(ItemStack stack, IBakedModel model) / func_180454_a
@@ -42,10 +42,10 @@ public class FCTransformer implements IClassTransformer
     /*
      * (Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V
      */
-    private String targetNodeDescriptor = "(Lcfw;Lain;)V";
+    private String targetNodeDescriptor = "(Lcfy;Laip;)V";
 
     /* (Lnet/minecraft/item/ItemStack;)V */
-    private String itemStackVoidDescriptor = "(Lain;)V";
+    private String itemStackVoidDescriptor = "(Laip;)V";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
