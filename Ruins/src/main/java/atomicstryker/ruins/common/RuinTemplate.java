@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -24,6 +26,131 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class RuinTemplate
 {
+    private static class VariantRuleset
+    {
+        private static class VariantGroup
+        {
+            private static class VariantRule
+            {
+                private final ArrayList<Integer> weights;
+                private int weightsTotal;
+                private final ArrayList<RuinTemplateRule> variants;
+
+                public VariantRule(final int weight, final RuinTemplateRule variant)
+                {
+                    weights = new ArrayList<>();
+                    weightsTotal = 0;
+                    variants = new ArrayList<>();
+                    addVariant(weight, variant);
+                }
+
+                public void addVariant(final int weight, final RuinTemplateRule variant)
+                {
+                    weights.add(weight);
+                    weightsTotal += weight;
+                    variants.add(variant);
+                }
+
+                public int getRandomSelector(Random random)
+                {
+                    return random.nextInt(weightsTotal);
+                }
+
+                public RuinTemplateRule getVariant(final int selectorInitial)
+                {
+                    RuinTemplateRule variant = variants.get(variants.size() - 1);
+                    if (selectorInitial < weightsTotal)
+                    {
+                        int index = 0;
+                        for (int selector = selectorInitial; (selector -= weights.get(index)) >= 0; ++index);
+                        variant =  variants.get(index);
+                    }
+                    return variant;
+                }
+            }
+
+            private final int repeatCount;
+            private final ArrayList<VariantRule> variantRules;
+
+            VariantGroup(final int repeatCountSpec, final int weight, final RuinTemplateRule variant)
+            {
+                repeatCount = repeatCountSpec;
+                variantRules = new ArrayList<>();
+                addVariantRule(weight, variant);
+            }
+
+            public void addVariant(final int weight, final RuinTemplateRule variant)
+            {
+                variantRules.get(variantRules.size() - 1).addVariant(weight,  variant);
+            }
+
+            public void addVariantRule(final int weight, final RuinTemplateRule variant)
+            {
+                variantRules.add(new VariantRule(weight, variant));
+            }
+
+            public ArrayList<RuinTemplateRule> getVariants(Random random)
+            {
+                final ArrayList<RuinTemplateRule> variants = new ArrayList<>();
+                for (int i = 0; i < repeatCount; ++i)
+                {
+                    final int selector = variantRules.get(0).getRandomSelector(random);
+                    for (final VariantRule variantRule: variantRules)
+                    {
+                        variants.add(variantRule.getVariant(selector));
+                    }
+                }
+                return variants;
+            }
+
+            public int size()
+            {
+                return repeatCount*variantRules.size();
+            }
+        }
+
+        private final ArrayList<VariantGroup> variantGroups;
+
+        VariantRuleset()
+        {
+            variantGroups = new ArrayList<>();
+        }
+
+        public void addVariant(final int weight, final RuinTemplateRule variant)
+        {
+            variantGroups.get(variantGroups.size() - 1).addVariant(weight,  variant);
+        }
+
+        public void addVariantRule(final int weight, final RuinTemplateRule variant)
+        {
+            variantGroups.get(variantGroups.size() - 1).addVariantRule(weight,  variant);
+        }
+
+        public void addVariantGroup(final int repeatCount, final int weight, final RuinTemplateRule variant)
+        {
+            variantGroups.add(new VariantGroup(repeatCount, weight, variant));
+        }
+
+        public ArrayList<RuinTemplateRule> getVariants(Random random)
+        {
+            final ArrayList<RuinTemplateRule> variants = new ArrayList<>();
+            for (final VariantGroup variantGroup: variantGroups)
+            {
+                variants.addAll(variantGroup.getVariants(random));
+            }
+            return variants;
+        }
+
+        public int size()
+        {
+            int total = 0;
+            for (final VariantGroup variantGroup: variantGroups)
+            {
+                total += variantGroup.size();
+            }
+            return total;
+        }
+    }
 
     private final String name;
     private Block[] acceptedSurfaces, deniedSurfaces;
@@ -31,7 +158,7 @@ public class RuinTemplate
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
     public int uniqueMinDistance = 0;
     private boolean preserveWater = false, preserveLava = false;
-    private final ArrayList<RuinTemplateRule> rules;
+    private final VariantRuleset variantRuleset;
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
     private final PrintWriter debugPrinter;
@@ -56,7 +183,7 @@ public class RuinTemplate
         debugPrinter = out;
         debugging = debug;
         ArrayList<String> lines = new ArrayList<>();
-        rules = new ArrayList<>();
+        variantRuleset = new VariantRuleset();
         layers = new ArrayList<>();
         biomes = new HashSet<>();
         bonemealMarkers = new ArrayList<>();
@@ -372,6 +499,7 @@ public class RuinTemplate
             levelSite(world, world.getBlockState(new BlockPos(xBase, y, zBase)).getBlock(), xBase, y, zBase, eastwest);
         }
 
+        final ArrayList<RuinTemplateRule> rules = variantRuleset.getVariants(random);
         int rulenum;
         // the main loop
         while (layeriter.hasNext())
@@ -564,18 +692,18 @@ public class RuinTemplate
         }
     }
 
+    private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
+
     private void parseFile(ArrayList<String> lines) throws Exception
     {
         // first get the variables.
         parseVariables(lines);
 
-        // the first rule added will always be the preserve block rule.
-        rules.add(new RuinRuleAir(debugPrinter, this));
-
         // now get the rest of the data
         final Iterator<String> i = lines.iterator();
         String line;
-        int ruleCount = -1;
+        int ruleState = 0;
+        Matcher matcher;
         while (i.hasNext())
         {
             line = i.next();
@@ -583,7 +711,7 @@ public class RuinTemplate
             {
                 if (line.startsWith("layer"))
                 {
-                    ruleCount = rules.size();
+                    ruleState = 2;
                     // add in data until we reach the end of the layer
                     ArrayList<String> layerlines = new ArrayList<>();
                     line = i.next();
@@ -595,18 +723,68 @@ public class RuinTemplate
                         }
                         line = i.next();
                     }
-                    layers.add(new RuinTemplateLayer(layerlines, width, length, ruleCount));
+                    layers.add(new RuinTemplateLayer(layerlines, width, length, variantRuleset.size()));
                 }
-                else if (line.startsWith("rule"))
+                else if ((matcher = patternRule.matcher(line)).matches())
                 {
-                    if (ruleCount != -1)
+                    if (ruleState > 1)
                     {
                         throw new Exception("Template file problem: A Rule was defined after a layer! Define all rules before the first layer!");
                     }
+
+                    final boolean isFirstRule = ruleState < 1;
+                    final boolean hasRepeatCount = matcher.group(1) != null;
+                    final int repeatCount = hasRepeatCount ? Integer.parseInt(matcher.group(1)) : 1;
+                    final boolean hasName = matcher.group(2) != null;
+                    final boolean isVariant = matcher.group(3).equals("^");
+                    final int weight = matcher.group(4) != null ? Integer.parseInt(matcher.group(4)) : 1;
+                    final RuinTemplateRule rule = new RuinTemplateRule(debugPrinter, this, matcher.group(5), debugging);
+
+                    ruleState = 1;
+                    if (isVariant)
+                    {
+                        if (isFirstRule)
+                        {
+                            throw new Exception("Template file problem: The first rule must start a new variant group!");
+                        }
+                        if (hasRepeatCount)
+                        {
+                            throw new Exception("Template file problem: Only the first rule in a variant group can have a repeat count!");
+                        }
+
+                        if (hasName)
+                        {
+                            variantRuleset.addVariantRule(weight, rule);
+                        }
+                        else
+                        {
+                            variantRuleset.addVariant(weight, rule);
+                        }
+                    }
                     else
                     {
-                        String rulestring = line.substring(line.indexOf('=') + 1);
-                        rules.add(new RuinTemplateRule(debugPrinter, this, rulestring, debugging));
+                        if (isFirstRule)
+                        {
+                            if (!hasName)
+                            {
+                                if (hasRepeatCount)
+                                {
+                                    throw new Exception("Template file problem: An alternate rule0 cannot have a repeat count!");
+                                }
+                            }
+                            else
+                            {
+                                variantRuleset.addVariantGroup(1, 1, new RuinRuleAir(debugPrinter, this));
+                            }
+                        }
+                        else
+                        {
+                            if (!hasName)
+                            {
+                                throw new Exception("Template file problem: An unnamed rule cannot start a variant group!");
+                            }
+                        }
+                        variantRuleset.addVariantGroup(repeatCount, weight, rule);
                     }
                 }
             }
