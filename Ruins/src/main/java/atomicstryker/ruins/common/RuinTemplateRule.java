@@ -51,6 +51,8 @@ public class RuinTemplateRule
     protected final int[] blockMDs;
     protected final String[] blockStrings;
     protected final SpecialFlags[] specialFlags;
+    protected final int[] blockWeights;
+    protected int blockWeightsTotal;
     private int chance = 100;
     private int condition = 0;
     final RuinTemplate owner;
@@ -62,6 +64,10 @@ public class RuinTemplateRule
     {
         COMMANDBLOCK, ADDBONEMEAL
     }
+
+    private static final Pattern patternInitialCommandBlock = Pattern.compile("(?:[1-9]\\d{0,4}\\*)?CommandBlock:");
+    private static final Pattern patternCommandBlockWeight = Pattern.compile("(.*,)([1-9]\\d{0,4})\\*");
+    private static final Pattern patternBlockWeight = Pattern.compile("([1-9]\\d{0,4})\\*(.*)");
 
     public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception
     {
@@ -84,17 +90,47 @@ public class RuinTemplateRule
         String[] data;
 
         // Command Block special case, contains basically any character that breaks this
-        if (blockRules[2].startsWith("CommandBlock:"))
+        if (patternInitialCommandBlock.matcher(blockRules[2]).lookingAt())
         {
             String[] commandrules = rule.split("CommandBlock:");
             int count = commandrules.length - 1; // -1 because there is a prefix
                                                  // part we ignore
+
+            // extract initial command block weight specification from first (throwaway) field, if any; otherwise, default = 1
+            int blockWeight = 1;
+            {
+                final Matcher matcher = patternCommandBlockWeight.matcher(commandrules[0]);
+                if (matcher.matches())
+                {
+                    blockWeight = Integer.parseInt(matcher.group(2));
+                }
+            }
+
             blockIDs = new Block[count];
             blockMDs = new int[count];
             blockStrings = new String[count];
             specialFlags = new SpecialFlags[count];
+            blockWeights = new int[count];
+            blockWeightsTotal = 0;
             for (int i = 0; i < count; i++)
             {
+                // apply command block weight specification from previous field
+                blockWeightsTotal += blockWeights[i] = blockWeight;
+                // extract next command block weight specification, if any (last field excluded); otherwise, default = 1
+                if (i < count - 1)
+                {
+                    final Matcher matcher = patternCommandBlockWeight.matcher(commandrules[i + 1]);
+                    if (matcher.matches())
+                    {
+                        blockWeight = Integer.parseInt(matcher.group(2));
+                        commandrules[i + 1] = matcher.group(1);
+                    }
+                    else
+                    {
+                        blockWeight = 1;
+                    }
+                }
+
                 blockIDs[i] = null;
                 blockMDs[i] = RuinsMod.DIR_NORTH;
                 // case meta value "-n" present (impulse command block)
@@ -122,8 +158,24 @@ public class RuinTemplateRule
             blockMDs = new int[numblocks];
             blockStrings = new String[numblocks];
             specialFlags = new SpecialFlags[numblocks];
+            blockWeights = new int[numblocks];
+            blockWeightsTotal = 0;
             for (int i = 0; i < numblocks; i++)
             {
+                // extract block weight specification, if any; otherwise, default = 1
+                {
+                    final Matcher matcher = patternBlockWeight.matcher(blockRules[i + 2]);
+                    if (matcher.matches())
+                    {
+                        blockWeightsTotal += blockWeights[i] = Integer.parseInt(matcher.group(1));
+                        blockRules[i + 2] = matcher.group(2);
+                    }
+                    else
+                    {
+                        blockWeightsTotal += blockWeights[i] = 1;
+                    }
+                }
+
                 data = blockRules[i + 2].split("-");
                 if (data.length > 1) // has '-' in it, like "torch-5" or
                                      // "planks-3"
@@ -750,7 +802,10 @@ public class RuinTemplateRule
 
     private int getBlockNum(Random random)
     {
-        return random.nextInt(blockIDs.length);
+        // random selection using weights assigned in config file
+        int blockIndex = 0;
+        for (int selector = random.nextInt(blockWeightsTotal); (selector -= blockWeights[blockIndex]) >= 0; ++blockIndex);
+        return blockIndex;
     }
 
     private void spawnEnderCrystal(World world, int x, int y, int z)
