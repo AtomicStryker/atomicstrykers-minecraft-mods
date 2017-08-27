@@ -1,3 +1,6 @@
+1.6.0
+- fixed default chestgenhook resource to the 1.12 variant "chests/simple_dungeon" from "dungeonChest"
+
 1.5.9
 - fixed biome name issue on dedicated server
 
