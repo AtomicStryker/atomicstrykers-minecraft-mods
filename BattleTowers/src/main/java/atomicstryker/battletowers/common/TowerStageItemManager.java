@@ -148,55 +148,49 @@ public class TowerStageItemManager
      *            your WorldGen Random
      * @param teChest
      *            chest tileentity to fill with loot
+     * @param count
+     *            how many slots worth of itemstacks are supposed to be
+     *            generated
      * @return ItemStack instance of the configured Block or Item with amount,
      *         or null
      */
-    public ItemStack getStageItem(World world, Random rand, TileEntityChest teChest)
+    public List<ItemStack> getStageItemStacks(World world, Random rand, TileEntityChest teChest, int count)
     {
-        ItemStack result = null;
-
-        if (floorHasItemsLeft() && rand.nextInt(100) < chanceToSpawn[curIndex])
+        List<ItemStack> result = new ArrayList<>();
+        int index = 0;
+        while (index++ <= count && floorHasItemsLeft())
         {
-            if (itemID[curIndex] instanceof Item)
+            if (itemID[curIndex] instanceof Item && rand.nextInt(100) < chanceToSpawn[curIndex])
             {
-                // System.out.println("Stashed item
-                // "+item.getUnlocalizedName()+" of id "+itemID[curIndex]);
-                result = new ItemStack((Item) itemID[curIndex], minAmount[curIndex] + rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-                // System.out.println("Stashed new damaged ItemStack, id
-                // "+itemID[curIndex]+", "+result.getItemName()+" in a BT
-                // chest.");
+                result.add(new ItemStack((Item) itemID[curIndex], minAmount[curIndex] + rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]));
             }
-            else if (itemID[curIndex] instanceof Block)
+            else if (itemID[curIndex] instanceof Block && rand.nextInt(100) < chanceToSpawn[curIndex])
             {
-                // System.out.println("Stashed block
-                // "+block.getLocalizedName()+" of id "+itemID[curIndex]);
-                result = new ItemStack((Block) itemID[curIndex], minAmount[curIndex] + rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]);
-                // System.out.println("Stashed new damaged Block Stack, id
-                // "+itemID[curIndex]+", "+result.getItemName()+" in a BT
-                // chest.");
+                result.add(new ItemStack((Block) itemID[curIndex], minAmount[curIndex] + rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]));
             }
             else if (itemID[curIndex] instanceof String) // ChestGenHook:strongholdLibrary:5
             {
                 String[] split = ((String) itemID[curIndex]).split(":");
                 LootTable loottable = world.getLootTableManager().getLootTableFromLocation(new ResourceLocation(split[1]));
-                List<ItemStack> list = loottable.generateLootForPools(rand, new LootContext.Builder((WorldServer) world).build());
+                List<ItemStack> generatedItems = loottable.generateLootForPools(rand, new LootContext.Builder((WorldServer) world).build());
 
                 if (split.length > 2)
                 {
                     int number = Integer.valueOf(split[2]);
                     if (number > 0)
                     {
-                        while (list.size() > number)
+                        while (generatedItems.size() > number)
                         {
-                            Collections.shuffle(list);
-                            list.remove(list.size() - 1);
+                            Collections.shuffle(generatedItems);
+                            generatedItems.remove(generatedItems.size() - 1);
                         }
+                        result.addAll(generatedItems);
                     }
                 }
             }
-        }
 
-        curIndex++;
+            curIndex++;
+        }
         return result;
     }
 }

@@ -1,6 +1,9 @@
 package atomicstryker.battletowers.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -415,14 +418,19 @@ public class AS_WorldGenTower
                     TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(new BlockPos(ix - chestlength, builderHeight + 7, kz + 3));
                     if (tileentitychest != null)
                     {
-                        for (int attempt = 0; attempt < (underground ? AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor * 2
-                                : AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor); attempt++)
+                        int count = underground ? AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor * 2 : AS_BattleTowersCore.instance.itemGenerateAttemptsPerFloor;
+                        List<ItemStack> generatedStacks = floorChestManager.getStageItemStacks(world, world.rand, tileentitychest, count);
+                        List<Integer> freeSlots = new ArrayList<>(tileentitychest.getSizeInventory());
+                        for (int i = 0; i < tileentitychest.getSizeInventory(); i++)
                         {
-                            ItemStack itemstack = floorChestManager.getStageItem(world, world.rand, tileentitychest);
-                            if (itemstack != null)
-                            {
-                                tileentitychest.setInventorySlotContents(world.rand.nextInt(tileentitychest.getSizeInventory()), itemstack);
-                            }
+                            freeSlots.add(i);
+                        }
+                        Iterator<ItemStack> iterator = generatedStacks.iterator();
+                        while (iterator.hasNext() && !freeSlots.isEmpty())
+                        {
+                            Integer slot = freeSlots.get(world.rand.nextInt(freeSlots.size()));
+                            freeSlots.remove(slot);
+                            tileentitychest.setInventorySlotContents(slot, iterator.next());
                         }
                     }
                 }

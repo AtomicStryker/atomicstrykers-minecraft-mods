@@ -1,3 +1,6 @@
+1.5.9
+- reworked Item generation in chests, ChestGenHook now actually works
+
 1.5.8
 - tentative fix for golems falling through floor bug when hit by a reflected fireball
 
