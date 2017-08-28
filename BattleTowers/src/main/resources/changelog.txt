@@ -1,3 +1,6 @@
+1.6.1
+- reworked item generation in chests, chestgenhook now actually works
+
 1.6.0
 - fixed default chestgenhook resource to the 1.12 variant "chests/simple_dungeon" from "dungeonChest"
 
