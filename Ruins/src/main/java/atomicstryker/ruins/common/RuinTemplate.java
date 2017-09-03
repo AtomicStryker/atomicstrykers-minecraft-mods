@@ -580,6 +580,7 @@ public class RuinTemplate
         int lineIndex = 0;
         int ruleIndex = 0;
         int groupIndex = 0;
+        int groupSize = 0;
         int repeatCountPrevious = 0;
         int variantIndex = 0;
         String line;
@@ -658,6 +659,14 @@ public class RuinTemplate
                         }
                         else
                         {
+                        	if (ruleIndex == groupIndex)
+                        	{
+                        		++groupSize;
+                        	}
+                        	else if (variantIndex == groupSize && debugging)
+                        	{
+                                debugPrinter.printf("template [%s] line [%d]: rule #%d has more variants than first rule in group (rule #%d with %d variants); excess will be ignored\n", name, lineIndex, ruleIndex, groupIndex, groupSize);
+                        	}
                             ++variantIndex;
                             if (debugging)
                             {
@@ -678,6 +687,7 @@ public class RuinTemplate
                             }
                         }
                         groupIndex = ++ruleIndex;
+                        groupSize = 1;
                         repeatCountPrevious = repeatCount;
                         variantIndex = 1;
                         if (isFirstRule)
