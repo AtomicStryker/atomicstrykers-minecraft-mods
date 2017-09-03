@@ -148,7 +148,7 @@ public class RuinTemplateRule
                 // because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
                 blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
-                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i]);
+                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i] + " and weight: " + blockWeights[i]);
             }
         }
         // not command blocks
@@ -281,7 +281,7 @@ public class RuinTemplateRule
 
                 if (excessiveDebugging)
                 {
-                    debugPrinter.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s]\n", i + 1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i]);
+                    debugPrinter.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s], blockWeights:[%d]\n", i + 1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i], blockWeights[i]);
                 }
             }
         }
