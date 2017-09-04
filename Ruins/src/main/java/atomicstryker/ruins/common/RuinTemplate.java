@@ -659,14 +659,14 @@ public class RuinTemplate
                         }
                         else
                         {
-                        	if (ruleIndex == groupIndex)
-                        	{
-                        		++groupSize;
-                        	}
-                        	else if (variantIndex == groupSize && debugging)
-                        	{
+                            if (ruleIndex == groupIndex)
+                            {
+                                ++groupSize;
+                            }
+                            else if (variantIndex == groupSize && debugging)
+                            {
                                 debugPrinter.printf("template [%s] line [%d]: rule #%d has more variants than first rule in group (rule #%d with %d variants); excess will be ignored\n", name, lineIndex, ruleIndex, groupIndex, groupSize);
-                        	}
+                            }
                             ++variantIndex;
                             if (debugging)
                             {
@@ -1053,7 +1053,7 @@ public class RuinTemplate
             {
                 return repeatCount*variantRules.size();
             }
-            
+
             // A VariantRule object contains an array of different RuinTemplateRule objects assigned to the same rule
             // index. In a template file, it looks like this:
             //     rule1=0,100,dirt
