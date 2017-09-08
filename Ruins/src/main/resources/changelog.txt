@@ -500,3 +500,6 @@ a: setAccessible now true
 
 16.7
 + adapted to Biomes having only ResourceLocations (not names) on server - for your templates, nothing has changed
+
+16.8
++ new rule variation system by QuarterAnimal
