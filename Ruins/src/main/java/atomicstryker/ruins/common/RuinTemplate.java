@@ -568,7 +568,7 @@ public class RuinTemplate
 
     private static final Pattern patternRuleRaw = Pattern.compile("(?:[^*=^]*\\*)?(?:rule[^=^]*)?[=^]");
     private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
-    private static enum ParserState { PRE_RULE_PHASE, RULE_PHASE, POST_RULE_PHASE };
+    private enum ParserState { PRE_RULE_PHASE, RULE_PHASE, POST_RULE_PHASE };
 
     private void parseFile(ArrayList<String> lines) throws Exception
     {
@@ -576,8 +576,7 @@ public class RuinTemplate
         parseVariables(lines);
 
         // now get the rest of the data
-        final Iterator<String> i = lines.iterator();
-        int lineIndex = 0;
+        InputFilter i = new InputFilter(lines, false);
         int ruleIndex = 0;
         int groupIndex = 0;
         int groupSize = 0;
@@ -589,10 +588,87 @@ public class RuinTemplate
         while (i.hasNext())
         {
             line = i.next();
-            ++lineIndex;
-            if (!line.startsWith("#") && !line.isEmpty())
+            if (line.startsWith("layer"))
             {
-                if (line.startsWith("layer"))
+                if (repeatCountPrevious > 1)
+                {
+                    final int ruleIndexPrevious = ruleIndex;
+                    ruleIndex += (repeatCountPrevious - 1)*(ruleIndex - groupIndex + 1);
+                    if (debugging)
+                    {
+                        debugPrinter.printf("template [%s] line [%d]: duplicating group from rules #%d-#%d (%d times) to create rules #%d-#%d\n", name, i.index(), groupIndex, ruleIndexPrevious, repeatCountPrevious, ruleIndexPrevious + 1, ruleIndex);
+                    }
+                    repeatCountPrevious = 0;
+                }
+                parserState = ParserState.POST_RULE_PHASE;
+                // add in data until we reach the end of the layer
+                ArrayList<String> layerlines = new ArrayList<>();
+                line = i.next();
+                while (!line.startsWith("endlayer"))
+                {
+                    layerlines.add(line);
+                    line = i.next();
+                }
+                layers.add(new RuinTemplateLayer(layerlines, width, length, variantRuleset.size()));
+            }
+            else if ((matcher = patternRule.matcher(line)).matches())
+            {
+                if (parserState == ParserState.POST_RULE_PHASE)
+                {
+                    throw new Exception("Template file problem: A Rule was defined after a layer! Define all rules before the first layer!");
+                }
+
+                final boolean isFirstRule = parserState == ParserState.PRE_RULE_PHASE;
+                final boolean hasRepeatCount = matcher.group(1) != null;
+                final int repeatCount = hasRepeatCount ? Integer.parseInt(matcher.group(1)) : 1;
+                final boolean hasName = matcher.group(2) != null;
+                final boolean isVariant = matcher.group(3).equals("^");
+                final int weight = matcher.group(4) != null ? Integer.parseInt(matcher.group(4)) : 1;
+                final RuinTemplateRule rule = new RuinTemplateRule(debugPrinter, this, matcher.group(5), debugging);
+
+                parserState = ParserState.RULE_PHASE;
+                if (isVariant)
+                {
+                    if (isFirstRule)
+                    {
+                        debugPrinter.printf("template [%s] line [%d]: first rule must start a new variant group (i.e., use = instead of ^)\n", name, i.index());
+                        throw new Exception("Template file problem: First rule cannot join nonexistent variant group!");
+                    }
+                    if (hasRepeatCount)
+                    {
+                        debugPrinter.printf("template [%s] line [%d]: only first rule variant in a group can have repeat count\n", name, i.index());
+                        throw new Exception("Template file problem: Unexpected repeat count before variant rule group member!");
+                    }
+
+                    if (hasName)
+                    {
+                        ++ruleIndex;
+                        variantIndex = 1;
+                        if (debugging)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: adding new rule #%d to variant group with rule #%d\n", name, i.index(), ruleIndex, groupIndex);
+                        }
+                        variantRuleset.addVariantRule(weight, rule);
+                    }
+                    else
+                    {
+                        if (ruleIndex == groupIndex)
+                        {
+                            ++groupSize;
+                        }
+                        else if (variantIndex == groupSize && debugging)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: rule #%d has more variants than first rule in group (rule #%d with %d variants); excess will be ignored\n", name, i.index(), ruleIndex, groupIndex, groupSize);
+                        }
+                        ++variantIndex;
+                        if (debugging)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: adding variant #%d to rule #%d\n", name, i.index(), variantIndex, ruleIndex);
+                        }
+                        variantRuleset.addVariant(weight, rule);
+                    }
+                }
+                else
                 {
                     if (repeatCountPrevious > 1)
                     {
@@ -600,290 +676,203 @@ public class RuinTemplate
                         ruleIndex += (repeatCountPrevious - 1)*(ruleIndex - groupIndex + 1);
                         if (debugging)
                         {
-                            debugPrinter.printf("template [%s] line [%d]: duplicating group from rules #%d-#%d (%d times) to create rules #%d-#%d\n", name, lineIndex, groupIndex, ruleIndexPrevious, repeatCountPrevious, ruleIndexPrevious + 1, ruleIndex);
+                            debugPrinter.printf("template [%s] line [%d]: duplicating variant group from rules #%d-#%d (%d times) to create rules #%d-#%d\n", name, i.index(), groupIndex, ruleIndexPrevious, repeatCountPrevious, ruleIndexPrevious + 1, ruleIndex);
                         }
-                        repeatCountPrevious = 0;
                     }
-                    parserState = ParserState.POST_RULE_PHASE;
-                    // add in data until we reach the end of the layer
-                    ArrayList<String> layerlines = new ArrayList<>();
-                    line = i.next();
-                    while (!line.startsWith("endlayer"))
+                    groupIndex = ++ruleIndex;
+                    groupSize = 1;
+                    repeatCountPrevious = repeatCount;
+                    variantIndex = 1;
+                    if (isFirstRule)
                     {
-                        if (line.charAt(0) != '#')
+                        if (!hasName)
                         {
-                            layerlines.add(line);
-                        }
-                        line = i.next();
-                    }
-                    layers.add(new RuinTemplateLayer(layerlines, width, length, variantRuleset.size()));
-                }
-                else if ((matcher = patternRule.matcher(line)).matches())
-                {
-                    if (parserState == ParserState.POST_RULE_PHASE)
-                    {
-                        throw new Exception("Template file problem: A Rule was defined after a layer! Define all rules before the first layer!");
-                    }
-
-                    final boolean isFirstRule = parserState == ParserState.PRE_RULE_PHASE;
-                    final boolean hasRepeatCount = matcher.group(1) != null;
-                    final int repeatCount = hasRepeatCount ? Integer.parseInt(matcher.group(1)) : 1;
-                    final boolean hasName = matcher.group(2) != null;
-                    final boolean isVariant = matcher.group(3).equals("^");
-                    final int weight = matcher.group(4) != null ? Integer.parseInt(matcher.group(4)) : 1;
-                    final RuinTemplateRule rule = new RuinTemplateRule(debugPrinter, this, matcher.group(5), debugging);
-
-                    parserState = ParserState.RULE_PHASE;
-                    if (isVariant)
-                    {
-                        if (isFirstRule)
-                        {
-                            debugPrinter.printf("template [%s] line [%d]: first rule must start a new variant group (i.e., use = instead of ^)\n", name, lineIndex);
-                            throw new Exception("Template file problem: First rule cannot join nonexistent variant group!");
-                        }
-                        if (hasRepeatCount)
-                        {
-                            debugPrinter.printf("template [%s] line [%d]: only first rule variant in a group can have repeat count\n", name, lineIndex);
-                            throw new Exception("Template file problem: Unexpected repeat count before variant rule group member!");
-                        }
-
-                        if (hasName)
-                        {
-                            ++ruleIndex;
-                            variantIndex = 1;
+                            if (hasRepeatCount)
+                            {
+                                debugPrinter.printf("template [%s] line [%d]: unnamed rule (alternate rule0) cannot have repeat count\n", name, i.index());
+                                throw new Exception("Template file problem: Unexpected repeat count before unnamed rule!");
+                            }
+                            groupIndex = ruleIndex = 0;
                             if (debugging)
                             {
-                                debugPrinter.printf("template [%s] line [%d]: adding new rule #%d to variant group with rule #%d\n", name, lineIndex, ruleIndex, groupIndex);
+                                debugPrinter.printf("template [%s] line [%d]: alternate rule #0 specified\n", name, i.index());
                             }
-                            variantRuleset.addVariantRule(weight, rule);
                         }
                         else
                         {
-                            if (ruleIndex == groupIndex)
-                            {
-                                ++groupSize;
-                            }
-                            else if (variantIndex == groupSize && debugging)
-                            {
-                                debugPrinter.printf("template [%s] line [%d]: rule #%d has more variants than first rule in group (rule #%d with %d variants); excess will be ignored\n", name, lineIndex, ruleIndex, groupIndex, groupSize);
-                            }
-                            ++variantIndex;
                             if (debugging)
                             {
-                                debugPrinter.printf("template [%s] line [%d]: adding variant #%d to rule #%d\n", name, lineIndex, variantIndex, ruleIndex);
+                                debugPrinter.printf("template [%s] line [%d]: creating default (air) rule #0\n", name, i.index());
                             }
-                            variantRuleset.addVariant(weight, rule);
+                            variantRuleset.addVariantGroup(1, 1, new RuinRuleAir(debugPrinter, this));
                         }
                     }
                     else
                     {
-                        if (repeatCountPrevious > 1)
+                        if (!hasName)
                         {
-                            final int ruleIndexPrevious = ruleIndex;
-                            ruleIndex += (repeatCountPrevious - 1)*(ruleIndex - groupIndex + 1);
-                            if (debugging)
-                            {
-                                debugPrinter.printf("template [%s] line [%d]: duplicating variant group from rules #%d-#%d (%d times) to create rules #%d-#%d\n", name, lineIndex, groupIndex, ruleIndexPrevious, repeatCountPrevious, ruleIndexPrevious + 1, ruleIndex);
-                            }
+                            debugPrinter.printf("template [%s] line [%d]: unnamed rule (alternate rule0) must appear before all other rules\n", name, i.index());
+                            throw new Exception("Template file problem: Rule name missing!");
                         }
-                        groupIndex = ++ruleIndex;
-                        groupSize = 1;
-                        repeatCountPrevious = repeatCount;
-                        variantIndex = 1;
-                        if (isFirstRule)
-                        {
-                            if (!hasName)
-                            {
-                                if (hasRepeatCount)
-                                {
-                                    debugPrinter.printf("template [%s] line [%d]: unnamed rule (alternate rule0) cannot have repeat count\n", name, lineIndex);
-                                    throw new Exception("Template file problem: Unexpected repeat count before unnamed rule!");
-                                }
-                                groupIndex = ruleIndex = 0;
-                                if (debugging)
-                                {
-                                    debugPrinter.printf("template [%s] line [%d]: alternate rule #0 specified\n", name, lineIndex);
-                                }
-                            }
-                            else
-                            {
-                                if (debugging)
-                                {
-                                    debugPrinter.printf("template [%s] line [%d]: creating default (air) rule #0\n", name, lineIndex);
-                                }
-                                variantRuleset.addVariantGroup(1, 1, new RuinRuleAir(debugPrinter, this));
-                            }
-                        }
-                        else
-                        {
-                            if (!hasName)
-                            {
-                                debugPrinter.printf("template [%s] line [%d]: unnamed rule (alternate rule0) must appear before all other rules\n", name, lineIndex);
-                                throw new Exception("Template file problem: Rule name missing!");
-                            }
-                        }
-                        if (debugging)
-                        {
-                            debugPrinter.printf("template [%s] line [%d]: creating new rule #%d\n", name, lineIndex, ruleIndex);
-                        }
-                        variantRuleset.addVariantGroup(repeatCount, weight, rule);
                     }
+                    if (debugging)
+                    {
+                        debugPrinter.printf("template [%s] line [%d]: creating new rule #%d\n", name, i.index(), ruleIndex);
+                    }
+                    variantRuleset.addVariantGroup(repeatCount, weight, rule);
                 }
-                else if (patternRuleRaw.matcher(line).lookingAt())
-                {
-                    debugPrinter.printf("template [%s] line [%d]: invalid rule syntax\n", name, lineIndex);
-                    throw new Exception("Template file problem: Cannot parse rule!");
-                }
+            }
+            else if (patternRuleRaw.matcher(line).lookingAt())
+            {
+                debugPrinter.printf("template [%s] line [%d]: invalid rule syntax\n", name, i.index());
+                throw new Exception("Template file problem: Cannot parse rule!");
             }
         }
     }
 
     private void parseVariables(ArrayList<String> variables) throws Exception
     {
-        Iterator<String> i = variables.iterator();
+        InputFilter i = new InputFilter(variables, true);
         String line;
         while (i.hasNext())
         {
             line = i.next();
-            if (!line.startsWith("#"))
+            if (line.startsWith("acceptable_target_blocks"))
             {
-                if (line.startsWith("acceptable_target_blocks"))
+                String[] check = line.split("=");
+                if (check.length > 1)
                 {
-                    String[] check = line.split("=");
-                    if (check.length > 1)
-                    {
-                        check = check[1].split(",");
-                        final HashSet<Block> acceptables = new HashSet<>();
-                        Block b;
-                        for (String aCheck : check)
-                        {
-                            b = Block.REGISTRY.getObject(new ResourceLocation(aCheck));
-                            if (b != Blocks.AIR)
-                            {
-                                acceptables.add(b);
-                            }
-                        }
-
-                        acceptedSurfaces = new Block[acceptables.size()];
-                        acceptedSurfaces = acceptables.toArray(acceptedSurfaces);
-                    }
-                }
-                else if (line.startsWith("unacceptable_target_blocks"))
-                {
-                    String[] check = line.split("=");
-                    if (check.length > 1)
-                    {
-                        check = check[1].split(",");
-                        final HashSet<Block> inacceptables = new HashSet<>();
-                        Block b;
-                        for (String aCheck : check)
-                        {
-                            b = Block.REGISTRY.getObject(new ResourceLocation(aCheck));
-                            if (b != Blocks.AIR)
-                            {
-                                inacceptables.add(b);
-                            }
-                        }
-
-                        deniedSurfaces = new Block[inacceptables.size()];
-                        deniedSurfaces = inacceptables.toArray(deniedSurfaces);
-                    }
-                }
-                else if (line.startsWith("dimensions"))
-                {
-                    String[] check = line.split("=");
                     check = check[1].split(",");
-                    height = Integer.parseInt(check[0]);
-                    width = Integer.parseInt(check[1]);
-                    length = Integer.parseInt(check[2]);
-                }
-                else if (line.startsWith("biomesToSpawnIn"))
-                {
-                    Collections.addAll(biomes, line.split("=")[1].split(","));
-                }
-                else if (line.startsWith("weight"))
-                {
-                    String[] check = line.split("=");
-                    weight = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("embed_into_distance"))
-                {
-                    String[] check = line.split("=");
-                    embed = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("allowable_overhang"))
-                {
-                    String[] check = line.split("=");
-                    overhang = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("max_leveling"))
-                {
-                    String[] check = line.split("=");
-                    leveling = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("leveling_buffer"))
-                {
-                    String[] check = line.split("=");
-                    lbuffer = Integer.parseInt(check[1]);
-                    if (lbuffer > 5)
+                    final HashSet<Block> acceptables = new HashSet<>();
+                    Block b;
+                    for (String aCheck : check)
                     {
-                        lbuffer = 5;
+                        b = Block.REGISTRY.getObject(new ResourceLocation(aCheck));
+                        if (b != Blocks.AIR)
+                        {
+                            acceptables.add(b);
+                        }
                     }
-                }
-                else if (line.startsWith("preserve_water"))
-                {
-                    String[] check = line.split("=");
-                    if (Integer.parseInt(check[1]) == 1)
-                    {
-                        preserveWater = true;
-                    }
-                }
-                else if (line.startsWith("preserve_lava"))
-                {
-                    String[] check = line.split("=");
-                    if (Integer.parseInt(check[1]) == 1)
-                    {
-                        preserveLava = true;
-                    }
-                }
-                else if (line.startsWith("random_height_offset"))
-                {
-                    /*
-                     * random_height_offset=-10,0 Moves the ruin down up to 10
-                     * Blocks.
-                     */
-                    String[] check = line.split("=");
-                    String[] bounds = check[1].split(",");
-                    randomOffMin = Integer.parseInt(bounds[0]);
-                    randomOffMax = Math.max(randomOffMin, Integer.parseInt(bounds[1]));
-                }
-                else if (line.startsWith("uniqueMinDistance"))
-                {
-                    String[] check = line.split("=");
-                    uniqueMinDistance = Integer.parseInt(check[1]);
-                }
-                else if (line.startsWith("preventRotation"))
-                {
-                    preventRotation = Integer.parseInt(line.split("=")[1]) == 1;
-                }
-                else if (line.startsWith("adjoining_template"))
-                {
-                    // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
-                    String[] vals = line.split("=")[1].split(";");
 
-                    File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + vals[0] + ".tml");
-                    if (file.exists() && file.canRead())
+                    acceptedSurfaces = new Block[acceptables.size()];
+                    acceptedSurfaces = acceptables.toArray(acceptedSurfaces);
+                }
+            }
+            else if (line.startsWith("unacceptable_target_blocks"))
+            {
+                String[] check = line.split("=");
+                if (check.length > 1)
+                {
+                    check = check[1].split(",");
+                    final HashSet<Block> inacceptables = new HashSet<>();
+                    Block b;
+                    for (String aCheck : check)
                     {
-                        RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
-                        AdjoiningTemplateData data = new AdjoiningTemplateData();
-                        data.adjoiningTemplate = adjTempl;
-                        data.relativeX = Integer.parseInt(vals[1]);
-                        data.acceptableY = Integer.parseInt(vals[2]);
-                        data.relativeZ = Integer.parseInt(vals[3]);
-                        data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
-
-                        adjoiningTemplates.add(data);
+                        b = Block.REGISTRY.getObject(new ResourceLocation(aCheck));
+                        if (b != Blocks.AIR)
+                        {
+                            inacceptables.add(b);
+                        }
                     }
+
+                    deniedSurfaces = new Block[inacceptables.size()];
+                    deniedSurfaces = inacceptables.toArray(deniedSurfaces);
+                }
+            }
+            else if (line.startsWith("dimensions"))
+            {
+                String[] check = line.split("=");
+                check = check[1].split(",");
+                height = Integer.parseInt(check[0]);
+                width = Integer.parseInt(check[1]);
+                length = Integer.parseInt(check[2]);
+            }
+            else if (line.startsWith("biomesToSpawnIn"))
+            {
+                Collections.addAll(biomes, line.split("=")[1].split(","));
+            }
+            else if (line.startsWith("weight"))
+            {
+                String[] check = line.split("=");
+                weight = Integer.parseInt(check[1]);
+            }
+            else if (line.startsWith("embed_into_distance"))
+            {
+                String[] check = line.split("=");
+                embed = Integer.parseInt(check[1]);
+            }
+            else if (line.startsWith("allowable_overhang"))
+            {
+                String[] check = line.split("=");
+                overhang = Integer.parseInt(check[1]);
+            }
+            else if (line.startsWith("max_leveling"))
+            {
+                String[] check = line.split("=");
+                leveling = Integer.parseInt(check[1]);
+            }
+            else if (line.startsWith("leveling_buffer"))
+            {
+                String[] check = line.split("=");
+                lbuffer = Integer.parseInt(check[1]);
+                if (lbuffer > 5)
+                {
+                    lbuffer = 5;
+                }
+            }
+            else if (line.startsWith("preserve_water"))
+            {
+                String[] check = line.split("=");
+                if (Integer.parseInt(check[1]) == 1)
+                {
+                    preserveWater = true;
+                }
+            }
+            else if (line.startsWith("preserve_lava"))
+            {
+                String[] check = line.split("=");
+                if (Integer.parseInt(check[1]) == 1)
+                {
+                    preserveLava = true;
+                }
+            }
+            else if (line.startsWith("random_height_offset"))
+            {
+                /*
+                 * random_height_offset=-10,0 Moves the ruin down up to 10
+                 * Blocks.
+                 */
+                String[] check = line.split("=");
+                String[] bounds = check[1].split(",");
+                randomOffMin = Integer.parseInt(bounds[0]);
+                randomOffMax = Math.max(randomOffMin, Integer.parseInt(bounds[1]));
+            }
+            else if (line.startsWith("uniqueMinDistance"))
+            {
+                String[] check = line.split("=");
+                uniqueMinDistance = Integer.parseInt(check[1]);
+            }
+            else if (line.startsWith("preventRotation"))
+            {
+                preventRotation = Integer.parseInt(line.split("=")[1]) == 1;
+            }
+            else if (line.startsWith("adjoining_template"))
+            {
+                // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
+                String[] vals = line.split("=")[1].split(";");
+
+                File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + vals[0] + ".tml");
+                if (file.exists() && file.canRead())
+                {
+                    RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
+                    AdjoiningTemplateData data = new AdjoiningTemplateData();
+                    data.adjoiningTemplate = adjTempl;
+                    data.relativeX = Integer.parseInt(vals[1]);
+                    data.acceptableY = Integer.parseInt(vals[2]);
+                    data.relativeZ = Integer.parseInt(vals[3]);
+                    data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+
+                    adjoiningTemplates.add(data);
                 }
             }
         }
@@ -935,6 +924,292 @@ public class RuinTemplate
     public Block getAirBlock()
     {
         return Blocks.AIR;
+    }
+
+    private static final Pattern patternComment = Pattern.compile("\\s*(?:#|$)");
+    private static final Pattern patternShowable = Pattern.compile("\\s*#\\s*(.*)");
+    private static final Pattern patternVersion = Pattern.compile("\\s*(\\d{1,5})(?:\\.(\\d{1,5}))?");
+    private static final Pattern patternHideDirectiveBegin = Pattern.compile("\\s*#\\[\\[HIDE(?:\\s+(\\S+))?\\s*(\\S)?");
+    private static final Pattern patternHideDirectiveEnd = Pattern.compile("\\s*#]]HIDE\\s*(\\S)?");
+    private static final Pattern patternShowDirectiveBegin = Pattern.compile("\\s*#\\[\\[SHOW(?:\\s+(\\S+))?\\s*(\\S)?");
+    private static final Pattern patternShowDirectiveEnd = Pattern.compile("\\s*#]]SHOW\\s*(\\S)?");
+
+    // An InputFilter is a filtered list of input lines. It roughly mimics a read-only Iterator into an immutable
+    // ArrayList<String>, but automatically skips over comments and provides a line number for diagnostic purposes.
+    // It also recognizes and implements a few "pre-processing" directives:
+    //     # ignore all lines between these HIDE directives when using Ruins mod version 16.8 or later
+    //     #[[HIDE 16.8
+    //     # the following rule is only seen when using a version below 16.8
+    //     rule1=0,100,stone
+    //     #]]HIDE
+    //     #
+    //     # uncomment (strip initial # from) all lines between these SHOW directives when using version 16.8 or later
+    //     #[[SHOW 16.8
+    //     ## lines intended to remain comments should start with two # characters, since the first may be removed
+    //     ## the following rule is only seen when using version 16.8 or above
+    //     #rule1=0,100,dirt
+    //     ## non-comment lines are unaffected, so the following rule is seen by any version of the mod
+    //     rule2=0,100,cobblestone
+    //     #]]SHOW
+    // Note: These directives do not generally support nesting. Do not put a HIDE section within another HIDE section,
+    // or a SHOW section within another SHOW section. Do not put a HIDE section within a SHOW section. You may,
+    // however, put a SHOW section within a HIDE section:
+    //     #[[HIDE 20.3
+    //     #[[SHOW 16.8
+    //     ## the following rule is seen when using version 16.8 up to, but not including, 20.3
+    //     #rule3=0,100,gravel
+    //     #]]SHOW
+    //     #]]HIDE
+    // Note: This feature was implemented in Ruins mod version 16.8. Specifying any version prior to that in any
+    // directive, while valid, is identical to specifying 16.8. Earlier versions will simply ignore these directives,
+    // interpreting them as ordinary comments.
+    private class InputFilter
+    {
+        private ArrayList<String> lines;
+        private Iterator<String> linesIterator;
+        private int linesIndex;
+        private String linesNext;
+        private boolean debugEnabled;
+        private boolean hiding;
+        private boolean hidingFailed;
+        private boolean showing;
+        private boolean showingFailed;
+
+        // create a new filtered input collection of lines from an unfiltered one
+        public InputFilter(ArrayList<String> linesInput, boolean debug)
+        {
+            lines = linesInput;
+            linesIterator = lines.iterator();
+            linesIndex = 0;
+            linesNext = null;
+            debugEnabled = debug;
+            hidingFailed = hiding = false;
+            showingFailed = showing = false;
+            advance();
+        }
+
+        // does the input have another filtered line?
+        public boolean hasNext()
+        {
+            return linesNext != null && linesIterator.hasNext();
+        }
+
+        // get the next filtered line of input
+        public String next()
+        {
+            String line = linesNext;
+            advance();
+            return line;
+        }
+
+        // get the current input line number
+        public int index()
+        {
+            return linesIndex;
+        }
+
+        // advance the iterator to the next non-comment line (if any)
+        private void advance()
+        {
+            linesNext = null;
+            while (linesIterator.hasNext())
+            {
+                String line = linesIterator.next();
+                ++linesIndex;
+                Matcher matcher;
+
+                // HIDE directive
+                if ((matcher = patternHideDirectiveBegin.matcher(line)).lookingAt())
+                {
+                    if (hiding || hidingFailed || showing || showingFailed)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[HIDE directive nested within another directive - directive ignored\n", name, linesIndex);
+                        }
+                        continue;
+                    }
+                    if (matcher.group(2) != null)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[HIDE directive ignoring superfluous trailing characters\n", name, linesIndex);
+                        }
+                    }
+                    hidingFailed = !(hiding = checkVersion(matcher.group(1)));
+                    if (debugEnabled && debugging)
+                    {
+                        if (hiding)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[HIDE directive passed version check - ***BEGIN LINE HIDING***\n", name, linesIndex);
+                        }
+                        else
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[HIDE directive failed version check - not hiding lines\n", name, linesIndex);
+                        }
+                    }
+                    continue;
+                }
+                else if ((matcher = patternHideDirectiveEnd.matcher(line)).lookingAt())
+                {
+                    if (showing || showingFailed)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]HIDE directive nested within #[[SHOW directive - directive ignored\n", name, linesIndex);
+                        }
+                        continue;
+                    }
+                    if (!hiding && !hidingFailed)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]HIDE directive without matching #[[HIDE - directive ignored\n", name, linesIndex);
+                        }
+                        continue;
+                    }
+                    if (matcher.group(1) != null)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]HIDE directive ignoring superfluous trailing characters\n", name, linesIndex);
+                        }
+                    }
+                    if (debugEnabled && debugging)
+                    {
+                        if (hiding)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]HIDE directive encountered - ***END LINE HIDING***\n", name, linesIndex);
+                        }
+                        else
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]HIDE directive encountered - not hiding lines\n", name, linesIndex);
+                        }
+                    }
+                    hidingFailed = hiding = false;
+                    continue;
+                }
+                if (hiding)
+                {
+                    continue;
+                }
+
+                // SHOW directive
+                if ((matcher = patternShowDirectiveBegin.matcher(line)).lookingAt())
+                {
+                    if (hidingFailed || showing || showingFailed)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[SHOW directive nested within another directive - directive ignored\n", name, linesIndex);
+                        }
+                        continue;
+                    }
+                    if (matcher.group(2) != null)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[SHOW directive ignoring superfluous trailing characters\n", name, linesIndex);
+                        }
+                    }
+                    showingFailed = !(showing = checkVersion(matcher.group(1)));
+                    if (debugEnabled && debugging)
+                    {
+                        if (showing)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[SHOW directive passed version check - ***BEGIN LINE SHOWING***\n", name, linesIndex);
+                        }
+                        else
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #[[SHOW directive failed version check - not showing lines\n", name, linesIndex);
+                        }
+                    }
+                    continue;
+                }
+                else if ((matcher = patternShowDirectiveEnd.matcher(line)).lookingAt())
+                {
+                    if (!showing && !showingFailed)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]SHOW directive without matching #[[SHOW - directive ignored\n", name, linesIndex);
+                        }
+                        continue;
+                    }
+                    if (matcher.group(1) != null)
+                    {
+                        if (debugEnabled)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]SHOW directive ignoring superfluous trailing characters\n", name, linesIndex);
+                        }
+                    }
+                    if (debugEnabled && debugging)
+                    {
+                        if (showing)
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]SHOW directive encountered - ***END LINE SHOWING***\n", name, linesIndex);
+                        }
+                        else
+                        {
+                            debugPrinter.printf("template [%s] line [%d]: #]]SHOW directive encountered - not showing lines\n", name, linesIndex);
+                        }
+                    }
+                    showingFailed = showing = false;
+                    continue;
+                }
+                if (showing && (matcher = patternShowable.matcher(line)).matches())
+                {
+                    line = matcher.group(1);
+                }
+
+                // stop when non-comment found
+                if (!patternComment.matcher(line).lookingAt())
+                {
+                    linesNext = line;
+                    break;
+                }
+            }
+        }
+
+        // is mod version >= version specified in directive?
+        private boolean checkVersion(String version)
+        {
+            Matcher matcher;
+
+            // get specified version
+            if (version == null)
+            {
+                if (debugEnabled)
+                {
+                    debugPrinter.printf("template [%s] line [%d]: missing version specification - version check fails\n", name, linesIndex);
+                }
+                return false;
+            }
+            if (!(matcher = patternVersion.matcher(version)).matches())
+            {
+                if (debugEnabled)
+                {
+                    debugPrinter.printf("template [%s] line [%d]: invalid version specification - version check fails\n", name, linesIndex);
+                }
+                return false;
+            }
+            int majorSpec = Integer.parseInt(matcher.group(1));
+            int minorSpec = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+
+            // get mod version
+            if (!(matcher = patternVersion.matcher(RuinsMod.modversion)).matches())
+            {
+                if (debugEnabled)
+                {
+                    debugPrinter.printf("template [%s] line [%d]: mod version unavailable or invalid - version check fails\n", name, linesIndex);
+                }
+                return false;
+            }
+            int majorMod = Integer.parseInt(matcher.group(1));
+            int minorMod = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+
+            return majorMod > majorSpec || majorMod == majorSpec && minorMod >= minorSpec;
+        }
     }
 
     // A VariantRuleset is a list of template rules, some of which may have a number of variant versions from which the
