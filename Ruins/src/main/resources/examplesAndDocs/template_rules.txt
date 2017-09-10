@@ -365,23 +365,80 @@ preserve_plants=0
 # been cut and pasted into the template file 3 times. Note rule names are irrelevant--rules are assigned numbers based
 # on their ordinal position in the template (the first rule is 1, the second 2, and so on, regardless of their names).
 #
-# * Alternate Rule 0: By default, rule 0 is an air block. You can now change it to something else by putting an unnamed
-# rule at the top of your rule list:
+# * Alternate rule0: By default, rule0 is an air block (well, sort of...see the next bullet, below). You can now change
+# it to something else by putting an unnamed rule at the top of your rule list:
 #     =0,100,stained_glass-7,stained_glass-8
 # It has to appear before any other rule. It cannot be a variant of a preceding rule (since there isn't one--it has to
 # start with = instead of ^), but it can be followed by variants and/or grouped variant rules. It cannot have a repeat
-# count. 
+# count.
+#
+# * New Special Background Blocks: The classic rule0 is a special air block that respects the template's settings of
+# preserve_water and preserve_lava. Not quite an air block, not quite a preserveBlock; there was no way to include such
+# a block in other rules. Now there is, with the new backgroundAir block:
+#     rule19=0,100,stone,cobblestone,backgroundAir,gravel
+# Also available are backgroundWater and backgroundLava, which do not replace air or blocks protected by the template
+# preserve_xxx settings.
+#
+# * rule0 used for Conditional Placeholder and Site Leveling: Previously, air blocks were used as placeholders to fill
+# in for conditional rules before their conditions could be evaluated. Air blocks were also used to level the base of a
+# structure site. This was problematic for partially or entirely submerged structures, leading to unsightly air
+# pockets. Now rule0 is used instead. Consider using backgroundWater as an alternate rule0 for such templates:
+#     preserve_water=1
+#     =0,100,backgroundWater
+# Similarly, preserve_lava and a backgroundLava rule0 might be used in more hellish climes.
+#
+# * Rudimentary Versioning Directives: With all this new syntax stuff, it may be desirable to conceal parts of your
+# template file from previous versions of the Ruins mod that don't support it. Here's how:
+#     # uncomment (i.e., remove initial # from) all lines between [[SHOW and ]]SHOW when running Ruins 16.8 or later
+#     #[[SHOW 16.8
+#     ## use double # for lines intended as actual comments, since the first is removed
+#     ## the following variant rules are only seen when running Ruins 16.8 or later
+#     #rule1=0,100,stone
+#     #^0,100,dirt
+#     #rule2^0,100,cobblestone
+#     #^0,100,gravel
+#     ## non-comment lines are unaffected--all versions will see the following line
+#     preserve_water=1
+#     #]]SHOW
+#     # versions earlier than 16.8 will see all the lines above (except rule3) as harmless comments
+# The converse is the ability to specify legacy sections of your template file should _only_ be used by earlier
+# versions of the mod:
+#     # ignore all lines between [[HIDE and ]]HIDE when running Ruins 16.8 or later
+#     #[[HIDE 16.8
+#     # the following rule is only seen when running a version of Ruins earlier than 16.8
+#     rule3=0,100,wool
+#     #]]HIDE
+# A few caveats. These directives generally do not support nesting. Don't put SHOW sections inside other SHOW sections,
+# or HIDE sections in other HIDE sections, or HIDE sections in SHOW sections. You _can_ put a SHOW section inside a
+# HIDE section, though, for a "from this (show) version, up to, but not including, that (hide) version" effect. Also,
+# since this feature was introduced in version 16.8, there's no point in specifying a version earlier than that; if you
+# do, the result is the same as specifying 16.8.
 #
 
 rule1=0,100,preserveBlock
-rule2=0,80,2*brick_block,dirt,stone,gravel
+#[[SHOW 16.8
+## block weighting not recognized prior to Ruins 16.8...
+#rule2=0,80,2*brick_block,dirt,stone,gravel
+#]]SHOW
+#[[HIDE 16.8
+# could still be used in Ruins 16.8 and beyond, but done this way for illustration...
+rule2=0,80,brick_block,brick_block,dirt,stone,gravel
+#]]HIDE
 rule3=0,100,brick_block
-rule4=2*0,100,log-0
-^0,100,log-2
-^0,100,log-1
-rule5^2*0,90,planks-0
-^0,80,planks-2
-^0,70,planks-1
+#[[SHOW 16.8
+## rule variants not recognized prior to Ruins 16.8...
+#rule4=2*0,100,log-0
+#^0,100,log-2
+#^0,100,log-1
+#rule5^2*0,90,planks-0
+#^0,80,planks-2
+#^0,70,planks-1
+#]]SHOW
+#[[HIDE 16.8
+# closest alternative in legacy versions...
+rule4=0,100,log-0,log-2,log-1
+rule5=0,90,planks-0,planks-2,planks-1
+#]]HIDE
 
 
 # LAYERS

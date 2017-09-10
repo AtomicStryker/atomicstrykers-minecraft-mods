@@ -540,6 +540,18 @@ public class RuinTemplateRule
         {
             return true;
         }
+        else if (dataString.equals("backgroundAir"))
+        {
+            return true;
+        }
+        else if (dataString.equals("backgroundWater"))
+        {
+            return true;
+        }
+        else if (dataString.equals("backgroundLava"))
+        {
+            return true;
+        }
         else if (dataString.startsWith("MobSpawner:"))
         {
             return true;
@@ -613,6 +625,30 @@ public class RuinTemplateRule
         if (dataString.equals("preserveBlock"))
         {
             // NOOP
+        }
+        else if (dataString.equals("backgroundAir"))
+        {
+            Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+            if (!owner.preserveBlock(b) && b != Blocks.AIR)
+            {
+                world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
+            }
+        }
+        else if (dataString.equals("backgroundWater"))
+        {
+            Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+            if (!owner.preserveBlock(b) && b != Blocks.AIR)
+            {
+                world.setBlockState(new BlockPos(x, y, z), Blocks.WATER.getDefaultState(), 2);
+            }
+        }
+        else if (dataString.equals("backgroundLava"))
+        {
+            Block b = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+            if (!owner.preserveBlock(b) && b != Blocks.AIR)
+            {
+                world.setBlockState(new BlockPos(x, y, z), Blocks.LAVA.getDefaultState(), 2);
+            }
         }
         else if (dataString.startsWith("MobSpawner:"))
         {
