@@ -367,13 +367,15 @@ public class RuinTemplate
             zDim = length;
         }
 
+        // resolve all the variant rules
+        final ArrayList<RuinTemplateRule> rules = variantRuleset.getVariants(random);
+
         // do any site leveling needed
         if (leveling > 0 && lbuffer >= 0)
         {
-            levelSite(world, world.getBlockState(new BlockPos(xBase, y, zBase)).getBlock(), xBase, y, zBase, eastwest);
+            levelSite(world, world.getBlockState(new BlockPos(xBase, y, zBase)).getBlock(), xBase, y, zBase, eastwest, random, rotate, rules.get(0));
         }
 
-        final ArrayList<RuinTemplateRule> rules = variantRuleset.getVariants(random);
         int rulenum;
         // the main loop
         while (layeriter.hasNext())
@@ -402,12 +404,12 @@ public class RuinTemplate
                     if (curRule.runLater())
                     {
                         laterun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.AIR.getDefaultState(), 2);
+                        rules.get(0).doBlock(world, random, x + x1, y + y_off, z + z1, rotate);
                     }
                     else if (curRule.runLast())
                     {
                         lastrun.add(new RuinRuleProcess(curRule, x + x1, y + y_off, z + z1, rotate));
-                        world.setBlockState(new BlockPos(x + x1, y + y_off, z + z1), Blocks.AIR.getDefaultState(), 2);
+                        rules.get(0).doBlock(world, random, x + x1, y + y_off, z + z1, rotate);
                     }
                     else
                     {
@@ -516,7 +518,7 @@ public class RuinTemplate
         }
     }
 
-    private void levelSite(World world, Block fillBlockID, int xBase, int y, int zBase, boolean eastwest)
+    private void levelSite(World world, Block fillBlockID, int xBase, int y, int zBase, boolean eastwest, Random random, int rotate, RuinTemplateRule rule0)
     {
         /*
          * Add blocks around the build site to level it in as needed. setup some
@@ -556,11 +558,7 @@ public class RuinTemplate
                 // flatten bumps
                 for (int yi = y + 1; yi <= lastY; yi++)
                 {
-                    BlockPos pos = new BlockPos(xi, yi, zi);
-                    if (!isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
-                    {
-                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
-                    }
+                    rule0.doBlock(world, random, xi, yi, zi, rotate);
                 }
             }
         }
@@ -709,9 +707,9 @@ public class RuinTemplate
                             {
                                 if (debugging)
                                 {
-                                    debugPrinter.printf("template [%s] line [%d]: creating default (air) rule #0\n", name, lineIndex);
+                                    debugPrinter.printf("template [%s] line [%d]: creating default (backgroundAir) rule #0\n", name, lineIndex);
                                 }
-                                variantRuleset.addVariantGroup(1, 1, new RuinRuleAir(debugPrinter, this));
+                                variantRuleset.addVariantGroup(1, 1, new RuinTemplateRule(debugPrinter, this, "0,100,backgroundAir"));
                             }
                         }
                         else

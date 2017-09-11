@@ -365,12 +365,26 @@ preserve_plants=0
 # been cut and pasted into the template file 3 times. Note rule names are irrelevant--rules are assigned numbers based
 # on their ordinal position in the template (the first rule is 1, the second 2, and so on, regardless of their names).
 #
-# * Alternate Rule 0: By default, rule 0 is an air block. You can now change it to something else by putting an unnamed
-# rule at the top of your rule list:
+# * Alternate rule0: By default, rule0 is an air block (well, sort of...see the next bullet, below). You can now change
+# it to something else by putting an unnamed rule at the top of your rule list:
 #     =0,100,stained_glass-7,stained_glass-8
 # It has to appear before any other rule. It cannot be a variant of a preceding rule (since there isn't one--it has to
 # start with = instead of ^), but it can be followed by variants and/or grouped variant rules. It cannot have a repeat
-# count. 
+# count.
+#
+# * New Special Background Blocks: The classic rule0 is a special air block that respects the template's settings of
+# preserve_water and preserve_lava. Not quite an air block, not quite a preserveBlock; there was no way to include such
+# a block in other rules. Now there is, with the new backgroundAir block:
+#     rule19=0,100,stone,cobblestone,backgroundAir,gravel
+# Also available are backgroundWater and backgroundLava, which do not replace air or blocks protected by the template
+# preserve_xxx settings.
+#
+# * rule0 used for Conditional Placeholder and Site Leveling: Previously, air blocks were used as placeholders to fill
+# in for conditional rules before their conditions could be evaluated. Air blocks were also used to level the base of a
+# structure site. This was problematic for partially or entirely submerged structures, leading to unsightly air
+# pockets. Now rule0 is used instead. Consider using backgroundWater as an alternate rule0 for such templates:
+#     =0,100,backgroundWater
+# Similarly, a backgroundLava rule0 might be used in more hellish climes.
 #
 
 rule1=0,100,preserveBlock
