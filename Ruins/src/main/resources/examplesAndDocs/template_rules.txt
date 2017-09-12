@@ -370,7 +370,26 @@ preserve_plants=0
 #     =0,100,stained_glass-7,stained_glass-8
 # It has to appear before any other rule. It cannot be a variant of a preceding rule (since there isn't one--it has to
 # start with = instead of ^), but it can be followed by variants and/or grouped variant rules. It cannot have a repeat
-# count. 
+# count.
+#
+# * New Background/Foreground Blocks: The classic rule0 is a special air block that respects the template's settings of
+# preserve_water and preserve_lava. Not quite an air block, not quite a preserveBlock; there was no way to include such
+# a block in other rules. Now there is, with the new background block:
+#     rule19=0,100,stone,cobblestone,2*?air,gravel
+# Any blocks can be made into background blocks by adding a "?" prefix before their names; the resultant background
+# blocks will not replace air, blocks with hardcoded preservation (currently snow layers, webs, and plants), or any
+# blocks protected by preserve_water or preserve_lava, if set. A "!" prefix does the opposite, creating a foreground
+# block which ONLY replaces air and preserved blocks. Incidentally, the existing site leveling algorithm effectively
+# uses background and foreground blocks for "flattening bumps" and "filling holes," respectively; these can now be
+# explicitly used for greater control over how a structure blends into its surroundings.
+#
+# * rule0 used for Conditional Placeholder and Site Leveling: Previously, air blocks were used as placeholders to fill
+# in for conditional rules before their conditions could be evaluated. Air blocks were also used to level the base of a
+# structure site. This was problematic for partially or entirely submerged structures, leading to unsightly air
+# pockets. Now rule0 is used instead. Consider using background water as an alternate rule0 for such templates:
+#     preserve_water=1
+#     =0,100,?water
+# Similarly, a background lava rule0 might be used in more hellish climes.
 #
 
 rule1=0,100,preserveBlock
