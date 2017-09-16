@@ -298,7 +298,7 @@ class FileHandler
                 }
             }
 
-            if ((matcher = patternSpecificBiome.matcher(read)).matches())
+            if ((matcher = patternSpecificBiome.matcher(read)).lookingAt())
             {
                 boolean found = false;
                 Biome bgb;
