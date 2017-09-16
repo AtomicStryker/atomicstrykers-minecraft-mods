@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.io.Files;
 
@@ -226,6 +228,8 @@ class FileHandler
         vars.put(biomeName, val);
     }
 
+    private static final Pattern patternSpecificBiome = Pattern.compile("\\s*specific_(\\w+)\\s*=\\s*(\\w+)\\s*(?:#|$)");
+    
     private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception
     {
         final File file = new File(dir, "ruins.txt");
@@ -238,6 +242,7 @@ class FileHandler
         String[] check;
         while (read != null)
         {
+            Matcher matcher = null;
             check = read.split("=");
             if (check[0].equals("tries_per_chunk_normal"))
             {
@@ -293,34 +298,29 @@ class FileHandler
                 }
             }
 
-            if (read.startsWith("specific_"))
+            if ((matcher = patternSpecificBiome.matcher(read)).lookingAt())
             {
-                read = read.split("_")[1];
-                check = read.split("=");
-                if (check.length > 1)
+                boolean found = false;
+                Biome bgb;
+                for (ResourceLocation rl : Biome.REGISTRY.getKeys())
                 {
-                    boolean found = false;
-                    Biome bgb;
-                    for (ResourceLocation rl : Biome.REGISTRY.getKeys())
+                    bgb = Biome.REGISTRY.getObject(rl);
+                    if (bgb != null && bgb.getRegistryName().getResourcePath().equals(matcher.group(1)))
                     {
-                        bgb = Biome.REGISTRY.getObject(rl);
-                        if (bgb != null && bgb.getRegistryName().getResourcePath().equals(check[0]))
+                        int[] val = vars.get(bgb.getRegistryName().getResourcePath());
+                        if (val != null)
                         {
-                            int[] val = vars.get(bgb.getRegistryName().getResourcePath());
-                            if (val != null)
-                            {
-                                val[CHANCE] = Integer.parseInt(check[1]);
-                                found = true;
-                                vars.put(bgb.getRegistryName().getResourcePath(), val);
-                                break;
-                            }
+                            val[CHANCE] = Integer.parseInt(matcher.group(2));
+                            found = true;
+                            vars.put(bgb.getRegistryName().getResourcePath(), val);
+                            break;
                         }
                     }
+                }
 
-                    if (!found && !disableLogging)
-                    {
-                        System.out.println("Did not find Matching Biome for config string: [" + check[0] + "]");
-                    }
+                if (!found && !disableLogging)
+                {
+                    System.out.println("Did not find Matching Biome for config string: [" + matcher.group(1) + "]");
                 }
             }
 
