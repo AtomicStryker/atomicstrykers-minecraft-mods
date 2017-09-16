@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:extrabiomes")
 public class RuinsMod
 {
-    static final String modversion = "16.8";
+    static final String modversion = "16.9";
     
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
     public static final String TEMPLATE_PATH_JAR = "ruins_config";

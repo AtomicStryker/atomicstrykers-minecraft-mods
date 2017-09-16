@@ -503,3 +503,6 @@ a: setAccessible now true
 
 16.8
 + new rule variation system by QuarterAnimal
+
+16.9
++ fix biome specific template folders with underscores in the name to work again, thanks QuarterAnimal again
