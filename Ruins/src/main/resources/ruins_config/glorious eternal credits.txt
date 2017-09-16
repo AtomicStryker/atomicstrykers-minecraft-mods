@@ -9,3 +9,7 @@ templates which i've made the new default just because.
 
 Finally, much gratefullness and wows go to Saeldur of the Minecraftforge IRC channel, who used his regex
 and python prowess for justice and converting the 1.6 template block IDs to the new 1.7 name based format.
+
+A new hope has revealed itself as QuarterAnimal implemented some great ideas as optional extensions
+to the template format, and also did pull requests for bugfixes. After so many years, i gained something from
+Open Source, i cry everytime

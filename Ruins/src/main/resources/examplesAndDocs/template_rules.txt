@@ -284,61 +284,61 @@ preserve_plants=0
 # Example: rule1=0,100,teBlock;minecraft:trapped_chest;{x:-156,y:65,z:72,Items:[0:{Slot:12b,id:5s,Count:1b,Damage:0s},1:{Slot:13b,id:24s,Count:1b,Damage:1s}],id:"Chest"}-2
 # Note: "Chain" and "Repeat" Command Blocks are classified as such by default
 #
-# --- begin proposal ---
+# Ruins 16.8 modifies the rule syntax a bit to add some new features (variants and variant groups, in particular). None
+# of these changes should break or alter the behavior of existing template files, except perhaps in pathological cases
+# exploiting undocumented or unintentional aspects of rule parsing.
 #
-# The rule syntax was modified a bit to add some new features (variants and variant groups, in particular). None of these changes
-# should break or alter the behavior of existing template files.
-#
-# Block Weighting: Instead of repeating block IDs in a rule to manipulate their probabilities of occurrence, weighting factors may
-# now be used. This can make rules shorter and, in certain circumstances, more efficient. Apply a weight to an block in a rule by
-# preceding it with a prefix of the form "n*"; this is functionally equivalent to repeating the same block n times. Valid values
-# for n are integers between 1 and 99999, inclusive. For example, the following rules are essentially identical, each producing
-# blocks of cobble, mossy cobble, and gravel with the same likelihood:
-#     rule1=0,100,cobblestone,cobblestone,mossy_cobblestone,cobblestone,gravel,cobblestone,mossy_cobblestone,mossy_cobblestone,cobblestone
-#     rule2=0,100,5*cobblestone,gravel,3*mossy_cobblestone
+# * Block Weighting: Instead of repeating block IDs in a rule to manipulate their probabilities of occurrence, weight
+# factors may now be used. This can make rules shorter and, in certain circumstances, more efficient. Apply a weight to
+# any block in a rule by preceding it with a prefix of the form "n*"; this is functionally equivalent to repeating the
+# same block n times. Valid values for n are integers between 1 and 99999, inclusive. For example, the following rules
+# are essentially identical, each producing blocks of dirt, mossy_cobblestone, and gravel with the same likelihood:
+#     rule1=0,100,dirt,dirt,mossy_cobblestone,dirt,gravel,dirt,mossy_cobblestone,mossy_cobblestone,dirt
+#     rule2=0,100,5*dirt,gravel,3*mossy_cobblestone
 # Weights are optional. If no weight is specified for a block in a rule, a weight of 1 is assumed.
 #
-# Rule Variants: Consider a platform composed of many instances of the following rule3:
+# * Rule Variants: Consider a platform composed of many instances of the following rule3:
 #     rule3=0,100,stone,dirt,cobblestone
-# Each generated structure will have a different random assortment of stone, dirt, and cobblestone blocks. Suppose, though, what
-# you really want is each platform to be a single, randomly chosen material--either all stone, or all dirt, or all cobblestone.
-# You can't do that with a regular rule, since a different color choice is made per block. You could do it with three separate
-# templates, of course, but now there's another way. For example:
+# Each generated structure will have a different random assortment of stone, dirt, and cobblestone blocks. Suppose,
+# though, what you really want is each platform to be a single, randomly chosen material--either all stone, or all
+# dirt, or all cobblestone. You can't do that with a regular rule, since a different material choice is made per block.
+# You could do it with three separate templates, of course, but now there's another way. For example:
 #     rule4=0,100,stone
 #     ^0,100,dirt
 #     ^0,100,cobblestone
-# Note "ruleXXX=" is replaced by "^" to indicate a line is a variant of the preceding rule, not a separate rule itself. Each time
-# a structure with such a rule is generated, one of these variants is randomly chosen to apply to that entire structure wherever
-# the corresponding number appears in the layer specifications.
+# Note "ruleXXX=" is replaced by "^" to indicate a line is a variant of the preceding rule, not a separate rule itself.
+# Each time a structure with such a rule is generated, one of these variants is randomly chosen to apply to that entire
+# structure wherever the corresponding number appears in the layer specifications.
 #
-# Rule Variant Weighting: Weights can be applied to rule variants to adjust the probability with which they are selected. As with
-# block weighting, a prefix of the form "n*" is placed at the beginning of the variant (i.e., just after the = or ^) to assign it
-# a weight. For example, you can use this rule for the windows in your structure:
+# * Rule Variant Weighting: Weights can be applied to rule variants to adjust the probability with which they are
+# selected. As with block weighting, a prefix of the form "n*" is placed at the beginning of the variant (i.e., just
+# after the = or ^) to assign it a weight. For example, you can use this rule for the windows in your structure:
 #     rule6=3*0,100,2*stained_glass-14
 #     ^0,100,stained_glass-4
 #     ^5*0,100,stained_glass-11
-# Most of your generated structures will have blue windows (stained_glass-11, with a weight of 5), a little more than half as many
-# will have red windows (stained_glass-14, with a weight of 3), and only a precious few will have yellow ones (stained_glass-4,
-# with a weight of 1, the default when none is specified).
+# Most of your generated structures will have blue windows (stained_glass-11, with a weight of 5), a little more than
+# half as many will have red windows (stained_glass-14, with a weight of 3), and only a precious few will have yellow
+# ones (stained_glass-4, with a weight of 1, the default when none is specified).
 #
-# Grouped Rule Variants: With variants, it may be desirable to coordinate several different rules to guarantee selections are
-# only made in particular combinations. A named rule specification using ^ instead of = creates a new rule whose variant choice
-# depends on that of the preceding rule. For example, make a small pillar with the following rule7 at the base and rule8 stacked
-# above it:
+# * Grouped Rule Variants: With variants, it may be desirable to coordinate several different rules to guarantee
+# selections are only made in particular combinations. A named rule specification using ^ instead of = creates a new
+# rule whose variant choice depends on that of the preceding rule. For example, make a small pillar with the following
+# rule7 at the base and rule8 stacked above it:
 #     rule7=0,100,redstone_block
 #     ^0,100,gold_block
 #     ^0,100,lapis_block
 #     rule8^0,100,stained_glass-14
 #     ^0,100,stained_glass-4
 #     ^0,100,stained_glass-11
-# When a structure chooses variant #1 of rule7, it will always choose variant #1 of rule8 as well, so pillars with redstone at the
-# base will have red glass (stained_glass-14) on top. Similarly, gold blocks (rule7, variant #2) will be matched with yellow glass
-# (rule8, variant #2) and lapis (rule7, variant #3) with blue (rule8, variant #3).
+# When a structure chooses variant #1 of rule7, it will always choose variant #1 of rule8 as well, so pillars with
+# redstone at the base will have red glass (stained_glass-14) on top. Similarly, gold blocks (rule7, variant #2) will
+# be matched with yellow glass (rule8, variant #2) and lapis (rule7, variant #3) with blue (rule8, variant #3).
 # 
-# Rule Variant Group Duplication: Suppose you have a structure with three fancy pillars, as described in the previous example.
-# You could make four stacks of rules7 and 8. Different structures would have different kinds of pillars, but all three pillars of
-# any one structure would be of the same type. To get variation within the same structure, you're going to need a separate group
-# of rules for each pillar--one using rule7 and 8, one using 9 and 10, and one using 11 and 12.
+# * Rule Variant Group Duplication: Suppose you have a structure with three fancy pillars, as described in the previous
+# example. You could make three stacks of rules7 and 8. Different structures would have different kinds of pillars, but
+# all three pillars of any one structure would be of the same type. To get variation within the same structure, you're
+# going to need a separate group of rules for each pillar--one using rule7 and 8, one using 9 and 10, and one using 11
+# and 12:
 #     rule9=0,100,redstone_block
 #     ^0,100,gold_block
 #     ^0,100,lapis_block
@@ -351,27 +351,45 @@ preserve_plants=0
 #     rule12^0,100,stained_glass-14
 #     ^0,100,stained_glass-4
 #     ^0,100,stained_glass-11
-# Note these rule groups are identical except for their names, and there's an easier way. By putting a repeat count of the form
-# "n*" in front of the first rule name in a variant group (the one with an =), that many identical groups are automatically
-# created. This is a bit tricky, because it does create new rules, which affects the way rules are numbered. To continue the
-# example, rule7 could be changed slightly to take advantage of this feature:
+# Note these rule groups are identical except for their names, and there's an easier way. By putting a repeat count of
+# the form "n*" in front of the first rule name in a variant group (the one with an =), that many identical groups are
+# automatically created. This is a bit tricky, because it does create new rules, which affects the way rules are
+# numbered. To continue the example, rule7 could be changed slightly to take advantage of this feature:
 #     3*rule7=0,100,redstone_block
 #     ^0,100,gold_block
 #     ^0,100,lapis_block
 #     rule8^0,100,stained_glass-14
 #     ^0,100,stained_glass-4
 #     ^0,100,stained_glass-11
-# This creates rule7 and 8 as before, but also creates rule9, 10, 11, and 12, exactly as though these lines were cut and pasted
-# into the template file 3 times. Note the rule names are irrelevant--rules are assigned numbers based on their ordinal position
-# in the template (the first rule is 1, the second 2, and so on, regardless of their names).
+# This creates rule7 and 8 as before, but also creates rule9, 10, 11, and 12 for you, exactly as though these lines had
+# been cut and pasted into the template file 3 times. Note rule names are irrelevant--rules are assigned numbers based
+# on their ordinal position in the template (the first rule is 1, the second 2, and so on, regardless of their names).
 #
-# Alternate Rule 0: By default, rule 0 is an air block. You can now change it to something else by putting an unnamed rule at the
-# top of your rule list:
+# * Alternate Rule 0: By default, rule 0 is an air block. You can now change it to something else by putting an unnamed
+# rule at the top of your rule list:
 #     =0,100,stained_glass-7,stained_glass-8
-# It has to appear before any other rule. It cannot be a variant of a preceding rule (since there isn't one--it has to start with
-# = instead of ^), but it can be followed by variants and/or grouped variant rules. It cannot have a repeat count. 
+# It has to appear before any other rule. It cannot be a variant of a preceding rule (since there isn't one--it has to
+# start with = instead of ^), but it can be followed by variants and/or grouped variant rules. It cannot have a repeat
+# count.
 #
-# --- end proposal ---
+# * New Background/Foreground Blocks: The classic rule0 is a special air block that respects the template's settings of
+# preserve_water and preserve_lava. Not quite an air block, not quite a preserveBlock; there was no way to include such
+# a block in other rules. Now there is, with the new background block:
+#     rule19=0,100,stone,cobblestone,2*?air,gravel
+# Any blocks can be made into background blocks by adding a "?" prefix before their names; the resultant background
+# blocks will not replace air, blocks with hardcoded preservation (currently snow layers, webs, and plants), or any
+# blocks protected by preserve_water or preserve_lava, if set. A "!" prefix does the opposite, creating a foreground
+# block which ONLY replaces air and preserved blocks. Incidentally, the existing site leveling algorithm effectively
+# uses background and foreground blocks for "flattening bumps" and "filling holes," respectively; these can now be
+# explicitly used for greater control over how a structure blends into its surroundings.
+#
+# * rule0 used for Conditional Placeholder and Site Leveling: Previously, air blocks were used as placeholders to fill
+# in for conditional rules before their conditions could be evaluated. Air blocks were also used to level the base of a
+# structure site. This was problematic for partially or entirely submerged structures, leading to unsightly air
+# pockets. Now rule0 is used instead. Consider using background water as an alternate rule0 for such templates:
+#     preserve_water=1
+#     =0,100,?water
+# Similarly, a background lava rule0 might be used in more hellish climes.
 #
 
 rule1=0,100,preserveBlock
