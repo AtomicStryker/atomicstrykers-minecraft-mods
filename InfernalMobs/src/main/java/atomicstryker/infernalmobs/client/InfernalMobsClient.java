@@ -187,8 +187,8 @@ public class InfernalMobsClient implements ISidedProxy
                 Entity pointedEntity = null;
                 for (Object obj : mc.world.getEntitiesWithinAABBExcludingEntity(mc.getRenderViewEntity(),
                         mc.getRenderViewEntity().getEntityBoundingBox()
-                                .offset(viewEntityLookVec.x * reachDistance, viewEntityLookVec.y * reachDistance, viewEntityLookVec.z * reachDistance)
-                                .expand((double) expandBBvalue, (double) expandBBvalue, (double) expandBBvalue)))
+                                .expand(viewEntityLookVec.x * reachDistance, viewEntityLookVec.y * reachDistance, viewEntityLookVec.z * reachDistance)
+                                .grow((double) expandBBvalue, (double) expandBBvalue, (double) expandBBvalue)))
                 {
                     iterEnt = (Entity) obj;
                     if (iterEnt.canBeCollidedWith())
