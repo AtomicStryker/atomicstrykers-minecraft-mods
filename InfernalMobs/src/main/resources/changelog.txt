@@ -1,3 +1,6 @@
+1.7.2 (hotfix)
+- bloodmc on github fixed the clientside health bars not being triggered correctly
+
 1.7.2
 - fixed crash with fake player camera entities
 
