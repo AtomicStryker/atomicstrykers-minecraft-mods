@@ -32,11 +32,13 @@ public class MM_Ghastly extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        long time = System.currentTimeMillis();
-        if (time > nextAbilityUse)
-        {
-            nextAbilityUse = time + coolDown;
-            tryAbility(mob, mob.world.getClosestPlayerToEntity(mob, 12f));
+        if (hasSteadyTarget()) {
+            long time = System.currentTimeMillis();
+            if (time > nextAbilityUse)
+            {
+                nextAbilityUse = time + coolDown;
+                tryAbility(mob, mob.world.getClosestPlayerToEntity(mob, 12f));
+            }
         }
         return super.onUpdate(mob);
     }

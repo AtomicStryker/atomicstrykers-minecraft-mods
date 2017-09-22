@@ -11,42 +11,55 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.TextFormatting;
 
 public abstract class MobModifier
-{    
+{
+    private final static int TARGETING_TICKS_BEFORE_ATTACK = 30;
+
     /**
      * next MobModifier in a linked chain, on the last one this field is null
      */
     protected MobModifier nextMod;
-    
+
     /**
      * keeps track of our past-max-bounds health patch
      */
     private boolean healthHacked;
-    
+
     /**
      * clientside health value to be displayed, because health is not networked
      */
     private float actualHealth;
-    
+
     /**
      * Display-sized (up to 5) series of Modifier Strings, buffered
      */
     private String[] bufferedNames;
-    
+
     /**
      * buffered maximum health
      */
     private float actualMaxHealth;
-    
+
     /**
      * internal mob attack target
      */
     private EntityLivingBase attackTarget;
-    
+
+    /**
+     * previous attack target, to compare across ticks and prevent nonagressive
+     * mobs popping mod effects
+     */
+    private EntityLivingBase previousAttackTarget;
+
+    /**
+     * how many ticks the mob is targeting something without interruption
+     */
+    private int targetingTicksSteadyTarget = 0;
+
     /**
      * buffered modifier size
      */
     private int bufferedSize;
-    
+
     /**
      * buffered modifier string result
      */
@@ -65,7 +78,9 @@ public abstract class MobModifier
 
     /**
      * Constructor for the chained-together case of modifiers
-     * @param nxtMod chained MobModifier instance
+     * 
+     * @param nxtMod
+     *            chained MobModifier instance
      */
     protected MobModifier(MobModifier nxtMod)
     {
@@ -77,15 +92,15 @@ public abstract class MobModifier
      * @return internal Modifier id string
      */
     public abstract String getModName();
-    
+
     /**
      * @return the complete List of linked Modifiers as their Names
      */
     public String getLinkedModName()
     {
-        return (I18n.format("translation.infernalmobs:mod."+getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
+        return (I18n.format("translation.infernalmobs:mod." + getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
     }
-    
+
     /**
      * @return same as above, but without using the translation system
      */
@@ -93,7 +108,7 @@ public abstract class MobModifier
     {
         return getModName() + " " + ((nextMod != null) ? nextMod.getLinkedModNameUntranslated() : "");
     }
-    
+
     /**
      * @return Display-sized (up to 5) series of Modifier Strings
      */
@@ -110,7 +125,7 @@ public abstract class MobModifier
             {
                 bufferedNames[index] = bufferedNames[index] + " " + m;
                 j++;
-                if (j % 5 == 0 && index+1 < bufferedNames.length)
+                if (j % 5 == 0 && index + 1 < bufferedNames.length)
                 {
                     index++;
                     bufferedNames[index] = "";
@@ -119,7 +134,7 @@ public abstract class MobModifier
         }
         return bufferedNames;
     }
-    
+
     /**
      * Helper to avoid adding the same mod twice
      */
@@ -129,21 +144,25 @@ public abstract class MobModifier
     }
 
     /**
-     * Called when local Spawn Processing is completed or when a client remote-attached Modifiers to a local Entity
-     * @param entity target mob to attach modifiers to
+     * Called when local Spawn Processing is completed or when a client
+     * remote-attached Modifiers to a local Entity
+     * 
+     * @param entity
+     *            target mob to attach modifiers to
      */
     public void onSpawningComplete(EntityLivingBase entity)
     {
         String oldTag = entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated()))
         {
-            System.out.printf("Infernal Mobs tag mismatch!! Was [%s], now trying to set [%s] \n", oldTag, getLinkedModNameUntranslated());
+            InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [%s], now trying to set [%s] \n", oldTag, getLinkedModNameUntranslated());
         }
         entity.getEntityData().setString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
     }
 
     /**
      * Passes the death event to the modifier list
+     * 
      * @return true if death should be aborted
      */
     public boolean onDeath()
@@ -165,11 +184,18 @@ public abstract class MobModifier
 
     /**
      * passes the setAttackTarget event to the modifier list
-     * @param target being passed from the event
+     * 
+     * @param target
+     *            being passed from the event
      */
     public void onSetAttackTarget(EntityLivingBase target)
     {
+        previousAttackTarget = attackTarget;
         attackTarget = target;
+        if (previousAttackTarget != target)
+        {
+            targetingTicksSteadyTarget = 0;
+        }
         if (nextMod != null)
         {
             nextMod.onSetAttackTarget(target);
@@ -178,9 +204,13 @@ public abstract class MobModifier
 
     /**
      * Modified Mob attacks something
-     * @param entity Entity being attacked
-     * @param source DamageSource instance doing the attacking
-     * @param amount unmitigated damage value
+     * 
+     * @param entity
+     *            Entity being attacked
+     * @param source
+     *            DamageSource instance doing the attacking
+     * @param amount
+     *            unmitigated damage value
      * @return damage to be applied after we processed the value
      */
     public float onAttack(EntityLivingBase entity, DamageSource source, float amount)
@@ -189,15 +219,19 @@ public abstract class MobModifier
         {
             return nextMod.onAttack(entity, source, amount);
         }
-        
+
         return amount;
     }
 
     /**
      * Modified Mob is being hurt
-     * @param mob entity instance
-     * @param source Damagesource doing the hurting
-     * @param amount unmitigated damage value
+     * 
+     * @param mob
+     *            entity instance
+     * @param source
+     *            Damagesource doing the hurting
+     * @param amount
+     *            unmitigated damage value
      * @return damage to be applied after we processed the value
      */
     public float onHurt(EntityLivingBase mob, DamageSource source, float amount)
@@ -208,8 +242,7 @@ public abstract class MobModifier
         }
         else if (source.getTrueSource() != null)
         {
-            if (source.getTrueSource().world.isRemote
-            && source.getTrueSource() instanceof EntityPlayer)
+            if (source.getTrueSource().world.isRemote && source.getTrueSource() instanceof EntityPlayer)
             {
                 InfernalMobsCore.instance().sendHealthRequestPacket(mob);
             }
@@ -217,7 +250,7 @@ public abstract class MobModifier
 
         return amount;
     }
-    
+
     /**
      * passes the fall event to the modifier list
      */
@@ -225,7 +258,7 @@ public abstract class MobModifier
     {
         return nextMod != null && nextMod.onFall(distance);
     }
-    
+
     /**
      * passes the jump event to the modifier list
      */
@@ -236,10 +269,10 @@ public abstract class MobModifier
             nextMod.onJump(entityLiving);
         }
     }
-    
+
     /**
-     * passes the update event to the modifier list
-     * the return value is currently unused
+     * passes the update event to the modifier list the return value is
+     * currently unused
      */
     public boolean onUpdate(EntityLivingBase mob)
     {
@@ -253,7 +286,7 @@ public abstract class MobModifier
             {
                 attackTarget = mob.world.getClosestPlayerToEntity(mob, 7.5f);
             }
-            
+
             if (attackTarget != null)
             {
                 if (attackTarget.isDead || attackTarget.getDistanceToEntity(mob) > 15f)
@@ -265,11 +298,30 @@ public abstract class MobModifier
 
         return false;
     }
-    
+
     /**
-     * clientside helper method. Due to the health not being networked, we keep track of it
-     * internally, here. Also, this is a good spot for the more-than-allowed health hack.
-     * @param mob entity instance
+     * used by mods with offensive onUpdate functions - increments the steady
+     * target ticker which is wiped when a target is reset and checks the amount
+     */
+    public boolean hasSteadyTarget()
+    {
+        if (attackTarget != null) {
+            targetingTicksSteadyTarget++;
+            if (targetingTicksSteadyTarget > TARGETING_TICKS_BEFORE_ATTACK)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * clientside helper method. Due to the health not being networked, we keep
+     * track of it internally, here. Also, this is a good spot for the
+     * more-than-allowed health hack.
+     * 
+     * @param mob
+     *            entity instance
      */
     public float getActualHealth(EntityLivingBase mob)
     {
@@ -277,12 +329,13 @@ public abstract class MobModifier
         {
             increaseHealthForMob(mob);
         }
-        
+
         return actualHealth;
     }
-    
+
     /**
-     * Prevents exponential health increase from re-loading the same infernal mob again and again
+     * Prevents exponential health increase from re-loading the same infernal
+     * mob again and again
      */
     public void setHealthAlreadyHacked(EntityLivingBase mob)
     {
@@ -292,7 +345,7 @@ public abstract class MobModifier
             healthHacked = true;
         }
     }
-    
+
     private void increaseHealthForMob(EntityLivingBase mob)
     {
         if (!healthHacked)
@@ -303,9 +356,10 @@ public abstract class MobModifier
             healthHacked = true;
         }
     }
-    
+
     /**
-     * @param mob entity instance
+     * @param mob
+     *            entity instance
      * @return buffered modified max health
      */
     public float getActualMaxHealth(EntityLivingBase mob)
@@ -316,23 +370,25 @@ public abstract class MobModifier
         }
         return actualMaxHealth;
     }
-    
+
     /**
-     * clientside receiving end of health packets sent from the InfernalMobs server instance
+     * clientside receiving end of health packets sent from the InfernalMobs
+     * server instance
      */
     public void setActualHealth(float health, float maxHealth)
     {
         actualHealth = health;
         actualMaxHealth = maxHealth;
     }
-    
+
     protected EntityLivingBase getMobTarget()
-    {        
+    {
         return attackTarget;
     }
 
     /**
-     * @return Array of classes an EntityLiving cannot equal, implement or extend in order for this MobModifier to be applied to it
+     * @return Array of classes an EntityLiving cannot equal, implement or
+     *         extend in order for this MobModifier to be applied to it
      */
     public Class<?>[] getBlackListMobClasses()
     {
@@ -340,7 +396,9 @@ public abstract class MobModifier
     }
 
     /**
-     * @return Array of MobModifiers a considered MobModifier should not be mixed with. Both sides need to exclude each other for this to work.
+     * @return Array of MobModifiers a considered MobModifier should not be
+     *         mixed with. Both sides need to exclude each other for this to
+     *         work.
      */
     public Class<?>[] getModsNotToMixWith()
     {
@@ -350,10 +408,9 @@ public abstract class MobModifier
     @Override
     public boolean equals(Object o)
     {
-        return (o instanceof MobModifier
-                && ((MobModifier)o).getModName().equals(getModName()));
+        return (o instanceof MobModifier && ((MobModifier) o).getModName().equals(getModName()));
     }
-    
+
     /**
      * @return size of linked Mod list
      */
@@ -369,10 +426,10 @@ public abstract class MobModifier
                 nextmod = nextmod.nextMod;
             }
         }
-        
+
         return bufferedSize;
     }
-    
+
     /**
      * Should be overridden by modifiers to provide possible name prefixes
      */
@@ -380,7 +437,7 @@ public abstract class MobModifier
     {
         return null;
     }
-    
+
     /**
      * Should be overridden by modifiers to provide possible name suffixes
      */
@@ -388,10 +445,12 @@ public abstract class MobModifier
     {
         return null;
     }
-    
+
     /**
      * Creates the Entity name the Infernal Mobs GUI displays, and buffers it
-     * @param target Entity to create the Name from
+     * 
+     * @param target
+     *            Entity to create the Name from
      * @return Entity display name such as 'Rare Zombie'
      */
     public String getEntityDisplayName(EntityLivingBase target)
@@ -403,22 +462,26 @@ public abstract class MobModifier
             {
                 buffer = "Monster";
             }
-            String[] subStrings = buffer.split("\\."); // in case of Package.Class.EntityName derps
+            String[] subStrings = buffer.split("\\."); // in case of
+                                                       // Package.Class.EntityName
+                                                       // derps
             if (subStrings.length > 1)
             {
-                buffer = subStrings[subStrings.length-1]; // reduce that to EntityName before proceeding
+                buffer = subStrings[subStrings.length - 1]; // reduce that to
+                                                            // EntityName before
+                                                            // proceeding
             }
             buffer = buffer.replaceFirst("Entity", "");
-            
-            String entLoc = "translation.infernalmobs:entity."+buffer;
+
+            String entLoc = "translation.infernalmobs:entity." + buffer;
             String entTrans = I18n.format(entLoc);
             if (!entLoc.equals(entTrans))
             {
                 buffer = entTrans;
             }
-            
+
             int size = getModSize();
-            
+
             int randomMod = target.getRNG().nextInt(getModSize());
             MobModifier mod = this;
             while (randomMod > 0)
@@ -426,35 +489,34 @@ public abstract class MobModifier
                 mod = mod.nextMod;
                 randomMod--;
             }
-            
+
             String modprefix = "";
             if (mod.getModNamePrefix() != null)
             {
                 modprefix = mod.getModNamePrefix()[target.getRNG().nextInt(mod.getModNamePrefix().length)];
-                modprefix = I18n.format("translation.infernalmobs:prefix."+modprefix);
+                modprefix = I18n.format("translation.infernalmobs:prefix." + modprefix);
             }
-            
-            String prefix = size <= 5 ? TextFormatting.AQUA+I18n.format("translation.infernalmobs:rareClass") 
-                    : size <= 10 ? TextFormatting.YELLOW+I18n.format("translation.infernalmobs:ultraClass") 
-                            : TextFormatting.GOLD+I18n.format("translation.infernalmobs:infernalClass");
 
-            buffer = prefix+modprefix+buffer;
-            
+            String prefix = size <= 5 ? TextFormatting.AQUA + I18n.format("translation.infernalmobs:rareClass")
+                    : size <= 10 ? TextFormatting.YELLOW + I18n.format("translation.infernalmobs:ultraClass") : TextFormatting.GOLD + I18n.format("translation.infernalmobs:infernalClass");
+
+            buffer = prefix + modprefix + buffer;
+
             if (size > 1)
             {
                 mod = mod.nextMod != null ? mod.nextMod : this;
                 if (mod.getModNameSuffix() != null)
                 {
                     String pickedSuffix = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
-                    pickedSuffix = I18n.format("translation.infernalmobs:suffix."+pickedSuffix);
-                    buffer = buffer+pickedSuffix;
+                    pickedSuffix = I18n.format("translation.infernalmobs:suffix." + pickedSuffix);
+                    buffer = buffer + pickedSuffix;
                 }
             }
-            
+
             bufferedEntityName = buffer;
         }
-        
+
         return bufferedEntityName;
     }
-    
+
 }

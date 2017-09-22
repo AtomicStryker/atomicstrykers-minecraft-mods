@@ -81,7 +81,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-@Mod(modid = "infernalmobs", name = "Infernal Mobs", version = "1.7.2")
+@Mod(modid = "infernalmobs", name = "Infernal Mobs", version = "1.7.3")
 public class InfernalMobsCore
 {
     private final long existCheckDelay = 5000L;
@@ -168,7 +168,7 @@ public class InfernalMobsCore
 
         proxy.load();
 
-        System.out.println("InfernalMobsCore load() completed! Modifiers ready: " + mobMods.size());
+        LOGGER.info("InfernalMobsCore load() completed! Modifiers ready: " + mobMods.size() + ", config file at: " + config.getConfigFile().getAbsolutePath());
     }
 
     @EventHandler
@@ -248,23 +248,20 @@ public class InfernalMobsCore
         disableHealthBar = config.get(Configuration.CATEGORY_GENERAL, "disableGUIoverlay", false, "Disables the ingame Health and Name overlay").getBoolean(false);
         modHealthFactor = config.get(Configuration.CATEGORY_GENERAL, "mobHealthFactor", "1.0", "Multiplier applied ontop of all of the modified Mobs health").getDouble(1.0D);
 
-        parseItemsForList(config
-                .get(Configuration.CATEGORY_GENERAL, "droppedItemIDsElite",
-                        "iron_shovel,iron_pickaxe,iron_axe,iron_sword,iron_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,iron_helmet,iron_chestplate,iron_leggings,iron_boots,cookie-0-6",
-                        "List of equally likely to drop Items for Elites, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
-                .getString(), instance.dropIdListElite);
+        parseItemsForList(config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDsElite",
+                "iron_shovel,iron_pickaxe,iron_axe,iron_sword,iron_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,iron_helmet,iron_chestplate,iron_leggings,iron_boots,cookie-0-6",
+                "List of equally likely to drop Items for Elites, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString(),
+                instance.dropIdListElite);
 
-        parseItemsForList(config
-                .get(Configuration.CATEGORY_GENERAL, "droppedItemIDsUltra",
-                        "bow,iron_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,iron_helmet,iron_chestplate,iron_leggings,iron_boots,golden_helmet,golden_chestplate,golden_leggings,golden_boots,golden_apple,blaze_powder-0-3,enchanted_book",
-                        "List of equally likely to drop Items for Ultras, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
-                .getString(), instance.dropIdListUltra);
+        parseItemsForList(config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDsUltra",
+                "bow,iron_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,iron_helmet,iron_chestplate,iron_leggings,iron_boots,golden_helmet,golden_chestplate,golden_leggings,golden_boots,golden_apple,blaze_powder-0-3,enchanted_book",
+                "List of equally likely to drop Items for Ultras, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString(),
+                instance.dropIdListUltra);
 
-        parseItemsForList(config
-                .get(Configuration.CATEGORY_GENERAL, "droppedItemIDsInfernal",
-                        "diamond-0-3,diamond_sword,diamond_shovel,diamond_pickaxe,diamond_axe,diamond_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,diamond_helmet,diamond_chestplate,diamond_leggings,diamond_boots,ender_pearl,enchanted_book",
-                        "List of equally likely to drop Items for Infernals, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog")
-                .getString(), instance.dropIdListInfernal);
+        parseItemsForList(config.get(Configuration.CATEGORY_GENERAL, "droppedItemIDsInfernal",
+                "diamond-0-3,diamond_sword,diamond_shovel,diamond_pickaxe,diamond_axe,diamond_hoe,chainmail_helmet,chainmail_chestplate,chainmail_leggings,chainmail_boots,diamond_helmet,diamond_chestplate,diamond_leggings,diamond_boots,ender_pearl,enchanted_book",
+                "List of equally likely to drop Items for Infernals, seperated by commas, syntax: ID-meta-stackSize-stackSizeRandomizer, everything but ID is optional, see changelog").getString(),
+                instance.dropIdListInfernal);
 
         maxDamage = config.get(Configuration.CATEGORY_GENERAL, "maxOneShotDamage", 10d, "highest amount of damage an Infernal Mob or reflecting Mod will do in a single strike").getDouble(10d);
 

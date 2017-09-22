@@ -33,7 +33,7 @@ public class MM_Cloaking extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (getMobTarget() != null
+        if (hasSteadyTarget()
         && getMobTarget() instanceof EntityPlayer)
         {
             tryAbility(mob);

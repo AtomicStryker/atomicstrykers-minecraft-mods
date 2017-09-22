@@ -30,7 +30,7 @@ public class MM_Quicksand extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (getMobTarget() != null
+        if (hasSteadyTarget()
         && InfernalMobsCore.instance().getIsEntityAllowedTarget(getMobTarget())
         && mob.canEntityBeSeen(getMobTarget())
         && ++ticker == 50)

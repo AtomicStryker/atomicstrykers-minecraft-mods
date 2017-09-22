@@ -35,7 +35,7 @@ public class MM_Gravity extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (getMobTarget() != null && getMobTarget() instanceof EntityPlayer)
+        if (hasSteadyTarget() && getMobTarget() instanceof EntityPlayer)
         {
             tryAbility(mob, getMobTarget());
         }
