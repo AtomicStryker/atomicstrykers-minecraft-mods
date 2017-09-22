@@ -32,6 +32,10 @@ public class MM_Choke extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
+        if (!hasSteadyTarget()) {
+            return super.onUpdate(mob);
+        }
+        
         if (getMobTarget() != lastTarget)
         {
             lastAir = -999;

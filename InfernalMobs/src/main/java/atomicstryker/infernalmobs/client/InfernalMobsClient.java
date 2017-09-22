@@ -1,8 +1,14 @@
 package atomicstryker.infernalmobs.client;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 
 import atomicstryker.infernalmobs.common.ISidedProxy;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
@@ -20,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -85,11 +92,7 @@ public class InfernalMobsClient implements ISidedProxy
     @SubscribeEvent
     public void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event)
     {
-        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || event.getType() != RenderGameOverlayEvent.ElementType.BOSSHEALTH || mc.ingameGUI.getBossOverlay().shouldPlayEndBossMusic()) // TODO
-                                                                                                                                                                                                // probably
-                                                                                                                                                                                                // needs
-                                                                                                                                                                                                // more
-                                                                                                                                                                                                // logic
+        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || event.getType() != RenderGameOverlayEvent.ElementType.BOSSHEALTH || mc.ingameGUI.getBossOverlay().shouldPlayEndBossMusic())
         {
             return;
         }
@@ -160,71 +163,78 @@ public class InfernalMobsClient implements ISidedProxy
         }
     }
 
-    private Entity getEntityCrosshairOver(float renderTick, Minecraft mc)
+    private Entity getEntityCrosshairOver(float partialTicks, Minecraft mc)
     {
+
         Entity returnedEntity = null;
+        Entity viewEntity = mc.getRenderViewEntity();
 
-        if (mc.getRenderViewEntity() != null)
+        if (mc.world != null && viewEntity != null)
         {
-            if (mc.world != null)
+            double distance = NAME_VISION_DISTANCE;
+            RayTraceResult traceResult = viewEntity.rayTrace(distance, partialTicks);
+            Vec3d viewEntEyeVec = viewEntity.getPositionEyes(partialTicks);
+
+            if (traceResult != null)
             {
-                double reachDistance = NAME_VISION_DISTANCE;
-                final RayTraceResult mopos = mc.getRenderViewEntity().rayTrace(reachDistance, renderTick);
-                double reachDist2 = reachDistance;
-                final Vec3d viewEntPositionVec = mc.getRenderViewEntity().getPositionVector();
+                distance = traceResult.hitVec.distanceTo(viewEntEyeVec);
+            }
 
-                if (mopos != null)
-                {
-                    reachDist2 = mopos.hitVec.squareDistanceTo(viewEntPositionVec);
-                }
-
-                final Vec3d viewEntityLookVec = mc.getRenderViewEntity().getLook(renderTick);
-                final Vec3d actualReachVector = viewEntPositionVec.addVector(viewEntityLookVec.x * reachDistance, viewEntityLookVec.y * reachDistance,
-                        viewEntityLookVec.z * reachDistance);
-                float expandBBvalue = 1.0F;
-                double lowestDistance = reachDist2;
-                Entity iterEnt;
-                Entity pointedEntity = null;
-                for (Object obj : mc.world.getEntitiesWithinAABBExcludingEntity(mc.getRenderViewEntity(),
-                        mc.getRenderViewEntity().getEntityBoundingBox()
-                                .expand(viewEntityLookVec.x * reachDistance, viewEntityLookVec.y * reachDistance, viewEntityLookVec.z * reachDistance)
-                                .grow((double) expandBBvalue, (double) expandBBvalue, (double) expandBBvalue)))
-                {
-                    iterEnt = (Entity) obj;
-                    if (iterEnt.canBeCollidedWith())
+            Vec3d lookVector = viewEntity.getLook(1.0F);
+            Vec3d viewEntEyeRay = viewEntEyeVec.addVector(lookVector.x * distance, lookVector.y * distance, lookVector.z * distance);
+            Vec3d intersectVector = null;
+            List<Entity> list = this.mc.world.getEntitiesInAABBexcluding(viewEntity,
+                    viewEntity.getEntityBoundingBox().expand(lookVector.x * distance, lookVector.y * distance, lookVector.z * distance).grow(1.0D, 1.0D, 1.0D),
+                    Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
                     {
-                        float entBorderSize = iterEnt.getCollisionBorderSize();
-                        AxisAlignedBB entHitBox = iterEnt.getEntityBoundingBox().expand((double) entBorderSize, (double) entBorderSize, (double) entBorderSize);
-                        RayTraceResult interceptObjectPosition = entHitBox.calculateIntercept(viewEntPositionVec, actualReachVector);
-
-                        if (entHitBox.contains(viewEntPositionVec))
+                        public boolean apply(@Nullable Entity e)
                         {
-                            if (0.0D < lowestDistance || lowestDistance == 0.0D)
+                            return e != null && e.canBeCollidedWith();
+                        }
+                    }));
+
+            for (Entity candidateHit : list)
+            {
+                AxisAlignedBB axisalignedbb = candidateHit.getEntityBoundingBox().grow((double) candidateHit.getCollisionBorderSize());
+                RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(viewEntEyeVec, viewEntEyeRay);
+
+                if (axisalignedbb.contains(viewEntEyeVec))
+                {
+                    if (distance >= 0.0D)
+                    {
+                        returnedEntity = candidateHit;
+                        intersectVector = raytraceresult == null ? viewEntEyeVec : raytraceresult.hitVec;
+                        distance = 0.0D;
+                    }
+                }
+                else if (raytraceresult != null)
+                {
+                    double d3 = viewEntEyeVec.distanceTo(raytraceresult.hitVec);
+                    if (d3 < distance || distance == 0.0D)
+                    {
+                        if (candidateHit.getLowestRidingEntity() == viewEntity.getLowestRidingEntity() && !candidateHit.canRiderInteract())
+                        {
+                            if (distance == 0.0D)
                             {
-                                pointedEntity = iterEnt;
-                                lowestDistance = 0.0D;
+                                returnedEntity = candidateHit;
+                                intersectVector = raytraceresult.hitVec;
                             }
                         }
-                        else if (interceptObjectPosition != null)
+                        else
                         {
-                            double distanceToEnt = viewEntPositionVec.distanceTo(interceptObjectPosition.hitVec);
-
-                            if (distanceToEnt < lowestDistance || lowestDistance == 0.0D)
-                            {
-                                pointedEntity = iterEnt;
-                                lowestDistance = distanceToEnt;
-                            }
+                            returnedEntity = candidateHit;
+                            intersectVector = raytraceresult.hitVec;
+                            distance = d3;
                         }
                     }
                 }
+            }
 
-                if (pointedEntity != null && (lowestDistance < reachDist2 || mopos == null))
-                {
-                    returnedEntity = pointedEntity;
-                }
+            if (returnedEntity != null && viewEntEyeVec.distanceTo(intersectVector) > NAME_VISION_DISTANCE)
+            {
+                returnedEntity = null;
             }
         }
-
         return returnedEntity;
     }
 
