@@ -165,7 +165,10 @@ public class RuinTemplateRule
                 // because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
                 blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
-                debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i] + ", weight: " + blockWeights[i] + ", preserve: " + preservePolicies[i]);
+                if (excessiveDebugging)
+                {
+                    debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i] + ", weight: " + blockWeights[i] + ", preserve: " + preservePolicies[i]);
+                }
             }
         }
         // not command blocks
@@ -357,7 +360,10 @@ public class RuinTemplateRule
             }
             String capture = rule.substring(openingIndex, closingIndex + 1);
             nbttags.add(capture);
-            debugPrinter.println("template " + owner.getName() + " contains nbt tag: " + capture);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("template " + owner.getName() + " contains nbt tag: " + capture);
+            }
             String pre = rule.substring(0, openingIndex);
             String post = rule.substring(closingIndex + 1, rule.length());
             rule = pre + "NBT" + nbttags.size() + post;
@@ -795,19 +801,28 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("teBlock;"))
         {
-            debugPrinter.println("teBlock about to be placed: " + dataString);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("teBlock about to be placed: " + dataString);
+            }
             // examples: teBlock;minecraft:trapped_chest;{...nbt json...},
             // teBlock;minecraft:trapped_chest;{...nbt json...}-4
             String[] in = dataString.split(";");
             Block b = Block.REGISTRY.getObject(new ResourceLocation(in[1]));
-            debugPrinter.println("teBlock object from [" + in[1] + "]: " + b);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("teBlock object from [" + in[1] + "]: " + b);
+            }
             if (b != Blocks.AIR)
             {
                 BlockPos p = new BlockPos(x, y, z);
                 try
                 {
                     NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
-                    debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
+                    if (excessiveDebugging)
+                    {
+                        debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
+                    }
                     world.setBlockState(p, b.getStateFromMeta(blockMDs[blocknum]), rotate);
                     TileEntity tenew = TileEntity.create(world, tc);
                     world.removeTileEntity(p);
@@ -1030,7 +1045,10 @@ public class RuinTemplateRule
 
             List<ItemStack> lootFromPools = loottable.generateLootForPools(random, lootContextBuilder.build());
             int toRemove = lootFromPools.size() - targetCount;
-            debugPrinter.println("addChestGenChest running with gen[" + gen + "], loot pool size " + lootFromPools.size() + ", targetCount " + targetCount);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("addChestGenChest running with gen[" + gen + "], loot pool size " + lootFromPools.size() + ", targetCount " + targetCount);
+            }
             if (targetCount > 0 && toRemove > 0)
             {
                 Collections.shuffle(lootFromPools);
@@ -1042,7 +1060,10 @@ public class RuinTemplateRule
                     toRemove--;
                 }
             }
-            debugPrinter.println("addChestGenChest post removal loot pool size " + lootFromPools.size());
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("addChestGenChest post removal loot pool size " + lootFromPools.size());
+            }
 
             List<Integer> emptySlotsRandomized = getEmptySlotsRandomized(chest, random);
             shuffleItems(lootFromPools, emptySlotsRandomized.size(), random);
@@ -1175,10 +1196,16 @@ public class RuinTemplateRule
         String[] itemStrings = itemDataWithoutNBT.split(Pattern.quote("+"));
         String[] hashsplit;
         Object o;
-        debugPrinter.println("itemStrings length: " + itemStrings.length);
+        if (excessiveDebugging)
+        {
+            debugPrinter.println("itemStrings length: " + itemStrings.length);
+        }
         for (String itemstring : itemStrings)
         {
-            debugPrinter.println("itemString: " + itemstring);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("itemString: " + itemstring);
+            }
             hashsplit = itemstring.split("#");
 
             int itemStackSize = 1;
@@ -1195,7 +1222,10 @@ public class RuinTemplateRule
             int itemMeta = hashsplit.length > 2 ? Integer.valueOf(hashsplit[2]) : 0;
             int targetslot = hashsplit.length > 3 ? Integer.valueOf(hashsplit[3]) : -1;
             o = tryFindingObject(hashsplit[0]);
-            debugPrinter.println(hashsplit[0] + " resolved to object " + o);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println(hashsplit[0] + " resolved to object " + o);
+            }
 
             putItem = null;
             if (o instanceof Block)
@@ -1206,7 +1236,10 @@ public class RuinTemplateRule
             {
                 putItem = new ItemStack(((Item) o), itemStackSize, itemMeta);
             }
-            debugPrinter.println("itemstack instance: " + putItem);
+            if (excessiveDebugging)
+            {
+                debugPrinter.println("itemstack instance: " + putItem);
+            }
 
             if (putItem != null)
             {
@@ -1215,7 +1248,10 @@ public class RuinTemplateRule
                     try
                     {
                         hashsplit[1] = restoreNBTTags(hashsplit[1], nbtTags);
-                        debugPrinter.println("trying to apply nbt tag: " + hashsplit[1]);
+                        if (excessiveDebugging)
+                        {
+                            debugPrinter.println("trying to apply nbt tag: " + hashsplit[1]);
+                        }
                         putItem.setTagCompound(JsonToNBT.getTagFromJson(hashsplit[1]));
                     }
                     catch (NBTException e)

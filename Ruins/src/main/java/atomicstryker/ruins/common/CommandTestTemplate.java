@@ -40,11 +40,12 @@ class CommandTestTemplate extends CommandBase
     public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
         EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
+        boolean is_player = player != null;
         int xpos, ypos, zpos;
         xpos = sender.getPosition().getX();
         ypos = sender.getPosition().getY();
         zpos = sender.getPosition().getZ();
-        if (player != null && args.length < 4)
+        if (is_player && args.length < 4)
         {
             if (args.length < 1)
             {
@@ -60,7 +61,7 @@ class CommandTestTemplate extends CommandBase
             }
             else
             {
-                tryBuild(sender, args, xpos, ypos - 1, zpos);
+                tryBuild(sender, args, xpos, ypos - 1, zpos, is_player);
             }
         }
         else if (args.length >= 4)
@@ -69,12 +70,12 @@ class CommandTestTemplate extends CommandBase
             {
                 if (args[2].equals("_"))
                 {
-                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), -1, (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
+                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), -1, (int) parseDouble(zpos, args[3], -30000000, 30000000, false), is_player);
                 }
                 else
                 {
                     tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), (int) parseDouble(ypos, args[2], -30000000, 30000000, false) - 1,
-                            (int) parseDouble(zpos, args[3], -30000000, 30000000, false));
+                            (int) parseDouble(zpos, args[3], -30000000, 30000000, false), is_player);
                 }
             }
             catch (NumberInvalidException e)
@@ -88,7 +89,7 @@ class CommandTestTemplate extends CommandBase
         }
     }
 
-    private void tryBuild(ICommandSender sender, String[] args, int x, int y, int z)
+    private void tryBuild(ICommandSender sender, String[] args, int x, int y, int z, boolean is_player)
     {
         String target = args[0];
         if (!target.contains("/"))
@@ -101,7 +102,7 @@ class CommandTestTemplate extends CommandBase
         {
             try
             {
-                parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), true);
+                parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), is_player);
                 int rotation = (args.length > 4) ? Integer.parseInt(args[4]) : RuinsMod.DIR_NORTH;
 
                 if (parsedRuin != null)
@@ -126,7 +127,7 @@ class CommandTestTemplate extends CommandBase
                         }
                     }
 
-                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, true, true)))
+                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, is_player, true)))
                     {
                         sender.sendMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
                     }
@@ -135,7 +136,7 @@ class CommandTestTemplate extends CommandBase
                         int resultY = parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, x, y, z, rotation);
                         if (resultY > 0)
                         {
-                            MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, resultY, z, rotation, true, false));
+                            MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, resultY, z, rotation, is_player, false));
                         }
                         parsedRuin = null;
                     }
