@@ -107,10 +107,6 @@ class FileHandler
                 HashSet<RuinTemplate> set = new HashSet<>();
                 templates.put(RuinsMod.BIOME_ANY, set);
                 addRuins(pw, new File(templPath, RuinsMod.BIOME_ANY), RuinsMod.BIOME_ANY, set);
-                int[] val = new int[3];
-                val[COUNT] = templates.get(RuinsMod.BIOME_ANY).size();
-                vars.put(RuinsMod.BIOME_ANY, val);
-                recalcBiomeWeight(RuinsMod.BIOME_ANY);
             }
             catch (Exception e)
             {
@@ -137,6 +133,15 @@ class FileHandler
                         printErrorToLog(pw, e, "There was an error when loading the " + bgb.getRegistryName().getResourcePath() + " ruins templates:");
                     }
                 }
+            }
+
+            // after all templates are loaded, calculate biome template counts and weights
+            for (String bname: templates.keySet())
+            {
+                int[] val = new int[3];
+                val[COUNT] = templates.get(bname).size();
+                vars.put(bname, val);
+                recalcBiomeWeight(bname);
             }
 
             /*
@@ -199,13 +204,14 @@ class FileHandler
         // pw.println("Loading the " + bname + " ruins templates...");
         pw.flush();
         File path_biome = new File(dir, bname);
-        HashSet<RuinTemplate> set = new HashSet<>();
-        templates.put(bname, set);
+        // if no template entry for this biome, create (empty) one
+        // may already exist if this biome appeared in earlier biomesToSpawnIn list
+        if (!templates.containsKey(bname))
+        {
+            templates.put(bname, new HashSet<>());
+        }
+        HashSet<RuinTemplate> set = templates.get(bname);
         addRuins(pw, path_biome, bname, set);
-        int[] val = new int[3];
-        val[COUNT] = templates.get(bname).size();
-        vars.put(bname, val);
-        recalcBiomeWeight(bname);
     }
 
     private void printErrorToLog(PrintWriter pw, Exception e, String msg)
@@ -229,7 +235,7 @@ class FileHandler
     }
 
     private static final Pattern patternSpecificBiome = Pattern.compile("\\s*specific_(\\w+)\\s*=\\s*(\\w+)\\s*(?:#|$)");
-    
+
     private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception
     {
         final File file = new File(dir, "ruins.txt");
@@ -351,7 +357,12 @@ class FileHandler
                             {
                                 if (!biomeName.equals(name))
                                 {
-                                    templates.get(name).add(r);
+                                    // if no template entry for this biome, create (empty) one
+                                    if (!templates.containsKey(biomeName))
+                                    {
+                                        templates.put(biomeName, new HashSet<>());
+                                    }
+                                    templates.get(biomeName).add(r);
                                 }
                             }
                         }
