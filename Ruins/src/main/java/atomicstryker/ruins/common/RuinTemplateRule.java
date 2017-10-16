@@ -241,7 +241,7 @@ public class RuinTemplateRule
                         blockIDs[i] = r.tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == r.getAirBlock())
                         {
-                            if (!data[0].equals("air"))
+                            if (!isAir(data[0]))
                             {
                                 blockIDs[i] = null;
                                 if (!isKnownSpecialRule(blockStrings[i]))
@@ -292,7 +292,7 @@ public class RuinTemplateRule
                     else
                     {
                         blockIDs[i] = r.tryFindingBlockOfName(blockRules[i + 2]);
-                        if (blockIDs[i] == r.getAirBlock() && !data[0].equals("air"))
+                        if (blockIDs[i] == r.getAirBlock() && !isAir(blockRules[i + 2]))
                         {
                             // debugPrinter.println("Rule [" + rule + "] in
                             // template " + owner.getName()+" has something
@@ -2498,4 +2498,8 @@ public class RuinTemplateRule
         return CustomRotationMapping.getMapping(blockID, metadata, dir);
     }
 
+    private boolean isAir(String block)
+    {
+        return block.equals("air") || block.equals("minecraft:air");
+    }
 }
