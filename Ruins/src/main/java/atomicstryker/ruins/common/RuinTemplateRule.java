@@ -241,7 +241,7 @@ public class RuinTemplateRule
                         blockIDs[i] = r.tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == r.getAirBlock())
                         {
-                            if (!data[0].equals("air"))
+                            if (!isAir(data[0]))
                             {
                                 blockIDs[i] = null;
                                 if (!isKnownSpecialRule(blockStrings[i]))
@@ -292,7 +292,7 @@ public class RuinTemplateRule
                     else
                     {
                         blockIDs[i] = r.tryFindingBlockOfName(blockRules[i + 2]);
-                        if (blockIDs[i] == r.getAirBlock() && !data[0].equals("air"))
+                        if (blockIDs[i] == r.getAirBlock() && !isAir(blockRules[i + 2]))
                         {
                             // debugPrinter.println("Rule [" + rule + "] in
                             // template " + owner.getName()+" has something
@@ -914,7 +914,7 @@ public class RuinTemplateRule
             addCustomSpawner(world, x, y, z, "Skeleton");
             break;
         case 2:
-            addCustomSpawner(world, x, y, z, "CaveSpider");
+            addCustomSpawner(world, x, y, z, "Cave_Spider");
             break;
         default:
             addCustomSpawner(world, x, y, z, "Zombie");
@@ -930,7 +930,7 @@ public class RuinTemplateRule
             addCustomSpawner(world, x, y, z, "Creeper");
             break;
         case 1:
-            addCustomSpawner(world, x, y, z, "CaveSpider");
+            addCustomSpawner(world, x, y, z, "Cave_Spider");
             break;
         case 2:
             addCustomSpawner(world, x, y, z, "Skeleton");
@@ -1516,7 +1516,7 @@ public class RuinTemplateRule
         // this method is unused if the direction is NORTH
         int tempdata = 0;
 
-        if (blockID == Blocks.RAIL || blockID == Blocks.GOLDEN_RAIL || blockID == Blocks.DETECTOR_RAIL || blockID == Blocks.ACTIVATOR_RAIL)
+        if (blockID == Blocks.RAIL)
         {
             // minecart tracks
             switch (dir)
@@ -1652,6 +1652,96 @@ public class RuinTemplateRule
                 if (metadata == 9)
                 {
                     return 8;
+                }
+            }
+        }
+        else if (blockID == Blocks.GOLDEN_RAIL || blockID == Blocks.DETECTOR_RAIL || blockID == Blocks.ACTIVATOR_RAIL)
+        {
+            int power_bit = metadata&0x08;
+            int shape = metadata&0x07;
+            // minecart tracks
+            switch (dir)
+            {
+            case RuinsMod.DIR_EAST:
+                // flat tracks
+                if (shape == 0)
+                {
+                    return power_bit | 1;
+                }
+                if (shape == 1)
+                {
+                    return power_bit | 0;
+                }
+                // ascending tracks
+                if (shape == 2)
+                {
+                    return power_bit | 5;
+                }
+                if (shape == 3)
+                {
+                    return power_bit | 4;
+                }
+                if (shape == 4)
+                {
+                    return power_bit | 2;
+                }
+                if (shape == 5)
+                {
+                    return power_bit | 3;
+                }
+            case RuinsMod.DIR_SOUTH:
+                // flat tracks
+                if (shape == 0)
+                {
+                    return power_bit | 0;
+                }
+                if (shape == 1)
+                {
+                    return power_bit | 1;
+                }
+                // ascending tracks
+                if (shape == 2)
+                {
+                    return power_bit | 3;
+                }
+                if (shape == 3)
+                {
+                    return power_bit | 2;
+                }
+                if (shape == 4)
+                {
+                    return power_bit | 5;
+                }
+                if (shape == 5)
+                {
+                    return power_bit | 4;
+                }
+            case RuinsMod.DIR_WEST:
+                // flat tracks
+                if (shape == 0)
+                {
+                    return power_bit | 1;
+                }
+                if (shape == 1)
+                {
+                    return power_bit | 0;
+                }
+                // ascending tracks
+                if (shape == 2)
+                {
+                    return power_bit | 4;
+                }
+                if (shape == 3)
+                {
+                    return power_bit | 5;
+                }
+                if (shape == 4)
+                {
+                    return power_bit | 3;
+                }
+                if (shape == 5)
+                {
+                    return power_bit | 2;
                 }
             }
         }
@@ -2498,4 +2588,8 @@ public class RuinTemplateRule
         return CustomRotationMapping.getMapping(blockID, metadata, dir);
     }
 
+    private boolean isAir(String block)
+    {
+        return block.equals("air") || block.equals("minecraft:air");
+    }
 }

@@ -334,7 +334,7 @@ public class RuinTemplate
         RuinTemplateRule curRule;
 
         // height sanity check
-        final int y = Math.max(Math.min(yBase, world.getActualHeight() - height), 8);
+        int y = Math.max(Math.min(yBase, world.getActualHeight() - height), 8);
 
         // initialize all these variables
         final ArrayList<RuinRuleProcess> laterun = new ArrayList<>();
@@ -342,7 +342,10 @@ public class RuinTemplate
         final Iterator<RuinTemplateLayer> layeriter = layers.iterator();
 
         int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
-        int yReturn = y + y_off;
+
+        // height sanity check redux
+        int yReturn = Math.max(Math.min(y + y_off, world.getActualHeight() - height), 8);
+        y = yReturn - y_off;
 
         // override rotation wishes if its locked by template
         if (preventRotation)
