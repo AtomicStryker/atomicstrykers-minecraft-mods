@@ -481,7 +481,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
 
         if (canPickUpItems)
         {
-            List<Entity> collidingEntities = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(1.0D, 0.0D, 1.0D));
+            List<Entity> collidingEntities = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D));
 
             if (collidingEntities != null && collidingEntities.size() > 0)
             {

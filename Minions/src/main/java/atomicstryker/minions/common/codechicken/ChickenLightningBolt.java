@@ -190,7 +190,7 @@ public class ChickenLightningBolt
         particleAge = -(int) (length * speed);
 
         boundingBox = new AxisAlignedBB(Math.min(start.x, end.x), Math.min(start.y, end.y), Math.min(start.z, end.z), Math.max(start.x, end.x), Math.max(start.y, end.y), Math.max(start.z, end.z))
-                .expand(length / 2, length / 2, length / 2);
+                .grow(length / 2, length / 2, length / 2);
         segments.add(new Segment(start, end));
     }
 
