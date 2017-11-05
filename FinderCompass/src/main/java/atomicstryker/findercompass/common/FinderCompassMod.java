@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -96,9 +97,7 @@ public class FinderCompassMod
         if (itemEnabled)
         {
             ResourceLocation rl = new ResourceLocation("findercompass", "findercompass");
-            ShapedOreRecipe recipe = new ShapedOreRecipe(rl, new ItemStack(compass), " # ", "#X#", " # ", '#', Items.DIAMOND, 'X', Items.COMPASS);
-            // disabled until forge works
-            // GameRegistry.register(recipe);
+            GameRegistry.addShapedRecipe(rl, null, new ItemStack(compass), " # ", "#X#", " # ", '#', Items.DIAMOND, 'X', Items.COMPASS);
         }
 
         if (FMLCommonHandler.instance().getEffectiveSide().isClient())
