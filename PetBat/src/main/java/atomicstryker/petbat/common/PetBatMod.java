@@ -224,7 +224,7 @@ public class PetBatMod implements IProxy
         ItemStack item = p.inventory.getCurrentItem();
         if (item.getItem() == TAME_ITEM_ID)
         {
-            List<Entity> entityList = p.world.getEntitiesWithinAABBExcludingEntity(p, p.getEntityBoundingBox().expand(10D, 10D, 10D));
+            List<Entity> entityList = p.world.getEntitiesWithinAABBExcludingEntity(p, p.getEntityBoundingBox().grow(10D, 10D, 10D));
             BlockPos coords = new BlockPos((int) (p.posX + 0.5D), (int) (p.posY + 1.5D), (int) (p.posZ + 0.5D));
             entityList.stream().filter(ent -> ent instanceof EntityBat).forEach(ent -> {
                 try
@@ -323,7 +323,7 @@ public class PetBatMod implements IProxy
                     // bat is inert. see if it was tossed onto pumpkin pie for
                     // revival
 
-                    final List nearEnts = itemDropped.world.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.getEntityBoundingBox().expand(8D, 8D, 8D));
+                    final List nearEnts = itemDropped.world.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.getEntityBoundingBox().grow(8D, 8D, 8D));
                     for (Object o : nearEnts)
                     {
                         if (o instanceof EntityItem)
@@ -350,7 +350,7 @@ public class PetBatMod implements IProxy
             }
             else if (id == TAME_ITEM_ID)
             {
-                final List nearEnts = itemDropped.world.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.getEntityBoundingBox().expand(8D, 8D, 8D));
+                final List nearEnts = itemDropped.world.getEntitiesWithinAABBExcludingEntity(itemDropped, itemDropped.getEntityBoundingBox().grow(8D, 8D, 8D));
                 for (Object o : nearEnts)
                 {
                     if (o instanceof EntityPetBat)
