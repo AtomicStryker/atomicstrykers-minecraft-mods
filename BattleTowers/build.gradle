@@ -1,0 +1,32 @@
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+plugins {
+    id 'com.matthewprenger.cursegradle' version '1.0.9'
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+apply from: '../masterbuild.gradle'
+
+curseforge {
+    apiKey = project.curseForgeApiKey
+    project {
+        id = '227877'
+        releaseType = 'release'
+        addGameVersion version
+        mainArtifact(file('build/libs/BattleTowers-' + version + '.jar')) {
+          displayName = 'AtomicStryker\'s Battle Towers'
+        }
+    }
+}
