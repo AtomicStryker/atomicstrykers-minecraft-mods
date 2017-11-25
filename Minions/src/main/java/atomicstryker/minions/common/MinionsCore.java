@@ -85,7 +85,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-@Mod(modid = "minions", name = "Minions", version = "2.0.2")
+@Mod(modid = "minions", name = "Minions", version = "2.0.3")
 public class MinionsCore
 {
     @SidedProxy(clientSide = "atomicstryker.minions.client.ClientProxy", serverSide = "atomicstryker.minions.common.CommonProxy")
@@ -286,9 +286,9 @@ public class MinionsCore
         while (iterator.hasNext())
         {
             Block iter = iterator.next();
-            if (iter instanceof BlockLog || iter.getLocalizedName().contains("log"))
+            if (iter instanceof BlockLog)
             {
-                debugPrint("Minions found viable TreeBlock: " + iter);
+                debugPrint("Minions found BlockLog instance: " + iter);
                 foundTreeBlocks.add(iter);
             }
         }

@@ -356,7 +356,7 @@ public class MinionsClient
             Block ID = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
             TileEntity chestOrInventoryBlock;
 
-            if (MinionsCore.instance.foundTreeBlocks.contains(ID))
+            if (MinionsCore.instance.foundTreeBlocks.contains(ID) || ID.isWood(worldObj, targetObjectMouseOver.getBlockPos()))
             {
                 if (MinionsCore.instance.hasPlayerWillPower(playerEnt))
                 {

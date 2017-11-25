@@ -1,3 +1,7 @@
+Update 2.0.3
+- removed clientside only code
+- reworked wood detection for logging commands
+
 Update 2.0.2
 - fixed broken minion texture
 - changed distribution file to be just a jar file
