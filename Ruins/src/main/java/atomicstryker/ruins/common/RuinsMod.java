@@ -88,7 +88,7 @@ public class RuinsMod
         if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
         {
             nextInfoTime = System.currentTimeMillis() + 1000L;
-            event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
+            event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
                     event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
         }
     }
@@ -102,7 +102,7 @@ public class RuinsMod
             if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
             {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
-                event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getLocalizedName(),
+                event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
                         event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
                 event.setCanceled(true);
             }
