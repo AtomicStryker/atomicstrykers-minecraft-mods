@@ -43,7 +43,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class RuinsMod
 {
     static final String modversion = "16.9";
-    
+
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
     public static final String TEMPLATE_PATH_JAR = "ruins_config";
 
@@ -66,9 +66,8 @@ public class RuinsMod
         currentlyGenerating = new ConcurrentLinkedQueue<>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
-        
+
         ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
-        new CustomRotationMapping(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
     @EventHandler
