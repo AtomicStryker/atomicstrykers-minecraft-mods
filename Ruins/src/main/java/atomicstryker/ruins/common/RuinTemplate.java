@@ -242,8 +242,8 @@ public class RuinTemplate
         }
 
         // now compute a better y for the structure from the found surface heights
-        int sum = 0;
-        int vals = 0;
+        double sum = 0;
+        double vals = 0;
         for (int[] row : heightMap)
         {
             for (int value : row)
