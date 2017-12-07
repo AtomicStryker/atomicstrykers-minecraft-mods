@@ -1325,7 +1325,7 @@ public class RuinTemplateRule
              * regex pattern to find each coordinate triple with at least x and
              * z relative (with tilde), save xz numbers and y in groups
              */
-            final Pattern coordinates = Pattern.compile("~(-?\\d*) (~?-?\\d*) ~(-?\\d*)");
+            final Pattern coordinates = Pattern.compile("~(-\\d+|\\d*)[ \\t]+(~?-?\\d+|~)[ \\t]+~(-\\d+|\\d*)");
             final Matcher coordinateMatcher = coordinates.matcher(command);
             final StringBuffer stringBuffer = new StringBuffer();
             /* for each pattern match do */
@@ -1347,8 +1347,8 @@ public class RuinTemplateRule
                 }
                 else
                 {
-                    // case DIR_SOUTH, just swap x and z numbers
-                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s", coordinateMatcher.group(3), coordinateMatcher.group(2), coordinateMatcher.group(1)));
+                    // case DIR_SOUTH, just negate x and z numbers
+                    coordinateMatcher.appendReplacement(stringBuffer, String.format("~%s %s ~%s", tryToInvert(coordinateMatcher.group(1)), coordinateMatcher.group(2), tryToInvert(coordinateMatcher.group(3))));
                 }
             }
             /*
