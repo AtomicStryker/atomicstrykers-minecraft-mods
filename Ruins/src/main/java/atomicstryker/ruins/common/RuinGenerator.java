@@ -260,22 +260,16 @@ class RuinGenerator
                     return;
                 }
 
-                if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, y, z, rotate, false, true)))
+                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false);
+                if (finalY >= 0)
                 {
-                    return;
-                }
+                    if (!fileHandler.disableLogging)
+                    {
+                        System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getRegistryName().getResourcePath(), x, y, z);
+                    }
+                    stats.NumCreated++;
 
-                if (!fileHandler.disableLogging)
-                {
-                    System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getRegistryName().getResourcePath(), x, y, z);
-                }
-                stats.NumCreated++;
-
-                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate);
-                if (finalY > 0)
-                {
                     registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
-                    MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ruinTemplate, x, finalY, z, rotate, false, false));
                 }
             }
             else

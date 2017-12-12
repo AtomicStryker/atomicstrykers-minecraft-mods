@@ -285,33 +285,33 @@ public class RuinTemplate
 
     public RuinData getRuinData(int x, int y, int z, int rotate)
     {
-        int add = lbuffer;
+        int add = lbuffer > 0 ? lbuffer : 0;
         int xMin, xMax, zMin, zMax;
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
             xMin = x + l_off - add;
-            xMax = xMin + length + add;
+            xMax = xMin + length - 1 + add;
             zMin = z + w_off - add;
-            zMax = zMin + width + add;
+            zMax = zMin + width - 1 + add;
         }
         else
         {
             xMin = x + w_off - add;
-            xMax = xMin + width + add;
+            xMax = xMin + width - 1 + add;
             zMin = z + l_off - add;
-            zMax = zMin + length + add;
+            zMax = zMin + length - 1 + add;
         }
-        return new RuinData(xMin, xMax, y, y + height, zMin, zMax, name);
+        return new RuinData(xMin, xMax, y, y + height - 1, zMin, zMax, name);
     }
 
     /**
      * @return the finalized y value of the embedded template or -1 if there was an exception
      */
-    public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate)
+    public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player)
     {
         try
         {
-            return doBuildNested(world, random, xBase, yBase, zBase, rotate);
+            return doBuildNested(world, random, xBase, yBase, zBase, rotate, is_player);
         }
         catch (Exception e)
         {
@@ -322,7 +322,7 @@ public class RuinTemplate
         }
     }
 
-    private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate)
+    private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player)
     {
         /*
          * we need to shift the base coordinates and take care of any rotations
@@ -333,24 +333,28 @@ public class RuinTemplate
         RuinTemplateLayer curlayer;
         RuinTemplateRule curRule;
 
-        // height sanity check
-        int y = Math.max(Math.min(yBase, world.getActualHeight() - height), 8);
-
         // initialize all these variables
         final ArrayList<RuinRuleProcess> laterun = new ArrayList<>();
         final ArrayList<RuinRuleProcess> lastrun = new ArrayList<>();
         final Iterator<RuinTemplateLayer> layeriter = layers.iterator();
 
-        int y_off = (1 - embed) + ((randomOffMax != randomOffMin) ? random.nextInt(randomOffMax - randomOffMin) : 0) + randomOffMin;
+        int y_off = (1 - embed) + ((randomOffMax > randomOffMin) ? (random.nextInt(randomOffMax - randomOffMin) + randomOffMin) : 0);
 
-        // height sanity check redux
-        int yReturn = Math.max(Math.min(y + y_off, world.getActualHeight() - height), 8);
-        y = yReturn - y_off;
+        // height sanity check
+        final int yReturn = Math.max(Math.min(yBase + y_off, world.getActualHeight() - height), 8);
+        final int y = yReturn - y_off;
 
         // override rotation wishes if its locked by template
         if (preventRotation)
         {
             rotate = RuinsMod.DIR_NORTH;
+        }
+
+        // post pre-build event after y position and rotation are resolved
+        if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, true)))
+        {
+            debugPrinter.printf("Forge Event came back negative, no spawn\n");
+            return -1;
         }
 
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
@@ -376,7 +380,7 @@ public class RuinTemplate
         // do any site leveling needed
         if (leveling > 0 && lbuffer >= 0)
         {
-            levelSite(world, world.getBlockState(new BlockPos(xBase, y, zBase)).getBlock(), xBase, y, zBase, eastwest, random, rotate, rules.get(0));
+            levelSite(world, world.getBlockState(new BlockPos(xBase, yReturn, zBase)).getBlock(), xBase, yReturn, zBase, eastwest, random, rotate, rules.get(0));
         }
 
         int rulenum;
@@ -433,10 +437,10 @@ public class RuinTemplate
         {
             for (int z1 = 0; z1 < zDim; z1++)
             {
-                for (int y1 = 0; y1 <= layers.size(); y1++)
+                for (int y1 = 0; y1 < layers.size(); y1++)
                 {
                     xv = x + x1;
-                    yv = y + y1;
+                    yv = yReturn + y1;
                     zv = z + z1;
                     BlockPos pos = new BlockPos(xv, yv, zv);
                     world.markAndNotifyBlock(pos, null, Blocks.AIR.getDefaultState(), world.getBlockState(pos), 2);
@@ -479,24 +483,15 @@ public class RuinTemplate
                 int newrot = world.rand.nextInt(4);
                 int targetX = xBase + ad.relativeX;
                 int targetZ = zBase + ad.relativeZ;
-                int targetY = ad.adjoiningTemplate.checkArea(world, targetX, y, targetZ, newrot, ad.acceptableY);
-                if (targetY > 0 && Math.abs(y - targetY) <= ad.acceptableY)
+                int targetY = ad.adjoiningTemplate.checkArea(world, targetX, yReturn, targetZ, newrot, ad.acceptableY);
+                if (targetY >= 0 && Math.abs(yReturn - targetY) <= ad.acceptableY)
                 {
-                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, targetY, targetZ, newrot, false, true)))
-                    {
-                        debugPrinter.printf("Forge Event came back negative, no spawn\n");
-                        continue;
-                    }
                     debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
-                    int finalY = ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot);
-                    if (finalY > 0)
-                    {
-                        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, ad.adjoiningTemplate, targetX, finalY, targetZ, newrot, false, false));
-                    }
+                    int finalY = ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot, false);
                 }
                 else
                 {
-                    debugPrinter.printf("Adjoining area around [%d|%d|%d] was rejected, targetY:%d, diff:%d\n", targetX, y, targetZ, targetY, Math.abs(y - targetY));
+                    debugPrinter.printf("Adjoining area around [%d|%d|%d] was rejected, targetY:%d, diff:%d\n", targetX, yReturn, targetZ, targetY, Math.abs(yReturn - targetY));
                 }
             }
             else
@@ -505,6 +500,7 @@ public class RuinTemplate
             }
         }
 
+        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, false));
         return yReturn;
     }
 
