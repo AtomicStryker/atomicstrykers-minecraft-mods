@@ -285,23 +285,23 @@ public class RuinTemplate
 
     public RuinData getRuinData(int x, int y, int z, int rotate)
     {
-        int add = lbuffer;
+        int add = lbuffer > 0 ? lbuffer : 0;
         int xMin, xMax, zMin, zMax;
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
             xMin = x + l_off - add;
-            xMax = xMin + length + add;
+            xMax = xMin + length - 1 + add;
             zMin = z + w_off - add;
-            zMax = zMin + width + add;
+            zMax = zMin + width - 1 + add;
         }
         else
         {
             xMin = x + w_off - add;
-            xMax = xMin + width + add;
+            xMax = xMin + width - 1 + add;
             zMin = z + l_off - add;
-            zMax = zMin + length + add;
+            zMax = zMin + length - 1 + add;
         }
-        return new RuinData(xMin, xMax, y, y + height, zMin, zMax, name);
+        return new RuinData(xMin, xMax, y, y + height - 1, zMin, zMax, name);
     }
 
     /**
@@ -437,7 +437,7 @@ public class RuinTemplate
         {
             for (int z1 = 0; z1 < zDim; z1++)
             {
-                for (int y1 = 0; y1 <= layers.size(); y1++)
+                for (int y1 = 0; y1 < layers.size(); y1++)
                 {
                     xv = x + x1;
                     yv = yReturn + y1;
