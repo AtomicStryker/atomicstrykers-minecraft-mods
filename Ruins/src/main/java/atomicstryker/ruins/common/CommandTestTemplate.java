@@ -51,7 +51,7 @@ class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos - 1, zpos, RuinsMod.DIR_NORTH);
+                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos - 1, zpos, RuinsMod.DIR_NORTH, is_player);
                     parsedRuin = null;
                 }
                 else
@@ -127,18 +127,13 @@ class CommandTestTemplate extends CommandBase
                         }
                     }
 
-                    if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, y, z, rotation, is_player, true)))
+                    if (parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, x, y, z, rotation, is_player) >= 0)
                     {
-                        sender.sendMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                        parsedRuin = null;
                     }
                     else
                     {
-                        int resultY = parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, x, y, z, rotation);
-                        if (resultY > 0)
-                        {
-                            MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(sender.getEntityWorld(), parsedRuin, x, resultY, z, rotation, is_player, false));
-                        }
-                        parsedRuin = null;
+                        sender.sendMessage(new TextComponentTranslation("EventRuinTemplateSpawn returned as cancelled, not building that."));
                     }
                 }
                 else
