@@ -10,6 +10,8 @@ import net.minecraft.util.DamageSource;
 public class MM_Choke extends MobModifier
 {
 
+    private final int RESET_AIR_VALUE = -999;
+
     public MM_Choke()
     {
         super();
@@ -32,13 +34,14 @@ public class MM_Choke extends MobModifier
     @Override
     public boolean onUpdate(EntityLivingBase mob)
     {
-        if (!hasSteadyTarget()) {
+        if (!hasSteadyTarget())
+        {
             return super.onUpdate(mob);
         }
-        
+
         if (getMobTarget() != lastTarget)
         {
-            lastAir = -999;
+            lastAir = RESET_AIR_VALUE;
             if (lastTarget != null)
             {
                 updateAir();
@@ -50,7 +53,7 @@ public class MM_Choke extends MobModifier
         {
             if (mob.canEntityBeSeen(lastTarget))
             {
-                if (lastAir == -999)
+                if (lastAir == RESET_AIR_VALUE)
                 {
                     lastAir = lastTarget.getAir();
                 }
@@ -79,7 +82,7 @@ public class MM_Choke extends MobModifier
     @Override
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
-        if (lastTarget != null && source.getTrueSource() == lastTarget && lastAir != -999)
+        if (lastTarget != null && source.getTrueSource() == lastTarget && lastAir != RESET_AIR_VALUE)
         {
             lastAir += 60;
             updateAir();
@@ -91,7 +94,7 @@ public class MM_Choke extends MobModifier
     @Override
     public boolean onDeath()
     {
-        lastAir = -999;
+        lastAir = RESET_AIR_VALUE;
         if (lastTarget != null)
         {
             updateAir();
@@ -106,7 +109,14 @@ public class MM_Choke extends MobModifier
         if (lastTarget instanceof EntityPlayerMP)
         {
             InfernalMobsCore.instance().sendAirPacket((EntityPlayerMP) lastTarget, lastAir);
+            InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName(), System.currentTimeMillis());
         }
+    }
+
+    @Override
+    public void resetModifiedVictim(EntityPlayer victim)
+    {
+        victim.setAir(RESET_AIR_VALUE);
     }
 
     @Override

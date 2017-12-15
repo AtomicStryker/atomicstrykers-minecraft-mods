@@ -305,7 +305,8 @@ public abstract class MobModifier
      */
     public boolean hasSteadyTarget()
     {
-        if (attackTarget != null) {
+        if (attackTarget != null)
+        {
             targetingTicksSteadyTarget++;
             if (targetingTicksSteadyTarget > TARGETING_TICKS_BEFORE_ATTACK)
             {
@@ -517,6 +518,18 @@ public abstract class MobModifier
         }
 
         return bufferedEntityName;
+    }
+
+    /**
+     * if a modifier does permanent changes to an entity, they need to register
+     * the playername at InfernalMobsCore.instance().getModifiedPlayerTimes()
+     * with the current timestamp a timer keeps track of the player not being
+     * infernal'd for a while and triggers this modifiers should override this
+     * and clean up their changes when necessary
+     */
+    public void resetModifiedVictim(EntityPlayer victim)
+    {
+        // NOOP by default
     }
 
 }

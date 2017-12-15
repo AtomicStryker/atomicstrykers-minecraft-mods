@@ -1,3 +1,6 @@
+1.7.4
+- added player entity reset when a modifier has stopped affecting them for a while, should fix choke bug
+
 1.7.3
 - reworked time based attack logic - nonhostile mobs (eg pigmen or creative mode) will no longer affect you unless actually in combat
 - reworked hitscan for health bars, now works more reliably
