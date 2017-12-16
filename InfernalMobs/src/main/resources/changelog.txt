@@ -1,3 +1,6 @@
+1.7.5
+- unified ender and ninja teleports, now also checks for destination block having space for an entity
+
 1.7.4
 - added player entity reset when a modifier has stopped affecting them for a while, should fix choke bug
 

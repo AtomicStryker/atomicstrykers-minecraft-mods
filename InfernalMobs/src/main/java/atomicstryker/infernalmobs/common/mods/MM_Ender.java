@@ -15,12 +15,12 @@ import net.minecraft.util.math.Vec3d;
 
 public class MM_Ender extends MobModifier
 {
-    
+
     public MM_Ender()
     {
         super();
     }
-    
+
     public MM_Ender(MobModifier next)
     {
         super(next);
@@ -39,11 +39,8 @@ public class MM_Ender extends MobModifier
     public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
     {
         long time = System.currentTimeMillis();
-        if (time > nextAbilityUse
-        && source.getTrueSource() != null
-        && source.getTrueSource() != mob
-        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())
-        && teleportToEntity(mob, source.getTrueSource()))
+        if (time > nextAbilityUse && source.getTrueSource() != null && source.getTrueSource() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())
+                && teleportToEntity(mob, source.getTrueSource()))
         {
             nextAbilityUse = time + coolDown;
             source.getTrueSource().attackEntityFrom(DamageSource.causeMobDamage(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
@@ -56,9 +53,8 @@ public class MM_Ender extends MobModifier
 
     private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity)
     {
-        Vec3d vector =
-                new Vec3d(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double) (mob.height / 2.0F) - par1Entity.posY
-                        + (double) par1Entity.getEyeHeight(), mob.posZ - par1Entity.posZ);
+        Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getEntityBoundingBox().minY + (double) (mob.height / 2.0F) - par1Entity.posY + (double) par1Entity.getEyeHeight(),
+                mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 16.0D;
         double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.x * telDist;
@@ -99,7 +95,8 @@ public class MM_Ender extends MobModifier
         {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
 
-            if (mob.world.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.world.containsAnyLiquid(mob.getEntityBoundingBox()))
+            if (mob.world.getCollisionBoxes(mob, mob.getEntityBoundingBox()).isEmpty() && !mob.world.containsAnyLiquid(mob.getEntityBoundingBox())
+                    && !mob.world.checkBlockCollision(mob.getEntityBoundingBox()))
             {
                 success = true;
             }
@@ -128,8 +125,9 @@ public class MM_Ender extends MobModifier
                 double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.width * 2.0D;
                 mob.world.spawnParticle(EnumParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
             }
-            
-            mob.world.playSound(null, new BlockPos(oldX, oldY, oldZ), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+
+            mob.world.playSound(null, new BlockPos(oldX, oldY, oldZ), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(),
+                    mob.getRNG().nextFloat() * 0.7F + 0.3F);
             mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
         return true;
