@@ -37,6 +37,8 @@ class FileHandler
 
     public float templateInstancesMinDistance = 75f;
     float anyRuinsMinDistance = 0f;
+    public int anySpawnMinDistance = 32;
+    public int anySpawnMaxDistance = Integer.MAX_VALUE;
     static final HashSet<Block> registeredTEBlocks = new HashSet<>();
 
     private int templateCount;
@@ -282,6 +284,18 @@ class FileHandler
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
                 ruinsLog.println("anyRuinsMinDistance = " + anyRuinsMinDistance);
             }
+            if (check[0].equals("anySpawnMinDistance"))
+            {
+                final int value = Integer.parseInt(check[1]);
+                anySpawnMinDistance = value > 0 ? value : 0;
+                ruinsLog.println("anySpawnMinDistance = " + anySpawnMinDistance);
+            }
+            if (check[0].equals("anySpawnMaxDistance"))
+            {
+                final int value = Integer.parseInt(check[1]);
+                anySpawnMaxDistance = value > 0 ? value : Integer.MAX_VALUE;
+                ruinsLog.println("anySpawnMaxDistance = " + anySpawnMaxDistance);
+            }
             if (check[0].equals("allowedDimensions") && check.length > 1)
             {
                 String[] ints = check[1].split(",");
@@ -448,6 +462,9 @@ class FileHandler
         pw.println("templateInstancesMinDistance=256");
         pw.println("# minimum distance a template must have from any other template");
         pw.println("anyRuinsMinDistance=64");
+        pw.println("# min/max distances overworld templates can have from world spawn (0 = no limit)");
+        pw.println("anySpawnMinDistance=32");
+        pw.println("anySpawnMaxDistance=0");
         pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
         pw.println("allowedDimensions=0,1,-1");
         pw.println();

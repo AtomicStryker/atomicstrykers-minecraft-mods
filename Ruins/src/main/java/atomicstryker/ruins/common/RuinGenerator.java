@@ -29,7 +29,6 @@ class RuinGenerator
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
     private final File ruinsDataFile;
     private final File ruinsDataFileWriting;
-    private final RuinData spawnPointBlock;
 
     private static boolean flushing;
 
@@ -39,12 +38,6 @@ class RuinGenerator
         stats = new RuinStats();
         registeredRuins = new ConcurrentSkipListSet<>();
         flushing = false;
-
-        // lets create a banned area 2 chunks around the spawn
-        final int minX = world.getSpawnPoint().getX() - 32;
-        final int minY = world.getSpawnPoint().getY() - 32;
-        final int minZ = world.getSpawnPoint().getZ() - 32;
-        spawnPointBlock = new RuinData(minX, minX + 64, minY, minY + 64, minZ, minZ + 64, "SpawnPointBlock");
 
         ruinsDataFile = new File(rh.saveFolder, fileName);
         ruinsDataFileWriting = new File(rh.saveFolder, fileName + "_writing");
@@ -154,9 +147,6 @@ class RuinGenerator
                 {
                     throw new RuntimeException("Ruins crashed trying to access file " + file);
                 }
-
-                // put it into the initial set
-                registeredRuins.add(spawnPointBlock);
             }
             int lineNumber = 1;
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -250,7 +240,7 @@ class RuinGenerator
         int y = findSuitableY(world, ruinTemplate, x, z, nether);
         if (y > 0)
         {
-            if (checkMinDistance(ruinTemplate, ruinTemplate.getRuinData(x, y, z, rotate)))
+            if (checkMinDistance(world, ruinTemplate, ruinTemplate.getRuinData(x, y, z, rotate)))
             {
                 y = ruinTemplate.checkArea(world, x, y, z, rotate);
                 if (y < 0)
@@ -322,8 +312,28 @@ class RuinGenerator
         }
     }
 
-    private boolean checkMinDistance(RuinTemplate ruinTemplate, RuinData ruinData)
+    private boolean checkMinDistance(World world, RuinTemplate ruinTemplate, RuinData ruinData)
     {
+        // in overworld, check min/max distances from world spawn
+        if (world.provider.getDimension() == 0)
+        {
+            BlockPos spawn = world.getSpawnPoint();
+            final int min_distance = Math.max(fileHandler.anySpawnMinDistance, ruinTemplate.spawnMinDistance);
+            if (
+                    ruinData.xMin - spawn.getX() < min_distance && spawn.getX() - ruinData.xMax < min_distance &&
+                    ruinData.zMin - spawn.getZ() < min_distance && spawn.getZ() - ruinData.zMax < min_distance)
+            {
+                return false;
+            }
+            final int max_distance = Math.min(fileHandler.anySpawnMaxDistance, ruinTemplate.spawnMaxDistance);
+            if (
+                    ruinData.xMax - spawn.getX() > max_distance || spawn.getX() - ruinData.xMin > max_distance ||
+                    ruinData.zMax - spawn.getZ() > max_distance || spawn.getZ() - ruinData.zMin > max_distance)
+            {
+                return false;
+            }
+        }
+
         //
         // We increase the bounding box by the required minimal distance
         // in each direction and check on intersections with other ruins.
