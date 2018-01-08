@@ -31,6 +31,8 @@ public class RuinTemplate
     private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
     public int uniqueMinDistance = 0;
+    public int spawnMinDistance = 0;
+    public int spawnMaxDistance = Integer.MAX_VALUE;
     private boolean preserveWater = false, preserveLava = false;
     private final VariantRuleset variantRuleset;
     private final ArrayList<RuinTemplateLayer> layers;
@@ -858,6 +860,16 @@ public class RuinTemplate
                 {
                     String[] check = line.split("=");
                     uniqueMinDistance = Integer.parseInt(check[1]);
+                }
+                else if (line.startsWith("spawnMinDistance"))
+                {
+                    final int value = Integer.parseInt(line.split("=")[1]);
+                    spawnMinDistance = value > 0 ? value : 0;
+                }
+                else if (line.startsWith("spawnMaxDistance"))
+                {
+                    final int value = Integer.parseInt(line.split("=")[1]);
+                    spawnMaxDistance = value > 0 ? value : Integer.MAX_VALUE;
                 }
                 else if (line.startsWith("preventRotation"))
                 {
