@@ -506,3 +506,6 @@ a: setAccessible now true
 
 16.9
 + fix biome specific template folders with underscores in the name to work again, thanks QuarterAnimal again
+
+17.0
++ adds optional variables "spawnMinDistance" and "spawnMaxDistance", cleaning some obsolete documentation (QuarterAnimal)
