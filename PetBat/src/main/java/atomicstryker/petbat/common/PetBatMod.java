@@ -43,7 +43,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder("petbat")
-@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.7")
+@Mod(modid = "petbat", name = "Pet Bat", version = "1.4.8")
 public class PetBatMod implements IProxy
 {
     private Item TAME_ITEM_ID;
@@ -169,8 +169,14 @@ public class PetBatMod implements IProxy
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        entityBatFlightCoords = EntityBat.class.getDeclaredFields()[0];
-        entityBatFlightCoords.setAccessible(true);
+        for (Field f : EntityBat.class.getDeclaredFields())
+        {
+            if (BlockPos.class.isAssignableFrom(f.getClass()))
+            {
+                entityBatFlightCoords = f;
+                entityBatFlightCoords.setAccessible(true);
+            }
+        }
 
         proxy.onModPreInit();
     }
@@ -385,6 +391,9 @@ public class PetBatMod implements IProxy
             else if (id == itemBatFlute) // bat flutes cannot be dropped. ever.
             {
                 event.setCanceled(true);
+                // as this only stops the entity from entering the world, we
+                // need to re-add the item to the inventory
+                event.getPlayer().addItemStackToInventory(event.getEntityItem().getItem());
             }
         }
     }
