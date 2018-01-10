@@ -101,15 +101,6 @@
 # any other block.
 # Defaults to 0/no.
 #
-# preserve_plants=<yes/no>
-# If set to 1 all site checking rules will treat trees, leaves, and cactus as
-# air so that the ruin can be generated in and around them.  Any rules that
-# replace a block with air will respect trees, leaves, and cactus and not
-# replace them.  If set to 0, trees, leaves, and cactus are treated like 
-# any other blocks.  Cactus adjacent to other blocks will break down, so you
-# may not actually see cactus in your structure.
-# Defaults to 0/no
-#
 # random_height_offset=<min>,<max>
 # Specifies block range in which the Ruin will be randomly shifted up or down
 # on an established valid location before actually being built.
@@ -142,6 +133,24 @@
 #
 # Example: adjoining_template=generic/MoaiHead;-25;10;25;33
 #
+# Ruins 17.0 adds optional variables "spawnMinDistance" and "spawnMaxDistance"
+# to specify the minimum and maximum distances (i.e., Chebyshev distance, in
+# blocks, on the XZ plane), respectively, from the world spawn point this
+# template may be naturally instantiated in the overworld (dimension 0). They
+# have no effect on instantiation in other dimensions.
+# spawnMinDistance=1000
+# spawnMaxDistance=5000
+# The default values are spawnMinDistance=0, spawnMaxDistance=infinity. For
+# both variables, a value of 0 effectively means "no limit" and reverts to the
+# corresponding default.
+# These settings are overridden by globals "anySpawnMinDistance" and/or
+# "anySpawnMaxDistance" when the global values are more restrictive--that is,
+# the greater min distance and lesser max distance are used. Note the default
+# value of anySpawnMinDistance is 32, not 0; if a spawnMinDistance less than
+# that is desired, the Ruins mod configuration file will need to be changed.
+# If the space between max and min distances is too narrow (namely, less than
+# the length and width of the template), no instances can naturally generate.
+#
 
 weight=5
 embed_into_distance=1
@@ -152,7 +161,6 @@ max_leveling=2
 leveling_buffer=0
 preserve_water=0
 preserve_lava=0
-preserve_plants=0
 
 
 # BLOCK RULES
@@ -167,9 +175,10 @@ preserve_plants=0
 # becomes rule #1 for the purposes of building a layer, the second becomes rule
 # #2, and so on.
 #
-# The mod uses a special rule, 0, which defines the Air block with a 100% spawn
-# rate and no conditional.  You can use this rule in the layers to "blank out"
-# certain areas (providing space for mobs, for instance).
+# By default, the mod uses a special rule, 0, which defines the Air block with
+# a 100% spawnrate and no conditional.  You can use this rule in the layers to
+# "blank out" certain areas (providing space for mobs, for instance).  Note,
+# however, that rule0 may be redefined as something else by the template author.
 #
 # <condition>
 # A conditional to the block being placed, aside from randomness.
@@ -372,6 +381,8 @@ preserve_plants=0
 # start with = instead of ^), but it can be followed by variants and/or grouped variant rules. It cannot have a repeat
 # count.
 #
+# Ruins 16.9 added the following features:
+#
 # * New Background/Foreground Blocks: The classic rule0 is a special air block that respects the template's settings of
 # preserve_water and preserve_lava. Not quite an air block, not quite a preserveBlock; there was no way to include such
 # a block in other rules. Now there is, with the new background block:
@@ -392,6 +403,7 @@ preserve_plants=0
 # Similarly, a background lava rule0 might be used in more hellish climes.
 #
 
+=0,100,?air
 rule1=0,100,preserveBlock
 rule2=0,80,2*brick_block,dirt,stone,gravel
 rule3=0,100,brick_block
@@ -408,7 +420,7 @@ rule5^2*0,90,planks-0
 # must be as many layers as the height, and each layer must have "layer" before
 # the rules and end with "endlayer".  There are as many rows as the length, and
 # as many rules as the width.  If you want the block blanked out use 0, which
-# represents the Air-block rule.
+# represents the background Air-block rule by default (but may be redefined).
 
 
 layer
