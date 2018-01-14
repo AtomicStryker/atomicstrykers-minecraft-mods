@@ -1535,6 +1535,7 @@ public class RuinTemplateRule
         if (entity != null)
         {
             entity.rotate(getDirectionalRotation(direction));
+            entity.markDirty();
         }
     }
 }
