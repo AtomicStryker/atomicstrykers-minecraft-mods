@@ -385,28 +385,32 @@ public class RuinTemplate
             levelSite(world, world.getBlockState(new BlockPos(xBase, yReturn, zBase)).getBlock(), xBase, yReturn, zBase, eastwest, random, rotate, rules.get(0));
         }
 
-        int rulenum;
         // the main loop
         while (layeriter.hasNext())
         {
             curlayer = layeriter.next();
-            for (int x1 = 0; x1 < xDim; x1++)
+            for (int x0 = 0; x0 < width; ++x0)
             {
-                for (int z1 = 0; z1 < zDim; z1++)
+                for (int z0 = 0; z0 < length; ++z0)
                 {
+                    final int rulenum = curlayer.getRuleAt(x0, z0);
+                    int x1 = x0;
+                    int z1 = z0;
                     switch (rotate)
                     {
                     case RuinsMod.DIR_EAST:
-                        rulenum = curlayer.getRuleAt(z1, xDim - (x1 + 1));
+                        x1 = (xDim - 1) - z0;
+                        z1 = x0;
                         break;
                     case RuinsMod.DIR_SOUTH:
-                        rulenum = curlayer.getRuleAt(xDim - (x1 + 1), zDim - (z1 + 1));
+                        x1 = (xDim - 1) - x0;
+                        z1 = (zDim - 1) - z0;
                         break;
                     case RuinsMod.DIR_WEST:
-                        rulenum = curlayer.getRuleAt(zDim - (z1 + 1), x1);
+                        x1 = z0;
+                        z1 = (zDim - 1) - x0;
                         break;
                     default:
-                        rulenum = curlayer.getRuleAt(x1, z1);
                         break;
                     }
                     curRule = rules.get(rulenum);
