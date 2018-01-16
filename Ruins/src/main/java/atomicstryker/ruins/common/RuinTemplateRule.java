@@ -17,6 +17,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -1521,8 +1522,24 @@ public class RuinTemplateRule
         if (world != null && block != null)
         {
             BlockPos position = new BlockPos(x, y, z);
-            if (world.setBlockState(position, (isValidMetadata(metadata) ? block.getStateFromMeta(metadata) : block.getDefaultState()).withRotation(getDirectionalRotation(direction)), 2))
+
+            // clobber existing tile entity block, if any
+            TileEntity existing_entity = world.getTileEntity(position);
+            if (existing_entity != null)
             {
+                if (existing_entity instanceof IInventory)
+                {
+                    ((IInventory) existing_entity).clear();
+                }
+                world.setBlockState(position, Blocks.BARRIER.getDefaultState(), 4);
+            }
+
+            final IBlockState state = (isValidMetadata(metadata) ? block.getStateFromMeta(metadata) : block.getDefaultState()).withRotation(getDirectionalRotation(direction));
+            if (world.setBlockState(position, state, 2))
+            {
+                // workaround for vanilla weirdness (bug?)
+                // double set required for some states (e.g., rails)
+                world.setBlockState(position, state, 2);
                 entity = world.getTileEntity(position);
             }
         }
