@@ -32,13 +32,14 @@ class FileHandler
     private int[] allowedDimensions = { -1, 0, 1 };
 
     public boolean loaded;
-    boolean disableLogging;
+    boolean disableLogging = true;
     final File saveFolder;
 
-    public float templateInstancesMinDistance = 75f;
-    float anyRuinsMinDistance = 0f;
+    public float templateInstancesMinDistance = 256;
+    float anyRuinsMinDistance = 64;
     public int anySpawnMinDistance = 32;
     public int anySpawnMaxDistance = Integer.MAX_VALUE;
+    public boolean enableStick = true;
     static final HashSet<Block> registeredTEBlocks = new HashSet<>();
 
     private int templateCount;
@@ -257,46 +258,50 @@ class FileHandler
                 triesPerChunkNormal = Integer.parseInt(check[1]);
                 ruinsLog.println("tries_per_chunk_normal = " + triesPerChunkNormal);
             }
-            if (check[0].equals("chance_to_spawn_normal"))
+            else if (check[0].equals("chance_to_spawn_normal"))
             {
                 chanceToSpawnNormal = Float.parseFloat(check[1]);
                 ruinsLog.println("chance_to_spawn_normal = " + chanceToSpawnNormal);
             }
-            if (check[0].equals("tries_per_chunk_nether"))
+            else if (check[0].equals("tries_per_chunk_nether"))
             {
                 triesPerChunkNether = Integer.parseInt(check[1]);
             }
-            if (check[0].equals("chance_to_spawn_nether"))
+            else if (check[0].equals("chance_to_spawn_nether"))
             {
                 chanceToSpawnNether = Float.parseFloat(check[1]);
             }
-            if (check[0].equals("disableRuinSpawnCoordsLogging"))
+            else if (check[0].equals("disableRuinSpawnCoordsLogging"))
             {
                 disableLogging = Boolean.parseBoolean(check[1]);
             }
-            if (check[0].equals("templateInstancesMinDistance"))
+            else if (check[0].equals("templateInstancesMinDistance"))
             {
                 templateInstancesMinDistance = Float.parseFloat(check[1]);
                 ruinsLog.println("templateInstancesMinDistance = " + templateInstancesMinDistance);
             }
-            if (check[0].equals("anyRuinsMinDistance"))
+            else if (check[0].equals("anyRuinsMinDistance"))
             {
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
                 ruinsLog.println("anyRuinsMinDistance = " + anyRuinsMinDistance);
             }
-            if (check[0].equals("anySpawnMinDistance"))
+            else if (check[0].equals("anySpawnMinDistance"))
             {
                 final int value = Integer.parseInt(check[1]);
                 anySpawnMinDistance = value > 0 ? value : 0;
                 ruinsLog.println("anySpawnMinDistance = " + anySpawnMinDistance);
             }
-            if (check[0].equals("anySpawnMaxDistance"))
+            else if (check[0].equals("anySpawnMaxDistance"))
             {
                 final int value = Integer.parseInt(check[1]);
                 anySpawnMaxDistance = value > 0 ? value : Integer.MAX_VALUE;
                 ruinsLog.println("anySpawnMaxDistance = " + anySpawnMaxDistance);
             }
-            if (check[0].equals("allowedDimensions") && check.length > 1)
+            else if (check[0].equals("enableStick"))
+            {
+                enableStick = Boolean.parseBoolean(check[1]);
+            }
+            else if (check[0].equals("allowedDimensions") && check.length > 1)
             {
                 String[] ints = check[1].split(",");
                 allowedDimensions = new int[ints.length];
@@ -305,7 +310,7 @@ class FileHandler
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
             }
-            if (check[0].equals("teblocks") && check.length > 1)
+            else if (check[0].equals("teblocks") && check.length > 1)
             {
                 String[] blocks = check[1].split(",");
                 for (String b : blocks)
@@ -317,8 +322,7 @@ class FileHandler
                     }
                 }
             }
-
-            if ((matcher = patternSpecificBiome.matcher(read)).lookingAt())
+            else if ((matcher = patternSpecificBiome.matcher(read)).lookingAt())
             {
                 boolean found = false;
                 Biome bgb;
@@ -440,22 +444,15 @@ class FileHandler
         pw.println("#     try in this chunk.  This may still fail if the ruin does not have a");
         pw.println("#     suitable place to generate.");
         pw.println("#");
-        pw.println("# chance_for_site is the chance, out of 100, that another ruin will attempt to");
-        pw.println("#     spawn nearby if a ruin was already successfully spawned.  This bypasses");
-        pw.println("#     the normal tries per chunk, so if this chance is set high you may end up");
-        pw.println("#     with a lot of ruins even with a low tries per chunk and chance to spawn.");
-        pw.println("#");
         pw.println("# specific_<biome name> is the chance, out of 100, that a ruin spawning in the");
         pw.println("#     specified biome will be chosen from the biome specific folder.  If not,");
         pw.println("#     it will choose a generic ruin from the folder of the same name.");
         pw.println();
         pw.println("tries_per_chunk_normal=6");
-        pw.println("chance_to_spawn_normal=10.0");
-        pw.println("chance_for_site_normal=15.0");
+        pw.println("chance_to_spawn_normal=10");
         pw.println();
         pw.println("tries_per_chunk_nether=6");
         pw.println("chance_to_spawn_nether=10");
-        pw.println("chance_for_site_nether=15");
         pw.println("disableRuinSpawnCoordsLogging=true");
         pw.println();
         pw.println("# minimum distance a template must have from instances of itself");
@@ -465,6 +462,8 @@ class FileHandler
         pw.println("# min/max distances overworld templates can have from world spawn (0 = no limit)");
         pw.println("anySpawnMinDistance=32");
         pw.println("anySpawnMaxDistance=0");
+        pw.println("# allow displaying a block's data by hitting it with a stick");
+        pw.println("enableStick=true");
         pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
         pw.println("allowedDimensions=0,1,-1");
         pw.println();

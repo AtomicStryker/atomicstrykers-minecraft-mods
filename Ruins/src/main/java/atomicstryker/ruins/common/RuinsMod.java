@@ -83,12 +83,16 @@ public class RuinsMod
     @SubscribeEvent
     public void onBreakSpeed(BreakSpeed event)
     {
-        ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
-        if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
+        WorldHandle wh = getWorldHandle(event.getEntity().getEntityWorld());
+        if (wh != null && wh.fileHandle.enableStick)
         {
-            nextInfoTime = System.currentTimeMillis() + 1000L;
-            event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
-                    event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+            ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
+            if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
+            {
+                nextInfoTime = System.currentTimeMillis() + 1000L;
+                event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
+                        event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+            }
         }
     }
 
@@ -97,13 +101,17 @@ public class RuinsMod
     {
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
         {
-            ItemStack is = event.getPlayer().getHeldItemMainhand();
-            if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
+            WorldHandle wh = getWorldHandle(event.getWorld());
+            if (wh != null && wh.fileHandle.enableStick)
             {
-                nextInfoTime = System.currentTimeMillis() + 1000L;
-                event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
-                        event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
-                event.setCanceled(true);
+                ItemStack is = event.getPlayer().getHeldItemMainhand();
+                if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
+                {
+                    nextInfoTime = System.currentTimeMillis() + 1000L;
+                    event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
+                            event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+                    event.setCanceled(true);
+                }
             }
         }
     }
