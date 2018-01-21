@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "multimine", name = "Multi Mine", version = "1.5.7")
+@Mod(modid = "multimine", name = "Multi Mine", version = "1.5.8")
 public class MultiMine
 {
     @Instance("multimine")

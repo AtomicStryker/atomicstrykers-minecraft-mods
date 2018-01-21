@@ -14,6 +14,7 @@ import com.google.common.collect.Maps;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockSkull;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -157,7 +158,17 @@ public class MultiMineServer
                         }
 
                         iblockstate.getBlock().onBlockHarvested(player.world, pos, iblockstate, player);
-                        boolean removed = iblockstate.getBlock().removedByPlayer(player.world.getBlockState(pos), player.world, pos, player, canHarvest);
+                        boolean removed;
+                        if (iblockstate.getBlock() instanceof BlockDoor)
+                        {
+                            // onBlockHarvested in BlockDoor actually sets the block to air, wat
+                            removed = true;
+                        }
+                        else
+                        {
+                            removed = iblockstate.getBlock().removedByPlayer(player.world.getBlockState(pos), player.world, pos, player, canHarvest);
+                        }
+
                         if (removed)
                         {
                             iblockstate.getBlock().onBlockDestroyedByPlayer(player.world, pos, iblockstate);
@@ -168,7 +179,7 @@ public class MultiMineServer
                             iblockstate.getBlock().harvestBlock(player.world, player, pos, iblockstate, tileentity, itemstack);
                         }
 
-                        // Drop experiance
+                        // Drop experience
                         if (removed && event > 0)
                         {
                             iblockstate.getBlock().dropXpOnBlockBreak(player.world, pos, event);
