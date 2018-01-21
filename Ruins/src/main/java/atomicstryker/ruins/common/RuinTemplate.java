@@ -493,7 +493,7 @@ public class RuinTemplate
                 if (targetY >= 0 && Math.abs(yReturn - targetY) <= ad.acceptableY)
                 {
                     debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
-                    int finalY = ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot, false);
+                    ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot, false);
                 }
                 else
                 {
