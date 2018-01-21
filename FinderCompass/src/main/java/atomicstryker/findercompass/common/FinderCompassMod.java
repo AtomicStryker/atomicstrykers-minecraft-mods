@@ -31,7 +31,6 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid = "findercompass", name = "Finder Compass", version = "1.12")
 public class FinderCompassMod

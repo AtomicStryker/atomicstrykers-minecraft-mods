@@ -161,7 +161,7 @@ public class AS_EntityGolemFireball extends Entity
     @Override
     public boolean attackEntityFrom(DamageSource damage, float i)
     {
-        setBeenAttacked();
+        markVelocityChanged();
         Entity entity = damage.getTrueSource();
         if (entity != null)
         {

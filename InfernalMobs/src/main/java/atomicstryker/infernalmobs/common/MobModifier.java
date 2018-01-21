@@ -289,7 +289,7 @@ public abstract class MobModifier
 
             if (attackTarget != null)
             {
-                if (attackTarget.isDead || attackTarget.getDistanceToEntity(mob) > 15f)
+                if (attackTarget.isDead || attackTarget.getDistance(mob) > 15f)
                 {
                     attackTarget = null;
                 }

@@ -51,7 +51,7 @@ public class MM_Storm extends MobModifier
         
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
-        && mob.getDistanceToEntity(target) > MIN_DISTANCE
+        && mob.getDistance(target) > MIN_DISTANCE
         && target.world.canBlockSeeSky(new BlockPos(MathHelper.floor(target.posX), MathHelper.floor(target.posY), MathHelper.floor(target.posZ))))
         {
             nextAbilityUse = time+coolDown;

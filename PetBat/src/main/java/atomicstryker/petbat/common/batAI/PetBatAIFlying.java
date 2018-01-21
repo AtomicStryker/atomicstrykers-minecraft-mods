@@ -84,13 +84,13 @@ public class PetBatAIFlying extends EntityAIBase
     {
         if (petBat.getOwnerEntity() != null)
         {
-            if (petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF
+            if (petBat.getDistanceSq(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF
                     || (sittingSpotAbortTime > 0 && System.currentTimeMillis() > sittingSpotAbortTime))
             {
                 petBat.setHangingSpot(null);
             }
 
-            if (petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TELEPORT)
+            if (petBat.getDistanceSq(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TELEPORT)
             {
                 if (PetBatMod.instance().getPetBatInventoryTeleportEnabled())
                 {
@@ -260,7 +260,7 @@ public class PetBatAIFlying extends EntityAIBase
             }
 
             if (petBat.getOwnerEntity() != null && petBat.getOwnerEntity().isEntityAlive()
-                    && petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF)
+                    && petBat.getDistanceSq(petBat.getOwnerEntity()) > OWNER_DISTANCE_TO_TAKEOFF)
             {
                 takeOff();
             }

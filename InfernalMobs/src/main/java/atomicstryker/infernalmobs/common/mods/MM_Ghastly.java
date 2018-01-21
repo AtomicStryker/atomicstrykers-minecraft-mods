@@ -50,7 +50,7 @@ public class MM_Ghastly extends MobModifier
             return;
         }
 
-        if (mob.getDistanceToEntity(target) > MIN_DISTANCE)
+        if (mob.getDistance(target) > MIN_DISTANCE)
         {
             double diffX = target.posX - mob.posX;
             double diffY = target.getEntityBoundingBox().minY + (double) (target.height / 2.0F) - (mob.posY + (double) (mob.height / 2.0F));

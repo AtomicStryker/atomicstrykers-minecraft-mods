@@ -307,7 +307,7 @@ public class AS_EntityGolem extends EntityMob implements IEntityAdditionalSpawnD
                 towerZ = (int) posZ;
             }
 
-            boolean targetNearby = (getAttackTarget().getDistanceSqToEntity(this) < 6F * 6F);
+            boolean targetNearby = (getAttackTarget().getDistanceSq(this) < 6F * 6F);
 
             if (!targetNearby || explosionAttack == 1 || (((this.posY - getAttackTarget().posY) > 0.3D)))
             {

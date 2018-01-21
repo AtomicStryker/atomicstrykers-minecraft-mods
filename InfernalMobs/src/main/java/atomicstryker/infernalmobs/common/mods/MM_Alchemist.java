@@ -55,7 +55,7 @@ public class MM_Alchemist extends MobModifier
             return;
         }
 
-        if (mob.getDistanceToEntity(target) > MIN_DISTANCE)
+        if (mob.getDistanceSq(target) > MIN_DISTANCE)
         {
             double diffX = target.posX + target.motionX - mob.posX;
             double diffY = target.posY + (double) target.getEyeHeight() - 1.100000023841858D - mob.posY;
@@ -78,10 +78,8 @@ public class MM_Alchemist extends MobModifier
             }
 
             EntityPotion potion = new EntityPotion(mob.world, mob, PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
-
             potion.rotationPitch -= -20.0F;
-
-            potion.setThrowableHeading(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
+            potion.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
             mob.world.spawnEntity(potion);
         }
     }

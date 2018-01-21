@@ -420,7 +420,7 @@ public class EntityMinion extends EntityCreature implements IAStarPathedEntity, 
         {
             if (master != null && !hasPath())
             {
-                if (this.getDistanceToEntity(master) < 2F && this.inventory.containsItems())
+                if (this.getDistance(master) < 2F && this.inventory.containsItems())
                 {
                     dropAllItemsToWorld();
                     returningGoods = false;

@@ -36,7 +36,7 @@ public class MinionAIFollowMaster extends EntityAIBase
     @Override
     public boolean shouldExecute()
     {
-        return theMinion.master != null && theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.minDist * this.minDist)
+        return theMinion.master != null && theMinion.getDistanceSq(theMinion.master) > (double) (this.minDist * this.minDist)
                 && shouldFollowMaster();
     }
 
@@ -46,7 +46,7 @@ public class MinionAIFollowMaster extends EntityAIBase
     @Override
     public boolean shouldContinueExecuting()
     {
-        return !this.petPathfinder.noPath() && this.theMinion.getDistanceSqToEntity(theMinion.master) > (double) (this.maxDist * this.maxDist)
+        return !this.petPathfinder.noPath() && this.theMinion.getDistanceSq(theMinion.master) > (double) (this.maxDist * this.maxDist)
                 && shouldFollowMaster();
     }
 
@@ -66,7 +66,7 @@ public class MinionAIFollowMaster extends EntityAIBase
     @Override
     public void resetTask()
     {
-        this.petPathfinder.clearPathEntity();
+        this.petPathfinder.clearPath();
     }
 
     /**
@@ -85,7 +85,7 @@ public class MinionAIFollowMaster extends EntityAIBase
 
                 if (!petPathfinder.tryMoveToEntityLiving(theMinion.master, followSpeed))
                 {
-                    if (theMinion.getDistanceSqToEntity(theMinion.master) >= followRangeSq)
+                    if (theMinion.getDistanceSq(theMinion.master) >= followRangeSq)
                     {
                         int x = MathHelper.floor(theMinion.master.posX) - 2;
                         int z = MathHelper.floor(theMinion.master.posZ) - 2;
@@ -101,7 +101,7 @@ public class MinionAIFollowMaster extends EntityAIBase
                                 if ((xIter < 1 || zIter < 1 || xIter > 3 || zIter > 3) && a.isNormalCube() && !b.isNormalCube() && !c.isNormalCube())
                                 {
                                     theMinion.setLocationAndAngles((double) (x + xIter) + 0.5D, (double) y, (double) (z + zIter) + 0.5D, theMinion.rotationYaw, theMinion.rotationPitch);
-                                    petPathfinder.clearPathEntity();
+                                    petPathfinder.clearPath();
                                     return;
                                 }
                             }

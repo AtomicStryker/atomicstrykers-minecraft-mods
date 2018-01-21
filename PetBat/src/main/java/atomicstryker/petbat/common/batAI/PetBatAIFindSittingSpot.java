@@ -41,7 +41,7 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
     private boolean checkOwnerNearby()
     {
         return !(petBat.getOwnerEntity() != null
-                && petBat.getDistanceSqToEntity(petBat.getOwnerEntity()) > OWNER_DISTANCE_ALLOWED_SQ);
+                && petBat.getDistanceSq(petBat.getOwnerEntity()) > OWNER_DISTANCE_ALLOWED_SQ);
     }
 
     @Override
