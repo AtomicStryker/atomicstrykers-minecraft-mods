@@ -1,3 +1,6 @@
+1.6.2
+- add DungeonTweaks support (jredfox)
+
 1.6.1
 - reworked item generation in chests, chestgenhook now actually works
 

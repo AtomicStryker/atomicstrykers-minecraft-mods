@@ -379,46 +379,52 @@ public class AS_WorldGenTower
                     TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix + 2, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
-                    	if(!Loader.isModLoaded("dungeontweaks"))
-                    	{
-                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
-                    	}
-                    	else
-                    	{
-                    		try
-                    		{
-                    			Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
-                    			Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
-                    			MinecraftForge.EVENT_BUS.post(event);
-                    		}
-                    		catch(Throwable t)
-                    		{
-                    			t.printStackTrace();
-                    		}
-                    	}
+                        if (!Loader.isModLoaded("dungeontweaks"))
+                        {
+                            tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
+                        }
+                        else
+                        {
+                            try
+                            {
+                                @SuppressWarnings("unchecked")
+                                Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post")
+                                        .getConstructor(TileEntity.class, BlockPos.class, Random.class, ResourceLocation.class, World.class);
+                                Event event = constructor.newInstance(tileentitymobspawner, tileentitymobspawner.getPos(), world.rand, new ResourceLocation("battletowers:" + towerChosen.getName()),
+                                        world);
+                                MinecraftForge.EVENT_BUS.post(event);
+                            }
+                            catch (Throwable t)
+                            {
+                                t.printStackTrace();
+                            }
+                        }
                     }
 
                     world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.MOB_SPAWNER.getDefaultState());
                     tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix - 3, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
-                    	if(!Loader.isModLoaded("dungeontweaks"))
-                    	{
-                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
-                    	}
-                    	else
-                    	{
-                    		try
-                    		{
-                        		Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
-                        		Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
-                        		MinecraftForge.EVENT_BUS.post(event);
-                        	}
-                    		catch(Throwable t)
-                    		{
-                    			t.printStackTrace();
-                    		}
-                    	}
+                        if (!Loader.isModLoaded("dungeontweaks"))
+                        {
+                            tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
+                        }
+                        else
+                        {
+                            try
+                            {
+                                @SuppressWarnings("unchecked")
+                                Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post")
+                                        .getConstructor(TileEntity.class, BlockPos.class, Random.class, ResourceLocation.class, World.class);
+                                Event event = constructor.newInstance(tileentitymobspawner, tileentitymobspawner.getPos(), world.rand, new ResourceLocation("battletowers:" + towerChosen.getName()),
+                                        world);
+                                MinecraftForge.EVENT_BUS.post(event);
+                            }
+                            catch (Throwable t)
+                            {
+                                t.printStackTrace();
+                            }
+                        }
                     }
                 }
                 else
@@ -615,7 +621,7 @@ public class AS_WorldGenTower
         private Block stairBlockID;
         private String typeName;
 
-        TowerTypes(String t,Block a, Block b, Block c, int d, Block e)
+        TowerTypes(String t, Block a, Block b, Block c, int d, Block e)
         {
             this.wallBlockID = a;
             this.lightBlockID = b;
@@ -649,9 +655,10 @@ public class AS_WorldGenTower
         {
             return stairBlockID;
         }
+
         public String getName()
         {
-        	return this.typeName;
+            return this.typeName;
         }
     }
 

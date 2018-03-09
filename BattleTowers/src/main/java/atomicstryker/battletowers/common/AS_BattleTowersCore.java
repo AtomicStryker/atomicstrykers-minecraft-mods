@@ -33,7 +33,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder("battletowers")
-@Mod(modid = "battletowers", name = "Battle Towers", version = "1.6.1")
+@Mod(modid = "battletowers", name = "Battle Towers", version = "1.6.2")
 public class AS_BattleTowersCore
 {
 
