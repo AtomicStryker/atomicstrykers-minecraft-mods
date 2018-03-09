@@ -488,9 +488,7 @@ public class AS_WorldGenTower
 
             if (towerChosen != TowerTypes.Null)
             {
-                for (int l3 = 0; l3 < (floor * 4 + towerChosen.ordinal()) - 8 && !topFloor; l3++) // random hole
-                                                                                                  // 
-                                                                                                  // poker
+                for (int l3 = 0; l3 < (floor * 4 + towerChosen.ordinal()) - 8 && !topFloor; l3++) // random hole poker
                 {
                     int k4 = 5 - world.rand.nextInt(12);
                     int k5 = builderHeight + 5;
