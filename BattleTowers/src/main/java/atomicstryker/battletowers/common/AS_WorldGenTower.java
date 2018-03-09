@@ -1,5 +1,6 @@
 package atomicstryker.battletowers.common;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,12 +15,15 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class AS_WorldGenTower
 {
@@ -381,7 +385,11 @@ public class AS_WorldGenTower
                     	}
                     	else
                     	{
-                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(new ResourceLocation("battletowers:" + towerChosen.getName() ));
+                    		try{
+                    		Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
+                    		Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
+                    		MinecraftForge.EVENT_BUS.post(event);
+                    		}catch(Throwable t){t.printStackTrace();}
                     	}
                     }
 
@@ -395,7 +403,11 @@ public class AS_WorldGenTower
                     	}
                     	else
                     	{
-                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(new ResourceLocation("battletowers:" + towerChosen.getName() ));
+                    		try{
+                        		Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
+                        		Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
+                        		MinecraftForge.EVENT_BUS.post(event);
+                        	}catch(Throwable t){t.printStackTrace();}
                     	}
                     }
                 }
