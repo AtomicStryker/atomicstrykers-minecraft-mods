@@ -385,11 +385,16 @@ public class AS_WorldGenTower
                     	}
                     	else
                     	{
-                    		try{
-                    		Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
-                    		Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
-                    		MinecraftForge.EVENT_BUS.post(event);
-                    		}catch(Throwable t){t.printStackTrace();}
+                    		try
+                    		{
+                    			Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
+                    			Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
+                    			MinecraftForge.EVENT_BUS.post(event);
+                    		}
+                    		catch(Throwable t)
+                    		{
+                    			t.printStackTrace();
+                    		}
                     	}
                     }
 
@@ -403,11 +408,16 @@ public class AS_WorldGenTower
                     	}
                     	else
                     	{
-                    		try{
+                    		try
+                    		{
                         		Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post").getConstructor(TileEntity.class,BlockPos.class,Random.class,ResourceLocation.class,World.class);
                         		Event event = constructor.newInstance(tileentitymobspawner,tileentitymobspawner.getPos(),world.rand,new ResourceLocation("battletowers:" + towerChosen.getName() ),world);
                         		MinecraftForge.EVENT_BUS.post(event);
-                        	}catch(Throwable t){t.printStackTrace();}
+                        	}
+                    		catch(Throwable t)
+                    		{
+                    			t.printStackTrace();
+                    		}
                     	}
                     }
                 }
