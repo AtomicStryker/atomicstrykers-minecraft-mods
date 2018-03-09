@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 
 public class AS_WorldGenTower
 {
@@ -374,14 +375,28 @@ public class AS_WorldGenTower
                     TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix + 2, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
-                        tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
+                    	if(!Loader.isModLoaded("dungeontweaks"))
+                    	{
+                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
+                    	}
+                    	else
+                    	{
+                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(new ResourceLocation("battletowers:" + towerChosen.getName() ));
+                    	}
                     }
 
                     world.setBlockState(new BlockPos(ix - 3, builderHeight + 6, kz + 2), Blocks.MOB_SPAWNER.getDefaultState());
                     tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix - 3, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
-                        tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
+                    	if(!Loader.isModLoaded("dungeontweaks"))
+                    	{
+                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
+                    	}
+                    	else
+                    	{
+                    		tileentitymobspawner.getSpawnerBaseLogic().setEntityId(new ResourceLocation("battletowers:" + towerChosen.getName() ));
+                    	}
                     }
                 }
                 else
@@ -562,28 +577,30 @@ public class AS_WorldGenTower
 
     public enum TowerTypes
     {
-        Null(Blocks.AIR, Blocks.AIR, Blocks.AIR, 0, Blocks.AIR),
-        CobbleStone(Blocks.COBBLESTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 0, Blocks.STONE_STAIRS),
-        CobbleStoneMossy(Blocks.MOSSY_COBBLESTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 0, Blocks.STONE_STAIRS),
-        SandStone(Blocks.SANDSTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 1, Blocks.SANDSTONE_STAIRS),
-        Ice(Blocks.ICE, Blocks.AIR /* Blocks.GLOWSTONE */, Blocks.CLAY, 2, Blocks.OAK_STAIRS), // since when does glowstone melt ice
-        SmoothStone(Blocks.STONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 3, Blocks.STONE_STAIRS),
-        Netherrack(Blocks.NETHERRACK, Blocks.GLOWSTONE, Blocks.SOUL_SAND, 0, Blocks.NETHER_BRICK_STAIRS),
-        Jungle(Blocks.MOSSY_COBBLESTONE, Blocks.WEB, Blocks.DIRT, 0, Blocks.JUNGLE_STAIRS);
+        Null("null",Blocks.AIR, Blocks.AIR, Blocks.AIR, 0, Blocks.AIR),
+        CobbleStone("cobblestone",Blocks.COBBLESTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 0, Blocks.STONE_STAIRS),
+        CobbleStoneMossy("cobblestonemossy",Blocks.MOSSY_COBBLESTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 0, Blocks.STONE_STAIRS),
+        SandStone("sandstone",Blocks.SANDSTONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 1, Blocks.SANDSTONE_STAIRS),
+        Ice("ice",Blocks.ICE, Blocks.AIR /* Blocks.GLOWSTONE */, Blocks.CLAY, 2, Blocks.OAK_STAIRS), // since when does glowstone melt ice
+        SmoothStone("smoothstone",Blocks.STONE, Blocks.TORCH, Blocks.DOUBLE_STONE_SLAB, 3, Blocks.STONE_STAIRS),
+        Netherrack("netherrack",Blocks.NETHERRACK, Blocks.GLOWSTONE, Blocks.SOUL_SAND, 0, Blocks.NETHER_BRICK_STAIRS),
+        Jungle("jungle",Blocks.MOSSY_COBBLESTONE, Blocks.WEB, Blocks.DIRT, 0, Blocks.JUNGLE_STAIRS);
 
         private Block wallBlockID;
         private Block lightBlockID;
         private Block floorBlockID;
         private int floorBlockMetaData;
         private Block stairBlockID;
+        private String typeName;
 
-        TowerTypes(Block a, Block b, Block c, int d, Block e)
+        TowerTypes(String t,Block a, Block b, Block c, int d, Block e)
         {
             this.wallBlockID = a;
             this.lightBlockID = b;
             this.floorBlockID = c;
             this.floorBlockMetaData = d;
             this.stairBlockID = e;
+            this.typeName = t;
         }
 
         Block getWallBlockID()
@@ -609,6 +626,10 @@ public class AS_WorldGenTower
         Block getStairBlockID()
         {
             return stairBlockID;
+        }
+        public String getName()
+        {
+        	return this.typeName;
         }
     }
 
