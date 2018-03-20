@@ -1,3 +1,6 @@
+1.4.7
+- hardened against reported render hacking problems
+
 1.4.6
 - updated to 1.11.2
 

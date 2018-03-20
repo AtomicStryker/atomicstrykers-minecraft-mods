@@ -12,6 +12,7 @@ import org.lwjgl.input.Keyboard;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +20,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -44,7 +44,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
  *         register dropped Items.
  *
  */
-@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.6")
+@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.7")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -76,6 +76,7 @@ public class DynamicLights
      */
     private KeyBinding toggleButton;
     private long nextKeyTriggerTime;
+    private static boolean hackingRenderFailed;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
@@ -85,6 +86,7 @@ public class DynamicLights
         worldLightsMap = new ConcurrentHashMap<>();
         MinecraftForge.EVENT_BUS.register(this);
         nextKeyTriggerTime = System.currentTimeMillis();
+        hackingRenderFailed = false;
     }
 
     @EventHandler
@@ -169,7 +171,7 @@ public class DynamicLights
     {
         int vanillaValue = blockState.getLightValue(world, pos);
 
-        if (instance == null || instance.globalLightsOff || world instanceof WorldServer)
+        if (instance == null || instance.globalLightsOff || !(world instanceof WorldClient))
         {
             return vanillaValue;
         }
@@ -204,14 +206,19 @@ public class DynamicLights
     @SuppressWarnings("unchecked")
     private static void hackRenderGlobalConcurrently()
     {
-        try
+        if (hackingRenderFailed)
         {
-            for (Field f : RenderGlobal.class.getDeclaredFields())
+            return;
+        }
+        
+        for (Field f : RenderGlobal.class.getDeclaredFields())
+        {
+            if (Set.class.isAssignableFrom(f.getType()))
             {
-                if (Set.class.isAssignableFrom(f.getType()))
+                ParameterizedType fieldType = (ParameterizedType) f.getGenericType();
+                if (BlockPos.class.equals(fieldType.getActualTypeArguments()[0]))
                 {
-                    ParameterizedType fieldType = (ParameterizedType) f.getGenericType();
-                    if (BlockPos.class.equals(fieldType.getActualTypeArguments()[0]))
+                    try
                     {
                         f.setAccessible(true);
                         Set<BlockPos> setLightUpdates = (Set<BlockPos>) f.get(instance.mcinstance.renderGlobal);
@@ -224,13 +231,15 @@ public class DynamicLights
                         System.out.println("Dynamic Lights successfully hacked Set RenderGlobal.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
                         return;
                     }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        System.out.println("Dynamic Lights completely failed to hack Set RenderGlobal.setLightUpdates and will not try again!");
+        hackingRenderFailed = true;
     }
 
     /**
