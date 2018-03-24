@@ -21,6 +21,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +45,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
  *         register dropped Items.
  *
  */
-@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.7")
+@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.8")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -78,6 +79,12 @@ public class DynamicLights
     private long nextKeyTriggerTime;
     private static boolean hackingRenderFailed;
 
+    /**
+     * Configuration for "global" dynamic lights settings
+     */
+    private Configuration config;
+    private int[] bannedDimensions;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
@@ -87,6 +94,10 @@ public class DynamicLights
         MinecraftForge.EVENT_BUS.register(this);
         nextKeyTriggerTime = System.currentTimeMillis();
         hackingRenderFailed = false;
+        config = new Configuration(evt.getSuggestedConfigurationFile());
+        config.load();
+        bannedDimensions = config.get(Configuration.CATEGORY_CLIENT, "bannedDimensionIDs", new int[] { -1 }).getIntList();
+        config.save();
     }
 
     @EventHandler
@@ -210,7 +221,7 @@ public class DynamicLights
         {
             return;
         }
-        
+
         for (Field f : RenderGlobal.class.getDeclaredFields())
         {
             if (Set.class.isAssignableFrom(f.getType()))
@@ -252,11 +263,13 @@ public class DynamicLights
      */
     public static void addLightSource(IDynamicLightSource lightToAdd)
     {
-        // System.out.println("Calling addLightSource "+lightToAdd+", world
-        // "+lightToAdd.getAttachmentEntity().world);
         if (lightToAdd.getAttachmentEntity() != null)
         {
-            if (lightToAdd.getAttachmentEntity().isEntityAlive())
+            // System.out.printf("Calling addLightSource on entity %s, world %s,
+            // dimension %d\n", lightToAdd.getAttachmentEntity(),
+            // lightToAdd.getAttachmentEntity().world.getWorldInfo().getWorldName(),
+            // lightToAdd.getAttachmentEntity().dimension);
+            if (lightToAdd.getAttachmentEntity().isEntityAlive() && !instance.isBannedDimension(lightToAdd.getAttachmentEntity().dimension))
             {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
                 ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().world);
@@ -264,10 +277,10 @@ public class DynamicLights
                 {
                     if (!lightList.contains(newLightContainer))
                     {
-                        // System.out.println("Successfully registered Dynamic
-                        // Light on Entity:
-                        // "+newLightContainer.getLightSource().getAttachmentEntity()+"
-                        // in list "+lightList);
+                        // System.out.println("Successfully registered
+                        // DynamicLight on Entity:" +
+                        // newLightContainer.getLightSource().getAttachmentEntity()
+                        // + "in list " + lightList);
                         lightList.add(newLightContainer);
                     }
                     else
@@ -284,7 +297,7 @@ public class DynamicLights
             }
             else
             {
-                System.err.println("Cannot add Dynamic Light: Attachment Entity is dead!");
+                System.err.println("Cannot add Dynamic Light: Attachment Entity is dead or in a banned dimension!");
             }
         }
         else
@@ -329,5 +342,29 @@ public class DynamicLights
                 }
             }
         }
+    }
+
+    /**
+     * getter for the global configuration, to be used with instance
+     */
+    public Configuration getConfiguration()
+    {
+        return config;
+    }
+
+    /**
+     * is a given dimension id on the banned list and will not receive dynamic
+     * lighting
+     */
+    public boolean isBannedDimension(int dimensionID)
+    {
+        for (int i : bannedDimensions)
+        {
+            if (i == dimensionID)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

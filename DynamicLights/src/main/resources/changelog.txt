@@ -1,3 +1,6 @@
+1.4.8
+- implemented dimension ID banlist in main dynamic lights mod, default: Nether (-1) is banned
+
 1.4.7
 - hardened against reported render hacking problems
 
