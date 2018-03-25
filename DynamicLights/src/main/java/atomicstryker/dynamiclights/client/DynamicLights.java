@@ -217,7 +217,7 @@ public class DynamicLights
     @SuppressWarnings("unchecked")
     private static void hackRenderGlobalConcurrently()
     {
-        if (hackingRenderFailed)
+        if (hackingRenderFailed || instance.isBannedDimension(Minecraft.getMinecraft().player.dimension))
         {
             return;
         }
