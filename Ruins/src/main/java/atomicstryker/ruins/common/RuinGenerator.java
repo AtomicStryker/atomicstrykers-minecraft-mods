@@ -41,14 +41,7 @@ class RuinGenerator
         ruinsDataFile = new File(rh.saveFolder, fileName);
         ruinsDataFileWriting = new File(rh.saveFolder, fileName + "_writing");
 
-        if (ruinsDataFile.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
-        {
-            new LoadThread().start();
-        }
-        else
-        {
-            System.err.println("Ruins attempted to load invalid worldname " + world.getWorldInfo().getWorldName() + " posfile");
-        }
+        new LoadThread().start();
     }
 
     private class LoadThread extends Thread
