@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -487,10 +489,20 @@ public class AS_WorldGenTower
             }
 
             // move lights builder a bit higher, to support non-opaque lights such as lamps
-            world.setBlockState(new BlockPos(ix + 3, builderHeight + 2, kz - 6), towerLightBlockID.getDefaultState());
-            world.setBlockState(new BlockPos(ix - 4, builderHeight + 2, kz - 6), towerLightBlockID.getDefaultState());
-            world.setBlockState(new BlockPos(ix + 1, builderHeight + 2, kz - 4), towerLightBlockID.getDefaultState());
-            world.setBlockState(new BlockPos(ix - 2, builderHeight + 2, kz - 4), towerLightBlockID.getDefaultState());
+            if (towerLightBlockID == Blocks.TORCH)
+            {
+                world.setBlockState(new BlockPos(ix + 3,  builderHeight+2,  kz - 6),  towerLightBlockID.getStateFromMeta(0).withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 2);
+                world.setBlockState(new BlockPos(ix - 4,  builderHeight+2,  kz - 6),  towerLightBlockID.getStateFromMeta(0).withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 2);
+                world.setBlockState(new BlockPos(ix + 1,  builderHeight+2,  kz - 4),  towerLightBlockID.getStateFromMeta(0).withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 2);
+                world.setBlockState(new BlockPos(ix - 2,  builderHeight+2,  kz - 4),  towerLightBlockID.getStateFromMeta(0).withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 2);
+            }
+            else
+            {
+                world.setBlockState(new BlockPos(ix + 3,  builderHeight+2,  kz - 6),  towerLightBlockID.getStateFromMeta(0));
+                world.setBlockState(new BlockPos(ix - 4,  builderHeight+2,  kz - 6),  towerLightBlockID.getStateFromMeta(0));
+                world.setBlockState(new BlockPos(ix + 1,  builderHeight+2,  kz - 4),  towerLightBlockID.getStateFromMeta(0));
+                world.setBlockState(new BlockPos(ix - 2,  builderHeight+2,  kz - 4),  towerLightBlockID.getStateFromMeta(0));
+            }
 
             if (towerChosen != TowerTypes.Null)
             {

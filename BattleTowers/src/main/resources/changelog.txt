@@ -1,3 +1,6 @@
+1.6.3
+- add a fix for dropping torches in generated towers (SandUhr32)
+
 1.6.2
 - add DungeonTweaks support (jredfox)
 
