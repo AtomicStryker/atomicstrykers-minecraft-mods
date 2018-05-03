@@ -199,10 +199,10 @@ public class RuinTemplate
         }
 
         // guess the top Y coordinate of the structure box, for checking top to bottom
-        final int topYguess = y + height - embed + additionalYRangeChecked;
+        final int topYguess = y + height + additionalYRangeChecked;
 
         // set a lowest height value at which surface search is aborted
-        final int minimalCheckedY = y - height - embed - additionalYRangeChecked;
+        final int minimalCheckedY = y - height - additionalYRangeChecked;
 
         // surface heights of the proposed site, -1 means 'out of range, consider overhang'
         final int[][] heightMap = new int[xDim][zDim];
