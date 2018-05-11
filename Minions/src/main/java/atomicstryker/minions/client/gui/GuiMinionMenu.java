@@ -1,5 +1,7 @@
 package atomicstryker.minions.client.gui;
 
+import java.io.IOException;
+
 import atomicstryker.minions.client.MinionsClient;
 import atomicstryker.minions.common.MinionsCore;
 import atomicstryker.minions.common.network.HaxPacket;
@@ -97,19 +99,23 @@ public class GuiMinionMenu extends GuiScreen
     private int cheatCount = 0;
 
     @Override
-    protected void keyTyped(char var1, int var2)
+    protected void keyTyped(char charTyped, int keyCode) throws IOException
     {
-    	if (var1 == 'i' && cheatCount == 0) cheatCount++;
-    	if (var1 == 'l' && cheatCount == 1) cheatCount++;
-    	if (var1 == 'u' && cheatCount == 2) cheatCount++;
-    	if (var1 == 'v' && cheatCount == 3) cheatCount++;
-    	if (var1 == 'e' && cheatCount == 4) cheatCount++;
-    	if (var1 == 'v' && cheatCount == 5) cheatCount++;
-    	if (var1 == 'i' && cheatCount == 6) cheatCount++;
-    	if (var1 == 'l' && cheatCount == 7)
+    	if (charTyped == 'i' && cheatCount == 0) cheatCount++;
+    	if (charTyped == 'l' && cheatCount == 1) cheatCount++;
+    	if (charTyped == 'u' && cheatCount == 2) cheatCount++;
+    	if (charTyped == 'v' && cheatCount == 3) cheatCount++;
+    	if (charTyped == 'e' && cheatCount == 4) cheatCount++;
+    	if (charTyped == 'v' && cheatCount == 5) cheatCount++;
+    	if (charTyped == 'i' && cheatCount == 6) cheatCount++;
+    	if (charTyped == 'l' && cheatCount == 7)
         {
     	    MinionsCore.instance.networkHelper.sendPacketToServer(new HaxPacket(mc.player.getName())); // cheater!!!!
             mc.displayGuiScreen(null);
+        }
+        else
+        {
+            super.keyTyped(charTyped, keyCode);
         }
     }
 
