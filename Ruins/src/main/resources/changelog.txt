@@ -509,3 +509,8 @@ a: setAccessible now true
 
 17.0
 + adds optional variables "spawnMinDistance" and "spawnMaxDistance", cleaning some obsolete documentation (QuarterAnimal)
+
+17.1
++ adds optional variable "enableStick" to the Ruins world config to turn off stick debugging info
++ remove embed distance from surface search, bugfix (QuarterAnimal)
++ fix pirateship template levelling, bugfix (QuarterAnimal)
