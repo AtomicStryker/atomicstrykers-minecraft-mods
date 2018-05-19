@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.lwjgl.input.Keyboard;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -45,7 +46,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
  *         register dropped Items.
  *
  */
-@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.8")
+@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.9", clientSideOnly = true, dependencies="required-after:forge@[14.23.3.2698,)")
 public class DynamicLights
 {
     private Minecraft mcinstance;
@@ -169,6 +170,8 @@ public class DynamicLights
      * and if it finds one for the exact coordinates asked, returns the Light
      * value from that source if higher.
      * 
+     * @param block
+     *            block queried
      * @param blockState
      *            IBlockState queried
      * @param world
@@ -178,9 +181,9 @@ public class DynamicLights
      * @return max(Block.getLightValue, Dynamic Light)
      */
     @SuppressWarnings("unused")
-    public static int getLightValue(IBlockState blockState, IBlockAccess world, BlockPos pos)
+    public static int getLightValue(Block block, IBlockState blockState, IBlockAccess world, BlockPos pos)
     {
-        int vanillaValue = blockState.getLightValue(world, pos);
+        int vanillaValue = block.getLightValue(blockState, world, pos);
 
         if (instance == null || instance.globalLightsOff || !(world instanceof WorldClient))
         {

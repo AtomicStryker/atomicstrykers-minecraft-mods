@@ -1,3 +1,6 @@
+1.4.9
+- fixed to work with current forge version, unfortunately also requires said forge version
+
 1.4.8
 - implemented dimension ID banlist in main dynamic lights mod, default: Nether (-1) is banned
 

@@ -43,7 +43,7 @@ public class DLTransformer implements IClassTransformer
     /*
      * (Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
      */
-    private String goalInvokeDesc = "(Lawt;Lamy;Let;)I";
+    private String goalInvokeDesc = "(Laow;Lawt;Lamy;Let;)I";
     
     @Override
     public byte[] transform(String name, String newName, byte[] bytes)
@@ -56,7 +56,7 @@ public class DLTransformer implements IClassTransformer
         else if (name.equals("net.minecraft.world.World")) // MCP testing
         {
             computeLightValueMethodName = "getRawLight";
-            goalInvokeDesc = "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)I";
+            goalInvokeDesc = "(Lnet/minecraft/block/Block;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)I";
             return handleWorldTransform(bytes, false);
         }
         
@@ -90,28 +90,36 @@ public class DLTransformer implements IClassTransformer
             {
                 System.out.println("In target method " + computeLightValueMethodName +":"+m.desc+ ", Patching!");
                 
-                /* before patch:
-                   0: aload_2
-			       1: getstatic     #136                // Field net/minecraft/world/EnumSkyBlock.SKY:Lnet/minecraft/world/EnumSkyBlock;
-			       4: if_acmpne     18
-			       7: aload_0       
-			       8: aload_1       
-			       9: invokevirtual #160                // Method isAgainstSky:(Lnet/minecraft/util/BlockPos;)Z
-			      12: ifeq          18
-			      15: bipush        15
-			      17: ireturn       
-			      18: aload_0       
-			      19: aload_1       
-			      20: invokevirtual #80                 // Method getBlockState:(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;
-			      23: invokeinterface #81,  1           // InterfaceMethod net/minecraft/block/state/IBlockState.getBlock:()Lnet/minecraft/block/Block;
-			      28: astore_3      
-			      29: aload_3       
-			      30: aload_0       
-			      31: aload_1       
-			      32: invokevirtual #486                // Method net/minecraft/block/Block.getLightValue:(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
-			      35: istore        4
-			      [... many more...]
-                 */
+                /* before patch, forge 2698
+                   
+               aload_2
+               getstatic     #136               // Field net/minecraft/world/EnumSkyBlock.SKY:Lnet/minecraft/world/EnumSkyBlock;
+               if_acmpne     18
+               aload_0       
+               aload_1       
+               invokevirtual #160               // Method isAgainstSky:(Lnet/minecraft/util/BlockPos;)Z
+               ifeq          18
+               bipush        15
+               ireturn       
+               aload_0       
+               aload_1       
+               invokevirtual #80                // Method getBlockState:(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+               astore_3       
+               getstatic                        // Field net/minecraft/world/EnumSkyBlock.SKY:Lnet/minecraft/world/EnumSkyBlock;
+               if_acmpne
+               iconst_0
+               goto [control jumps somewhere else]
+               aload_3
+               invokeinterface                  // InterfaceMethod Lnet/minecraft/block/state/IBlockState.getBlock:()Lnet/minecraft/block/Block;
+               aload_3
+               aload_0       
+               aload_1       
+               stack is block, iblockstate, iblockaccess, blockpos
+               invokevirtual                    // Method net/minecraft/block/Block.getLightValue (Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
+               istore        4
+              
+               [... many more...]
+              */
                 
                 /*
                 System.out.println("=== PRE PRINT===");
@@ -142,7 +150,8 @@ public class DLTransformer implements IClassTransformer
                         // go further until ISTORE is hit
                         while (targetNode.getOpcode() != Opcodes.ISTORE)
                         {
-                            if (targetNode instanceof MethodInsnNode && targetNode.getOpcode() != Opcodes.INVOKEINTERFACE)
+                            // we want to delete the INVOKEVIRTUAL aka the call to Block.getLightValue
+                            if (targetNode instanceof MethodInsnNode && targetNode.getOpcode() == Opcodes.INVOKEVIRTUAL)
                             {
                                 MethodInsnNode mNode = (MethodInsnNode) targetNode;
                                 System.out.printf("found deletion target at index %d: %s\n", index, insnToString(mNode));
