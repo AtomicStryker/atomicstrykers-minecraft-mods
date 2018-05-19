@@ -41,7 +41,7 @@ public class DLTransformer implements IClassTransformer
     private String computeLightValueMethodName = "a";
 
     /*
-     * (Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
+     * (Lnet/minecraft/block/Block;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;)I
      */
     private String goalInvokeDesc = "(Laow;Lawt;Lamy;Let;)I";
     
