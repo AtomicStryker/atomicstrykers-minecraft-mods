@@ -50,7 +50,7 @@ class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos - 1, zpos, RuinsMod.DIR_NORTH, is_player);
+                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, is_player);
                     parsedRuin = null;
                 }
                 else
@@ -60,7 +60,7 @@ class CommandTestTemplate extends CommandBase
             }
             else
             {
-                tryBuild(sender, args, xpos, ypos - 1, zpos, is_player);
+                tryBuild(sender, args, xpos, ypos, zpos, is_player);
             }
         }
         else if (args.length >= 4)
@@ -73,7 +73,7 @@ class CommandTestTemplate extends CommandBase
                 }
                 else
                 {
-                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), (int) parseDouble(ypos, args[2], -30000000, 30000000, false) - 1,
+                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), (int) parseDouble(ypos, args[2], -30000000, 30000000, false),
                             (int) parseDouble(zpos, args[3], -30000000, 30000000, false), is_player);
                 }
             }
@@ -124,6 +124,7 @@ class CommandTestTemplate extends CommandBase
                             sender.sendMessage(new TextComponentTranslation("Could not find acceptable Y coordinate"));
                             return;
                         }
+                        ++y;
                     }
 
                     if (parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, x, y, z, rotation, is_player) >= 0)
