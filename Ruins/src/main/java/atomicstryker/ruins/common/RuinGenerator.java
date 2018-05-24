@@ -187,9 +187,7 @@ class RuinGenerator
         {
             if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNether)
             {
-                int xMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
-                int zMod = (random.nextBoolean() ? random.nextInt(16) : 0 - random.nextInt(16));
-                createBuilding(world, random, xBase + xMod, zBase + zMod, true);
+                createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), true);
             }
         }
     }
@@ -219,13 +217,7 @@ class RuinGenerator
         RuinTemplate ruinTemplate = fileHandler.getTemplate(random, biomeID);
         if (ruinTemplate == null)
         {
-            biomeID = RuinsMod.BIOME_ANY;
-            ruinTemplate = fileHandler.getTemplate(random, biomeID);
-
-            if (ruinTemplate == null)
-            {
-                return;
-            }
+            return;
         }
         numTries++;
 
