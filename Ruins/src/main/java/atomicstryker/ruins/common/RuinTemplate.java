@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -198,11 +198,11 @@ public class RuinTemplate
             zDim = width;
         }
 
-        // guess the top Y coordinate of the structure box, for checking top to bottom
-        final int topYguess = y + height + additionalYRangeChecked;
+        // guess the top Y coordinate of the surface, for checking top to bottom
+        final int topYguess = y - 1 + height + additionalYRangeChecked;
 
         // set a lowest height value at which surface search is aborted
-        final int minimalCheckedY = y - height - additionalYRangeChecked;
+        final int minimalCheckedY = y - 1 - height - additionalYRangeChecked;
 
         // surface heights of the proposed site, -1 means 'out of range, consider overhang'
         final int[][] heightMap = new int[xDim][zDim];
@@ -257,7 +257,7 @@ public class RuinTemplate
                 }
             }
         }
-        final int newY = vals > 0 ? (int) Math.ceil(sum / vals) : y;
+        final int newY = vals > 0 ? (int) Math.round(sum / vals) : y;
 
         // check if the resulting levelling and overhang in the build site surface is acceptable
         int localOverhang = overhang;
@@ -282,28 +282,35 @@ public class RuinTemplate
         }
 
         // looks like a good spot!
-        return newY;
+        return newY + 1;
     }
 
     public RuinData getRuinData(int x, int y, int z, int rotate)
     {
-        int add = lbuffer > 0 ? lbuffer : 0;
+        int add = 0;
+        int y_add = 0;
+        if (leveling > 0 && lbuffer >= 0)
+        {
+            add = lbuffer;
+            y_add = leveling;
+        }
+
         int xMin, xMax, zMin, zMax;
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST))
         {
             xMin = x + l_off - add;
-            xMax = xMin + length - 1 + add;
+            xMax = xMin + length + add;
             zMin = z + w_off - add;
-            zMax = zMin + width - 1 + add;
+            zMax = zMin + width + add;
         }
         else
         {
             xMin = x + w_off - add;
-            xMax = xMin + width - 1 + add;
+            xMax = xMin + width + add;
             zMin = z + l_off - add;
-            zMax = zMin + length - 1 + add;
+            zMax = zMin + length + add;
         }
-        return new RuinData(xMin, xMax, y, y + height - 1, zMin, zMax, name);
+        return new RuinData(xMin, xMax, Math.max(y - y_add, 0), y + height - 1, zMin, zMax, name);
     }
 
     /**
@@ -340,7 +347,7 @@ public class RuinTemplate
         final ArrayList<RuinRuleProcess> lastrun = new ArrayList<>();
         final Iterator<RuinTemplateLayer> layeriter = layers.iterator();
 
-        int y_off = (1 - embed) + ((randomOffMax > randomOffMin) ? (random.nextInt(randomOffMax - randomOffMin) + randomOffMin) : 0);
+        int y_off = -embed + ((randomOffMax > randomOffMin) ? (random.nextInt(randomOffMax - randomOffMin) + randomOffMin) : 0);
 
         // height sanity check
         final int yReturn = Math.max(Math.min(yBase + y_off, world.getActualHeight() - height), 8);
@@ -382,7 +389,11 @@ public class RuinTemplate
         // do any site leveling needed
         if (leveling > 0 && lbuffer >= 0)
         {
-            levelSite(world, world.getBlockState(new BlockPos(xBase, yReturn, zBase)).getBlock(), xBase, yReturn, zBase, eastwest, random, rotate, rules.get(0));
+            Block fill_block = getLevelingFillBlock(world, xBase, yReturn, zBase);
+            if (fill_block != null)
+            {
+                levelSite(world, fill_block, xBase, yReturn, zBase, eastwest, random, rotate, rules.get(0));
+            }
         }
 
         // the main loop
@@ -510,6 +521,30 @@ public class RuinTemplate
         return yReturn;
     }
 
+    // try to recover the original acceptable surface block or suitable substitute, if any
+    private Block getLevelingFillBlock(World world, int x, int y, int z)
+    {
+        Block fill_block = null;
+
+        int y_end = Math.max(y - height, 0) - 1;
+        for (int y_surface = y - 1; y_surface > y_end; --y_surface)
+        {
+            BlockPos pos = new BlockPos(x, y_surface, z);
+            Block block = world.getBlockState(pos).getBlock();
+
+            if (!isIgnoredBlock(block, world, pos))
+            {
+                if (isAcceptableSurface(block))
+                {
+                    fill_block = block;
+                }
+                break;
+            }
+        }
+
+        return fill_block;
+    }
+
     private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun)
     {
         for (RuinRuleProcess rp : laterun)
@@ -552,7 +587,7 @@ public class RuinTemplate
             for (int zi = z; zi < lastZ; zi++)
             {
                 // fill holes
-                for (int yi = y - leveling; yi <= y; yi++)
+                for (int yi = y - leveling; yi < y; yi++)
                 {
                     BlockPos pos = new BlockPos(xi, yi, zi);
                     if (isIgnoredBlock(world.getBlockState(pos).getBlock(), world, pos))
@@ -561,7 +596,7 @@ public class RuinTemplate
                     }
                 }
                 // flatten bumps
-                for (int yi = y + 1; yi <= lastY; yi++)
+                for (int yi = y; yi < lastY; yi++)
                 {
                     rule0.doBlock(world, random, xi, yi, zi, rotate);
                 }

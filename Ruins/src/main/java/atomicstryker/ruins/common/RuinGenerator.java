@@ -373,7 +373,7 @@ class RuinGenerator
 
                 if (r.isAcceptableSurface(b))
                 {
-                    return y;
+                    return y + 1;
                 }
                 return -1;
             }
@@ -401,7 +401,7 @@ class RuinGenerator
                             {
                                 if (r.isAcceptableSurface(b))
                                 {
-                                    return y;
+                                    return y + 1;
                                 }
                                 return -1;
                             }
@@ -412,17 +412,18 @@ class RuinGenerator
             else
             {
                 // from the bottom. find the first air block from the floor
+                boolean accept = false;
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++)
                 {
                     BlockPos pos = new BlockPos(x, y, z);
                     final Block b = world.getBlockState(pos).getBlock();
                     if (!r.isIgnoredBlock(b, world, pos))
                     {
-                        if (r.isAcceptableSurface(b))
-                        {
-                            return y - 1;
-                        }
-                        return -1;
+                        accept = r.isAcceptableSurface(b);
+                    }
+                    else
+                    {
+                        return accept ? y : -1;
                     }
                 }
             }
