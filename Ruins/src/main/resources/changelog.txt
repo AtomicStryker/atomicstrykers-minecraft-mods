@@ -514,3 +514,11 @@ a: setAccessible now true
 + adds optional variable "enableStick" to the Ruins world config to turn off stick debugging info
 + remove embed distance from surface search, bugfix (QuarterAnimal)
 + fix pirateship template levelling, bugfix (QuarterAnimal)
+
+17.2 (pending)
++ resolve off-by-one Y-coordinate selection/adjustment issues--prevents floating ruins, bugfix
++ correct alternate (bottom-up) nether Y-coordinate search, bugfix
++ recover original leveling fill block after Y-coordinate adjustment, bugfix
++ extend structure bounding box (for /undo) to include leveling effects, bugfix
++ constrain nether worldgen to chunk being decorated--reduces "cascading worldgen" log spam, bugfix
++ don't force generic template if no specific template available, bugfix
