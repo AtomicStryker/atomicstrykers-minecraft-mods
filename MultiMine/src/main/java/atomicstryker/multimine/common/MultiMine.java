@@ -10,12 +10,13 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.Logger;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "multimine", name = "Multi Mine", version = "1.5.8")
+@Mod(modid = "multimine", name = "Multi Mine", version = "1.5.9")
 public class MultiMine
 {
     @Instance("multimine")
@@ -26,6 +27,7 @@ public class MultiMine
     private long blockRegenInterval;
 
     private boolean debugMode;
+    private Logger LOGGER;
     public Configuration config;
 
     @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
@@ -50,6 +52,7 @@ public class MultiMine
         config.save();
 
         proxy.onPreInit();
+        LOGGER = evt.getModLog();
     }
 
     @EventHandler
@@ -78,11 +81,11 @@ public class MultiMine
         return blockRegenInterval;
     }
 
-    public void debugPrint(String s)
+    public void debugPrint(String s, Object... params)
     {
         if (debugMode)
         {
-            System.out.println(s);
+            LOGGER.info(s, params);
         }
     }
 }

@@ -1,3 +1,6 @@
+1.5.9
+- fixes bug where block regeneration would never affect the block a player mined last
+
 1.5.8
 - fixes bug with mc doors, thanks to P3rf3ctXZer0 for the report
 

@@ -95,7 +95,7 @@ public class MultiMineServer
     {
         serverInstance = FMLCommonHandler.instance().getMinecraftServerInstance();
         int dimension = player.dimension;
-        MultiMine.instance().debugPrint("multi mine client " + player + " sent progress packet: " + value);
+        MultiMine.instance().debugPrint("multi mine client {} sent progress packet: {}", player.getName(), value);
 
         final BlockPos pos = new BlockPos(x, y, z);
         final IBlockState iblockstate = player.world.getBlockState(pos);
@@ -121,14 +121,14 @@ public class MultiMineServer
             {
                 iterBlock.setProgress(Math.max(iterBlock.getProgress(), value));
                 iterBlock.setLastTimeMined(System.currentTimeMillis() + MultiMine.instance().getInitialBlockRegenDelay());
-                MultiMine.instance().debugPrint("Server updating partial block at: [" + x + "|" + y + "|" + z + "], progress now: " + iterBlock.getProgress());
+                MultiMine.instance().debugPrint("Server updating partial block at: [{}|{}|{}], progress now: {}", x, y, z, iterBlock.getProgress());
 
                 // send the newly advanced partialblock to all relevant players
-                sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock);
+                sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock, false);
 
                 if (iterBlock.isFinished() && !block.isAir(player.world.getBlockState(pos), player.world, pos))
                 {
-                    MultiMine.instance().debugPrint("Server finishing partial block at: [" + x + "|" + y + "|" + z + "]");
+                    MultiMine.instance().debugPrint("Server finishing partial block at: [{}|{}|{}]", x, y, z);
                     // and if its done, destroy the world block
                     player.world.sendBlockBreakProgress(player.getEntityId(), pos, -1);
 
@@ -216,7 +216,7 @@ public class MultiMineServer
 
         partiallyMinedBlocks.add(newblock);
         blockRegenQueue.offer(newblock);
-        sendPartiallyMinedBlockUpdateToAllPlayers(newblock);
+        sendPartiallyMinedBlockUpdateToAllPlayers(newblock, false);
     }
 
     private boolean isBlockBanned(Block block, int meta)
@@ -317,9 +317,9 @@ public class MultiMineServer
      * @param block
      *            PartiallyMinedBlock instance
      */
-    private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block)
+    private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block, boolean regenerating)
     {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress()),
+        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating),
                 new TargetPoint(block.getDimension(), block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D));
     }
 
@@ -333,7 +333,7 @@ public class MultiMineServer
      */
     private void sendPartiallyMinedBlockToPlayer(EntityPlayerMP p, PartiallyMinedBlock block)
     {
-        MultiMine.instance().networkHelper.sendPacketToPlayer(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress()), p);
+        MultiMine.instance().networkHelper.sendPacketToPlayer(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false), p);
     }
 
     /**
@@ -377,13 +377,15 @@ public class MultiMineServer
                 if (block.getProgress() < 0f)
                 {
                     // tell everyone to stop tracking this one
+                    MultiMine.instance().debugPrint("Server sending partial delete command for [{}|{}|{}]", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ());
                     sendPartiallyMinedBlockDeleteCommandToAllPlayers(block);
                     getPartiallyMinedBlocksForDimension(block.getDimension()).remove(block);
                 }
                 else
                 {
                     // send update about this one to all
-                    sendPartiallyMinedBlockUpdateToAllPlayers(block);
+                    MultiMine.instance().debugPrint("Server sending partial regen update for [{}|{}|{}]", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ());
+                    sendPartiallyMinedBlockUpdateToAllPlayers(block, true);
                     blockRegenQueue.add(block);
                 }
             }

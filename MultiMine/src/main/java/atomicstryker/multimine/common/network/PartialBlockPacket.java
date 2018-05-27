@@ -16,18 +16,20 @@ public class PartialBlockPacket implements IPacket
     private String user;
     private int x, y, z;
     private float value;
+    private boolean regenerating;
 
     public PartialBlockPacket()
     {
     }
 
-    public PartialBlockPacket(String username, int ix, int iy, int iz, float val)
+    public PartialBlockPacket(String username, int ix, int iy, int iz, float val, boolean regen)
     {
         user = username;
         x = ix;
         y = iy;
         z = iz;
         value = val;
+        regenerating = regen;
     }
 
     @Override
@@ -38,6 +40,7 @@ public class PartialBlockPacket implements IPacket
         bytes.writeInt(y);
         bytes.writeInt(z);
         bytes.writeFloat(value);
+        bytes.writeBoolean(regenerating);
     }
 
     @Override
@@ -48,6 +51,7 @@ public class PartialBlockPacket implements IPacket
         y = bytes.readInt();
         z = bytes.readInt();
         value = bytes.readFloat();
+        regenerating = bytes.readBoolean();
         if (user.equals("server"))
         {
             FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
@@ -66,7 +70,7 @@ public class PartialBlockPacket implements IPacket
         {
             if (user.equals("server"))
             {
-                MultiMineClient.instance().onServerSentPartialBlockData(x, y, z, value);
+                MultiMineClient.instance().onServerSentPartialBlockData(x, y, z, value, regenerating);
             }
             else
             {

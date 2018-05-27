@@ -104,7 +104,7 @@ public class MultiMineClient
             if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(pos))
             {
                 float savedProgress = partiallyMinedBlocksArray[i].getProgress();
-                MultiMine.instance().debugPrint("found cached block at index " + i + ", cached: " + savedProgress + ", completion: " + blockCompletion);
+                MultiMine.instance().debugPrint("found cached block at index {}, cached: {}, completion: {}", i, savedProgress, blockCompletion);
                 if (savedProgress > blockCompletion)
                 {
                     lastBlockCompletion = savedProgress;
@@ -124,11 +124,11 @@ public class MultiMineClient
             }
             else if (blockCompletion > lastBlockCompletion)
             {
-                MultiMine.instance().debugPrint("Client has block progress for: [" + pos + "], actual completion: " + blockCompletion + ", lastCompletion: " + lastBlockCompletion);
-                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion));
-                MultiMine.instance().debugPrint("Sent block progress packet to server: " + blockCompletion);
+                MultiMine.instance().debugPrint("Client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, blockCompletion, lastBlockCompletion);
+                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion, false));
+                MultiMine.instance().debugPrint("Sent block progress packet to server: {}", blockCompletion);
                 lastBlockCompletion = blockCompletion;
-                updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion);
+                updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion, false);
             }
         }
 
@@ -159,24 +159,24 @@ public class MultiMineClient
 
     /**
      * Called when a server informs the client about new Block progress. See if it exists locally and update, else add it.
-     *
-     * @param x        coordinate of Block
+     *  @param x        coordinate of Block
      * @param y        coordinate of Block
      * @param z        coordinate of Block
      * @param progress of Block Mining, float 0 to 1
+     * @param regenerating
      */
-    public void onServerSentPartialBlockData(int x, int y, int z, float progress)
+    public void onServerSentPartialBlockData(int x, int y, int z, float progress, boolean regenerating)
     {
         if (thePlayer == null)
         {
             return;
         }
 
-        MultiMine.instance().debugPrint("Client received partial Block packet for: [" + x + "|" + y + "|" + z + "], progress now: " + progress);
-        updateLocalPartialBlock(x, y, z, progress);
+        MultiMine.instance().debugPrint("Client received partial Block packet for: [{}|{}|{}], progress now: {}, regen: {}", x, y, z, progress, regenerating);
+        updateLocalPartialBlock(x, y, z, progress, regenerating);
     }
 
-    private void updateLocalPartialBlock(int x, int y, int z, float progress)
+    private void updateLocalPartialBlock(int x, int y, int z, float progress, boolean regenerating)
     {
         updateCloudTickReading();
 
@@ -188,6 +188,12 @@ public class MultiMineClient
         final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.dimension, progress);
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
+
+        if (regenerating && pos.equals(curBlock))
+        {
+            lastBlockCompletion = progress;
+        }
+
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
         {
             iterBlock = partiallyMinedBlocksArray[i];
@@ -204,9 +210,8 @@ public class MultiMineClient
                     renderBlockDigParticles(x, y, z);
                     notClientsBlock = true;
                 }
-                MultiMine.instance().debugPrint(
-                        "Client updating local partial block [" + x + "|" + y + "|" + z + "], at index " + i + ", notClientsBlock: " + notClientsBlock + ", setting progres from " + iterBlock
-                                .getProgress() + " to " + progress);
+                MultiMine.instance().debugPrint("Client updating local partial block [{}|{}|{}], at index {}, notClientsBlock: {}, setting progres from {} to {}", x, y, z, i, notClientsBlock,
+                        iterBlock.getProgress(), progress);
 
                 iterBlock.setProgress(progress);
                 final DestroyBlockProgress newDestroyBP = new DestroyBlockProgress(0, iterBlock.getPos());
@@ -241,7 +246,7 @@ public class MultiMineClient
                     {
                         curBlock = BlockPos.ORIGIN;
                     }
-                    MultiMine.instance().debugPrint("Client wiped local finished block [" + x + "|" + y + "|" + z + "], at index " + i);
+                    MultiMine.instance().debugPrint("Client wiped local finished block [{}|{}|{}], at index {}", x, y, z, i);
                 }
                 return;
             }
@@ -249,7 +254,7 @@ public class MultiMineClient
 
         if (progress > 0.99)
         {
-            MultiMine.instance().debugPrint("Client ignoring late arrival packet [" + x + "|" + y + "|" + z + "]");
+            MultiMine.instance().debugPrint("Client ignoring late arrival packet [{}|{}|{}]", x, y, z);
             return;
         }
 
@@ -300,12 +305,20 @@ public class MultiMineClient
      */
     public void onServerSentPartialBlockDeleteCommand(BlockPos p)
     {
+        MultiMine.instance().debugPrint("Server sent partial delete command for [{}|{}|{}]", p.getX(), p.getY(), p.getZ());
+        if (curBlock.equals(p))
+        {
+            MultiMine.instance().debugPrint("was current block, wiping that!");
+            curBlock = BlockPos.ORIGIN;
+            lastBlockCompletion = 0F;
+        }
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
         {
             if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(p))
             {
                 partiallyMinedBlocksArray[i] = null;
                 vanillaDestroyBlockProgressMap.remove(i);
+                MultiMine.instance().debugPrint("Server sent partial delete matched at index {}, deleted!", i);
                 break;
             }
         }
