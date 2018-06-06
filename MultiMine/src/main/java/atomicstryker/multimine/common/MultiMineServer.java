@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -222,7 +224,7 @@ public class MultiMineServer
     private boolean isBlockBanned(Block block, int meta)
     {
         final String ident = Block.REGISTRY.getNameForObject(block).toString() + "-" + meta;
-        Boolean result = blacklistedBlocksAndTools.get(ident);
+        Boolean result = findInBlacklistEntries(ident);
         if (result != null)
         {
             return result;
@@ -237,6 +239,20 @@ public class MultiMineServer
         return result;
     }
 
+    private Boolean findInBlacklistEntries(String ident)
+    {
+        for (String key : blacklistedBlocksAndTools.keySet())
+        {
+            Pattern pattern = Pattern.compile(key);
+            Matcher matcher = pattern.matcher(ident);
+            if (matcher.find())
+            {
+                return blacklistedBlocksAndTools.get(key);
+            }
+        }
+        return null;
+    }
+
     private boolean isUsingBannedItem(EntityPlayer player)
     {
         for (EnumHand hand : EnumHand.values())
@@ -248,7 +264,7 @@ public class MultiMineServer
             }
 
             final String ident = Item.REGISTRY.getNameForObject(item.getItem()).toString() + "-" + item.getItemDamage();
-            Boolean result = blacklistedBlocksAndTools.get(ident);
+            Boolean result = findInBlacklistEntries(ident);
             if (result != null && result)
             {
                 return true;
