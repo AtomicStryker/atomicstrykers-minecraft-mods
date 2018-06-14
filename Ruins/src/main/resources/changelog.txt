@@ -522,3 +522,4 @@ a: setAccessible now true
 + extend structure bounding box (for /undo) to include leveling effects, bugfix
 + constrain nether worldgen to chunk being decorated--reduces "cascading worldgen" log spam, bugfix
 + don't force generic template if no specific template available, bugfix
++ all parameters documented in default config and /parseruin template files

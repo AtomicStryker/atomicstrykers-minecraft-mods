@@ -837,7 +837,11 @@ public class RuinTemplate
                 }
                 else if (line.startsWith("biomesToSpawnIn"))
                 {
-                    Collections.addAll(biomes, line.split("=")[1].split(","));
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        Collections.addAll(biomes, check[1].split(","));
+                    }
                 }
                 else if (line.startsWith("weight"))
                 {
@@ -916,21 +920,25 @@ public class RuinTemplate
                 }
                 else if (line.startsWith("adjoining_template"))
                 {
-                    // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
-                    String[] vals = line.split("=")[1].split(";");
-
-                    File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + vals[0] + ".tml");
-                    if (file.exists() && file.canRead())
+                    String[] check = line.split("=");
+                    if (check.length > 1)
                     {
-                        RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
-                        AdjoiningTemplateData data = new AdjoiningTemplateData();
-                        data.adjoiningTemplate = adjTempl;
-                        data.relativeX = Integer.parseInt(vals[1]);
-                        data.acceptableY = Integer.parseInt(vals[2]);
-                        data.relativeZ = Integer.parseInt(vals[3]);
-                        data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+                        // syntax: adjoining_template=<template>;<relativeX>;<allowedYdifference>;<relativeZ>[;<spawnchance>]
+                        String[] vals = check[1].split(";");
 
-                        adjoiningTemplates.add(data);
+                        File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + vals[0] + ".tml");
+                        if (file.exists() && file.canRead())
+                        {
+                            RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
+                            AdjoiningTemplateData data = new AdjoiningTemplateData();
+                            data.adjoiningTemplate = adjTempl;
+                            data.relativeX = Integer.parseInt(vals[1]);
+                            data.acceptableY = Integer.parseInt(vals[2]);
+                            data.relativeZ = Integer.parseInt(vals[3]);
+                            data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+
+                            adjoiningTemplates.add(data);
+                        }
                     }
                 }
             }

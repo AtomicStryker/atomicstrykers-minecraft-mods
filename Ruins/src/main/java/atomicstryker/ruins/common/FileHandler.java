@@ -453,6 +453,7 @@ class FileHandler
         pw.println();
         pw.println("tries_per_chunk_nether=6");
         pw.println("chance_to_spawn_nether=10");
+        pw.println("# prevent a message from being logged every time a ruin is built");
         pw.println("disableRuinSpawnCoordsLogging=true");
         pw.println();
         pw.println("# minimum distance a template must have from instances of itself");
