@@ -40,6 +40,7 @@ class FileHandler
     public int anySpawnMinDistance = 32;
     public int anySpawnMaxDistance = Integer.MAX_VALUE;
     public boolean enableStick = true;
+    public static boolean enableFixedWidthRuleIds = false;
     static final HashSet<Block> registeredTEBlocks = new HashSet<>();
 
     private int templateCount;
@@ -310,6 +311,10 @@ class FileHandler
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
             }
+            else if (dimension == 0 && check[0].equals("enableFixedWidthRuleIds"))
+            {
+                enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
+            }
             else if (check[0].equals("teblocks") && check.length > 1)
             {
                 String[] blocks = check[1].split(",");
@@ -468,6 +473,9 @@ class FileHandler
         pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
         pw.println("allowedDimensions=0,1,-1");
         pw.println();
+        pw.println("# make /parseruin rule IDs line up nicely in template files");
+        pw.println("# note: overworld (i.e., dimension 0) setting applies to all dimensions");
+        pw.println("enableFixedWidthRuleIds=false");
         pw.println("# tileentity blocks, those (nonvanilla)blocks which cannot function without storing their nbt data, full name as stick dictates, seperated by commata");
         pw.println("teblocks=");
         pw.println();

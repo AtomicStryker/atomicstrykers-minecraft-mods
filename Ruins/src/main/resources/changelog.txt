@@ -523,3 +523,4 @@ a: setAccessible now true
 + constrain nether worldgen to chunk being decorated--reduces "cascading worldgen" log spam, bugfix
 + don't force generic template if no specific template available, bugfix
 + all parameters documented in default config and /parseruin template files
++ added config option to make /parseruin rules line up nicely

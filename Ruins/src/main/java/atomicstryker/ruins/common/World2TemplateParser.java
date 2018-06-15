@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -499,10 +501,17 @@ class World2TemplateParser extends Thread
             pw.println("adjoining_template=");
             pw.println();
 
+            NumberFormat id_formatter = NumberFormat.getIntegerInstance();
+            if (FileHandler.enableFixedWidthRuleIds && id_formatter instanceof DecimalFormat)
+            {
+                int count = usedBlocks.size();
+                ((DecimalFormat) id_formatter).applyPattern(count < 10 ? "0" : count < 100 ? "00" : count < 1000 ? "000" : "0");
+            }
+
             int rulenum = 1;
             for (BlockData bd : usedBlocks)
             {
-                pw.println("rule" + rulenum + "=" + StringEscapeUtils.escapeJava(bd.toString()));
+                pw.println("rule" + id_formatter.format(rulenum) + "=" + StringEscapeUtils.escapeJava(bd.toString()));
                 rulenum++;
             }
 
@@ -521,7 +530,7 @@ class World2TemplateParser extends Thread
                          * since 'nothing' is not contained, it returns -1 + 1 =
                          * 0, which is the default preserveBlock rule
                          */
-                        pw.print(usedBlocks.indexOf(aLayer[j2]) + 1);
+                        pw.print(id_formatter.format(usedBlocks.indexOf(aLayer[j2]) + 1));
 
                         if (j < layer[0].length - 1)
                         {
