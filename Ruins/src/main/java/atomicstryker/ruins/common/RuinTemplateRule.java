@@ -80,8 +80,8 @@ public class RuinTemplateRule
         owner = r;
         excessiveDebugging = debug;
 
-        ArrayList<String> nbttags = new ArrayList<>(5);
-        rule = replaceNBTTags(rule, nbttags);
+        Lumper lumper = new Lumper(owner, excessiveDebugging ? debugPrinter : null);
+        rule = lumper.lump(rule);
 
         String[] blockRules = rule.split(",");
         int numblocks = blockRules.length - 2;
@@ -166,7 +166,7 @@ public class RuinTemplateRule
                 // readd the splitout string for the parsing, offset by 1
                 // because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
-                blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
+                blockStrings[i] = lumper.unlump(blockStrings[i]);
                 if (excessiveDebugging)
                 {
                     debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i] + ", weight: " + blockWeights[i] + ", preserve: " + preservePolicies[i]);
@@ -238,7 +238,7 @@ public class RuinTemplateRule
                         }
 
                         blockStrings[i] = blockRules[i + 2];
-                        blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
+                        blockStrings[i] = lumper.unlump(blockStrings[i]);
 
                         blockIDs[i] = r.tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == r.getAirBlock())
@@ -301,7 +301,7 @@ public class RuinTemplateRule
                             blockIDs[i] = null;
                         }
                         blockStrings[i] = blockRules[i + 2];
-                        blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
+                        blockStrings[i] = lumper.unlump(blockStrings[i]);
                     }
                     blockMDs[i] = UNSPECIFIED_METADATA;
                 }
@@ -317,90 +317,6 @@ public class RuinTemplateRule
     RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule) throws Exception
     {
         this(dpw, r, rule, false);
-    }
-
-    /**
-     * Since NBT contents, especially books, wreak havoc with all the legacy and
-     * hardcoded string splitting going on, we replace them in their entirety
-     * for slightly less problematic hardcoded strings.
-     *
-     * @param rule
-     *            which may or may not contain nbt tags
-     * @param nbttags
-     *            a non null array list which after execution contains each nbt
-     *            tag in order of occurence
-     * @return the input string except all nbt tags have been replaced with
-     *         NBT1, NBT2 ... etc
-     */
-    private String replaceNBTTags(String rule, ArrayList<String> nbttags)
-    {
-        int openingIndex = rule.indexOf('{');
-        while (openingIndex != -1)
-        {
-            int closingIndex = openingIndex + 1;
-            int bracketCounter = 1;
-            for (;; closingIndex++)
-            {
-                if (closingIndex == rule.length())
-                {
-                    System.err.println("Unbalanced brackets in Ruins template, offending rule: " + rule);
-                    return rule;
-                }
-                if (rule.charAt(closingIndex) == '{')
-                {
-                    bracketCounter++;
-                }
-                else if (rule.charAt(closingIndex) == '}')
-                {
-                    bracketCounter--;
-                    if (bracketCounter == 0)
-                    {
-                        break;
-                    }
-                }
-            }
-            String capture = rule.substring(openingIndex, closingIndex + 1);
-            nbttags.add(capture);
-            if (excessiveDebugging)
-            {
-                debugPrinter.println("template " + owner.getName() + " contains nbt tag: " + capture);
-            }
-            String pre = rule.substring(0, openingIndex);
-            String post = rule.substring(closingIndex + 1, rule.length());
-            rule = pre + "NBT" + nbttags.size() + post;
-            openingIndex = rule.indexOf('{');
-        }
-        return rule;
-    }
-
-    /** use regex so we dont get aliasing for NBT1, NBT10 etc */
-    private final Pattern patternNBT = Pattern.compile("(NBT\\d*)");
-
-    /**
-     * And the reverse, restore the glorious NBT tags into a string loaded with
-     * their placeholders
-     *
-     * @param str
-     *            string with nbt placeholders
-     * @param nbttags
-     *            list with stored nbt tags
-     * @return original string with nbt tags
-     */
-    private String restoreNBTTags(String str, ArrayList<String> nbttags)
-    {
-        Matcher matcher = patternNBT.matcher(str);
-        StringBuffer sb = new StringBuffer(str.length());
-        while (matcher.find())
-        {
-            String tag = matcher.group(0);
-            // strip "NBT", get the number out
-            int index = Integer.valueOf(tag.substring(3));
-            // list index is 1 less
-            matcher.appendReplacement(sb, nbttags.get(index - 1));
-        }
-        matcher.appendTail(sb);
-        String result = sb.toString();
-        return result;
     }
 
     @SuppressWarnings("unused")
@@ -693,8 +609,8 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("IInventory;"))
         {
-            ArrayList<String> nbttags = new ArrayList<>(5);
-            String dataWithoutNBT = replaceNBTTags(dataString, nbttags);
+            Lumper lumper = new Lumper(owner, excessiveDebugging ? debugPrinter : null);
+            String dataWithoutNBT = lumper.lump(dataString);
             String[] s = dataWithoutNBT.split(";");
             Object o = tryFindingObject(s[1]);
             if (o instanceof Block)
@@ -703,11 +619,11 @@ public class RuinTemplateRule
                 // need to strip meta '-x' value if present
                 if (s[2].lastIndexOf("-") > s[2].length() - 5)
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), nbttags, blockMDs[blocknum], rotate);
+                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), lumper, blockMDs[blocknum], rotate);
                 }
                 else
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2], nbttags, blockMDs[blocknum], rotate);
+                    addIInventoryBlock(world, random, x, y, z, b, s[2], lumper, blockMDs[blocknum], rotate);
                 }
             }
             else
@@ -1130,7 +1046,7 @@ public class RuinTemplateRule
     }
 
     @SuppressWarnings("deprecation")
-    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, ArrayList<String> nbtTags, int metadata, int direction)
+    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, Lumper lumper, int metadata, int direction)
     {
         TileEntity te = realizeBlock(world, x, y, z, block, metadata, direction);
         if (te instanceof IInventory)
@@ -1150,7 +1066,7 @@ public class RuinTemplateRule
             }
             else
             {
-                handleIInventory((IInventory) te, itemDataWithoutNBT, nbtTags);
+                handleIInventory((IInventory) te, itemDataWithoutNBT, lumper);
             }
             rotateTileEntity(te, direction);
         }
@@ -1160,7 +1076,7 @@ public class RuinTemplateRule
         }
     }
 
-    private void handleIInventory(IInventory inv, String itemDataWithoutNBT, ArrayList<String> nbtTags)
+    private void handleIInventory(IInventory inv, String itemDataWithoutNBT, Lumper lumper)
     {
         // example string:
         // minecraft:stone#1#4#0+minecraft:written_book#NBT1#0#1+minecraft:chest#1#0#2
@@ -1220,7 +1136,7 @@ public class RuinTemplateRule
                 {
                     try
                     {
-                        hashsplit[1] = restoreNBTTags(hashsplit[1], nbtTags);
+                        hashsplit[1] = lumper.unlump(hashsplit[1]);
                         if (excessiveDebugging)
                         {
                             debugPrinter.println("trying to apply nbt tag: " + hashsplit[1]);
@@ -1553,6 +1469,158 @@ public class RuinTemplateRule
         {
             entity.rotate(getDirectionalRotation(direction));
             entity.markDirty();
+        }
+    }
+
+    // utility for hiding troublesome commas to simplify rule parsing
+    private static class Lumper
+    {
+        private RuinTemplate template_;
+        private PrintWriter log_;
+        private List<String> lumps_;
+
+        // create new lumper
+        public Lumper(RuinTemplate template, PrintWriter log)
+        {
+            template_ = template;
+            log_ = log;
+            lumps_ = new ArrayList<>();
+        }
+
+        private static final Pattern LUMP_PATTERN = Pattern.compile("(\\{)|\\[[^]]*+]|Lu\\d++mP");
+        private static final Pattern BRACED_LUMP_PATTERN = Pattern.compile("(})|(\")|\\{");
+        private static final Pattern QUOTED_LUMP_PATTERN = Pattern.compile("(\")|\\\\.");
+
+        // replace problematic text ("lumps") with Lu#mP placeholders:
+        // 1) {text in {possibly nested} braces}, such as NBT tags
+        // 2) [text in brackets], such as block state properties
+        // 3) unlikely text that happens to look like a placeholder
+        // note: all previous placeholder data is discarded
+        public String lump(String input)
+        {
+            lumps_.clear();
+            StringBuilder output = new StringBuilder();
+            int start = 0;
+            final int end = input.length();
+            Matcher matcher = LUMP_PATTERN.matcher(input);
+            while (start < end)
+            {
+                if (matcher.find(start))
+                {
+                    int extent = matcher.end();
+                    if (matcher.group(1) != null)
+                    {
+                        extent = extendNestedLump(BRACED_LUMP_PATTERN, input, extent, end);
+                    }
+                    if (extent >= start)
+                    {
+                        output.append(input.substring(start, matcher.start())).append("Lu").append(lumps_.size()).append("mP");
+                        String lump = input.substring(matcher.start(), extent);
+                        lumps_.add(lump);
+                        if (log_ != null)
+                        {
+                            log_.println("template " + template_.getName() + " contains lump: " + lump);
+                        }
+                        start = extent;
+                    }
+                    else
+                    {
+                        System.err.println("Unbalanced nesting in Ruins template " + template_.getName() + ", offending rule: " + input);
+                        output.append(input.substring(start));
+                        break;
+                    }
+                }
+                else
+                {
+                    output.append(input.substring(start));
+                    break;
+                }
+            }
+            return output.toString();
+        }
+
+        // find end position of entire (possibly) nested lump
+        private int extendNestedLump(Pattern pattern, String input, int start, int end)
+        {
+            int depth = 0;
+            Matcher matcher = pattern.matcher(input);
+            while (start < end)
+            {
+                if (matcher.find(start))
+                {
+                    start = matcher.end();
+                    if (matcher.group(1) != null)
+                    {
+                        if (--depth < 0)
+                        {
+                            return start;
+                        }
+                    }
+                    else if (matcher.group(2) != null)
+                    {
+                        if ((start = extendQuotedLump(input, start, end)) < 0)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        ++depth;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return -1;
+        }
+
+        // find end position of entire quoted lump
+        private int extendQuotedLump(String input, int start, int end)
+        {
+            Matcher matcher = QUOTED_LUMP_PATTERN.matcher(input);
+            while (start < end)
+            {
+                if (matcher.find(start))
+                {
+                    start = matcher.end();
+                    if (matcher.group(1) != null)
+                    {
+                        return start;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return -1;
+        }
+
+        private static final Pattern UNLUMP_PATTERN = Pattern.compile("Lu(\\d++)mP");
+
+        // replace lump placeholders with original text
+        public String unlump(String input)
+        {
+            StringBuilder output = new StringBuilder();
+            int start = 0;
+            final int end = input.length();
+            Matcher matcher = UNLUMP_PATTERN.matcher(input);
+            while (start < end)
+            {
+                if (matcher.find())
+                {
+                    output.append(input.substring(start, matcher.start())).append(lumps_.get(Integer.parseInt(matcher.group(1))));
+                    start = matcher.end();
+                }
+                else
+                {
+                    output.append(input.substring(start));
+                    break;
+                }
+            }
+            return output.toString();
         }
     }
 }
