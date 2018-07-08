@@ -466,6 +466,15 @@ class World2TemplateParser extends Thread
             pw.println("# biome corresponding to directory is always assumed, listed or not");
             pw.println("# generic templates should leave this list empty");
             pw.println("biomesToSpawnIn=");
+            pw.println("# list of biome types (or ALL) in which this template may spawn");
+            pw.println("# this is in addition to those explicitly listed as biomesToSpawnIn");
+            pw.println("# generic templates should leave this list empty");
+            pw.println("biomeTypesToSpawnIn=");
+            pw.println("# exclusion list of biomes and biome types");
+            pw.println("# takes precedence over biomeTypesToSpawnIn, but NOT biomesToSpawnIn");
+            pw.println("# both should be empty if biomeTypesToSpawnIn is empty");
+            pw.println("biomesToNotSpawnIn=");
+            pw.println("biomeTypesToNotSpawnIn=");
             pw.println("# depth template is pushed down into the surface when built");
             pw.println("# offset is min/max range of random additional bury depth");
             pw.println("embed_into_distance=" + yPadding);

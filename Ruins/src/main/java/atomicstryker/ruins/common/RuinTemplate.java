@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.MinecraftForge;
@@ -778,6 +781,10 @@ public class RuinTemplate
 
     private void parseVariables(ArrayList<String> variables) throws Exception
     {
+        Set<String> included_biomes = new HashSet<>();
+        Set<String> included_biome_types = new HashSet<>();
+        Set<String> excluded_biomes = new HashSet<>();
+        Set<String> excluded_biome_types = new HashSet<>();
         Iterator<String> i = variables.iterator();
         String line;
         while (i.hasNext())
@@ -840,7 +847,31 @@ public class RuinTemplate
                     String[] check = line.split("=");
                     if (check.length > 1)
                     {
-                        Collections.addAll(biomes, check[1].split(","));
+                        Collections.addAll(included_biomes, check[1].split(","));
+                    }
+                }
+                else if (line.startsWith("biomeTypesToSpawnIn"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        Collections.addAll(included_biome_types, check[1].toUpperCase().split(","));
+                    }
+                }
+                else if (line.startsWith("biomesToNotSpawnIn"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        Collections.addAll(excluded_biomes, check[1].split(","));
+                    }
+                }
+                else if (line.startsWith("biomeTypesToNotSpawnIn"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        Collections.addAll(excluded_biome_types, check[1].toUpperCase().split(","));
                     }
                 }
                 else if (line.startsWith("weight"))
@@ -939,6 +970,45 @@ public class RuinTemplate
 
                             adjoiningTemplates.add(data);
                         }
+                    }
+                }
+            }
+        }
+
+        // assemble final biomesToSpawnIn list:
+        // 1) biomes listed as biomesToSpawnIn are added (regardless of ToNotSpawnIn lists)
+        // 2) biomes with at least one type listed as a biomeTypesToSpawnIn are added, UNLESS...
+        // 2a) ...the biome is listed as a biomesToNotSpawnIn, or
+        // 2b) ...the biome has at least one type listed as a BiomeTypesToNotSpawnIn
+        // note: biomeTypesToSpawnIn may use the special type ALL to include all biomes
+        final boolean include_all_biome_types = included_biome_types.contains("ALL");
+        for (Iterator<Biome> biome_iter = Biome.REGISTRY.iterator(); biome_iter.hasNext(); )
+        {
+            Biome biome = biome_iter.next();
+            String biome_name = biome.getRegistryName().getResourcePath();
+            if (!biomes.contains(biome_name))
+            {
+                if (included_biomes.contains(biome_name))
+                {
+                    biomes.add(biome_name);
+                }
+                else if (!excluded_biomes.contains(biome_name))
+                {
+                    boolean included = include_all_biome_types;
+                    boolean excluded = false;
+                    for (BiomeDictionary.Type type : BiomeDictionary.getTypes(biome))
+                    {
+                        String type_name = type.getName().toUpperCase();
+                        included = included || included_biome_types.contains(type_name);
+                        if (excluded_biome_types.contains(type_name))
+                        {
+                            excluded = true;
+                            break;
+                        }
+                    }
+                    if (included && !excluded)
+                    {
+                        biomes.add(biome_name);
                     }
                 }
             }
