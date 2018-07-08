@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -779,12 +780,120 @@ public class RuinTemplate
         }
     }
 
+    // a biome type criteria collection against which biomes are checked
+    // as to whether or not they satisfy at least one of the specified
+    // conditions
+    private static class BiomeTypeCriteria
+    {
+        private RuinTemplate template_;
+        private PrintWriter log_;
+
+        // a biome satisfies a particular criterion if it is assigned
+        // ALL the included types and NONE of the excluded ones
+        private static class Criterion
+        {
+            private RuinTemplate template_;
+            private PrintWriter log_;
+
+            private Set<String> included_;
+            private Set<String> excluded_;
+
+            private static final Pattern SPEC_PATTERN = Pattern.compile("(?:\\+|(-))?+([^+-]++)");
+
+            // parse given specification string into a new criterion
+            public Criterion(RuinTemplate template, PrintWriter log, String spec)
+            {
+                template_ = template;
+                log_ = log;
+                if (log_ != null)
+                {
+                    log_.printf("adding new criterion: spec=\"%s\"\n", spec);
+                }
+                included_ = new HashSet<>();
+                excluded_ = new HashSet<>();
+                Matcher matcher = SPEC_PATTERN.matcher(spec);
+                int start = 0;
+                final int end = spec.length();
+                while (start < end)
+                {
+                    if (matcher.find(start))
+                    {
+                        if (matcher.start() != start)
+                        {
+                            System.err.printf("invalid use of operator(s) in biome type list; template=\"%s\", list element=\"%s\"\n", template_.getName(), spec.substring(start, matcher.end()));
+                        }
+                        if (log_ != null)
+                        {
+                            log_.printf("%s biome type %s\n", (matcher.group(1) != null ? "excluding" : "including"), matcher.group(2));
+                        }
+                        (matcher.group(1) != null ? excluded_ : included_).add(matcher.group(2));
+                        start = matcher.end();
+                    }
+                    else
+                    {
+                        System.err.printf("cannot parse text in biome type list; template=\"%s\", text=\"%s\"\n", template_.getName(), spec.substring(start));
+                        break;
+                    }
+                }
+                if (included_.isEmpty() && !excluded_.isEmpty())
+                {
+                    if (log_ != null)
+                    {
+                        log_.printf("including biome type ALL (implicit)\n");
+                    }
+                    included_.add("ALL");
+                }
+            }
+
+            // does the given set of biome type names satisfy this criterion?
+            public boolean satisfiedBy(Set<String> type_names)
+            {
+                return Collections.disjoint(type_names, excluded_) && type_names.containsAll(included_);
+            }
+        }
+
+        private List<Criterion> criteria_;
+
+        // create a new set of criteria
+        public BiomeTypeCriteria(RuinTemplate template, PrintWriter log)
+        {
+            template_ = template;
+            log_ = log;
+            criteria_ = new ArrayList<>();
+        }
+
+        // parse given specification string into criterion objects
+        public void addCriteria(String specs)
+        {
+            for (String spec : specs.toUpperCase().split(","))
+            {
+                criteria_.add(new Criterion(template_, log_, spec));
+            }
+        }
+
+        // does the given biome satisfy all criteria?
+        public boolean satisfiedBy(Biome biome)
+        {
+            Set<String> type_names = new HashSet<>();
+            BiomeDictionary.getTypes(biome).forEach(type -> type_names.add(type.getName().toUpperCase()));
+            type_names.add("ALL");
+            for (Criterion criterion : criteria_)
+            {
+                if (criterion.satisfiedBy(type_names))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     private void parseVariables(ArrayList<String> variables) throws Exception
     {
         Set<String> included_biomes = new HashSet<>();
-        Set<String> included_biome_types = new HashSet<>();
+        BiomeTypeCriteria included_biome_types = new BiomeTypeCriteria(this, debugging ? debugPrinter : null);
         Set<String> excluded_biomes = new HashSet<>();
-        Set<String> excluded_biome_types = new HashSet<>();
+        BiomeTypeCriteria excluded_biome_types = new BiomeTypeCriteria(this, debugging ? debugPrinter : null);
         Iterator<String> i = variables.iterator();
         String line;
         while (i.hasNext())
@@ -855,7 +964,11 @@ public class RuinTemplate
                     String[] check = line.split("=");
                     if (check.length > 1)
                     {
-                        Collections.addAll(included_biome_types, check[1].toUpperCase().split(","));
+                        if (debugging)
+                        {
+                            debugPrinter.printf("adding biomeTypesToSpawnIn criteria for template \"%s\": specs=\"%s\"\n", name, check[1]);
+                        }
+                        included_biome_types.addCriteria(check[1]);
                     }
                 }
                 else if (line.startsWith("biomesToNotSpawnIn"))
@@ -871,7 +984,11 @@ public class RuinTemplate
                     String[] check = line.split("=");
                     if (check.length > 1)
                     {
-                        Collections.addAll(excluded_biome_types, check[1].toUpperCase().split(","));
+                        if (debugging)
+                        {
+                            debugPrinter.printf("adding biomeTypesToNotSpawnIn criteria for template \"%s\": specs=\"%s\"\n", name, check[1]);
+                        }
+                        excluded_biome_types.addCriteria(check[1]);
                     }
                 }
                 else if (line.startsWith("weight"))
@@ -980,38 +1097,22 @@ public class RuinTemplate
         // 2) biomes with at least one type listed as a biomeTypesToSpawnIn are added, UNLESS...
         // 2a) ...the biome is listed as a biomesToNotSpawnIn, or
         // 2b) ...the biome has at least one type listed as a BiomeTypesToNotSpawnIn
-        // note: biomeTypesToSpawnIn may use the special type ALL to include all biomes
-        final boolean include_all_biome_types = included_biome_types.contains("ALL");
+        // note: special type ALL may be used to specify all biomes
         for (Iterator<Biome> biome_iter = Biome.REGISTRY.iterator(); biome_iter.hasNext(); )
         {
             Biome biome = biome_iter.next();
             String biome_name = biome.getRegistryName().getResourcePath();
-            if (!biomes.contains(biome_name))
+            if (!biomes.contains(biome_name) && (included_biomes.contains(biome_name) || !excluded_biomes.contains(biome_name) &&
+                    included_biome_types.satisfiedBy(biome) && !excluded_biome_types.satisfiedBy(biome)))
             {
-                if (included_biomes.contains(biome_name))
-                {
-                    biomes.add(biome_name);
-                }
-                else if (!excluded_biomes.contains(biome_name))
-                {
-                    boolean included = include_all_biome_types;
-                    boolean excluded = false;
-                    for (BiomeDictionary.Type type : BiomeDictionary.getTypes(biome))
-                    {
-                        String type_name = type.getName().toUpperCase();
-                        included = included || included_biome_types.contains(type_name);
-                        if (excluded_biome_types.contains(type_name))
-                        {
-                            excluded = true;
-                            break;
-                        }
-                    }
-                    if (included && !excluded)
-                    {
-                        biomes.add(biome_name);
-                    }
-                }
+                biomes.add(biome_name);
             }
+        }
+        if (debugging)
+        {
+            debugPrinter.printf("final biomesToSpawnIn list for template \"%s\":", name);
+            biomes.forEach(biome_name -> debugPrinter.printf(" %s", biome_name));
+            debugPrinter.printf("\n");
         }
 
         if (acceptedSurfaces == null)

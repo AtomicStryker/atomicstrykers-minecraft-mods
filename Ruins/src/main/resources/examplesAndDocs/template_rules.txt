@@ -170,6 +170,16 @@
 # example: biomeTypesToNotSpawnIn=spooky,rare
 # Optional. Only relevant if biomeTypesToSpawnIn list is not empty.
 #
+# In both the biomeTypesToSpawnIn and biomeTypesToNotSpawnIn lists, some rudimentary boolean
+# operations are allowed by concatenating multiple type names separated by + (and) or - (and
+# not). So, for example:
+# biomeTypesToSpawnIn=forest-cold,jungle+hills
+# This adds the template to all biomes that are of type forest AND NOT cold, or are of both
+# jungle AND hills. Order doesn't matter, so the following is equivalent:
+# biomeTypesToSpawnIn=hills+jungle,-cold+forest
+# If all the types are exclusions, an implicit ALL is added. Thus, "-nether-end" is the same
+# as "all-nether-end" (i.e., any biome that isn't of type nether or end).
+#
 
 weight=5
 embed_into_distance=1
