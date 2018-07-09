@@ -987,13 +987,13 @@ public class RuinTemplate
         // 2) biomes with at least one type listed as a biomeTypesToSpawnIn are added, UNLESS...
         // 2a) ...the biome is listed as a biomesToNotSpawnIn, or
         // 2b) ...the biome has at least one type listed as a BiomeTypesToNotSpawnIn
-        // note: special type ALL may be used to specify all biomes
+        final boolean consider_types = !excluded_biomes.isEmpty() || !included_biome_types.isEmpty() || !excluded_biome_types.isEmpty();
         for (Iterator<Biome> biome_iter = Biome.REGISTRY.iterator(); biome_iter.hasNext(); )
         {
             Biome biome = biome_iter.next();
             String biome_name = biome.getRegistryName().getResourcePath();
-            if (!biomes.contains(biome_name) && (included_biomes.contains(biome_name) || !excluded_biomes.contains(biome_name) &&
-                    included_biome_types.satisfiedBy(biome) && !excluded_biome_types.satisfiedBy(biome)))
+            if (!biomes.contains(biome_name) && (included_biomes.contains(biome_name) || consider_types && !excluded_biomes.contains(biome_name) &&
+                    (included_biome_types.isEmpty() || included_biome_types.satisfiedBy(biome)) && !excluded_biome_types.satisfiedBy(biome)))
             {
                 biomes.add(biome_name);
             }

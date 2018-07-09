@@ -69,13 +69,9 @@ class RuinBiomeTypeCriteria
                     break;
                 }
             }
-            if (included_.isEmpty() && !excluded_.isEmpty())
+            if (included_.isEmpty() && log_ != null)
             {
-                if (log_ != null)
-                {
-                    log_.printf("including biome type ALL (implicit)\n");
-                }
-                included_.add("ALL");
+                log_.printf("including all other biome types (implicit)\n");
             }
         }
 
@@ -105,12 +101,11 @@ class RuinBiomeTypeCriteria
         }
     }
 
-    // does the given biome satisfy all criteria?
+    // does the given biome satisfy at least one criterion?
     public boolean satisfiedBy(Biome biome)
     {
         Set<String> type_names = new HashSet<>();
         BiomeDictionary.getTypes(biome).forEach(type -> type_names.add(type.getName().toUpperCase()));
-        type_names.add("ALL");
         for (Criterion criterion : criteria_)
         {
             if (criterion.satisfiedBy(type_names))
@@ -119,5 +114,11 @@ class RuinBiomeTypeCriteria
             }
         }
         return false;
+    }
+
+    // are there any criteria?
+    public boolean isEmpty()
+    {
+        return criteria_.isEmpty();
     }
 }
