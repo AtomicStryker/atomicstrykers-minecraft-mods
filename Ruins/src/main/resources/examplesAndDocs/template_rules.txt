@@ -151,6 +151,36 @@
 # If the space between max and min distances is too narrow (namely, less than
 # the length and width of the template), no instances can naturally generate.
 #
+# Ruins 17.2 adds three new optional variables:
+#
+# biomeTypesToSpawnIn=<name1>,<name2>,<name3>...
+# Adds the Template being loaded (regardless which folder it is in) to every Ruins Biome
+# found in the Minecraft Biomelist for which at least one <namex> is among the Biome's types.
+# Case insensitive.
+# example: biomeTypesToSpawnIn=dry,cold
+# Optional. May be used in addition to, or instead of, biomesToSpawnIn.
+#
+# biomesToNotSpawnIn=<name1>,<name2>,<name3>...
+# biomeTypesToNotSpawnIn=<name1>,<name2>,<name3>...
+# Excludes the Template being loaded from every Ruins Biome found in the Minecraft Biomelist
+# with the specified name or type, respectively. Case insensitive. Note these take precedence
+# over biomeTypesToSpawnIn, but do not inhibit Biomes listed as biomesToSpawnIn, nor the
+# Biome associated with the Template's folder.
+# example: biomesToNotSpawnIn=ice_flats,ice_mountains
+# example: biomeTypesToNotSpawnIn=spooky,rare
+# Optional. If biomeTypesToSpawnIn list is empty and one or both of these are not, all
+# non-excluded biomes are added. If all three lists are empty, only biomesToSpawnIn applies.
+#
+# In both the biomeTypesToSpawnIn and biomeTypesToNotSpawnIn lists, some rudimentary boolean
+# operations are allowed by concatenating multiple type names separated by + (and) or - (and
+# not). So, for example:
+# biomeTypesToSpawnIn=forest-cold,jungle+hills
+# This adds the template to all biomes that are of type forest AND NOT cold, or are of both
+# jungle AND hills. Order doesn't matter, so the following is equivalent:
+# biomeTypesToSpawnIn=hills+jungle,-cold+forest
+# If all the types are exclusions, all non-excluded types are added. Thus, "-nether-end"
+# means every biome that isn't of type nether or end.
+#
 
 weight=5
 embed_into_distance=1
