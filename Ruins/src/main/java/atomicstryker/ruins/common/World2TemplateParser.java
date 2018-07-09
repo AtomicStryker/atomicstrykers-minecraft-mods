@@ -459,6 +459,9 @@ class World2TemplateParser extends Thread
             pw.println("# authoring Player: " + player.getName());
             pw.println();
 
+            pw.println("# other mods required or prohibited by this template");
+            pw.println("requiredMods=");
+            pw.println("prohibitedMods=");
             pw.println("# likelihood this template will be chosen relative to all others");
             pw.println("# e.g., a weight=6 template is chosen 3X as often as one with weight=2");
             pw.println("weight=1");

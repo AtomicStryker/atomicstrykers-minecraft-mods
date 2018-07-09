@@ -526,3 +526,4 @@ a: setAccessible now true
 + added config option to make /parseruin rules line up nicely
 + templates can now specify biomes to spawn in by type
 + enhance biomeTypesToSpawnIn with simple boolean operations
++ templates can now declare required/prohibited mods
