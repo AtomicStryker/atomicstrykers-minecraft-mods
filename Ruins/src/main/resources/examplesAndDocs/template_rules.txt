@@ -156,7 +156,7 @@
 # biomeTypesToSpawnIn=<name1>,<name2>,<name3>...
 # Adds the Template being loaded (regardless which folder it is in) to every Ruins Biome
 # found in the Minecraft Biomelist for which at least one <namex> is among the Biome's types.
-# Case insensitive. The special type ALL may be specified to include all Biomes.
+# Case insensitive.
 # example: biomeTypesToSpawnIn=dry,cold
 # Optional. May be used in addition to, or instead of, biomesToSpawnIn.
 #
@@ -168,7 +168,8 @@
 # Biome associated with the Template's folder.
 # example: biomesToNotSpawnIn=ice_flats,ice_mountains
 # example: biomeTypesToNotSpawnIn=spooky,rare
-# Optional. Only relevant if biomeTypesToSpawnIn list is not empty.
+# Optional. If biomeTypesToSpawnIn list is empty and one or both of these are not, all
+# non-excluded biomes are added. If all three lists are empty, only biomesToSpawnIn applies.
 #
 # In both the biomeTypesToSpawnIn and biomeTypesToNotSpawnIn lists, some rudimentary boolean
 # operations are allowed by concatenating multiple type names separated by + (and) or - (and
@@ -177,8 +178,8 @@
 # This adds the template to all biomes that are of type forest AND NOT cold, or are of both
 # jungle AND hills. Order doesn't matter, so the following is equivalent:
 # biomeTypesToSpawnIn=hills+jungle,-cold+forest
-# If all the types are exclusions, an implicit ALL is added. Thus, "-nether-end" is the same
-# as "all-nether-end" (i.e., any biome that isn't of type nether or end).
+# If all the types are exclusions, all non-excluded types are added. Thus, "-nether-end"
+# means every biome that isn't of type nether or end.
 #
 
 weight=5
