@@ -525,3 +525,4 @@ a: setAccessible now true
 + all parameters documented in default config and /parseruin template files
 + added config option to make /parseruin rules line up nicely
 + templates can now specify biomes to spawn in by type
++ enhance biomeTypesToSpawnIn with simple boolean operations
