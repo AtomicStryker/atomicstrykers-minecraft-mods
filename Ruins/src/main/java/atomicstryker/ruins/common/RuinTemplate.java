@@ -979,7 +979,7 @@ public class RuinTemplate
                                 {
                                     debugPrinter.printf("template [%s]: required mod [%s] not active\n", name, mod);
                                 }
-                                throw new RequiredModNotActiveException(name, mod);
+                                throw new IncompatibleModException(true, name, mod);
                             }
                         }
                     }
@@ -997,7 +997,7 @@ public class RuinTemplate
                                 {
                                     debugPrinter.printf("template [%s]: prohibited mod [%s] active\n", name, mod);
                                 }
-                                throw new ProhibitedModActiveException(name, mod);
+                                throw new IncompatibleModException(false, name, mod);
                             }
                         }
                     }
@@ -1018,7 +1018,7 @@ public class RuinTemplate
                             {
                                 adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
                             }
-                            catch (RequiredModNotActiveException | ProhibitedModActiveException e)
+                            catch (IncompatibleModException e)
                             {
                                 if (debugging)
                                 {
@@ -1311,33 +1311,14 @@ public class RuinTemplate
         }
     }
 
-    public static class ClassException extends RuntimeException
-    {
-        private static final long serialVersionUID = -7630819126112904714L;
-
-        protected ClassException(String message)
-        {
-            super("RuinTemplate: " + message);
-        }
-    }
-
-    public static class RequiredModNotActiveException extends ClassException
+    public static class IncompatibleModException extends RuntimeException
     {
         private static final long serialVersionUID = -6208915606622752271L;
 
-        public RequiredModNotActiveException(String template, String mod)
+        public IncompatibleModException(boolean required, String template, String mod)
         {
-            super("template \"" + template + "\" not installed because required mod \"" + mod + "\" not active");
-        }
-    }
-
-    public static class ProhibitedModActiveException extends ClassException
-    {
-        private static final long serialVersionUID = 7686853844820450433L;
-
-        public ProhibitedModActiveException(String template, String mod)
-        {
-            super("template \"" + template + "\" not installed because prohibited mod \"" + mod + "\" active");
+            super("template \"" + template + "\" not installed because " + (required ? "required" : "prohibited") +
+                    " mod \"" + mod + "\" " + (required ? "not active" : "active"));
         }
     }
 }

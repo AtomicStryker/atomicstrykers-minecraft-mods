@@ -141,7 +141,7 @@ class CommandTestTemplate extends CommandBase
                     sender.sendMessage(new TextComponentTranslation("Could not parse Ruin of file " + file));
                 }
             }
-            catch (RuinTemplate.RequiredModNotActiveException | RuinTemplate.ProhibitedModActiveException e)
+            catch (RuinTemplate.IncompatibleModException e)
             {
                 sender.sendMessage(new TextComponentTranslation(e.getMessage()));
             }
