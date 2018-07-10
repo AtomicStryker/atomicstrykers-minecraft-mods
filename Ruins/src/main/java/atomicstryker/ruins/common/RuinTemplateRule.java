@@ -1,7 +1,6 @@
 package atomicstryker.ruins.common;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -80,8 +79,8 @@ public class RuinTemplateRule
         owner = r;
         excessiveDebugging = debug;
 
-        ArrayList<String> nbttags = new ArrayList<>(5);
-        rule = replaceNBTTags(rule, nbttags);
+        RuinTextLumper lumper = new RuinTextLumper(owner, excessiveDebugging ? debugPrinter : null);
+        rule = lumper.lump(rule);
 
         String[] blockRules = rule.split(",");
         int numblocks = blockRules.length - 2;
@@ -166,7 +165,7 @@ public class RuinTemplateRule
                 // readd the splitout string for the parsing, offset by 1
                 // because of the prefix string
                 blockStrings[i] = commandrules[i + 1];
-                blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
+                blockStrings[i] = lumper.unlump(blockStrings[i]);
                 if (excessiveDebugging)
                 {
                     debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i] + ", weight: " + blockWeights[i] + ", preserve: " + preservePolicies[i]);
@@ -238,7 +237,7 @@ public class RuinTemplateRule
                         }
 
                         blockStrings[i] = blockRules[i + 2];
-                        blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
+                        blockStrings[i] = lumper.unlump(blockStrings[i]);
 
                         blockIDs[i] = r.tryFindingBlockOfName(data[0]);
                         if (blockIDs[i] == r.getAirBlock())
@@ -301,7 +300,7 @@ public class RuinTemplateRule
                             blockIDs[i] = null;
                         }
                         blockStrings[i] = blockRules[i + 2];
-                        blockStrings[i] = restoreNBTTags(blockStrings[i], nbttags);
+                        blockStrings[i] = lumper.unlump(blockStrings[i]);
                     }
                     blockMDs[i] = UNSPECIFIED_METADATA;
                 }
@@ -317,90 +316,6 @@ public class RuinTemplateRule
     RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule) throws Exception
     {
         this(dpw, r, rule, false);
-    }
-
-    /**
-     * Since NBT contents, especially books, wreak havoc with all the legacy and
-     * hardcoded string splitting going on, we replace them in their entirety
-     * for slightly less problematic hardcoded strings.
-     *
-     * @param rule
-     *            which may or may not contain nbt tags
-     * @param nbttags
-     *            a non null array list which after execution contains each nbt
-     *            tag in order of occurence
-     * @return the input string except all nbt tags have been replaced with
-     *         NBT1, NBT2 ... etc
-     */
-    private String replaceNBTTags(String rule, ArrayList<String> nbttags)
-    {
-        int openingIndex = rule.indexOf('{');
-        while (openingIndex != -1)
-        {
-            int closingIndex = openingIndex + 1;
-            int bracketCounter = 1;
-            for (;; closingIndex++)
-            {
-                if (closingIndex == rule.length())
-                {
-                    System.err.println("Unbalanced brackets in Ruins template, offending rule: " + rule);
-                    return rule;
-                }
-                if (rule.charAt(closingIndex) == '{')
-                {
-                    bracketCounter++;
-                }
-                else if (rule.charAt(closingIndex) == '}')
-                {
-                    bracketCounter--;
-                    if (bracketCounter == 0)
-                    {
-                        break;
-                    }
-                }
-            }
-            String capture = rule.substring(openingIndex, closingIndex + 1);
-            nbttags.add(capture);
-            if (excessiveDebugging)
-            {
-                debugPrinter.println("template " + owner.getName() + " contains nbt tag: " + capture);
-            }
-            String pre = rule.substring(0, openingIndex);
-            String post = rule.substring(closingIndex + 1, rule.length());
-            rule = pre + "NBT" + nbttags.size() + post;
-            openingIndex = rule.indexOf('{');
-        }
-        return rule;
-    }
-
-    /** use regex so we dont get aliasing for NBT1, NBT10 etc */
-    private final Pattern patternNBT = Pattern.compile("(NBT\\d*)");
-
-    /**
-     * And the reverse, restore the glorious NBT tags into a string loaded with
-     * their placeholders
-     *
-     * @param str
-     *            string with nbt placeholders
-     * @param nbttags
-     *            list with stored nbt tags
-     * @return original string with nbt tags
-     */
-    private String restoreNBTTags(String str, ArrayList<String> nbttags)
-    {
-        Matcher matcher = patternNBT.matcher(str);
-        StringBuffer sb = new StringBuffer(str.length());
-        while (matcher.find())
-        {
-            String tag = matcher.group(0);
-            // strip "NBT", get the number out
-            int index = Integer.valueOf(tag.substring(3));
-            // list index is 1 less
-            matcher.appendReplacement(sb, nbttags.get(index - 1));
-        }
-        matcher.appendTail(sb);
-        String result = sb.toString();
-        return result;
     }
 
     @SuppressWarnings("unused")
@@ -693,8 +608,8 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("IInventory;"))
         {
-            ArrayList<String> nbttags = new ArrayList<>(5);
-            String dataWithoutNBT = replaceNBTTags(dataString, nbttags);
+            RuinTextLumper lumper = new RuinTextLumper(owner, excessiveDebugging ? debugPrinter : null);
+            String dataWithoutNBT = lumper.lump(dataString);
             String[] s = dataWithoutNBT.split(";");
             Object o = tryFindingObject(s[1]);
             if (o instanceof Block)
@@ -703,11 +618,11 @@ public class RuinTemplateRule
                 // need to strip meta '-x' value if present
                 if (s[2].lastIndexOf("-") > s[2].length() - 5)
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), nbttags, blockMDs[blocknum], rotate);
+                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), lumper, blockMDs[blocknum], rotate);
                 }
                 else
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2], nbttags, blockMDs[blocknum], rotate);
+                    addIInventoryBlock(world, random, x, y, z, b, s[2], lumper, blockMDs[blocknum], rotate);
                 }
             }
             else
@@ -1130,7 +1045,7 @@ public class RuinTemplateRule
     }
 
     @SuppressWarnings("deprecation")
-    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, ArrayList<String> nbtTags, int metadata, int direction)
+    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, RuinTextLumper lumper, int metadata, int direction)
     {
         TileEntity te = realizeBlock(world, x, y, z, block, metadata, direction);
         if (te instanceof IInventory)
@@ -1150,7 +1065,7 @@ public class RuinTemplateRule
             }
             else
             {
-                handleIInventory((IInventory) te, itemDataWithoutNBT, nbtTags);
+                handleIInventory((IInventory) te, itemDataWithoutNBT, lumper);
             }
             rotateTileEntity(te, direction);
         }
@@ -1160,7 +1075,7 @@ public class RuinTemplateRule
         }
     }
 
-    private void handleIInventory(IInventory inv, String itemDataWithoutNBT, ArrayList<String> nbtTags)
+    private void handleIInventory(IInventory inv, String itemDataWithoutNBT, RuinTextLumper lumper)
     {
         // example string:
         // minecraft:stone#1#4#0+minecraft:written_book#NBT1#0#1+minecraft:chest#1#0#2
@@ -1220,7 +1135,7 @@ public class RuinTemplateRule
                 {
                     try
                     {
-                        hashsplit[1] = restoreNBTTags(hashsplit[1], nbtTags);
+                        hashsplit[1] = lumper.unlump(hashsplit[1]);
                         if (excessiveDebugging)
                         {
                             debugPrinter.println("trying to apply nbt tag: " + hashsplit[1]);
