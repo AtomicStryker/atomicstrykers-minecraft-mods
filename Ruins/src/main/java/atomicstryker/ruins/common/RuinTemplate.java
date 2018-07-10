@@ -25,6 +25,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 
 public class RuinTemplate
 {
@@ -778,8 +779,17 @@ public class RuinTemplate
         }
     }
 
+    private static Set<String> active_mods_ = null;
+
     private void parseVariables(ArrayList<String> variables) throws Exception
     {
+        // collect list of currently active mods on first pass and keep for future reference
+        if (active_mods_ == null)
+        {
+            active_mods_ = new HashSet<>();
+            Loader.instance().getActiveModList().forEach(mod -> active_mods_.add(mod.getModId()));
+        }
+
         Set<String> included_biomes = new HashSet<>();
         RuinBiomeTypeCriteria included_biome_types = new RuinBiomeTypeCriteria(this, debugging ? debugPrinter : null);
         Set<String> excluded_biomes = new HashSet<>();
@@ -956,6 +966,42 @@ public class RuinTemplate
                 {
                     preventRotation = Integer.parseInt(line.split("=")[1]) == 1;
                 }
+                else if (line.startsWith("requiredMods"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        for (String mod : check[1].split(","))
+                        {
+                            if (!active_mods_.contains(mod))
+                            {
+                                if (debugging)
+                                {
+                                    debugPrinter.printf("template [%s]: required mod [%s] not active\n", name, mod);
+                                }
+                                throw new IncompatibleModException(true, name, mod);
+                            }
+                        }
+                    }
+                }
+                else if (line.startsWith("prohibitedMods"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        for (String mod : check[1].split(","))
+                        {
+                            if (active_mods_.contains(mod))
+                            {
+                                if (debugging)
+                                {
+                                    debugPrinter.printf("template [%s]: prohibited mod [%s] active\n", name, mod);
+                                }
+                                throw new IncompatibleModException(false, name, mod);
+                            }
+                        }
+                    }
+                }
                 else if (line.startsWith("adjoining_template"))
                 {
                     String[] check = line.split("=");
@@ -967,15 +1013,31 @@ public class RuinTemplate
                         File file = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + vals[0] + ".tml");
                         if (file.exists() && file.canRead())
                         {
-                            RuinTemplate adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
-                            AdjoiningTemplateData data = new AdjoiningTemplateData();
-                            data.adjoiningTemplate = adjTempl;
-                            data.relativeX = Integer.parseInt(vals[1]);
-                            data.acceptableY = Integer.parseInt(vals[2]);
-                            data.relativeZ = Integer.parseInt(vals[3]);
-                            data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
+                            RuinTemplate adjTempl = null;
+                            try
+                            {
+                                adjTempl = new RuinTemplate(debugPrinter, file.getCanonicalPath(), file.getName(), false);
+                            }
+                            catch (IncompatibleModException e)
+                            {
+                                if (debugging)
+                                {
+                                    debugPrinter.println("template \"" + name + "\" cannot install adjoining template");
+                                    debugPrinter.println(e.getMessage());
+                                }
+                                adjTempl = null;
+                            }
+                            if (adjTempl != null)
+                            {
+                                AdjoiningTemplateData data = new AdjoiningTemplateData();
+                                data.adjoiningTemplate = adjTempl;
+                                data.relativeX = Integer.parseInt(vals[1]);
+                                data.acceptableY = Integer.parseInt(vals[2]);
+                                data.relativeZ = Integer.parseInt(vals[3]);
+                                data.spawnchance = vals.length > 4 ? Float.parseFloat(vals[4]) : 100f;
 
-                            adjoiningTemplates.add(data);
+                                adjoiningTemplates.add(data);
+                            }
                         }
                     }
                 }
@@ -1246,6 +1308,17 @@ public class RuinTemplate
                     return variants.get(index);
                 }
             }
+        }
+    }
+
+    public static class IncompatibleModException extends RuntimeException
+    {
+        private static final long serialVersionUID = -6208915606622752271L;
+
+        public IncompatibleModException(boolean required, String template, String mod)
+        {
+            super("template \"" + template + "\" not installed because " + (required ? "required" : "prohibited") +
+                    " mod \"" + mod + "\" " + (required ? "not active" : "active"));
         }
     }
 }

@@ -459,6 +459,10 @@ class World2TemplateParser extends Thread
             pw.println("# authoring Player: " + player.getName());
             pw.println();
 
+            pw.println("# comma-separated list of mod ids required/prohibited to load template");
+            pw.println("# all required mods listed must be present; no prohibited mods can be");
+            pw.println("requiredMods=");
+            pw.println("prohibitedMods=");
             pw.println("# likelihood this template will be chosen relative to all others");
             pw.println("# e.g., a weight=6 template is chosen 3X as often as one with weight=2");
             pw.println("weight=1");
@@ -466,7 +470,7 @@ class World2TemplateParser extends Thread
             pw.println("# biome corresponding to directory is always assumed, listed or not");
             pw.println("# generic templates should leave this list empty");
             pw.println("biomesToSpawnIn=");
-            pw.println("# list of biome types (or ALL) in which this template may spawn");
+            pw.println("# list of biome types in which this template may spawn");
             pw.println("# this is in addition to those explicitly listed as biomesToSpawnIn");
             pw.println("# generic templates should leave this list empty");
             pw.println("biomeTypesToSpawnIn=");

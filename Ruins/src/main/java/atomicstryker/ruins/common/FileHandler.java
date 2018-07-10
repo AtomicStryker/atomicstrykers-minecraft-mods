@@ -393,6 +393,10 @@ class FileHandler
                     // pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                     templateCount++;
                 }
+                catch (RuinTemplate.IncompatibleModException e)
+                {
+                    pw.println(e.getMessage());
+                }
                 catch (Exception e)
                 {
                     pw.println();

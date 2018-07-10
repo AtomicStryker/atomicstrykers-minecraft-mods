@@ -151,7 +151,15 @@
 # If the space between max and min distances is too narrow (namely, less than
 # the length and width of the template), no instances can naturally generate.
 #
-# Ruins 17.2 adds three new optional variables:
+# Ruins 17.2 adds five new optional variables:
+#
+# requiredMods=<name1>,<name2>,<name3>...
+# prohibitedMods=<name1>,<name2>,<name3>...
+# Prevent installation of this template if a listed required mod is not active, or a listed
+# prohibited mod is active.
+# example: requiredMods=quark,tconstruct
+# example: prohibitedMods=forestry,natura
+# Optional. Both default to empty lists.
 #
 # biomeTypesToSpawnIn=<name1>,<name2>,<name3>...
 # Adds the Template being loaded (regardless which folder it is in) to every Ruins Biome

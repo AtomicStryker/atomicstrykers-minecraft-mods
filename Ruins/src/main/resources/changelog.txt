@@ -528,3 +528,4 @@ a: setAccessible now true
 + hide commas in [bracketed rule text], 1.13 prep
 + templates can now specify biomes to spawn in by type
 + enhance biomeTypesToSpawnIn with simple boolean operations
++ templates can now declare required/prohibited mods
