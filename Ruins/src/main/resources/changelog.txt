@@ -529,3 +529,4 @@ a: setAccessible now true
 + templates can now specify biomes to spawn in by type
 + enhance biomeTypesToSpawnIn with simple boolean operations
 + templates can now declare required/prohibited mods
++ cache block states for efficient repeat use, 1.13 prep
