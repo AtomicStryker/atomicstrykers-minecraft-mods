@@ -49,7 +49,8 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 public class RuinTemplateRule
 {
     protected final Block[] blockIDs;
-    protected final int[] blockMDs;
+    protected final String[] blockMDs;
+    protected final IBlockState[] blockBSs;
     protected final String[] blockStrings;
     protected final SpecialFlags[] specialFlags;
     protected final PreservePolicy[] preservePolicies;
@@ -118,7 +119,8 @@ public class RuinTemplateRule
             }
 
             blockIDs = new Block[count];
-            blockMDs = new int[count];
+            blockMDs = new String[count];
+            blockBSs = new IBlockState[count];
             blockStrings = new String[count];
             specialFlags = new SpecialFlags[count];
             preservePolicies = new PreservePolicy[count];
@@ -126,6 +128,9 @@ public class RuinTemplateRule
             blockWeightsTotal = 0;
             for (int i = 0; i < count; i++)
             {
+                // invalidate cached block state
+                blockBSs[i] = null;
+
                 // apply command block prefix from previous field
                 blockWeightsTotal += blockWeights[i] = blockWeight;
                 preservePolicies[i] = preservePolicy;
@@ -150,13 +155,11 @@ public class RuinTemplateRule
                 }
 
                 blockIDs[i] = null;
-                blockMDs[i] = UNSPECIFIED_METADATA;
+                blockMDs[i] = null;
                 // case meta value "-n" present (impulse command block)
                 if (commandrules[i + 1].charAt(commandrules[i + 1].length() - 2) == '-')
                 {
-                    String meta = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1);
-                    // needed because char to int conversion is bad here
-                    blockMDs[i] = Integer.valueOf(meta);
+                    blockMDs[i] = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1);
                     // strip the last 2 chars from the string or else parsing
                     // the command will fail
                     commandrules[i + 1] = commandrules[i + 1].substring(0, commandrules[i + 1].length() - 3);
@@ -176,7 +179,8 @@ public class RuinTemplateRule
         else
         {
             blockIDs = new Block[numblocks];
-            blockMDs = new int[numblocks];
+            blockMDs = new String[numblocks];
+            blockBSs = new IBlockState[numblocks];
             blockStrings = new String[numblocks];
             specialFlags = new SpecialFlags[numblocks];
             preservePolicies = new PreservePolicy[numblocks];
@@ -184,6 +188,9 @@ public class RuinTemplateRule
             blockWeightsTotal = 0;
             for (int i = 0; i < numblocks; i++)
             {
+                // invalidate cached block state
+                blockBSs[i] = null;
+
                 // extract block prefix, if any
                 int blockWeight = 1;
                 PreservePolicy preservePolicy = PreservePolicy.IGNORE;
@@ -211,7 +218,7 @@ public class RuinTemplateRule
                     {
                         debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
                         blockIDs[i] = Blocks.AIR;
-                        blockMDs[i] = UNSPECIFIED_METADATA;
+                        blockMDs[i] = null;
                         blockStrings[i] = "";
                     }
                     else
@@ -259,11 +266,11 @@ public class RuinTemplateRule
                             specialFlags[i] = SpecialFlags.ADDBONEMEAL;
                             try
                             {
-                                blockMDs[i] = Integer.parseInt(data[data.length - 2]);
+                                blockMDs[i] = data[data.length - 2];
                             }
                             catch (NumberFormatException ne)
                             {
-                                blockMDs[i] = UNSPECIFIED_METADATA;
+                                blockMDs[i] = null;
                             }
                         }
                         // otherwise parse meta value
@@ -271,11 +278,11 @@ public class RuinTemplateRule
                         {
                             try
                             {
-                                blockMDs[i] = Integer.parseInt(data[data.length - 1]);
+                                blockMDs[i] = data[data.length - 1];
                             }
                             catch (NumberFormatException ne)
                             {
-                                blockMDs[i] = UNSPECIFIED_METADATA;
+                                blockMDs[i] = null;
                             }
                         }
                     }
@@ -302,7 +309,7 @@ public class RuinTemplateRule
                         blockStrings[i] = blockRules[i + 2];
                         blockStrings[i] = lumper.unlump(blockStrings[i]);
                     }
-                    blockMDs[i] = UNSPECIFIED_METADATA;
+                    blockMDs[i] = null;
                 }
 
                 if (excessiveDebugging)
@@ -471,10 +478,9 @@ public class RuinTemplateRule
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void placeBlock(World world, int blocknum, int x, int y, int z, int rotate)
     {
-        realizeBlock(world, x, y, z, blockIDs[blocknum], blockMDs[blocknum], rotate);
+        realizeBlock(world, x, y, z, blockIDs[blocknum], blocknum, rotate);
         if (specialFlags[blocknum] != null)
         {
             switch (specialFlags[blocknum])
@@ -561,7 +567,6 @@ public class RuinTemplateRule
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     private void doSpecialBlock(World world, Random random, int x, int y, int z, int blocknum, int rotate, final String dataString)
     {
         if (dataString.equals("preserveBlock"))
@@ -590,21 +595,21 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("EasyChest"))
         {
-            addEasyChest(world, random, x, y, z, blockMDs[blocknum], rotate, random.nextInt(3) + 3);
+            addEasyChest(world, random, x, y, z, blocknum, rotate, random.nextInt(3) + 3);
         }
         else if (dataString.startsWith("MediumChest"))
         {
-            addMediumChest(world, random, x, y, z, blockMDs[blocknum], rotate, random.nextInt(4) + 3);
+            addMediumChest(world, random, x, y, z, blocknum, rotate, random.nextInt(4) + 3);
         }
         else if (dataString.startsWith("HardChest"))
         {
-            addHardChest(world, random, x, y, z, blockMDs[blocknum], rotate, random.nextInt(5) + 3);
+            addHardChest(world, random, x, y, z, blocknum, rotate, random.nextInt(5) + 3);
         }
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
             int targetCount = s.length > 1 ? Integer.valueOf(s[2].split("-")[0]) : 0;
-            addChestGenChest(world, random, x, y, z, s[1], targetCount, blockMDs[blocknum], rotate);
+            addChestGenChest(world, random, x, y, z, s[1], targetCount, blocknum, rotate);
         }
         else if (dataString.startsWith("IInventory;"))
         {
@@ -618,11 +623,11 @@ public class RuinTemplateRule
                 // need to strip meta '-x' value if present
                 if (s[2].lastIndexOf("-") > s[2].length() - 5)
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), lumper, blockMDs[blocknum], rotate);
+                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), lumper, blocknum, rotate);
                 }
                 else
                 {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2], lumper, blockMDs[blocknum], rotate);
+                    addIInventoryBlock(world, random, x, y, z, b, s[2], lumper, blocknum, rotate);
                 }
             }
             else
@@ -649,11 +654,11 @@ public class RuinTemplateRule
                 command = dataString.substring(0, lastIdx);
                 sender = dataString.substring(lastIdx + 1, dataString.length());
             }
-            addCommandBlock(world, x, y, z, command, sender, blockMDs[blocknum], rotate);
+            addCommandBlock(world, x, y, z, command, sender, blocknum, rotate);
         }
         else if (dataString.startsWith("StandingSign:"))
         {
-            TileEntitySign tes = (TileEntitySign) realizeBlock(world, x, y, z, Blocks.STANDING_SIGN, blockMDs[blocknum], rotate);
+            TileEntitySign tes = (TileEntitySign) realizeBlock(world, x, y, z, Blocks.STANDING_SIGN, blocknum, rotate);
             if (tes != null && tes.signText != null)
             {
                 String[] splits = dataString.split(":");
@@ -665,7 +670,7 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("WallSign:"))
         {
-            TileEntitySign tes = (TileEntitySign) realizeBlock(world, x, y, z, Blocks.WALL_SIGN, blockMDs[blocknum], rotate);
+            TileEntitySign tes = (TileEntitySign) realizeBlock(world, x, y, z, Blocks.WALL_SIGN, blocknum, rotate);
             if (tes != null && tes.signText != null)
             {
                 String[] splits = dataString.split(":");
@@ -678,7 +683,7 @@ public class RuinTemplateRule
         else if (dataString.startsWith("Skull:"))
         {
             // standard case Skull:2:8-3
-            TileEntitySkull tes = (TileEntitySkull) realizeBlock(world, x, y, z, Blocks.SKULL, blockMDs[blocknum], rotate);
+            TileEntitySkull tes = (TileEntitySkull) realizeBlock(world, x, y, z, Blocks.SKULL, blocknum, rotate);
             if (tes != null)
             {
                 String[] splits = dataString.split(":");
@@ -724,7 +729,7 @@ public class RuinTemplateRule
                     {
                         debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
                     }
-                    realizeBlock(world, x, y, z, b, blockMDs[blocknum], rotate);
+                    realizeBlock(world, x, y, z, b, blocknum, rotate);
                     world.removeTileEntity(p);
                     TileEntity tenew = TileEntity.create(world, tc);
                     rotateTileEntity(tenew, rotate);
@@ -752,7 +757,7 @@ public class RuinTemplateRule
 
     private void spawnEnderCrystal(World world, int x, int y, int z)
     {
-        realizeBlock(world, x, y, z, Blocks.BEDROCK, UNSPECIFIED_METADATA, RuinsMod.DIR_NORTH);
+        realizeBlock(world, x, y, z, Blocks.BEDROCK, UNSPECIFIED_BLOCKNUM, RuinsMod.DIR_NORTH);
         EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(world);
         entityendercrystal.setLocationAndAngles((x + 0.5F), y, (z + 0.5F), world.rand.nextFloat() * 360.0F, 0.0F);
         world.spawnEntity(entityendercrystal);
@@ -760,7 +765,7 @@ public class RuinTemplateRule
 
     private void addCustomSpawner(World world, int x, int y, int z, String id)
     {
-        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) realizeBlock(world, x, y, z, Blocks.MOB_SPAWNER, UNSPECIFIED_METADATA, RuinsMod.DIR_NORTH);
+        TileEntityMobSpawner mobspawner = (TileEntityMobSpawner) realizeBlock(world, x, y, z, Blocks.MOB_SPAWNER, UNSPECIFIED_BLOCKNUM, RuinsMod.DIR_NORTH);
         if (mobspawner != null)
         {
             ResourceLocation rsl = new ResourceLocation(id);
@@ -849,9 +854,9 @@ public class RuinTemplateRule
         }
     }
 
-    private void addEasyChest(World world, Random random, int x, int y, int z, int meta, int direction, int items)
+    private void addEasyChest(World world, Random random, int x, int y, int z, int blocknum, int direction, int items)
     {
-        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, meta, direction);
+        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, blocknum, direction);
         if (chest != null)
         {
             ItemStack stack;
@@ -866,9 +871,9 @@ public class RuinTemplateRule
         }
     }
 
-    private void addMediumChest(World world, Random random, int x, int y, int z, int meta, int direction, int items)
+    private void addMediumChest(World world, Random random, int x, int y, int z, int blocknum, int direction, int items)
     {
-        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, meta, direction);
+        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, blocknum, direction);
         if (chest != null)
         {
             ItemStack stack;
@@ -890,9 +895,9 @@ public class RuinTemplateRule
         }
     }
 
-    private void addHardChest(World world, Random random, int x, int y, int z, int meta, int direction, int items)
+    private void addHardChest(World world, Random random, int x, int y, int z, int blocknum, int direction, int items)
     {
-        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, meta, direction);
+        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, blocknum, direction);
         if (chest != null)
         {
             ItemStack stack;
@@ -914,9 +919,9 @@ public class RuinTemplateRule
         }
     }
 
-    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int targetCount, int meta, int direction)
+    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen, int targetCount, int blocknum, int direction)
     {
-        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, meta, direction);
+        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, blocknum, direction);
         if (chest != null)
         {
             ResourceLocation lootTable;
@@ -1044,10 +1049,9 @@ public class RuinTemplateRule
         Collections.shuffle(stacks, rand);
     }
 
-    @SuppressWarnings("deprecation")
-    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, RuinTextLumper lumper, int metadata, int direction)
+    private void addIInventoryBlock(World world, Random random, int x, int y, int z, Block block, String itemDataWithoutNBT, RuinTextLumper lumper, int blocknum, int direction)
     {
-        TileEntity te = realizeBlock(world, x, y, z, block, metadata, direction);
+        TileEntity te = realizeBlock(world, x, y, z, block, blocknum, direction);
         if (te instanceof IInventory)
         {
             if (excessiveDebugging)
@@ -1218,10 +1222,9 @@ public class RuinTemplateRule
         return null;
     }
 
-    @SuppressWarnings("deprecation")
-    private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int meta, int rotate)
+    private void addCommandBlock(World world, int x, int y, int z, String command, String sender, int blocknum, int rotate)
     {
-        TileEntityCommandBlock tecb = (TileEntityCommandBlock) realizeBlock(world, x, y, z, Blocks.COMMAND_BLOCK, meta, rotate);
+        TileEntityCommandBlock tecb = (TileEntityCommandBlock) realizeBlock(world, x, y, z, Blocks.COMMAND_BLOCK, blocknum, rotate);
         if (tecb != null)
         {
             tecb.getCommandBlockLogic().setCommand(findAndRotateRelativeCommandBlockCoords(command, rotate));
@@ -1400,14 +1403,8 @@ public class RuinTemplateRule
         return block.equals("air") || block.equals("minecraft:air");
     }
 
-    // is given metadata value valid?
-    private static boolean isValidMetadata(int metadata)
-    {
-        return metadata >= 0 && metadata < 16;
-    }
-
-    // invalid sentinel metadata value indicating none was specified and default should be used
-    private static final int UNSPECIFIED_METADATA = -1;
+    // invalid sentinel block index indicating no data value was specified and default state should be used
+    static final int UNSPECIFIED_BLOCKNUM = -1;
 
     // get rotation (minecraft enum) corresponding to given direction (ruins int)
     private static Rotation getDirectionalRotation(int direction)
@@ -1430,8 +1427,7 @@ public class RuinTemplateRule
 
     // make specified block manifest in world, with given metadata and direction
     // returns associated tile entity, if there is one
-    @SuppressWarnings("deprecation")
-    private static TileEntity realizeBlock(World world, int x, int y, int z, Block block, int metadata, int direction)
+    private TileEntity realizeBlock(World world, int x, int y, int z, Block block, int blocknum, int direction)
     {
         TileEntity entity = null;
         if (world != null && block != null)
@@ -1449,7 +1445,7 @@ public class RuinTemplateRule
                 world.setBlockState(position, Blocks.BARRIER.getDefaultState(), 4);
             }
 
-            final IBlockState state = (isValidMetadata(metadata) ? block.getStateFromMeta(metadata) : block.getDefaultState()).withRotation(getDirectionalRotation(direction));
+            IBlockState state = getCachedBlockState(block, blocknum).withRotation(getDirectionalRotation(direction));
             if (world.setBlockState(position, state, 2))
             {
                 // workaround for vanilla weirdness (bug?)
@@ -1459,6 +1455,51 @@ public class RuinTemplateRule
             }
         }
         return entity;
+    }
+
+    // parsing block property specifications can be expensive! cache states to avoid repeated calculation
+    @SuppressWarnings("deprecation")
+    private IBlockState getCachedBlockState(Block block, int blocknum)
+    {
+        // use cached state; if no metadata, use default state
+        IBlockState state = blocknum != UNSPECIFIED_BLOCKNUM ? blockBSs[blocknum] : block.getDefaultState();
+
+        // if no cached state, interpret metadata string and save result for next time
+        if (state == null)
+        {
+            // convert data value to state
+            String metadata = blockMDs[blocknum];
+            if (metadata != null && !metadata.isEmpty())
+            {
+                try
+                {
+                    int value = Integer.parseInt(metadata);
+                    if ((value & ~0b1111) == 0)
+                    {
+                        state = block.getStateFromMeta(value);
+                    }
+                    else
+                    {
+                        System.err.printf("Warning: Ruins template [%s] contains out-of-range block data value [%d]\n", owner.getName(), value);
+                    }
+                }
+                catch (NumberFormatException exception)
+                {
+                    System.err.printf("Warning: Ruins template [%s] contains non-integer block data value [%s]\n", owner.getName(), metadata);
+                }
+            }
+
+            // if state still undetermined, use default
+            if (state == null)
+            {
+                state = block.getDefaultState();
+            }
+
+            // store state for future use
+            blockBSs[blocknum] = state;
+        }
+
+        return state;
     }
 
     // apply given direction to specified tile entity
