@@ -1473,8 +1473,9 @@ public class RuinTemplateRule
             {
                 try
                 {
+                    // data value must be an integer from 0-15, inclusive
                     int value = Integer.parseInt(metadata);
-                    if ((value & ~0b1111) == 0)
+                    if (value >= 0 && value < 16)
                     {
                         state = block.getStateFromMeta(value);
                     }
