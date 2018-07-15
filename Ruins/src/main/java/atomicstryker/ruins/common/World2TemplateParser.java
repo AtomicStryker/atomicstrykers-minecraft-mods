@@ -459,10 +459,10 @@ class World2TemplateParser extends Thread
             pw.println("# authoring Player: " + player.getName());
             pw.println();
 
-            pw.println("# comma-separated list of mod ids required/prohibited to load template");
+            pw.println("# criterion expression specifying mod ids required to load template");
+            pw.println("# may include plus (AND), minus (AND NOT), comma (OR), and parentheses");
             pw.println("# all required mods listed must be present; no prohibited mods can be");
             pw.println("requiredMods=");
-            pw.println("prohibitedMods=");
             pw.println("# likelihood this template will be chosen relative to all others");
             pw.println("# e.g., a weight=6 template is chosen 3X as often as one with weight=2");
             pw.println("weight=1");
@@ -470,15 +470,14 @@ class World2TemplateParser extends Thread
             pw.println("# biome corresponding to directory is always assumed, listed or not");
             pw.println("# generic templates should leave this list empty");
             pw.println("biomesToSpawnIn=");
-            pw.println("# list of biome types in which this template may spawn");
+            pw.println("# criterion expression specifying types of biome where template spawns");
             pw.println("# this is in addition to those explicitly listed as biomesToSpawnIn");
             pw.println("# generic templates should leave this list empty");
             pw.println("biomeTypesToSpawnIn=");
-            pw.println("# exclusion list of biomes and biome types");
+            pw.println("# list of biomes in which this template may not spawn");
             pw.println("# takes precedence over biomeTypesToSpawnIn, but NOT biomesToSpawnIn");
-            pw.println("# both should be empty if biomeTypesToSpawnIn is empty");
+            pw.println("# should be empty if biomeTypesToSpawnIn is empty");
             pw.println("biomesToNotSpawnIn=");
-            pw.println("biomeTypesToNotSpawnIn=");
             pw.println("# depth template is pushed down into the surface when built");
             pw.println("# offset is min/max range of random additional bury depth");
             pw.println("embed_into_distance=" + yPadding);

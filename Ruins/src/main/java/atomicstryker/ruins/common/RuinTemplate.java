@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -22,6 +23,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.MinecraftForge;
@@ -779,21 +781,29 @@ public class RuinTemplate
         }
     }
 
-    private static Set<String> active_mods_ = null;
+    private static Set<String> installed_mods_ = null;
+    private static Set<String> installed_biome_types_ = null;
 
     private void parseVariables(ArrayList<String> variables) throws Exception
     {
-        // collect list of currently active mods on first pass and keep for future reference
-        if (active_mods_ == null)
+        // collect list of currently installed mods on first pass and keep for future reference
+        if (installed_mods_ == null)
         {
-            active_mods_ = new HashSet<>();
-            Loader.instance().getActiveModList().forEach(mod -> active_mods_.add(mod.getModId()));
+            installed_mods_ = new HashSet<>();
+            Loader.instance().getModList().forEach(mod -> installed_mods_.add(mod.getModId()));
+        }
+
+        // collect list of currently installed biome types on first pass and keep for future reference
+        if (installed_biome_types_ == null)
+        {
+            installed_biome_types_ = new HashSet<>();
+            BiomeDictionary.Type.getAll().forEach(type -> installed_biome_types_.add(type.getName()));
         }
 
         Set<String> included_biomes = new HashSet<>();
-        RuinBiomeTypeCriteria included_biome_types = new RuinBiomeTypeCriteria(this, debugging ? debugPrinter : null);
         Set<String> excluded_biomes = new HashSet<>();
-        RuinBiomeTypeCriteria excluded_biome_types = new RuinBiomeTypeCriteria(this, debugging ? debugPrinter : null);
+        List<RuinVennCriterion> biome_type_criteria = new ArrayList<>();
+
         Iterator<String> i = variables.iterator();
         String line;
         while (i.hasNext())
@@ -859,18 +869,6 @@ public class RuinTemplate
                         Collections.addAll(included_biomes, check[1].split(","));
                     }
                 }
-                else if (line.startsWith("biomeTypesToSpawnIn"))
-                {
-                    String[] check = line.split("=");
-                    if (check.length > 1)
-                    {
-                        if (debugging)
-                        {
-                            debugPrinter.printf("adding biomeTypesToSpawnIn criteria for template \"%s\": specs=\"%s\"\n", name, check[1]);
-                        }
-                        included_biome_types.addCriteria(check[1]);
-                    }
-                }
                 else if (line.startsWith("biomesToNotSpawnIn"))
                 {
                     String[] check = line.split("=");
@@ -879,16 +877,29 @@ public class RuinTemplate
                         Collections.addAll(excluded_biomes, check[1].split(","));
                     }
                 }
-                else if (line.startsWith("biomeTypesToNotSpawnIn"))
+                else if (line.startsWith("biomeTypesToSpawnIn"))
                 {
                     String[] check = line.split("=");
                     if (check.length > 1)
                     {
                         if (debugging)
                         {
-                            debugPrinter.printf("adding biomeTypesToNotSpawnIn criteria for template \"%s\": specs=\"%s\"\n", name, check[1]);
+                            debugPrinter.printf("adding biomeTypesToSpawnIn criterion for template \"%s\": specs=\"%s\"\n", name, check[1]);
                         }
-                        excluded_biome_types.addCriteria(check[1]);
+                        RuinVennCriterion criterion = null;
+                        try
+                        {
+                            criterion = RuinVennCriterion.parseExpression(check[1]);
+                        }
+                        catch (RuntimeException exception)
+                        {
+                            System.err.printf("template [%s]: invalid biomeTypesToSpawnIn expression [%s]\n", name, check[1]);
+                            System.err.println(exception);
+                        }
+                        if (criterion != null && !criterion.isEmpty())
+                        {
+                            biome_type_criteria.add(criterion);
+                        }
                     }
                 }
                 else if (line.startsWith("weight"))
@@ -971,34 +982,23 @@ public class RuinTemplate
                     String[] check = line.split("=");
                     if (check.length > 1)
                     {
-                        for (String mod : check[1].split(","))
+                        if (debugging)
                         {
-                            if (!active_mods_.contains(mod))
-                            {
-                                if (debugging)
-                                {
-                                    debugPrinter.printf("template [%s]: required mod [%s] not active\n", name, mod);
-                                }
-                                throw new IncompatibleModException(true, name, mod);
-                            }
+                            debugPrinter.printf("checking requiredMods criterion for template \"%s\": specs=\"%s\"\n", name, check[1]);
                         }
-                    }
-                }
-                else if (line.startsWith("prohibitedMods"))
-                {
-                    String[] check = line.split("=");
-                    if (check.length > 1)
-                    {
-                        for (String mod : check[1].split(","))
+                        RuinVennCriterion criterion = null;
+                        try
                         {
-                            if (active_mods_.contains(mod))
-                            {
-                                if (debugging)
-                                {
-                                    debugPrinter.printf("template [%s]: prohibited mod [%s] active\n", name, mod);
-                                }
-                                throw new IncompatibleModException(false, name, mod);
-                            }
+                            criterion = RuinVennCriterion.parseExpression(check[1]);
+                        }
+                        catch (RuntimeException exception)
+                        {
+                            System.err.printf("template [%s]: invalid requiredMods expression [%s]\n", name, check[1]);
+                            System.err.println(exception);
+                        }
+                        if (criterion != null && !criterion.isEmpty() && !criterion.isSatisfiedBy(installed_mods_))
+                        {
+                            throw new IncompatibleModException(name);
                         }
                     }
                 }
@@ -1045,19 +1045,32 @@ public class RuinTemplate
         }
 
         // assemble final biomesToSpawnIn list:
-        // 1) biomes listed as biomesToSpawnIn are added (regardless of ToNotSpawnIn lists)
-        // 2) biomes with at least one type listed as a biomeTypesToSpawnIn are added, UNLESS...
-        // 2a) ...the biome is listed as a biomesToNotSpawnIn, or
-        // 2b) ...the biome has at least one type listed as a BiomeTypesToNotSpawnIn
-        final boolean consider_types = !excluded_biomes.isEmpty() || !included_biome_types.isEmpty() || !excluded_biome_types.isEmpty();
+        // 1) biomes listed as biomesToSpawnIn are added (regardless of biomesToNotSpawnIn)
+        // 2) biomes listed as biomesToNotSpawnIn are not added (regardless of biomeTypesToSpawnIn)
+        // 3) biomes satisfying at least one biomeTypesToSpawnIn criterion are added
         for (Iterator<Biome> biome_iter = Biome.REGISTRY.iterator(); biome_iter.hasNext(); )
         {
             Biome biome = biome_iter.next();
             String biome_name = biome.getRegistryName().getResourcePath();
-            if (!biomes.contains(biome_name) && (included_biomes.contains(biome_name) || consider_types && !excluded_biomes.contains(biome_name) &&
-                    (included_biome_types.isEmpty() || included_biome_types.satisfiedBy(biome)) && !excluded_biome_types.satisfiedBy(biome)))
+            if (!biomes.contains(biome_name))
             {
-                biomes.add(biome_name);
+                if (included_biomes.contains(biome_name))
+                {
+                    biomes.add(biome_name);
+                }
+                else if (!excluded_biomes.contains(biome_name) && !biome_type_criteria.isEmpty())
+                {
+                    Set<String> biome_types = new HashSet<>();
+                    BiomeDictionary.getTypes(biome).forEach(type -> biome_types.add(type.getName()));
+                    for (RuinVennCriterion criterion : biome_type_criteria)
+                    {
+                        if (criterion.isSatisfiedBy(biome_types))
+                        {
+                            biomes.add(biome_name);
+                            break;
+                        }
+                    }
+                }
             }
         }
         if (debugging)
@@ -1315,10 +1328,9 @@ public class RuinTemplate
     {
         private static final long serialVersionUID = -6208915606622752271L;
 
-        public IncompatibleModException(boolean required, String template, String mod)
+        public IncompatibleModException(String template)
         {
-            super("template \"" + template + "\" not installed because " + (required ? "required" : "prohibited") +
-                    " mod \"" + mod + "\" " + (required ? "not active" : "active"));
+            super("template \"" + template + "\" not installed due to incompatibility with other mods");
         }
     }
 }
