@@ -1082,7 +1082,7 @@ public class RuinTemplateRule
     private void handleIInventory(IInventory inv, String itemDataWithoutNBT, RuinTextLumper lumper)
     {
         // example string:
-        // minecraft:stone#1#4#0+minecraft:written_book#NBT1#0#1+minecraft:chest#1#0#2
+        // minecraft:stone#1#4#0+minecraft:written_book#{NBT}#0#1+minecraft:chest#1#0#2
         ItemStack putItem;
         ItemStack slotItemPrev;
         String[] itemStrings = itemDataWithoutNBT.split(Pattern.quote("+"));
@@ -1104,10 +1104,13 @@ public class RuinTemplateRule
             boolean nbtdata = false;
             if (hashsplit.length > 1)
             {
-                nbtdata = hashsplit[1].startsWith("NBT");
-                if (!nbtdata)
+                try
                 {
-                    itemStackSize = Integer.valueOf(hashsplit[1]);
+                    itemStackSize = Integer.parseInt(hashsplit[1]);
+                }
+                catch (NumberFormatException exception)
+                {
+                    nbtdata = true;
                 }
             }
 
