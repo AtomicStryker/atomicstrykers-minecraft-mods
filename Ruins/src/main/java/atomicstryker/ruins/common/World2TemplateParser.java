@@ -9,8 +9,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.Block;
@@ -523,7 +521,7 @@ class World2TemplateParser extends Thread
             int rulenum = 1;
             for (BlockData bd : usedBlocks)
             {
-                pw.println("rule" + id_formatter.format(rulenum) + "=" + StringEscapeUtils.escapeJava(bd.toString()));
+                pw.println("rule" + id_formatter.format(rulenum) + "=" + bd.toString());
                 rulenum++;
             }
 

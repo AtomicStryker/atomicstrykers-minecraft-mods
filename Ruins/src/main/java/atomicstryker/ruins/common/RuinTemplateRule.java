@@ -9,8 +9,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
@@ -462,7 +460,7 @@ public class RuinTemplateRule
             }
             if (blockID == null)
             {
-                doSpecialBlock(world, random, x, y, z, blocknum, rotate, StringEscapeUtils.unescapeJava(blockString));
+                doSpecialBlock(world, random, x, y, z, blocknum, rotate, blockString);
             }
             else
             {
