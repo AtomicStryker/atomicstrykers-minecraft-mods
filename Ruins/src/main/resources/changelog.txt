@@ -532,3 +532,4 @@ a: setAccessible now true
 + cache block states for efficient repeat use, 1.13 prep
 + enhance requiredMods/biomeTypesToSpawnIn with fancier boolean operations
 + revert 15.2--no additional layer of escape needed for JSON, bugfix
++ /parseruin rules no longer include tile entity absolute positions, bugfix
