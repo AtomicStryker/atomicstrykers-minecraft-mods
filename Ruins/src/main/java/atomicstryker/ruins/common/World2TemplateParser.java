@@ -242,6 +242,10 @@ class World2TemplateParser extends Thread
                     {
                         NBTTagCompound tc = new NBTTagCompound();
                         te.writeToNBT(tc);
+                        // remove absolute position tags
+                        tc.removeTag("x");
+                        tc.removeTag("y");
+                        tc.removeTag("z");
                         temp.data = "teBlock;" + Block.REGISTRY.getNameForObject(temp.block).toString() + ";" + tc.toString() + "-" + temp.meta;
                     }
                     else if (temp.block == Blocks.MOB_SPAWNER)
