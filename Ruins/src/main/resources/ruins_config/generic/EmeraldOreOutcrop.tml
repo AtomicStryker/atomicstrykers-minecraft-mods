@@ -15,10 +15,10 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=1
 
-rule1=0,100,minecraft:dirt-0
-rule2=0,100,minecraft:stone-0
-rule3=0,100,minecraft:emerald_ore-0
-rule4=0,100,minecraft:clay-0
+rule1=0,100,minecraft:dirt
+rule2=0,100,minecraft:stone
+rule3=0,100,minecraft:emerald_ore
+rule4=0,100,minecraft:clay
 
 layer
 0,2,1,0

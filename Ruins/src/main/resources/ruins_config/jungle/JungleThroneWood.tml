@@ -17,13 +17,13 @@ preserve_plants=1
 
 
 rule1=0,100,fence
-rule2=0,100,log-3
-rule3=0,100,wall_sign-4
-rule4=0,100,oak_stairs-3
-rule5=0,100,wall_sign-5
-rule6=0,100,vine-2
-rule7=0,100,oak_stairs-2
-rule8=0,100,vine-8
+rule2=0,100,log[variant=jungle]
+rule3=0,100,wall_sign[facing=west]
+rule4=0,100,oak_stairs
+rule5=0,100,wall_sign[facing=east]
+rule6=0,100,vine[west=true]
+rule7=0,100,oak_stairs[facing=south]
+rule8=0,100,vine[east=true]
 rule9=0,100,planks
 
 

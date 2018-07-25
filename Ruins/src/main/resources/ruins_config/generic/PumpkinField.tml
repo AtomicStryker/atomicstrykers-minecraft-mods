@@ -15,11 +15,11 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,minecraft:dirt-0
-rule2=0,100,minecraft:gravel-0
-rule3=0,100,minecraft:water-0
-rule4=0,100,minecraft:cobblestone_wall-1
-rule5=0,100,minecraft:pumpkin-0
+rule1=0,100,minecraft:dirt
+rule2=0,100,minecraft:gravel
+rule3=0,100,minecraft:water
+rule4=0,100,minecraft:cobblestone_wall[variant=mossy_cobblestone]
+rule5=0,100,minecraft:pumpkin[facing=south]
 
 layer
 1,1,1,1,1

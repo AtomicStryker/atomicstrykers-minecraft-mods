@@ -17,21 +17,21 @@ preserve_plants=0
 
 rule1=0,100,preserveBlock
 rule2=0,100,stone
-rule3=0,100,log-0
+rule3=0,100,log
 rule4=0,100,fence
 rule5=0,100,planks
 rule6=0,100,MobSpawner:Skeleton
 rule7=0,100,glass
 rule8=0,100,fence
-rule9=0,100,ladder-5
-rule10=0,100,ladder-4
-rule11=0,100,ladder-2
-rule12=0,100,ladder-3
+rule9=0,100,ladder[facing=east]
+rule10=0,100,ladder[facing=west]
+rule11=0,100,ladder
+rule12=0,100,ladder[facing=south]
 rule13=0,100,MobSpawner:Zombie
 rule14=0,100,flowing_water
 rule15=0,100,MobSpawner:Zombie
-rule16=0,100,wool-15
-rule17=0,100,wool-0
+rule16=0,100,wool[color=black]
+rule17=0,100,wool
 rule18=0,100,gravel
 
 layer
