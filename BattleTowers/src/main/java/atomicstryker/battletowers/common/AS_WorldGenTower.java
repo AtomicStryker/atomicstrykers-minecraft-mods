@@ -154,7 +154,7 @@ public class AS_WorldGenTower
     }
 
     @SuppressWarnings("deprecation") // is needed because getDefaultState on stairs does not work
-    public void generate(World world, int ix, int jy, int kz, int towerchoice, boolean underground)
+    public void generate(World world, Random random, int ix, int jy, int kz, int towerchoice, boolean underground)
     {
         TowerTypes towerChosen = TowerTypes.values()[towerchoice];
 
@@ -387,19 +387,7 @@ public class AS_WorldGenTower
                         }
                         else
                         {
-                            try
-                            {
-                                @SuppressWarnings("unchecked")
-                                Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post")
-                                        .getConstructor(TileEntity.class, BlockPos.class, Random.class, ResourceLocation.class, World.class);
-                                Event event = constructor.newInstance(tileentitymobspawner, tileentitymobspawner.getPos(), world.rand, new ResourceLocation("battletowers:" + towerChosen.getName()),
-                                        world);
-                                MinecraftForge.EVENT_BUS.post(event);
-                            }
-                            catch (Throwable t)
-                            {
-                                t.printStackTrace();
-                            }
+                           DungeonTweaksCompat.fireDungeonSpawn(tileentitymobspawner, world, random, towerChosen);
                         }
                     }
 
@@ -413,19 +401,7 @@ public class AS_WorldGenTower
                         }
                         else
                         {
-                            try
-                            {
-                                @SuppressWarnings("unchecked")
-                                Constructor<? extends Event> constructor = (Constructor<? extends Event>) Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post")
-                                        .getConstructor(TileEntity.class, BlockPos.class, Random.class, ResourceLocation.class, World.class);
-                                Event event = constructor.newInstance(tileentitymobspawner, tileentitymobspawner.getPos(), world.rand, new ResourceLocation("battletowers:" + towerChosen.getName()),
-                                        world);
-                                MinecraftForge.EVENT_BUS.post(event);
-                            }
-                            catch (Throwable t)
-                            {
-                                t.printStackTrace();
-                            }
+                        	DungeonTweaksCompat.fireDungeonSpawn(tileentitymobspawner, world, random, towerChosen);
                         }
                     }
                 }
@@ -671,6 +647,11 @@ public class AS_WorldGenTower
         public String getName()
         {
             return this.typeName;
+        }
+        
+        public ResourceLocation getId()
+        {
+        	return new ResourceLocation("battletowers:" + this.typeName);
         }
     }
 

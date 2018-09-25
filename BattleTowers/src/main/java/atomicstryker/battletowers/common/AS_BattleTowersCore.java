@@ -87,6 +87,9 @@ public class AS_BattleTowersCore
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+    	DungeonTweaksCompat.legacyCheck();
+    	DungeonTweaksCompat.registerDungeons();
+    	
         configuration = new Configuration(event.getSuggestedConfigurationFile(), false);
         loadForgeConfig();
 
