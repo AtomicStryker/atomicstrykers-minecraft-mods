@@ -381,7 +381,7 @@ public class AS_WorldGenTower
                     TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix + 2, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
-                        if (!Loader.isModLoaded("dungeontweaks"))
+                        if (!DungeonTweaksCompat.isLoaded)
                         {
                             tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
                         }
@@ -395,7 +395,7 @@ public class AS_WorldGenTower
                     tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(ix - 3, builderHeight + 6, kz + 2));
                     if (tileentitymobspawner != null)
                     {
-                        if (!Loader.isModLoaded("dungeontweaks"))
+                        if (!DungeonTweaksCompat.isLoaded)
                         {
                             tileentitymobspawner.getSpawnerBaseLogic().setEntityId(getMobType(world.rand));
                         }

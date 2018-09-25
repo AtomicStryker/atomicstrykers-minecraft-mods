@@ -11,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
@@ -23,12 +24,20 @@ public class DungeonTweaksCompat
 {
 
     public static boolean isLegacy = false;
+    public static boolean isLoaded = false;
 
     /**
      * make backwards compatability when isLegacy becomes true
      */
     public static void legacyCheck()
     {
+        isLoaded = Loader.isModLoaded("dungeontweaks");
+        
+        if(!isLoaded)
+        {
+            return;
+        }
+        
         try
         {
             Class c = Class.forName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post");
@@ -45,7 +54,7 @@ public class DungeonTweaksCompat
      */
     public static void registerDungeons()
     {
-        if (isLegacy)
+        if (!isLoaded || isLegacy)
         {
             return;// I supported this mod in older versions
         }
