@@ -82,9 +82,9 @@ public class DungeonTweaksCompat {
                     world);
 				MinecraftForge.EVENT_BUS.post(event);
 			}
-			catch (Throwable t)
+			catch (Exception e)
 			{
-				t.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 		else
@@ -94,9 +94,9 @@ public class DungeonTweaksCompat {
 				Method fireDungeonTweaks = Class.forName("com.evilnotch.dungeontweeks.main.world.worldgen.mobs.DungeonMobs").getMethod("fireDungeonTweaks",ResourceLocation.class,TileEntity.class,Random.class,World.class);
 				fireDungeonTweaks.invoke(null, towerId, spawner, random, world);
 			}
-			catch(Throwable t)
+			catch(Exception e)
 			{
-				t.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}
