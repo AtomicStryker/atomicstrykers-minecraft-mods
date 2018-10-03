@@ -148,7 +148,7 @@ public class WorldGenHandler implements IWorldGenerator
         if (choice >= 0)
         {
             pos.underground = world.rand.nextInt(100) + 1 < AS_BattleTowersCore.instance.chanceTowerIsUnderGround;
-            generator.generate(world, x, y, z, choice, pos.underground);
+            generator.generate(world, random, x, y, z, choice, pos.underground);
             return true;
         }
 
@@ -158,7 +158,7 @@ public class WorldGenHandler implements IWorldGenerator
     public static void generateTower(World world, int x, int y, int z, int type, boolean underground)
     {
         disableGenerationHook++;
-        instance.generator.generate(world, x, y, z, type, underground);
+        instance.generator.generate(world, world.rand, x, y, z, type, underground);
         obtainTowerPosListAccess();
         towerPositions.add(instance.new TowerPosition(x, y, z, type, underground));
         releaseTowerPosListAccess();
@@ -460,7 +460,7 @@ public class WorldGenHandler implements IWorldGenerator
 
         if (chosen != null)
         {
-            instance.generator.generate(world, chosen.x, chosen.y, chosen.z, AS_WorldGenTower.TowerTypes.Null.ordinal(), chosen.underground);
+            instance.generator.generate(world, world.rand, chosen.x, chosen.y, chosen.z, AS_WorldGenTower.TowerTypes.Null.ordinal(), chosen.underground);
             obtainTowerPosListAccess();
             towerPositions.remove(chosen);
             releaseTowerPosListAccess();
@@ -490,7 +490,7 @@ public class WorldGenHandler implements IWorldGenerator
         obtainTowerPosListAccess();
         for (TowerPosition tp : towerPositions)
         {
-            instance.generator.generate(world, tp.x, tp.y, tp.z, regenerate ? tp.type : AS_WorldGenTower.TowerTypes.Null.ordinal(), tp.underground);
+            instance.generator.generate(world, world.rand, tp.x, tp.y, tp.z, regenerate ? tp.type : AS_WorldGenTower.TowerTypes.Null.ordinal(), tp.underground);
         }
 
         if (!regenerate)
