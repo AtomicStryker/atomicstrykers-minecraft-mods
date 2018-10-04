@@ -13,10 +13,10 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=0
 
-rule1=0,100,grass,grass,dirt
-rule2=1,95,flowing_water,flowing_water,flowing_water,flowing_water,dirt
+rule1=0,100,2*grass,dirt
+rule2=1,95,4*flowing_water,dirt
 rule3=0,80,farmland
-rule4=1,70,wheat-1,wheat-2,wheat-3
+rule4=1,70,wheat[age=1],wheat[age=2],wheat[age=3]
 rule5=1,40,fence
 
 layer

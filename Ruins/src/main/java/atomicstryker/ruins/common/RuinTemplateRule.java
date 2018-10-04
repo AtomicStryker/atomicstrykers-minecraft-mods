@@ -2,18 +2,21 @@ package atomicstryker.ruins.common;
 
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.IGrowable;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -63,14 +66,16 @@ public class RuinTemplateRule
     // just leave the field null for NONE
     public enum SpecialFlags
     {
-        COMMANDBLOCK, ADDBONEMEAL
+        ADDBONEMEAL
     }
 
     private enum PreservePolicy { IGNORE, PRESERVE, CORRUPT }
 
-    private static final Pattern patternInitialCommandBlock = Pattern.compile("(?:[1-9]\\d{0,4}\\*)?[?!]?CommandBlock:");
-    private static final Pattern patternCommandBlockPrefix = Pattern.compile("(.*,)(?:([1-9]\\d{0,4})\\*)?([?!])?");
-    private static final Pattern patternBlockPrefix = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?([?!])?(.*)");
+    private static final Pattern patternRule = Pattern.compile("(\\d++),(\\d++),");
+    private static final Pattern patternInitialCommandBlock = Pattern.compile("(?:\\d++\\*)?+[?!]?+CommandBlock:");
+    private static final Pattern patternCommandBlockSplitter = Pattern.compile(",(?=(?:\\d++\\*)?+[?!]?+CommandBlock:)");
+    private static final Pattern patternCommandBlock = Pattern.compile("(?:(\\d++)\\*)?+([?!])?+(CommandBlock:.*?)(?:\\[([^]]*+)])?");
+    private static final Pattern patternBlock = Pattern.compile("(?:(\\d++)\\*)?+([?!])?+(.*?)(?:\\[([^]]*+)])?(?:-add(bonemeal))?");
 
     public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception
     {
@@ -78,42 +83,23 @@ public class RuinTemplateRule
         owner = r;
         excessiveDebugging = debug;
 
-        RuinTextLumper lumper = new RuinTextLumper(owner, excessiveDebugging ? debugPrinter : null);
-        rule = lumper.lump(rule);
-
-        String[] blockRules = rule.split(",");
-        int numblocks = blockRules.length - 2;
-        if (numblocks < 1)
+        Matcher matcher = patternRule.matcher(rule);
+        if (!matcher.lookingAt())
         {
-            throw new Exception("No blockIDs specified for rule [" + rule + "] in template " + owner.getName());
+            throw new Exception("Rule [" + rule + "] in template [" + owner.getName() + "] uses incorrect rule syntax");
         }
-        condition = Integer.parseInt(blockRules[0]);
-        chance = Integer.parseInt(blockRules[1]);
-
-        String[] data;
+        condition = Integer.parseInt(matcher.group(1));
+        chance = Integer.parseInt(matcher.group(2));
+        String blocks = rule.substring(matcher.end());
 
         // Command Block special case, contains basically any character that breaks this
-        if (patternInitialCommandBlock.matcher(blockRules[2]).lookingAt())
+        if (patternInitialCommandBlock.matcher(blocks).lookingAt())
         {
-            String[] commandrules = rule.split("CommandBlock:");
-            int count = commandrules.length - 1; // -1 because there is a prefix
-                                                 // part we ignore
-
-            // extract initial command block prefix, if any, from first field
-            int blockWeight = 1;
-            PreservePolicy preservePolicy = PreservePolicy.IGNORE;
-            final Matcher matcher0 = patternCommandBlockPrefix.matcher(commandrules[0]);
-            if (matcher0.matches())
+            String[] commandrules = patternCommandBlockSplitter.split(blocks);
+            int count = commandrules.length;
+            if (count < 1)
             {
-                if (matcher0.group(2) != null)
-                {
-                    blockWeight = Integer.parseInt(matcher0.group(2));
-                }
-                if (matcher0.group(3) != null)
-                {
-                    preservePolicy = matcher0.group(3).equals("?") ? PreservePolicy.PRESERVE : PreservePolicy.CORRUPT;
-                }
-                commandrules[0] = matcher0.group(1);
+                throw new Exception("Rule [" + rule + "] in template [" + owner.getName() + "] contains no CommandBlock specifications");
             }
 
             blockIDs = new Block[count];
@@ -126,47 +112,26 @@ public class RuinTemplateRule
             blockWeightsTotal = 0;
             for (int i = 0; i < count; i++)
             {
-                // invalidate cached block state
-                blockBSs[i] = null;
-
-                // apply command block prefix from previous field
-                blockWeightsTotal += blockWeights[i] = blockWeight;
-                preservePolicies[i] = preservePolicy;
-                // extract next command block prefix, if any (last field excluded)
-                blockWeight = 1;
-                preservePolicy = PreservePolicy.IGNORE;
-                if (i < count - 1)
+                // apply command block specification fields
+                matcher = patternCommandBlock.matcher(commandrules[i]);
+                if (!matcher.matches())
                 {
-                    final Matcher matcher = patternCommandBlockPrefix.matcher(commandrules[i + 1]);
-                    if (matcher.matches())
-                    {
-                        if (matcher.group(2) != null)
-                        {
-                            blockWeight = Integer.parseInt(matcher.group(2));
-                        }
-                        if (matcher.group(3) != null)
-                        {
-                            preservePolicy = matcher.group(3).equals("?") ? PreservePolicy.PRESERVE : PreservePolicy.CORRUPT;
-                        }
-                        commandrules[i + 1] = matcher.group(1);
-                    }
+                    throw new Exception("CommandBlock [" + commandrules[i] + "] in template [" + owner.getName() + "] uses incorrect CommandBlock syntax");
+                }
+                try
+                {
+                    blockIDs[i] = parseBlockId(blockStrings[i] = matcher.group(3));
+                    blockMDs[i] = matcher.group(4);
+                    blockBSs[i] = null;
+                    specialFlags[i] = null;
+                    preservePolicies[i] = parseBlockPreservePolicy(matcher.group(2));
+                    blockWeightsTotal += blockWeights[i] = parseBlockWeight(matcher.group(1));
+                }
+                catch (Exception exception)
+                {
+                    throw new Exception("CommandBlock [" + commandrules[i] + "] in template [" + owner.getName() + "]: " + exception.getMessage());
                 }
 
-                blockIDs[i] = null;
-                blockMDs[i] = null;
-                // case meta value "-n" present (impulse command block)
-                if (commandrules[i + 1].charAt(commandrules[i + 1].length() - 2) == '-')
-                {
-                    blockMDs[i] = "" + commandrules[i + 1].charAt(commandrules[i + 1].length() - 1);
-                    // strip the last 2 chars from the string or else parsing
-                    // the command will fail
-                    commandrules[i + 1] = commandrules[i + 1].substring(0, commandrules[i + 1].length() - 3);
-                }
-                specialFlags[i] = SpecialFlags.COMMANDBLOCK;
-                // readd the splitout string for the parsing, offset by 1
-                // because of the prefix string
-                blockStrings[i] = commandrules[i + 1];
-                blockStrings[i] = lumper.unlump(blockStrings[i]);
                 if (excessiveDebugging)
                 {
                     debugPrinter.println("template " + owner.getName() + " contains Command Block command: " + blockStrings[i] + " with meta: " + blockMDs[i] + ", weight: " + blockWeights[i] + ", preserve: " + preservePolicies[i]);
@@ -176,6 +141,14 @@ public class RuinTemplateRule
         // not command blocks
         else
         {
+            RuinTextLumper lumper = new RuinTextLumper(owner, excessiveDebugging ? debugPrinter : null);
+            String[] blockRules = lumper.lump(blocks).split(",");
+            int numblocks = blockRules.length;
+            if (numblocks < 1)
+            {
+                throw new Exception("Rule [" + rule + "] in template [" + owner.getName() + "] contains no block specifications");
+            }
+
             blockIDs = new Block[numblocks];
             blockMDs = new String[numblocks];
             blockBSs = new IBlockState[numblocks];
@@ -186,128 +159,25 @@ public class RuinTemplateRule
             blockWeightsTotal = 0;
             for (int i = 0; i < numblocks; i++)
             {
-                // invalidate cached block state
-                blockBSs[i] = null;
-
-                // extract block prefix, if any
-                int blockWeight = 1;
-                PreservePolicy preservePolicy = PreservePolicy.IGNORE;
-                final Matcher matcher = patternBlockPrefix.matcher(blockRules[i + 2]);
-                if (matcher.matches())
+                // apply block specification fields
+                blockRules[i] = lumper.unlump(blockRules[i]);
+                matcher = patternBlock.matcher(blockRules[i]);
+                if (!matcher.matches())
                 {
-                    if (matcher.group(1) != null)
-                    {
-                        blockWeight = Integer.parseInt(matcher.group(1));
-                    }
-                    if (matcher.group(2) != null)
-                    {
-                        preservePolicy = matcher.group(2).equals("?") ? PreservePolicy.PRESERVE : PreservePolicy.CORRUPT;
-                    }
-                    blockRules[i + 2] = matcher.group(3);
+                    throw new Exception("Block [" + blockRules[i] + "] in template [" + owner.getName() + "] uses incorrect block syntax");
                 }
-                blockWeightsTotal += blockWeights[i] = blockWeight;
-                preservePolicies[i] = preservePolicy;
-
-                data = blockRules[i + 2].split("-");
-                if (data.length > 1) // has '-' in it, like "torch-5" or
-                                     // "planks-3"
+                try
                 {
-                    if (isNumber(data[0])) // 1-5
-                    {
-                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
-                        blockIDs[i] = Blocks.AIR;
-                        blockMDs[i] = null;
-                        blockStrings[i] = "";
-                    }
-                    else
-                    // planks-3 or ChestGenHook:strongholdLibrary:5-2 or
-                    // chisel:sandstone-scribbles-1
-                    {
-                        // compat cases: sand-scrib-1 or sand-scrib or
-                        // d-d-derp-addbonemeal or even d-d-derp-3-addbonemeal
-                        // need to rebuild data array
-                        while (data.length > 1 && !isNumber(data[1]) && !data[1].equals("addbonemeal"))
-                        {
-                            String[] newdata = new String[data.length - 1];
-                            newdata[0] = data[0] + "-" + data[1];
-                            for (int j = 1; j < data.length - 1; j++)
-                            {
-                                newdata[j] = data[j + 1];
-                            }
-                            // this loop should keep concatting data[0] until
-                            // data is [n, 3] or [n, addbonemeal] or [n, 3,
-                            // addbonemeal]
-                            // irregardless of how many '-' are contained in n
-                            data = newdata;
-                        }
-
-                        blockStrings[i] = blockRules[i + 2];
-                        blockStrings[i] = lumper.unlump(blockStrings[i]);
-
-                        blockIDs[i] = r.tryFindingBlockOfName(data[0]);
-                        if (blockIDs[i] == r.getAirBlock())
-                        {
-                            if (!isAir(data[0]))
-                            {
-                                blockIDs[i] = null;
-                                if (!isKnownSpecialRule(blockStrings[i]))
-                                {
-                                    throw new Exception(
-                                            "Rule [" + rule + "], blockString [" + blockStrings[i] + "] in template " + owner.getName() + " can absolutely not be mapped to anything known");
-                                }
-                            }
-                        }
-
-                        // special case -addbonemeal
-                        if (blockIDs[i] instanceof IGrowable && data[data.length - 1].equals("addbonemeal"))
-                        {
-                            specialFlags[i] = SpecialFlags.ADDBONEMEAL;
-                            try
-                            {
-                                blockMDs[i] = data[data.length - 2];
-                            }
-                            catch (NumberFormatException ne)
-                            {
-                                blockMDs[i] = null;
-                            }
-                        }
-                        // otherwise parse meta value
-                        else
-                        {
-                            try
-                            {
-                                blockMDs[i] = data[data.length - 1];
-                            }
-                            catch (NumberFormatException ne)
-                            {
-                                blockMDs[i] = null;
-                            }
-                        }
-                    }
+                    blockIDs[i] = parseBlockId(blockStrings[i] = matcher.group(3));
+                    blockMDs[i] = matcher.group(4);
+                    blockBSs[i] = null;
+                    specialFlags[i] = parseBlockBonemealFlag(matcher.group(5));
+                    preservePolicies[i] = parseBlockPreservePolicy(matcher.group(2));
+                    blockWeightsTotal += blockWeights[i] = parseBlockWeight(matcher.group(1));
                 }
-                else
-                // does not have metadata specified, aka "50"
+                catch (Exception exception)
                 {
-                    if (isNumber(blockRules[i + 2]))
-                    {
-                        debugPrinter.println("Rule [" + rule + "] in template " + owner.getName() + " still uses numeric blockIDs! ERROR!");
-                        blockIDs[i] = r.getAirBlock();
-                        blockStrings[i] = "";
-                    }
-                    else
-                    {
-                        blockIDs[i] = r.tryFindingBlockOfName(blockRules[i + 2]);
-                        if (blockIDs[i] == r.getAirBlock() && !isAir(blockRules[i + 2]))
-                        {
-                            // debugPrinter.println("Rule [" + rule + "] in
-                            // template " + owner.getName()+" has something
-                            // special? Checking again later");
-                            blockIDs[i] = null;
-                        }
-                        blockStrings[i] = blockRules[i + 2];
-                        blockStrings[i] = lumper.unlump(blockStrings[i]);
-                    }
-                    blockMDs[i] = null;
+                    throw new Exception("Block [" + blockRules[i] + "] in template [" + owner.getName() + "]: " + exception.getMessage());
                 }
 
                 if (excessiveDebugging)
@@ -323,22 +193,98 @@ public class RuinTemplateRule
         this(dpw, r, rule, false);
     }
 
-    @SuppressWarnings("unused")
-    private boolean isNumber(String s)
+    private static int parseBlockWeight(String weight_spec) throws Exception
     {
-        if (s == null || s.equals(""))
+        int weight = 1;
+        if (weight_spec != null)
         {
-            return false;
+            try
+            {
+                weight = Integer.parseInt(weight_spec);
+            }
+            catch (NumberFormatException exception)
+            {
+                weight = 0;
+            }
+            if (weight < 1)
+            {
+                throw new Exception("invalid weight specification [" + weight_spec + "]");
+            }
         }
+        return weight;
+    }
+
+    private static PreservePolicy parseBlockPreservePolicy(String policy_spec) throws Exception
+    {
+        PreservePolicy policy = PreservePolicy.IGNORE;
+        if (policy_spec != null)
+        {
+            switch (policy_spec)
+            {
+            case "?":
+                policy = PreservePolicy.PRESERVE;
+                break;
+            case "!":
+                policy = PreservePolicy.CORRUPT;
+                break;
+            default:
+                throw new Exception("invalid preserve policy specification [" + policy_spec + "]");
+            }
+        }
+        return policy;
+    }
+
+    private Block parseBlockId(String id_spec) throws Exception
+    {
+        if (id_spec == null)
+        {
+            throw new Exception("missing block id");
+        }
+        boolean numeric_id = true;
         try
         {
-            int n = Integer.parseInt(s);
-            return true;
+            Integer.parseInt(id_spec);
         }
-        catch (NumberFormatException e)
+        catch (NumberFormatException exception)
         {
-            return false;
+            numeric_id = false;
         }
+        if (numeric_id)
+        {
+            throw new Exception("obsolete numeric block id [" + id_spec + "]");
+        }
+
+        Block id = owner.tryFindingBlockOfName(id_spec);
+        if (id == owner.getAirBlock())
+        {
+            if (!id_spec.equals("air") && !id_spec.equals("minecraft:air"))
+            {
+                if (!isKnownSpecialRule(id_spec))
+                {
+                    throw new Exception("unrecognized block id [" + id_spec + "]");
+                }
+                id = null;
+            }
+        }
+
+        return id;
+    }
+
+    private static SpecialFlags parseBlockBonemealFlag(String bonemeal_spec) throws Exception
+    {
+        SpecialFlags bonemeal = null;
+        if (bonemeal_spec != null)
+        {
+            switch (bonemeal_spec)
+            {
+            case "bonemeal":
+                bonemeal = SpecialFlags.ADDBONEMEAL;
+                break;
+            default:
+                throw new Exception("invalid bonemeal flag specification [" + bonemeal_spec + "]");
+            }
+        }
+        return bonemeal;
     }
 
     public void doBlock(World world, Random random, int x, int y, int z, int rotate)
@@ -606,7 +552,7 @@ public class RuinTemplateRule
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
-            int targetCount = s.length > 1 ? Integer.valueOf(s[2].split("-")[0]) : 0;
+            int targetCount = s.length > 1 ? Integer.valueOf(s[2]) : 0;
             addChestGenChest(world, random, x, y, z, s[1], targetCount, blocknum, rotate);
         }
         else if (dataString.startsWith("IInventory;"))
@@ -617,16 +563,7 @@ public class RuinTemplateRule
             Object o = tryFindingObject(s[1]);
             if (o instanceof Block)
             {
-                Block b = (Block) o;
-                // need to strip meta '-x' value if present
-                if (s[2].lastIndexOf("-") > s[2].length() - 5)
-                {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2].substring(0, s[2].lastIndexOf("-")), lumper, blocknum, rotate);
-                }
-                else
-                {
-                    addIInventoryBlock(world, random, x, y, z, b, s[2], lumper, blocknum, rotate);
-                }
+                addIInventoryBlock(world, random, x, y, z, (Block) o, s[2], lumper, blocknum, rotate);
             }
             else
             {
@@ -637,20 +574,21 @@ public class RuinTemplateRule
         {
             spawnEnderCrystal(world, x, y, z);
         }
-        else if (specialFlags[blocknum] == SpecialFlags.COMMANDBLOCK)
+        else if (dataString.startsWith("CommandBlock:"))
         {
+            int firstIdx = dataString.indexOf(":");
             int lastIdx = dataString.lastIndexOf(":");
             String sender;
             String command;
-            if (lastIdx < 0)
+            if (lastIdx > firstIdx)
             {
-                command = dataString;
-                sender = "@";
+                command = dataString.substring(firstIdx + 1, lastIdx);
+                sender = dataString.substring(lastIdx + 1);
             }
             else
             {
-                command = dataString.substring(0, lastIdx);
-                sender = dataString.substring(lastIdx + 1, dataString.length());
+                command = dataString.substring(firstIdx + 1);
+                sender = "@";
             }
             addCommandBlock(world, x, y, z, command, sender, blocknum, rotate);
         }
@@ -662,7 +600,7 @@ public class RuinTemplateRule
                 String[] splits = dataString.split(":");
                 for (int i = 0; i < tes.signText.length && i + 1 < splits.length; i++)
                 {
-                    tes.signText[i] = (splits[i + 1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i + 1].split("-")[0]);
+                    tes.signText[i] = (splits[i + 1].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i + 1]);
                 }
             }
         }
@@ -674,28 +612,28 @@ public class RuinTemplateRule
                 String[] splits = dataString.split(":");
                 for (int i = 0; i < tes.signText.length && i + 1 < splits.length; i++)
                 {
-                    tes.signText[i] = (splits[i + 1].split("-")[0].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i + 1].split("-")[0]);
+                    tes.signText[i] = (splits[i + 1].equals("null")) ? new TextComponentTranslation("") : new TextComponentTranslation(splits[i + 1]);
                 }
             }
         }
         else if (dataString.startsWith("Skull:"))
         {
-            // standard case Skull:2:8-3
+            // standard case Skull:2:8
             TileEntitySkull tes = (TileEntitySkull) realizeBlock(world, x, y, z, Blocks.SKULL, blocknum, rotate);
             if (tes != null)
             {
                 String[] splits = dataString.split(":");
                 ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[1]), 0);
-                ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[2].split("-")[0]), 1);
+                ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, Integer.valueOf(splits[2]), 1);
 
                 // is a player head saved?
                 // looks like
-                // Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
+                // Skull:3:8:1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker
                 if (splits.length > 3)
                 {
                     // split segment like this:
-                    // 1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker-3
-                    String[] moresplits = splits[3].split("-");
+                    // 1b4d8438-e714-3553-a433-059f2d3b1fd2-AtomicStryker
+                    String[] moresplits = splits[3].split("-", 6);
                     UUID id = UUID.fromString(moresplits[0] + "-" + moresplits[1] + "-" + moresplits[2] + "-" + moresplits[3] + "-" + moresplits[4]);
                     GameProfile playerprofile = new GameProfile(id, moresplits[5]);
                     ReflectionHelper.setPrivateValue(TileEntitySkull.class, tes, playerprofile, 2);
@@ -710,8 +648,8 @@ public class RuinTemplateRule
                 debugPrinter.println("teBlock about to be placed: " + dataString);
             }
             // examples: teBlock;minecraft:trapped_chest;{...nbt json...},
-            // teBlock;minecraft:trapped_chest;{...nbt json...}-4
-            String[] in = dataString.split(";");
+            // teBlock;minecraft:trapped_chest;{...nbt json...}
+            String[] in = dataString.split(";", 3);
             Block b = Block.REGISTRY.getObject(new ResourceLocation(in[1]));
             if (excessiveDebugging)
             {
@@ -722,7 +660,7 @@ public class RuinTemplateRule
                 BlockPos p = new BlockPos(x, y, z);
                 try
                 {
-                    NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
+                    NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2]);
                     if (excessiveDebugging)
                     {
                         debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
@@ -1399,11 +1337,6 @@ public class RuinTemplateRule
         }
     }
 
-    private boolean isAir(String block)
-    {
-        return block.equals("air") || block.equals("minecraft:air");
-    }
-
     // invalid sentinel block index indicating no data value was specified and default state should be used
     static final int UNSPECIFIED_BLOCKNUM = -1;
 
@@ -1428,6 +1361,8 @@ public class RuinTemplateRule
 
     // make specified block manifest in world, with given metadata and direction
     // returns associated tile entity, if there is one
+    // parsing block property specifications can be expensive! cache states to avoid repeated calculation
+    @SuppressWarnings("deprecation")
     private TileEntity realizeBlock(World world, int x, int y, int z, Block block, int blocknum, int direction)
     {
         TileEntity entity = null;
@@ -1446,7 +1381,92 @@ public class RuinTemplateRule
                 world.setBlockState(position, Blocks.BARRIER.getDefaultState(), 4);
             }
 
-            IBlockState state = getCachedBlockState(block, blocknum).withRotation(getDirectionalRotation(direction));
+            // use cached state; if no metadata, use default state
+            IBlockState state = blocknum != UNSPECIFIED_BLOCKNUM ? blockBSs[blocknum] : block.getDefaultState();
+
+            // if no cached state, interpret metadata string and save result for next time
+            if (state == null)
+            {
+                String metadata = blockMDs[blocknum];
+                if (metadata != null && !metadata.isEmpty())
+                {
+                    // try to parse metadata as legacy data value
+                    boolean legacy = true;
+                    int data_value = 0;
+                    try
+                    {
+                        data_value = Integer.parseInt(metadata);
+                    }
+                    catch (NumberFormatException exception)
+                    {
+                        legacy = false;
+                    }
+                    if (legacy)
+                    {
+                        // data value must be an integer from 0-15, inclusive
+                        if (data_value >= 0 && data_value < 16)
+                        {
+                            state = block.getStateFromMeta(data_value);
+                            System.err.printf("Warning: Ruins template [%s] contains deprecated block [%s] data value [%d]; use [%s] instead\n", owner.getName(), block, data_value, RuinsMod.getMeta(state));
+                        }
+                        else
+                        {
+                            System.err.printf("Warning: Ruins template [%s] contains out-of-range block data value [%d]\n", owner.getName(), data_value);
+                        }
+                    }
+                    else
+                    {
+                        // if not legacy data value, try list of state properties
+                        // first, build a <name, value> map of specifications
+                        Map<String, String> metamap = new HashMap<>();
+                        for (String spec : metadata.split(","))
+                        {
+                            String[] fields = spec.split("=");
+                            if (fields.length != 2 || fields[0].isEmpty() || fields[1].isEmpty())
+                            {
+                                System.err.printf("Warning: Ruins template [%s] contains malformed block property specification [%s]\n", owner.getName(), spec);
+                            }
+                            else if (metamap.containsKey(fields[0]))
+                            {
+                                System.err.printf("Warning: Ruins template [%s] contains repeated block property specification [%s]\n", owner.getName(), spec);
+                            }
+                            else
+                            {
+                                metamap.put(fields[0], fields[1]);
+                            }
+                        }
+
+                        // second, step through block properties and apply any matching specifications
+                        state = block.getDefaultState();
+                        for (IProperty<? extends Comparable<?>> property: state.getPropertyKeys())
+                        {
+                            String name = property.getName();
+                            String raw_value = metamap.get(name);
+                            if (raw_value != null)
+                            {
+                                Optional<? extends Comparable<?>> value = property.parseValue(raw_value);
+                                if (!value.isPresent())
+                                {
+                                    System.err.printf("Warning: Ruins template [%s] contains invalid block property value [%s=%s]\n", owner.getName(), name, raw_value);
+                                }
+                                else
+                                {
+                                    state = applyPropertySpecification(state, property, value.get());
+                                }
+                                metamap.remove(name);
+                            }
+                        }
+
+                        // third, whine about any unapplied specifications
+                        metamap.forEach((name, value) -> System.err.printf("Warning: Ruins template [%s] contains invalid block property value [%s=%s]\n", owner.getName(), name, value));
+                    }
+                }
+
+                // store state for future use, or default if state still undetermined
+                blockBSs[blocknum] = state != null ? state : (state = block.getDefaultState());
+            }
+
+            state = state.withRotation(getDirectionalRotation(direction));
             if (world.setBlockState(position, state, 2))
             {
                 // workaround for vanilla weirdness (bug?)
@@ -1458,50 +1478,11 @@ public class RuinTemplateRule
         return entity;
     }
 
-    // parsing block property specifications can be expensive! cache states to avoid repeated calculation
-    @SuppressWarnings("deprecation")
-    private IBlockState getCachedBlockState(Block block, int blocknum)
+    // coerce types to match call to generic withProperty() method
+    @SuppressWarnings("unchecked")
+    private static <T extends Comparable<T>> IBlockState applyPropertySpecification(IBlockState state, IProperty<T> property, Comparable<?> value)
     {
-        // use cached state; if no metadata, use default state
-        IBlockState state = blocknum != UNSPECIFIED_BLOCKNUM ? blockBSs[blocknum] : block.getDefaultState();
-
-        // if no cached state, interpret metadata string and save result for next time
-        if (state == null)
-        {
-            // convert data value to state
-            String metadata = blockMDs[blocknum];
-            if (metadata != null && !metadata.isEmpty())
-            {
-                try
-                {
-                    // data value must be an integer from 0-15, inclusive
-                    int value = Integer.parseInt(metadata);
-                    if (value >= 0 && value < 16)
-                    {
-                        state = block.getStateFromMeta(value);
-                    }
-                    else
-                    {
-                        System.err.printf("Warning: Ruins template [%s] contains out-of-range block data value [%d]\n", owner.getName(), value);
-                    }
-                }
-                catch (NumberFormatException exception)
-                {
-                    System.err.printf("Warning: Ruins template [%s] contains non-integer block data value [%s]\n", owner.getName(), metadata);
-                }
-            }
-
-            // if state still undetermined, use default
-            if (state == null)
-            {
-                state = block.getDefaultState();
-            }
-
-            // store state for future use
-            blockBSs[blocknum] = state;
-        }
-
-        return state;
+        return state.withProperty(property, (T) value);
     }
 
     // apply given direction to specified tile entity

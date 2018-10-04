@@ -13,8 +13,8 @@ leveling_buffer=0
 preserve_water=0
 preserve_lava=0
 
-rule1=0,100,minecraft:grass-0
-rule2=1,100,StandingSign:I am adjacent!:Weee:null:null-12
+rule1=0,100,minecraft:grass
+rule2=1,100,StandingSign:I am adjacent!:Weee:null:null[rotation=12]
 
 layer
 1,1,1

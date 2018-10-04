@@ -15,12 +15,12 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=1
 
-rule1=0,100,minecraft:stone_stairs-2
-rule2=0,100,minecraft:stone_stairs-0
-rule3=0,100,IInventory;minecraft:furnace;minecraft:coal#5#0#1-2
-rule4=0,100,minecraft:stone_stairs-3
-rule5=0,100,minecraft:stone_stairs-1
-rule6=0,100,minecraft:cobblestone-0
+rule1=0,100,minecraft:stone_stairs[facing=south]
+rule2=0,100,minecraft:stone_stairs[facing=east]
+rule3=0,100,IInventory;minecraft:furnace;minecraft:coal#5#0#1
+rule4=0,100,minecraft:stone_stairs
+rule5=0,100,minecraft:stone_stairs[facing=west]
+rule6=0,100,minecraft:cobblestone
 
 layer
 2,2,1

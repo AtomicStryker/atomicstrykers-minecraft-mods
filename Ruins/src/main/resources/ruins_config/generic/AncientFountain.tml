@@ -13,14 +13,14 @@ preserve_plants=1
 
 
 rule1=0,100,gravel
-rule2=0,100,water,cobblestone,mossy_cobblestone,cobblestone,mossy_cobblestone,preserveBlock,preserveBlock
-rule3=0,100,water,water,water,cobblestone,cobblestone,mossy_cobblestone,mossy_cobblestone
-rule4=0,100,water,water,water,water,water,water,water,water,water,water,water,water,water,gravel,grass
+rule2=0,100,water,2*cobblestone,2*mossy_cobblestone,2*preserveBlock
+rule3=0,100,3*water,2*cobblestone,2*mossy_cobblestone
+rule4=0,100,13*water,gravel,grass
 rule5=0,100,cobblestone,mossy_cobblestone
-rule6=0,30,stone_slab-3
+rule6=0,30,stone_slab[variant=cobblestone]
 rule7=0,30,waterlily
 rule8=0,75,cobblestone,mossy_cobblestone
-rule9=1,50,cobblestone,mossy_cobblestone,cobblestone,mossy_cobblestone,flowing_water
+rule9=1,50,2*cobblestone,2*mossy_cobblestone,flowing_water
 
 
 layer

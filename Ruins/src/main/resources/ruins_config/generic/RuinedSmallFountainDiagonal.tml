@@ -15,17 +15,17 @@ preserve_lava=0
 preserve_plants=0
 
 rule1=0,100,preserveBlock
-rule2=0,100,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick,preserveBlock,preserveBlock,preserveBlock
+rule2=0,100,2*stonebrick[variant=mossy_stonebrick],2*stonebrick[variant=cracked_stonebrick],stonebrick,3*preserveBlock
 rule3=0,100,gravel
-rule4=0,100,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
-rule5=0,100,stone_brick_stairs-2,stone_brick_stairs-2,stone_brick_stairs-2,stone_brick_stairs-2,stonebrick-1,stonebrick-2
-rule6=0,50,stone_slab-5
-rule7=0,100,water,water,water,water,water,water,water,water,water,water,water,water,water,gravel
-rule8=0,100,stone_brick_stairs-1,stone_brick_stairs-1,stone_brick_stairs-1,stone_brick_stairs-1,stonebrick-1,stonebrick-2
-rule9=0,100,stone_brick_stairs,stone_brick_stairs,stone_brick_stairs,stone_brick_stairs,stonebrick-1,stonebrick-2
-rule10=0,100,stone_brick_stairs-3,stone_brick_stairs-3,stone_brick_stairs-3,stone_brick_stairs-3,stonebrick-1,stonebrick-2
+rule4=0,100,2*stonebrick[variant=mossy_stonebrick],2*stonebrick[variant=cracked_stonebrick],stonebrick
+rule5=0,100,4*stone_brick_stairs[facing=south],stonebrick[variant=mossy_stonebrick],stonebrick[variant=cracked_stonebrick]
+rule6=0,50,stone_slab[variant=stone_brick]
+rule7=0,100,13*water,gravel
+rule8=0,100,4*stone_brick_stairs[facing=west],stonebrick[variant=mossy_stonebrick],stonebrick[variant=cracked_stonebrick]
+rule9=0,100,4*stone_brick_stairs,stonebrick[variant=mossy_stonebrick],stonebrick[variant=cracked_stonebrick]
+rule10=0,100,4*stone_brick_stairs,stonebrick[variant=mossy_stonebrick],stonebrick[variant=cracked_stonebrick]
 rule11=0,15,waterlily
-rule12=0,75,stonebrick-1,stonebrick-1,stonebrick-2,stonebrick-2,stonebrick
+rule12=0,75,2*stonebrick[variant=mossy_stonebrick],2*stonebrick[variant=cracked_stonebrick],stonebrick
 rule13=1,40,flowing_water
 
 

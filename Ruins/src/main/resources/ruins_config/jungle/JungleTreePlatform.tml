@@ -16,16 +16,16 @@ preserve_lava=0
 preserve_plants=1
 
 
-rule1=0,100,vine-1
-rule2=0,100,log-3
-rule3=0,100,vine-2
-rule4=0,100,vine-4
-rule5=0,100,vine-8
+rule1=0,100,vine[south=true]
+rule2=0,100,log[variant=jungle]
+rule3=0,100,vine[west=true]
+rule4=0,100,vine[north=true]
+rule5=0,100,vine[east=true]
 rule6=0,100,planks
 rule7=0,100,fence
-rule8=0,100,leaves-3
-rule9=0,100,leaves-11
-rule10=0,100,oak_stairs-1
+rule8=0,100,leaves[check_decay=false,variant=jungle]
+rule9=0,100,leaves[variant=jungle]
+rule10=0,100,oak_stairs[facing=west]
 
 
 layer

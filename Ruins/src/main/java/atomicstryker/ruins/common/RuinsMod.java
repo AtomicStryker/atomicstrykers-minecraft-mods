@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -90,8 +92,8 @@ public class RuinsMod
             if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
             {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
-                event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
-                        event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+                event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%s]", event.getState().getBlock().getUnlocalizedName(),
+                        event.getState().getBlock().getRegistryName().getResourcePath(), getMeta(event.getState()))));
             }
         }
     }
@@ -108,12 +110,30 @@ public class RuinsMod
                 if (is != null && is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime)
                 {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
-                            event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+                    event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%s]", event.getState().getBlock().getUnlocalizedName(),
+                            event.getState().getBlock().getRegistryName().getResourcePath(), getMeta(event.getState()))));
                     event.setCanceled(true);
                 }
             }
         }
+    }
+
+    static String getMeta(IBlockState state)
+    {
+        IBlockState default_state = state.getBlock().getDefaultState();
+        StringBuilder builder = new StringBuilder();
+        default_state.getPropertyKeys().stream()
+                .filter(property -> !state.getValue(property).equals(default_state.getValue(property)))
+                .forEachOrdered(property -> builder
+                        .append(builder.length() > 0 ? "," : "[")
+                        .append(getPropertySpecification(property, state.getValue(property))));
+        return builder.append(builder.length() > 0 ? "]" : "").toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Comparable<T>> String getPropertySpecification(IProperty<T> property, Comparable<?> value)
+    {
+        return new StringBuilder().append(property.getName()).append("=").append(property.getName((T) value)).toString();
     }
 
     @SubscribeEvent

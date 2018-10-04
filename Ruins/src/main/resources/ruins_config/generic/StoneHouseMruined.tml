@@ -19,10 +19,10 @@ rule1=0,100,double_stone_slab
 rule2=0,100,planks
 rule3=0,100,cobblestone
 rule4=0,100,grass
-rule5=0,100,stone_stairs
-rule6=0,100,stone_stairs-1
-rule7=0,100,stone_stairs-2
-rule8=0,100,stone_stairs-3
+rule5=0,100,stone_stairs[facing=east]
+rule6=0,100,stone_stairs[facing=west]
+rule7=0,100,stone_stairs[facing=south]
+rule8=0,100,stone_stairs
 
 
 layer

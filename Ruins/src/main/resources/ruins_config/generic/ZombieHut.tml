@@ -15,14 +15,14 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=1
 
-rule1=0,100,minecraft:cobblestone-0
-rule2=0,100,minecraft:mossy_cobblestone-0
+rule1=0,100,minecraft:cobblestone
+rule2=0,100,minecraft:mossy_cobblestone
 rule3=0,100,MobSpawner:Zombie
-rule4=0,100,ChestGenHook:chests/simple_dungeon:1-2
-rule5=0,100,minecraft:stone_stairs-2
-rule6=0,100,minecraft:stone_stairs-0
-rule7=0,100,minecraft:stone_stairs-3
-rule8=0,100,minecraft:stone_stairs-1
+rule4=0,100,ChestGenHook:chests/simple_dungeon:1
+rule5=0,100,minecraft:stone_stairs[facing=south]
+rule6=0,100,minecraft:stone_stairs[facing=east]
+rule7=0,100,minecraft:stone_stairs
+rule8=0,100,minecraft:stone_stairs[facing=west]
 
 layer
 1,2,2,1,1

@@ -15,21 +15,21 @@ preserve_lava=0
 preserve_plants=1
 
 
-rule1=0,0,wool-5
+rule1=0,0,wool[5]
 rule2=0,100,stone
 rule3=0,75,stone
 rule4=1,75,stone
-rule5=1,75,stone,stone,coal_ore
-rule6=0,100,stone,stone,stone,coal_ore
-rule7=1,75,stone,stone,stone,iron_ore
-rule8=0,100,stone,stone,stone,stone,iron_ore
-rule9=1,75,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,redstone_ore
-rule10=0,100,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,redstone_ore
-rule11=1,75,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,lapis_ore
-rule12=0,100,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,lapis_ore
-rule13=1,75,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,gold_ore
-rule14=0,100,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,gold_ore
-rule15=1,100,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,stone,diamond_ore
+rule5=1,75,2*stone,coal_ore
+rule6=0,100,3*stone,coal_ore
+rule7=1,75,3*stone,iron_ore
+rule8=0,100,4*stone,iron_ore
+rule9=1,75,11*stone,redstone_ore
+rule10=0,100,12*stone,redstone_ore
+rule11=1,75,19*stone,lapis_ore
+rule12=0,100,20*stone,lapis_ore
+rule13=1,75,13*stone,gold_ore
+rule14=0,100,14*stone,gold_ore
+rule15=1,100,15*stone,diamond_ore
 rule16=0,100,preserveBlock
 
 

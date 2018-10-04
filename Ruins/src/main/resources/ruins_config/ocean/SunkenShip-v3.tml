@@ -17,12 +17,12 @@ preserve_plants=1
 
 
 rule1=0,100,preserveBlock
-rule2=0,90,planks,planks,planks,planks-1
-rule3=0,50,ChestGenHook:chests/simple_dungeon:3-5
-rule4=0,50,ChestGenHook:chests/simple_dungeon:3-4
-rule5=2,98,log-1
+rule2=0,90,3*planks,planks[variant=spruce]
+rule3=0,50,ChestGenHook:chests/simple_dungeon:3[facing=east]
+rule4=0,50,ChestGenHook:chests/simple_dungeon:3[facing=west]
+rule5=2,98,log[variant=spruce]
 rule6=0,50,glass
-rule7=1,80,log-1
+rule7=1,80,log[variant=spruce]
 
 layer
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

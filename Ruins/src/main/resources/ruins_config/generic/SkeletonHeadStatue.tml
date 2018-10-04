@@ -15,11 +15,11 @@ preserve_water=0
 preserve_lava=0
 preserve_plants=1
 
-rule1=0,100,minecraft:cobblestone-0
-rule2=0,100,Skull:0:0-4
-rule3=0,100,minecraft:iron_bars-0
-rule4=0,100,Skull:0:0-4
-rule5=0,100,Skull:0:0-4
+rule1=0,100,minecraft:cobblestone
+rule2=0,100,Skull:0:0[facing=west]
+rule3=0,100,minecraft:iron_bars
+rule4=0,100,Skull:0:0[facing=west]
+rule5=0,100,Skull:0:0[facing=west]
 
 layer
 0,0,0

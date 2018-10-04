@@ -15,7 +15,7 @@ preserve_lava=0
 preserve_plants=1
 
 
-rule1=0,0,wool-3
+rule1=0,0,wool[3]
 rule2=0,100,stone
 rule3=0,75,stone
 rule4=1,75,stone

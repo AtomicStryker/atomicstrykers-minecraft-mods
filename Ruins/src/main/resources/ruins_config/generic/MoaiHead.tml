@@ -17,9 +17,9 @@ preserve_plants=1
 
 rule1=0,100,cobblestone,mossy_cobblestone
 rule2=0,100,cobblestone
-rule3=0,100,stone_stairs-0
+rule3=0,100,stone_stairs[facing=east]
 rule4=0,100,preserveBlock
-rule5=0,100,air,wool-9
+rule5=0,100,air,wool[color=cyan]
 
 
 layer

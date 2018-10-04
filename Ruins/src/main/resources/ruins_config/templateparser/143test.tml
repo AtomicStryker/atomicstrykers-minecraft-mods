@@ -18,8 +18,8 @@ adjoining_template=templateparser/adjtest;-4;3;-4
 adjoining_template=templateparser/adjtest;-4;3;4;50
 adjoining_template=templateparser/adjtest;4;3;-4;50
 
-rule1=0,100,minecraft:grass-0
-rule2=0,100,minecraft:sapling-1-addbonemeal
+rule1=0,100,minecraft:grass
+rule2=0,100,minecraft:sapling[type=spruce]-addbonemeal
 
 layer
 1,1,1
