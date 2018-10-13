@@ -719,19 +719,22 @@ public class RuinTemplateRule
             }
             if (b != Blocks.AIR)
             {
-                BlockPos p = new BlockPos(x, y, z);
                 try
                 {
                     NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
+                    tc.setInteger("x", x);
+                    tc.setInteger("y", y);
+                    tc.setInteger("z", z);
                     if (excessiveDebugging)
                     {
                         debugPrinter.println("teBlock read, decoded nbt tag: " + tc.toString());
                     }
-                    realizeBlock(world, x, y, z, b, blocknum, rotate);
-                    world.removeTileEntity(p);
-                    TileEntity tenew = TileEntity.create(world, tc);
-                    rotateTileEntity(tenew, rotate);
-                    world.setTileEntity(p, tenew);
+                    TileEntity tenew = realizeBlock(world, x, y, z, b, blocknum, rotate);
+                    if (tenew != null)
+                    {
+                        tenew.readFromNBT(tc);
+                        rotateTileEntity(tenew, rotate);
+                    }
                 }
                 catch (NBTException e)
                 {
@@ -1449,10 +1452,12 @@ public class RuinTemplateRule
             IBlockState state = getCachedBlockState(block, blocknum).withRotation(getDirectionalRotation(direction));
             if (world.setBlockState(position, state, 2))
             {
-                // workaround for vanilla weirdness (bug?)
-                // double set required for some states (e.g., rails)
-                world.setBlockState(position, state, 2);
-                entity = world.getTileEntity(position);
+                if ((entity = world.getTileEntity(position)) == null)
+                {
+                    // workaround for vanilla weirdness (bug?)
+                    // double set required for some states (e.g., rails)
+                    world.setBlockState(position, state, 2);
+                }
             }
         }
         return entity;
