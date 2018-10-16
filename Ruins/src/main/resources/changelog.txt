@@ -515,7 +515,7 @@ a: setAccessible now true
 + remove embed distance from surface search, bugfix (QuarterAnimal)
 + fix pirateship template levelling, bugfix (QuarterAnimal)
 
-17.2 (pending)
+17.2
 + resolve off-by-one Y-coordinate selection/adjustment issues--prevents floating ruins, bugfix
 + correct alternate (bottom-up) nether Y-coordinate search, bugfix
 + recover original leveling fill block after Y-coordinate adjustment, bugfix
@@ -533,3 +533,4 @@ a: setAccessible now true
 + enhance requiredMods/biomeTypesToSpawnIn with fancier boolean operations
 + revert 15.2--no additional layer of escape needed for JSON, bugfix
 + /parseruin rules no longer include tile entity absolute positions, bugfix
++ configure teBlock TileEntity correctly--allows execute-on-spawn command blocks, bugfix
