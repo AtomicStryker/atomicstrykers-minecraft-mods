@@ -1,3 +1,6 @@
+1.6.4
+- make sure chest attacked packet does not cause off-thread controlflow (thanks Aaron1011)
+
 1.6.3
 - add a fix for dropping torches in generated towers (SandUhr32)
 
