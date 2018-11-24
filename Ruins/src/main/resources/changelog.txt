@@ -534,3 +534,6 @@ a: setAccessible now true
 + revert 15.2--no additional layer of escape needed for JSON, bugfix
 + /parseruin rules no longer include tile entity absolute positions, bugfix
 + configure teBlock TileEntity correctly--allows execute-on-spawn command blocks, bugfix
+
+17.3
++ interpret IInventory block as block instead of item, bugfix
