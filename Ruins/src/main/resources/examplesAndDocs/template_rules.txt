@@ -326,7 +326,7 @@ preserve_lava=0
 #
 # Ruins 15.0 adds support for tile entity NBT data. This is best achieved by adding the blockname to the global "teblock" variable in ruins.txt
 # Usage: teBlock;<blockName>;<nbttag json>-<blockrotation>
-# Example: rule1=0,100,teBlock;minecraft:trapped_chest;{x:-156,y:65,z:72,Items:[0:{Slot:12b,id:5s,Count:1b,Damage:0s},1:{Slot:13b,id:24s,Count:1b,Damage:1s}],id:"Chest"}-2
+# Example: rule1=0,100,teBlock;minecraft:trapped_chest;{Items:[0:{Slot:12b,id:5s,Count:1b,Damage:0s},1:{Slot:13b,id:24s,Count:1b,Damage:1s}],id:"Chest"}-2
 # Note: "Chain" and "Repeat" Command Blocks are classified as such by default
 #
 # Ruins 16.8 modifies the rule syntax a bit to add some new features (variants and variant groups, in particular). None

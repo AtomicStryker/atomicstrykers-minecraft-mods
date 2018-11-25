@@ -536,7 +536,7 @@ public class RuinTemplateRule
         }
         else if (dataString.startsWith("IInventory;"))
         {
-            return tryFindingObject(dataString.split(";")[1]) instanceof Block;
+            return Block.REGISTRY.containsKey(new ResourceLocation(dataString.split(";")[1]));
         }
         else if (dataString.equals("EnderCrystal"))
         {
@@ -614,10 +614,9 @@ public class RuinTemplateRule
             RuinTextLumper lumper = new RuinTextLumper(owner, excessiveDebugging ? debugPrinter : null);
             String dataWithoutNBT = lumper.lump(dataString);
             String[] s = dataWithoutNBT.split(";");
-            Object o = tryFindingObject(s[1]);
-            if (o instanceof Block)
+            Block b = Block.REGISTRY.getObject(new ResourceLocation(s[1]));
+            if (b != Blocks.AIR)
             {
-                Block b = (Block) o;
                 // need to strip meta '-x' value if present
                 if (s[2].lastIndexOf("-") > s[2].length() - 5)
                 {
