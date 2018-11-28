@@ -710,7 +710,9 @@ public class RuinTemplateRule
             }
             // examples: teBlock;minecraft:trapped_chest;{...nbt json...},
             // teBlock;minecraft:trapped_chest;{...nbt json...}-4
-            String[] in = dataString.split(";");
+            RuinTextLumper lumper = new RuinTextLumper(owner, excessiveDebugging ? debugPrinter : null);
+            String dataWithoutNBT = lumper.lump(dataString);
+            String[] in = dataWithoutNBT.split(";");
             Block b = Block.REGISTRY.getObject(new ResourceLocation(in[1]));
             if (excessiveDebugging)
             {
@@ -720,7 +722,8 @@ public class RuinTemplateRule
             {
                 try
                 {
-                    NBTTagCompound tc = JsonToNBT.getTagFromJson(in[2].substring(0, in[2].lastIndexOf('}') + 1));
+                    final String json = lumper.unlump(in[2]);
+                    NBTTagCompound tc = JsonToNBT.getTagFromJson(json.substring(0, json.lastIndexOf('}') + 1));
                     tc.setInteger("x", x);
                     tc.setInteger("y", y);
                     tc.setInteger("z", z);
