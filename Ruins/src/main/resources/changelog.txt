@@ -538,3 +538,4 @@ a: setAccessible now true
 17.3
 + interpret IInventory block as block instead of item, bugfix
 + lump teBlock spec before splitting into fields, bugfix
++ resolve RuinsPositionsFile.txt concurrency issues, bugfix
