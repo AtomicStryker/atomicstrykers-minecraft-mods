@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 
 class CommandTestTemplate extends CommandBase
 {
@@ -26,7 +27,7 @@ class CommandTestTemplate extends CommandBase
     @Override
     public String getUsage(ICommandSender var1)
     {
-        return "/testruin TEMPLATENAME [X Y Z ROTATION] manually spawns the target Ruin of the templateparser folder, [] optional";
+        return "/testruin TEMPLATENAME [X Y Z [ROTATION [IGNORE_CEILING]]] manually spawns the target Ruin of the templateparser folder, [] optional";
     }
 
     @Override
@@ -50,7 +51,7 @@ class CommandTestTemplate extends CommandBase
             {
                 if (parsedRuin != null)
                 {
-                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, is_player);
+                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, is_player, false);
                     parsedRuin = null;
                 }
                 else
@@ -103,16 +104,19 @@ class CommandTestTemplate extends CommandBase
             {
                 parsedRuin = new RuinTemplate(new PrintWriter(System.out, true), file.getCanonicalPath(), file.getName(), is_player);
                 int rotation = (args.length > 4) ? Integer.parseInt(args[4]) : RuinsMod.DIR_NORTH;
+                final boolean ignore_ceiling = args.length > 5 && Boolean.parseBoolean(args[5]);
+                final World world = sender.getEntityWorld();
 
                 if (parsedRuin != null)
                 {
                     if (y < 0)
                     {
-                        for (y = RuinGenerator.WORLD_MAX_HEIGHT - 1; y > 7; y--)
+                        final int ceiling = ignore_ceiling ? world.getHeight() : world.getActualHeight();
+                        for (y = ceiling - 1; y > 7; y--)
                         {
                             BlockPos pos = new BlockPos(x, y, z);
-                            final Block b = sender.getEntityWorld().getBlockState(pos).getBlock();
-                            if (parsedRuin.isIgnoredBlock(b, sender.getEntityWorld(), pos))
+                            final Block b = world.getBlockState(pos).getBlock();
+                            if (parsedRuin.isIgnoredBlock(b, world, pos))
                             {
                                 continue;
                             }
@@ -127,7 +131,7 @@ class CommandTestTemplate extends CommandBase
                         ++y;
                     }
 
-                    if (parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, x, y, z, rotation, is_player) >= 0)
+                    if (parsedRuin.doBuild(world, world.rand, x, y, z, rotation, is_player, ignore_ceiling) >= 0)
                     {
                         parsedRuin = null;
                     }

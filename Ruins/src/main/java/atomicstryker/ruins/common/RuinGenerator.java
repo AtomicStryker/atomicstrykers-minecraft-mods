@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -29,14 +30,14 @@ class RuinGenerator
     private final File ruinsDataFile;
     private final File ruinsDataFileWriting;
 
-    private static boolean flushing;
+    private AtomicBoolean flushing;
 
     public RuinGenerator(FileHandler rh, World world)
     {
         fileHandler = rh;
         stats = new RuinStats();
         registeredRuins = new ConcurrentSkipListSet<>();
-        flushing = false;
+        flushing = new AtomicBoolean(false);
 
         ruinsDataFile = new File(rh.saveFolder, fileName);
         ruinsDataFileWriting = new File(rh.saveFolder, fileName + "_writing");
@@ -49,19 +50,26 @@ class RuinGenerator
         @Override
         public void run()
         {
-            loadPosFile(ruinsDataFile);
+            // prevent conflict with flush operation
+            synchronized (ruinsDataFile)
+            {
+                loadPosFile(ruinsDataFile);
+            }
         }
     }
 
     void flushPosFile(String worldName)
     {
-        if (flushing || registeredRuins.isEmpty() || worldName.equals("MpServer"))
+        if (registeredRuins.isEmpty() || worldName.equals("MpServer"))
         {
             return;
         }
 
-        flushing = true;
-        new FlushThread().start();
+        // begin new flush operation unless another already in progress
+        if (flushing.compareAndSet(false, true))
+        {
+            new FlushThread().start();
+        }
     }
 
     private class FlushThread extends Thread
@@ -69,11 +77,23 @@ class RuinGenerator
         @Override
         public void run()
         {
+            try
+            {
+                doFlush();
+            }
+            finally
+            {
+                // clear flush-in-progress flag regardless of outcome
+                flushing.set(false);
+            }
+        }
+
+        private void doFlush()
+        {
             if (ruinsDataFileWriting.exists())
             {
                 if (!ruinsDataFileWriting.delete())
                 {
-                    flushing = false;
                     throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
                 }
             }
@@ -106,24 +126,24 @@ class RuinGenerator
                 pw.close();
                 // System.out.println("Ruins Positions flushed, entries "+registeredRuins.size());
 
-                if (ruinsDataFile.exists())
+                // prevent conflict with load operation
+                synchronized (ruinsDataFile)
                 {
-                    if (!ruinsDataFile.delete())
+                    if (ruinsDataFile.exists())
                     {
-                        flushing = false;
+                        if (!ruinsDataFile.delete())
+                        {
+                            throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
+                        }
+                    }
+                    if (!ruinsDataFileWriting.renameTo(ruinsDataFile))
+                    {
                         throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
                     }
                 }
-                if (!ruinsDataFileWriting.renameTo(ruinsDataFile))
-                {
-                    flushing = false;
-                    throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
-                }
-                flushing = false;
             }
             catch (IOException e)
             {
-                flushing = false;
                 e.printStackTrace();
             }
         }
@@ -234,7 +254,7 @@ class RuinGenerator
                     return;
                 }
 
-                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false);
+                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false, false);
                 if (finalY >= 0)
                 {
                     if (!fileHandler.disableLogging)

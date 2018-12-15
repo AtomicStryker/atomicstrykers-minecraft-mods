@@ -321,11 +321,11 @@ public class RuinTemplate
     /**
      * @return the finalized y value of the embedded template or -1 if there was an exception
      */
-    public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player)
+    public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player, boolean ignore_ceiling)
     {
         try
         {
-            return doBuildNested(world, random, xBase, yBase, zBase, rotate, is_player);
+            return doBuildNested(world, random, xBase, yBase, zBase, rotate, is_player, ignore_ceiling);
         }
         catch (Exception e)
         {
@@ -336,7 +336,7 @@ public class RuinTemplate
         }
     }
 
-    private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player)
+    private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player, boolean ignore_ceiling)
     {
         /*
          * we need to shift the base coordinates and take care of any rotations
@@ -355,7 +355,8 @@ public class RuinTemplate
         int y_off = -embed + ((randomOffMax > randomOffMin) ? (random.nextInt(randomOffMax - randomOffMin) + randomOffMin) : 0);
 
         // height sanity check
-        final int yReturn = Math.max(Math.min(yBase + y_off, world.getActualHeight() - height), 8);
+        final int ceiling = ignore_ceiling ? world.getHeight() : world.getActualHeight();
+        final int yReturn = Math.max(Math.min(yBase + y_off, ceiling - height), 8);
         final int y = yReturn - y_off;
 
         // override rotation wishes if its locked by template
@@ -509,7 +510,7 @@ public class RuinTemplate
                 if (targetY >= 0 && Math.abs(yReturn - targetY) <= ad.acceptableY)
                 {
                     debugPrinter.printf("Creating adjoining %s of Ruin %s at [%d|%d|%d], rot:%d\n", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
-                    ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot, false);
+                    ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot, false, ignore_ceiling);
                 }
                 else
                 {
