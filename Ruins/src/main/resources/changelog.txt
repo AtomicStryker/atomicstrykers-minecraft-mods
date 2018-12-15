@@ -539,3 +539,4 @@ a: setAccessible now true
 + interpret IInventory block as block instead of item, bugfix
 + lump teBlock spec before splitting into fields, bugfix
 + optionally allow /testruin to ignore world ceiling
++ resolve RuinsPositionsFile.txt concurrency issues, bugfix
