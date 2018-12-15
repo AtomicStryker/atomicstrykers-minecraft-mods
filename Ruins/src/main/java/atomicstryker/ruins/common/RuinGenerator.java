@@ -254,7 +254,7 @@ class RuinGenerator
                     return;
                 }
 
-                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false);
+                int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false, false);
                 if (finalY >= 0)
                 {
                     if (!fileHandler.disableLogging)

@@ -38,10 +38,11 @@ see https://www.youtube.com/watch?v=E9cNolY_LsQ for a in-depth explanation
 tldw: make a one-block plate the width and thickness of the template from one block which is not part of the template. build template on top. use command, give filename. break one block of plate.
 for advanced features such as basements consult template_rules.txt
 
-/testruin TEMPLATENAME [X Y Z [ROTATION]]
+/testruin TEMPLATENAME [X Y Z [ROTATION [IGNORE_CEILING]]]
 [] parts are optional each. TEMPLATENAME is either a filename in the "templateparser" biome folder or a folder and a template filename aka ocean/lighthouse
 testruin can be called exactly once without any arguments after successfully parsing a template in order to immediatly test that template
 rotation is 0 for 'none', 1 for EAST 'one to the right', 2 for SOUTH 'two to the right', 3 for WEST 'three to the right'
+specify IGNORE_CEILING 'true' to allow blocks to Y=255; otherwise, ruin is constrained by world height (e.g., max Y=127 in nether)  
 testruin supports minecraft relative coordinates, and can be called by command blocks
 testruin also supports using '_' instead of a relative or absolute y coordinate, which will let ruins find a suitable y using its spawner algorithm for given x,z
 
