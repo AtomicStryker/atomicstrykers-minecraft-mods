@@ -33,6 +33,7 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
@@ -51,7 +52,6 @@ public class RuinsMod
     public static final String BIOME_ANY = "generic";
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
-    private ConcurrentLinkedQueue<int[]> currentlyGenerating;
 
     @NetworkCheckHandler
     public boolean checkModLists(Map<String, String> modList, Side side)
@@ -62,12 +62,16 @@ public class RuinsMod
     @EventHandler
     public void load(FMLInitializationEvent evt)
     {
-        generatorMap = new ConcurrentHashMap<>();
-        currentlyGenerating = new ConcurrentLinkedQueue<>();
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         MinecraftForge.EVENT_BUS.register(this);
 
         ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
+    }
+
+    @EventHandler
+    public void serverAboutToStart(FMLServerAboutToStartEvent evt)
+    {
+        generatorMap = new ConcurrentHashMap<>();
     }
 
     @EventHandler
@@ -176,19 +180,19 @@ public class RuinsMod
                 return;
             }
 
-            int[] tuple = { chunkX, chunkZ };
-            if (currentlyGenerating.contains(tuple))
+            final WorldHandle wh = getWorldHandle(world);
+            if (wh != null)
             {
-                System.err.printf("Ruins Mod caught recursive generator call at chunk [%d|%d]", chunkX, chunkZ);
-            }
-            else
-            {
-                WorldHandle wh = getWorldHandle(world);
-                if (wh != null)
+                int[] tuple = { chunkX, chunkZ };
+                if (wh.currentlyGenerating.contains(tuple))
                 {
-                    if (wh.fileHandle.allowsDimension(world.provider.getDimension()) && !getWorldHandle(world).chunkLogger.catchChunkBug(chunkX, chunkZ))
+                    System.err.printf("Ruins Mod caught recursive generator call at chunk [%d|%d]", chunkX, chunkZ);
+                }
+                else
+                {
+                    if (wh.fileHandle.allowsDimension(world.provider.getDimension()) && !wh.chunkLogger.catchChunkBug(chunkX, chunkZ))
                     {
-                        currentlyGenerating.add(tuple);
+                        wh.currentlyGenerating.add(tuple);
                         if (world.provider instanceof WorldProviderHell)
                         {
                             generateNether(world, random, tuple[0] * 16, tuple[1] * 16);
@@ -198,7 +202,7 @@ public class RuinsMod
                         {
                             generateSurface(world, random, tuple[0] * 16, tuple[1] * 16);
                         }
-                        currentlyGenerating.remove(tuple);
+                        wh.currentlyGenerating.remove(tuple);
                     }
                 }
             }
@@ -235,6 +239,7 @@ public class RuinsMod
     {
         FileHandler fileHandle;
         RuinGenerator generator;
+        ConcurrentLinkedQueue<int[]> currentlyGenerating;
         ChunkLoggerData chunkLogger;
     }
 
@@ -312,6 +317,7 @@ public class RuinsMod
             File worlddir = getWorldSaveDir(world);
             worldHandle.fileHandle = new FileHandler(worlddir, world.provider.getDimension());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
+            worldHandle.currentlyGenerating = new ConcurrentLinkedQueue<>();
 
             worldHandle.chunkLogger = (ChunkLoggerData) world.getPerWorldStorage().getOrLoadData(ChunkLoggerData.class, "ruinschunklogger");
             if (worldHandle.chunkLogger == null)
