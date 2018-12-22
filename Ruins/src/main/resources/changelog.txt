@@ -541,3 +541,5 @@ a: setAccessible now true
 + improve readability of /parseruin parameter settings
 + optionally allow /testruin to ignore world ceiling
 + resolve RuinsPositionsFile.txt concurrency issues, bugfix
++ reset Ruins upon server launch--now uses proper world folder, bugfix
++ consider dimension in "recursive generator" check, bugfix
