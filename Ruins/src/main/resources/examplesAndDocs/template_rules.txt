@@ -336,8 +336,8 @@ preserve_lava=0
 # * Block Weighting: Instead of repeating block IDs in a rule to manipulate their probabilities of occurrence, weight
 # factors may now be used. This can make rules shorter and, in certain circumstances, more efficient. Apply a weight to
 # any block in a rule by preceding it with a prefix of the form "n*"; this is functionally equivalent to repeating the
-# same block n times. Valid values for n are integers between 1 and 99999, inclusive. For example, the following rules
-# are essentially identical, each producing blocks of dirt, mossy_cobblestone, and gravel with the same likelihood:
+# same block n times. For example, the following rules are essentially identical, each producing blocks of dirt,
+# mossy_cobblestone, and gravel with the same likelihood:
 #     rule1=0,100,dirt,dirt,mossy_cobblestone,dirt,gravel,dirt,mossy_cobblestone,mossy_cobblestone,dirt
 #     rule2=0,100,5*dirt,gravel,3*mossy_cobblestone
 # Weights are optional. If no weight is specified for a block in a rule, a weight of 1 is assumed.
@@ -357,7 +357,8 @@ preserve_lava=0
 #
 # * Rule Variant Weighting: Weights can be applied to rule variants to adjust the probability with which they are
 # selected. As with block weighting, a prefix of the form "n*" is placed at the beginning of the variant (i.e., just
-# after the = or ^) to assign it a weight. For example, you can use this rule for the windows in your structure:
+# after the = or ^) to assign it a weight. Unlike block weights, however, variant weights must be integers. For
+# example, you can use this rule for the windows in your structure:
 #     rule6=3*0,100,2*stained_glass-14
 #     ^0,100,stained_glass-4
 #     ^5*0,100,stained_glass-11

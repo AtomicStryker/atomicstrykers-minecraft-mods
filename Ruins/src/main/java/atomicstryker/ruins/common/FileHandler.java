@@ -22,10 +22,10 @@ import net.minecraft.world.biome.Biome;
 
 class FileHandler
 {
-    private final static int COUNT = 0, WEIGHT = 1, CHANCE = 2;
+    private final static int WEIGHT = 0, CHANCE = 1;
     private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<>();
     private final int dimension;
-    private final HashMap<String, int[]> vars = new HashMap<>();
+    private final HashMap<String, double[]> vars = new HashMap<>();
 
     int triesPerChunkNormal = 6, triesPerChunkNether = 6;
     float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
@@ -139,11 +139,10 @@ class FileHandler
                 }
             }
 
-            // after all templates are loaded, calculate biome template counts and weights
+            // after all templates are loaded, calculate biome template weights
             for (String bname: templates.keySet())
             {
-                int[] val = new int[3];
-                val[COUNT] = templates.get(bname).size();
+                double[] val = new double[2];
                 vars.put(bname, val);
                 recalcBiomeWeight(bname);
             }
@@ -176,18 +175,15 @@ class FileHandler
     {
         try
         {
-            int rand = random.nextInt(vars.get(biome)[WEIGHT]);
-            int oldval = 0, increment = 0;
+            double rand = random.nextDouble()*vars.get(biome)[WEIGHT];
             RuinTemplate retval = null;
             for (RuinTemplate ruinTemplate : templates.get(biome))
             {
                 retval = ruinTemplate;
-                increment += retval.getWeight();
-                if ((oldval <= rand) && (rand < increment))
+                if ((rand -= retval.getWeight()) < 0)
                 {
-                    return retval;
+                    break;
                 }
-                oldval += retval.getWeight();
             }
             return retval;
         }
@@ -199,8 +195,8 @@ class FileHandler
 
     boolean useGeneric(Random random, String biome)
     {
-        int[] val = vars.get(biome);
-        return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextInt(100) + 1 >= val[CHANCE]);
+        double[] val = vars.get(biome);
+        return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextDouble() >= val[CHANCE]);
     }
 
     private void loadSpecificTemplates(PrintWriter pw, File dir, String bname) throws Exception
@@ -229,7 +225,7 @@ class FileHandler
     private void recalcBiomeWeight(String biomeName)
     {
         final Iterator<RuinTemplate> i = templates.get(biomeName).iterator();
-        int[] val = vars.get(biomeName);
+        double[] val = vars.get(biomeName);
         val[WEIGHT] = 0;
         while (i.hasNext())
         {
@@ -238,7 +234,7 @@ class FileHandler
         vars.put(biomeName, val);
     }
 
-    private static final Pattern patternSpecificBiome = Pattern.compile("\\s*specific_(\\w+)\\s*=\\s*(\\w+)\\s*(?:#|$)");
+    private static final Pattern patternSpecificBiome = Pattern.compile("\\s*+specific_([^\\s=]++)\\s*+=\\s*+([^\\s#]++)");
 
     private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception
     {
@@ -336,10 +332,10 @@ class FileHandler
                     bgb = Biome.REGISTRY.getObject(rl);
                     if (bgb != null && bgb.getRegistryName().getResourcePath().equals(matcher.group(1)))
                     {
-                        int[] val = vars.get(bgb.getRegistryName().getResourcePath());
+                        double[] val = vars.get(bgb.getRegistryName().getResourcePath());
                         if (val != null)
                         {
-                            val[CHANCE] = Integer.parseInt(matcher.group(2));
+                            val[CHANCE] = Math.min(Math.max(Double.parseDouble(matcher.group(2))/100, 0), 1);
                             found = true;
                             vars.put(bgb.getRegistryName().getResourcePath(), val);
                             break;

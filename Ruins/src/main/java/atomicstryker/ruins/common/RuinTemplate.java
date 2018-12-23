@@ -33,7 +33,8 @@ public class RuinTemplate
 {
     private final String name;
     private Block[] acceptedSurfaces, deniedSurfaces;
-    private int height = 0, width = 0, length = 0, overhang = 0, weight = 1, embed = 0, randomOffMin = 0, randomOffMax = 0;
+    private int height = 0, width = 0, length = 0, overhang = 0, embed = 0, randomOffMin = 0, randomOffMax = 0;
+    private double weight = 1;
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
     public int uniqueMinDistance = 0;
     public int spawnMinDistance = 0;
@@ -103,7 +104,7 @@ public class RuinTemplate
         return name;
     }
 
-    public int getWeight()
+    public double getWeight()
     {
         return weight;
     }
@@ -906,7 +907,7 @@ public class RuinTemplate
                 else if (line.startsWith("weight"))
                 {
                     String[] check = line.split("=");
-                    weight = Integer.parseInt(check[1]);
+                    weight = Math.max(Double.parseDouble(check[1]), 0);
                 }
                 else if (line.startsWith("embed_into_distance"))
                 {
