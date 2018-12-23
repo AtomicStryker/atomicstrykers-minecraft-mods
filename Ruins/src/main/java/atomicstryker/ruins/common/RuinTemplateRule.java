@@ -52,9 +52,9 @@ public class RuinTemplateRule
     protected final String[] blockStrings;
     protected final SpecialFlags[] specialFlags;
     protected final PreservePolicy[] preservePolicies;
-    protected final int[] blockWeights;
-    protected int blockWeightsTotal;
-    private int chance = 100;
+    protected final double[] blockWeights;
+    protected double blockWeightsTotal;
+    private double chance = 1;
     private int condition = 0;
     final RuinTemplate owner;
     private final PrintWriter debugPrinter;
@@ -68,9 +68,9 @@ public class RuinTemplateRule
 
     private enum PreservePolicy { IGNORE, PRESERVE, CORRUPT }
 
-    private static final Pattern patternInitialCommandBlock = Pattern.compile("(?:[1-9]\\d{0,4}\\*)?[?!]?CommandBlock:");
-    private static final Pattern patternCommandBlockPrefix = Pattern.compile("(.*,)(?:([1-9]\\d{0,4})\\*)?([?!])?");
-    private static final Pattern patternBlockPrefix = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?([?!])?(.*)");
+    private static final Pattern patternInitialCommandBlock = Pattern.compile("(?:[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[Ee][+-]?\\d+)?\\*)?[?!]?CommandBlock:");
+    private static final Pattern patternCommandBlockPrefix = Pattern.compile("(.*,)(?:([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[Ee][+-]?\\d+)?)\\*)?([?!])?");
+    private static final Pattern patternBlockPrefix = Pattern.compile("(?:([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[Ee][+-]?\\d+)?)\\*)?([?!])?(.*)");
 
     public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception
     {
@@ -88,7 +88,7 @@ public class RuinTemplateRule
             throw new Exception("No blockIDs specified for rule [" + rule + "] in template " + owner.getName());
         }
         condition = Integer.parseInt(blockRules[0]);
-        chance = Integer.parseInt(blockRules[1]);
+        chance = Math.min(Math.max(Double.parseDouble(blockRules[1])/100, 0), 1);
 
         String[] data;
 
@@ -100,14 +100,14 @@ public class RuinTemplateRule
                                                  // part we ignore
 
             // extract initial command block prefix, if any, from first field
-            int blockWeight = 1;
+            double blockWeight = 1;
             PreservePolicy preservePolicy = PreservePolicy.IGNORE;
             final Matcher matcher0 = patternCommandBlockPrefix.matcher(commandrules[0]);
             if (matcher0.matches())
             {
                 if (matcher0.group(2) != null)
                 {
-                    blockWeight = Integer.parseInt(matcher0.group(2));
+                    blockWeight = Math.max(Double.parseDouble(matcher0.group(2)), 0);
                 }
                 if (matcher0.group(3) != null)
                 {
@@ -122,7 +122,7 @@ public class RuinTemplateRule
             blockStrings = new String[count];
             specialFlags = new SpecialFlags[count];
             preservePolicies = new PreservePolicy[count];
-            blockWeights = new int[count];
+            blockWeights = new double[count];
             blockWeightsTotal = 0;
             for (int i = 0; i < count; i++)
             {
@@ -142,7 +142,7 @@ public class RuinTemplateRule
                     {
                         if (matcher.group(2) != null)
                         {
-                            blockWeight = Integer.parseInt(matcher.group(2));
+                            blockWeight = Math.max(Double.parseDouble(matcher.group(2)), 0);
                         }
                         if (matcher.group(3) != null)
                         {
@@ -182,7 +182,7 @@ public class RuinTemplateRule
             blockStrings = new String[numblocks];
             specialFlags = new SpecialFlags[numblocks];
             preservePolicies = new PreservePolicy[numblocks];
-            blockWeights = new int[numblocks];
+            blockWeights = new double[numblocks];
             blockWeightsTotal = 0;
             for (int i = 0; i < numblocks; i++)
             {
@@ -190,14 +190,14 @@ public class RuinTemplateRule
                 blockBSs[i] = null;
 
                 // extract block prefix, if any
-                int blockWeight = 1;
+                double blockWeight = 1;
                 PreservePolicy preservePolicy = PreservePolicy.IGNORE;
                 final Matcher matcher = patternBlockPrefix.matcher(blockRules[i + 2]);
                 if (matcher.matches())
                 {
                     if (matcher.group(1) != null)
                     {
-                        blockWeight = Integer.parseInt(matcher.group(1));
+                        blockWeight = Math.max(Double.parseDouble(matcher.group(1)), 0);
                     }
                     if (matcher.group(2) != null)
                     {
@@ -312,7 +312,7 @@ public class RuinTemplateRule
 
                 if (excessiveDebugging)
                 {
-                    debugPrinter.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s], blockWeights:[%d], preservePolicies:[%s]\n", i + 1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i], blockWeights[i], preservePolicies[i]);
+                    debugPrinter.printf("rule alternative: %d, blockIDs[%s], blockMDs[%s], blockStrings[%s], specialflags:[%s], blockWeights:[%f], preservePolicies:[%s]\n", i + 1, blockIDs[i], blockMDs[i], blockStrings[i], specialFlags[i], blockWeights[i], preservePolicies[i]);
                 }
             }
         }
@@ -344,7 +344,7 @@ public class RuinTemplateRule
     public void doBlock(World world, Random random, int x, int y, int z, int rotate)
     {
         // check to see if we can create this block
-        if (random.nextInt(100) < chance)
+        if (random.nextDouble() < chance)
         {
             // we're cleared, pass it off to the correct conditional.
             switch (condition)
@@ -754,7 +754,7 @@ public class RuinTemplateRule
     {
         // random selection using weights assigned in config file
         int blockIndex = 0;
-        for (int selector = random.nextInt(blockWeightsTotal); (selector -= blockWeights[blockIndex]) >= 0; ++blockIndex);
+        for (double selector = random.nextDouble()*blockWeightsTotal; (selector -= blockWeights[blockIndex]) >= 0; ++blockIndex);
         return blockIndex;
     }
 

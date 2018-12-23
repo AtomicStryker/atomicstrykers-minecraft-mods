@@ -543,3 +543,5 @@ a: setAccessible now true
 + resolve RuinsPositionsFile.txt concurrency issues, bugfix
 + reset Ruins upon server launch--now uses proper world folder, bugfix
 + consider dimension in "recursive generator" check, bugfix
++ allow floating point block and template weights, rule and specific_biome chance values
++ remove extra +1% generic spawn chance, bugfix
