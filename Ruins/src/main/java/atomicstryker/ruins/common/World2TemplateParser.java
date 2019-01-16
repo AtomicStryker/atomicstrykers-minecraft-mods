@@ -472,6 +472,10 @@ class World2TemplateParser extends Thread
             pw.println("# e.g., a weight=6 template is chosen 3X as often as one with weight=2");
             pw.println("weight=1");
             pw.println("#");
+            pw.println("# list of dimensions in which this template may spawn, even if generic");
+            pw.println("# one or more dimension names, separated by commas (blank = all)");
+            pw.println("dimensionsToSpawnIn=");
+            pw.println("#");
             pw.println("# list of other biomes in which this template may spawn");
             pw.println("# biome corresponding to directory is always assumed, listed or not");
             pw.println("# generic templates should leave this list empty");

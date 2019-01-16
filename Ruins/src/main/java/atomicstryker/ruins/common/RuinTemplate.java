@@ -48,6 +48,7 @@ public class RuinTemplate
     private boolean preventRotation = false;
     private final ArrayList<Integer> bonemealMarkers;
     private final ArrayList<AdjoiningTemplateData> adjoiningTemplates;
+    private final Set<String> acceptedDimensions = new HashSet<>();
 
     private class AdjoiningTemplateData
     {
@@ -855,6 +856,14 @@ public class RuinTemplate
                         deniedSurfaces = inacceptables.toArray(deniedSurfaces);
                     }
                 }
+                else if (line.startsWith("dimensionsToSpawnIn"))
+                {
+                    String[] check = line.split("=");
+                    if (check.length > 1)
+                    {
+                        Collections.addAll(acceptedDimensions, check[1].split(","));
+                    }
+                }
                 else if (line.startsWith("dimensions"))
                 {
                     String[] check = line.split("=");
@@ -1129,6 +1138,11 @@ public class RuinTemplate
     public Block getAirBlock()
     {
         return Blocks.AIR;
+    }
+
+    public boolean acceptsDimension(final String dimension)
+    {
+        return acceptedDimensions.isEmpty() || dimension != null && !dimension.isEmpty() && acceptedDimensions.contains(dimension);
     }
 
     // A VariantRuleset is a list of template rules, some of which may have a number of variant versions from which the

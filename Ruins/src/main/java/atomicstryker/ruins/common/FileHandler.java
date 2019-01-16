@@ -18,6 +18,7 @@ import com.google.common.io.Files;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 
 class FileHandler
@@ -234,7 +235,7 @@ class FileHandler
         vars.put(biomeName, val);
     }
 
-    private static final Pattern patternSpecificBiome = Pattern.compile("\\s*+specific_([^\\s=]++)\\s*+=\\s*+([^\\s#]++)");
+    private static final Pattern patternSpecificBiome = Pattern.compile("specific_([^=]++)=(.++)");
 
     private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception
     {
@@ -323,7 +324,7 @@ class FileHandler
                     }
                 }
             }
-            else if ((matcher = patternSpecificBiome.matcher(read)).lookingAt())
+            else if ((matcher = patternSpecificBiome.matcher(read)).matches())
             {
                 boolean found = false;
                 Biome bgb;
@@ -359,6 +360,7 @@ class FileHandler
         RuinTemplate r;
         Biome bgb;
         File[] listFiles = path.listFiles();
+        final String dimensionName = DimensionType.getById(dimension).getName();
         if (listFiles != null)
         {
             for (File f : listFiles)
@@ -366,6 +368,10 @@ class FileHandler
                 try
                 {
                     r = new RuinTemplate(pw, f.getCanonicalPath(), f.getName());
+                    if (!r.acceptsDimension(dimensionName))
+                    {
+                        continue;
+                    }
                     targetList.add(r);
                     for (String biomeName : r.getBiomesToSpawnIn())
                     {
