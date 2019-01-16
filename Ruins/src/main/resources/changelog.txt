@@ -545,3 +545,5 @@ a: setAccessible now true
 + consider dimension in "recursive generator" check, bugfix
 + allow floating point block and template weights, rule and specific_biome chance values
 + remove extra +1% generic spawn chance, bugfix
++ support biome names containing spaces
++ templates can now specify dimensions to spawn in

@@ -187,6 +187,12 @@
 # and is of lower precedence than + and -; parentheses may be used to further control the
 # order of evaluation.
 #
+# Ruins 17.3 adds optional variable "dimensionsToSpawnIn" to specify in which
+# dimensions the template's structures may appear. Note this applies to generic
+# spawning as well. List one or more dimensions by name, separated by commas,
+# or leave blank (default) to allow all dimensions.
+# example: dimensionsToSpawnIn=overworld,twilight_forest
+#
 
 weight=5
 embed_into_distance=1
