@@ -8,65 +8,69 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
+
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.EnumLightType;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
- * 
  * @author AtomicStryker
- * 
+ *         <p>
  *         Rewritten and now-awesome Dynamic Lights Mod.
- * 
+ *         <p>
  *         Instead of the crude base edits and inefficient giant loops of the
  *         original, this Mod uses ASM transforming to hook into Minecraft with
  *         style and has an API that does't suck. It also uses Forge events to
  *         register dropped Items.
- *
  */
-@Mod(modid = "dynamiclights", name = "Dynamic Lights", version = "1.4.9", clientSideOnly = true, dependencies="required-after:forge@[14.23.3.2698,)")
+@Mod(DynamicLights.MOD_ID)
+@Mod.EventBusSubscriber(modid = DynamicLights.MOD_ID, value = Dist.CLIENT)
 public class DynamicLights
 {
+
+    public static final String MOD_ID = "dynamiclights";
+
     private Minecraft mcinstance;
 
-    @Instance("dynamiclights")
     private static DynamicLights instance;
 
     /*
      * Optimization - instead of repeatedly getting the same List for the same
      * World, just check once for World being equal.
      */
-    private IBlockAccess lastWorld;
-    private ConcurrentLinkedQueue<DynamicLightSourceContainer> lastList;
+    private IWorldReader lastWorld;
+    private ConcurrentLinkedQueue<atomicstryker.dynamiclights.client.DynamicLightSourceContainer> lastList;
 
     /**
-     * This Map contains a List of DynamicLightSourceContainer for each World.
-     * Since the client can only be in a single World, the other Lists just
-     * float idle when unused.
+     * This Map contains a List of DynamicLightSourceContainer for each World. Since
+     * the client can only be in a single World, the other Lists just float idle
+     * when unused.
      */
-    private ConcurrentHashMap<World, ConcurrentLinkedQueue<DynamicLightSourceContainer>> worldLightsMap;
+    private ConcurrentHashMap<World, ConcurrentLinkedQueue<atomicstryker.dynamiclights.client.DynamicLightSourceContainer>> worldLightsMap;
 
     /**
      * Keeps track of the toggle button.
@@ -80,31 +84,29 @@ public class DynamicLights
     private long nextKeyTriggerTime;
     private static boolean hackingRenderFailed;
 
-    /**
-     * Configuration for "global" dynamic lights settings
-     */
-    private Configuration config;
-    private int[] bannedDimensions;
-
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
+    public DynamicLights()
     {
+        instance = this;
         globalLightsOff = false;
-        mcinstance = FMLClientHandler.instance().getClient();
         worldLightsMap = new ConcurrentHashMap<>();
-        MinecraftForge.EVENT_BUS.register(this);
         nextKeyTriggerTime = System.currentTimeMillis();
         hackingRenderFailed = false;
-        config = new Configuration(evt.getSuggestedConfigurationFile());
-        config.load();
-        bannedDimensions = config.get(Configuration.CATEGORY_CLIENT, "bannedDimensionIDs", new int[] { -1 }).getIntList();
-        config.save();
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientSpec);
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::preInit);
+        modEventBus.addListener(this::onClientSetup);
     }
 
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
+    public void preInit(FMLCommonSetupEvent evt)
     {
-        toggleButton = new KeyBinding("Dynamic Lights toggle", Keyboard.KEY_L, "key.categories.gameplay");
+        // nope?
+    }
+
+    public void onClientSetup(FMLClientSetupEvent evt)
+    {
+        mcinstance = Minecraft.getInstance();
+        toggleButton = new KeyBinding("Dynamic Lights toggle", GLFW.KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
     }
 
@@ -124,7 +126,7 @@ public class DynamicLights
                     if (tickedLightContainer.onUpdate())
                     {
                         iter.remove();
-                        mcinstance.world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ()));
+                        mcinstance.world.checkLightFor(EnumLightType.BLOCK, new BlockPos(tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ()));
                         // System.out.println("Dynamic Lights killing off
                         // LightSource on dead Entity
                         // "+tickedLightContainer.getLightSource().getAttachmentEntity());
@@ -145,7 +147,7 @@ public class DynamicLights
                     {
                         for (DynamicLightSourceContainer c : worldLights)
                         {
-                            world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(c.getX(), c.getY(), c.getZ()));
+                            world.checkLightFor(EnumLightType.BLOCK, new BlockPos(c.getX(), c.getY(), c.getZ()));
                         }
                     }
                 }
@@ -153,9 +155,33 @@ public class DynamicLights
         }
     }
 
+    public static class ClientConfig
+    {
+        public final ForgeConfigSpec.ConfigValue<String> bannedDimensions;
+
+        ClientConfig(ForgeConfigSpec.Builder builder)
+        {
+            builder.comment("ClientConfig only settings, mostly things related to rendering").push("client");
+
+            bannedDimensions = builder.comment("Toggle off to make missing model text in the gui fit inside the slot.").translation("forge.configgui.bannedDimensions").define("bannedDimensions", "");
+
+            builder.pop();
+        }
+    }
+
+    static final ForgeConfigSpec clientSpec;
+    public static final ClientConfig CLIENT_CONFIG;
+
+    static
+    {
+        final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+        clientSpec = specPair.getRight();
+        CLIENT_CONFIG = specPair.getLeft();
+    }
+
     /**
      * Used not only to toggle the Lights, but any Ticks in the sub-modules
-     * 
+     *
      * @return true when all computation and tracking should be suspended, false
      *         otherwise
      */
@@ -165,11 +191,11 @@ public class DynamicLights
     }
 
     /**
-     * Exposed method which is called by the transformed World.getRawLight
-     * method instead of Block.getLightValue. Loops active Dynamic Light Sources
-     * and if it finds one for the exact coordinates asked, returns the Light
-     * value from that source if higher.
-     * 
+     * Exposed method which is called by the transformed World.getRawLight method
+     * instead of Block.getLightValue. Loops active Dynamic Light Sources and if it
+     * finds one for the exact coordinates asked, returns the Light value from that
+     * source if higher.
+     *
      * @param block
      *            block queried
      * @param blockState
@@ -181,7 +207,7 @@ public class DynamicLights
      * @return max(Block.getLightValue, Dynamic Light)
      */
     @SuppressWarnings("unused")
-    public static int getLightValue(Block block, IBlockState blockState, IBlockAccess world, BlockPos pos)
+    public static int getLightValue(Block block, IBlockState blockState, IWorldReader world, BlockPos pos)
     {
         int vanillaValue = block.getLightValue(blockState, world, pos);
 
@@ -220,12 +246,12 @@ public class DynamicLights
     @SuppressWarnings("unchecked")
     private static void hackRenderGlobalConcurrently()
     {
-        if (hackingRenderFailed || instance.isBannedDimension(Minecraft.getMinecraft().player.dimension))
+        if (hackingRenderFailed || instance.isBannedDimension(instance.mcinstance.player.dimension.getId()))
         {
             return;
         }
 
-        for (Field f : RenderGlobal.class.getDeclaredFields())
+        for (Field f : WorldRenderer.class.getDeclaredFields())
         {
             if (Set.class.isAssignableFrom(f.getType()))
             {
@@ -242,7 +268,7 @@ public class DynamicLights
                         }
                         ConcurrentSkipListSet<BlockPos> cs = new ConcurrentSkipListSet<>(setLightUpdates);
                         f.set(instance.mcinstance.renderGlobal, cs);
-                        System.out.println("Dynamic Lights successfully hacked Set RenderGlobal.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
+                        System.out.println("Dynamic Lights successfully hacked Set WorldRenderer.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
                         return;
                     }
                     catch (Exception e)
@@ -252,15 +278,15 @@ public class DynamicLights
                 }
             }
         }
-        System.out.println("Dynamic Lights completely failed to hack Set RenderGlobal.setLightUpdates and will not try again!");
+        System.out.println("Dynamic Lights completely failed to hack Set WorldRenderer.setLightUpdates and will not try again!");
         hackingRenderFailed = true;
     }
 
     /**
-     * Exposed method to register active Dynamic Light Sources with. Does all
-     * the necessary checks, prints errors if any occur, creates new World
-     * entries in the worldLightsMap
-     * 
+     * Exposed method to register active Dynamic Light Sources with. Does all the
+     * necessary checks, prints errors if any occur, creates new World entries in
+     * the worldLightsMap
+     *
      * @param lightToAdd
      *            IDynamicLightSource to register
      */
@@ -272,7 +298,7 @@ public class DynamicLights
             // dimension %d\n", lightToAdd.getAttachmentEntity(),
             // lightToAdd.getAttachmentEntity().world.getWorldInfo().getWorldName(),
             // lightToAdd.getAttachmentEntity().dimension);
-            if (lightToAdd.getAttachmentEntity().isEntityAlive() && !instance.isBannedDimension(lightToAdd.getAttachmentEntity().dimension))
+            if (lightToAdd.getAttachmentEntity().isAlive() && !instance.isBannedDimension(lightToAdd.getAttachmentEntity().dimension.getId()))
             {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
                 ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().world);
@@ -310,9 +336,9 @@ public class DynamicLights
     }
 
     /**
-     * Exposed method to remove active Dynamic Light sources with. If it fails
-     * for whatever reason, it does so quietly.
-     * 
+     * Exposed method to remove active Dynamic Light sources with. If it fails for
+     * whatever reason, it does so quietly.
+     *
      * @param lightToRemove
      *            IDynamicLightSource you want removed.
      */
@@ -340,19 +366,11 @@ public class DynamicLights
 
                     if (iterContainer != null)
                     {
-                        world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(iterContainer.getX(), iterContainer.getY(), iterContainer.getZ()));
+                        world.checkLightFor(EnumLightType.BLOCK, new BlockPos(iterContainer.getX(), iterContainer.getY(), iterContainer.getZ()));
                     }
                 }
             }
         }
-    }
-
-    /**
-     * getter for the global configuration, to be used with instance
-     */
-    public Configuration getConfiguration()
-    {
-        return config;
     }
 
     /**
@@ -361,9 +379,10 @@ public class DynamicLights
      */
     public boolean isBannedDimension(int dimensionID)
     {
-        for (int i : bannedDimensions)
+        String bans = CLIENT_CONFIG.bannedDimensions.get();
+        for (String i : bans.split(","))
         {
-            if (i == dimensionID)
+            if (Integer.valueOf(i) == dimensionID)
             {
                 return true;
             }

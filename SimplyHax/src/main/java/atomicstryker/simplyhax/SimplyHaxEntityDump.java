@@ -1,25 +1,23 @@
 package atomicstryker.simplyhax;
 
-import net.minecraft.entity.EntityList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import java.util.Map;
 
-@Mod(modid = "simplyhaxentitydump", name = "Simply Hax Entity Dump", version = "1.12")
+import net.minecraft.entity.EntityType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+
+@Mod(SimplyHaxEntityDump.MOD_ID)
+@Mod.EventBusSubscriber(modid = SimplyHaxEntityDump.MOD_ID, value = Dist.CLIENT)
 public class SimplyHaxEntityDump
 {
 
-    private boolean dumped = false;
+    public static final String MOD_ID = "simplyhaxentitydump";
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
-    {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
+    private boolean dumped = false;
 
     @SubscribeEvent
     public void onWorldStart(WorldEvent.Load event)
@@ -28,10 +26,9 @@ public class SimplyHaxEntityDump
         {
             dumped = true;
             System.out.println("Simply Hax Entity Dump following, these are the exact Mobspawner names");
-            for (ResourceLocation rsl : EntityList.getEntityNameList())
+            for (Map.Entry<ResourceLocation, EntityType<?>> entityEntry : ForgeRegistries.ENTITIES.getEntries())
             {
-                System.out.printf("[%s] as entity resource location%n", rsl);
-
+                System.out.printf("resource [%s], entity type [%s]%n", entityEntry.getKey(), entityEntry.getValue());
             }
         }
     }
