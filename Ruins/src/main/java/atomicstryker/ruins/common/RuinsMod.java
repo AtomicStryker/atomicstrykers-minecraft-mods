@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javafx.geometry.Side;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -16,33 +17,32 @@ import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.storage.ISaveHandler;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(modid = "ruins", name = "Ruins Mod", version = RuinsMod.modversion, dependencies = "after:extrabiomes")
+@Mod(RuinsMod.MOD_ID)
+@Mod.EventBusSubscriber(modid = RuinsMod.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class RuinsMod
 {
+    static final String MOD_ID = "ruins";
+
     static final String modversion = "17.2";
 
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
@@ -53,39 +53,42 @@ public class RuinsMod
 
     private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
 
-    @NetworkCheckHandler
+    // @NetworkCheckHandler
     public boolean checkModLists(Map<String, String> modList, Side side)
     {
         return true;
     }
 
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
+    public RuinsMod()
+    {
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::preInit);
+        modEventBus.addListener(this::serverAboutToStart);
+        modEventBus.addListener(this::serverStarted);
+    }
+
+    public void preInit(FMLCommonSetupEvent evt)
     {
         GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
-        MinecraftForge.EVENT_BUS.register(this);
-
         ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
-    @EventHandler
     public void serverAboutToStart(FMLServerAboutToStartEvent evt)
     {
         generatorMap = new ConcurrentHashMap<>();
     }
 
-    @EventHandler
     public void serverStarted(FMLServerStartingEvent evt)
     {
-        evt.registerServerCommand(new CommandParseTemplate());
-        evt.registerServerCommand(new CommandTestTemplate());
-        evt.registerServerCommand(new CommandUndo());
+        evt.getCommandDispatcher().register(CommandParseTemplate.BUILDER);
+        evt.getCommandDispatcher().register(CommandTestTemplate.BUILDER);
+        evt.getCommandDispatcher().register(new CommandUndo());
     }
 
     private long nextInfoTime;
 
     @SubscribeEvent
-    public void onBreakSpeed(BreakSpeed event)
+    public void onBreakSpeed(PlayerEvent.BreakSpeed event)
     {
         WorldHandle wh = getWorldHandle(event.getEntity().getEntityWorld());
         if (wh != null && wh.fileHandle.enableStick)
@@ -101,7 +104,7 @@ public class RuinsMod
     }
 
     @SubscribeEvent
-    public void onBreak(BreakEvent event)
+    public void onBreak(BlockEvent.BreakEvent event)
     {
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer))
         {

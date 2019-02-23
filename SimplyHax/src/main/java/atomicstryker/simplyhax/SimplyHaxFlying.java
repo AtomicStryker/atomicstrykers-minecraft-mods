@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import net.minecraftforge.api.distmarker.Dist;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
@@ -24,9 +25,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-@Mod(modid = "simplyhaxflying", name = "Simply Hax Flying", version = "1.12")
+@Mod(SimplyHaxFlying.MOD_ID)
+@Mod.EventBusSubscriber(modid = SimplyHaxFlying.MOD_ID, value = Dist.CLIENT)
 public class SimplyHaxFlying
 {
+    public final static String MOD_ID = "simplyhaxflying";
 
     private Minecraft mc = null;
     private EntityPlayer player = null;
@@ -39,11 +42,14 @@ public class SimplyHaxFlying
 
     private KeyBinding sprintButton;
 
+    public SimplyHaxFlying() {
+
+    }
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent evt)
     {
         configfile = evt.getSuggestedConfigurationFile();
-        MinecraftForge.EVENT_BUS.register(this);
         initSettings();
     }
 

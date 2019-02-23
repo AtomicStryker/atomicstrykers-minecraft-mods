@@ -1,19 +1,53 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommandSender;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.MessageArgument;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class CommandParseTemplate extends CommandBase
+public class CommandParseTemplate
 {
 
-    private EntityPlayer player;
-    private String templateName;
+    public static final LiteralArgumentBuilder<CommandSource> BUILDER =
+            Commands.literal("parseruin")
+            .requires((caller) -> caller.hasPermissionLevel(2))
+            .then(Commands.argument("input", MessageArgument.message()))
+            .executes((caller) -> {
+                ITextComponent input = MessageArgument.getMessage(caller, "input");
+                execute(caller.getSource(), input.getString());
+                return 1;
+            });
+
+    private static EntityPlayer player;
+    private static String templateName;
+
+    private static void execute(CommandSource source, String input)
+    {
+        if (source.getEntity() instanceof EntityPlayer)
+        {
+            if (input == null || input.isEmpty())
+            {
+                source.sendErrorMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin funhouse"));
+            }
+            else
+            {
+                player = (EntityPlayer) source.getEntity();
+                templateName = input;
+                source.sendFeedback(new TextComponentTranslation("Template parser ready to create " + templateName + ". Break any block of the baseplate now."), false);
+            }
+        }
+        else
+        {
+            source.sendErrorMessage(new TextComponentTranslation("Command only available for ingame player entities."));
+        }
+    }
 
     public CommandParseTemplate()
     {
@@ -28,47 +62,6 @@ public class CommandParseTemplate extends CommandBase
             new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName).start();
             player = null;
             event.setCanceled(true);
-        }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "parseruin";
-    }
-
-    @Override
-    public String getUsage(ICommandSender var1)
-    {
-        return "/parseruin TEMPLATENAME sets the Ruins World2Template parser to wait for the next block you break, which will be considered part of the template baseplate";
-    }
-
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
-    }
-
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
-    {
-        player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
-        if (player != null)
-        {
-            if (args.length != 1)
-            {
-                player.sendMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin funhouse"));
-                player = null;
-            }
-            else
-            {
-                templateName = args[0];
-                player.sendMessage(new TextComponentTranslation("Template parser ready to create " + templateName + ". Break any block of the baseplate now."));
-            }
-        }
-        else
-        {
-            sender.sendMessage(new TextComponentTranslation("Command only available for ingame player entities."));
         }
     }
 

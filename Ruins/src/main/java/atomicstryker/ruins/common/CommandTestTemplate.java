@@ -3,93 +3,93 @@ package atomicstryker.ruins.common;
 import java.io.File;
 import java.io.PrintWriter;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
 import net.minecraft.block.Block;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.NumberInvalidException;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.MessageArgument;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-class CommandTestTemplate extends CommandBase
+class CommandTestTemplate
 {
 
     public static RuinTemplate parsedRuin;
 
-    @Override
-    public String getName()
-    {
-        return "testruin";
-    }
+    public static final LiteralArgumentBuilder<CommandSource> BUILDER =
+            Commands.literal("testruin")
+            .requires((caller) -> caller.hasPermissionLevel(2))
+            .then(Commands.argument("input", MessageArgument.message()))
+            .executes((caller) -> {
+                ITextComponent input = MessageArgument.getMessage(caller, "input");
+                execute(caller.getSource(), input.getString());
+                return 1;
+            });
 
-    @Override
-    public String getUsage(ICommandSender var1)
+    private static void execute(CommandSource source, String input)
     {
-        return "/testruin TEMPLATENAME [X Y Z [ROTATION [IGNORE_CEILING]]] manually spawns the target Ruin of the templateparser folder, [] optional";
-    }
-
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
-    }
-
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
-    {
-        EntityPlayer player = sender.getEntityWorld().getPlayerEntityByName(sender.getName());
-        boolean is_player = player != null;
-        int xpos, ypos, zpos;
-        xpos = sender.getPosition().getX();
-        ypos = sender.getPosition().getY();
-        zpos = sender.getPosition().getZ();
-        if (is_player && args.length < 4)
+        if (source.getEntity() instanceof EntityPlayer)
         {
-            if (args.length < 1)
+            EntityPlayer sender = (EntityPlayer) source.getEntity();
+            String[] args = input.split(" ");
+            int xpos, ypos, zpos;
+            xpos = sender.getPosition().getX();
+            ypos = sender.getPosition().getY();
+            zpos = sender.getPosition().getZ();
+            if (args.length < 4)
             {
-                if (parsedRuin != null)
+                if (args.length < 1)
                 {
-                    parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, is_player, false);
-                    parsedRuin = null;
+                    if (parsedRuin != null)
+                    {
+                        parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
+                        parsedRuin = null;
+                    }
+                    else
+                    {
+                        sender.sendMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
+                    }
                 }
                 else
                 {
-                    player.sendMessage(new TextComponentTranslation("You need to use the command with the target template name, eg. /parseruin beach/LightHouse"));
+                    tryBuild(sender, args, xpos, ypos, zpos, true);
                 }
             }
             else
             {
-                tryBuild(sender, args, xpos, ypos, zpos, is_player);
-            }
-        }
-        else if (args.length >= 4)
-        {
-            try
-            {
-                if (args[2].equals("_"))
+                try
                 {
-                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), -1, (int) parseDouble(zpos, args[3], -30000000, 30000000, false), is_player);
+                    if (args[2].equals("_"))
+                    {
+                        int x = Integer.valueOf(args[1]);
+                        int z = Integer.valueOf(args[3]);
+                        tryBuild(sender, args, x, -1, z, true);
+                    }
+                    else
+                    {
+                        int x = Integer.valueOf(args[1]);
+                        int y = Integer.valueOf(args[2]);
+                        int z = Integer.valueOf(args[3]);
+                        tryBuild(sender, args, x, y, z, true);
+                    }
                 }
-                else
+                catch (NumberFormatException e)
                 {
-                    tryBuild(sender, args, (int) parseDouble(xpos, args[1], -30000000, 30000000, false), (int) parseDouble(ypos, args[2], -30000000, 30000000, false),
-                            (int) parseDouble(zpos, args[3], -30000000, 30000000, false), is_player);
+                    sender.sendMessage(new TextComponentTranslation("Invalid coordinates specified"));
                 }
-            }
-            catch (NumberInvalidException e)
-            {
-                sender.sendMessage(new TextComponentTranslation("Invalid coordinates specified"));
             }
         }
         else
         {
-            sender.sendMessage(new TextComponentTranslation("Command is only available for ingame player entities, or with coordinates specified"));
+            source.sendErrorMessage(new TextComponentTranslation("Command is only available for ingame player entities, or with coordinates specified"));
         }
     }
 
-    private void tryBuild(ICommandSender sender, String[] args, int x, int y, int z, boolean is_player)
+    private static void tryBuild(EntityPlayer sender, String[] args, int x, int y, int z, boolean is_player)
     {
         String target = args[0];
         if (!target.contains("/"))
