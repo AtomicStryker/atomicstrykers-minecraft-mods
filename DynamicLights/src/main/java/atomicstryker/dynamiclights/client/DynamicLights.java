@@ -2,15 +2,18 @@ package atomicstryker.dynamiclights.client;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -51,7 +54,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod.EventBusSubscriber(modid = DynamicLights.MOD_ID, value = Dist.CLIENT)
 public class DynamicLights
 {
-
     public static final String MOD_ID = "dynamiclights";
 
     private Minecraft mcinstance;
@@ -92,15 +94,10 @@ public class DynamicLights
         nextKeyTriggerTime = System.currentTimeMillis();
         hackingRenderFailed = false;
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_SPEC);
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::onClientSetup);
-    }
-
-    public void preInit(FMLCommonSetupEvent evt)
-    {
-        // nope?
+        modEventBus.addListener(this::onConfigLoad);
     }
 
     public void onClientSetup(FMLClientSetupEvent evt)
@@ -108,6 +105,44 @@ public class DynamicLights
         mcinstance = Minecraft.getInstance();
         toggleButton = new KeyBinding("Dynamic Lights toggle", GLFW.GLFW_KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
+    }
+
+    public void onConfigLoad(ModConfig.ModConfigEvent event)
+    {
+        if (event.getConfig().getSpec() == CLIENT_SPEC) {
+            loadConfig();
+        }
+    }
+
+    public static final ClientConfig CLIENT_CONFIG;
+    public static final ForgeConfigSpec CLIENT_SPEC;
+
+    public static List<? extends Integer> bannedDimensions = new ArrayList<>();
+
+    static
+    {
+        final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+        CLIENT_SPEC = specPair.getRight();
+        CLIENT_CONFIG = specPair.getLeft();
+    }
+
+    public static class ClientConfig
+    {
+        public ForgeConfigSpec.ConfigValue<List<? extends Integer>> bannedDimensions;
+
+        ClientConfig(ForgeConfigSpec.Builder builder)
+        {
+            builder.comment("ClientConfig only settings, mostly things related to rendering").push("client");
+
+            bannedDimensions = builder.comment("Toggle off to make missing model text in the gui fit inside the slot.").translation("forge.configgui.itemsList").defineList("itemsList",
+                    Lists.newArrayList(), i -> i instanceof Integer);
+
+            builder.pop();
+        }
+    }
+
+    public static void loadConfig() {
+        bannedDimensions = CLIENT_CONFIG.bannedDimensions.get();
     }
 
     @SubscribeEvent
@@ -153,30 +188,6 @@ public class DynamicLights
                 }
             }
         }
-    }
-
-    public static class ClientConfig
-    {
-        public final ForgeConfigSpec.ConfigValue<String> bannedDimensions;
-
-        ClientConfig(ForgeConfigSpec.Builder builder)
-        {
-            builder.comment("ClientConfig only settings, mostly things related to rendering").push("client");
-
-            bannedDimensions = builder.comment("Toggle off to make missing model text in the gui fit inside the slot.").translation("forge.configgui.bannedDimensions").define("bannedDimensions", "");
-
-            builder.pop();
-        }
-    }
-
-    static final ForgeConfigSpec clientSpec;
-    public static final ClientConfig CLIENT_CONFIG;
-
-    static
-    {
-        final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
-        clientSpec = specPair.getRight();
-        CLIENT_CONFIG = specPair.getLeft();
     }
 
     /**
@@ -379,10 +390,9 @@ public class DynamicLights
      */
     public boolean isBannedDimension(int dimensionID)
     {
-        String bans = CLIENT_CONFIG.bannedDimensions.get();
-        for (String i : bans.split(","))
+        for (Integer i : CLIENT_CONFIG.bannedDimensions.get())
         {
-            if (Integer.valueOf(i) == dimensionID)
+            if (i == dimensionID)
             {
                 return true;
             }
