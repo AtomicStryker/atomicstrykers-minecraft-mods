@@ -3,7 +3,7 @@ package atomicstryker.dynamiclights.client;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.EnumLightType;
 
 /**
  * 
@@ -32,17 +32,17 @@ public class DynamicLightSourceContainer
     }
 
     /**
-     * Update passed on from the World tick. Checks for the Light Source Entity
-     * to be alive, and for it to have changed Coordinates. Marks it's current
-     * Block for Update if it has moved. When this method returns true, the
-     * Light Source Entity has died and it should be removed from the List!
+     * Update passed on from the World tick. Checks for the Light Source Entity to
+     * be alive, and for it to have changed Coordinates. Marks it's current Block
+     * for Update if it has moved. When this method returns true, the Light Source
+     * Entity has died and it should be removed from the List!
      * 
      * @return true when the Light Source has died, false otherwise
      */
     public boolean onUpdate()
     {
         Entity ent = lightSource.getAttachmentEntity();
-        if (!ent.isEntityAlive())
+        if (!ent.isAlive())
         {
             return true;
         }
@@ -50,15 +50,14 @@ public class DynamicLightSourceContainer
         if (hasEntityMoved(ent))
         {
             /*
-             * This is the critical point, by this we tell Minecraft to ask for
-             * the BlockLight value at the coordinates, which in turn triggers
-             * they Dynamic Lights response pointing to this Light's value,
-             * which in turn has Minecraft update all surrounding Blocks :3 We
-             * also have to call an update for the previous coordinates,
-             * otherwise they would stay lit up.
+             * This is the critical point, by this we tell Minecraft to ask for the
+             * BlockLight value at the coordinates, which in turn triggers they Dynamic
+             * Lights response pointing to this Light's value, which in turn has Minecraft
+             * update all surrounding Blocks :3 We also have to call an update for the
+             * previous coordinates, otherwise they would stay lit up.
              */
-            ent.world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(x, y, z));
-            ent.world.checkLightFor(EnumSkyBlock.BLOCK, new BlockPos(prevX, prevY, prevZ));
+            ent.world.checkLightFor(EnumLightType.BLOCK, new BlockPos(x, y, z));
+            ent.world.checkLightFor(EnumLightType.BLOCK, new BlockPos(prevX, prevY, prevZ));
         }
 
         return false;

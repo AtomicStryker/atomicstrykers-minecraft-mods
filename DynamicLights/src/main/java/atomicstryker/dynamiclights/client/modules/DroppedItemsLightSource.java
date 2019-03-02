@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.common.collect.Lists;
+
 import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
@@ -11,20 +15,18 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * 
@@ -34,53 +36,88 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
  *         Torches and such can give off Light through this Module.
  *
  */
-@Mod(modid = "dynamiclights_dropitems", name = "Dynamic Lights on ItemEntities", version = "1.1.0", dependencies = "required-after:dynamiclights")
+@Mod(DroppedItemsLightSource.MOD_ID)
+@Mod.EventBusSubscriber(modid = DroppedItemsLightSource.MOD_ID, value = Dist.CLIENT)
 public class DroppedItemsLightSource
 {
+    static final String MOD_ID = "dynamiclights_droppeditems";
+
     private Minecraft mcinstance;
     private long nextUpdate;
     private long updateInterval;
     private ArrayList<EntityItemAdapter> trackedItems;
     private boolean threadRunning;
-    private Configuration config;
 
-    private ItemConfigHelper itemsMap;
-    private ItemConfigHelper notWaterProofItems;
+    private static ItemConfigHelper itemsMap;
+    private static ItemConfigHelper notWaterProofItems;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
+    public DroppedItemsLightSource()
     {
-        config = new Configuration(evt.getSuggestedConfigurationFile());
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        mcinstance = FMLClientHandler.instance().getClient();
-        nextUpdate = System.currentTimeMillis();
         trackedItems = new ArrayList<>();
         threadRunning = false;
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onConfigLoad);
     }
 
-    @EventHandler
-    public void modsLoaded(FMLPostInitializationEvent evt)
+    public void onClientSetup(FMLClientSetupEvent evt)
     {
-        config.load();
+        mcinstance = evt.getMinecraftSupplier().get();
+        nextUpdate = System.currentTimeMillis();
+    }
 
-        Property itemsList = config.get(Configuration.CATEGORY_GENERAL, "LightItems", "torch,glowstone=12,glowstone_dust=10,lit_pumpkin,lava_bucket,redstone_torch=10,redstone=10,golden_helmet=14");
-        itemsList.setComment("Item IDs that shine light when dropped in the World.");
-        itemsMap = new ItemConfigHelper(itemsList.getString(), 15);
+    public void onConfigLoad(ModConfig.ModConfigEvent event)
+    {
+        if (event.getConfig().getSpec() == CLIENT_SPEC)
+        {
+            loadConfig();
+        }
+    }
 
-        Property updateI = config.get(Configuration.CATEGORY_GENERAL, "update Interval", 1000);
-        updateI.setComment("Update Interval time for all Item entities in milliseconds. The lower the better and costlier.");
-        updateInterval = updateI.getInt();
+    public static final DroppedItemsLightSource.ClientConfig CLIENT_CONFIG;
+    public static final ForgeConfigSpec CLIENT_SPEC;
 
-        Property notWaterProofList = config.get(Configuration.CATEGORY_GENERAL, "TurnedOffByWaterItems", "torch,lava_bucket");
-        notWaterProofList.setComment("Item IDs that do not shine light when dropped and in water, have to be present in LightItems.");
-        notWaterProofItems = new ItemConfigHelper(notWaterProofList.getString(), 1);
+    public static List<? extends String> itemsList = new ArrayList<>();
+    public static List<? extends String> notWaterProofList = new ArrayList<>();
 
-        config.save();
+    static
+    {
+        final Pair<DroppedItemsLightSource.ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(DroppedItemsLightSource.ClientConfig::new);
+        CLIENT_SPEC = specPair.getRight();
+        CLIENT_CONFIG = specPair.getLeft();
+    }
+
+    public static class ClientConfig
+    {
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> itemsList;
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> notWaterProofList;
+        public ForgeConfigSpec.ConfigValue<Integer> updateInterval;
+
+        ClientConfig(ForgeConfigSpec.Builder builder)
+        {
+            itemsList = builder.comment("Item IDs that shine light when dropped in the World").translation("forge.configgui.itemsList").defineList("itemsList", getDefaultLightItems(),
+                    i -> i instanceof String);
+            notWaterProofList = builder.comment("Item IDs that do not shine light when dropped and in water, have to be present in LightItems.").translation("forge.configgui.notWaterProofList")
+                    .defineList("notWaterProofList", Lists.newArrayList(), i -> i instanceof String);
+            updateInterval = builder.comment("Update Interval time for item entities in milliseconds. The lower the better and costlier.").define("updateInterval", 1000, i -> i instanceof Integer);
+            builder.pop();
+        }
+    }
+
+    private static List<String> getDefaultLightItems()
+    {
+        ItemStack torchStack = new ItemStack(Blocks.TORCH);
+        List<String> output = new ArrayList<>();
+        output.add(ItemConfigHelper.fromItemStack(torchStack));
+        return output;
+    }
+
+    public static void loadConfig()
+    {
+        itemsList = CLIENT_CONFIG.itemsList.get();
+        notWaterProofList = CLIENT_CONFIG.notWaterProofList.get();
+        itemsMap = new ItemConfigHelper(itemsList);
+        notWaterProofItems = new ItemConfigHelper(notWaterProofList);
     }
 
     @SubscribeEvent
@@ -102,12 +139,7 @@ public class DroppedItemsLightSource
 
     private int getLightFromItemStack(ItemStack stack)
     {
-        if (stack != null)
-        {
-            int r = itemsMap.retrieveValue(stack.getItem().getRegistryName(), stack.getItemDamage());
-            return r < 0 ? 0 : r;
-        }
-        return 0;
+        return itemsMap.contains(stack) ? 15 : 0;
     }
 
     private class EntityListChecker extends Thread
@@ -129,7 +161,7 @@ public class DroppedItemsLightSource
             {
                 ent = (Entity) o;
                 // Loop all loaded Entities, find alive and valid ItemEntities
-                if (ent instanceof EntityItem && ent.isEntityAlive())
+                if (ent instanceof EntityItem && ent.isAlive())
                 {
                     // now find them in the already tracked item adapters
                     boolean found = false;
@@ -179,12 +211,12 @@ public class DroppedItemsLightSource
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.retrieveValue(eI.getItem().getItem().getRegistryName(), eI.getItem().getItemDamage()) == 1;
+            notWaterProof = notWaterProofItems.contains(eI.getItem());
         }
 
         /**
-         * Since they are IDynamicLightSource instances, they will already
-         * receive updates! Why do we need to do this? Because seperate Thread!
+         * Since they are IDynamicLightSource instances, they will already receive
+         * updates! Why do we need to do this? Because seperate Thread!
          */
         public void onTick()
         {

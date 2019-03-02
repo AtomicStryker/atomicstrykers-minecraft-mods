@@ -102,7 +102,7 @@ public class DynamicLights
 
     public void onClientSetup(FMLClientSetupEvent evt)
     {
-        mcinstance = Minecraft.getInstance();
+        mcinstance = evt.getMinecraftSupplier().get();
         toggleButton = new KeyBinding("Dynamic Lights toggle", GLFW.GLFW_KEY_L, "key.categories.gameplay");
         ClientRegistry.registerKeyBinding(toggleButton);
     }

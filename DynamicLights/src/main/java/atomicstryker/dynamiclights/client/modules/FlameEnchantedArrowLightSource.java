@@ -6,40 +6,37 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * 
  * @author AtomicStryker
  *
- * Offers Dynamic Light functionality to flame enchanted Arrows fired.
- * Those can give off Light through this Module.
+ *         Offers Dynamic Light functionality to flame enchanted Arrows fired.
+ *         Those can give off Light through this Module.
  *
  */
-@Mod(modid = "dynamiclights_flamearrows", name = "Dynamic Lights on Flame enchanted Arrows", version = "1.0.1", dependencies = "required-after:dynamiclights")
+@Mod(FlameEnchantedArrowLightSource.MOD_ID)
+@Mod.EventBusSubscriber(modid = FlameEnchantedArrowLightSource.MOD_ID, value = Dist.CLIENT)
 public class FlameEnchantedArrowLightSource
 {
-    
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-    
+
+    static final String MOD_ID = "dynamiclights_flamearrows";
+
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event)
     {
         if (event.getEntity() instanceof EntityArrow)
         {
             EntityArrow arrow = (EntityArrow) event.getEntity();
-            if (arrow.shootingEntity != null && arrow.shootingEntity instanceof EntityPlayer)
+            Entity shooterEnt = ((WorldServer) arrow.world).getEntityFromUuid(arrow.shootingEntity);
+            if (shooterEnt instanceof EntityPlayer)
             {
-                EntityPlayer shooter = (EntityPlayer) arrow.shootingEntity;
+                EntityPlayer shooter = (EntityPlayer) shooterEnt;
                 if (EnchantmentHelper.getFireAspectModifier(shooter) != 0)
                 {
                     DynamicLights.addLightSource(new EntityLightAdapter(arrow));
@@ -47,18 +44,18 @@ public class FlameEnchantedArrowLightSource
             }
         }
     }
-    
+
     private class EntityLightAdapter implements IDynamicLightSource
     {
         private EntityArrow entity;
         private int lightLevel;
-        
+
         public EntityLightAdapter(EntityArrow entArrow)
         {
             lightLevel = 15;
             entity = entArrow;
         }
-     
+
         @Override
         public Entity getAttachmentEntity()
         {

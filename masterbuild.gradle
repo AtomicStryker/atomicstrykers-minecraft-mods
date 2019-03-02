@@ -23,10 +23,7 @@ group= "atomicstryker."+projname
 archivesBaseName = projname
 
 minecraft {
-    version = xmlproperties.@mcversion
-	runDir = "eclipse/assets"
-    mappings = xmlproperties.@mcpversion
-    makeObfSourceJar = false
+    mappings channel: 'snapshot', version: xmlproperties.@mcpversion.text()
 }
 
 // check for specified dependencies on other projects or jars
@@ -43,6 +40,7 @@ if( dfile.exists() ) {
 }
 
 dependencies {
+    minecraft 'net.minecraftforge:forge:'+xmlproperties.@mcversion.text()
 	// also punch in anything in the forgegradle libs folder
 	compile fileTree(dir: projectpath+'/../../forgegradle/libs', include: '*.jar')
 }
@@ -52,8 +50,6 @@ processResources
     // copy assets into artifact
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        // put mcversion in
-        expand 'mcversion':project.minecraft.version
     }
 	from(sourceSets.main.java.srcDirs) {into('src')}
 }
