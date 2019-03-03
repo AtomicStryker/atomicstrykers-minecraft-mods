@@ -5,3 +5,6 @@
 */build/tmp/*
 */build/sources/*
 */build/*
+DynamicLights_RL/.idea/
+FinderCompass_RL/.idea/
+FinderCompass_RL/classes/
