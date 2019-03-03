@@ -92,7 +92,7 @@ public class DynamicLights implements BootstrapListener, KeyBindingAdder, Client
         try {
             config = GsonConfig.loadConfigWithDefault(DynamicLightsConfig.class, new File(mcinstance.gameDir, "\\config\\dynamiclights.cfg"), new DynamicLightsConfig());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("IOException parsing config", e);
         }
     }
 
@@ -152,8 +152,7 @@ public class DynamicLights implements BootstrapListener, KeyBindingAdder, Client
             return vanillaValue;
         }
 
-        if (!world.equals(instance.lastWorld) || instance.lastList == null) {
-            LOGGER.info("world change detected, initializing dynamic lights renderhack...");
+        if (world != instance.lastWorld || instance.lastList == null) {
             instance.lastWorld = world;
             instance.lastList = instance.worldLightsMap.get(world);
             hackRenderGlobalConcurrently();
