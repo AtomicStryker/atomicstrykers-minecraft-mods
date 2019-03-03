@@ -1,0 +1,24 @@
+{
+    "id": "findercompass",
+    "name": "Finder Compass",
+    "authors": [
+        "AtomicStryker"
+    ],
+    "listeners": [
+        {
+            "class": "atomicstryker.findercompass.client.FinderCompassMixin",
+            "side": "client",
+            "priority": 5
+        },
+        {
+            "class": "atomicstryker.findercompass.client.FinderCompassClientTicker",
+            "side": "client"
+        },
+        {
+            "class": "atomicstryker.findercompass.common.FinderCompassMod",
+            "side": "client"
+        }
+    ],
+    "url": "https://atomicstryker.net",
+    "description": "Find useful blocks by compass!"
+}
