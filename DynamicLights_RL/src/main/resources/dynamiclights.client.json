@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.7.7",
+  "target": "@env(DEFAULT)",
+  "package": "atomicstryker.dynamiclights.client.mixin",
+  "refmap": "mixins.atomicstryker.dynamiclights.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MixinWorld"
+  ]
+}

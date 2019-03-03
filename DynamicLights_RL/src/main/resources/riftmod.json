@@ -1,0 +1,28 @@
+{
+    "id": "dynamiclights",
+    "name": "Dynamic Lights",
+    "authors": [
+        "AtomicStryker"
+    ],
+    "listeners": [
+        {
+            "class": "atomicstryker.dynamiclights.client.DynamicLightsMixin",
+            "side": "client",
+            "priority": 5
+        },
+        {
+            "class": "atomicstryker.dynamiclights.client.DynamicLights",
+            "side": "client"
+        },
+        {
+            "class": "atomicstryker.dynamiclights.client.modules.PlayerSelfLightSource",
+            "side": "client"
+        },
+        {
+            "class": "atomicstryker.dynamiclights.client.modules.DroppedItemsLightSource",
+            "side": "client"
+        }
+    ],
+    "url": "https://atommicstryker.net",
+    "description": "Moving light sources!"
+}
