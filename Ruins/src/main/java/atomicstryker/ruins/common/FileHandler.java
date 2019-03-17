@@ -261,7 +261,7 @@ class FileHandler {
         Biome bgb;
         File[] listFiles = path.listFiles();
 
-        final String dimensionName = dimension.getRegistryName().getPath();
+        String dimensionName = DimensionType.getKey(dimension).getPath();
         if (listFiles != null) {
             for (File f : listFiles) {
                 try {
