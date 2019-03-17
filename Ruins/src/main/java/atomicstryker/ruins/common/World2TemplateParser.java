@@ -138,7 +138,15 @@ class World2TemplateParser extends Thread {
         readBlocks(world);
         player.sendMessage(new TextComponentTranslation("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
 
-        File templateFile = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/" + fileName + ".tml");
+        File folder = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/");
+        if (!folder.exists()) {
+            if (!folder.mkdirs()) {
+                player.sendMessage(new TextComponentTranslation("Failed to create folder structure: " + folder));
+                return;
+            }
+            player.sendMessage(new TextComponentTranslation("Created folder structure: " + folder));
+        }
+        File templateFile = new File(folder, fileName + ".tml");
         toFile(templateFile);
 
         player.sendMessage(new TextComponentTranslation("Success writing templatefile " + templateFile));
@@ -339,7 +347,7 @@ class World2TemplateParser extends Thread {
 
             pw.println();
             pw.println("# Created by Ruins mod version " + RuinsMod.modversion + " Ingame Parser");
-            pw.println("# authoring Player: " + player.getName());
+            pw.println("# authoring Player: " + player.getName().getString());
             pw.println();
 
             pw.println("# TEMPLATE PARAMETER SETTINGS:");
@@ -377,10 +385,14 @@ class World2TemplateParser extends Thread {
             pw.println("embed_into_distance=" + yPadding);
             pw.println("random_height_offset=0,0");
             pw.println("#");
-            pw.println("# whitelist/blacklist of block types on which template may be built");
+            pw.println("# whitelist/blacklist of block states on which template may be built");
             pw.println("# specify one, not both; leave the other empty (both empty = allow all)");
+            pw.println("# CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)");
             pw.println("acceptable_target_blocks=");
-            pw.println("unacceptable_target_blocks=flowing_water,water,flowing_lava,lava");
+            // get water and lava source block Strings
+            String water = RuleStringNbtHelper.StringFromBlockState(Blocks.WATER.getDefaultState(), null);
+            String lava = RuleStringNbtHelper.StringFromBlockState(Blocks.LAVA.getDefaultState(), null);
+            pw.printf("unacceptable_target_blocks=%s,%s\n", water, lava);
             pw.println("#");
             pw.println("# size of template (#layers, #rows per layer, #blocks per row)");
             pw.println("dimensions=" + layerData.size() + "," + xLength + "," + zLength);
@@ -456,7 +468,7 @@ class World2TemplateParser extends Thread {
 
             pw.close();
 
-            CommandTestTemplate.parsedRuin = new RuinTemplate(new PrintWriter(System.out), file.getCanonicalPath(), file.getName());
+            CommandTestTemplate.parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName());
         } catch (Exception e) {
             e.printStackTrace();
             player.sendMessage(new TextComponentTranslation("Something broke! See server logfile for exception message and get it to AtomicStryker."));

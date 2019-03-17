@@ -19,7 +19,7 @@ class FileHandler {
 
     private final static int WEIGHT = 0, CHANCE = 1;
     private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<>();
-    private final int dimension;
+    private final DimensionType dimension;
     private final HashMap<String, double[]> vars = new HashMap<>();
 
     private static IForgeRegistry<Biome> biomeRegistry = null;
@@ -41,7 +41,7 @@ class FileHandler {
 
     private int templateCount;
 
-    public FileHandler(File worldPath, int dim) {
+    public FileHandler(File worldPath, DimensionType dim) {
         saveFolder = worldPath;
         loaded = false;
         templateCount = 0;
@@ -52,7 +52,6 @@ class FileHandler {
     private class LoaderThread extends Thread {
         @Override
         public void run() {
-            PrintWriter pw;
             File basedir;
             try {
                 basedir = RuinsMod.getMinecraftBaseDir();
@@ -70,7 +69,6 @@ class FileHandler {
                         throw new RuntimeException("Ruins crashed trying to access file: " + log.getAbsolutePath());
                     }
                 }
-                pw = new PrintWriter(new BufferedWriter(new FileWriter(log)));
             } catch (Exception e) {
                 System.err.println("There was an error when creating the log file.");
                 System.err.println("The ruins mod could not be loaded.");
@@ -83,7 +81,6 @@ class FileHandler {
             if (!templPath.exists()) {
                 System.out.println("Could not access the resources path for the ruins templates, file doesn't exist!");
                 System.err.println("The ruins mod could not be loaded.");
-                pw.close();
                 loaded = true;
                 return;
             }
@@ -93,9 +90,9 @@ class FileHandler {
                 // pw.println("Loading the generic ruins templates...");
                 HashSet<RuinTemplate> set = new HashSet<>();
                 templates.put(RuinsMod.BIOME_ANY, set);
-                addRuins(pw, new File(templPath, RuinsMod.BIOME_ANY), RuinsMod.BIOME_ANY, set);
+                addRuins(new File(templPath, RuinsMod.BIOME_ANY), RuinsMod.BIOME_ANY, set);
             } catch (Exception e) {
-                printErrorToLog(pw, e, "There was an error when loading the generic ruins templates:");
+                RuinsMod.LOGGER.error("There was an error when loading the generic ruins templates:", e);
             }
 
             /*
@@ -108,10 +105,10 @@ class FileHandler {
                 bgb = biomeRegistry.getValue(rl);
                 if (bgb != null) {
                     try {
-                        loadSpecificTemplates(pw, templPath, bgb.getRegistryName().getPath());
+                        loadSpecificTemplates(templPath, bgb.getRegistryName().getPath());
                         // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
                     } catch (Exception e) {
-                        printErrorToLog(pw, e, "There was an error when loading the " + bgb.getRegistryName().getPath() + " ruins templates:");
+                        RuinsMod.LOGGER.error("There was an error when loading the {}" + bgb.getRegistryName().getPath() + " ruins templates:", e);
                     }
                 }
             }
@@ -128,17 +125,14 @@ class FileHandler {
              * defaults if the file could not be loaded.
              */
             try {
-                pw.println();
-                pw.println("Loading options from: " + saveFolder.getCanonicalPath());
-                readPerWorldOptions(saveFolder, pw);
+                RuinsMod.LOGGER.info("Loading options from: {}", saveFolder.getCanonicalPath());
+                readPerWorldOptions(saveFolder);
             } catch (Exception e) {
-                printErrorToLog(pw, e, "There was an error when loading the options file.  Defaults will be used instead.");
+                RuinsMod.LOGGER.error("There was an error when loading the options file.  Defaults will be used instead.", e);
             }
 
             loaded = true;
-            pw.println("Ruins mod loaded successfully for world " + saveFolder + ", template files: " + templateCount);
-            pw.flush();
-            pw.close();
+            RuinsMod.LOGGER.info("Ruins mod loaded successfully for world {} template files: {}", saveFolder, templateCount);
         }
     }
 
@@ -170,9 +164,8 @@ class FileHandler {
         return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextDouble() >= val[CHANCE]);
     }
 
-    private void loadSpecificTemplates(PrintWriter pw, File dir, String bname) throws Exception {
+    private void loadSpecificTemplates(File dir, String bname) throws Exception {
         // pw.println("Loading the " + bname + " ruins templates...");
-        pw.flush();
         File path_biome = new File(dir, bname);
         // if no template entry for this biome, create (empty) one
         // may already exist if this biome appeared in earlier biomesToSpawnIn list
@@ -180,14 +173,7 @@ class FileHandler {
             templates.put(bname, new HashSet<>());
         }
         HashSet<RuinTemplate> set = templates.get(bname);
-        addRuins(pw, path_biome, bname, set);
-    }
-
-    private void printErrorToLog(PrintWriter pw, Exception e, String msg) {
-        pw.println();
-        pw.println(msg);
-        e.printStackTrace(pw);
-        pw.flush();
+        addRuins(path_biome, bname, set);
     }
 
     private void recalcBiomeWeight(String biomeName) {
@@ -202,7 +188,7 @@ class FileHandler {
 
     private static final Pattern patternSpecificBiome = Pattern.compile("specific_([^=]++)=(.++)");
 
-    private void readPerWorldOptions(File dir, PrintWriter ruinsLog) throws Exception {
+    private void readPerWorldOptions(File dir) throws Exception {
         final File file = new File(dir, "ruins.txt");
         if (!file.exists()) {
             copyGlobalOptionsTo(dir);
@@ -215,10 +201,8 @@ class FileHandler {
             check = read.split("=");
             if (check[0].equals("tries_per_chunk_normal")) {
                 triesPerChunkNormal = Integer.parseInt(check[1]);
-                ruinsLog.println("tries_per_chunk_normal = " + triesPerChunkNormal);
             } else if (check[0].equals("chance_to_spawn_normal")) {
                 chanceToSpawnNormal = Float.parseFloat(check[1]);
-                ruinsLog.println("chance_to_spawn_normal = " + chanceToSpawnNormal);
             } else if (check[0].equals("tries_per_chunk_nether")) {
                 triesPerChunkNether = Integer.parseInt(check[1]);
             } else if (check[0].equals("chance_to_spawn_nether")) {
@@ -227,18 +211,14 @@ class FileHandler {
                 disableLogging = Boolean.parseBoolean(check[1]);
             } else if (check[0].equals("templateInstancesMinDistance")) {
                 templateInstancesMinDistance = Float.parseFloat(check[1]);
-                ruinsLog.println("templateInstancesMinDistance = " + templateInstancesMinDistance);
             } else if (check[0].equals("anyRuinsMinDistance")) {
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
-                ruinsLog.println("anyRuinsMinDistance = " + anyRuinsMinDistance);
             } else if (check[0].equals("anySpawnMinDistance")) {
                 final int value = Integer.parseInt(check[1]);
                 anySpawnMinDistance = value > 0 ? value : 0;
-                ruinsLog.println("anySpawnMinDistance = " + anySpawnMinDistance);
             } else if (check[0].equals("anySpawnMaxDistance")) {
                 final int value = Integer.parseInt(check[1]);
                 anySpawnMaxDistance = value > 0 ? value : Integer.MAX_VALUE;
-                ruinsLog.println("anySpawnMaxDistance = " + anySpawnMaxDistance);
             } else if (check[0].equals("enableStick")) {
                 enableStick = Boolean.parseBoolean(check[1]);
             } else if (check[0].equals("allowedDimensions") && check.length > 1) {
@@ -247,7 +227,7 @@ class FileHandler {
                 for (int i = 0; i < ints.length; i++) {
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
-            } else if (dimension == 0 && check[0].equals("enableFixedWidthRuleIds")) {
+            } else if (dimension == DimensionType.NETHER && check[0].equals("enableFixedWidthRuleIds")) {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
@@ -276,15 +256,16 @@ class FileHandler {
         br.close();
     }
 
-    private void addRuins(PrintWriter pw, File path, String name, HashSet<RuinTemplate> targetList) {
+    private void addRuins(File path, String name, HashSet<RuinTemplate> targetList) {
         RuinTemplate r;
         Biome bgb;
         File[] listFiles = path.listFiles();
-        final String dimensionName = DimensionType.getById(dimension).getRegistryName().getPath();
+
+        final String dimensionName = dimension.getRegistryName().getPath();
         if (listFiles != null) {
             for (File f : listFiles) {
                 try {
-                    r = new RuinTemplate(pw, f.getCanonicalPath(), f.getName());
+                    r = new RuinTemplate(f.getCanonicalPath(), f.getName());
                     if (!r.acceptsDimension(dimensionName)) {
                         continue;
                     }
@@ -306,17 +287,14 @@ class FileHandler {
                     // pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                     templateCount++;
                 } catch (RuinTemplate.IncompatibleModException e) {
-                    pw.println(e.getMessage());
+                    RuinsMod.LOGGER.error("IncompatibleModException", e);
                 } catch (Exception e) {
-                    pw.println();
-                    pw.println("There was a problem loading the file: " + f.getName());
-                    e.printStackTrace(pw);
+                    RuinsMod.LOGGER.error("There was a problem loading the file: " + f.getName(), e);
                 }
             }
         } else {
-            pw.println("Did not find any Building data for " + path + ", creating empty folder for it: " + (path.mkdir() ? "success" : "failed"));
+            RuinsMod.LOGGER.info("Did not find any Building data for {}, creating empty folder for it: {}", path, (path.mkdir() ? "success" : "failed"));
         }
-        pw.flush();
     }
 
     boolean allowsDimension(int dimensionId) {

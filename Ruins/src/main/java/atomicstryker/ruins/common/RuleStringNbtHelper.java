@@ -8,7 +8,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +23,12 @@ public class RuleStringNbtHelper {
         return tagCompound.toString();
     }
 
-    public static IBlockState blockStateFromString(String input, PrintWriter debugPrinter) {
+    public static IBlockState blockStateFromString(String input) {
         NBTTagCompound nbtTagCompound;
         try {
             nbtTagCompound = JsonToNBT.getTagFromJson(input);
         } catch (CommandSyntaxException e) {
-            e.printStackTrace(debugPrinter);
+            RuinsMod.LOGGER.error("failed to parse block state " + input, e);
             return Blocks.AIR.getDefaultState();
         }
         // strip this away here
@@ -57,7 +56,7 @@ public class RuleStringNbtHelper {
     }
 
     // assuming we can have multiple blockstates {nbt}{nbt}{nbt}, split them into a string array. a normal rule will have 1
-    public static String[] splitRuleByBrackets(String rule, PrintWriter debugPrinter) {
+    public static String[] splitRuleByBrackets(String rule) {
         List<String> result = new ArrayList<>();
         int currentBracketStartIndex = 0;
         int bracketCounter = 0;
@@ -70,7 +69,7 @@ public class RuleStringNbtHelper {
             } else if ('}' == rule.charAt(i)) {
                 bracketCounter--;
                 if (bracketCounter < 0) {
-                    debugPrinter.printf("Error in rule %s at character %d: unbalanced brackets!", rule, i);
+                    RuinsMod.LOGGER.error("Error in rule {} at character {}: unbalanced brackets!", rule, i);
                     return null;
                 } else if (bracketCounter == 0) {
                     result.add(rule.substring(currentBracketStartIndex, i + 1));
@@ -78,9 +77,13 @@ public class RuleStringNbtHelper {
             }
         }
         if (bracketCounter > 0) {
-            debugPrinter.printf("Error in rule %s: unbalanced brackets!", rule);
+            RuinsMod.LOGGER.error("Error in rule {} unbalanced brackets!", rule);
             return null;
         }
-        return (String[]) result.toArray();
+        String[] output = new String[result.size()];
+        for (int i = 0; i < output.length; i++) {
+            output[i] = result.get(i);
+        }
+        return output;
     }
 }

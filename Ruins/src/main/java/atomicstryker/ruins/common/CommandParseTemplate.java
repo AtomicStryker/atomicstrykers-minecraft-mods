@@ -15,11 +15,11 @@ public class CommandParseTemplate {
     public static final LiteralArgumentBuilder<CommandSource> BUILDER =
             Commands.literal("parseruin")
                     .requires((caller) -> caller.hasPermissionLevel(2))
-                    .then(Commands.argument("input", StringArgumentType.greedyString()))
-                    .executes((caller) -> {
-                        execute(caller.getSource(), StringArgumentType.getString(caller, "input"));
-                        return 1;
-                    });
+                    .then(Commands.argument("input", StringArgumentType.greedyString())
+                            .executes((caller) -> {
+                                execute(caller.getSource(), StringArgumentType.getString(caller, "input"));
+                                return 1;
+                            }));
 
     private static EntityPlayer player;
     private static String templateName;
@@ -36,10 +36,6 @@ public class CommandParseTemplate {
         } else {
             source.sendErrorMessage(new TextComponentTranslation("Command only available for ingame player entities."));
         }
-    }
-
-    public CommandParseTemplate() {
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent

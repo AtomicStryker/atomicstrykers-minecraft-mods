@@ -14,7 +14,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
 
-import java.io.PrintWriter;
 import java.util.Random;
 
 public class RuinTemplateRule {
@@ -25,17 +24,15 @@ public class RuinTemplateRule {
     protected double blockWeightsTotal;
 
     final RuinTemplate owner;
-    private final PrintWriter debugPrinter;
     private final boolean excessiveDebugging;
 
-    public RuinTemplateRule(PrintWriter dpw, RuinTemplate r, String rule, boolean debug) throws Exception {
-        debugPrinter = dpw;
+    public RuinTemplateRule(RuinTemplate r, String rule, boolean debug) {
         owner = r;
         excessiveDebugging = debug;
 
-        String[] stateStrings = RuleStringNbtHelper.splitRuleByBrackets(rule, debugPrinter);
+        String[] stateStrings = RuleStringNbtHelper.splitRuleByBrackets(rule);
         if (stateStrings == null || stateStrings.length == 0) {
-            debugPrinter.println("could not find any blockstates in rule " + rule);
+            RuinsMod.LOGGER.error("could not find any blockstates in rule {}", rule);
             blockStates = new IBlockState[0];
             blockWeights = new double[0];
             tileEntityData = new NBTTagCompound[0];
@@ -54,17 +51,17 @@ public class RuinTemplateRule {
             blockWeightsTotal += blockWeights[i] = blockWeight;
 
             // stateStrings[i] = "{nbt string}"
-            blockStates[i] = RuleStringNbtHelper.blockStateFromString(stateStrings[i], debugPrinter);
+            blockStates[i] = RuleStringNbtHelper.blockStateFromString(stateStrings[i]);
             tileEntityData[i] = RuleStringNbtHelper.tileEntityNBTFromString(stateStrings[i], 0, 0, 0);
 
             if (excessiveDebugging) {
-                debugPrinter.printf("rule alternative: %d, %s\n", i + 1, blockStates[i].toString());
+                RuinsMod.LOGGER.error("rule alternative: {}, {}", i + 1, blockStates[i].toString());
             }
         }
     }
 
-    RuinTemplateRule(PrintWriter dpw, RuinTemplate r, final String rule) throws Exception {
-        this(dpw, r, rule, false);
+    RuinTemplateRule(RuinTemplate r, final String rule) {
+        this(r, rule, false);
     }
 
     @SuppressWarnings("unused")
@@ -93,7 +90,7 @@ public class RuinTemplateRule {
         IBlockState state = blockStates[blocknum];
         BlockPos pos = new BlockPos(x, y, z);
         if (excessiveDebugging) {
-            debugPrinter.printf("About to place blockstate %s at pos %s\n", state.toString(), pos.toString());
+            RuinsMod.LOGGER.info("About to place blockstate {} at pos {}", state.toString(), pos.toString());
         }
         placeBlock(world, blocknum, x, y, z);
     }

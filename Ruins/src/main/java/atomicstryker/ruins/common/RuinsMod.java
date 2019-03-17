@@ -52,7 +52,7 @@ public class RuinsMod {
 
     static final String modversion = "17.2";
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
     public static final String TEMPLATE_PATH_JAR = "ruins_config";
@@ -67,6 +67,8 @@ public class RuinsMod {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::preInit);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
+        MinecraftForge.EVENT_BUS.register(new CommandUndoTemplate());
         LOGGER.info("Ruins instance built, events registered");
     }
 
@@ -100,7 +102,6 @@ public class RuinsMod {
 
     @SubscribeEvent
     public void onBreak(BlockEvent.BreakEvent event) {
-        LOGGER.info("Ruins onBreak");
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer)) {
             WorldHandle wh = getWorldHandle(event.getWorld());
             if (wh != null && wh.fileHandle.enableStick) {
@@ -273,7 +274,7 @@ public class RuinsMod {
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
-            worldHandle.fileHandle = new FileHandler(worlddir, world.getWorldInfo().getDimension());
+            worldHandle.fileHandle = new FileHandler(worlddir, world.getDimension().getType());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world.getWorld());
             worldHandle.currentlyGenerating = new ConcurrentLinkedQueue<>();
 
