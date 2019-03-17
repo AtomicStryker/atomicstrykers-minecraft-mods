@@ -16,6 +16,7 @@ import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -29,9 +30,10 @@ import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -45,9 +47,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Mod(RuinsMod.MOD_ID)
 @Mod.EventBusSubscriber(modid = RuinsMod.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class RuinsMod {
+
     static final String MOD_ID = "ruins";
 
     static final String modversion = "17.2";
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
     public static final String TEMPLATE_PATH_JAR = "ruins_config";
@@ -55,24 +60,24 @@ public class RuinsMod {
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
 
-    private ConcurrentHashMap<Integer, WorldHandle> generatorMap;
+    private final ConcurrentHashMap<Integer, WorldHandle> generatorMap;
 
     public RuinsMod() {
+        generatorMap = new ConcurrentHashMap<>();
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::preInit);
-        modEventBus.addListener(this::serverAboutToStart);
-        modEventBus.addListener(this::serverStarted);
+        MinecraftForge.EVENT_BUS.register(this);
+        LOGGER.info("Ruins instance built, events registered");
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
+        LOGGER.info("Ruins preInit");
         ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
-    public void serverAboutToStart(FMLServerAboutToStartEvent evt) {
-        generatorMap = new ConcurrentHashMap<>();
-    }
-
+    @SubscribeEvent
     public void serverStarted(FMLServerStartingEvent evt) {
+        LOGGER.info("Ruins serverStarted");
         evt.getCommandDispatcher().register(CommandParseTemplate.BUILDER);
         evt.getCommandDispatcher().register(CommandTestTemplate.BUILDER);
         evt.getCommandDispatcher().register(CommandUndoTemplate.BUILDER);
@@ -87,21 +92,23 @@ public class RuinsMod {
             ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
             if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
-
-                event.getEntityPlayer().sendMessage(new TextComponentTranslation(RuleStringNbtHelper.StringFromBlockState(event.getState())));
+                TileEntity te = event.getEntityPlayer().world.getTileEntity(event.getPos());
+                event.getEntityPlayer().sendMessage(new TextComponentTranslation(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
             }
         }
     }
 
     @SubscribeEvent
     public void onBreak(BlockEvent.BreakEvent event) {
+        LOGGER.info("Ruins onBreak");
         if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer)) {
             WorldHandle wh = getWorldHandle(event.getWorld());
             if (wh != null && wh.fileHandle.enableStick) {
                 ItemStack is = event.getPlayer().getHeldItemMainhand();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    event.getPlayer().sendMessage(new TextComponentTranslation(RuleStringNbtHelper.StringFromBlockState(event.getState())));
+                    TileEntity te = event.getPlayer().world.getTileEntity(event.getPos());
+                    event.getPlayer().sendMessage(new TextComponentTranslation(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                     event.setCanceled(true);
                 }
             }
@@ -142,7 +149,7 @@ public class RuinsMod {
                 tecb2.getCommandBlockLogic().trigger(event.getEntity().world);
                 // kill block
                 BlockPos pos = tecb2.getPos();
-                System.out.printf("Ruins executed and killed Command Block at [%s]\n", pos);
+                LOGGER.info("Ruins executed and killed Command Block at [%s]\n", pos);
                 event.getEntity().world.removeBlock(pos);
             }
         }
@@ -161,9 +168,9 @@ public class RuinsMod {
         if (wh != null) {
 
             if (wh.currentlyGenerating.contains(chunkPos)) {
-                System.err.printf("Ruins Mod caught recursive generator call at chunk %s]\n", chunkPos);
+                LOGGER.error("Ruins Mod caught recursive generator call at chunk {}", chunkPos);
             } else {
-                if (wh.fileHandle.allowsDimension(world.getWorldInfo().getDimension()) && !wh.chunkLogger.catchChunkBug(chunkPos)) {
+                if (wh.fileHandle.allowsDimension(world.getWorldInfo().getDimension()) && (wh.chunkLogger == null || !wh.chunkLogger.catchChunkBug(chunkPos))) {
                     wh.currentlyGenerating.add(chunkPos);
                     // sigh. no proper event for this. lets try it like this
                     Timer timer = new Timer();
@@ -181,7 +188,7 @@ public class RuinsMod {
                         }
                     }, 10000L);
                 }
-        }
+            }
         }
     }
 
@@ -237,11 +244,9 @@ public class RuinsMod {
                 if (f.getType().equals(File.class)) {
                     try {
                         f.setAccessible(true);
-                        // System.out.println("Ruins mod determines World Save
-                        // Dir to be at: "+saveLoc);
                         return (File) f.get(loader);
                     } catch (Exception e) {
-                        System.out.println("Ruins mod failed trying to find World Save dir:");
+                        LOGGER.error("Ruins mod failed trying to find World Save dir:");
                         e.printStackTrace();
                     }
                 }
@@ -267,6 +272,7 @@ public class RuinsMod {
         // load in defaults
         try {
             File worlddir = getWorldSaveDir(world);
+            LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
             worldHandle.fileHandle = new FileHandler(worlddir, world.getWorldInfo().getDimension());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world.getWorld());
             worldHandle.currentlyGenerating = new ConcurrentLinkedQueue<>();
@@ -275,8 +281,8 @@ public class RuinsMod {
                 worldHandle.chunkLogger = world.getWorld().getSavedDataStorage().get(DimensionType.OVERWORLD, ChunkLoggerData::new, "ruinschunklogger");
             }
         } catch (Exception e) {
-            System.err.println("There was a problem loading the ruins mod:");
-            System.err.println(e.getMessage());
+            LOGGER.error("There was a problem loading the ruins mod:");
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
     }

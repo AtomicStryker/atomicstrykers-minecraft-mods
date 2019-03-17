@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ResourceLocation;
@@ -19,6 +20,7 @@ import java.util.Random;
 public class RuinTemplateRule {
 
     protected final IBlockState[] blockStates;
+    protected final NBTTagCompound[] tileEntityData;
     protected final double[] blockWeights;
     protected double blockWeightsTotal;
 
@@ -34,14 +36,15 @@ public class RuinTemplateRule {
         String[] stateStrings = RuleStringNbtHelper.splitRuleByBrackets(rule, debugPrinter);
         if (stateStrings == null || stateStrings.length == 0) {
             debugPrinter.println("could not find any blockstates in rule " + rule);
-            int numblocks = 0;
-            blockStates = new IBlockState[numblocks];
-            blockWeights = new double[numblocks];
+            blockStates = new IBlockState[0];
+            blockWeights = new double[0];
+            tileEntityData = new NBTTagCompound[0];
             return;
         }
         int numblocks = stateStrings.length;
         blockStates = new IBlockState[numblocks];
         blockWeights = new double[numblocks];
+        tileEntityData = new NBTTagCompound[numblocks];
         blockWeightsTotal = 0;
         for (int i = 0; i < numblocks; i++) {
             // invalidate cached block state
@@ -52,6 +55,7 @@ public class RuinTemplateRule {
 
             // stateStrings[i] = "{nbt string}"
             blockStates[i] = RuleStringNbtHelper.blockStateFromString(stateStrings[i], debugPrinter);
+            tileEntityData[i] = RuleStringNbtHelper.tileEntityNBTFromString(stateStrings[i], 0, 0, 0);
 
             if (excessiveDebugging) {
                 debugPrinter.printf("rule alternative: %d, %s\n", i + 1, blockStates[i].toString());
@@ -95,7 +99,7 @@ public class RuinTemplateRule {
     }
 
     private void placeBlock(World world, int blocknum, int x, int y, int z) {
-        realizeBlock(world, x, y, z, blockStates[blocknum]);
+        realizeBlock(world, x, y, z, blockStates[blocknum], tileEntityData[blocknum]);
     }
 
     private int getBlockNum(Random random) {
@@ -107,7 +111,7 @@ public class RuinTemplateRule {
     }
 
     private void addChestGenChest(World world, Random random, int x, int y, int z, String gen) {
-        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST.getDefaultState());
+        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST.getDefaultState(), null);
         if (chest != null) {
             ResourceLocation lootTable;
             if (gen.contains(":")) {
@@ -144,7 +148,7 @@ public class RuinTemplateRule {
 
     // make specified block manifest in world, with given metadata and direction
     // returns associated tile entity, if there is one
-    private TileEntity realizeBlock(World world, int x, int y, int z, IBlockState blockState) {
+    private TileEntity realizeBlock(World world, int x, int y, int z, IBlockState blockState, NBTTagCompound tileEntityData) {
         TileEntity entity = null;
         if (world != null && blockState != null) {
             BlockPos position = new BlockPos(x, y, z);
@@ -159,10 +163,12 @@ public class RuinTemplateRule {
             }
 
             if (world.setBlockState(position, blockState, 2)) {
-                if ((entity = world.getTileEntity(position)) == null) {
-                    // workaround for vanilla weirdness (bug?)
-                    // double set required for some states (e.g., rails)
-                    world.setBlockState(position, blockState, 2);
+                if (tileEntityData != null) {
+                    tileEntityData.putInt("x", x);
+                    tileEntityData.putInt("y", x);
+                    tileEntityData.putInt("z", x);
+                    entity = TileEntity.create(tileEntityData);
+                    world.setTileEntity(position, entity);
                 }
             }
         }

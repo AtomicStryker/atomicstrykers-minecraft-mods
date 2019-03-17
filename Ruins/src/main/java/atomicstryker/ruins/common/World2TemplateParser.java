@@ -3,6 +3,7 @@ package atomicstryker.ruins.common;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -23,7 +24,7 @@ class World2TemplateParser extends Thread {
      * templates.
      */
     private final BlockData templateHelperBlock;
-    private final BlockData nothing = new BlockData(Blocks.AIR.getDefaultState(), 0);
+    private final BlockData nothing = new BlockData(Blocks.AIR.getDefaultState(), 0, null);
 
     /**
      * Starting point for the template parse scan
@@ -87,7 +88,7 @@ class World2TemplateParser extends Thread {
         z = c;
         fileName = fName;
         IBlockState state = world.getBlockState(new BlockPos(a, b, c));
-        templateHelperBlock = new BlockData(state, 0);
+        templateHelperBlock = new BlockData(state, 0, null);
         usedBlocks = new ArrayList<>();
         layerData = new ArrayList<>();
     }
@@ -175,9 +176,10 @@ class World2TemplateParser extends Thread {
                     blocky = yi;
                     blockz = zi + lowestZ;
 
-                    IBlockState state = world.getBlockState(new BlockPos(blockx, blocky, blockz));
-                    temp.blockState = state;
+                    BlockPos pos = new BlockPos(blockx, blocky, blockz);
+                    temp.blockState = world.getBlockState(pos);
                     temp.spawnRule = 0;
+                    temp.tileEntity = world.getTileEntity(pos);
 
                     if (temp.blockState.getBlock() == Blocks.AIR || temp.equals(templateHelperBlock)) {
                         currentLayer[xi][zi] = nothing;
@@ -465,14 +467,16 @@ class World2TemplateParser extends Thread {
     private class BlockData {
         IBlockState blockState;
         int spawnRule;
+        TileEntity tileEntity;
 
-        BlockData(IBlockState state, int sr) {
+        BlockData(IBlockState state, int sr, TileEntity te) {
             blockState = state;
             spawnRule = sr;
+            tileEntity = te;
         }
 
         BlockData copy() {
-            return new BlockData(blockState, spawnRule);
+            return new BlockData(blockState, spawnRule, tileEntity);
         }
 
         boolean matchesBlock(World w, int x, int y, int z) {
@@ -481,7 +485,7 @@ class World2TemplateParser extends Thread {
 
         @Override
         public String toString() {
-            return String.format("%s,100,%s", spawnRule, RuleStringNbtHelper.StringFromBlockState(blockState));
+            return String.format("%s,100,%s", spawnRule, RuleStringNbtHelper.StringFromBlockState(blockState, tileEntity));
         }
 
         @Override
