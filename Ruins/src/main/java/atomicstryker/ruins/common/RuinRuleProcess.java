@@ -21,6 +21,6 @@ class RuinRuleProcess
 
     public void doBlock(World world, Random random)
     {
-        rule.doBlock(world, random, x, y, z, rotate);
+        rule.doBlock(world, random, x, y, z);
     }
 }

@@ -8,27 +8,25 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.terraingen.ChunkGeneratorEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
-import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
@@ -39,6 +37,8 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -65,7 +65,6 @@ public class RuinsMod {
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
-        GameRegistry.registerWorldGenerator(new RuinsWorldGenerator(), 0);
         ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
@@ -88,8 +87,8 @@ public class RuinsMod {
             ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
             if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                 nextInfoTime = System.currentTimeMillis() + 1000L;
-                event.getEntityPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
-                        event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+
+                event.getEntityPlayer().sendMessage(new TextComponentTranslation(RuleStringNbtHelper.StringFromBlockState(event.getState())));
             }
         }
     }
@@ -102,8 +101,7 @@ public class RuinsMod {
                 ItemStack is = event.getPlayer().getHeldItemMainhand();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    event.getPlayer().sendMessage(new TextComponentTranslation(String.format("BlockName [%s], blockID [%s], metadata [%d]", event.getState().getBlock().getUnlocalizedName(),
-                            event.getState().getBlock().getRegistryName().getResourcePath(), event.getState().getBlock().getMetaFromState(event.getState()))));
+                    event.getPlayer().sendMessage(new TextComponentTranslation(RuleStringNbtHelper.StringFromBlockState(event.getState())));
                     event.setCanceled(true);
                 }
             }
@@ -150,32 +148,40 @@ public class RuinsMod {
         }
     }
 
-    private class RuinsWorldGenerator implements IWorldGenerator {
-        @Override
-        public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-            if (world.isRemote || !world.getWorldInfo().isMapFeaturesEnabled()) {
-                return;
-            }
+    @SubscribeEvent
+    public void onReplaceBiomeBlocks(ChunkGeneratorEvent.ReplaceBiomeBlocks event) {
 
-            final WorldHandle wh = getWorldHandle(world);
-            if (wh != null) {
-                int[] tuple = {chunkX, chunkZ};
-                if (wh.currentlyGenerating.contains(tuple)) {
-                    System.err.printf("Ruins Mod caught recursive generator call at chunk [%d|%d]", chunkX, chunkZ);
-                } else {
-                    if (wh.fileHandle.allowsDimension(world.getWorldInfo().getDimension()) && !wh.chunkLogger.catchChunkBug(chunkX, chunkZ)) {
-                        wh.currentlyGenerating.add(tuple);
-                        if (world.getDimension().isNether()) {
-                            generateNether(world, random, tuple[0] * 16, tuple[1] * 16);
-                        } else
-                        // normal world
-                        {
-                            generateSurface(world, random, tuple[0] * 16, tuple[1] * 16);
+        if (event.getWorld().isRemote() || !event.getWorld().getWorldInfo().isMapFeaturesEnabled()) {
+            return;
+        }
+
+        World world = event.getWorld().getWorld();
+        ChunkPos chunkPos = event.getChunk().getPos();
+        final WorldHandle wh = getWorldHandle(world);
+        if (wh != null) {
+
+            if (wh.currentlyGenerating.contains(chunkPos)) {
+                System.err.printf("Ruins Mod caught recursive generator call at chunk %s]\n", chunkPos);
+            } else {
+                if (wh.fileHandle.allowsDimension(world.getWorldInfo().getDimension()) && !wh.chunkLogger.catchChunkBug(chunkPos)) {
+                    wh.currentlyGenerating.add(chunkPos);
+                    // sigh. no proper event for this. lets try it like this
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (world.getDimension().isNether()) {
+                                generateNether(world, world.rand, chunkPos.getXStart(), chunkPos.getZStart());
+                            } else
+                            // normal world
+                            {
+                                generateSurface(world, world.rand, chunkPos.getXStart(), chunkPos.getZStart());
+                            }
+                            wh.currentlyGenerating.remove(chunkPos);
                         }
-                        wh.currentlyGenerating.remove(tuple);
-                    }
+                    }, 10000L);
                 }
-            }
+        }
         }
     }
 
@@ -202,7 +208,7 @@ public class RuinsMod {
     private class WorldHandle {
         FileHandler fileHandle;
         RuinGenerator generator;
-        ConcurrentLinkedQueue<int[]> currentlyGenerating;
+        ConcurrentLinkedQueue<ChunkPos> currentlyGenerating;
         ChunkLoggerData chunkLogger;
     }
 

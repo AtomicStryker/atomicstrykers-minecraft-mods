@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.MessageArgument;
@@ -115,7 +116,7 @@ class CommandTestTemplate
                         for (y = ceiling - 1; y > 7; y--)
                         {
                             BlockPos pos = new BlockPos(x, y, z);
-                            final Block b = world.getBlockState(pos).getBlock();
+                            final IBlockState b = world.getBlockState(pos);
                             if (parsedRuin.isIgnoredBlock(b, world, pos))
                             {
                                 continue;
