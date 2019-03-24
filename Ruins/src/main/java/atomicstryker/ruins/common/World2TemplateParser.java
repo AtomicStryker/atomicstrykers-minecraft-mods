@@ -1,12 +1,18 @@
 package atomicstryker.ruins.common;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootTableList;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,6 +21,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 class World2TemplateParser extends Thread {
 
@@ -25,6 +32,11 @@ class World2TemplateParser extends Thread {
      */
     private final BlockData templateHelperBlock;
     private final BlockData nothing = new BlockData(Blocks.AIR.getDefaultState(), 0, null);
+
+    private final List<String> chestLootTableNamesToGenerate = ImmutableList.of(
+            LootTableList.CHESTS_SIMPLE_DUNGEON.toString(), LootTableList.CHESTS_BURIED_TREASURE.toString(),
+            LootTableList.CHESTS_ABANDONED_MINESHAFT.toString(), LootTableList.CHESTS_STRONGHOLD_CORRIDOR.toString(),
+            LootTableList.CHESTS_STRONGHOLD_CROSSING.toString(), LootTableList.CHESTS_STRONGHOLD_LIBRARY.toString());
 
     /**
      * Starting point for the template parse scan
@@ -199,94 +211,12 @@ class World2TemplateParser extends Thread {
                     }
                     highestY = yi;
 
-                    /* TODO Is any of that still necessary?
-                    TileEntity te = world.getTileEntity(new BlockPos(new BlockPos(blockx, blocky, blockz)));
-                    // handle special blocks
-                    if (temp.blockState.getBlock() == Blocks.TORCH || temp.blockState.getBlock() == Blocks.REDSTONE_TORCH) {
-                        // if meta says FLOOR, add FLOOR dependency, alse
-                        // ADJACENT dependency
-                        temp.spawnRule = (temp.meta == 0 || temp.meta == 5) ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
-                    } else if (temp.block == Blocks.PISTON_HEAD || temp.block == Blocks.PISTON_EXTENSION) {
-                        temp.spawnRule = SPAWN_RULE_EXISTSADJACENT;
-                    } else if (temp.block == Blocks.WOODEN_BUTTON || temp.block == Blocks.STONE_BUTTON) {
-                        // if meta says FLOOR, add FLOOR dependency, alse
-                        // ADJACENT dependency
-                        temp.spawnRule = temp.meta == 5 ? SPAWN_RULE_EXISTSBELOW : SPAWN_RULE_EXISTSADJACENT;
-                    } else if (te instanceof IInventory && !isIInventoryEmpty((IInventory) te)) {
-                        IInventory inventory = (IInventory) te;
-                        final ArrayList<ItemStack> invItems = new ArrayList<>();
-                        final ArrayList<Integer> slots = new ArrayList<>();
-                        for (int slot = 0; slot < inventory.getSizeInventory(); slot++) {
-                            if (inventory.getStackInSlot(slot) != ItemStack.EMPTY) {
-                                invItems.add(inventory.getStackInSlot(slot));
-                                slots.add(slot);
-                            }
-                        }
-
-                        StringBuilder sb = new StringBuilder("IInventory;");
-                        sb.append(Block.REGISTRY.getNameForObject(temp.block));
-                        sb.append(';');
-                        for (int index = 0; index < invItems.size(); index++) {
-                            ItemStack stack = invItems.get(index);
-                            String ident;
-                            if (stack.getItem() instanceof ItemBlock) {
-                                ItemBlock itemBlock = (ItemBlock) stack.getItem();
-                                ident = Block.REGISTRY.getNameForObject(itemBlock.getBlock()).toString();
-                            } else {
-                                ident = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
-                            }
-                            if (ident != null) {
-                                sb.append(ident);
-                            } else {
-                                sb.append(stack.getUnlocalizedName());
-                            }
-                            sb.append('#');
-                            if (stack.getTagCompound() != null) {
-                                sb.append(stack.getTagCompound().toString());
-                            } else {
-                                sb.append(stack.getCount());
-                            }
-                            sb.append('#');
-                            sb.append(stack.getItemDamage());
-                            sb.append('#');
-                            sb.append(slots.get(index));
-                            sb.append('+');
-                        }
-
-                        temp.data = sb.toString();
-                        int iLastSep = temp.data.lastIndexOf("+");
-                        if (iLastSep != -1) {
-                            temp.data = temp.data.substring(0, iLastSep) + "-" + temp.meta;
-                        } else {
-                            temp.data = temp.data + "-" + temp.meta;
-                        }
-                    } else if (temp.block == Blocks.CHEST) {
-                        temp.data = "ChestGenHook:chests/simple_dungeon:5-" + temp.meta;
-                    } else if (temp.block == Blocks.COMMAND_BLOCK) {
-                        TileEntityCommandBlock tec = (TileEntityCommandBlock) te;
-                        if (tec != null) {
-                            temp.data = "CommandBlock:" + tec.getCommandBlockLogic().getCommand() + ":" + tec.getCommandBlockLogic().getName() + "-" + temp.meta;
-                        }
-                    } else if (temp.block == Blocks.STANDING_SIGN) {
-                        TileEntitySign tes = (TileEntitySign) te;
-                        temp.data = convertSignStrings("StandingSign:", tes) + "-" + temp.meta;
-                        temp.spawnRule = SPAWN_RULE_EXISTSBELOW;
-                    } else if (temp.block == Blocks.WALL_SIGN) {
-                        TileEntitySign tes = (TileEntitySign) te;
-                        temp.data = convertSignStrings("WallSign:", tes) + "-" + temp.meta;
-                        temp.spawnRule = SPAWN_RULE_EXISTSADJACENT;
-                    } else if (temp.block == Blocks.SKULL) {
-                        TileEntitySkull tes = (TileEntitySkull) te;
-                        int skulltype = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 0);
-                        int rot = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 1);
-                        String specialType = "";
-                        GameProfile playerhead = ReflectionHelper.getPrivateValue(TileEntitySkull.class, tes, 2);
-                        if (playerhead != null) {
-                            specialType = playerhead.getId().toString() + "-" + playerhead.getName();
-                        }
-                        temp.data = "Skull:" + skulltype + ":" + rot + ((specialType.equals("")) ? "" : ":" + specialType) + "-" + temp.meta;
+                    if (temp.tileEntity instanceof TileEntityChest && isIInventoryEmpty((IInventory) temp.tileEntity)) {
+                        NBTTagCompound teData = temp.tileEntity.getTileData();
+                        // use vanilla method of placing loot!
+                        teData.putString("LootTable", chestLootTableNamesToGenerate.get(world.rand.nextInt(chestLootTableNamesToGenerate.size())));
+                        teData.putLong("LootTableSeed", world.rand.nextLong());
                     }
-                    */
 
                     int indexInList = usedBlocks.indexOf(temp);
                     if (indexInList == -1) {
@@ -301,7 +231,6 @@ class World2TemplateParser extends Thread {
         }
     }
 
-    /*
     private boolean isIInventoryEmpty(IInventory inventory) {
         for (int slot = 0; slot < inventory.getSizeInventory(); slot++) {
             if (inventory.getStackInSlot(slot) != ItemStack.EMPTY) {
@@ -310,27 +239,6 @@ class World2TemplateParser extends Thread {
         }
         return true;
     }
-
-    private String convertSignStrings(String prefix, TileEntitySign sign) {
-        String a = sign.signText[0].getUnformattedText();
-        if (a.equals("")) {
-            a = "null";
-        }
-        String b = sign.signText[1].getUnformattedText();
-        if (b.equals("")) {
-            b = "null";
-        }
-        String c = sign.signText[2].getUnformattedText();
-        if (c.equals("")) {
-            c = "null";
-        }
-        String d = sign.signText[3].getUnformattedText();
-        if (d.equals("")) {
-            d = "null";
-        }
-        return prefix + a + ":" + b + ":" + c + ":" + d;
-    }
-    */
 
     private void toFile(File file) {
         try {

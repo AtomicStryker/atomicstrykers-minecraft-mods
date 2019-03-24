@@ -1,17 +1,13 @@
 # BASICS
-# This file is designed to be copied into the mods/resources/ruins folder and be
-# edited to create a new template.  It is functional as-is; you can use it as
-# a placeholder for future templates after renaming it.
+# Please use the ingame parser to create templates. It is not worth the effort to make them from scratch.
 #
-# Templates have a .tml extension and the mod will attempt to load any and
+# Templates have a .tml extension and Ruins will attempt to load any and
 # all files with that extension if they reside in the <minecraft root>/
-# mods/resources/ruins folder. Whether it does so successfully or not can be
-# checked in the log file (<minecraft root>/mods/ruins_log.txt). The mod will also
-# load any templates found in the biome folders within
-# <minecraft root>/mods/resources/ruins.
+# config/ruins_config/*biomename* folder. Whether it does so successfully or not can be
+# checked in the minecraft log file.
 #
 # These template files are a simple text file; simply open them in your
-# favorite text editor to make changes or create new ones.
+# favorite text editor to make adjustments.
 #
 # There are three sections to each template file:
 # VARIABLES define how the template is generated.
@@ -111,15 +107,15 @@
 # more than 0 you may get some unexpected fluid dynamics if the structure
 # does not spawn completely in water/lava.
 #
-# Ruins 13.8 adds optional variable "uniqueMinDistance" which overrides global templateInstancesMinDistance
+# "uniqueMinDistance" overrides global templateInstancesMinDistance, e.g. how close can 2 instances of the template spawn together
 # uniqueMinDistance=1500
 # defaults to 0. values of 0 are handled as if no value was specified at all.
 #
-# Ruins 13.9 adds optional variable "preventRotation" which keeps a template in the specified direction
+# keeps a template rotated in the original direction
 # preventRotation=1
 # defaults to 0. values of 0 are handled as if no value was specified at all.
 #
-# Ruins 14.3 adds the optional repeatable variable "adjoining_template" which lets you spawn adjacent templates
+# "adjoining_template" lets you spawn adjacent templates
 # these will not be checked for minimal distances against ANY other ruins, make sure your spacings are big enough
 # these will also not be checked for circular dependencies, you build an infinite loop, you wait it out
 # these will be checked against the rules the template itself contains
@@ -133,8 +129,8 @@
 #
 # Example: adjoining_template=generic/MoaiHead;-25;10;25;33
 #
-# Ruins 17.0 adds optional variables "spawnMinDistance" and "spawnMaxDistance"
-# to specify the minimum and maximum distances (i.e., Chebyshev distance, in
+# optional variables "spawnMinDistance" and "spawnMaxDistance"
+# specify the minimum and maximum distances (i.e., Chebyshev distance, in
 # blocks, on the XZ plane), respectively, from the world spawn point this
 # template may be naturally instantiated in the overworld (dimension 0). They
 # have no effect on instantiation in other dimensions.
@@ -150,8 +146,6 @@
 # that is desired, the Ruins mod configuration file will need to be changed.
 # If the space between max and min distances is too narrow (namely, less than
 # the length and width of the template), no instances can naturally generate.
-#
-# Ruins 17.2 adds three new optional variables:
 #
 # requiredMods=<criterion>
 # Prevent installation of this template unless the list of installed mods meets the
@@ -187,7 +181,7 @@
 # and is of lower precedence than + and -; parentheses may be used to further control the
 # order of evaluation.
 #
-# Ruins 17.3 adds optional variable "dimensionsToSpawnIn" to specify in which
+# optional variable "dimensionsToSpawnIn" specifies in which
 # dimensions the template's structures may appear. Note this applies to generic
 # spawning as well. List one or more dimensions by name, separated by commas,
 # or leave blank (default) to allow all dimensions.
@@ -196,8 +190,8 @@
 
 weight=5
 embed_into_distance=1
-acceptable_target_blocks=stone,grass,dirt,sand,gravel,clay
-dimensions=4,7,5
+unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+dimensions=1,3
 allowable_overhang=0
 max_leveling=2
 leveling_buffer=0
@@ -207,7 +201,7 @@ preserve_lava=0
 
 # BLOCK RULES
 # Each rule must be formatted carefully:
-# rule<number>=<condition>,<chance to appear>,<list of blocks>
+# rule<number>=<condition>,<chance to appear>,<list of blockstates>
 #
 # rule<number>
 # The mod does not care what you call these and will number the rules in the
@@ -223,117 +217,32 @@ preserve_lava=0
 # however, that rule0 may be redefined as something else by the template author.
 #
 # <condition>
-# A conditional to the block being placed, aside from randomness.
-# 0 = Normal, spawns first
-# ±1 = Checks block under, spawns delayed
-# ±2 = Checks block adjacent, spawns delayed
-# ±3 = Checks block above, spawns last
-# 7 = Spawns last
-# Where the negative cases for 1,2,3 denote NOT. In other words, 2 means the block will only spawn 
-# if there is a block next to it, while -2 will NOT spawn if there are any blocks next to it.
+# As of Minecraft 1.13.2, condition no longer does anything.
+# Until the rule pattern matcher is updated, though, it is still mandatory.
 #
 # Adjacent in this case is not diagonal, only along the cardinal directions.
-#
-# Adjacent blocks are processed after 0 and 1 conditionals have been placed,
-# and "under blocks" are processed after all other blocks have been placed.
-# Please note that these blocks are still processed in an order dependent on
-# the rotation of the site.  For a normal, north-facing site, the block rules
-# are processed for each line from the left and from the bottom template to the
-# top.
-#
-# DO NOT CHAIN CONDITIONS. That results in undefined behaviour.
-#
+##
 # <chance to appear>
-# The chance that this block will appear, out of 100, depending on whether the
-# condition above is met.
+# As of Minecraft 1.13.2, has no effect.
 #
-# <list of blocks>
-# A comma-delimited set of minecraft blockIDs.  This will determine what block
-# will actually spawn in the location.  Each blockID is given the same weight,
-# so you can skew the odds of a certain blockID appearing by adding it multiple
-# times.  You can specify block metadata by adding a "-<metadata>" after the
-# blockID.  For instance, to place a cobblestone stairs block ascending to the
-# east, use stone_stairs-3.  To place a wood half-block (slab), use stone_slab-2.
-#
-# You can find a list of blockIDs and commonly-used metadata via Google.
-# There is also one included, idmappings.txt
+# <list of blockstates>
+# One or more blockstates in minecraft NBT format. Tile Entities data compounds are included inside a "ruinsTE" nbt tag.
+# You can disregard the XYZ coordinates in tile entity tags, they are overwritten by Ruins when spawning TE.
+# I suggest using the ingame template parses and then editing the result if needed.
+# Delimiters are optional. Parsing is done between opening and closing brackets.
+# {Name:"minecraft:bookshelf"}{Properties:{facing:"west"},Name:"minecraft:carved_pumpkin"}{Name:"minecraft:diamond_ore"}
 #
 #
-# Example 1: rule1=0,100,0,cobblestone,mossy_cobblestone
-# This spawns either air, cobblestone, or a mossy cobblestone 100% of the time.
+# Using the ingame parser on an empty chest will automatically link a minecraft loot table to it and spawn loot when the
+# template is generated by Ruins.
 #
-# Example 2: rule1=1,50,mossy_cobblestone
-# This spawns a mossy cobblestone 50% of the time but only if another block
-# is underneath it.
-#
-# Example 3: rule1=2,100,stone_slab-2,planks
-# This spawns either a stone slab or a plank block, but only if there is an
-# adjacent block on the same level.
-#
-# Example 4: rule1=0,100,torch-5
-# This spawns a torch standing on the ground.
-#
-# Example 5: rule1=0,25,MediumChest
-# This spawns a Medium Chest (see above) 25% of the time.
-#
-# Example 6: rule1=0,50,MobSpawner:Villager
-# This spawns a Mob Spawner with Entity Id "Villager" 50% of the time
-# Entity Id's are case sensitive! Mod added Mobs are allowed. Use a tool like Simply Hax to get correct Entity Id's
-#
-# Ruins 9.0 exposes minecraft ChestGenHook for your meddling. Usage:
-#
-# Example 7: rule1=0,100,ChestGenHook:chests/simple_dungeon:10
-# This spawns a chest and tells the Minecraft generator to fill it with "10" itemstacks of the "chests/simple_dungeon" loot preset.
-# This might include extremely powerful items added by mods. Note: The algorithm spreads out the itemstacks, it might be more than 10
-# items in this particular case, e.g. 5 pieces of bread count as 1 itemstack, yet will be spread out over 5 slots.
-#
-#	see http://minecraft.gamepedia.com/Loot_table#List_of_loot_tables for possible loot tables (as of MC 1.9)
-#
-#	As of 10.6, all chest rules can also append a metadata/rotation int similar to a chest block ID
-#	example: rule1=0,100,ChestGenHook:chests/simple_dungeon:10-5
-#	for a chest filled with dungeon chest loot and rotated to meta 5.
+# {ruinsTE:{ForgeData:{LootTable:"minecraft:chests/stronghold_library",LootTableSeed:3471763263981993226L},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:"west",type:"single"},Name:"minecraft:chest"}
+# see http://minecraft.gamepedia.com/Loot_table#List_of_loot_tables for possible loot tables (as of MC 1.9)
 #
 #
-# Ruins 10.3 adds Command Block Support. Usage:
-# Example 8: rule1=0,100,CommandBlock:command:sender
-# command being the Command string to be executed and sender being the Command sender (a player name, Rcon...)
-# you can provide several alternative command blocks seperated by commata, however you may not mix command blocks and other blocks in one rule
+# As of Minecraft 1.13.2, Command Block support is suspended until someone bothers to implement it.
 #
-# Ruins 12.1 adds Standing Signs. Usage:
-# Example 9: rule1=0,100,StandingSign:a|b|c|d-4
-# a,b,c,d are the 4 Strings/lines you can write on a sign. The metadata/rotation of the sign is affixed as usual.
-#
-# Ruins 12.2 adds IInventory block support. Usage: IInventory;<blockName>;<itemList>-<blockrotation>
-# where <blockName> is the registry name of the Block that sports an inventory
-# where <itemList> is a list of elements seperated by '+', each element is a block or item registry name
-# optionally followed by #stacksize OR #stacksize#metadata OR #stacksize#metadata#inventoryslot
-# Example 10: rule1=0,100,IInventory;chest;red_flower+arrow#10+wool#3#15-5
-# this spawns a chest rotated to 5, which will contain a single red flower, 10 arrows, and 3 wool of color red (meta 15)
-# Example 11: rule1=0,100,IInventory;dispenser;arrow#10+snowball#20+egg#3-1
-# this spawns a dispenser rotated to 1, with 10 arrows 20 snowballs and 3 eggs
-# you may use this for items added by mods. names not found in the registry will simply be skipped over.
-# you may also use this for container blocks added by mods. invalid anythings should be skipped.
-# the Ruins Parser will do this for you when you parse an IInventory block. Empty chests get hooked with dungeon loot
-# automatically. If you want to prevent this, either edit the template afterwards or place some dirt in the chest.
-# if you specify the same slot index multiple times, only the first itemstack gets put in
-#
-# Ruins 15.0 adds ChestGenHook (see above) as valid <itemList> entry for IInventory rules
-# Example: rule1=0,100,IInventory;dispenser;ChestGenHook:dungeonChest:5-1
-#
-# Ruins 14.3 adds the -addbonemeal flag to use on IGrowable blocks such as saplings or most plants
-# simply append -addbonemeal to a block which is an IGrowable (and only those!)
-# note this overrides certain checks done before hand application of bonemeal, such as darkness checks for shrooms
-# also note /undo does NOT take growing things into account when cleaning up your shenanigans
-# below example is for oak and dark oak saplings
-# Example 12: rule1=0,100,0,sapling-addbonemeal,sapling-5-addbonemeal
-#
-# Ruins 14.9 adds support for item NBT data. the json nbt string replaces 'stacksize' in the format, as nbt capable items are never stackable
-# Example 13: rule1=0,100,IInventory;minecraft:chest;minecraft:diamond_sword#{RepairCost:2,display:{Name:"Choppa"}}#0#0
-#
-# Ruins 15.0 adds support for tile entity NBT data. This is best achieved by adding the blockname to the global "teblock" variable in ruins.txt
-# Usage: teBlock;<blockName>;<nbttag json>-<blockrotation>
-# Example: rule1=0,100,teBlock;minecraft:trapped_chest;{Items:[0:{Slot:12b,id:5s,Count:1b,Damage:0s},1:{Slot:13b,id:24s,Count:1b,Damage:1s}],id:"Chest"}-2
-# Note: "Chain" and "Repeat" Command Blocks are classified as such by default
+# DISREGARD ANY OF THE OLD STYLE NAMING IN THE REST OF THE FILE, HE NEEDS TO REWRITE HIS DOCUMENTATION FOR 1.13.2
 #
 # Ruins 16.8 modifies the rule syntax a bit to add some new features (variants and variant groups, in particular). None
 # of these changes should break or alter the behavior of existing template files, except perhaps in pathological cases

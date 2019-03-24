@@ -349,7 +349,7 @@ public class RuinTemplate {
                             break;
                     }
                     curRule = rules.get(rulenum);
-                    curRule.doBlock(world, random, x + x1, y + y_off, z + z1);
+                    curRule.doBlock(world, random, new BlockPos(x + x1, y + y_off, z + z1), rotate);
                 }
             }
 
@@ -458,7 +458,7 @@ public class RuinTemplate {
                 }
                 // flatten bumps
                 for (int yi = y; yi < lastY; yi++) {
-                    rule0.doBlock(world, random, xi, yi, zi);
+                    rule0.doBlock(world, random, new BlockPos(xi, yi, zi), RuinsMod.DIR_NORTH);
                 }
             }
         }

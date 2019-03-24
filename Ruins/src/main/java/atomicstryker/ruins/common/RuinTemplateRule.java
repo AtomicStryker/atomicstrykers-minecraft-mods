@@ -5,14 +5,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootTable;
 
 import java.util.Random;
 
@@ -77,26 +74,18 @@ public class RuinTemplateRule {
         }
     }
 
-    public void doBlock(World world, Random random, int x, int y, int z) {
-        doNormalBlock(world, random, x, y, z);
-    }
-
-    private void doNormalBlock(World world, Random random, int x, int y, int z) {
+    public void doBlock(World world, Random random, BlockPos pos, int rotate) {
         int blocknum = getBlockNum(random);
-        handleBlockSpawning(world, random, x, y, z, blocknum);
+        handleBlockSpawning(world, random, pos, blocknum, rotate);
     }
 
-    private void handleBlockSpawning(World world, Random random, int x, int y, int z, int blocknum) {
-        IBlockState state = blockStates[blocknum];
-        BlockPos pos = new BlockPos(x, y, z);
+    private void handleBlockSpawning(World world, Random random, BlockPos pos, int blocknum, int rotate) {
+        // use vanilla rotation - lets see how this goes
+        IBlockState rotatedState = blockStates[blocknum].rotate(world, pos, getDirectionalRotation(rotate));
         if (excessiveDebugging) {
-            RuinsMod.LOGGER.info("About to place blockstate {} at pos {}", state.toString(), pos.toString());
+            RuinsMod.LOGGER.info("About to place blockstate {} at pos {}", rotatedState.toString(), pos.toString());
         }
-        placeBlock(world, blocknum, x, y, z);
-    }
-
-    private void placeBlock(World world, int blocknum, int x, int y, int z) {
-        realizeBlock(world, x, y, z, blockStates[blocknum], tileEntityData[blocknum]);
+        realizeBlock(world, pos, rotatedState, tileEntityData[blocknum]);
     }
 
     private int getBlockNum(Random random) {
@@ -105,25 +94,6 @@ public class RuinTemplateRule {
         for (double selector = random.nextDouble() * blockWeightsTotal; (selector -= blockWeights[blockIndex]) >= 0; ++blockIndex)
             ;
         return blockIndex;
-    }
-
-    private void addChestGenChest(World world, Random random, int x, int y, int z, String gen) {
-        TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST.getDefaultState(), null);
-        if (chest != null) {
-            ResourceLocation lootTable;
-            if (gen.contains(":")) {
-                String[] pair = gen.split(":");
-                lootTable = new ResourceLocation(pair[0], pair[1]);
-            } else {
-                lootTable = new ResourceLocation("minecraft", gen);
-            }
-
-            if (world.getServer() != null) {
-                LootTable lootTableFromLocation = world.getServer().getLootTableManager().getLootTableFromLocation(lootTable);
-                LootContext.Builder lootContextBuilder = new LootContext.Builder((WorldServer) world);
-                lootTableFromLocation.fillInventory(chest, random, lootContextBuilder.build());
-            }
-        }
     }
 
     // get rotation (minecraft enum) corresponding to given direction (ruins int)
@@ -145,10 +115,9 @@ public class RuinTemplateRule {
 
     // make specified block manifest in world, with given metadata and direction
     // returns associated tile entity, if there is one
-    private TileEntity realizeBlock(World world, int x, int y, int z, IBlockState blockState, NBTTagCompound tileEntityData) {
+    private TileEntity realizeBlock(World world, BlockPos position, IBlockState blockState, NBTTagCompound tileEntityData) {
         TileEntity entity = null;
         if (world != null && blockState != null) {
-            BlockPos position = new BlockPos(x, y, z);
 
             // clobber existing tile entity block, if any
             TileEntity existing_entity = world.getTileEntity(position);
@@ -161,11 +130,28 @@ public class RuinTemplateRule {
 
             if (world.setBlockState(position, blockState, 2)) {
                 if (tileEntityData != null) {
-                    tileEntityData.putInt("x", x);
-                    tileEntityData.putInt("y", x);
-                    tileEntityData.putInt("z", x);
+                    tileEntityData.putInt("x", position.getX());
+                    tileEntityData.putInt("y", position.getY());
+                    tileEntityData.putInt("z", position.getZ());
+
                     entity = TileEntity.create(tileEntityData);
                     world.setTileEntity(position, entity);
+
+                    if (entity instanceof TileEntityLockableLoot) {
+                        NBTTagCompound nbtTagCompound = entity.getTileData();
+                        // unwrap forgedata if needed?
+                        if (nbtTagCompound.contains("ForgeData")) {
+                            nbtTagCompound = nbtTagCompound.getCompound("ForgeData");
+                        }
+                        if (nbtTagCompound.contains("LootTable")) {
+                            String lootTable = nbtTagCompound.getString("LootTable");
+                            long lootSeed = nbtTagCompound.getLong("LootTableSeed");
+
+                            TileEntityLockableLoot tileEntityLockableLoot = (TileEntityLockableLoot) entity;
+                            tileEntityLockableLoot.setLootTable(new ResourceLocation(lootTable), lootSeed);
+                            tileEntityLockableLoot.fillWithLoot(null);
+                        }
+                    }
                 }
             }
         }
