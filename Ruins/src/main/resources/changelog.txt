@@ -547,3 +547,7 @@ a: setAccessible now true
 + remove extra +1% generic spawn chance, bugfix
 + support biome names containing spaces
 + templates can now specify dimensions to spawn in
+
+1.13.2
++ port to MinecraftForge 1.13.2
++ see template_rules for changes ... i don't want to write so much ...
