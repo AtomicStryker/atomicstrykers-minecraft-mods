@@ -48,9 +48,11 @@ public class ItemConfigHelper {
     }
 
     public boolean contains(ItemStack testee) {
-        for (ItemStack is : itemStackList) {
-            if (is.getItem() == testee.getItem() && ItemStack.areItemStackTagsEqual(is, testee)) {
-                return true;
+        if (testee != null && testee != ItemStack.EMPTY) {
+            for (ItemStack is : itemStackList) {
+                if (is.getItem() == testee.getItem() && ItemStack.areItemStackTagsEqual(is, testee)) {
+                    return true;
+                }
             }
         }
         return false;

@@ -88,7 +88,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource, BootstrapList
             }
             int prevLight = lightLevel;
 
-            ItemStack item = null;
+            ItemStack item = ItemStack.EMPTY;
             LOGGER.debug("checking for light from main hand item {}", thePlayer.getHeldItemMainhand());
             int main = getLightFromItemStack(thePlayer.getHeldItemMainhand());
             int off = getLightFromItemStack(thePlayer.getHeldItemOffhand());
