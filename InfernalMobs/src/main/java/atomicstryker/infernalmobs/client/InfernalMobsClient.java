@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.client;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
@@ -266,15 +267,19 @@ public class InfernalMobsClient implements ISidedProxy
     @Override
     public void onHealthPacketForClient(int entID, float health, float maxhealth)
     {
-        Entity ent = FMLClientHandler.instance().getClient().world.getEntityByID(entID);
-        if (ent != null && ent instanceof EntityLivingBase)
+
+    }
+
+    public static void onHealthPacketForClient(HealthPacket healthPacket) {
+        Entity ent = Minecraft.getInstance().world.getEntityByID(healthPacket.getEntID());
+        if (ent instanceof EntityLivingBase)
         {
             MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) ent);
             if (mod != null)
             {
                 // System.out.printf("health packet [%f of %f] for %s\n",
                 // health, maxhealth, ent);
-                mod.setActualHealth(health, maxhealth);
+                mod.setActualHealth(healthPacket.getHealth(), healthPacket.getMaxhealth());
             }
         }
     }
@@ -300,6 +305,10 @@ public class InfernalMobsClient implements ISidedProxy
     @Override
     public void onAirPacket(int air)
     {
+        airOverrideValue = air;
+    }
+
+    public static void overrideAir(int air) {
         airOverrideValue = air;
     }
 

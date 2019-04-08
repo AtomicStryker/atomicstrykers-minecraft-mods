@@ -1,29 +1,32 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-public class HealthPacket implements IPacket
-{
-    
+import java.util.function.Supplier;
+
+public class HealthPacket implements IPacket {
+
     private String stringData;
     private int entID;
     private float health;
     private float maxhealth;
 
-    public HealthPacket() {}
-    
-    public HealthPacket(String u, int i, float f1, float f2)
-    {
+    public HealthPacket() {
+    }
+
+    public HealthPacket(String u, int i, float f1, float f2) {
         stringData = u;
         entID = i;
         health = f1;
@@ -31,63 +34,62 @@ public class HealthPacket implements IPacket
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-    	ByteBufUtils.writeUTF8String(bytes, stringData);
-        bytes.writeInt(entID);
-        bytes.writeFloat(health);
-        bytes.writeFloat(maxhealth);
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        HealthPacket healthPacket = (HealthPacket) msg;
+        packetBuffer.writeString(healthPacket.stringData);
+        packetBuffer.writeInt(healthPacket.entID);
+        packetBuffer.writeFloat(healthPacket.health);
+        packetBuffer.writeFloat(healthPacket.maxhealth);
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        stringData = ByteBufUtils.readUTF8String(bytes);
-        entID = bytes.readInt();
-        health = bytes.readFloat();
-        maxhealth = bytes.readFloat();
-        
-        // client always sends packets with health = maxhealth = 0
-        if (maxhealth > 0)
-        {
-            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
-        }
-        else
-        {
-            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
-        }
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        HealthPacket result = new HealthPacket();
+        result.stringData = packetBuffer.readString(32767);
+        result.entID = packetBuffer.readInt();
+        result.health = packetBuffer.readFloat();
+        result.maxhealth = packetBuffer.readFloat();
+        return (MSG) result;
     }
-    
-    class ScheduledCode implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            // client always sends packets with health = maxhealth = 0
-            if (maxhealth > 0)
-            {
-                InfernalMobsCore.proxy.onHealthPacketForClient(entID, health, maxhealth);
-            }
-            else
-            {
-                EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(stringData);
-                if (p != null)
-                {
+
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> {
+            HealthPacket healthPacket = (HealthPacket) msg;
+            if (healthPacket.maxhealth > 0) {
+                EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
+                if (p != null) {
                     Entity ent = p.world.getEntityByID(entID);
-                    if (ent != null && ent instanceof EntityLivingBase)
-                    {
+                    if (ent instanceof EntityLivingBase) {
                         EntityLivingBase e = (EntityLivingBase) ent;
                         MobModifier mod = InfernalMobsCore.getMobModifiers(e);
-                        if (mod != null)
-                        {
+                        if (mod != null) {
                             health = e.getHealth();
                             maxhealth = e.getMaxHealth();
                             InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new HealthPacket(stringData, entID, health, maxhealth), p);
                         }
                     }
                 }
+            } else {
+                Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.onHealthPacketForClient(healthPacket)));
             }
-        }
+        });
+        contextSupplier.get().setPacketHandled(true);
     }
 
+    public String getStringData() {
+        return stringData;
+    }
+
+    public int getEntID() {
+        return entID;
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public float getMaxhealth() {
+        return maxhealth;
+    }
 }

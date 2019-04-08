@@ -1,43 +1,43 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class AirPacket implements IPacket
-{
-    
+import java.util.function.Supplier;
+
+public class AirPacket implements IPacket {
+
     private int air;
 
-    public AirPacket() {}
-    
-    public AirPacket(int a)
-    {
+    public AirPacket() {
+    }
+
+    public AirPacket(int a) {
         air = a;
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        bytes.writeInt(air);
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        AirPacket airPacket = (AirPacket) msg;
+        packetBuffer.writeInt(airPacket.air);
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        air = bytes.readInt();
-        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
-    }
-    
-    class ScheduledCode implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            InfernalMobsCore.proxy.onAirPacket(air);
-        }
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        return (MSG) new AirPacket(packetBuffer.readInt());
     }
 
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> {
+            AirPacket airPacket = (AirPacket) msg;
+            Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.overrideAir(airPacket.air)));
+        });
+        contextSupplier.get().setPacketHandled(true);
+    }
 }
