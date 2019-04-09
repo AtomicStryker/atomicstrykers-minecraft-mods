@@ -1,49 +1,48 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class VelocityPacket implements IPacket
-{
-    
+import java.util.function.Supplier;
+
+public class VelocityPacket implements IPacket {
+
     private float xv, yv, zv;
 
-    public VelocityPacket() {}
-    
-    public VelocityPacket(float x, float y, float z)
-    {
+    public VelocityPacket() {
+    }
+
+    public VelocityPacket(float x, float y, float z) {
         xv = x;
         yv = y;
         zv = z;
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        bytes.writeFloat(xv);
-        bytes.writeFloat(yv);
-        bytes.writeFloat(zv);
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        VelocityPacket velocityPacket = (VelocityPacket) msg;
+        packetBuffer.writeFloat(velocityPacket.xv);
+        packetBuffer.writeFloat(velocityPacket.yv);
+        packetBuffer.writeFloat(velocityPacket.zv);
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        xv = bytes.readFloat();
-        yv = bytes.readFloat();
-        zv = bytes.readFloat();
-        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
-    }
-    
-    class ScheduledCode implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            InfernalMobsCore.proxy.onVelocityPacket(xv, yv, zv);
-        }
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        VelocityPacket velocityPacket = new VelocityPacket();
+        velocityPacket.xv = packetBuffer.readFloat();
+        velocityPacket.yv = packetBuffer.readFloat();
+        velocityPacket.zv = packetBuffer.readFloat();
+        return (MSG) velocityPacket;
     }
 
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        Minecraft.getInstance().addScheduledTask(() -> {
+            VelocityPacket velocityPacket = (VelocityPacket) msg;
+            Minecraft.getInstance().player.addVelocity(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
+        });
+        contextSupplier.get().setPacketHandled(true);
+    }
 }

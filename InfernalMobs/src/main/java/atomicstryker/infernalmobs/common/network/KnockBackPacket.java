@@ -1,46 +1,46 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class KnockBackPacket implements IPacket
-{
-    
+import java.util.function.Supplier;
+
+public class KnockBackPacket implements IPacket {
+
     private float xv, zv;
 
-    public KnockBackPacket() {}
-    
-    public KnockBackPacket(float x, float z)
-    {
+    public KnockBackPacket() {
+    }
+
+    public KnockBackPacket(float x, float z) {
         xv = x;
         zv = z;
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        bytes.writeFloat(xv);
-        bytes.writeFloat(zv);
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
+        packetBuffer.writeFloat(knockBackPacket.xv);
+        packetBuffer.writeFloat(knockBackPacket.zv);
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        xv = bytes.readFloat();
-        zv = bytes.readFloat();
-        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
-    }
-    
-    class ScheduledCode implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            InfernalMobsCore.proxy.onKnockBackPacket(xv, zv);
-        }
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        KnockBackPacket knockBackPacket = new KnockBackPacket();
+        knockBackPacket.xv = packetBuffer.readFloat();
+        knockBackPacket.zv = packetBuffer.readFloat();
+        return (MSG) knockBackPacket;
     }
 
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> Minecraft.getInstance().addScheduledTask(() -> {
+            KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
+            MM_Gravity.knockBack(Minecraft.getInstance().player, knockBackPacket.xv, knockBackPacket.zv);
+        }));
+        contextSupplier.get().setPacketHandled(true);
+    }
 }

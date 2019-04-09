@@ -9,7 +9,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -20,7 +19,7 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class EntityEventHandler
 {
@@ -148,9 +147,9 @@ public class EntityEventHandler
                     {
                         for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet())
                         {
-                            if (Math.abs(e.getKey().getFirst() - cpair.getFirst()) < 3)
+                            if (Math.abs(e.getKey().getA() - cpair.getA()) < 3)
                             {
-                                if (Math.abs(e.getKey().getSecond() - cpair.getSecond()) < 3)
+                                if (Math.abs(e.getKey().getB() - cpair.getB()) < 3)
                                 {
                                     e.setValue(e.getValue() + event.getAmount());
                                     break;
@@ -223,11 +222,11 @@ public class EntityEventHandler
 
                     if (maxC != null)
                     {
-                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getFirst() + ", " + maxC.getSecond());
+                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getA() + ", " + maxC.getB());
                         if (maxDamage > mobFarmDamageTrigger)
                         {
                             MinecraftForge.EVENT_BUS
-                                    .post(new MobFarmDetectedEvent(event.getEntityLiving().world.getChunkFromChunkCoords(maxC.getFirst(), maxC.getSecond()), mobFarmCheckIntervals, maxDamage));
+                                    .post(new MobFarmDetectedEvent(event.getEntityLiving().world.getChunk(maxC.getA(), maxC.getB()), mobFarmCheckIntervals, maxDamage));
                         }
                     }
                     damageMap.clear();
