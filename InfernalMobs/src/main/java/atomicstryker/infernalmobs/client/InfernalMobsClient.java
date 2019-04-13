@@ -40,7 +40,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class InfernalMobsClient implements ISidedProxy
+public class InfernalMobsClient
 {
     private final double NAME_VISION_DISTANCE = 32D;
     private Minecraft mc;
