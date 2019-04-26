@@ -210,7 +210,7 @@ public abstract class MobModifier {
             amount = nextMod.onHurt(mob, source, amount);
         } else if (source.getTrueSource() != null) {
             if (source.getTrueSource().world.isRemote && source.getTrueSource() instanceof EntityPlayer) {
-                InfernalMobsCore.instance().sendHealthRequestPacket(mob);
+                InfernalMobsCore.instance().sendHealthRequestPacket(source.getTrueSource().getName().getUnformattedComponentText(), mob);
             }
         }
 

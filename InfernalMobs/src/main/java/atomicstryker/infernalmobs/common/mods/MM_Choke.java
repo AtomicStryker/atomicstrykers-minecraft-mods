@@ -7,66 +7,52 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 
-public class MM_Choke extends MobModifier
-{
+public class MM_Choke extends MobModifier {
 
+    private static String[] suffix = {"ofBreathlessness", "theAnaerobic", "ofDeprivation"};
+    private static String[] prefix = {"Sith Lord", "Dark Lord", "Darth"};
     private final int RESET_AIR_VALUE = -999;
-
-    public MM_Choke()
-    {
-        super();
-    }
-
-    public MM_Choke(MobModifier next)
-    {
-        super(next);
-    }
-
     private EntityLivingBase lastTarget;
     private int lastAir;
 
+    public MM_Choke() {
+        super();
+    }
+
+    public MM_Choke(MobModifier next) {
+        super(next);
+    }
+
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Choke";
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase mob)
-    {
-        if (!hasSteadyTarget())
-        {
+    public boolean onUpdate(EntityLivingBase mob) {
+        if (!hasSteadyTarget()) {
             return super.onUpdate(mob);
         }
 
-        if (getMobTarget() != lastTarget)
-        {
+        if (getMobTarget() != lastTarget) {
             lastAir = RESET_AIR_VALUE;
-            if (lastTarget != null)
-            {
+            if (lastTarget != null) {
                 updateAir();
             }
             lastTarget = getMobTarget();
         }
 
-        if (lastTarget != null)
-        {
-            if (mob.canEntityBeSeen(lastTarget))
-            {
-                if (lastAir == RESET_AIR_VALUE)
-                {
+        if (lastTarget != null) {
+            if (mob.canEntityBeSeen(lastTarget)) {
+                if (lastAir == RESET_AIR_VALUE) {
                     lastAir = lastTarget.getAir();
-                }
-                else
-                {
+                } else {
                     lastAir = Math.min(lastAir, lastTarget.getAir());
                 }
 
-                if (!(lastTarget instanceof EntityPlayer && ((EntityPlayer) lastTarget).capabilities.disableDamage))
-                {
+                if (!(lastTarget instanceof EntityPlayer && ((EntityPlayer) lastTarget).abilities.disableDamage)) {
                     lastAir--;
-                    if (lastAir < -19)
-                    {
+                    if (lastAir < -19) {
                         lastAir = 0;
                         lastTarget.attackEntityFrom(DamageSource.DROWN, 2.0F);
                     }
@@ -80,10 +66,8 @@ public class MM_Choke extends MobModifier
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
-        if (lastTarget != null && source.getTrueSource() == lastTarget && lastAir != RESET_AIR_VALUE)
-        {
+    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+        if (lastTarget != null && source.getTrueSource() == lastTarget && lastAir != RESET_AIR_VALUE) {
             lastAir += 60;
             updateAir();
         }
@@ -92,47 +76,36 @@ public class MM_Choke extends MobModifier
     }
 
     @Override
-    public boolean onDeath()
-    {
+    public boolean onDeath() {
         lastAir = RESET_AIR_VALUE;
-        if (lastTarget != null)
-        {
+        if (lastTarget != null) {
             updateAir();
             lastTarget = null;
         }
         return false;
     }
 
-    private void updateAir()
-    {
+    private void updateAir() {
         lastTarget.setAir(lastAir);
-        if (lastTarget instanceof EntityPlayerMP)
-        {
+        if (lastTarget instanceof EntityPlayerMP) {
             InfernalMobsCore.instance().sendAirPacket((EntityPlayerMP) lastTarget, lastAir);
-            InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName(), System.currentTimeMillis());
+            InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName().getUnformattedComponentText(), System.currentTimeMillis());
         }
     }
 
     @Override
-    public void resetModifiedVictim(EntityPlayer victim)
-    {
+    public void resetModifiedVictim(EntityPlayer victim) {
         victim.setAir(RESET_AIR_VALUE);
     }
 
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
 
-    private static String[] suffix = { "ofBreathlessness", "theAnaerobic", "ofDeprivation" };
-
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = { "Sith Lord", "Dark Lord", "Darth" };
 
 }
