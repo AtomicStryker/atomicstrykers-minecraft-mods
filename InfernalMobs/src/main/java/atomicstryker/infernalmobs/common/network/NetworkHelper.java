@@ -5,7 +5,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -27,11 +26,6 @@ public class NetworkHelper {
     private final SimpleChannel packetChannel;
 
     private final HashSet<Class<? extends IPacket>> registeredClasses;
-
-    /**
-     * Set true when helper is about to send a packet, remains true until packet is out
-     */
-    private boolean isCurrentlySendingSemaphor;
 
     /**
      * Creates an instance of the NetworkHelper with included channels for client and server communication.
@@ -63,6 +57,68 @@ public class NetworkHelper {
     }
 
     /**
+     * Sends the supplied Packet from a client to the server
+     *
+     * @param packet to send
+     */
+    public void sendPacketToServer(IPacket packet) {
+        checkClass(packet.getClass());
+        packetChannel.sendToServer(packet);
+    }
+
+    /**
+     * Sends the supplied Packet from the server to the chosen Player
+     *
+     * @param packet to send
+     * @param player to send to
+     */
+    public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player) {
+        checkClass(packet.getClass());
+        packetChannel.send(PacketDistributor.PLAYER.with(() -> player), packet);
+    }
+
+    /**
+     * Sends a packet from the server to all currently connected players
+     *
+     * @param packet to send
+     */
+    public void sendPacketToAllPlayers(IPacket packet) {
+        checkClass(packet.getClass());
+        packetChannel.send(PacketDistributor.ALL.noArg(), packet);
+    }
+
+    /**
+     * Sends a packet from the server to all players in a dimension around a location
+     *
+     * @param packet to send
+     * @param tp     targetpoint instance to pass, cannot be null
+     */
+    public void sendPacketToAllAroundPoint(IPacket packet, PacketDistributor.TargetPoint tp) {
+        checkClass(packet.getClass());
+        packetChannel.send(PacketDistributor.NEAR.with(() -> tp), packet);
+    }
+
+    /**
+     * Sends a packet from the server to all players in a dimension
+     *
+     * @param packet    to send
+     * @param dimension serverside dim id to use
+     */
+    public void sendPacketToAllInDimension(IPacket packet, int dimension) {
+        checkClass(packet.getClass());
+        packetChannel.send(PacketDistributor.DIMENSION.with(() -> DimensionType.getById(dimension)), packet);
+    }
+
+    /**
+     * Since the crash that happens if we dont do this is complete garbage
+     */
+    private void checkClass(Class<? extends IPacket> clazz) {
+        if (!registeredClasses.contains(clazz)) {
+            throw new RuntimeException("NetworkHelper got unknown Packet type " + clazz + " to send, critical error");
+        }
+    }
+
+    /**
      * Packets only need to implement this and offer a constructor with no args,
      * unless you don't have constructors with >0 args. The class MUST also be
      * statically accessible, else you will suffer an InstantiationException!
@@ -77,79 +133,6 @@ public class NetworkHelper {
         <MSG> MSG decode(PacketBuffer packetBuffer);
 
         void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier);
-    }
-
-    /**
-     * Sends the supplied Packet from a client to the server
-     *
-     * @param packet to send
-     */
-    public void sendPacketToServer(IPacket packet) {
-        checkClassAndSync(packet.getClass());
-        packetChannel.sendToServer(packet);
-        isCurrentlySendingSemaphor = false;
-    }
-
-    /**
-     * Sends the supplied Packet from the server to the chosen Player
-     *
-     * @param packet to send
-     * @param player to send to
-     */
-    public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player) {
-        checkClassAndSync(packet.getClass());
-        packetChannel.send(PacketDistributor.PLAYER.with(() -> player), packet);
-        isCurrentlySendingSemaphor = false;
-    }
-
-    /**
-     * Sends a packet from the server to all currently connected players
-     *
-     * @param packet to send
-     */
-    public void sendPacketToAllPlayers(IPacket packet) {
-        checkClassAndSync(packet.getClass());
-        packetChannel.send(PacketDistributor.ALL.noArg(), packet);
-        isCurrentlySendingSemaphor = false;
-    }
-
-    /**
-     * Sends a packet from the server to all players in a dimension around a location
-     *
-     * @param packet to send
-     * @param tp     targetpoint instance to pass, cannot be null
-     */
-    public void sendPacketToAllAroundPoint(IPacket packet, PacketDistributor.TargetPoint tp) {
-        checkClassAndSync(packet.getClass());
-        packetChannel.send(PacketDistributor.NEAR.with(() -> tp), packet);
-        isCurrentlySendingSemaphor = false;
-    }
-
-    /**
-     * Sends a packet from the server to all players in a dimension
-     *
-     * @param packet    to send
-     * @param dimension serverside dim id to use
-     */
-    public void sendPacketToAllInDimension(IPacket packet, int dimension) {
-        checkClassAndSync(packet.getClass());
-        packetChannel.send(PacketDistributor.DIMENSION.with(() -> DimensionType.getById(dimension)), packet);
-        isCurrentlySendingSemaphor = false;
-    }
-
-    /**
-     * Since the crash that happens if we dont do this is complete garbage
-     */
-    private void checkClassAndSync(Class<? extends IPacket> clazz) {
-        if (!registeredClasses.contains(clazz)) {
-            throw new RuntimeException("NetworkHelper got unknown Packet type " + clazz + " to send, critical error");
-        }
-
-        // prevent concurrent packet sending
-        while (isCurrentlySendingSemaphor) {
-            Thread.yield();
-        }
-        isCurrentlySendingSemaphor = true;
     }
 
 }

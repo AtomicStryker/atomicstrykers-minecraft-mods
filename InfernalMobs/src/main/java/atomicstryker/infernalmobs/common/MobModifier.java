@@ -405,6 +405,9 @@ public abstract class MobModifier {
                 buffer = entTrans;
             }
 
+            // upper case entity if it isnt already
+            buffer = buffer.substring(0, 1).toUpperCase() + buffer.substring(1);
+
             int size = getModSize();
 
             int randomMod = target.getRNG().nextInt(getModSize());
@@ -423,14 +426,14 @@ public abstract class MobModifier {
             String prefix = size <= 5 ? TextFormatting.AQUA + I18n.format("translation.infernalmobs:rareClass")
                     : size <= 10 ? TextFormatting.YELLOW + I18n.format("translation.infernalmobs:ultraClass") : TextFormatting.GOLD + I18n.format("translation.infernalmobs:infernalClass");
 
-            buffer = prefix + modprefix + buffer;
+            buffer = String.format("%s %s %s", prefix, modprefix, buffer);
 
             if (size > 1) {
                 mod = mod.nextMod != null ? mod.nextMod : this;
                 if (mod.getModNameSuffix() != null) {
                     String pickedSuffix = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
                     pickedSuffix = I18n.format("translation.infernalmobs:suffix." + pickedSuffix);
-                    buffer = buffer + pickedSuffix;
+                    buffer = String.format("%s %s", buffer, pickedSuffix);
                 }
             }
 

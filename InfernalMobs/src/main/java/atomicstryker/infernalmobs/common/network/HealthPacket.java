@@ -61,11 +61,13 @@ public class HealthPacket implements IPacket {
             } else {
                 EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
                 if (p != null) {
-                    Entity ent = p.world.getEntityByID(entID);
+                    Entity ent = p.world.getEntityByID(healthPacket.entID);
                     if (ent instanceof EntityLivingBase) {
                         EntityLivingBase e = (EntityLivingBase) ent;
                         MobModifier mod = InfernalMobsCore.getMobModifiers(e);
                         if (mod != null) {
+                            stringData = healthPacket.stringData;
+                            entID = healthPacket.entID;
                             health = e.getHealth();
                             maxhealth = e.getMaxHealth();
                             InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new HealthPacket(stringData, entID, health, maxhealth), p);
