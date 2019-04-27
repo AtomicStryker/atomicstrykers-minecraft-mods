@@ -26,11 +26,11 @@ public class HealthPacket implements IPacket {
     public HealthPacket() {
     }
 
-    public HealthPacket(String u, int i, float f1, float f2) {
+    public HealthPacket(String u, int i, float entHealth, float entMaxHealth) {
         stringData = u;
         entID = i;
-        health = f1;
-        maxhealth = f2;
+        health = entHealth;
+        maxhealth = entMaxHealth;
     }
 
     @Override
@@ -57,6 +57,8 @@ public class HealthPacket implements IPacket {
         contextSupplier.get().enqueueWork(() -> {
             HealthPacket healthPacket = (HealthPacket) msg;
             if (healthPacket.maxhealth > 0) {
+                Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.onHealthPacketForClient(healthPacket)));
+            } else {
                 EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
                 if (p != null) {
                     Entity ent = p.world.getEntityByID(entID);
@@ -70,8 +72,6 @@ public class HealthPacket implements IPacket {
                         }
                     }
                 }
-            } else {
-                Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.onHealthPacketForClient(healthPacket)));
             }
         });
         contextSupplier.get().setPacketHandled(true);

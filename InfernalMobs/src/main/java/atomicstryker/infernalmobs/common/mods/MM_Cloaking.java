@@ -8,81 +8,71 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 
-public class MM_Cloaking extends MobModifier
-{
-    
-    public MM_Cloaking()
-    {
+public class MM_Cloaking extends MobModifier {
+
+    public MM_Cloaking() {
         super();
     }
-    
-    public MM_Cloaking(MobModifier next)
-    {
+
+    public MM_Cloaking(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Cloaking";
     }
-    
+
     private long nextAbilityUse = 0L;
     private final static long coolDown = 10000L;
-    
+
     @Override
-    public boolean onUpdate(EntityLivingBase mob)
-    {
+    public boolean onUpdate(EntityLivingBase mob) {
         if (hasSteadyTarget()
-        && getMobTarget() instanceof EntityPlayer)
-        {
+                && getMobTarget() instanceof EntityPlayer) {
             tryAbility(mob);
         }
-        
+
         return super.onUpdate(mob);
     }
-    
+
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
+    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-        && source.getTrueSource() instanceof EntityLivingBase)
-        {
+                && source.getTrueSource() instanceof EntityLivingBase) {
             tryAbility(mob);
         }
-        
+
         return super.onHurt(mob, source, damage);
     }
 
-    private void tryAbility(EntityLivingBase mob)
-    {
+    private void tryAbility(EntityLivingBase mob) {
         long time = System.currentTimeMillis();
-        if (time > nextAbilityUse)
-        {
-            nextAbilityUse = time+coolDown;
+        if (time > nextAbilityUse) {
+            nextAbilityUse = time + coolDown;
             mob.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 200));
         }
     }
-    
+
     @Override
-    public Class<?>[] getBlackListMobClasses()
-    {
+    public Class<?>[] getBlackListMobClasses() {
         return disallowed;
     }
-    private static Class<?>[] disallowed = { EntitySpider.class };
-    
+
+    private static Class<?>[] disallowed = {EntitySpider.class};
+
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
-    private static String[] suffix = { "ofStalking", "theUnseen", "thePredator" };
-    
+
+    private static String[] suffix = {"ofStalking", "theUnseen", "thePredator"};
+
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-    private static String[] prefix = { "stalking", "unseen", "hunting" };
-    
+
+    private static String[] prefix = {"stalking", "unseen", "hunting"};
+
 }

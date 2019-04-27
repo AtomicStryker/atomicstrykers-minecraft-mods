@@ -7,70 +7,61 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class MM_Storm extends MobModifier
-{
-    
-    public MM_Storm()
-    {
+public class MM_Storm extends MobModifier {
+
+    public MM_Storm() {
         super();
     }
-    
-    public MM_Storm(MobModifier next)
-    {
+
+    public MM_Storm(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Storm";
     }
-    
+
     private long nextAbilityUse = 0L;
     private final static long coolDown = 15000L;
     private final static float MIN_DISTANCE = 3F;
-    
+
     @Override
-    public boolean onUpdate(EntityLivingBase mob)
-    {
+    public boolean onUpdate(EntityLivingBase mob) {
         if (hasSteadyTarget()
-        && getMobTarget() instanceof EntityPlayer)
-        {
+                && getMobTarget() instanceof EntityPlayer) {
             tryAbility(mob, getMobTarget());
         }
-        
+
         return super.onUpdate(mob);
     }
 
-    private void tryAbility(EntityLivingBase mob, EntityLivingBase target)
-    {
-        if (target == null || target.getRidingEntity() != null || !mob.canEntityBeSeen(target))
-        {
+    private void tryAbility(EntityLivingBase mob, EntityLivingBase target) {
+        if (target == null || target.getRidingEntity() != null || !mob.canEntityBeSeen(target)) {
             return;
         }
-        
+
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
-        && mob.getDistance(target) > MIN_DISTANCE
-        && target.world.canBlockSeeSky(new BlockPos(MathHelper.floor(target.posX), MathHelper.floor(target.posY), MathHelper.floor(target.posZ))))
-        {
-            nextAbilityUse = time+coolDown;
-            mob.world.addWeatherEffect(new EntityLightningBolt(mob.world, target.posX, target.posY-1, target.posZ, false));
+                && mob.getDistance(target) > MIN_DISTANCE
+                && target.world.canBlockSeeSky(new BlockPos(MathHelper.floor(target.posX), MathHelper.floor(target.posY), MathHelper.floor(target.posZ)))) {
+            nextAbilityUse = time + coolDown;
+            mob.world.addWeatherEffect(new EntityLightningBolt(mob.world, target.posX, target.posY - 1, target.posZ, false));
         }
     }
-    
+
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
-    private static String[] suffix = { "ofLightning", "theRaiden" };
-    
+
+    private static String[] suffix = {"ofLightning", "theRaiden"};
+
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-    private static String[] prefix = { "striking", "thundering", "electrified" };
-    
+
+    private static String[] prefix = {"striking", "thundering", "electrified"};
+
 }

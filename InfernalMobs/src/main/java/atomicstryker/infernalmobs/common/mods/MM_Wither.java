@@ -8,63 +8,55 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 
-public class MM_Wither extends MobModifier
-{
-    
-    public MM_Wither()
-    {
+public class MM_Wither extends MobModifier {
+
+    public MM_Wither() {
         super();
     }
-    
-    public MM_Wither(MobModifier next)
-    {
+
+    public MM_Wither(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Wither";
     }
-    
+
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
+    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-        && (source.getTrueSource() instanceof EntityLivingBase)
-        && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getTrueSource())
-        && !(source instanceof EntityDamageSourceIndirect))
-        {
-            ((EntityLivingBase)source.getTrueSource()).addPotionEffect(new PotionEffect(MobEffects.WITHER, 120, 0));
+                && (source.getTrueSource() instanceof EntityLivingBase)
+                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getTrueSource())
+                && !(source instanceof EntityDamageSourceIndirect)) {
+            ((EntityLivingBase) source.getTrueSource()).addPotionEffect(new PotionEffect(MobEffects.WITHER, 120, 0));
         }
-        
+
         return super.onHurt(mob, source, damage);
     }
-    
+
     @Override
-    public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
-    {
+    public float onAttack(EntityLivingBase entity, DamageSource source, float damage) {
         if (entity != null
-        && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity))
-        {
+                && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity)) {
             entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 120, 0));
         }
-        
+
         return super.onAttack(entity, source, damage);
     }
-    
+
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
-    private static String[] suffix = { "ofDarkSkulls", "Doomskull" };
-    
+
+    private static String[] suffix = {"ofDarkSkulls", "Doomskull"};
+
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-    private static String[] prefix = { "withering" };
-    
+
+    private static String[] prefix = {"withering"};
+
 }

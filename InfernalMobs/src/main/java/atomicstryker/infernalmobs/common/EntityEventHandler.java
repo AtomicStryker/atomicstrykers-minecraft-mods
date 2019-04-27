@@ -1,6 +1,5 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
@@ -13,40 +12,19 @@ import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class EntityEventHandler {
 
-    private InfernalMobsConfig config;
-    private File configFile;
-    private long nextMapEvaluation;
-
     private final HashMap<Tuple<Integer, Integer>, Float> damageMap = new HashMap<>();
+    private long nextMapEvaluation;
 
     /**
      * Links the Forge Event Handler to the registered Entity MobModifier Events
      * (if present) Also keeps track of the anti mobfarm mechanic if enabled
      */
     public EntityEventHandler() {
-
-        InfernalMobsConfig defaultConfig = new InfernalMobsConfig();
-        defaultConfig.setAntiMobFarm(true);
-        defaultConfig.setMobFarmCheckIntervals(30L);
-        defaultConfig.setMobFarmDamageTrigger(150F);
-
-        configFile = new File(Minecraft.getInstance().gameDir, "\\config\\infernal_mobs.cfg");
-        try {
-            config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
-            if (config == null) {
-                throw new UnsupportedOperationException("Infernal Mobs failed parsing config file somehow...");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         nextMapEvaluation = System.currentTimeMillis();
     }
 
@@ -113,7 +91,7 @@ public class EntityEventHandler {
                 }
             }
 
-            if (config.isAntiMobFarm()) {
+            if (InfernalMobsCore.instance().config.isAntiMobFarm()) {
                 /*
                  * check for an environmental/automated damage type, aka mob
                  * farms
@@ -133,11 +111,7 @@ public class EntityEventHandler {
                         }
                     } else {
                         damageMap.put(cpair, value + event.getAmount());
-                        try {
-                            GsonConfig.saveConfig(config, configFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        GsonConfig.saveConfig(InfernalMobsCore.instance().config, InfernalMobsCore.instance().configFile);
                     }
                 }
             }
@@ -172,7 +146,7 @@ public class EntityEventHandler {
                 mod.onUpdate(event.getEntityLiving());
             }
 
-            if (config.isAntiMobFarm() && System.currentTimeMillis() > nextMapEvaluation) {
+            if (InfernalMobsCore.instance().config.isAntiMobFarm() && System.currentTimeMillis() > nextMapEvaluation) {
                 if (!damageMap.isEmpty()) {
                     float maxDamage = 0f;
                     float val;
@@ -187,14 +161,25 @@ public class EntityEventHandler {
 
                     if (maxC != null) {
                         System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getA() + ", " + maxC.getB());
-                        if (maxDamage > config.getMobFarmDamageTrigger()) {
+                        if (maxDamage > InfernalMobsCore.instance().config.getMobFarmDamageTrigger()) {
                             MinecraftForge.EVENT_BUS
-                                    .post(new MobFarmDetectedEvent(event.getEntityLiving().world.getChunk(maxC.getA(), maxC.getB()), config.getMobFarmCheckIntervals(), maxDamage));
+                                    .post(new MobFarmDetectedEvent(event.getEntityLiving().world.getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
                         }
                     }
                     damageMap.clear();
                 }
-                nextMapEvaluation = System.currentTimeMillis() + config.getMobFarmCheckIntervals();
+                nextMapEvaluation = System.currentTimeMillis() + InfernalMobsCore.instance().config.getMobFarmCheckIntervals();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityLivingDrops(LivingDropsEvent event) {
+        if (!event.getEntity().world.isRemote) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
+            if (mod != null) {
+                mod.onDropItems(event.getEntityLiving(), event.getSource(), event.getDrops(), event.getLootingLevel(), event.isRecentlyHit(), event.getLootingLevel());
+                InfernalMobsCore.removeEntFromElites(event.getEntityLiving());
             }
         }
     }
@@ -207,17 +192,6 @@ public class EntityEventHandler {
             super(chunk);
             triggeringInterval = ti;
             triggeringDamage = td;
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityLivingDrops(LivingDropsEvent event) {
-        if (!event.getEntity().world.isRemote) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntityLiving());
-            if (mod != null) {
-                mod.onDropItems(event.getEntityLiving(), event.getSource(), event.getDrops(), event.getLootingLevel(), event.isRecentlyHit(), event.getLootingLevel());
-                InfernalMobsCore.removeEntFromElites(event.getEntityLiving());
-            }
         }
     }
 }

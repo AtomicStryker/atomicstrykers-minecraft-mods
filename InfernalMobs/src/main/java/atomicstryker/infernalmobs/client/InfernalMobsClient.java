@@ -44,8 +44,6 @@ public class InfernalMobsClient implements ISidedProxy {
         if (ent instanceof EntityLivingBase) {
             MobModifier mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) ent);
             if (mod != null) {
-                // System.out.printf("health packet [%f of %f] for %s\n",
-                // health, maxhealth, ent);
                 mod.setActualHealth(healthPacket.getHealth(), healthPacket.getMaxhealth());
             }
         }

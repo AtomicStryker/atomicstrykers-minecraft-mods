@@ -4,43 +4,38 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 
-public class MM_Bulwark extends MobModifier
-{
-    
-    public MM_Bulwark()
-    {
+public class MM_Bulwark extends MobModifier {
+
+    public MM_Bulwark() {
         super();
     }
-    
-    public MM_Bulwark(MobModifier next)
-    {
+
+    public MM_Bulwark(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Bulwark";
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
-        return super.onHurt(mob, source, Math.max(damage/2, 1));
+    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+        return super.onHurt(mob, source, Math.max(damage / 2, 1));
     }
-    
+
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
-    private static String[] suffix = { "ofTurtling", "theDefender", "ofeffingArmor" };
-    
+
+    private static String[] suffix = {"ofTurtling", "theDefender", "ofeffingArmor"};
+
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-    private static String[] prefix = { "turtling", "defensive", "armoured" };
-    
+
+    private static String[] prefix = {"turtling", "defensive", "armoured"};
+
 }

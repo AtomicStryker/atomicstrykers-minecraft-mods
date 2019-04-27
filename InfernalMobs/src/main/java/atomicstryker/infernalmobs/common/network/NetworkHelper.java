@@ -5,6 +5,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -42,8 +43,11 @@ public class NetworkHelper {
     @SafeVarargs
     public NetworkHelper(String channelName, Class<? extends IPacket>... handledPacketClasses) {
 
-        packetChannel = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(channelName)).simpleChannel();
-
+        packetChannel = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(channelName)).
+                clientAcceptedVersions(a -> true).
+                serverAcceptedVersions(a -> true).
+                networkProtocolVersion(() -> "1.0.0")
+                .simpleChannel();
         registeredClasses = new HashSet<>(handledPacketClasses.length);
         registeredClasses.addAll(Arrays.asList(handledPacketClasses));
 

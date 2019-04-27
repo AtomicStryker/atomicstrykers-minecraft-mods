@@ -8,56 +8,50 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
-public class MM_1UP extends MobModifier
-{
+public class MM_1UP extends MobModifier {
     private boolean healed;
-    
-    public MM_1UP()
-    {
+
+    public MM_1UP() {
         super();
     }
-    
-    public MM_1UP(MobModifier next)
-    {
+
+    public MM_1UP(MobModifier next) {
         super(next);
     }
-    
+
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "1UP";
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase mob)
-    {
-        if (!healed && mob.getHealth() < (getActualMaxHealth(mob)*0.25))
-        {
+    public boolean onUpdate(EntityLivingBase mob) {
+        if (!healed && mob.getHealth() < (getActualMaxHealth(mob) * 0.25)) {
             InfernalMobsCore.instance().setEntityHealthPastMax(mob, getActualMaxHealth(mob));
             mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             healed = true;
         }
         return super.onUpdate(mob);
     }
-    
+
     @Override
-    public Class<?>[] getBlackListMobClasses()
-    {
+    public Class<?>[] getBlackListMobClasses() {
         return disallowed;
     }
-    private static Class<?>[] disallowed = { EntityCreeper.class };
-    
+
+    private static Class<?>[] disallowed = {EntityCreeper.class};
+
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
-    private static String[] suffix = { "ofRecurrence", "theUndying", "oftwinLives" };
-    
+
+    private static String[] suffix = {"ofRecurrence", "theUndying", "oftwinLives"};
+
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-    private static String[] prefix = { "recurring", "undying", "twinlived" };
+
+    private static String[] prefix = {"recurring", "undying", "twinlived"};
 }

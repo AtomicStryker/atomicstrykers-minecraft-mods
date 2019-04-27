@@ -6,66 +6,57 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 
-public class MM_Rust extends MobModifier
-{
-    
-    public MM_Rust()
-    {
+public class MM_Rust extends MobModifier {
+
+    public MM_Rust() {
         super();
     }
-    
-    public MM_Rust(MobModifier next)
-    {
+
+    public MM_Rust(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Rust";
     }
-    
+
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
+    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-        && (source.getTrueSource() instanceof EntityPlayer)
-        && !(source instanceof EntityDamageSourceIndirect))
-        {
-            EntityPlayer p = (EntityPlayer)source.getTrueSource();
-            if (p.inventory.getCurrentItem() != null)
-            {
+                && (source.getTrueSource() instanceof EntityPlayer)
+                && !(source instanceof EntityDamageSourceIndirect)) {
+            EntityPlayer p = (EntityPlayer) source.getTrueSource();
+            if (p.inventory.getCurrentItem() != null) {
                 p.inventory.getCurrentItem().damageItem(4, (EntityLivingBase) source.getTrueSource());
             }
         }
-        
+
         return super.onHurt(mob, source, damage);
     }
-    
+
     @Override
-    public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
-    {
+    public float onAttack(EntityLivingBase entity, DamageSource source, float damage) {
         if (entity != null
-        && entity instanceof EntityPlayer)
-        {
-            ((EntityPlayer)entity).inventory.damageArmor(damage*3);
+                && entity instanceof EntityPlayer) {
+            ((EntityPlayer) entity).inventory.damageArmor(damage * 3);
         }
-        
+
         return super.onAttack(entity, source, damage);
     }
-    
+
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
-    private static String[] suffix = { "ofDecay", "theEquipmentHaunter" };
-    
+
+    private static String[] suffix = {"ofDecay", "theEquipmentHaunter"};
+
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
-    private static String[] prefix = { "rusting", "decaying" };
-    
+
+    private static String[] prefix = {"rusting", "decaying"};
+
 }

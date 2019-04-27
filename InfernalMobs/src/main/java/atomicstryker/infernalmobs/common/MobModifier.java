@@ -389,9 +389,6 @@ public abstract class MobModifier {
     public String getEntityDisplayName(EntityLivingBase target) {
         if (bufferedEntityName == null) {
             String buffer = ForgeRegistries.ENTITIES.getKey(target.getType()).getPath();
-            if (buffer == null) {
-                buffer = "Monster";
-            }
             String[] subStrings = buffer.split("\\."); // in case of
             // Package.Class.EntityName
             // derps

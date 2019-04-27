@@ -4,7 +4,6 @@ import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.mods.*;
 import atomicstryker.infernalmobs.common.network.*;
 import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
@@ -18,11 +17,10 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -54,20 +52,19 @@ public class InfernalMobsCore {
     private final long existCheckDelay = 5000L;
     public NetworkHelper networkHelper;
     private long nextExistCheckTime;
-    /**
-     * Array of ItemStacks
-     */
-    private ArrayList<ItemStack> dropIdListElite;
-    private ArrayList<ItemStack> dropIdListUltra;
-    private ArrayList<ItemStack> dropIdListInfernal;
+
+    private ItemConfigHelper lootItemDropsElite;
+    private ItemConfigHelper lootItemDropsUltra;
+    private ItemConfigHelper lootItemDropsInfernal;
+
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
     private HashMap<String, Double> classesHealthMap;
     private Entity infCheckA;
     private Entity infCheckB;
     private ArrayList<Class<? extends MobModifier>> mobMods;
-    private File configFile;
-    private InfernalMobsConfig config;
+    protected File configFile;
+    protected InfernalMobsConfig config;
     private ArrayList<Enchantment> enchantmentList;
     /*
      * saves the last timestamp of long term affected players (eg choke) reset
@@ -78,9 +75,6 @@ public class InfernalMobsCore {
     public InfernalMobsCore() {
         instance = this;
 
-        dropIdListElite = new ArrayList<>();
-        dropIdListUltra = new ArrayList<>();
-        dropIdListInfernal = new ArrayList<>();
         nextExistCheckTime = System.currentTimeMillis();
         classesAllowedMap = new HashMap<>();
         classesForcedMap = new HashMap<>();
@@ -96,7 +90,7 @@ public class InfernalMobsCore {
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
 
-        networkHelper = new NetworkHelper("AS_IF", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
+        networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
 
         LOGGER = LogManager.getLogger();
 
@@ -184,10 +178,63 @@ public class InfernalMobsCore {
         defaultConfig.setUseSimpleEntityClassNames(true);
         defaultConfig.setDisableHealthBar(false);
         defaultConfig.setModHealthFactor(1.0D);
-        // TODO need to redo item configuration ... matching Ruins mod item inside chest serialization seems wise
-        defaultConfig.setDroppedItemIDsElite(Lists.newArrayList("iron_shovel", "iron_pickaxe", "iron_axe", "iron_sword", "iron_hoe", "chainmail_helmet", "chainmail_chestplate", "chainmail_leggings", "chainmail_boots", "iron_helmet", "iron_chestplate", "iron_leggings", "iron_boots", "cookie"));
-        defaultConfig.setDroppedItemIDsUltra(Lists.newArrayList("bow", "iron_hoe", "chainmail_helmet", "chainmail_chestplate", "chainmail_leggings", "chainmail_boots", "iron_helmet", "iron_chestplate", "iron_leggings", "iron_boots", "golden_helmet", "golden_chestplate", "golden_leggings", "golden_boots", "golden_apple", "blaze_powder", "enchanted_book"));
-        defaultConfig.setDroppedItemIDsInfernal(Lists.newArrayList("diamond", "diamond_sword", "diamond_shovel", "diamond_pickaxe", "diamond_axe", "diamond_hoe", "chainmail_helmet", "chainmail_chestplate", "chainmail_leggings", "chainmail_boots", "diamond_helmet", "diamond_chestplate", "diamond_leggings", "diamond_boots", "ender_pearl", "enchanted_book"));
+
+        List<String> dropsElite = new ArrayList<>();
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SHOVEL)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_PICKAXE)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_AXE)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SWORD)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.COOKIE, 5)));
+        defaultConfig.setDroppedItemIDsElite(dropsElite);
+
+        List<String> dropsUltra = new ArrayList<>();
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BOW)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_HELMET)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_BOOTS)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_CHESTPLATE)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_LEGGINGS)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_APPLE, 3)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BLAZE_POWDER, 5)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK)));
+        defaultConfig.setDroppedItemIDsUltra(dropsUltra);
+
+        List<String> dropsInfernal = new ArrayList<>();
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND, 3)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SWORD)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_AXE)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HOE)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_PICKAXE)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SHOVEL)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HELMET)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_BOOTS)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_CHESTPLATE)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_LEGGINGS)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENDER_PEARL, 3)));
+        defaultConfig.setDroppedItemIDsInfernal(dropsInfernal);
+
         defaultConfig.setMaxDamage(10D);
         defaultConfig.setDimensionIDBlackList(new ArrayList<>());
 
@@ -199,43 +246,11 @@ public class InfernalMobsCore {
 
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
-        parseItemsForList(config.getDroppedItemIDsElite(), instance.dropIdListElite);
-
-        parseItemsForList(config.getDroppedItemIDsUltra(), instance.dropIdListUltra);
-
-        parseItemsForList(config.getDroppedItemIDsInfernal(), instance.dropIdListInfernal);
+        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER);
+        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER);
+        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER);
 
         mobMods.removeIf(c -> !config.getModsEnabled().containsKey(c.getSimpleName()));
-    }
-
-    private void parseItemsForList(List<String> itemIDs, ArrayList<ItemStack> list) {
-        Random rand = new Random();
-        for (String s : itemIDs) {
-            Object itemOrBlock = parseOrFind(s);
-            if (itemOrBlock != null) {
-                if (itemOrBlock instanceof Block) {
-                    Block block = (Block) itemOrBlock;
-                    list.add(new ItemStack(block, stackSize + rand.nextInt(randomizer), imeta));
-                } else {
-                    Item item = (Item) itemOrBlock;
-                    list.add(new ItemStack(item, stackSize + rand.nextInt(randomizer), imeta));
-                }
-            }
-        }
-    }
-
-    private Object parseOrFind(String s) {
-        ResourceLocation rl = new ResourceLocation(s);
-        Item item = Item.REGISTRY.getObject(rl);
-        if (item != null) {
-            return item;
-        }
-
-        Block block = Block.REGISTRY.getObject(rl);
-        if (block != Blocks.AIR) {
-            return block;
-        }
-        return null;
     }
 
     /**
@@ -597,7 +612,7 @@ public class InfernalMobsCore {
      * @return ItemStack instance to drop to the World
      */
     private ItemStack getRandomItem(EntityLivingBase mob, int prefix) {
-        ArrayList<ItemStack> list = (prefix == 0) ? instance.dropIdListElite : (prefix == 1) ? instance.dropIdListUltra : instance.dropIdListInfernal;
+        List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ? instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
         return list.size() > 0 ? list.get(mob.world.rand.nextInt(list.size())).copy() : null;
     }
 

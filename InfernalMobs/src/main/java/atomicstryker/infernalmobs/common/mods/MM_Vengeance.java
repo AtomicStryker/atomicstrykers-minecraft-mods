@@ -5,32 +5,26 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 
-public class MM_Vengeance extends MobModifier
-{
-    
-    public MM_Vengeance()
-    {
+public class MM_Vengeance extends MobModifier {
+
+    public MM_Vengeance() {
         super();
     }
-    
-    public MM_Vengeance(MobModifier next)
-    {
+
+    public MM_Vengeance(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Vengeance";
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage)
-    {
+    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-        && source.getTrueSource() != mob
-        && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource()))
-        {
+                && source.getTrueSource() != mob
+                && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())) {
             source.getTrueSource().attackEntityFrom(DamageSource.causeMobDamage(mob),
                     InfernalMobsCore.instance().getLimitedDamage(Math.max(damage / 2, 1)));
         }
@@ -39,19 +33,17 @@ public class MM_Vengeance extends MobModifier
     }
 
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
 
-    private static String[] suffix = { "ofRetribution", "theThorned", "ofStrikingBack" };
+    private static String[] suffix = {"ofRetribution", "theThorned", "ofStrikingBack"};
 
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
 
-    private static String[] prefix = { "thorned", "thorny", "spiky" };
+    private static String[] prefix = {"thorned", "thorny", "spiky"};
 
 }

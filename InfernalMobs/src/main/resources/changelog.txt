@@ -1,3 +1,6 @@
+1.7.6
+- updated for minecraft 1.13.2
+
 1.7.5
 - unified ender and ninja teleports, now also checks for destination block having space for an entity
 

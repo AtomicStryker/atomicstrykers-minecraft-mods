@@ -6,30 +6,24 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.util.DamageSource;
 
-public class MM_Berserk extends MobModifier
-{
+public class MM_Berserk extends MobModifier {
 
-    public MM_Berserk()
-    {
+    public MM_Berserk() {
         super();
     }
 
-    public MM_Berserk(MobModifier next)
-    {
+    public MM_Berserk(MobModifier next) {
         super(next);
     }
 
     @Override
-    public String getModName()
-    {
+    public String getModName() {
         return "Berserk";
     }
 
     @Override
-    public float onAttack(EntityLivingBase entity, DamageSource source, float damage)
-    {
-        if (entity != null)
-        {
+    public float onAttack(EntityLivingBase entity, DamageSource source, float damage) {
+        if (entity != null) {
             source.getTrueSource().attackEntityFrom(DamageSource.GENERIC, damage);
             damage *= 2;
             damage = InfernalMobsCore.instance().getLimitedDamage(damage);
@@ -39,27 +33,24 @@ public class MM_Berserk extends MobModifier
     }
 
     @Override
-    public Class<?>[] getBlackListMobClasses()
-    {
+    public Class<?>[] getBlackListMobClasses() {
         return disallowed;
     }
 
-    private static Class<?>[] disallowed = { EntityCreeper.class };
+    private static Class<?>[] disallowed = {EntityCreeper.class};
 
     @Override
-    protected String[] getModNameSuffix()
-    {
+    protected String[] getModNameSuffix() {
         return suffix;
     }
 
-    private static String[] suffix = { "ofRecklessness", "theRaging", "ofSmashing" };
+    private static String[] suffix = {"ofRecklessness", "theRaging", "ofSmashing"};
 
     @Override
-    protected String[] getModNamePrefix()
-    {
+    protected String[] getModNamePrefix() {
         return prefix;
     }
 
-    private static String[] prefix = { "reckless", "raging", "smashing" };
+    private static String[] prefix = {"reckless", "raging", "smashing"};
 
 }
