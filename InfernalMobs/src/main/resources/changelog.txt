@@ -1,3 +1,6 @@
+1.7.6
+- added 3 second time out for the choke modifier bubble overlay in case of a desync
+
 1.7.5
 - unified ender and ninja teleports, now also checks for destination block having space for an entity
 
