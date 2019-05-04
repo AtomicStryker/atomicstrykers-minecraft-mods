@@ -32,6 +32,7 @@ public class InfernalMobsClient implements ISidedProxy {
 
     private static int airOverrideValue = -999;
     private final double NAME_VISION_DISTANCE = 32D;
+    private long airDisplayTimeout;
     private Minecraft mc;
     private World lastWorld;
     private long nextPacketTime;
@@ -249,11 +250,15 @@ public class InfernalMobsClient implements ISidedProxy {
     @Override
     public void onAirPacket(int air) {
         airOverrideValue = air;
+        airDisplayTimeout = System.currentTimeMillis() + 3000L;
     }
 
     @SubscribeEvent
     public void onTick(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.AIR) {
+            if (System.currentTimeMillis() > airDisplayTimeout) {
+                airOverrideValue = -999;
+            }
             if (!mc.player.areEyesInFluid(FluidTags.WATER) && airOverrideValue != -999) {
                 GL11.glEnable(GL11.GL_BLEND);
 
