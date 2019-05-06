@@ -12,3 +12,4 @@ DynamicLights/.idea/
 InfernalMobs/.idea/*
 InfernalMobs/out/
 InfernalMobs/run/
+*/*.iml
