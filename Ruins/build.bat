@@ -1,1 +1,1 @@
-gradle -x test
+gradlew.bat

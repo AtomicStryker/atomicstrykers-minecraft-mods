@@ -8,12 +8,12 @@ To setup my workspace in your eclipse, simply setup Forge, then move your eclips
 
 
 Each project/mod refers to the master gradle build file which creates download files in their respective /build/libs (or /build/distributions) folders.
-Gradle is required, however one could also use the gradlew wrapper found in forgegradle to do this.
+Gradle is required, and since Forge no longer works without their own Kool-Aid you need to copy their Gradle Wrapper into each project and use gradlew.
 The build file reacts to certain conditions like a "META-INF.mf" being present, "makezip" being present...
 
 THIS ASSUMES YOUR MOD COMPILES AGAINST FORGEGRADLE - if there are compile errors in the eclipse project, it will fail.
 
-There is also a "curse" build target my successor can probably safely ignore.
+There is also a "curseGradle" build target my successor can probably safely ignore.
 
 NOTE: Some projects attempt to include the Update Checker into their packages, which means it should be built first.
 NOTE #2: Pet Bat relies on Dynamic Lights to have been compiled first.
