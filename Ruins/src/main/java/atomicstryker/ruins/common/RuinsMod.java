@@ -12,7 +12,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -48,19 +50,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Mod.EventBusSubscriber(modid = RuinsMod.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class RuinsMod {
 
-    static final String MOD_ID = "ruins";
-
-    static final String modversion = "17.2";
-
     public static final Logger LOGGER = LogManager.getLogger();
-
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
     public static final String TEMPLATE_PATH_JAR = "ruins_config";
-
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
-
-    private final ConcurrentHashMap<Integer, WorldHandle> generatorMap;
+    static final String MOD_ID = "ruins";
+    static final String modversion = "17.2";
+    private final ConcurrentHashMap<Dimension, WorldHandle> generatorMap;
+    private long nextInfoTime;
 
     public RuinsMod() {
         generatorMap = new ConcurrentHashMap<>();
@@ -70,6 +68,40 @@ public class RuinsMod {
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         MinecraftForge.EVENT_BUS.register(new CommandUndoTemplate());
         LOGGER.info("Ruins instance built, events registered");
+    }
+
+    private static File getWorldSaveDir(IWorld world) {
+        ISaveHandler worldsaver = world.getSaveHandler();
+
+        if (worldsaver.getChunkLoader(world.getWorld().getDimension()) instanceof AnvilChunkLoader) {
+            AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.getWorld().getDimension());
+
+            for (Field f : loader.getClass().getDeclaredFields()) {
+                if (f.getType().equals(File.class)) {
+                    try {
+                        f.setAccessible(true);
+                        return (File) f.get(loader);
+                    } catch (Exception e) {
+                        LOGGER.error("Ruins mod failed trying to find World Save dir:");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static File getMinecraftBaseDir() {
+        if (EffectiveSide.get() == LogicalSide.CLIENT) {
+            File file = Minecraft.getInstance().gameDir;
+            String abspath = file.getAbsolutePath();
+            if (abspath.endsWith(".")) {
+                file = new File(abspath.substring(0, abspath.length() - 1));
+            }
+            return file;
+        }
+        MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+        return server.getFile("");
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
@@ -84,8 +116,6 @@ public class RuinsMod {
         evt.getCommandDispatcher().register(CommandTestTemplate.BUILDER);
         evt.getCommandDispatcher().register(CommandUndoTemplate.BUILDER);
     }
-
-    private long nextInfoTime;
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
@@ -213,60 +243,20 @@ public class RuinsMod {
         }
     }
 
-    private class WorldHandle {
-        FileHandler fileHandle;
-        RuinGenerator generator;
-        ConcurrentLinkedQueue<ChunkPos> currentlyGenerating;
-        ChunkLoggerData chunkLogger;
-    }
-
     private WorldHandle getWorldHandle(IWorld worldInterface) {
         WorldHandle wh = null;
-        if (!worldInterface.getWorld().isRemote) {
-            if (!generatorMap.containsKey(worldInterface.getWorldInfo().getDimension())) {
+        if (!worldInterface.getWorld().isRemote && worldInterface instanceof WorldServer) {
+            Dimension dimension = ((WorldServer) worldInterface).dimension;
+            if (!generatorMap.containsKey(dimension)) {
                 wh = new WorldHandle();
                 initWorldHandle(wh, worldInterface);
-                generatorMap.put(worldInterface.getWorldInfo().getDimension(), wh);
+                generatorMap.put(dimension, wh);
             } else {
-                wh = generatorMap.get(worldInterface.getWorldInfo().getDimension());
+                wh = generatorMap.get(dimension);
             }
         }
 
         return wh;
-    }
-
-    private static File getWorldSaveDir(IWorld world) {
-        ISaveHandler worldsaver = world.getSaveHandler();
-
-        if (worldsaver.getChunkLoader(world.getWorld().getDimension()) instanceof AnvilChunkLoader) {
-            AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.getWorld().getDimension());
-
-            for (Field f : loader.getClass().getDeclaredFields()) {
-                if (f.getType().equals(File.class)) {
-                    try {
-                        f.setAccessible(true);
-                        return (File) f.get(loader);
-                    } catch (Exception e) {
-                        LOGGER.error("Ruins mod failed trying to find World Save dir:");
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static File getMinecraftBaseDir() {
-        if (EffectiveSide.get() == LogicalSide.CLIENT) {
-            File file = Minecraft.getInstance().gameDir;
-            String abspath = file.getAbsolutePath();
-            if (abspath.endsWith(".")) {
-                file = new File(abspath.substring(0, abspath.length() - 1));
-            }
-            return file;
-        }
-        MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-        return server.getFile("");
     }
 
     private void initWorldHandle(WorldHandle worldHandle, IWorld world) {
@@ -286,6 +276,13 @@ public class RuinsMod {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private class WorldHandle {
+        FileHandler fileHandle;
+        RuinGenerator generator;
+        ConcurrentLinkedQueue<ChunkPos> currentlyGenerating;
+        ChunkLoggerData chunkLogger;
     }
 
 }

@@ -551,3 +551,7 @@ a: setAccessible now true
 1.13.2
 + port to MinecraftForge 1.13.2
 + see template_rules for changes ... i don't want to write so much ...
+
+1.13.2 #2
++ i really should figure out a new versioning system
++ fixed dedicated server crash
