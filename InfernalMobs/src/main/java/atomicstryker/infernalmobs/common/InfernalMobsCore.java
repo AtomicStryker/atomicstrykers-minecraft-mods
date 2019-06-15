@@ -649,7 +649,7 @@ public class InfernalMobsCore {
             Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
-            mobsmap.keySet().stream().filter(mob -> !mob.isAlive() || !mob.world.loadedEntityList.contains(mob)).forEach(InfernalMobsCore::removeEntFromElites);
+            mobsmap.keySet().stream().filter(mob -> filterMob(mob)).forEach(InfernalMobsCore::removeEntFromElites);
 
             resetModifiedPlayerEntitiesAsNeeded(tick.world);
         }
@@ -658,6 +658,10 @@ public class InfernalMobsCore {
             infCheckA = null;
             infCheckB = null;
         }
+    }
+
+    private boolean filterMob(EntityLivingBase mob) {
+        return !mob.isAlive() || mob.world == null || mob.world.loadedEntityList == null || !mob.world.loadedEntityList.contains(mob);
     }
 
     private void resetModifiedPlayerEntitiesAsNeeded(World world) {
