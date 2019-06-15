@@ -1,132 +1,214 @@
 package atomicstryker.findercompass.common;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Map;
-
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import atomicstryker.findercompass.common.network.StrongholdPacket;
+import com.google.gson.Gson;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
+import net.minecraft.init.Blocks;
+import net.minecraft.state.IProperty;
+import net.minecraft.state.IStateHolder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.network.NetworkCheckHandler;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "findercompass", name = "Finder Compass", version = "1.12")
-public class FinderCompassMod
-{
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
-    @Instance(value = "findercompass")
+@Mod(FinderCompassMod.MOD_ID)
+@Mod.EventBusSubscriber(modid = FinderCompassMod.MOD_ID)
+public class FinderCompassMod {
+
+    public static final String MOD_ID = "findercompass";
+
+    public static final Logger LOGGER = LogManager.getLogger();
+
     public static FinderCompassMod instance;
 
+    public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
-
-    public static ItemFinderCompass compass;
-    public static boolean itemEnabled;
-
-    public File compassConfig;
 
     public NetworkHelper networkHelper;
 
-    @NetworkCheckHandler
-    public boolean checkModLists(Map<String, String> modList, Side side)
-    {
-        return true;
+    public FinderCompassMod() {
+        instance = this;
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::preInit);
+        modEventBus.addListener(this::clientSetup);
+        MinecraftForge.EVENT_BUS.register(this);
+        networkHelper = new NetworkHelper("findercompass", HandshakePacket.class, StrongholdPacket.class);
     }
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
-    {
+    public void preInit(FMLCommonSetupEvent evt) {
+        compassConfig = createDefaultConfig();
+        try {
+            GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(Minecraft.getInstance().gameDir, "\\config\\findercompass.cfg"), compassConfig);
+            loadSettingListFromConfig(compassConfig);
+        } catch (IOException e) {
+            LOGGER.error("IOException parsing config", e);
+        }
+    }
+
+    public void loadSettingListFromConfig(CompassConfig input) {
+        compassConfig = input;
         settingList = new ArrayList<>();
-
-        compassConfig = evt.getSuggestedConfigurationFile();
-        Configuration itemConfig = new Configuration(new File(compassConfig.getAbsolutePath().replace("findercompass", "FinderCompassItemConfig")));
-        System.out.println("Finder compass needle config location: " + compassConfig.getAbsolutePath());
-        System.out.println("Finder compass item config location: " + itemConfig.getConfigFile().getAbsolutePath());
-        itemConfig.load();
-        itemEnabled = itemConfig.get(Configuration.CATEGORY_GENERAL, "isFinderCompassNewItem", false).getBoolean(false);
-        itemConfig.save();
-
-        if (itemEnabled)
-        {
-            compass = (ItemFinderCompass) new ItemFinderCompass().setUnlocalizedName("finder_compass").setRegistryName("findercompass", "finder_compass");
-            ForgeRegistries.ITEMS.register(compass);
+        for (CompassConfig.NeedleSet needleSet : compassConfig.getNeedles()) {
+            CompassSetting setting = new CompassSetting(needleSet.getName());
+            for (Map.Entry<String, int[]> blockEntry : needleSet.getNeedles().entrySet()) {
+                IBlockState state = getBlockStateFromString(blockEntry.getKey());
+                if (state != null) {
+                    CompassTargetData data = new CompassTargetData(state);
+                    setting.getCustomNeedles().put(data, blockEntry.getValue());
+                    setting.setHasStrongholdNeedle(false);
+                    LOGGER.info("{}: parsed blockstate {} for colors {}", needleSet.getName(), state, blockEntry.getValue());
+                } else {
+                    LOGGER.error("Could not identify block for input {}", blockEntry.getKey());
+                }
+            }
+            settingList.add(setting);
         }
-
-        MinecraftForge.EVENT_BUS.register(this);
-
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
-            FinderCompassClientTicker.instance = new FinderCompassClientTicker();
-        }
-
-        networkHelper = new NetworkHelper("AS_FC", HandshakePacket.class, StrongholdPacket.class);
     }
 
     @SubscribeEvent
-    public void onPlayerLogin(PlayerLoggedInEvent event)
-    {
-        networkHelper.sendPacketToPlayer(new HandshakePacket("server"), (EntityPlayerMP) event.player);
+    public void onPlayerLogin(PlayerLoggedInEvent event) {
+        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (EntityPlayerMP) event.getPlayer());
     }
 
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-
-        if (itemEnabled)
-        {
-            ResourceLocation rl = new ResourceLocation("findercompass", "findercompass");
-            GameRegistry.addShapedRecipe(rl, null, new ItemStack(compass), " # ", "#X#", " # ", '#', Items.DIAMOND, 'X', Items.COMPASS);
-        }
-
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-        {
+    public void clientSetup(TickEvent.ClientTickEvent evt) {
+        // hopefully this only executes on client?
+        if (FinderCompassClientTicker.instance == null) {
+            FinderCompassClientTicker.instance = new FinderCompassClientTicker();
             FinderCompassClientTicker.instance.onLoad();
+            FinderCompassClientTicker.instance.switchSetting();
         }
     }
 
-    @EventHandler
-    public void onModsLoaded(FMLPostInitializationEvent event)
-    {
-        DefaultConfigFilePrinter configurator = new DefaultConfigFilePrinter();
-        if (!compassConfig.exists())
-        {
-            configurator.writeDefaultFile(compassConfig);
-        }
-        try
-        {
-            configurator.parseConfig(new BufferedReader(new FileReader(compassConfig)), settingList);
-            System.out.println("Finder compass config fully parsed, loaded " + settingList.size() + " settings");
+    private String getStringFromBlockState(IBlockState blockState) {
 
-            if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-            {
-                FinderCompassClientTicker.instance.switchSetting();
-            }
+        Map<String, String> blockMap = new HashMap<>();
+
+        blockMap.put("block", ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString());
+        for (IProperty<?> property : blockState.getBlock().getStateContainer().getProperties()) {
+            blockMap.put(property.getName(), blockState.get(property).toString());
         }
-        catch (FileNotFoundException e)
+        Gson gson = new Gson();
+        return gson.toJson(blockMap);
+    }
+
+    private IBlockState getBlockStateFromString(String json) {
+        Gson gson = new Gson();
+        Map<String, String> blockMap = gson.fromJson(json, HashMap.class);
+        String resourceAsString = blockMap.get("block");
+        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(resourceAsString));
+        if (block == null) {
+            return null;
+        }
+        IBlockState reconstructedState = block.getDefaultState();
+        for (IProperty<?> property : block.getStateContainer().getProperties()) {
+            reconstructedState = setValueHelper(reconstructedState, property, property.getName(), blockMap.get(property.getName()));
+        }
+        return reconstructedState;
+    }
+
+    private <S extends IStateHolder<S>, T extends Comparable<T>> S setValueHelper(S blockState, IProperty<T> property, String propertyName, String valueString) {
+        Optional<T> optional = property.parseValue(valueString);
+        if (optional.isPresent()) {
+            return (blockState.with(property, optional.get()));
+        } else {
+            LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", propertyName, valueString, blockState.toString());
+            return blockState;
+        }
+    }
+
+    private CompassConfig createDefaultConfig() {
+        CompassConfig compassConfig = new CompassConfig();
+
+        List<CompassConfig.NeedleSet> needleSetList = new ArrayList<>();
+
         {
-            e.printStackTrace();
+            CompassConfig.NeedleSet workingManMineables = new CompassConfig.NeedleSet();
+            workingManMineables.setName("Working Man's Mineables");
+            Map<String, int[]> needleMap = new HashMap<>();
+
+            {
+                IBlockState state = Blocks.GOLD_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                IBlockState state = Blocks.IRON_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                IBlockState state = Blocks.COAL_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{51, 26, 0, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            workingManMineables.setNeedles(needleMap);
+            needleSetList.add(workingManMineables);
         }
+
+        {
+            CompassConfig.NeedleSet shinyStones = new CompassConfig.NeedleSet();
+            shinyStones.setName("Shiny Stones");
+            Map<String, int[]> needleMap = new HashMap<>();
+
+            {
+                IBlockState state = Blocks.DIAMOND_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                IBlockState state = Blocks.LAPIS_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{55, 70, 220, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                IBlockState state = Blocks.REDSTONE_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{255, 125, 155, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                IBlockState state = Blocks.EMERALD_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{26, 255, 26, 7, 1, 4, 31, 0};
+                needleMap.put(string, setting);
+            }
+
+            shinyStones.setNeedles(needleMap);
+            needleSetList.add(shinyStones);
+        }
+
+        compassConfig.setNeedles(needleSetList);
+        return compassConfig;
     }
 
 }

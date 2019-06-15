@@ -13,3 +13,10 @@ InfernalMobs/.idea/*
 InfernalMobs/out/
 InfernalMobs/run/
 */*.iml
+.idea/
+FinderCompass/out/
+FinderCompass/run/usercache.json
+FinderCompass/run/config/findercompass.cfg
+FinderCompass/run/config/fml.toml
+FinderCompass/run/config/forge-client.toml
+FinderCompass/run/

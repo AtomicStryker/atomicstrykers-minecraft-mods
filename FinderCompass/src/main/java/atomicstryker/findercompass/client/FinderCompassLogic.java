@@ -1,104 +1,80 @@
 package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
-import atomicstryker.findercompass.common.FinderCompassMod;
-import atomicstryker.findercompass.common.network.StrongholdPacket;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-public class FinderCompassLogic
-{
+public class FinderCompassLogic {
 
+    public static BlockPos strongholdCoords = new BlockPos(0, 0, 0);
+    public static boolean hasStronghold = false;
     private final BlockPos NullChunk = new BlockPos(0, 0, 0);
-
+    private final Minecraft mc;
     private BlockPos oldPos;
     private long nextTime;
     private int seccounter;
 
-    private final Minecraft mc;
-
-    public static boolean serverHasFinderCompass = false;
-    public static BlockPos strongholdCoords = new BlockPos(0, 0, 0);
-    public static boolean hasStronghold = false;
-
-    public FinderCompassLogic(Minecraft minecraft)
-    {
+    public FinderCompassLogic(Minecraft minecraft) {
         mc = minecraft;
         seccounter = 0;
         nextTime = System.currentTimeMillis();
     }
 
-    public void onTick()
-    {
-        if (mc.world != null && mc.player != null)
-        {
+    public void onTick() {
+        if (mc.world != null && mc.player != null) {
             boolean isNewSecond = false;
             boolean is15SecInterval = false;
             boolean movement = false;
-            if (System.currentTimeMillis() > nextTime)
-            {
+            if (System.currentTimeMillis() > nextTime) {
                 isNewSecond = true;
                 seccounter++;
                 nextTime = System.currentTimeMillis() + 1000L;
             }
 
             BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-            if (!pos.equals(oldPos))
-            {
+            if (!pos.equals(oldPos)) {
                 oldPos = pos;
                 movement = true;
             }
 
-            if (isNewSecond && this.seccounter > 14)
-            {
+            if (isNewSecond && this.seccounter > 14) {
                 seccounter = 0;
                 is15SecInterval = true;
 
                 FinderCompassLogic.hasStronghold = false;
-                if (serverHasFinderCompass)
-                {
-                    FinderCompassMod.instance.networkHelper.sendPacketToServer(new StrongholdPacket(mc.player.getGameProfile().getName()));
-                }
             }
 
             int[] configInts;
-            CompassTargetData blockInts;
+            CompassTargetData targetData;
             BlockPos coords;
             Iterator<Entry<CompassTargetData, int[]>> iter;
             Entry<CompassTargetData, int[]> iterEntry;
-            if (movement || isNewSecond)
-            {
+            if (movement || isNewSecond) {
                 CompassSetting currentSetting = FinderCompassClientTicker.instance.getCurrentSetting();
                 iter = currentSetting.getCustomNeedles().entrySet().iterator();
                 //System.out.println("finder compass second ticker");
 
-                while (iter.hasNext())
-                {
+                while (iter.hasNext()) {
                     iterEntry = iter.next();
-                    blockInts = iterEntry.getKey();
+                    targetData = iterEntry.getKey();
                     configInts = iterEntry.getValue();
-                    if (is15SecInterval || configInts[7] == 0)
-                    {
+                    if (is15SecInterval || configInts[7] == 0) {
                         coords =
-                                findNearestBlockChunkOfIDInRange(currentSetting, blockInts.getBlockID(), blockInts.getDamage(),
+                                findNearestBlockChunkOfIDInRange(currentSetting, targetData.getBlockState(),
                                         pos.getX(), pos.getY(), pos.getZ(),
                                         configInts[3], configInts[4], configInts[5], configInts[6]);
-                        if (coords != null && !coords.equals(NullChunk))
-                        {
-                            if (currentSetting.getCustomNeedleTargets().containsKey(blockInts))
-                            {
-                                currentSetting.getCustomNeedleTargets().remove(blockInts);
+                        if (coords != null && !coords.equals(NullChunk)) {
+                            if (currentSetting.getCustomNeedleTargets().containsKey(targetData)) {
+                                currentSetting.getCustomNeedleTargets().remove(targetData);
                             }
 
-                            currentSetting.getCustomNeedleTargets().put(blockInts, coords);
-                        }
-                        else
-                        {
-                            currentSetting.getCustomNeedleTargets().remove(blockInts);
+                            currentSetting.getCustomNeedleTargets().put(targetData, coords);
+                        } else {
+                            currentSetting.getCustomNeedleTargets().remove(targetData);
                         }
                     }
                 }
@@ -111,34 +87,28 @@ public class FinderCompassLogic
      * present and busy, it does nothing, if a worker is not present, it makes
      * one, and if a worker found something, it retrieves and puts the found
      * target into the "display" Coordinates Map
-     * 
+     *
      * @param currentSetting CompassSetting instance
      */
     private BlockPos findNearestBlockChunkOfIDInRange(CompassSetting currentSetting,
-            Block blockID, int meta, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY)
-    {
-        int[] configInts = { meta, playerX, playerY, playerZ, xzRange, yRange, minY, maxY };
-        CompassTargetData key = new CompassTargetData(blockID, meta);
+                                                      IBlockState blockState, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY) {
+        CompassTargetData key = new CompassTargetData(blockState);
 
         ThreadCompassWorker worker = currentSetting.getCompassWorkers().get(key);
-        if (worker == null || !worker.isWorking())
-        {
+        if (worker == null || !worker.isWorking()) {
             worker = new ThreadCompassWorker(mc);
             worker.setPriority(Thread.MIN_PRIORITY);
             currentSetting.getCompassWorkers().put(key, worker);
 
-            worker.setupValues(blockID, configInts);
+            worker.setupValues(blockState, playerX, playerY, playerZ, xzRange, yRange, minY, maxY);
             worker.start();
         }
 
         BlockPos result = currentSetting.getNewFoundTargets().get(key);
-        if (result == null)
-        {
+        if (result == null) {
             // System.out.println("Did not find saved coords for "+key.getBlockID()+", "+key.getDamage());
             result = currentSetting.getCustomNeedleTargets().get(key);
-        }
-        else
-        {
+        } else {
             // System.out.println("Retrieved found coords for "+key.getBlockID()+", "+key.getDamage());
             currentSetting.getNewFoundTargets().remove(key);
         }

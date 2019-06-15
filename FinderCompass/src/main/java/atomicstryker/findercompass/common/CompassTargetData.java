@@ -1,42 +1,36 @@
 package atomicstryker.findercompass.common;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 
-public class CompassTargetData
-{
-    private final Block blockID;
-    private final int damage;
-    
-    public CompassTargetData(Block a, int b)
-    {
-        blockID = a;
-        damage = b;
+public class CompassTargetData {
+
+    private final IBlockState blockState;
+
+    public CompassTargetData(IBlockState state) {
+        blockState = state;
     }
-    
-    public Block getBlockID()
-    {
-        return blockID;
+
+    public IBlockState getBlockState() {
+        return blockState;
     }
-    
-    public int getDamage()
-    {
-        return damage;
-    }
-    
+
     @Override
-    public boolean equals(Object o)
-    {
-        if (o instanceof CompassTargetData)
-        {
-            CompassTargetData comp = (CompassTargetData)o;
-            return comp.getBlockID() == blockID && comp.getDamage() == damage;
+    public boolean equals(Object o) {
+        if (o instanceof CompassTargetData) {
+            CompassTargetData comp = (CompassTargetData) o;
+            return comp.getBlockState() == getBlockState();
         }
         return false;
     }
-    
+
     @Override
-    public int hashCode()
-    {
-        return blockID.getUnlocalizedName().hashCode();
+    public int hashCode() {
+        int result;
+        if (blockState.getBlock().getStateContainer().getProperties().isEmpty()) {
+            result = blockState.getBlock().hashCode();
+        } else {
+            result = blockState.hashCode();
+        }
+        return result;
     }
 }

@@ -3,99 +3,82 @@ package atomicstryker.findercompass.common.network;
 import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-public class StrongholdPacket implements IPacket
-{
+import java.util.function.Supplier;
 
-    public StrongholdPacket()
-    {
-    }
+public class StrongholdPacket implements IPacket {
 
+    private int MAX_STRING_LENGTH = 256;
+    private int STRONGHOLD_SEARCH_RADIUS = 160;
     private int x, y, z;
     private String username;
 
+    public StrongholdPacket() {
+    }
+
     /**
-     * Server responding with stronghold location
-     * 
-     * @param a
-     *            x coord
-     * @param b
-     *            y coord
-     * @param c
-     *            z coord
+     *
      */
-    public StrongholdPacket(int a, int b, int c)
-    {
+    public StrongholdPacket(String user, int a, int b, int c) {
+        username = user;
         x = a;
         y = b;
         z = c;
-        username = "";
-    }
-
-    /**
-     * User requesting stronghold location
-     * 
-     * @param s
-     *            username
-     */
-    public StrongholdPacket(String s)
-    {
-        x = y = z = 0;
-        username = s;
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        // write coords
-        bytes.writeInt(x);
-        bytes.writeInt(y);
-        bytes.writeInt(z);
-        // encode username into outgoing bytestream
-        bytes.writeShort(username.length());
-        for (char c : username.toCharArray())
-            bytes.writeChar(c);
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        StrongholdPacket packet = (StrongholdPacket) msg;
+        packetBuffer.writeString(packet.username, MAX_STRING_LENGTH);
+        packetBuffer.writeInt(packet.x);
+        packetBuffer.writeInt(packet.y);
+        packetBuffer.writeInt(packet.z);
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        // retrieve coords
-        x = bytes.readInt();
-        y = bytes.readInt();
-        z = bytes.readInt();
-        // retrieve username from incoming bytestream
-        short len = bytes.readShort();
-        char[] chars = new char[len];
-        for (int i = 0; i < len; i++)
-            chars[i] = bytes.readChar();
-        username = String.valueOf(chars);
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        return (MSG) new StrongholdPacket(packetBuffer.readString(MAX_STRING_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt());
+    }
 
-        if (username.equals("")) // client received stronghold answer
-        {
-            FinderCompassLogic.strongholdCoords = new BlockPos(x, y, z);
-            // System.out.printf("Finder Compass server sent Stronghold coords:
-            // [%d|%d|%d]\n", x, y, z);
-            FinderCompassLogic.hasStronghold = true;
-        }
-        else // server received stronghold request
-        {
-            EntityPlayerMP p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(username);
-            if (p != null)
-            {
-                BlockPos result = ((WorldServer) p.world).getChunkProvider().getNearestStructurePos(p.world, "Stronghold", new BlockPos(p), false);
-                if (result != null)
-                {
-                    FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(result.getX(), result.getY(), result.getZ()), p);
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> {
+            StrongholdPacket packet = (StrongholdPacket) msg;
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onClientReceivedResponse(packet));
+            DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () -> () -> onServerReceivedQuery(packet));
+
+        });
+        contextSupplier.get().setPacketHandled(true);
+    }
+
+    private void onServerReceivedQuery(StrongholdPacket packet) {
+
+        ServerLifecycleHooks.getCurrentServer().addScheduledTask(() -> {
+            EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(packet.username);
+            if (p != null) {
+                BlockPos result = ((WorldServer) p.world).getChunkProvider().getChunkGenerator().findNearestStructure(p.world, "Stronghold", new BlockPos(p), STRONGHOLD_SEARCH_RADIUS, false);
+                if (result != null) {
+                    FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(packet.username, result.getX(), result.getY(), result.getZ()), p);
                 }
             }
-        }
+        });
+    }
+
+    private void onClientReceivedResponse(StrongholdPacket packet) {
+        Minecraft.getInstance().addScheduledTask(() -> {
+            FinderCompassLogic.strongholdCoords = new BlockPos(packet.x, packet.y, packet.z);
+            FinderCompassMod.LOGGER.info("Finder Compass server sent Stronghold coords: [{}|{}|{}]", packet.x, packet.y, packet.z);
+            FinderCompassLogic.hasStronghold = true;
+        });
     }
 
 }
