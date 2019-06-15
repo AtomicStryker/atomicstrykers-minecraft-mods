@@ -32,6 +32,7 @@ public class FinderCompassClientTicker {
     private ArrayList<CompassSetting> settingList;
 
     public FinderCompassClientTicker() {
+        instance = this;
         mc = Minecraft.getInstance();
         repeat = false;
         settingList = FinderCompassMod.instance.settingList;

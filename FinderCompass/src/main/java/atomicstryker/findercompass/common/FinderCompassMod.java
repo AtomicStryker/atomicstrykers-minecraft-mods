@@ -89,6 +89,7 @@ public class FinderCompassMod {
         networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (EntityPlayerMP) event.getPlayer());
     }
 
+    @SubscribeEvent
     public void clientSetup(TickEvent.ClientTickEvent evt) {
         // hopefully this only executes on client?
         if (FinderCompassClientTicker.instance == null) {
