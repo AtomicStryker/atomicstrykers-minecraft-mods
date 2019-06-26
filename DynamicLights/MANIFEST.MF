@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-FMLCorePlugin: atomicstryker.dynamiclights.common.DLFMLCorePlugin
-Created-By: 1.7.0 (Oracle Corporation)
-FMLCorePluginContainsFMLMod: ulovebreakingstuffcpwdontcha
-ModSide: CLIENT
