@@ -1,11 +1,14 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.IndirectEntityDamageSource;
 
 public class MM_Fiery extends MobModifier {
+
+    private static String[] suffix = {"ofConflagration", "thePhoenix", "ofCrispyness"};
+    private static String[] prefix = {"burning", "toasting"};
 
     public MM_Fiery() {
         super();
@@ -21,10 +24,10 @@ public class MM_Fiery extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-                && (source.getTrueSource() instanceof EntityLivingBase)
-                && !(source instanceof EntityDamageSourceIndirect)) {
+                && (source.getTrueSource() instanceof LivingEntity)
+                && !(source instanceof IndirectEntityDamageSource)) {
             source.getTrueSource().setFire(3);
         }
 
@@ -33,7 +36,7 @@ public class MM_Fiery extends MobModifier {
     }
 
     @Override
-    public float onAttack(EntityLivingBase entity, DamageSource source, float damage) {
+    public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity != null) {
             entity.setFire(3);
         }
@@ -46,13 +49,9 @@ public class MM_Fiery extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"ofConflagration", "thePhoenix", "ofCrispyness"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"burning", "toasting"};
 
 }

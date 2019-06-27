@@ -2,13 +2,16 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.IndirectEntityDamageSource;
 
 public class MM_Poisonous extends MobModifier {
+
+    private static String[] suffix = {"ofVenom", "thedeadlyChalice"};
+    private static String[] prefix = {"poisonous", "stinging", "despoiling"};
 
     public MM_Poisonous() {
         super();
@@ -24,14 +27,14 @@ public class MM_Poisonous extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-                && (source.getTrueSource() instanceof EntityLivingBase)
+                && (source.getTrueSource() instanceof LivingEntity)
                 && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getTrueSource())) {
-            EntityLivingBase ent = (EntityLivingBase) source.getTrueSource();
-            if (!ent.isPotionActive(MobEffects.POISON)
-                    && !(source instanceof EntityDamageSourceIndirect)) {
-                ent.addPotionEffect(new PotionEffect(MobEffects.POISON, 120, 0));
+            LivingEntity ent = (LivingEntity) source.getTrueSource();
+            if (!ent.isPotionActive(Effects.POISON)
+                    && !(source instanceof IndirectEntityDamageSource)) {
+                ent.addPotionEffect(new EffectInstance(Effects.POISON, 120, 0));
             }
         }
 
@@ -39,11 +42,11 @@ public class MM_Poisonous extends MobModifier {
     }
 
     @Override
-    public float onAttack(EntityLivingBase entity, DamageSource source, float damage) {
+    public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity != null
                 && InfernalMobsCore.instance().getIsEntityAllowedTarget(entity)
-                && !entity.isPotionActive(MobEffects.POISON)) {
-            entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 120, 0));
+                && !entity.isPotionActive(Effects.POISON)) {
+            entity.addPotionEffect(new EffectInstance(Effects.POISON, 120, 0));
         }
 
         return super.onAttack(entity, source, damage);
@@ -54,13 +57,9 @@ public class MM_Poisonous extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"ofVenom", "thedeadlyChalice"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"poisonous", "stinging", "despoiling"};
 
 }

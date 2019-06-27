@@ -1,9 +1,17 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 
 public class MM_Sprint extends MobModifier {
+
+    private final static long coolDown = 5000L;
+    private static String[] suffix = {"ofBolting", "theSwiftOne", "ofbeinginyourFace"};
+    private static String[] prefix = {"sprinting", "swift", "charging"};
+    private long nextAbilityUse = 0L;
+    private boolean sprinting;
+    private double modMotionX;
+    private double modMotionZ;
 
     public MM_Sprint() {
         super();
@@ -18,12 +26,8 @@ public class MM_Sprint extends MobModifier {
         return "Sprint";
     }
 
-    private long nextAbilityUse = 0L;
-    private final static long coolDown = 5000L;
-    private boolean sprinting;
-
     @Override
-    public boolean onUpdate(EntityLivingBase mob) {
+    public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
@@ -39,11 +43,8 @@ public class MM_Sprint extends MobModifier {
         return super.onUpdate(mob);
     }
 
-    private double modMotionX;
-    private double modMotionZ;
-
-    private void doSprint(EntityLivingBase mob) {
-        float rotationMovement = (float) ((Math.atan2(mob.motionX, mob.motionZ) * 180D) / 3.1415D);
+    private void doSprint(LivingEntity mob) {
+        float rotationMovement = (float) ((Math.atan2(mob.getMotion().x, mob.getMotion().z) * 180D) / 3.1415D);
         float rotationLook = mob.rotationYaw;
 
         // god fucking dammit notch
@@ -62,8 +63,8 @@ public class MM_Sprint extends MobModifier {
 
         // unfuck velocity lock
         if (Math.abs(rotationMovement + rotationLook) > 10F) {
-            modMotionX = mob.motionX;
-            modMotionZ = mob.motionZ;
+            modMotionX = mob.getMotion().x;
+            modMotionZ = mob.getMotion().z;
         }
 
         if (entspeed < 0.3D) {
@@ -73,14 +74,13 @@ public class MM_Sprint extends MobModifier {
             }
 
             modMotionX *= 1.5;
-            mob.motionX = modMotionX;
             modMotionZ *= 1.5;
-            mob.motionZ = modMotionZ;
+            mob.setMotion(modMotionX, mob.getMotion().y, modMotionZ);
         }
     }
 
-    private double GetAbsSpeed(EntityLivingBase ent) {
-        return Math.sqrt(ent.motionX * ent.motionX + ent.motionZ * ent.motionZ);
+    private double GetAbsSpeed(LivingEntity ent) {
+        return Math.sqrt(ent.getMotion().x * ent.getMotion().x + ent.getMotion().z * ent.getMotion().z);
     }
 
     private double GetAbsModSpeed() {
@@ -92,13 +92,9 @@ public class MM_Sprint extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"ofBolting", "theSwiftOne", "ofbeinginyourFace"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"sprinting", "swift", "charging"};
 
 }

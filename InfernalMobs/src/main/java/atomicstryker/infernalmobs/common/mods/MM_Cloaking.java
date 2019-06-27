@@ -1,14 +1,20 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.SpiderEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 
 public class MM_Cloaking extends MobModifier {
+
+    private final static long coolDown = 10000L;
+    private static Class<?>[] disallowed = {SpiderEntity.class};
+    private static String[] suffix = {"ofStalking", "theUnseen", "thePredator"};
+    private static String[] prefix = {"stalking", "unseen", "hunting"};
+    private long nextAbilityUse = 0L;
 
     public MM_Cloaking() {
         super();
@@ -23,13 +29,10 @@ public class MM_Cloaking extends MobModifier {
         return "Cloaking";
     }
 
-    private long nextAbilityUse = 0L;
-    private final static long coolDown = 10000L;
-
     @Override
-    public boolean onUpdate(EntityLivingBase mob) {
+    public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
-                && getMobTarget() instanceof EntityPlayer) {
+                && getMobTarget() instanceof PlayerEntity) {
             tryAbility(mob);
         }
 
@@ -37,20 +40,20 @@ public class MM_Cloaking extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-                && source.getTrueSource() instanceof EntityLivingBase) {
+                && source.getTrueSource() instanceof LivingEntity) {
             tryAbility(mob);
         }
 
         return super.onHurt(mob, source, damage);
     }
 
-    private void tryAbility(EntityLivingBase mob) {
+    private void tryAbility(LivingEntity mob) {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse) {
             nextAbilityUse = time + coolDown;
-            mob.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 200));
+            mob.addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 200));
         }
     }
 
@@ -59,20 +62,14 @@ public class MM_Cloaking extends MobModifier {
         return disallowed;
     }
 
-    private static Class<?>[] disallowed = {EntitySpider.class};
-
     @Override
     protected String[] getModNameSuffix() {
         return suffix;
     }
 
-    private static String[] suffix = {"ofStalking", "theUnseen", "thePredator"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"stalking", "unseen", "hunting"};
 
 }

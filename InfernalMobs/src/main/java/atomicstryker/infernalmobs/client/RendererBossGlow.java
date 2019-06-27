@@ -5,8 +5,8 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Particles;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -36,13 +36,13 @@ public class RendererBossGlow {
         double var11 = viewEnt.lastTickPosZ + (viewEnt.posZ - viewEnt.lastTickPosZ) * (double) renderTick;
         f.setPosition(var7, var9, var11);
 
-        Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+        Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
         mobsmap.keySet().stream().filter(ent -> ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVector()))
                 && (ent.ignoreFrustumCheck || f.isBoundingBoxInFrustum(ent.getBoundingBox()))
-                && ent.isAlive()).forEach(ent -> mc.worldRenderer.addParticle(Particles.WITCH,
-                false, ent.posX + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.width,
-                ent.posY + ent.world.rand.nextDouble() * (double) ent.height - 0.25D,
-                ent.posZ + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.width,
+                && ent.isAlive()).forEach(ent -> mc.worldRenderer.addParticle(ParticleTypes.WITCH,
+                false, ent.posX + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
+                ent.posY + ent.world.rand.nextDouble() * (double) ent.getHeight() - 0.25D,
+                ent.posZ + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
                 (ent.world.rand.nextDouble() - 0.5D) * 2.0D,
                 -ent.world.rand.nextDouble(),
                 (ent.world.rand.nextDouble() - 0.5D) * 2.0D));

@@ -2,13 +2,13 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Particles;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -34,7 +34,7 @@ public class MM_Ninja extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse && source.getTrueSource() != null && source.getTrueSource() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())
                 && teleportToEntity(mob, source.getTrueSource())) {
@@ -46,8 +46,8 @@ public class MM_Ninja extends MobModifier {
         return super.onHurt(mob, source, damage);
     }
 
-    private boolean teleportToEntity(EntityLivingBase mob, Entity par1Entity) {
-        Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double) (mob.height / 2.0F) - par1Entity.posY + (double) par1Entity.getEyeHeight(),
+    private boolean teleportToEntity(LivingEntity mob, Entity par1Entity) {
+        Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.posY + (double) par1Entity.getEyeHeight(),
                 mob.posZ - par1Entity.posZ);
         vector = vector.normalize();
         double telDist = 8.0D;
@@ -57,7 +57,7 @@ public class MM_Ninja extends MobModifier {
         return teleportTo(mob, destX, destY, destZ);
     }
 
-    private boolean teleportTo(EntityLivingBase mob, double destX, double destY, double destZ) {
+    private boolean teleportTo(LivingEntity mob, double destX, double destY, double destZ) {
         double oldX = mob.posX;
         double oldY = mob.posY;
         double oldZ = mob.posZ;
@@ -71,7 +71,7 @@ public class MM_Ninja extends MobModifier {
 
         boolean hitGround = false;
         while (!hitGround && y < 96 && y > 0) {
-            IBlockState bs = mob.world.getBlockState(new BlockPos(x, y - 1, z));
+            BlockState bs = mob.world.getBlockState(new BlockPos(x, y - 1, z));
             if (bs.getMaterial().blocksMovement()) {
                 hitGround = true;
             } else {
@@ -83,7 +83,7 @@ public class MM_Ninja extends MobModifier {
         if (hitGround) {
             mob.setPosition(mob.posX, mob.posY, mob.posZ);
             mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
-            mob.world.addParticle(Particles.EXPLOSION, oldX, oldY, oldZ, 0D, 0D, 0D);
+            mob.world.addParticle(ParticleTypes.EXPLOSION, oldX, oldY, oldZ, 0D, 0D, 0D);
 
             if (mob.world.isCollisionBoxesEmpty(mob, mob.getBoundingBox()) && !mob.world.containsAnyLiquid(mob.getBoundingBox())) {
                 success = true;

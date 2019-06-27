@@ -2,9 +2,9 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.DamageSource;
 
 public class MM_Choke extends MobModifier {
@@ -12,7 +12,7 @@ public class MM_Choke extends MobModifier {
     private static String[] suffix = {"ofBreathlessness", "theAnaerobic", "ofDeprivation"};
     private static String[] prefix = {"Sith Lord", "Dark Lord", "Darth"};
     private final int RESET_AIR_VALUE = -999;
-    private EntityLivingBase lastTarget;
+    private LivingEntity lastTarget;
     private int lastAir;
 
     public MM_Choke() {
@@ -29,7 +29,7 @@ public class MM_Choke extends MobModifier {
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase mob) {
+    public boolean onUpdate(LivingEntity mob) {
         if (!hasSteadyTarget()) {
             return super.onUpdate(mob);
         }
@@ -50,7 +50,7 @@ public class MM_Choke extends MobModifier {
                     lastAir = Math.min(lastAir, lastTarget.getAir());
                 }
 
-                if (!(lastTarget instanceof EntityPlayer && ((EntityPlayer) lastTarget).abilities.disableDamage)) {
+                if (!(lastTarget instanceof PlayerEntity && ((PlayerEntity) lastTarget).abilities.disableDamage)) {
                     lastAir--;
                     if (lastAir < -19) {
                         lastAir = 0;
@@ -66,7 +66,7 @@ public class MM_Choke extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (lastTarget != null && source.getTrueSource() == lastTarget && lastAir != RESET_AIR_VALUE) {
             lastAir += 60;
             updateAir();
@@ -87,14 +87,14 @@ public class MM_Choke extends MobModifier {
 
     private void updateAir() {
         lastTarget.setAir(lastAir);
-        if (lastTarget instanceof EntityPlayerMP) {
-            InfernalMobsCore.instance().sendAirPacket((EntityPlayerMP) lastTarget, lastAir);
+        if (lastTarget instanceof ServerPlayerEntity) {
+            InfernalMobsCore.instance().sendAirPacket((ServerPlayerEntity) lastTarget, lastAir);
             InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName().getUnformattedComponentText(), System.currentTimeMillis());
         }
     }
 
     @Override
-    public void resetModifiedVictim(EntityPlayer victim) {
+    public void resetModifiedVictim(PlayerEntity victim) {
         victim.setAir(RESET_AIR_VALUE);
     }
 

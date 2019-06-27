@@ -1,6 +1,6 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,7 +9,7 @@ public interface ISidedProxy {
 
     void load();
 
-    ConcurrentHashMap<EntityLivingBase, MobModifier> getRareMobs();
+    ConcurrentHashMap<LivingEntity, MobModifier> getRareMobs();
 
     void onHealthPacketForClient(int entID, float health, float maxhealth);
 

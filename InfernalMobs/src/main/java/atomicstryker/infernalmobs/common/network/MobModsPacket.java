@@ -5,8 +5,9 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -61,15 +62,15 @@ public class MobModsPacket implements IPacket {
             InfernalMobsCore.instance().addRemoteEntityModifiers(Minecraft.getInstance().world, entID, stringData);
         } else {
             // else we are on serverside
-            EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(stringData);
+            PlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(stringData);
             if (p != null) {
                 Entity ent = p.world.getEntityByID(entID);
-                if (ent instanceof EntityLivingBase) {
-                    EntityLivingBase e = (EntityLivingBase) ent;
+                if (ent instanceof LivingEntity) {
+                    LivingEntity e = (LivingEntity) ent;
                     MobModifier mod = InfernalMobsCore.getMobModifiers(e);
                     if (mod != null) {
                         stringData = mod.getLinkedModNameUntranslated();
-                        InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new MobModsPacket(stringData, entID, (byte) 1), p);
+                        InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new MobModsPacket(stringData, entID, (byte) 1), (ServerPlayerEntity) p);
                         InfernalMobsCore.instance().sendHealthPacket(e);
                     }
                 }

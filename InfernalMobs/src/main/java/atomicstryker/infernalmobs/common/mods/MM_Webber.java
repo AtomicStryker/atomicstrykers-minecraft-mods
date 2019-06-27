@@ -1,12 +1,12 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -32,9 +32,9 @@ public class MM_Webber extends MobModifier {
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase mob) {
+    public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
-                && getMobTarget() instanceof EntityPlayer) {
+                && getMobTarget() instanceof PlayerEntity) {
             tryAbility(mob, getMobTarget());
         }
 
@@ -42,16 +42,16 @@ public class MM_Webber extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-                && source.getTrueSource() instanceof EntityLivingBase) {
-            tryAbility(mob, (EntityLivingBase) source.getTrueSource());
+                && source.getTrueSource() instanceof LivingEntity) {
+            tryAbility(mob, (LivingEntity) source.getTrueSource());
         }
 
         return super.onHurt(mob, source, damage);
     }
 
-    private void tryAbility(EntityLivingBase mob, EntityLivingBase target) {
+    private void tryAbility(LivingEntity mob, LivingEntity target) {
         if (target == null || !mob.canEntityBeSeen(target)) {
             return;
         }

@@ -3,10 +3,9 @@ package atomicstryker.infernalmobs.common;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +19,7 @@ public class ItemConfigHelper {
         itemStackList = new ArrayList<>();
         for (String json : items) {
             try {
-                NBTTagCompound nbt = JsonToNBT.getTagFromJson(json);
+                CompoundNBT nbt = JsonToNBT.getTagFromJson(json);
                 ResourceLocation resourceLocation = new ResourceLocation(nbt.getString("nameId"));
                 Item item = ForgeRegistries.ITEMS.getValue(resourceLocation);
 
@@ -44,7 +43,7 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack) {
-        itemStack.getOrCreateTag().putString("nameId", IRegistry.ITEM.getKey(itemStack.getItem()).toString());
+        itemStack.getOrCreateTag().putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
         return itemStack.getOrCreateTag().toString();
     }
 

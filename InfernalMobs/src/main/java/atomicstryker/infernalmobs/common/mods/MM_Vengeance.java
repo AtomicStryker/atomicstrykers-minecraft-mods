@@ -2,10 +2,13 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 
 public class MM_Vengeance extends MobModifier {
+
+    private static String[] suffix = {"ofRetribution", "theThorned", "ofStrikingBack"};
+    private static String[] prefix = {"thorned", "thorny", "spiky"};
 
     public MM_Vengeance() {
         super();
@@ -21,7 +24,7 @@ public class MM_Vengeance extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
                 && source.getTrueSource() != mob
                 && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())) {
@@ -37,13 +40,9 @@ public class MM_Vengeance extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"ofRetribution", "theThorned", "ofStrikingBack"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"thorned", "thorny", "spiky"};
 
 }

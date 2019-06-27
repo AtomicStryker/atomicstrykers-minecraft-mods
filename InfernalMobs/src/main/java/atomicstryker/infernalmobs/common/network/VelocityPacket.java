@@ -39,7 +39,7 @@ public class VelocityPacket implements IPacket {
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        Minecraft.getInstance().addScheduledTask(() -> {
+        Minecraft.getInstance().deferTask(() -> {
             VelocityPacket velocityPacket = (VelocityPacket) msg;
             Minecraft.getInstance().player.addVelocity(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
         });

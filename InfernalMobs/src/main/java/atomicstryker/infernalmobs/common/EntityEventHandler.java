@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.chunk.Chunk;
@@ -30,12 +30,12 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof EntityLivingBase) {
+        if (event.getEntity() instanceof LivingEntity) {
             String savedMods = event.getEntity().getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
             if (!savedMods.equals("")) {
-                InfernalMobsCore.instance().addEntityModifiersByString((EntityLivingBase) event.getEntity(), savedMods);
+                InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) event.getEntity(), savedMods);
             } else {
-                InfernalMobsCore.instance().processEntitySpawn((EntityLivingBase) event.getEntity());
+                InfernalMobsCore.instance().processEntitySpawn((LivingEntity) event.getEntity());
             }
         }
     }
@@ -84,8 +84,8 @@ public class EntityEventHandler {
              * and attacker
              */
             Entity attacker = event.getSource().getTrueSource();
-            if (attacker instanceof EntityLivingBase) {
-                mod = InfernalMobsCore.getMobModifiers((EntityLivingBase) attacker);
+            if (attacker instanceof LivingEntity) {
+                mod = InfernalMobsCore.getMobModifiers((LivingEntity) attacker);
                 if (mod != null) {
                     event.setAmount(mod.onAttack(event.getEntityLiving(), event.getSource(), event.getAmount()));
                 }

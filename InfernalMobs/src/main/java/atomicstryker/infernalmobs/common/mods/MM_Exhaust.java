@@ -1,11 +1,14 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
 
 public class MM_Exhaust extends MobModifier {
+
+    private static String[] suffix = {"ofFatigue", "theDrainer"};
+    private static String[] prefix = {"exhausting", "draining"};
 
     public MM_Exhaust() {
         super();
@@ -21,20 +24,20 @@ public class MM_Exhaust extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getTrueSource() != null
-                && (source.getTrueSource() instanceof EntityPlayer)) {
-            ((EntityPlayer) source.getTrueSource()).addExhaustion(1F);
+                && (source.getTrueSource() instanceof PlayerEntity)) {
+            ((PlayerEntity) source.getTrueSource()).addExhaustion(1F);
         }
 
         return super.onHurt(mob, source, damage);
     }
 
     @Override
-    public float onAttack(EntityLivingBase entity, DamageSource source, float damage) {
+    public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity != null
-                && entity instanceof EntityPlayer) {
-            ((EntityPlayer) entity).addExhaustion(1F);
+                && entity instanceof PlayerEntity) {
+            ((PlayerEntity) entity).addExhaustion(1F);
         }
 
         return super.onAttack(entity, source, damage);
@@ -45,13 +48,9 @@ public class MM_Exhaust extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"ofFatigue", "theDrainer"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"exhausting", "draining"};
 
 }

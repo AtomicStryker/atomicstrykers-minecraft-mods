@@ -1,10 +1,13 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 
 public class MM_Bulwark extends MobModifier {
+
+    private static String[] suffix = {"ofTurtling", "theDefender", "ofeffingArmor"};
+    private static String[] prefix = {"turtling", "defensive", "armoured"};
 
     public MM_Bulwark() {
         super();
@@ -20,7 +23,7 @@ public class MM_Bulwark extends MobModifier {
     }
 
     @Override
-    public float onHurt(EntityLivingBase mob, DamageSource source, float damage) {
+    public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         return super.onHurt(mob, source, Math.max(damage / 2, 1));
     }
 
@@ -29,13 +32,9 @@ public class MM_Bulwark extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"ofTurtling", "theDefender", "ofeffingArmor"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"turtling", "defensive", "armoured"};
 
 }

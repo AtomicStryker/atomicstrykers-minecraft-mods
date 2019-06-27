@@ -9,18 +9,18 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -51,20 +51,18 @@ public class InfernalMobsCore {
     private static InfernalMobsCore instance;
     private final long existCheckDelay = 5000L;
     public NetworkHelper networkHelper;
+    protected File configFile;
+    protected InfernalMobsConfig config;
     private long nextExistCheckTime;
-
     private ItemConfigHelper lootItemDropsElite;
     private ItemConfigHelper lootItemDropsUltra;
     private ItemConfigHelper lootItemDropsInfernal;
-
     private HashMap<String, Boolean> classesAllowedMap;
     private HashMap<String, Boolean> classesForcedMap;
     private HashMap<String, Double> classesHealthMap;
     private Entity infCheckA;
     private Entity infCheckB;
     private ArrayList<Class<? extends MobModifier>> mobMods;
-    protected File configFile;
-    protected InfernalMobsConfig config;
     private ArrayList<Enchantment> enchantmentList;
     /*
      * saves the last timestamp of long term affected players (eg choke) reset
@@ -101,15 +99,15 @@ public class InfernalMobsCore {
         return instance;
     }
 
-    public static MobModifier getMobModifiers(EntityLivingBase ent) {
+    public static MobModifier getMobModifiers(LivingEntity ent) {
         return proxy.getRareMobs().get(ent);
     }
 
-    public static boolean getIsRareEntity(EntityLivingBase ent) {
+    public static boolean getIsRareEntity(LivingEntity ent) {
         return proxy.getRareMobs().containsKey(ent);
     }
 
-    public static void removeEntFromElites(EntityLivingBase entity) {
+    public static void removeEntFromElites(LivingEntity entity) {
         proxy.getRareMobs().remove(entity);
     }
 
@@ -259,7 +257,7 @@ public class InfernalMobsCore {
      *
      * @param entity Entity in question
      */
-    public void processEntitySpawn(EntityLivingBase entity) {
+    public void processEntitySpawn(LivingEntity entity) {
         if (!entity.world.isRemote) {
             if (!getIsRareEntity(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.world.rand.nextInt(config.getEliteRarity()) == 0)) {
@@ -286,9 +284,9 @@ public class InfernalMobsCore {
         }
     }
 
-    private boolean isClassAllowed(EntityLivingBase entity) {
+    private boolean isClassAllowed(LivingEntity entity) {
         if ((entity instanceof IMob)) {
-            if (entity instanceof IEntityOwnable) {
+            if (entity instanceof TameableEntity) {
                 return false;
             }
             if (instance.checkEntityClassAllowed(entity)) {
@@ -310,7 +308,7 @@ public class InfernalMobsCore {
         return result;
     }
 
-    private boolean checkEntityClassAllowed(EntityLivingBase entity) {
+    private boolean checkEntityClassAllowed(LivingEntity entity) {
         String entName = config.isUseSimpleEntityClassNames() ? entity.getClass().getSimpleName() : getEntityNameSafe(entity);
         if (classesAllowedMap.containsKey(entName)) {
             return classesAllowedMap.get(entName);
@@ -327,7 +325,7 @@ public class InfernalMobsCore {
         return result;
     }
 
-    private boolean checkEntityClassForced(EntityLivingBase entity) {
+    private boolean checkEntityClassForced(LivingEntity entity) {
         String entName = config.isUseSimpleEntityClassNames() ? entity.getClass().getSimpleName() : getEntityNameSafe(entity);
         if (classesForcedMap.containsKey(entName)) {
             return classesForcedMap.get(entName);
@@ -344,7 +342,7 @@ public class InfernalMobsCore {
         return result;
     }
 
-    public double getMobClassMaxHealth(EntityLivingBase entity) {
+    public double getMobClassMaxHealth(LivingEntity entity) {
         String entName = config.isUseSimpleEntityClassNames() ? entity.getClass().getSimpleName() : getEntityNameSafe(entity);
         if (classesHealthMap.containsKey(entName)) {
             return classesHealthMap.get(entName);
@@ -367,7 +365,7 @@ public class InfernalMobsCore {
      * @param entity Entity instance whose health you want changed
      * @param amount value to set
      */
-    public void setEntityHealthPastMax(EntityLivingBase entity, float amount) {
+    public void setEntityHealthPastMax(LivingEntity entity, float amount) {
         entity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(amount);
         entity.setHealth(amount);
         instance.sendHealthPacket(entity);
@@ -380,7 +378,7 @@ public class InfernalMobsCore {
      * @param entity Target Entity
      * @return null or the first linked MobModifier instance for the Entity
      */
-    private MobModifier createMobModifiers(EntityLivingBase entity) {
+    private MobModifier createMobModifiers(LivingEntity entity) {
         /* 2-5 modifications standard */
         int number = 2 + entity.world.rand.nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
@@ -459,7 +457,7 @@ public class InfernalMobsCore {
      * @param entity    Target Entity
      * @param savedMods String depicting the MobModifiers, equal to the ingame Display
      */
-    public void addEntityModifiersByString(EntityLivingBase entity, String savedMods) {
+    public void addEntityModifiersByString(LivingEntity entity, String savedMods) {
         if (!getIsRareEntity(entity)) {
             MobModifier mod = stringToMobModifiers(savedMods);
             if (mod != null) {
@@ -520,24 +518,24 @@ public class InfernalMobsCore {
     public void addRemoteEntityModifiers(World world, int entID, String mods) {
         Entity ent = world.getEntityByID(entID);
         if (ent != null) {
-            addEntityModifiersByString((EntityLivingBase) ent, mods);
+            addEntityModifiersByString((LivingEntity) ent, mods);
             // System.out.println("Client added remote infernal mod on entity
             // "+ent+", is now "+mod.getModName());
         }
     }
 
-    public void dropLootForEnt(EntityLivingBase mob, MobModifier mods) {
+    public void dropLootForEnt(LivingEntity mob, MobModifier mods) {
         int xpValue = 25;
         while (xpValue > 0) {
-            int xpDrop = EntityXPOrb.getXPSplit(xpValue);
+            int xpDrop = ExperienceOrbEntity.getXPSplit(xpValue);
             xpValue -= xpDrop;
-            mob.world.spawnEntity(new EntityXPOrb(mob.world, mob.posX, mob.posY, mob.posZ, xpDrop));
+            mob.world.addEntity(new ExperienceOrbEntity(mob.world, mob.posX, mob.posY, mob.posZ, xpDrop));
         }
 
         dropRandomEnchantedItems(mob, mods);
     }
 
-    private void dropRandomEnchantedItems(EntityLivingBase mob, MobModifier mods) {
+    private void dropRandomEnchantedItems(LivingEntity mob, MobModifier mods) {
         int modStr = mods.getModSize();
         /* 0 for elite, 1 for ultra, 2 for infernal */
         int prefix = (modStr <= 5) ? 0 : (modStr <= 10) ? 1 : 2;
@@ -545,18 +543,16 @@ public class InfernalMobsCore {
             ItemStack itemStack = getRandomItem(mob, prefix);
             if (itemStack != null) {
                 Item item = itemStack.getItem();
-                if (item != null) {
-                    if (item instanceof ItemEnchantedBook) {
-                        itemStack = ItemEnchantedBook.getEnchantedItemStack(getRandomEnchantment(mob.getRNG()));
-                    } else {
-                        int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                        enchantRandomly(mob.world.rand, itemStack, item.getItemEnchantability(), usedStr);
-                        // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
-                        // itemStack, item.getItemEnchantability());
-                    }
+                if (item instanceof EnchantedBookItem) {
+                    itemStack = EnchantedBookItem.getEnchantedItemStack(getRandomEnchantment(mob.getRNG()));
+                } else {
+                    int usedStr = (modStr - 5 > 0) ? 5 : modStr;
+                    enchantRandomly(mob.world.rand, itemStack, item.getItemEnchantability(), usedStr);
+                    // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
+                    // itemStack, item.getItemEnchantability());
                 }
-                EntityItem itemEnt = new EntityItem(mob.world, mob.posX, mob.posY, mob.posZ, itemStack);
-                mob.world.spawnEntity(itemEnt);
+                ItemEntity itemEnt = new ItemEntity(mob.world, mob.posX, mob.posY, mob.posZ, itemStack);
+                mob.world.addEntity(itemEnt);
                 modStr -= 5;
             } else {
                 // fixes issue with empty drop lists
@@ -611,32 +607,32 @@ public class InfernalMobsCore {
      * @param prefix 0 for Elite rarity, 1 for Ultra and 2 for Infernal
      * @return ItemStack instance to drop to the World
      */
-    private ItemStack getRandomItem(EntityLivingBase mob, int prefix) {
+    private ItemStack getRandomItem(LivingEntity mob, int prefix) {
         List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ? instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
         return list.size() > 0 ? list.get(mob.world.rand.nextInt(list.size())).copy() : null;
     }
 
-    public void sendVelocityPacket(EntityPlayerMP target, float xVel, float yVel, float zVel) {
+    public void sendVelocityPacket(ServerPlayerEntity target, float xVel, float yVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
             networkHelper.sendPacketToPlayer(new VelocityPacket(xVel, yVel, zVel), target);
         }
     }
 
-    public void sendKnockBackPacket(EntityPlayerMP target, float xVel, float zVel) {
+    public void sendKnockBackPacket(ServerPlayerEntity target, float xVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
             networkHelper.sendPacketToPlayer(new KnockBackPacket(xVel, zVel), target);
         }
     }
 
-    public void sendHealthPacket(EntityLivingBase mob) {
+    public void sendHealthPacket(LivingEntity mob) {
         networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.posX, mob.posY, mob.posZ, 32d, mob.dimension));
     }
 
-    public void sendHealthRequestPacket(String playerName, EntityLivingBase mob) {
+    public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
         networkHelper.sendPacketToServer(new HealthPacket(playerName, mob.getEntityId(), 0f, 0f));
     }
 
-    public void sendAirPacket(EntityPlayerMP target, int lastAir) {
+    public void sendAirPacket(ServerPlayerEntity target, int lastAir) {
         if (getIsEntityAllowedTarget(target)) {
             networkHelper.sendPacketToPlayer(new AirPacket(lastAir), target);
         }
@@ -646,7 +642,7 @@ public class InfernalMobsCore {
     public void onTick(TickEvent.WorldTickEvent tick) {
         if (System.currentTimeMillis() > nextExistCheckTime) {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            Map<EntityLivingBase, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+            Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
             mobsmap.keySet().stream().filter(mob -> filterMob(mob)).forEach(InfernalMobsCore::removeEntFromElites);
@@ -660,8 +656,8 @@ public class InfernalMobsCore {
         }
     }
 
-    private boolean filterMob(EntityLivingBase mob) {
-        return !mob.isAlive() || mob.world == null || mob.world.loadedEntityList == null || !mob.world.loadedEntityList.contains(mob);
+    private boolean filterMob(LivingEntity mob) {
+        return !mob.isAlive() || mob.world == null;
     }
 
     private void resetModifiedPlayerEntitiesAsNeeded(World world) {
@@ -670,7 +666,7 @@ public class InfernalMobsCore {
             Map.Entry<String, Long> entry = iterator.next();
             if (System.currentTimeMillis() > entry.getValue() + (existCheckDelay * 2)) {
                 String username = entry.getKey();
-                for (EntityPlayer player : world.playerEntities) {
+                for (PlayerEntity player : world.getPlayers()) {
                     if (player.getName().equals(username)) {
                         for (Class<? extends MobModifier> c : mobMods) {
                             try {
@@ -709,7 +705,7 @@ public class InfernalMobsCore {
      *
      * @return true when inf loop is suspected, false otherwise
      */
-    public boolean isInfiniteLoop(EntityLivingBase mob, Entity entity) {
+    public boolean isInfiniteLoop(LivingEntity mob, Entity entity) {
         if ((mob == infCheckA && entity == infCheckB) || (mob == infCheckB && entity == infCheckA)) {
             return true;
         }

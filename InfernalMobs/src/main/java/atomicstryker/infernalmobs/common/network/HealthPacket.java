@@ -6,8 +6,8 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -57,13 +57,13 @@ public class HealthPacket implements IPacket {
         contextSupplier.get().enqueueWork(() -> {
             HealthPacket healthPacket = (HealthPacket) msg;
             if (healthPacket.maxhealth > 0) {
-                Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.onHealthPacketForClient(healthPacket)));
+                Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.onHealthPacketForClient(healthPacket)));
             } else {
-                EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
+                ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
                 if (p != null) {
                     Entity ent = p.world.getEntityByID(healthPacket.entID);
-                    if (ent instanceof EntityLivingBase) {
-                        EntityLivingBase e = (EntityLivingBase) ent;
+                    if (ent instanceof LivingEntity) {
+                        LivingEntity e = (LivingEntity) ent;
                         MobModifier mod = InfernalMobsCore.getMobModifiers(e);
                         if (mod != null) {
                             stringData = healthPacket.stringData;

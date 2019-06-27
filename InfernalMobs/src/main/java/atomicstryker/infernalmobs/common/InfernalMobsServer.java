@@ -1,19 +1,20 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.entity.EntityLivingBase;
+
+import net.minecraft.entity.LivingEntity;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InfernalMobsServer implements ISidedProxy {
 
-    private ConcurrentHashMap<EntityLivingBase, MobModifier> rareMobsServer;
+    private ConcurrentHashMap<LivingEntity, MobModifier> rareMobsServer;
 
     public InfernalMobsServer() {
         rareMobsServer = new ConcurrentHashMap<>();
     }
 
     @Override
-    public ConcurrentHashMap<EntityLivingBase, MobModifier> getRareMobs() {
+    public ConcurrentHashMap<LivingEntity, MobModifier> getRareMobs() {
         return rareMobsServer;
     }
 

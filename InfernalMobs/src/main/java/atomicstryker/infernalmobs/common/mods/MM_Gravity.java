@@ -2,11 +2,11 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -26,20 +26,26 @@ public class MM_Gravity extends MobModifier {
         super(next);
     }
 
-    public static void knockBack(EntityLivingBase target, double x, double z) {
+    public static void knockBack(LivingEntity target, double x, double z) {
         target.isAirBorne = true;
         float normalizedPower = MathHelper.sqrt(x * x + z * z);
         float knockPower = 0.8F;
-        target.motionX /= 2.0D;
-        target.motionY /= 2.0D;
-        target.motionZ /= 2.0D;
-        target.motionX -= x / (double) normalizedPower * (double) knockPower;
-        target.motionY += (double) knockPower;
-        target.motionZ -= z / (double) normalizedPower * (double) knockPower;
 
-        if (target.motionY > 0.4000000059604645D) {
-            target.motionY = 0.4000000059604645D;
+        double motionX = target.getMotion().x;
+        double motionY = target.getMotion().x;
+        double motionZ = target.getMotion().x;
+
+        motionX /= 2.0D;
+        motionY /= 2.0D;
+        motionZ /= 2.0D;
+        motionX -= x / (double) normalizedPower * (double) knockPower;
+        motionY += (double) knockPower;
+        motionZ -= z / (double) normalizedPower * (double) knockPower;
+
+        if (motionY > 0.4000000059604645D) {
+            motionY = 0.4000000059604645D;
         }
+        target.setMotion(motionX, motionY, motionZ);
     }
 
     @Override
@@ -48,15 +54,15 @@ public class MM_Gravity extends MobModifier {
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase mob) {
-        if (hasSteadyTarget() && getMobTarget() instanceof EntityPlayer) {
+    public boolean onUpdate(LivingEntity mob) {
+        if (hasSteadyTarget() && getMobTarget() instanceof PlayerEntity) {
             tryAbility(mob, getMobTarget());
         }
 
         return super.onUpdate(mob);
     }
 
-    private void tryAbility(EntityLivingBase mob, EntityLivingBase target) {
+    private void tryAbility(LivingEntity mob, LivingEntity target) {
         if (target == null || !mob.canEntityBeSeen(target)) {
             return;
         }
@@ -73,10 +79,10 @@ public class MM_Gravity extends MobModifier {
 
             mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
 
-            if (mob.world.isRemote || !(target instanceof EntityPlayerMP)) {
+            if (mob.world.isRemote || !(target instanceof ServerPlayerEntity)) {
                 knockBack(target, diffX, diffZ);
             } else {
-                InfernalMobsCore.instance().sendKnockBackPacket((EntityPlayerMP) target, (float) diffX, (float) diffZ);
+                InfernalMobsCore.instance().sendKnockBackPacket((ServerPlayerEntity) target, (float) diffX, (float) diffZ);
             }
         }
     }

@@ -1,9 +1,9 @@
 package atomicstryker.infernalmobs.common;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -41,13 +41,13 @@ public abstract class MobModifier {
     /**
      * internal mob attack target
      */
-    private EntityLivingBase attackTarget;
+    private LivingEntity attackTarget;
 
     /**
      * previous attack target, to compare across ticks and prevent nonagressive
      * mobs popping mod effects
      */
-    private EntityLivingBase previousAttackTarget;
+    private LivingEntity previousAttackTarget;
 
     /**
      * how many ticks the mob is targeting something without interruption
@@ -138,7 +138,7 @@ public abstract class MobModifier {
      *
      * @param entity target mob to attach modifiers to
      */
-    public void onSpawningComplete(EntityLivingBase entity) {
+    public void onSpawningComplete(LivingEntity entity) {
         String oldTag = entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated())) {
             InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [%s], now trying to set [%s] \n", oldTag, getLinkedModNameUntranslated());
@@ -159,7 +159,7 @@ public abstract class MobModifier {
     /**
      * Passes the loot drop event to the modifier list
      */
-    public void onDropItems(EntityLivingBase moddedMob, DamageSource killSource, Collection<EntityItem> drops, int lootingLevel, boolean recentlyHit, int specialDropValue) {
+    public void onDropItems(LivingEntity moddedMob, DamageSource killSource, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit, int specialDropValue) {
         if (recentlyHit) {
             InfernalMobsCore.instance().dropLootForEnt(moddedMob, this);
         }
@@ -170,7 +170,7 @@ public abstract class MobModifier {
      *
      * @param target being passed from the event
      */
-    public void onSetAttackTarget(EntityLivingBase target) {
+    public void onSetAttackTarget(LivingEntity target) {
         previousAttackTarget = attackTarget;
         attackTarget = target;
         if (previousAttackTarget != target) {
@@ -189,7 +189,7 @@ public abstract class MobModifier {
      * @param amount unmitigated damage value
      * @return damage to be applied after we processed the value
      */
-    public float onAttack(EntityLivingBase entity, DamageSource source, float amount) {
+    public float onAttack(LivingEntity entity, DamageSource source, float amount) {
         if (nextMod != null) {
             return nextMod.onAttack(entity, source, amount);
         }
@@ -205,11 +205,11 @@ public abstract class MobModifier {
      * @param amount unmitigated damage value
      * @return damage to be applied after we processed the value
      */
-    public float onHurt(EntityLivingBase mob, DamageSource source, float amount) {
+    public float onHurt(LivingEntity mob, DamageSource source, float amount) {
         if (nextMod != null) {
             amount = nextMod.onHurt(mob, source, amount);
         } else if (source.getTrueSource() != null) {
-            if (source.getTrueSource().world.isRemote && source.getTrueSource() instanceof EntityPlayer) {
+            if (source.getTrueSource().world.isRemote && source.getTrueSource() instanceof PlayerEntity) {
                 InfernalMobsCore.instance().sendHealthRequestPacket(source.getTrueSource().getName().getUnformattedComponentText(), mob);
             }
         }
@@ -227,7 +227,7 @@ public abstract class MobModifier {
     /**
      * passes the jump event to the modifier list
      */
-    public void onJump(EntityLivingBase entityLiving) {
+    public void onJump(LivingEntity entityLiving) {
         if (nextMod != null) {
             nextMod.onJump(entityLiving);
         }
@@ -237,12 +237,12 @@ public abstract class MobModifier {
      * passes the update event to the modifier list the return value is
      * currently unused
      */
-    public boolean onUpdate(EntityLivingBase mob) {
+    public boolean onUpdate(LivingEntity mob) {
         if (nextMod != null) {
             return nextMod.onUpdate(mob);
         } else {
             if (attackTarget == null) {
-                attackTarget = mob.world.getClosestPlayerToEntity(mob, 7.5f);
+                attackTarget = mob.world.getClosestPlayer(mob, 7.5f);
             }
 
             if (attackTarget != null) {
@@ -276,7 +276,7 @@ public abstract class MobModifier {
      *
      * @param mob entity instance
      */
-    public float getActualHealth(EntityLivingBase mob) {
+    public float getActualHealth(LivingEntity mob) {
         if (!mob.world.isRemote) {
             increaseHealthForMob(mob);
         }
@@ -288,14 +288,14 @@ public abstract class MobModifier {
      * Prevents exponential health increase from re-loading the same infernal
      * mob again and again
      */
-    public void setHealthAlreadyHacked(EntityLivingBase mob) {
+    public void setHealthAlreadyHacked(LivingEntity mob) {
         if (!mob.world.isRemote) {
             actualMaxHealth = getActualMaxHealth(mob);
             healthHacked = true;
         }
     }
 
-    private void increaseHealthForMob(EntityLivingBase mob) {
+    private void increaseHealthForMob(LivingEntity mob) {
         if (!healthHacked) {
             actualMaxHealth = getActualMaxHealth(mob);
             actualHealth = actualMaxHealth;
@@ -308,7 +308,7 @@ public abstract class MobModifier {
      * @param mob entity instance
      * @return buffered modified max health
      */
-    public float getActualMaxHealth(EntityLivingBase mob) {
+    public float getActualMaxHealth(LivingEntity mob) {
         if (actualMaxHealth < 0) {
             actualMaxHealth = (float) (InfernalMobsCore.instance().getMobClassMaxHealth(mob) * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
         }
@@ -324,7 +324,7 @@ public abstract class MobModifier {
         actualMaxHealth = maxHealth;
     }
 
-    protected EntityLivingBase getMobTarget() {
+    protected LivingEntity getMobTarget() {
         return attackTarget;
     }
 
@@ -386,7 +386,7 @@ public abstract class MobModifier {
      * @param target Entity to create the Name from
      * @return Entity display name such as 'Rare Zombie'
      */
-    public String getEntityDisplayName(EntityLivingBase target) {
+    public String getEntityDisplayName(LivingEntity target) {
         if (bufferedEntityName == null) {
             String buffer = ForgeRegistries.ENTITIES.getKey(target.getType()).getPath();
             String[] subStrings = buffer.split("\\."); // in case of
@@ -450,7 +450,7 @@ public abstract class MobModifier {
      * infernal'd for a while and triggers this modifiers should override this
      * and clean up their changes when necessary
      */
-    public void resetModifiedVictim(EntityPlayer victim) {
+    public void resetModifiedVictim(PlayerEntity victim) {
         // NOOP by default
     }
 

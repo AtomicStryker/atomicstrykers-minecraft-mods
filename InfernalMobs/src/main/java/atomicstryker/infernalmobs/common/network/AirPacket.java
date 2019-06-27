@@ -36,7 +36,7 @@ public class AirPacket implements IPacket {
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
         contextSupplier.get().enqueueWork(() -> {
             AirPacket airPacket = (AirPacket) msg;
-            Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.overrideAir(airPacket.air)));
+            Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.overrideAir(airPacket.air)));
         });
         contextSupplier.get().setPacketHandled(true);
     }

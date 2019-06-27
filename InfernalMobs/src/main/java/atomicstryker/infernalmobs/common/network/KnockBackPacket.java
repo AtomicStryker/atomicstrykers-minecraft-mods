@@ -37,7 +37,7 @@ public class KnockBackPacket implements IPacket {
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> Minecraft.getInstance().addScheduledTask(() -> {
+        contextSupplier.get().enqueueWork(() -> Minecraft.getInstance().deferTask(() -> {
             KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
             MM_Gravity.knockBack(Minecraft.getInstance().player, knockBackPacket.xv, knockBackPacket.zv);
         }));

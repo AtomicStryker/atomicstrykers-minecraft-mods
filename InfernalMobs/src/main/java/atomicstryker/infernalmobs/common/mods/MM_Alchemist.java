@@ -1,17 +1,25 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.projectile.EntityPotion;
-import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
-import net.minecraft.init.PotionTypes;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
+import net.minecraft.item.Items;
+import net.minecraft.potion.Effects;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 
 public class MM_Alchemist extends MobModifier {
+
+    private final static long coolDown = 6000L;
+    private final static float MIN_DISTANCE = 2F;
+    private static String[] suffix = {"theWitchkin", "theBrewmaster", "theSinged"};
+    private static String[] prefix = {"witchkin", "brewing", "singed"};
+    private long nextAbilityUse = 0L;
 
     public MM_Alchemist() {
         super();
@@ -21,52 +29,50 @@ public class MM_Alchemist extends MobModifier {
         super(next);
     }
 
-    private long nextAbilityUse = 0L;
-    private final static long coolDown = 6000L;
-    private final static float MIN_DISTANCE = 2F;
-
     @Override
     public String getModName() {
         return "Alchemist";
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase mob) {
+    public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                tryAbility(mob, mob.world.getClosestPlayerToEntity(mob, 12f));
+                tryAbility(mob, mob.world.getClosestPlayer(mob, 12f));
             }
         }
         return super.onUpdate(mob);
     }
 
-    private void tryAbility(EntityLivingBase mob, EntityLivingBase target) {
+    private void tryAbility(LivingEntity mob, LivingEntity target) {
         if (target == null || !mob.canEntityBeSeen(target)) {
             return;
         }
 
         if (mob.getDistanceSq(target) > MIN_DISTANCE) {
-            double diffX = target.posX + target.motionX - mob.posX;
+            double diffX = target.posX + target.getMotion().x - mob.posX;
             double diffY = target.posY + (double) target.getEyeHeight() - 1.100000023841858D - mob.posY;
-            double diffZ = target.posZ + target.motionZ - mob.posZ;
+            double diffZ = target.posZ + target.getMotion().z - mob.posZ;
             float distance = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
 
-            PotionType potiontype = PotionTypes.HARMING;
+            Potion potiontype = Potions.HARMING;
 
-            if (distance >= 8.0F && !target.isPotionActive(MobEffects.SLOWNESS)) {
-                potiontype = PotionTypes.SLOWNESS;
-            } else if (target.getHealth() >= 8.0F && !target.isPotionActive(MobEffects.POISON)) {
-                potiontype = PotionTypes.POISON;
-            } else if (distance <= 3.0F && !target.isPotionActive(MobEffects.WEAKNESS) && mob.getRNG().nextFloat() < 0.25F) {
-                potiontype = PotionTypes.WEAKNESS;
+            if (distance >= 8.0F && !target.isPotionActive(Effects.SLOWNESS)) {
+                potiontype = Potions.SLOWNESS;
+            } else if (target.getHealth() >= 8.0F && !target.isPotionActive(Effects.POISON)) {
+                potiontype = Potions.POISON;
+            } else if (distance <= 3.0F && !target.isPotionActive(Effects.WEAKNESS) && mob.getRNG().nextFloat() < 0.25F) {
+                potiontype = Potions.WEAKNESS;
             }
 
-            EntityPotion potion = new EntityPotion(mob.world, mob, PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
-            potion.rotationPitch -= -20.0F;
-            potion.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
-            mob.world.spawnEntity(potion);
+            PotionEntity potionentity = new PotionEntity(mob.world, mob);
+            potionentity.setItem(PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
+            potionentity.rotationPitch -= -20.0F;
+            potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
+            mob.world.playSound(null, mob.posX, mob.posY, mob.posZ, SoundEvents.ENTITY_WITCH_THROW, mob.getSoundCategory(), 1.0F, 0.8F + mob.world.rand.nextFloat() * 0.4F);
+            mob.world.addEntity(potionentity);
         }
     }
 
@@ -75,13 +81,9 @@ public class MM_Alchemist extends MobModifier {
         return suffix;
     }
 
-    private static String[] suffix = {"theWitchkin", "theBrewmaster", "theSinged"};
-
     @Override
     protected String[] getModNamePrefix() {
         return prefix;
     }
-
-    private static String[] prefix = {"witchkin", "brewing", "singed"};
 
 }
