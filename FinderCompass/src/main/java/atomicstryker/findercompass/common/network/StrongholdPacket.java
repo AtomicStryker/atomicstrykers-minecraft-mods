@@ -4,10 +4,10 @@ import atomicstryker.findercompass.client.FinderCompassLogic;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -62,10 +62,10 @@ public class StrongholdPacket implements IPacket {
 
     private void onServerReceivedQuery(StrongholdPacket packet) {
 
-        ServerLifecycleHooks.getCurrentServer().addScheduledTask(() -> {
-            EntityPlayerMP p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(packet.username);
+        ServerLifecycleHooks.getCurrentServer().deferTask(() -> {
+            ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(packet.username);
             if (p != null) {
-                BlockPos result = ((WorldServer) p.world).getChunkProvider().getChunkGenerator().findNearestStructure(p.world, "Stronghold", new BlockPos(p), STRONGHOLD_SEARCH_RADIUS, false);
+                BlockPos result = ((ServerWorld) p.world).getChunkProvider().getChunkGenerator().findNearestStructure(p.world, "Stronghold", new BlockPos(p), STRONGHOLD_SEARCH_RADIUS, false);
                 if (result != null) {
                     FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new StrongholdPacket(packet.username, result.getX(), result.getY(), result.getZ()), p);
                 }
@@ -74,7 +74,7 @@ public class StrongholdPacket implements IPacket {
     }
 
     private void onClientReceivedResponse(StrongholdPacket packet) {
-        Minecraft.getInstance().addScheduledTask(() -> {
+        Minecraft.getInstance().deferTask(() -> {
             FinderCompassLogic.strongholdCoords = new BlockPos(packet.x, packet.y, packet.z);
             FinderCompassMod.LOGGER.info("Finder Compass server sent Stronghold coords: [{}|{}|{}]", packet.x, packet.y, packet.z);
             FinderCompassLogic.hasStronghold = true;

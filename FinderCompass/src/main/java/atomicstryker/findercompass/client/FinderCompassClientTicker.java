@@ -4,16 +4,16 @@ import atomicstryker.findercompass.common.CompassConfig;
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -93,7 +93,7 @@ public class FinderCompassClientTicker {
 
         if (mc.world != null) {
             mc.world.playSound(null, new BlockPos(mc.player), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
-            mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Finder Compass Mode: " + currentSetting.getName()));
+            mc.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
 
@@ -105,10 +105,10 @@ public class FinderCompassClientTicker {
         CompassConfig compassConfig = GsonConfig.loadConfigFromString(CompassConfig.class, json);
         FinderCompassMod.instance.loadSettingListFromConfig(compassConfig);
         mc.ingameGUI.getChatGUI().printChatMessage(
-                new TextComponentTranslation("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
+                new TranslationTextComponent("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
     }
 
-    public void onFoundChunkCoordinates(BlockPos input, IBlockState blockState) {
+    public void onFoundChunkCoordinates(BlockPos input, BlockState blockState) {
         // System.out.println("onFoundChunkCoordinates ["+input.posX+"|"+input.posZ+"] for ID "+b+", damage "+meta);
         CompassTargetData key = new CompassTargetData(blockState);
         currentSetting.getNewFoundTargets().put(key, input);

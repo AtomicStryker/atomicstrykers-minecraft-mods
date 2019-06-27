@@ -1,16 +1,17 @@
 package atomicstryker.findercompass.common;
 
-import net.minecraft.block.state.IBlockState;
+
+import net.minecraft.block.BlockState;
 
 public class CompassTargetData {
 
-    private final IBlockState blockState;
+    private final BlockState blockState;
 
-    public CompassTargetData(IBlockState state) {
+    public CompassTargetData(BlockState state) {
         blockState = state;
     }
 
-    public IBlockState getBlockState() {
+    public BlockState getBlockState() {
         return blockState;
     }
 

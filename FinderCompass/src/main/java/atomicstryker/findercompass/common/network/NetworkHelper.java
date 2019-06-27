@@ -1,6 +1,6 @@
 package atomicstryker.findercompass.common.network;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
@@ -72,7 +72,7 @@ public class NetworkHelper {
      * @param packet to send
      * @param player to send to
      */
-    public void sendPacketToPlayer(IPacket packet, EntityPlayerMP player) {
+    public void sendPacketToPlayer(IPacket packet, ServerPlayerEntity player) {
         checkClass(packet.getClass());
         packetChannel.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }

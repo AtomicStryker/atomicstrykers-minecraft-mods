@@ -47,7 +47,7 @@ public class HandshakePacket implements IPacket {
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
         contextSupplier.get().enqueueWork(() -> {
             HandshakePacket airPacket = (HandshakePacket) msg;
-            Minecraft.getInstance().addScheduledTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onClientReceivedPacket(airPacket)));
+            Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onClientReceivedPacket(airPacket)));
         });
         contextSupplier.get().setPacketHandled(true);
     }

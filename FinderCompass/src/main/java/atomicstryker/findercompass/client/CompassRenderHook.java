@@ -3,8 +3,8 @@ package atomicstryker.findercompass.client;
 import atomicstryker.findercompass.common.CompassTargetData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 

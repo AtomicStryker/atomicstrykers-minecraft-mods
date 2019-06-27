@@ -1,7 +1,7 @@
 package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 
@@ -91,7 +91,7 @@ public class FinderCompassLogic {
      * @param currentSetting CompassSetting instance
      */
     private BlockPos findNearestBlockChunkOfIDInRange(CompassSetting currentSetting,
-                                                      IBlockState blockState, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY) {
+                                                      BlockState blockState, int playerX, int playerY, int playerZ, int xzRange, int yRange, int minY, int maxY) {
         CompassTargetData key = new CompassTargetData(blockState);
 
         ThreadCompassWorker worker = currentSetting.getCompassWorkers().get(key);
