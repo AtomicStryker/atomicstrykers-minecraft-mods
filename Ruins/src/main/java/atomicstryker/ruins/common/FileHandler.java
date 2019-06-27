@@ -2,8 +2,12 @@ package atomicstryker.ruins.common;
 
 import com.google.common.io.Files;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SharedSeedRandom;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.WorldGenRegion;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -227,7 +231,7 @@ class FileHandler {
                 for (int i = 0; i < ints.length; i++) {
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
-            } else if (dimension == DimensionType.NETHER && check[0].equals("enableFixedWidthRuleIds")) {
+            } else if (dimension == DimensionType.THE_NETHER && check[0].equals("enableFixedWidthRuleIds")) {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
@@ -304,6 +308,25 @@ class FileHandler {
             }
         }
         return false;
+    }
+
+    public void decorate(WorldGenRegion p_202092_1_) {
+        int lvt_2_1_ = p_202092_1_.getMainChunkX();
+        int lvt_3_1_ = p_202092_1_.getMainChunkZ();
+        int lvt_4_1_ = lvt_2_1_ * 16;
+        int lvt_5_1_ = lvt_3_1_ * 16;
+        BlockPos lvt_6_1_ = new BlockPos(lvt_4_1_, 0, lvt_5_1_);
+        Biome lvt_7_1_ = null;
+        SharedSeedRandom lvt_8_1_ = new SharedSeedRandom();
+        long lvt_9_1_ = lvt_8_1_.setDecorationSeed(p_202092_1_.getSeed(), lvt_4_1_, lvt_5_1_);
+        GenerationStage.Decoration[] var11 = GenerationStage.Decoration.values();
+        int var12 = var11.length;
+
+        for(int var13 = 0; var13 < var12; ++var13) {
+            GenerationStage.Decoration lvt_14_1_ = var11[var13];
+            lvt_7_1_.decorate(lvt_14_1_, null, p_202092_1_, lvt_9_1_, lvt_8_1_, lvt_6_1_);
+        }
+        RuinsMod.decorateChunkHook(p_202092_1_);
     }
 
     private void copyGlobalOptionsTo(File dir) throws Exception {

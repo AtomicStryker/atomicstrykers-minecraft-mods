@@ -1,7 +1,7 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -20,33 +20,27 @@ import java.util.regex.Pattern;
 
 public class RuinTemplate {
 
+    private static final Pattern patternRuleRaw = Pattern.compile("(?:[^*=^]*\\*)?(?:rule[^=^]*)?[=^]");
+    private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
+    private static Set<String> installed_mods_ = null;
+    private static Set<String> installed_biome_types_ = null;
     private final String name;
-    private IBlockState[] acceptedSurfaces, deniedSurfaces;
-    private int height = 0, width = 0, length = 0, overhang = 0, embed = 0, randomOffMin = 0, randomOffMax = 0;
-    private double weight = 1;
-    private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
-    public int uniqueMinDistance = 0;
-    public int spawnMinDistance = 0;
-    public int spawnMaxDistance = Integer.MAX_VALUE;
-    private boolean preserveWater = false, preserveLava = false;
     private final VariantRuleset variantRuleset;
     private final ArrayList<RuinTemplateLayer> layers;
     private final HashSet<String> biomes;
     private final boolean debugging;
-    private boolean preventRotation = false;
-
     private final ArrayList<AdjoiningTemplateData> adjoiningTemplates;
     private final Set<String> acceptedDimensions = new HashSet<>();
-
+    public int uniqueMinDistance = 0;
+    public int spawnMinDistance = 0;
+    public int spawnMaxDistance = Integer.MAX_VALUE;
     IForgeRegistry<Biome> biomeRegistry = null;
-
-    private class AdjoiningTemplateData {
-        RuinTemplate adjoiningTemplate;
-        int relativeX;
-        int acceptableY;
-        int relativeZ;
-        float spawnchance;
-    }
+    private BlockState[] acceptedSurfaces, deniedSurfaces;
+    private int height = 0, width = 0, length = 0, overhang = 0, embed = 0, randomOffMin = 0, randomOffMax = 0;
+    private double weight = 1;
+    private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
+    private boolean preserveWater = false, preserveLava = false;
+    private boolean preventRotation = false;
 
     public RuinTemplate(String filename, String simpleName, boolean debug) throws Exception {
         // load in the given file as a template
@@ -95,15 +89,15 @@ public class RuinTemplate {
         return biomes;
     }
 
-    public boolean isIgnoredBlock(IBlockState blockState, World world, BlockPos pos) {
+    public boolean isIgnoredBlock(BlockState blockState, World world, BlockPos pos) {
         return blockState.getBlock() == Blocks.AIR || blockState.getBlock() == Blocks.SNOW || blockState.getBlock() == Blocks.COBWEB || isPlant(blockState, world, pos) || preserveBlock(blockState);
     }
 
-    private boolean isPlant(IBlockState blockState, World world, BlockPos pos) {
+    private boolean isPlant(BlockState blockState, World world, BlockPos pos) {
         return blockState.getBlock().isFoliage(blockState, world, pos);
     }
 
-    public boolean preserveBlock(IBlockState blockState) {
+    public boolean preserveBlock(BlockState blockState) {
         if (preserveWater) {
             if (blockState.getBlock() == Blocks.WATER) {
                 return true;
@@ -120,8 +114,8 @@ public class RuinTemplate {
         return false;
     }
 
-    public boolean isAcceptableSurface(IBlockState blockState) {
-        for (IBlockState b : deniedSurfaces) {
+    public boolean isAcceptableSurface(BlockState blockState) {
+        for (BlockState b : deniedSurfaces) {
             if (blockState == b) {
                 return false;
             }
@@ -131,7 +125,7 @@ public class RuinTemplate {
             return true;
         }
 
-        for (IBlockState b : acceptedSurfaces) {
+        for (BlockState b : acceptedSurfaces) {
             if (blockState == b) {
                 return true;
             }
@@ -168,7 +162,7 @@ public class RuinTemplate {
         // surface heights of the proposed site, -1 means 'out of range, consider overhang'
         final int[][] heightMap = new int[xDim][zDim];
 
-        IBlockState blockState;
+        BlockState blockState;
         final int lastX = x + xDim;
         final int lastZ = z + zDim;
 
@@ -318,7 +312,7 @@ public class RuinTemplate {
 
         // do any site leveling needed
         if (leveling > 0 && lbuffer >= 0) {
-            IBlockState fill_block = getLevelingFillBlock(world, xBase, yReturn, zBase);
+            BlockState fill_block = getLevelingFillBlock(world, xBase, yReturn, zBase);
             if (fill_block != null) {
                 levelSite(world, fill_block, xBase, yReturn, zBase, eastwest, random, rules.get(0));
             }
@@ -397,13 +391,13 @@ public class RuinTemplate {
     }
 
     // try to recover the original acceptable surface block or suitable substitute, if any
-    private IBlockState getLevelingFillBlock(World world, int x, int y, int z) {
-        IBlockState fill_block = null;
+    private BlockState getLevelingFillBlock(World world, int x, int y, int z) {
+        BlockState fill_block = null;
 
         int y_end = Math.max(y - height, 0) - 1;
         for (int y_surface = y - 1; y_surface > y_end; --y_surface) {
             BlockPos pos = new BlockPos(x, y_surface, z);
-            IBlockState block = world.getBlockState(pos);
+            BlockState block = world.getBlockState(pos);
             if (!isIgnoredBlock(block, world, pos)) {
                 if (isAcceptableSurface(block)) {
                     fill_block = block;
@@ -425,7 +419,7 @@ public class RuinTemplate {
         }
     }
 
-    private void levelSite(World world, IBlockState fillBlockID, int xBase, int y, int zBase, boolean eastwest, Random random, RuinTemplateRule rule0) {
+    private void levelSite(World world, BlockState fillBlockID, int xBase, int y, int zBase, boolean eastwest, Random random, RuinTemplateRule rule0) {
         /*
          * Add blocks around the build site to level it in as needed. setup some
          * variable defaults (north/south)
@@ -463,11 +457,6 @@ public class RuinTemplate {
             }
         }
     }
-
-    private static final Pattern patternRuleRaw = Pattern.compile("(?:[^*=^]*\\*)?(?:rule[^=^]*)?[=^]");
-    private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
-
-    private enum ParserState {PRE_RULE_PHASE, RULE_PHASE, POST_RULE_PHASE}
 
     private void parseFile(ArrayList<String> lines) throws Exception {
         // first get the variables.
@@ -597,9 +586,6 @@ public class RuinTemplate {
             }
         }
     }
-
-    private static Set<String> installed_mods_ = null;
-    private static Set<String> installed_biome_types_ = null;
 
     private void parseVariables(ArrayList<String> variables) throws Exception {
         // collect list of currently installed mods on first pass and keep for future reference
@@ -795,10 +781,10 @@ public class RuinTemplate {
         }
 
         if (acceptedSurfaces == null) {
-            acceptedSurfaces = new IBlockState[0];
+            acceptedSurfaces = new BlockState[0];
         }
         if (deniedSurfaces == null) {
-            deniedSurfaces = new IBlockState[0];
+            deniedSurfaces = new BlockState[0];
         }
 
         if (width % 2 == 1) {
@@ -820,22 +806,40 @@ public class RuinTemplate {
         return biomeRegistry;
     }
 
-    private IBlockState[] fromString(String input) {
-        final HashSet<IBlockState> stateSet = new HashSet<>();
+    private BlockState[] fromString(String input) {
+        final HashSet<BlockState> stateSet = new HashSet<>();
         String[] stateArray = RuleStringNbtHelper.splitRuleByBrackets(input);
         if (stateArray != null) {
             for (String stateString : stateArray) {
-                IBlockState state = RuleStringNbtHelper.blockStateFromString(stateString);
+                BlockState state = RuleStringNbtHelper.blockStateFromString(stateString);
                 if (state.getBlock() != Blocks.AIR) {
                     stateSet.add(state);
                 }
             }
         }
-        return stateSet.toArray(new IBlockState[0]);
+        return stateSet.toArray(new BlockState[0]);
     }
 
     public boolean acceptsDimension(final String dimension) {
         return acceptedDimensions.isEmpty() || dimension != null && !dimension.isEmpty() && acceptedDimensions.contains(dimension);
+    }
+
+    private enum ParserState {PRE_RULE_PHASE, RULE_PHASE, POST_RULE_PHASE}
+
+    public static class IncompatibleModException extends RuntimeException {
+        private static final long serialVersionUID = -6208915606622752271L;
+
+        public IncompatibleModException(String template) {
+            super("template \"" + template + "\" not installed due to incompatibility with other mods");
+        }
+    }
+
+    private class AdjoiningTemplateData {
+        RuinTemplate adjoiningTemplate;
+        int relativeX;
+        int acceptableY;
+        int relativeZ;
+        float spawnchance;
     }
 
     // A VariantRuleset is a list of template rules, some of which may have a number of variant versions from which the
@@ -958,8 +962,8 @@ public class RuinTemplate {
             // of rule1--in the examples above), a weight of 1 is assumed.
             private class VariantRule {
                 private final ArrayList<Integer> weights;
-                private int weightsTotal;
                 private final ArrayList<RuinTemplateRule> variants;
+                private int weightsTotal;
 
                 // create a new VariantRule, given its first variant
                 public VariantRule(final int weight, final RuinTemplateRule variant) {
@@ -1002,14 +1006,6 @@ public class RuinTemplate {
                     return variants.get(index);
                 }
             }
-        }
-    }
-
-    public static class IncompatibleModException extends RuntimeException {
-        private static final long serialVersionUID = -6208915606622752271L;
-
-        public IncompatibleModException(String template) {
-            super("template \"" + template + "\" not installed due to incompatibility with other mods");
         }
     }
 }

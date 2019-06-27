@@ -1,18 +1,18 @@
 package atomicstryker.ruins.common;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraft.world.storage.loot.LootTables;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,53 +34,45 @@ class World2TemplateParser extends Thread {
     private final BlockData nothing = new BlockData(Blocks.AIR.getDefaultState(), 0, null);
 
     private final List<String> chestLootTableNamesToGenerate = ImmutableList.of(
-            LootTableList.CHESTS_SIMPLE_DUNGEON.toString(), LootTableList.CHESTS_BURIED_TREASURE.toString(),
-            LootTableList.CHESTS_ABANDONED_MINESHAFT.toString(), LootTableList.CHESTS_STRONGHOLD_CORRIDOR.toString(),
-            LootTableList.CHESTS_STRONGHOLD_CROSSING.toString(), LootTableList.CHESTS_STRONGHOLD_LIBRARY.toString());
+            LootTables.CHESTS_SIMPLE_DUNGEON.toString(), LootTables.CHESTS_BURIED_TREASURE.toString(),
+            LootTables.CHESTS_ABANDONED_MINESHAFT.toString(), LootTables.CHESTS_STRONGHOLD_CORRIDOR.toString(),
+            LootTables.CHESTS_STRONGHOLD_CROSSING.toString(), LootTables.CHESTS_STRONGHOLD_LIBRARY.toString());
 
     /**
      * Starting point for the template parse scan
      */
     private final int x, y, z;
-
-    /**
-     * These values denote the template size and location
-     */
-    private int lowestX, lowestZ, xLength, zLength;
-
-    /**
-     * This keeps track how high above the baseplate the first template content
-     * appeared
-     */
-    private int yPadding;
-
     /**
      * Blocks and metas found while parsing the template. Each different
      * instance will be made a rule
      */
     private final ArrayList<BlockData> usedBlocks;
-
+    /**
+     * World instance
+     */
+    private final World world;
+    /**
+     * Template target filename
+     */
+    private final String fileName;
+    /**
+     * Player that executed the command
+     */
+    private final PlayerEntity player;
+    /**
+     * These values denote the template size and location
+     */
+    private int lowestX, lowestZ, xLength, zLength;
+    /**
+     * This keeps track how high above the baseplate the first template content
+     * appeared
+     */
+    private int yPadding;
     /**
      * Threedimensional Layerdata, starts with the first layer containing a
      * Block
      */
     private ArrayList<BlockData[][]> layerData;
-
-    /**
-     * World instance
-     */
-    private final World world;
-
-    /**
-     * Template target filename
-     */
-    private final String fileName;
-
-    /**
-     * Player that executed the command
-     */
-    private final EntityPlayer player;
-
     /**
      * Counts in the Background to stop near-finite loops by accident
      */
@@ -92,14 +84,14 @@ class World2TemplateParser extends Thread {
      * same Block which defines the template size. Any different Blocks found
      * above this plate are considered to make up the template.
      */
-    public World2TemplateParser(EntityPlayer p, int a, int b, int c, String fName) {
+    public World2TemplateParser(PlayerEntity p, int a, int b, int c, String fName) {
         player = p;
         world = p.world;
         x = a;
         y = b;
         z = c;
         fileName = fName;
-        IBlockState state = world.getBlockState(new BlockPos(a, b, c));
+        BlockState state = world.getBlockState(new BlockPos(a, b, c));
         templateHelperBlock = new BlockData(state, 0, null);
         usedBlocks = new ArrayList<>();
         layerData = new ArrayList<>();
@@ -109,7 +101,7 @@ class World2TemplateParser extends Thread {
     public void run() {
 
         if (templateHelperBlock.blockState.getBlock() == Blocks.AIR) {
-            player.sendMessage(new TextComponentTranslation("Template Parse fail, chosen Block was air WTF?!"));
+            player.sendMessage(new TranslationTextComponent("Template Parse fail, chosen Block was air WTF?!"));
             return;
         }
 
@@ -148,20 +140,20 @@ class World2TemplateParser extends Thread {
         zLength = 1 + zmax - lowestZ;
 
         readBlocks(world);
-        player.sendMessage(new TextComponentTranslation("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
+        player.sendMessage(new TranslationTextComponent("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
 
         File folder = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/");
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
-                player.sendMessage(new TextComponentTranslation("Failed to create folder structure: " + folder));
+                player.sendMessage(new TranslationTextComponent("Failed to create folder structure: " + folder));
                 return;
             }
-            player.sendMessage(new TextComponentTranslation("Created folder structure: " + folder));
+            player.sendMessage(new TranslationTextComponent("Created folder structure: " + folder));
         }
         File templateFile = new File(folder, fileName + ".tml");
         toFile(templateFile);
 
-        player.sendMessage(new TextComponentTranslation("Success writing templatefile " + templateFile));
+        player.sendMessage(new TranslationTextComponent("Success writing templatefile " + templateFile));
     }
 
     private void checkLockup() {
@@ -211,8 +203,8 @@ class World2TemplateParser extends Thread {
                     }
                     highestY = yi;
 
-                    if (temp.tileEntity instanceof TileEntityChest && isIInventoryEmpty((IInventory) temp.tileEntity)) {
-                        NBTTagCompound teData = temp.tileEntity.getTileData();
+                    if (temp.tileEntity instanceof ChestTileEntity && isIInventoryEmpty((IInventory) temp.tileEntity)) {
+                        CompoundNBT teData = temp.tileEntity.getTileData();
                         // use vanilla method of placing loot!
                         teData.putString("LootTable", chestLootTableNamesToGenerate.get(world.rand.nextInt(chestLootTableNamesToGenerate.size())));
                         teData.putLong("LootTableSeed", world.rand.nextLong());
@@ -379,17 +371,17 @@ class World2TemplateParser extends Thread {
             CommandTestTemplate.parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName());
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendMessage(new TextComponentTranslation("Something broke! See server logfile for exception message and get it to AtomicStryker."));
-            player.sendMessage(new TextComponentTranslation("First line of stacktrace: " + e.getMessage()));
+            player.sendMessage(new TranslationTextComponent("Something broke! See server logfile for exception message and get it to AtomicStryker."));
+            player.sendMessage(new TranslationTextComponent("First line of stacktrace: " + e.getMessage()));
         }
     }
 
     private class BlockData {
-        IBlockState blockState;
+        BlockState blockState;
         int spawnRule;
         TileEntity tileEntity;
 
-        BlockData(IBlockState state, int sr, TileEntity te) {
+        BlockData(BlockState state, int sr, TileEntity te) {
             blockState = state;
             spawnRule = sr;
             tileEntity = te;

@@ -1,6 +1,6 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.WorldSavedData;
 
@@ -15,7 +15,7 @@ public class ChunkLoggerData extends WorldSavedData {
     }
 
     @Override
-    public void read(NBTTagCompound nbt) {
+    public void read(CompoundNBT nbt) {
         int[] xload = nbt.getIntArray("xcoords");
         int[] zload = nbt.getIntArray("zcoords");
         System.out.println("Ruins chunks logged: " + xload.length);
@@ -28,7 +28,7 @@ public class ChunkLoggerData extends WorldSavedData {
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound nbt) {
+    public CompoundNBT write(CompoundNBT nbt) {
         int[] xsave = new int[coords.size()];
         int[] zsave = new int[coords.size()];
         for (int i = 0; i < xsave.length; i++) {

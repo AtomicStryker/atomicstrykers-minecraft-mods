@@ -1,10 +1,10 @@
 package atomicstryker.ruins.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 
@@ -14,17 +14,17 @@ import java.util.List;
 public class RuleStringNbtHelper {
 
 
-    public static String StringFromBlockState(IBlockState blockState, TileEntity tileEntity) {
-        NBTTagCompound tagCompound = NBTUtil.writeBlockState(blockState);
+    public static String StringFromBlockState(BlockState blockState, TileEntity tileEntity) {
+        CompoundNBT tagCompound = NBTUtil.writeBlockState(blockState);
         if (tileEntity != null) {
-            NBTTagCompound tagTileEntity = tileEntity.write(new NBTTagCompound());
+            CompoundNBT tagTileEntity = tileEntity.write(new CompoundNBT());
             tagCompound.put("ruinsTE", tagTileEntity);
         }
         return tagCompound.toString();
     }
 
-    public static IBlockState blockStateFromString(String input) {
-        NBTTagCompound nbtTagCompound;
+    public static BlockState blockStateFromString(String input) {
+        CompoundNBT nbtTagCompound;
         try {
             nbtTagCompound = JsonToNBT.getTagFromJson(input);
         } catch (CommandSyntaxException e) {
@@ -38,15 +38,15 @@ public class RuleStringNbtHelper {
         return NBTUtil.readBlockState(nbtTagCompound);
     }
 
-    public static NBTTagCompound tileEntityNBTFromString(String input, int x, int y, int z) {
-        NBTTagCompound nbtTagCompound;
+    public static CompoundNBT tileEntityNBTFromString(String input, int x, int y, int z) {
+        CompoundNBT nbtTagCompound;
         try {
             nbtTagCompound = JsonToNBT.getTagFromJson(input);
         } catch (CommandSyntaxException e) {
             return null;
         }
         if (nbtTagCompound.contains("ruinsTE")) {
-            NBTTagCompound teNbt = nbtTagCompound.getCompound("ruinsTE");
+            CompoundNBT teNbt = nbtTagCompound.getCompound("ruinsTE");
             teNbt.putInt("x", x);
             teNbt.putInt("y", y);
             teNbt.putInt("z", z);

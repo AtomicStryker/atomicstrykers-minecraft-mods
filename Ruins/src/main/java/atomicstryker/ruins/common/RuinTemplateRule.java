@@ -1,11 +1,11 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -15,13 +15,12 @@ import java.util.Random;
 
 public class RuinTemplateRule {
 
-    protected final IBlockState[] blockStates;
-    protected final NBTTagCompound[] tileEntityData;
+    protected final BlockState[] blockStates;
+    protected final CompoundNBT[] tileEntityData;
     protected final double[] blockWeights;
-    protected double blockWeightsTotal;
-
     final RuinTemplate owner;
     private final boolean excessiveDebugging;
+    protected double blockWeightsTotal;
 
     public RuinTemplateRule(RuinTemplate r, String rule, boolean debug) {
         owner = r;
@@ -30,15 +29,15 @@ public class RuinTemplateRule {
         String[] stateStrings = RuleStringNbtHelper.splitRuleByBrackets(rule);
         if (stateStrings == null || stateStrings.length == 0) {
             RuinsMod.LOGGER.error("could not find any blockstates in rule {}", rule);
-            blockStates = new IBlockState[0];
+            blockStates = new BlockState[0];
             blockWeights = new double[0];
-            tileEntityData = new NBTTagCompound[0];
+            tileEntityData = new CompoundNBT[0];
             return;
         }
         int numblocks = stateStrings.length;
-        blockStates = new IBlockState[numblocks];
+        blockStates = new BlockState[numblocks];
         blockWeights = new double[numblocks];
-        tileEntityData = new NBTTagCompound[numblocks];
+        tileEntityData = new CompoundNBT[numblocks];
         blockWeightsTotal = 0;
         for (int i = 0; i < numblocks; i++) {
             // invalidate cached block state
@@ -61,6 +60,23 @@ public class RuinTemplateRule {
         this(r, rule, false);
     }
 
+    // get rotation (minecraft enum) corresponding to given direction (ruins int)
+    private static Rotation getDirectionalRotation(int direction) {
+        Rotation rotation = Rotation.NONE;
+        switch (direction) {
+            case RuinsMod.DIR_EAST:
+                rotation = Rotation.CLOCKWISE_90;
+                break;
+            case RuinsMod.DIR_SOUTH:
+                rotation = Rotation.CLOCKWISE_180;
+                break;
+            case RuinsMod.DIR_WEST:
+                rotation = Rotation.COUNTERCLOCKWISE_90;
+                break;
+        }
+        return rotation;
+    }
+
     @SuppressWarnings("unused")
     private boolean isNumber(String s) {
         if (s == null || s.equals("")) {
@@ -81,7 +97,7 @@ public class RuinTemplateRule {
 
     private void handleBlockSpawning(World world, Random random, BlockPos pos, int blocknum, int rotate) {
         // use vanilla rotation - lets see how this goes
-        IBlockState rotatedState = blockStates[blocknum].rotate(world, pos, getDirectionalRotation(rotate));
+        BlockState rotatedState = blockStates[blocknum].rotate(world, pos, getDirectionalRotation(rotate));
         if (excessiveDebugging) {
             RuinsMod.LOGGER.info("About to place blockstate {} at pos {}", rotatedState.toString(), pos.toString());
         }
@@ -96,26 +112,9 @@ public class RuinTemplateRule {
         return blockIndex;
     }
 
-    // get rotation (minecraft enum) corresponding to given direction (ruins int)
-    private static Rotation getDirectionalRotation(int direction) {
-        Rotation rotation = Rotation.NONE;
-        switch (direction) {
-            case RuinsMod.DIR_EAST:
-                rotation = Rotation.CLOCKWISE_90;
-                break;
-            case RuinsMod.DIR_SOUTH:
-                rotation = Rotation.CLOCKWISE_180;
-                break;
-            case RuinsMod.DIR_WEST:
-                rotation = Rotation.COUNTERCLOCKWISE_90;
-                break;
-        }
-        return rotation;
-    }
-
     // make specified block manifest in world, with given metadata and direction
     // returns associated tile entity, if there is one
-    private TileEntity realizeBlock(World world, BlockPos position, IBlockState blockState, NBTTagCompound tileEntityData) {
+    private TileEntity realizeBlock(World world, BlockPos position, BlockState blockState, CompoundNBT tileEntityData) {
         TileEntity entity = null;
         if (world != null && blockState != null) {
 
@@ -137,8 +136,8 @@ public class RuinTemplateRule {
                     entity = TileEntity.create(tileEntityData);
                     world.setTileEntity(position, entity);
 
-                    if (entity instanceof TileEntityLockableLoot) {
-                        NBTTagCompound nbtTagCompound = entity.getTileData();
+                    if (entity instanceof LockableLootTileEntity) {
+                        CompoundNBT nbtTagCompound = entity.getTileData();
                         // unwrap forgedata if needed?
                         if (nbtTagCompound.contains("ForgeData")) {
                             nbtTagCompound = nbtTagCompound.getCompound("ForgeData");
@@ -147,7 +146,7 @@ public class RuinTemplateRule {
                             String lootTable = nbtTagCompound.getString("LootTable");
                             long lootSeed = nbtTagCompound.getLong("LootTableSeed");
 
-                            TileEntityLockableLoot tileEntityLockableLoot = (TileEntityLockableLoot) entity;
+                            LockableLootTileEntity tileEntityLockableLoot = (LockableLootTileEntity) entity;
                             tileEntityLockableLoot.setLootTable(new ResourceLocation(lootTable), lootSeed);
                             tileEntityLockableLoot.fillWithLoot(null);
                         }
