@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.EnumLightType;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -104,14 +104,12 @@ public class DynamicLights {
     }
 
     /**
-     * Exposed method which is called by the transformed World.getRawLight method
-     * instead of Block.getLightValue. Loops active Dynamic Light Sources and if it
+     * Exposed method which is called by the transformed World.getLightFor method
+     * overriding the light cache as needed. Loops active Dynamic Light Sources and if it
      * finds one for the exact coordinates asked, returns the Light value from that
      * source if higher.
      */
-    public static int getDynamicLightValue(IWorldReader worldReader, BlockPos pos) {
-        World world = (World) worldReader;
-        int vanillaValue = world.getBlockState(pos).getLightValue(world, pos);
+    public static int getDynamicLightValue(World world, BlockPos pos, int vanillaValue) {
         if (instance.globalLightsOff || !isWorldReady() || !isClientWorld(world)) {
             return vanillaValue;
         }
@@ -119,7 +117,7 @@ public class DynamicLights {
         if (world != instance.lastWorld || instance.lastList == null) {
             instance.lastWorld = world;
             instance.lastList = instance.worldLightsMap.get(world);
-            hackRenderGlobalConcurrently();
+//            hackRenderGlobalConcurrently();
         }
 
         int dynamicValue = 0;
@@ -145,35 +143,35 @@ public class DynamicLights {
         return instance.mcinstance != null && instance.mcinstance.player != null && instance.mcinstance.player.dimension != null;
     }
 
-    @SuppressWarnings("unchecked")
-    private static void hackRenderGlobalConcurrently() {
-        if (hackingRenderFailed || instance.isBannedDimension(instance.mcinstance.player.dimension.getId())) {
-            return;
-        }
-
-        for (Field f : WorldRenderer.class.getDeclaredFields()) {
-            if (Set.class.isAssignableFrom(f.getType())) {
-                ParameterizedType fieldType = (ParameterizedType) f.getGenericType();
-                if (BlockPos.class.equals(fieldType.getActualTypeArguments()[0])) {
-                    try {
-                        f.setAccessible(true);
-                        Set<BlockPos> setLightUpdates = (Set<BlockPos>) f.get(instance.mcinstance.worldRenderer);
-                        if (setLightUpdates instanceof ConcurrentSkipListSet) {
-                            return;
-                        }
-                        ConcurrentSkipListSet<BlockPos> cs = new ConcurrentSkipListSet<>(setLightUpdates);
-                        f.set(instance.mcinstance.worldRenderer, cs);
-                        LOGGER.info("Dynamic Lights successfully hacked Set WorldRenderer.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
-                        return;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        LOGGER.error("Dynamic Lights completely failed to hack Set WorldRenderer.setLightUpdates and will not try again!");
-        hackingRenderFailed = true;
-    }
+//    @SuppressWarnings("unchecked")
+//    private static void hackRenderGlobalConcurrently() {
+//        if (hackingRenderFailed || instance.isBannedDimension(instance.mcinstance.player.dimension.getId())) {
+//            return;
+//        }
+//
+//        for (Field f : WorldRenderer.class.getDeclaredFields()) {
+//            if (Set.class.isAssignableFrom(f.getType())) {
+//                ParameterizedType fieldType = (ParameterizedType) f.getGenericType();
+//                if (BlockPos.class.equals(fieldType.getActualTypeArguments()[0])) {
+//                    try {
+//                        f.setAccessible(true);
+//                        Set<BlockPos> setLightUpdates = (Set<BlockPos>) f.get(instance.mcinstance.worldRenderer);
+//                        if (setLightUpdates instanceof ConcurrentSkipListSet) {
+//                            return;
+//                        }
+//                        ConcurrentSkipListSet<BlockPos> cs = new ConcurrentSkipListSet<>(setLightUpdates);
+//                        f.set(instance.mcinstance.worldRenderer, cs);
+//                        LOGGER.info("Dynamic Lights successfully hacked Set WorldRenderer.setLightUpdates and replaced it with a ConcurrentSkipListSet!");
+//                        return;
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
+//        LOGGER.error("Dynamic Lights completely failed to hack Set WorldRenderer.setLightUpdates and will not try again!");
+//        hackingRenderFailed = true;
+//    }
 
     /**
      * Exposed method to register active Dynamic Light Sources with. Does all the
@@ -232,7 +230,7 @@ public class DynamicLights {
                     }
 
                     if (iterContainer != null) {
-                        world.checkLightFor(EnumLightType.BLOCK, new BlockPos(iterContainer.getX(), iterContainer.getY(), iterContainer.getZ()));
+                        world.getLightFor(LightType.BLOCK, new BlockPos(iterContainer.getX(), iterContainer.getY(), iterContainer.getZ()));
                     }
                 }
             }
@@ -265,7 +263,7 @@ public class DynamicLights {
                     DynamicLightSourceContainer tickedLightContainer = iter.next();
                     if (tickedLightContainer.onUpdate()) {
                         iter.remove();
-                        mcinstance.world.checkLightFor(EnumLightType.BLOCK, new BlockPos(tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ()));
+                        mcinstance.world.getLightFor(LightType.BLOCK, new BlockPos(tickedLightContainer.getX(), tickedLightContainer.getY(), tickedLightContainer.getZ()));
                         LOGGER.debug("Dynamic Lights killing off LightSource on dead Entity: " + tickedLightContainer.getLightSource().getAttachmentEntity());
                     }
                 }
@@ -274,13 +272,14 @@ public class DynamicLights {
             if (mcinstance.currentScreen == null && toggleButton.isPressed() && System.currentTimeMillis() >= nextKeyTriggerTime) {
                 nextKeyTriggerTime = System.currentTimeMillis() + 1000L;
                 globalLightsOff = !globalLightsOff;
-                mcinstance.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("Dynamic Lights globally " + (globalLightsOff ? "off" : "on")));
+                mcinstance.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent("Dynamic Lights globally " + (globalLightsOff ? "off" : "on")));
 
                 World world = mcinstance.world;
                 if (world != null) {
                     if (worldLights != null) {
                         for (DynamicLightSourceContainer c : worldLights) {
-                            world.checkLightFor(EnumLightType.BLOCK, new BlockPos(c.getX(), c.getY(), c.getZ()));
+                            //world.getChunkProvider().getLightManager().checkBlock(new BlockPos(c.getX(), c.getY(), c.getZ()));
+                            world.getLightFor(LightType.BLOCK, new BlockPos(c.getX(), c.getY(), c.getZ()));
                         }
                     }
                 }

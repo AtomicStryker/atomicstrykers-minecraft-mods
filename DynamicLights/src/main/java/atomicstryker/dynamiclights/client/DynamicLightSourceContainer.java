@@ -3,7 +3,7 @@ package atomicstryker.dynamiclights.client;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.EnumLightType;
+import net.minecraft.world.LightType;
 
 /**
  * 
@@ -56,8 +56,8 @@ public class DynamicLightSourceContainer
              * update all surrounding Blocks :3 We also have to call an update for the
              * previous coordinates, otherwise they would stay lit up.
              */
-            ent.world.checkLightFor(EnumLightType.BLOCK, new BlockPos(x, y, z));
-            ent.world.checkLightFor(EnumLightType.BLOCK, new BlockPos(prevX, prevY, prevZ));
+            ent.world.getLightFor(LightType.BLOCK, new BlockPos(x, y, z));
+            ent.world.getLightFor(LightType.BLOCK, new BlockPos(prevX, prevY, prevZ));
         }
 
         return false;

@@ -4,11 +4,11 @@ import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.GsonConfig;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -37,7 +37,7 @@ public class PlayerSelfLightSource implements IDynamicLightSource {
     private static ItemConfigHelper itemsMap;
     private static ItemConfigHelper notWaterProofItems;
     public boolean fmlOverrideEnable;
-    private EntityPlayer thePlayer;
+    private PlayerEntity thePlayer;
     private World lastWorld;
     private int lightLevel;
     private boolean enabled;
@@ -137,12 +137,12 @@ public class PlayerSelfLightSource implements IDynamicLightSource {
 
     }
 
-    private boolean checkPlayerWater(EntityPlayer thePlayer) {
+    private boolean checkPlayerWater(PlayerEntity thePlayer) {
         if (thePlayer.isInWater()) {
             int x = MathHelper.floor(thePlayer.posX + 0.5D);
             int y = MathHelper.floor(thePlayer.posY + thePlayer.getEyeHeight());
             int z = MathHelper.floor(thePlayer.posZ + 0.5D);
-            IBlockState is = thePlayer.world.getBlockState(new BlockPos(x, y, z));
+            BlockState is = thePlayer.world.getBlockState(new BlockPos(x, y, z));
             return is.getMaterial().isLiquid();
         }
         return false;

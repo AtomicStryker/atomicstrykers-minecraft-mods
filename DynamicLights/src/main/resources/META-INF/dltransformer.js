@@ -3,51 +3,72 @@ function initializeCoreMod() {
 
     var/*Class*/ ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI');
 
+    var/*Class*/ VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode');
     var/*Class*/ MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode');
+    var/*Class*/ InsnList = Java.type('org.objectweb.asm.tree.InsnList');
 
     var/*Class/Interface*/ Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
-    // var methodName = "getRawLight";
-    var methodName = ASMAPI.mapMethod("func_175638_a");
-    print("func_175638_a was mapped to: ", methodName);
+    // var methodName = "getLightFor";
+    var methodName = ASMAPI.mapMethod("func_175642_b");
+    print("func_175642_b was mapped to: ", methodName);
 
     var className = 'net.minecraft.world.World';
-    var methodDescriptorToModify = "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/EnumLightType;)I";
-    var goalInvokeDesc = "(Lnet/minecraft/world/IWorldReader;Lnet/minecraft/util/math/BlockPos;)I";
+    var methodDescriptorToModify = "(Lnet/minecraft/world/LightType;Lnet/minecraft/util/math/BlockPos;)I";
+    var goalInvokeDesc = "(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;I)I";
 
-    if (!methodName.equals("getRawLight")) {
+    if (!methodName.equals("getLightFor")) {
         print("detecting obfuscated environment, method name is ", methodName);
     }
 
     /*
-          private getRawLight(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/EnumLightType;)I
-           L16
-            ALOAD 2
-            GETSTATIC net/minecraft/world/EnumLightType.SKY : Lnet/minecraft/world/EnumLightType;
-            IF_ACMPNE L17
+          public getLightFor(Lnet/minecraft/world/LightType;Lnet/minecraft/util/math/BlockPos;)I
+           L0
+            LINENUMBER 416 L0
             ALOAD 0
+            INVOKEVIRTUAL net/minecraft/world/World.getChunkProvider ()Lnet/minecraft/world/chunk/AbstractChunkProvider;
+            INVOKEVIRTUAL net/minecraft/world/chunk/AbstractChunkProvider.getLightManager ()Lnet/minecraft/world/lighting/WorldLightManager;
             ALOAD 1
-            INVOKEVIRTUAL net/minecraft/world/World.canSeeSky (Lnet/minecraft/util/math/BlockPos;)Z
-            IFEQ L17
-           L18
-            BIPUSH 15
+            INVOKEVIRTUAL net/minecraft/world/lighting/WorldLightManager.getLightEngine (Lnet/minecraft/world/LightType;)Lnet/minecraft/world/lighting/IWorldLightListener;
+            ALOAD 2
+            INVOKEINTERFACE net/minecraft/world/lighting/IWorldLightListener.getLightFor (Lnet/minecraft/util/math/BlockPos;)I (itf)
             IRETURN
-           L17
+           L1
+            LOCALVARIABLE this Lnet/minecraft/world/World; L0 L1 0
+            LOCALVARIABLE type Lnet/minecraft/world/LightType; L0 L1 1
+            LOCALVARIABLE pos Lnet/minecraft/util/math/BlockPos; L0 L1 2
+            MAXSTACK = 2
+            MAXLOCALS = 3
+
+            transform to:
+
+          public getLightFor(Lnet/minecraft/world/LightType;Lnet/minecraft/util/math/BlockPos;)I
+           L0
+            LINENUMBER 112 L0
             ALOAD 0
+            INVOKEVIRTUAL atomicstryker/dynamiclights/client/WorldTest.getChunkProvider ()Lnet/minecraft/world/chunk/AbstractChunkProvider;
+            INVOKEVIRTUAL net/minecraft/world/chunk/AbstractChunkProvider.getLightManager ()Lnet/minecraft/world/lighting/WorldLightManager;
             ALOAD 1
-            INVOKEVIRTUAL net/minecraft/world/World.getBlockState (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
-            ASTORE 3
-           L19
+            INVOKEVIRTUAL net/minecraft/world/lighting/WorldLightManager.getLightEngine (Lnet/minecraft/world/LightType;)Lnet/minecraft/world/lighting/IWorldLightListener;
             ALOAD 2
-            GETSTATIC net/minecraft/world/EnumLightType.SKY : Lnet/minecraft/world/EnumLightType;
-            IF_ACMPNE L20
-            ICONST_0
-            GOTO L21
-           L20
-            ALOAD 3
+            INVOKEINTERFACE net/minecraft/world/lighting/IWorldLightListener.getLightFor (Lnet/minecraft/util/math/BlockPos;)I (itf)
+            ISTORE 3
+           L1
+            LINENUMBER 113 L1
             ALOAD 0
-            ALOAD 1
-            INVOKEINTERFACE net/minecraft/block/state/IBlockState.getLightValue (Lnet/minecraft/world/IWorldReader;Lnet/minecraft/util/math/BlockPos;)I (itf)
+            ALOAD 2
+            ILOAD 3
+            INVOKESTATIC atomicstryker/dynamiclights/client/DynamicLights.getDynamicLightValue (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;I)I
+            IRETURN
+           L2
+            LOCALVARIABLE this Latomicstryker/dynamiclights/client/WorldTest; L0 L2 0
+            LOCALVARIABLE type Lnet/minecraft/world/LightType; L0 L2 1
+            LOCALVARIABLE pos Lnet/minecraft/util/math/BlockPos; L0 L2 2
+            LOCALVARIABLE i I L1 L2 3
+            MAXSTACK = 3
+            MAXLOCALS = 4
+        }
+
      */
 
     return {
@@ -66,27 +87,14 @@ function initializeCoreMod() {
                     if (methods[i].name.equals(methodName) && methods[i].desc.equals(methodDescriptorToModify)) {
                         print("this is our target method!");
 
-                        /* BEFORE ASM TRANSFORM:
+                        /* inject this before IRETURN:
 
-                            ICONST_0
-                            GOTO L21
-                           L20
-                           * FRAME NODE *
-                            ALOAD 3
+                            ISTORE 3
                             ALOAD 0
-                            ALOAD 1
-                            INVOKEINTERFACE net/minecraft/block/state/IBlockState.getLightValue (Lnet/minecraft/world/IWorldReader;Lnet/minecraft/util/math/BlockPos;)I (itf)
-                         */
+                            ALOAD 2
+                            ILOAD 3
+                            INVOKESTATIC atomicstryker/dynamiclights/client/DynamicLights.getDynamicLightValue (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;I)I
 
-                        /* AFTER ASM TRANSFORM:
-
-                            ICONST_0
-                            GOTO L21
-                           L20
-                           * FRAME NODE *
-                            ALOAD 0
-                            ALOAD 1
-                            INVOKEVIRTUAL atomicstryker/dynamiclights/client/modules/PlayerSelfLightSource.getBlockState (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
                          */
 
                         var targetNode;
@@ -97,42 +105,31 @@ function initializeCoreMod() {
                             // check all nodes
                             targetNode = iter.next();
 
-                            // find the ICONST_0 node
-                            if (targetNode.getOpcode() === Opcodes.ICONST_0) {
-                                print("Found ICONST_0 Node at index ", index);
-                                targetNode = iter.next(); // L20
-                                print("next node ", targetNode, " opcode: ", targetNode.getOpcode());
-                                targetNode = iter.next(); // FRAME NODE
-                                print("next node ", targetNode, " opcode: ", targetNode.getOpcode());
-                                targetNode = iter.next(); // GOTO
-                                print("next node ", targetNode, " opcode: ", targetNode.getOpcode());
-                                var aload3 = iter.next();
-                                print("aload3 node", aload3, " opcode: ", aload3.getOpcode());
-                                if (aload3.getOpcode() === Opcodes.ALOAD && aload3.var === 3) {
-                                    print("found ALOAD 3 as expected. deleting it!");
-                                    iter.remove();
-                                    iter.next(); // ALOAD 0
-                                    iter.next(); // ALOAD 1
-                                    targetNode = iter.next();
-                                    print("found INVOKESTATIC: ", targetNode.name, " ", targetNode.desc);
-                                    found = true;
-                                    iter.remove();
-                                    // select followup node just so we can inject our code before it
-                                    targetNode = iter.next();
-                                    break;
-                                }
+                            // find the IRETURN node
+                            if (targetNode.getOpcode() === Opcodes.IRETURN) {
+                                print("Found IRETURN Node at index ", index);
+                                found = true;
+                                break;
                             }
                             index++;
                         }
                         if (found) {
-                            // now write our replacement before the target node
-                            methods[i].instructions.insertBefore(targetNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getDynamicLightValue", goalInvokeDesc, false));
+
+                            var toInject = new InsnList();
+                            toInject.add(new VarInsnNode(Opcodes.ISTORE, 3));
+                            toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            toInject.add(new VarInsnNode(Opcodes.ALOAD, 2));
+                            toInject.add(new VarInsnNode(Opcodes.ILOAD, 3));
+                            toInject.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "atomicstryker/dynamiclights/client/DynamicLights", "getDynamicLightValue", goalInvokeDesc, false));
+
+                            // now write our instructions before the target node
+                            methods[i].instructions.insertBefore(targetNode, toInject);
                             print("Dynamic Lights injected code!");
                         }
                         break;
                     }
                 }
-                print("Dynamic Lights coremode exiting");
+                print("Dynamic Lights coremod exiting");
                 return classNode;
             }
         }

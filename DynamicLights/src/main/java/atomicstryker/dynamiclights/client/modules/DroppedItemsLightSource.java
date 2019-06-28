@@ -4,11 +4,11 @@ import atomicstryker.dynamiclights.client.DynamicLights;
 import atomicstryker.dynamiclights.client.GsonConfig;
 import atomicstryker.dynamiclights.client.IDynamicLightSource;
 import atomicstryker.dynamiclights.client.ItemConfigHelper;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author AtomicStryker
@@ -88,7 +87,7 @@ public class DroppedItemsLightSource {
             nextUpdate = System.currentTimeMillis() + updateInterval;
 
             if (!threadRunning) {
-                Thread thread = new EntityListChecker(mcinstance.world.loadedEntityList);
+                Thread thread = new EntityListChecker(mcinstance.world.func_217416_b());
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.start();
                 threadRunning = true;
@@ -101,10 +100,13 @@ public class DroppedItemsLightSource {
     }
 
     private class EntityListChecker extends Thread {
-        private final Object[] list;
+        private final ArrayList<Entity> list;
 
-        public EntityListChecker(List<Entity> input) {
-            list = input.toArray();
+        public EntityListChecker(Iterable<Entity> input) {
+            list = new ArrayList<>();
+            for (Entity entity : input) {
+                list.add(entity);
+            }
         }
 
         @Override
@@ -115,7 +117,7 @@ public class DroppedItemsLightSource {
             for (Object o : list) {
                 ent = (Entity) o;
                 // Loop all loaded Entities, find alive and valid ItemEntities
-                if (ent instanceof EntityItem && ent.isAlive()) {
+                if (ent instanceof ItemEntity && ent.isAlive()) {
                     // now find them in the already tracked item adapters
                     boolean found = false;
                     Iterator<EntityItemAdapter> iter = trackedItems.iterator();
@@ -136,7 +138,7 @@ public class DroppedItemsLightSource {
                     if (!found) // wasnt already tracked
                     {
                         // make new, tick, put in new list
-                        adapter = new EntityItemAdapter((EntityItem) ent);
+                        adapter = new EntityItemAdapter((ItemEntity) ent);
                         adapter.onTick();
                         newList.add(adapter);
                     }
@@ -152,12 +154,12 @@ public class DroppedItemsLightSource {
 
     private class EntityItemAdapter implements IDynamicLightSource {
 
-        private EntityItem entity;
+        private ItemEntity entity;
         private int lightLevel;
         private boolean enabled;
         private boolean notWaterProof;
 
-        public EntityItemAdapter(EntityItem eI) {
+        public EntityItemAdapter(ItemEntity eI) {
             lightLevel = 0;
             enabled = false;
             entity = eI;
@@ -175,7 +177,7 @@ public class DroppedItemsLightSource {
                 lightLevel = getLightFromItemStack(entity.getItem());
 
                 BlockPos pos = new BlockPos(MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ));
-                IBlockState is = entity.world.getBlockState(pos);
+                BlockState is = entity.world.getBlockState(pos);
                 if (notWaterProof && is.getMaterial().isLiquid()) {
                     lightLevel = 0;
                 }
