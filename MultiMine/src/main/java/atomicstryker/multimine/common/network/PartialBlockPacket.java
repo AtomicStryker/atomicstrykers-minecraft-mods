@@ -3,27 +3,29 @@ package atomicstryker.multimine.common.network;
 import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.MultiMineServer;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-public class PartialBlockPacket implements IPacket
-{
+import java.util.function.Supplier;
+
+public class PartialBlockPacket implements IPacket {
+
+    private int MAX_STRING_LENGTH = 256;
 
     private String user;
     private int x, y, z;
     private float value;
     private boolean regenerating;
 
-    public PartialBlockPacket()
-    {
+    public PartialBlockPacket() {
     }
 
-    public PartialBlockPacket(String username, int ix, int iy, int iz, float val, boolean regen)
-    {
+    public PartialBlockPacket(String username, int ix, int iy, int iz, float val, boolean regen) {
         user = username;
         x = ix;
         y = iy;
@@ -33,55 +35,41 @@ public class PartialBlockPacket implements IPacket
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        ByteBufUtils.writeUTF8String(bytes, user);
-        bytes.writeInt(x);
-        bytes.writeInt(y);
-        bytes.writeInt(z);
-        bytes.writeFloat(value);
-        bytes.writeBoolean(regenerating);
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        PartialBlockPacket packet = (PartialBlockPacket) msg;
+        packetBuffer.writeString(packet.user, MAX_STRING_LENGTH);
+        packetBuffer.writeInt(packet.x);
+        packetBuffer.writeInt(packet.y);
+        packetBuffer.writeInt(packet.z);
+        packetBuffer.writeFloat(value);
+        packetBuffer.writeBoolean(regenerating);
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        user = ByteBufUtils.readUTF8String(bytes);
-        x = bytes.readInt();
-        y = bytes.readInt();
-        z = bytes.readInt();
-        value = bytes.readFloat();
-        regenerating = bytes.readBoolean();
-        if (user.equals("server"))
-        {
-            FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
-        }
-        else
-        {
-            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(new ScheduledCode());
-        }
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        return (MSG) new PartialBlockPacket(packetBuffer.readString(MAX_STRING_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readFloat(), packetBuffer.readBoolean());
     }
 
-    class ScheduledCode implements Runnable
-    {
-
-        @Override
-        public void run()
-        {
-            if (user.equals("server"))
-            {
-                MultiMineClient.instance().onServerSentPartialBlockData(x, y, z, value, regenerating);
-            }
-            else
-            {
-                EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(user);
-                if (player != null)
-                {
-                    MultiMineServer.instance().onClientSentPartialBlockPacket(player, x, y, z, value);
-                }
-            }
-        }
-
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> {
+            PartialBlockPacket packet = (PartialBlockPacket) msg;
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onClientReceived(packet));
+            DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () -> () -> onServerReceivedQuery(packet));
+        });
+        contextSupplier.get().setPacketHandled(true);
     }
 
+    private void onClientReceived(PartialBlockPacket packet) {
+        Minecraft.getInstance().addScheduledTask(() -> MultiMineClient.instance().onServerSentPartialBlockData(packet.x, packet.y, packet.z, packet.value, packet.regenerating));
+    }
+
+    private void onServerReceivedQuery(PartialBlockPacket packet) {
+        ServerLifecycleHooks.getCurrentServer().addScheduledTask(() -> {
+            EntityPlayerMP player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(packet.user);
+            if (player != null) {
+                MultiMineServer.instance().onClientSentPartialBlockPacket(player, packet.x, packet.y, packet.z, packet.value);
+            }
+        });
+    }
 }

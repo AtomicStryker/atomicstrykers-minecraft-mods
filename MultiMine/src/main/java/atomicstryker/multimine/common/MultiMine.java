@@ -1,90 +1,90 @@
 package atomicstryker.multimine.common;
 
+import atomicstryker.multimine.client.ClientProxy;
 import atomicstryker.multimine.common.network.NetworkHelper;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
-import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.util.HashMap;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "multimine", name = "Multi Mine", version = "1.6.0")
-public class MultiMine
-{
-    @Instance("multimine")
+@Mod(MultiMine.MOD_ID)
+@Mod.EventBusSubscriber(modid = MultiMine.MOD_ID)
+public class MultiMine {
+
+    public static final String MOD_ID = "multimine";
+
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+
     private static MultiMine instance;
-
-    private boolean blockRegenEnabled;
-    private long initialBlockRegenDelay;
-    private long blockRegenInterval;
-
-    private boolean debugMode;
-    private Logger LOGGER;
-    public Configuration config;
-
-    @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
-    public static CommonProxy proxy;
-
+    private final Logger LOGGER = LogManager.getLogger();
+    public MultiMineConfig config;
+    public File configFile;
     public NetworkHelper networkHelper;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
-    {
-        networkHelper = new NetworkHelper("AS_MM", PartialBlockPacket.class, PartialBlockRemovalPacket.class);
+    public MultiMine() {
+        instance = this;
 
-        config = new Configuration(evt.getSuggestedConfigurationFile());
-        config.load();
+        networkHelper = new NetworkHelper("asmultimine", PartialBlockPacket.class, PartialBlockRemovalPacket.class);
 
-        blockRegenEnabled = config.get("general", "Block Regeneration Enabled", true).getBoolean(true);
-        initialBlockRegenDelay = config.get("general", "Initial Block Regen Delay in ms", 5000).getInt();
-        blockRegenInterval = config.get("general", "Block 10 percent Regen Interval in ms", 1000).getInt();
-
-        debugMode = config.get("general", "debugMode", false, "Tons of debug printing. Only enable if really needed.").getBoolean(false);
-
-        config.save();
+        loadOrDefaultConfig();
 
         proxy.onPreInit();
-        LOGGER = evt.getModLog();
+
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::commonSetup);
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        proxy.onLoad();
-    }
-
-    public static MultiMine instance()
-    {
+    public static MultiMine instance() {
         return instance;
     }
 
-    public boolean getBlockRegenEnabled()
-    {
-        return blockRegenEnabled;
+    private void loadOrDefaultConfig() {
+
+        MultiMineConfig defaultConfig = new MultiMineConfig();
+        defaultConfig.setBlockRegenEnabled(true);
+        defaultConfig.setInitialBlockRegenDelay(5000);
+        defaultConfig.setBlockRegenInterval(1000);
+        defaultConfig.setDebugMode(false);
+        defaultConfig.setBannedBlocks(new HashMap<>());
+        defaultConfig.setBannedItems(new HashMap<>());
+
+        configFile = proxy.getConfigFile();
+        config = GsonConfig.loadConfigWithDefault(MultiMineConfig.class, configFile, defaultConfig);
     }
 
-    public long getInitialBlockRegenDelay()
-    {
-        return initialBlockRegenDelay;
+    public void commonSetup(FMLCommonSetupEvent evt) {
+        proxy.onLoad();
     }
 
-    public long getBlockRegenInterval()
-    {
-        return blockRegenInterval;
+    public boolean getBlockRegenEnabled() {
+        return config.isBlockRegenEnabled();
     }
 
-    public void debugPrint(String s, Object... params)
-    {
-        if (debugMode)
-        {
+    public long getInitialBlockRegenDelay() {
+        return config.getInitialBlockRegenDelay();
+    }
+
+    public long getBlockRegenInterval() {
+        return config.getBlockRegenInterval();
+    }
+
+    public void debugPrint(String s, Object... params) {
+        if (config.isDebugMode()) {
             LOGGER.info(s, params);
         }
     }

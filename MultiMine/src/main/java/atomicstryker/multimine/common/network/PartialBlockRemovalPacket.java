@@ -2,48 +2,46 @@ package atomicstryker.multimine.common.network;
 
 import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PartialBlockRemovalPacket implements IPacket
-{
+import java.util.function.Supplier;
+
+public class PartialBlockRemovalPacket implements IPacket {
 
     private BlockPos pos;
 
-    public PartialBlockRemovalPacket()
-    {
+    public PartialBlockRemovalPacket() {
     }
 
-    public PartialBlockRemovalPacket(BlockPos p)
-    {
+    public PartialBlockRemovalPacket(BlockPos p) {
         pos = p;
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        bytes.writeInt(pos.getX());
-        bytes.writeInt(pos.getY());
-        bytes.writeInt(pos.getZ());
+    public void encode(Object msg, PacketBuffer packetBuffer) {
+        PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
+        packetBuffer.writeInt(packet.pos.getX());
+        packetBuffer.writeInt(packet.pos.getY());
+        packetBuffer.writeInt(packet.pos.getZ());
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        pos = new BlockPos(bytes.readInt(), bytes.readInt(), bytes.readInt());
-        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+        return (MSG) new PartialBlockRemovalPacket(new BlockPos(packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt()));
     }
 
-    class ScheduledCode implements Runnable
-    {
-
-        @Override
-        public void run()
-        {
-            MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(pos);
-        }
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> {
+            PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().addScheduledTask(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos)));
+        });
+        contextSupplier.get().setPacketHandled(true);
     }
 
 }
