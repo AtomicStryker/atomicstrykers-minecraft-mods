@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -260,7 +261,7 @@ class RuinGenerator {
 
     private boolean checkMinDistance(World world, RuinTemplate ruinTemplate, RuinData ruinData) {
         // in overworld, check min/max distances from world spawn
-        if (world.getWorldInfo().getDimension() == 0) {
+        if (world.getChunkProvider().getChunkGenerator() instanceof ChunkGeneratorOverworld) {
             BlockPos spawn = world.getSpawnPoint();
             final int min_distance = Math.max(fileHandler.anySpawnMinDistance, ruinTemplate.spawnMinDistance);
             if (

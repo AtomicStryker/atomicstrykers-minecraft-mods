@@ -201,7 +201,7 @@ public class RuinsMod {
             if (wh.currentlyGenerating.contains(chunkPos)) {
                 LOGGER.error("Ruins Mod caught recursive generator call at chunk {}", chunkPos);
             } else {
-                if (wh.fileHandle.allowsDimension(world.getWorldInfo().getDimension()) && (wh.chunkLogger == null || !wh.chunkLogger.catchChunkBug(chunkPos))) {
+                if (wh.fileHandle.allowsDimension(world.getDimension().getType().getId()) && (wh.chunkLogger == null || !wh.chunkLogger.catchChunkBug(chunkPos))) {
                     wh.currentlyGenerating.add(chunkPos);
                     // sigh. no proper event for this. lets try it like this
                     Timer timer = new Timer();
