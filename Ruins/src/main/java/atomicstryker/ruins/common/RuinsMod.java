@@ -146,20 +146,22 @@ public class RuinsMod {
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-        WorldHandle wh = getWorldHandle((ServerWorld) event.getEntity().getEntityWorld());
-        if (wh != null && wh.fileHandle.enableStick) {
-            ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
-            if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
-                nextInfoTime = System.currentTimeMillis() + 1000L;
-                TileEntity te = event.getEntityPlayer().world.getTileEntity(event.getPos());
-                event.getEntityPlayer().sendMessage(new TranslationTextComponent(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
+        if (event.getEntity().getEntityWorld() instanceof ServerWorld) {
+            WorldHandle wh = getWorldHandle((ServerWorld) event.getEntity().getEntityWorld());
+            if (wh != null && wh.fileHandle.enableStick) {
+                ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
+                if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
+                    nextInfoTime = System.currentTimeMillis() + 1000L;
+                    TileEntity te = event.getEntityPlayer().world.getTileEntity(event.getPos());
+                    event.getEntityPlayer().sendMessage(new TranslationTextComponent(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
+                }
             }
         }
     }
 
     @SubscribeEvent
     public void onBreak(BlockEvent.BreakEvent event) {
-        if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer)) {
+        if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer) && event.getWorld() instanceof ServerWorld) {
             WorldHandle wh = getWorldHandle((ServerWorld) event.getWorld());
             if (wh != null && wh.fileHandle.enableStick) {
                 ItemStack is = event.getPlayer().getHeldItemMainhand();
@@ -175,9 +177,11 @@ public class RuinsMod {
 
     @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt) {
-        WorldHandle wh = getWorldHandle((ServerWorld) evt.getWorld());
-        if (wh != null) {
-            wh.generator.flushPosFile(evt.getWorld().getWorldInfo().getWorldName());
+        if (evt.getWorld() instanceof ServerWorld) {
+            WorldHandle wh = getWorldHandle((ServerWorld) evt.getWorld());
+            if (wh != null) {
+                wh.generator.flushPosFile(evt.getWorld().getWorldInfo().getWorldName());
+            }
         }
     }
 
