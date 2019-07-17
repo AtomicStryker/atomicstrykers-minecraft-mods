@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -39,10 +39,8 @@ public class VelocityPacket implements IPacket {
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        Minecraft.getInstance().deferTask(() -> {
-            VelocityPacket velocityPacket = (VelocityPacket) msg;
-            Minecraft.getInstance().player.addVelocity(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
-        });
+        VelocityPacket velocityPacket = (VelocityPacket) msg;
+        InfernalMobsCore.proxy.onVelocityPacket(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
         contextSupplier.get().setPacketHandled(true);
     }
 }

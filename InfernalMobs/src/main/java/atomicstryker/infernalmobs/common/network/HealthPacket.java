@@ -1,16 +1,12 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -57,7 +53,8 @@ public class HealthPacket implements IPacket {
         contextSupplier.get().enqueueWork(() -> {
             HealthPacket healthPacket = (HealthPacket) msg;
             if (healthPacket.maxhealth > 0) {
-                Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.onHealthPacketForClient(healthPacket)));
+                InfernalMobsCore.proxy.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
+
             } else {
                 ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
                 if (p != null) {

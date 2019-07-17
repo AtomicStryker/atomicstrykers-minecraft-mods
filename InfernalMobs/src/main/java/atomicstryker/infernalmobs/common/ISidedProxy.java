@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.common;
 
 import net.minecraft.entity.LivingEntity;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface ISidedProxy {
@@ -20,4 +21,6 @@ public interface ISidedProxy {
     void onVelocityPacket(float xv, float yv, float zv);
 
     void onAirPacket(int air);
+
+    File getMcFolder();
 }

@@ -2,7 +2,9 @@ package atomicstryker.infernalmobs.common;
 
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InfernalMobsServer implements ISidedProxy {
@@ -51,5 +53,10 @@ public class InfernalMobsServer implements ISidedProxy {
     @Override
     public void onAirPacket(int air) {
 
+    }
+
+    @Override
+    public File getMcFolder() {
+        return ServerLifecycleHooks.getCurrentServer().getFile("");
     }
 }

@@ -19,13 +19,16 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InfernalMobsClient implements ISidedProxy {
@@ -40,16 +43,6 @@ public class InfernalMobsClient implements ISidedProxy {
     private ConcurrentHashMap<LivingEntity, MobModifier> rareMobsClient;
     private long healthBarRetainTime;
     private LivingEntity retainedTarget;
-
-    public static void onHealthPacketForClient(HealthPacket healthPacket) {
-        Entity ent = Minecraft.getInstance().world.getEntityByID(healthPacket.getEntID());
-        if (ent instanceof LivingEntity) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers((LivingEntity) ent);
-            if (mod != null) {
-                mod.setActualHealth(healthPacket.getHealth(), healthPacket.getMaxhealth());
-            }
-        }
-    }
 
     public static void overrideAir(int air) {
         airOverrideValue = air;
@@ -93,7 +86,7 @@ public class InfernalMobsClient implements ISidedProxy {
             return;
         }
 
-        Entity ent = getEntityCrosshairOver(event.getPartialTicks(), mc);
+        LivingEntity ent = getEntityCrosshairOver(event.getPartialTicks(), mc);
         boolean retained = false;
 
         if (ent == null && System.currentTimeMillis() < healthBarRetainTime) {
@@ -101,8 +94,8 @@ public class InfernalMobsClient implements ISidedProxy {
             retained = true;
         }
 
-        if (ent != null && ent instanceof LivingEntity) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers((LivingEntity) ent);
+        if (ent != null) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers(ent);
             if (mod != null) {
                 askServerHealth(ent);
 
@@ -110,8 +103,7 @@ public class InfernalMobsClient implements ISidedProxy {
                 this.mc.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
                 GL11.glDisable(GL11.GL_BLEND);
 
-                LivingEntity target = (LivingEntity) ent;
-                String buffer = mod.getEntityDisplayName(target);
+                String buffer = mod.getEntityDisplayName(ent);
 
                 int screenwidth = mc.mainWindow.getScaledWidth();
                 FontRenderer fontR = mc.fontRenderer;
@@ -120,7 +112,7 @@ public class InfernalMobsClient implements ISidedProxy {
                 short lifeBarLength = 182;
                 int x = screenwidth / 2 - lifeBarLength / 2;
 
-                int lifeBarLeft = (int) (mod.getActualHealth(target) / mod.getActualMaxHealth(target) * (float) (lifeBarLength + 1));
+                int lifeBarLeft = (int) (mod.getActualHealth(ent) / mod.getActualMaxHealth(ent) * (float) (lifeBarLength + 1));
                 byte y = 12;
                 gui.blit(x, y, 0, 74, lifeBarLength, 5);
                 gui.blit(x, y, 0, 74, lifeBarLength, 5);
@@ -144,7 +136,7 @@ public class InfernalMobsClient implements ISidedProxy {
                 this.mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
                 if (!retained) {
-                    retainedTarget = target;
+                    retainedTarget = ent;
                     healthBarRetainTime = System.currentTimeMillis() + 3000L;
                 }
 
@@ -202,12 +194,22 @@ public class InfernalMobsClient implements ISidedProxy {
 
     @Override
     public void onHealthPacketForClient(int entID, float health, float maxhealth) {
+        Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onHealthPacket(entID, health, maxhealth)));
+    }
 
+    private void onHealthPacket(int entID, float health, float maxhealth) {
+        Entity ent = Minecraft.getInstance().world.getEntityByID(entID);
+        if (ent instanceof LivingEntity) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers((LivingEntity) ent);
+            if (mod != null) {
+                mod.setActualHealth(health, maxhealth);
+            }
+        }
     }
 
     @Override
     public void onKnockBackPacket(float xv, float zv) {
-        MM_Gravity.knockBack(mc.player, xv, zv);
+        Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> MM_Gravity.knockBack(mc.player, xv, zv)));
     }
 
     @Override
@@ -217,13 +219,18 @@ public class InfernalMobsClient implements ISidedProxy {
 
     @Override
     public void onVelocityPacket(float xv, float yv, float zv) {
-        mc.player.addVelocity(xv, yv, zv);
+        mc.deferTask(() -> mc.player.addVelocity(xv, yv, zv));
     }
 
     @Override
     public void onAirPacket(int air) {
         airOverrideValue = air;
         airDisplayTimeout = System.currentTimeMillis() + 3000L;
+    }
+
+    @Override
+    public File getMcFolder() {
+        return Minecraft.getInstance().gameDir;
     }
 
     @SubscribeEvent

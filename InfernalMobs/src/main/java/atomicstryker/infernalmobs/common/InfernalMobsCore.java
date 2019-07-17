@@ -4,7 +4,6 @@ import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.mods.*;
 import atomicstryker.infernalmobs.common.network.*;
 import com.google.common.collect.Lists;
-import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -91,8 +90,6 @@ public class InfernalMobsCore {
         networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
 
         LOGGER = LogManager.getLogger();
-
-        configFile = new File(Minecraft.getInstance().gameDir, "\\config\\infernalmobs.cfg");
     }
 
     public static InfernalMobsCore instance() {
@@ -117,17 +114,21 @@ public class InfernalMobsCore {
 
     public void commonSetup(FMLCommonSetupEvent evt) {
         prepareModList();
-        loadConfig();
 
         proxy.load();
-        LOGGER.info("InfernalMobsCore commonSetup() completed! Modifiers ready: " + mobMods.size() + ", config file at: " + configFile.getAbsolutePath());
+        LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
     }
 
     @SubscribeEvent
     public void serverStarted(FMLServerStartingEvent evt) {
 
+        configFile = new File(proxy.getMcFolder(), "\\config\\infernalmobs.cfg");
+        loadConfig();
+
         evt.getCommandDispatcher().register(InfernalCommandFindEntityClass.BUILDER);
         evt.getCommandDispatcher().register(InfernalCommandSpawnInfernal.BUILDER);
+
+        LOGGER.info("InfernalMobsCore serverStarted completed! config file at: " + configFile.getAbsolutePath());
     }
 
     /**

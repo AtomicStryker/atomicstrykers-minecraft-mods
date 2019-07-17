@@ -3,7 +3,6 @@ package atomicstryker.infernalmobs.common.network;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -59,7 +58,7 @@ public class MobModsPacket implements IPacket {
         MobModsPacket mobModsPacket = (MobModsPacket) msg;
         if (sentFromServer != 0) {
             // so we are on client now
-            InfernalMobsCore.instance().addRemoteEntityModifiers(Minecraft.getInstance().world, entID, stringData);
+            InfernalMobsCore.proxy.onMobModsPacketToClient(stringData, entID);
         } else {
             // else we are on serverside
             PlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(stringData);

@@ -1,11 +1,8 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.client.InfernalMobsClient;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -34,10 +31,8 @@ public class AirPacket implements IPacket {
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> {
-            AirPacket airPacket = (AirPacket) msg;
-            Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> InfernalMobsClient.overrideAir(airPacket.air)));
-        });
+        AirPacket airPacket = (AirPacket) msg;
+        InfernalMobsCore.proxy.onAirPacket(airPacket.air);
         contextSupplier.get().setPacketHandled(true);
     }
 }
