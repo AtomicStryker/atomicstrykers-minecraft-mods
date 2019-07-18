@@ -43,10 +43,3 @@ Ruins mod description TODO, just copy it from a website or something.
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="SERVER"
-# Here's another dependency
-[[dependencies.examplemod]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.13.2]"
-    ordering="NONE"
-    side="SERVER"
