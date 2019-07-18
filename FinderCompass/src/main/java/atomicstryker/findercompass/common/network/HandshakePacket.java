@@ -1,20 +1,16 @@
 package atomicstryker.findercompass.common.network;
 
-import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class HandshakePacket implements IPacket {
 
-    private int MAX_STRING_LENGTH = Integer.MAX_VALUE-1;
+    private int MAX_STRING_LENGTH = Integer.MAX_VALUE - 1;
 
     private String username;
     private String json;
@@ -25,6 +21,14 @@ public class HandshakePacket implements IPacket {
     public HandshakePacket(String user, String json) {
         username = user;
         this.json = json;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getJson() {
+        return json;
     }
 
     @Override
@@ -45,15 +49,8 @@ public class HandshakePacket implements IPacket {
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> {
-            HandshakePacket airPacket = (HandshakePacket) msg;
-            Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onClientReceivedPacket(airPacket)));
-        });
+        HandshakePacket handShakePacket = (HandshakePacket) msg;
+        FinderCompassMod.proxy.onReceivedHandshakePacket(handShakePacket);
         contextSupplier.get().setPacketHandled(true);
     }
-
-    private void onClientReceivedPacket(HandshakePacket airPacket) {
-        FinderCompassClientTicker.instance.inputOverrideConfig(airPacket.json);
-    }
-
 }

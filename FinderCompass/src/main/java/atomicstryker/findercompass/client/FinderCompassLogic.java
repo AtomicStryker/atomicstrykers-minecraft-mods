@@ -1,6 +1,8 @@
 package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
+import atomicstryker.findercompass.common.FinderCompassMod;
+import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
@@ -10,8 +12,8 @@ import java.util.Map.Entry;
 
 public class FinderCompassLogic {
 
-    public static BlockPos strongholdCoords = new BlockPos(0, 0, 0);
-    public static boolean hasStronghold = false;
+    public static BlockPos featureCoords = new BlockPos(0, 0, 0);
+    public static boolean hasFeature = false;
     private final BlockPos NullChunk = new BlockPos(0, 0, 0);
     private final Minecraft mc;
     private BlockPos oldPos;
@@ -45,7 +47,7 @@ public class FinderCompassLogic {
                 seccounter = 0;
                 is15SecInterval = true;
 
-                FinderCompassLogic.hasStronghold = false;
+                FinderCompassLogic.hasFeature = false;
             }
 
             int[] configInts;
@@ -58,6 +60,12 @@ public class FinderCompassLogic {
                 iter = currentSetting.getCustomNeedles().entrySet().iterator();
                 //System.out.println("finder compass second ticker");
 
+                if (is15SecInterval && currentSetting.getFeatureNeedle() != null) {
+                    FinderCompassMod.instance.networkHelper.sendPacketToServer(
+                            new FeatureSearchPacket(mc.player.getName().getString(), currentSetting.getFeatureNeedle(),
+                                    mc.player.getPosition().getX(), mc.player.getPosition().getY(), mc.player.getPosition().getZ()));
+                }
+
                 while (iter.hasNext()) {
                     iterEntry = iter.next();
                     targetData = iterEntry.getKey();
@@ -68,10 +76,6 @@ public class FinderCompassLogic {
                                         pos.getX(), pos.getY(), pos.getZ(),
                                         configInts[3], configInts[4], configInts[5], configInts[6]);
                         if (coords != null && !coords.equals(NullChunk)) {
-                            if (currentSetting.getCustomNeedleTargets().containsKey(targetData)) {
-                                currentSetting.getCustomNeedleTargets().remove(targetData);
-                            }
-
                             currentSetting.getCustomNeedleTargets().put(targetData, coords);
                         } else {
                             currentSetting.getCustomNeedleTargets().remove(targetData);

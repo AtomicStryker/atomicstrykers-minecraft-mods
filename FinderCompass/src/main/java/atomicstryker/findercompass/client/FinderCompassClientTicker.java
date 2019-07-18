@@ -90,6 +90,7 @@ public class FinderCompassClientTicker {
         }
 
         currentSetting = settingList.get(nextIndex);
+        FinderCompassLogic.hasFeature = false;
 
         if (mc.world != null) {
             mc.world.playSound(null, new BlockPos(mc.player), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);

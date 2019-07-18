@@ -20,6 +20,7 @@ public class CompassConfig {
     public static class NeedleSet {
         private String name = "dummy";
         private Map<String, int[]> needles = new HashMap<>();
+        private String featureNeedle = null;
 
         public String getName() {
             return name;
@@ -35,6 +36,14 @@ public class CompassConfig {
 
         public void setNeedles(Map<String, int[]> needles) {
             this.needles = needles;
+        }
+
+        public String getFeatureNeedle() {
+            return featureNeedle;
+        }
+
+        public void setFeatureNeedle(String featureNeedle) {
+            this.featureNeedle = featureNeedle;
         }
     }
 }

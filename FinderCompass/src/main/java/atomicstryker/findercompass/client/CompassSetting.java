@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CompassSetting
 {
     private final String displayedName;
-    private boolean noEnderEyeNeedle;
+    private final String featureNeedle;
     
     /**
      * Maps an int pair blockID/damage to a config array
@@ -31,24 +31,18 @@ public class CompassSetting
      */
     private final HashMap<CompassTargetData, ThreadCompassWorker> compassWorkers;
     
-    public CompassSetting(String name)
+    public CompassSetting(String name, String feature)
     {
         displayedName = name;
-        noEnderEyeNeedle = false;
+        featureNeedle = feature;
         customNeedles = new HashMap<>();
         customNeedleTargets = new ConcurrentHashMap<>();
         newFoundTargets = new HashMap<>();
         compassWorkers = new HashMap<>();
     }
     
-    public void setHasStrongholdNeedle(boolean input)
-    {
-        noEnderEyeNeedle = !input;
-    }
-    
-    public boolean isStrongholdNeedleEnabled()
-    {
-        return !noEnderEyeNeedle;
+    public String getFeatureNeedle() {
+        return featureNeedle;
     }
     
     public HashMap<CompassTargetData, int[]> getCustomNeedles()
