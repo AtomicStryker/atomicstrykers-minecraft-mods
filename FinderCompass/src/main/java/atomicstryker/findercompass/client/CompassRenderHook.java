@@ -48,9 +48,9 @@ public class CompassRenderHook {
             drawNeedle(Tessellator.getInstance(), (float) configInts[0] / 255f, (float) configInts[1] / 255f, (float) configInts[2] / 255f, computeNeedleHeading(entryTarget.getValue()));
         }
 
-        if (css.isStrongholdNeedleEnabled() && FinderCompassLogic.hasStronghold) {
+        if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
             GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
-            drawNeedle(Tessellator.getInstance(), strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.strongholdCoords));
+            drawNeedle(Tessellator.getInstance(), strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
 
         // restore ogl state

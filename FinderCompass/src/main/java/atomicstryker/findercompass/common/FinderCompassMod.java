@@ -1,10 +1,11 @@
 package atomicstryker.findercompass.common;
 
 import atomicstryker.findercompass.client.CompassSetting;
+import atomicstryker.findercompass.client.FinderCompassClient;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
+import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
-import atomicstryker.findercompass.common.network.StrongholdPacket;
 import com.google.gson.Gson;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -17,6 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -39,10 +41,9 @@ public class FinderCompassMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static FinderCompassMod instance;
-
+    public static ISidedProxy proxy = DistExecutor.runForDist(() -> () -> new FinderCompassClient(), () -> () -> new FinderCompassServer());
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
-
     public NetworkHelper networkHelper;
 
     public FinderCompassMod() {
@@ -51,13 +52,13 @@ public class FinderCompassMod {
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::clientSetup);
         MinecraftForge.EVENT_BUS.register(this);
-        networkHelper = new NetworkHelper("findercompass", HandshakePacket.class, StrongholdPacket.class);
+        networkHelper = new NetworkHelper("findercompass", HandshakePacket.class, FeatureSearchPacket.class);
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
         compassConfig = createDefaultConfig();
         try {
-            GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(Minecraft.getInstance().gameDir, "\\config\\findercompass.cfg"), compassConfig);
+            compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(Minecraft.getInstance().gameDir, "\\config\\findercompass.cfg"), compassConfig);
             loadSettingListFromConfig(compassConfig);
         } catch (IOException e) {
             LOGGER.error("IOException parsing config", e);
@@ -68,13 +69,12 @@ public class FinderCompassMod {
         compassConfig = input;
         settingList = new ArrayList<>();
         for (CompassConfig.NeedleSet needleSet : compassConfig.getNeedles()) {
-            CompassSetting setting = new CompassSetting(needleSet.getName());
+            CompassSetting setting = new CompassSetting(needleSet.getName(), needleSet.getFeatureNeedle());
             for (Map.Entry<String, int[]> blockEntry : needleSet.getNeedles().entrySet()) {
                 IBlockState state = getBlockStateFromString(blockEntry.getKey());
                 if (state != null) {
                     CompassTargetData data = new CompassTargetData(state);
                     setting.getCustomNeedles().put(data, blockEntry.getValue());
-                    setting.setHasStrongholdNeedle(false);
                     LOGGER.info("{}: parsed blockstate {} for colors {}", needleSet.getName(), state, blockEntry.getValue());
                 } else {
                     LOGGER.error("Could not identify block for input {}", blockEntry.getKey());
@@ -168,6 +168,7 @@ public class FinderCompassMod {
             }
 
             workingManMineables.setNeedles(needleMap);
+            workingManMineables.setFeatureNeedle("Village");
             needleSetList.add(workingManMineables);
         }
 
@@ -205,6 +206,7 @@ public class FinderCompassMod {
             }
 
             shinyStones.setNeedles(needleMap);
+            shinyStones.setFeatureNeedle("Stronghold");
             needleSetList.add(shinyStones);
         }
 
