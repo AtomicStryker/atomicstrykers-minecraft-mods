@@ -1,3 +1,6 @@
+1.13.2.3
+get dedicated server working
+
 1.13.2.2
 fix linux config file path
 
