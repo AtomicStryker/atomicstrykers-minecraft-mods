@@ -246,7 +246,7 @@ class World2TemplateParser extends Thread {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
             pw.println();
-            pw.println("# Created by Ruins mod version " + RuinsMod.modversion + " Ingame Parser");
+            pw.println("# Created by Ruins mod Ingame Parser");
             pw.println("# authoring Player: " + player.getName().getString());
             pw.println();
 

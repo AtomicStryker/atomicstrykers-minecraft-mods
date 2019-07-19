@@ -1,10 +1,8 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.CommandBlockTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -23,10 +21,8 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -51,7 +47,7 @@ public class RuinsMod {
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
-    static final String modversion = "1.14.3";
+    public static IProxy proxy = DistExecutor.runForDist(() -> () -> new RuinsClient(), () -> () -> new RuinsServer());
     private static RuinsMod instance;
     private final ConcurrentHashMap<Dimension, WorldHandle> generatorMap;
     private long nextInfoTime;
@@ -77,16 +73,7 @@ public class RuinsMod {
     }
 
     public static File getMinecraftBaseDir() {
-        if (EffectiveSide.get() == LogicalSide.CLIENT) {
-            File file = Minecraft.getInstance().gameDir;
-            String abspath = file.getAbsolutePath();
-            if (abspath.endsWith(".")) {
-                file = new File(abspath.substring(0, abspath.length() - 1));
-            }
-            return file;
-        }
-        MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-        return server.getFile("");
+        return proxy.getBaseDir();
     }
 
     /**
