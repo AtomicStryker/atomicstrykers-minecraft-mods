@@ -10,7 +10,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorld;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import java.io.File;
+
 public class FinderCompassClient implements ISidedProxy {
+
+    @Override
+    public File getMcFolder() {
+        return Minecraft.getInstance().gameDir;
+    }
 
     @Override
     public void onReceivedHandshakePacket(HandshakePacket handShakePacket) {
