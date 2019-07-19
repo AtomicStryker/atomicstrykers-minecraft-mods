@@ -89,7 +89,7 @@ public class RuinsMod {
         int x = worldGenRegion.getMainChunkX();
         int z = worldGenRegion.getMainChunkZ();
         ChunkPos chunkPos = new ChunkPos(x, z);
-        LOGGER.debug("Ruins chunk decoration [{}|{}]", x, z);
+        LOGGER.trace("Ruins chunk decoration [{}|{}]", x, z);
         final WorldHandle wh = instance.getWorldHandle(world);
         if (wh != null) {
 
@@ -103,14 +103,16 @@ public class RuinsMod {
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            if (world.getDimension().isNether()) {
-                                instance.generateNether(world, world.rand, chunkPos.getXStart(), chunkPos.getZStart());
-                            } else
-                            // normal world
-                            {
-                                instance.generateSurface(world, world.rand, chunkPos.getXStart(), chunkPos.getZStart());
-                            }
-                            wh.currentlyGenerating.remove(chunkPos);
+                            world.getServer().deferTask(() -> {
+                                if (world.getDimension().isNether()) {
+                                    instance.generateNether(world, world.rand, chunkPos.getXStart(), chunkPos.getZStart());
+                                } else
+                                // normal world
+                                {
+                                    instance.generateSurface(world, world.rand, chunkPos.getXStart(), chunkPos.getZStart());
+                                }
+                                wh.currentlyGenerating.remove(chunkPos);
+                            });
                         }
                     }, 10000L);
                 }
