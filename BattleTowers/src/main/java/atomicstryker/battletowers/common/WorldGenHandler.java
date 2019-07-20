@@ -7,9 +7,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
@@ -18,9 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.WorldEvent;
@@ -35,54 +33,74 @@ public class WorldGenHandler implements IWorldGenerator
     private final static WorldGenHandler instance = new WorldGenHandler();
     private HashMap<String, Boolean> biomesMap;
     private HashMap<String, Boolean> providerMap;
-    private final static ArrayList<TowerPosition> towerPositions = new ArrayList<TowerPosition>();
-    private static World lastWorld;
+    private final static Map<Integer, WorldHandle> worldMap = new HashMap<>();
+
     private final AS_WorldGenTower generator;
-    private static int disableGenerationHook;
 
     public WorldGenHandler()
     {
         biomesMap = new HashMap<String, Boolean>();
         providerMap = new HashMap<String, Boolean>();
         generator = new AS_WorldGenTower();
-        disableGenerationHook = 0;
 
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    private class WorldHandle
+    {
+        boolean posFileLoaded;
+        File worldSaveDirectory;
+        final ArrayList<TowerPosition> towerPositions = new ArrayList<TowerPosition>();
+        boolean towerPositionsAccessLock;
+        int disableGenerationHook;
     }
 
     @SubscribeEvent
     public void eventWorldLoad(WorldEvent.Load evt)
     {
-        loadPosFile(new File(getWorldSaveDir(evt.getWorld()), fileName), evt.getWorld());
-        lastWorld = evt.getWorld();
+        WorldHandle wh = getWorldHandle(evt.getWorld());
+        if (!wh.posFileLoaded)
+        {
+            wh.posFileLoaded = true;
+            loadPosFile(wh, new File(wh.worldSaveDirectory, fileName), evt.getWorld());
+        }
+    }
+
+    private WorldHandle getWorldHandle(World world)
+    {
+        Integer dimension = world.provider.getDimension();
+        WorldHandle result = worldMap.get(dimension);
+        if (result == null)
+        {
+            result = new WorldHandle();
+            result.worldSaveDirectory = world.getSaveHandler().getWorldDirectory();
+            result.posFileLoaded = false;
+            result.towerPositionsAccessLock = false;
+            result.disableGenerationHook = 0;
+            worldMap.put(dimension, result);
+        }
+        return result;
     }
 
     @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt)
     {
-        flushCurrentPosListToFile(evt.getWorld());
+        WorldHandle wh = getWorldHandle(evt.getWorld());
+        flushCurrentPosListToFile(wh, wh.worldSaveDirectory);
     }
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
     {
-        if (disableGenerationHook > 0)
+        WorldHandle wh = getWorldHandle(world);
+        if (wh.disableGenerationHook > 0)
         {
             return;
         }
         Biome target = world.getBiome(new BlockPos(chunkX, 0, chunkZ));
         if (target != Biome.getBiome(8) && getIsBiomeAllowed(target) && getIsChunkProviderAllowed(chunkProvider))
         {
-            if (world != lastWorld)
-            {
-                if (lastWorld != null)
-                {
-                    flushCurrentPosListToFile(lastWorld);
-                }
-                loadPosFile(new File(getWorldSaveDir(world), fileName), world);
-                lastWorld = world;
-            }
-            generateSurface(world, random, chunkX * 16, chunkZ * 16);
+            generateSurface(wh, world, random, chunkX * 16, chunkZ * 16);
         }
     }
 
@@ -117,14 +135,14 @@ public class WorldGenHandler implements IWorldGenerator
         return result;
     }
 
-    private void generateSurface(World world, Random random, int xActual, int zActual)
+    private void generateSurface(WorldHandle wh, World world, Random random, int xActual, int zActual)
     {
-        TowerPosition pos = canTowerSpawnAt(world, xActual, zActual);
+        TowerPosition pos = canTowerSpawnAt(wh, world, xActual, zActual);
         if (pos != null)
         {
-            obtainTowerPosListAccess();
-            towerPositions.add(pos);
-            releaseTowerPosListAccess();
+            obtainTowerPosListAccess(wh);
+            wh.towerPositions.add(pos);
+            releaseTowerPosListAccess(wh);
             int y = getSurfaceBlockHeight(world, xActual, zActual);
             if (y > 49)
             {
@@ -132,9 +150,9 @@ public class WorldGenHandler implements IWorldGenerator
                 if (!attemptToSpawnTower(world, pos, random, xActual, y, zActual))
                 {
                     System.out.printf("Tower Site [%d|%d] rejected: %s\n", pos.x, pos.z, generator.failState);
-                    obtainTowerPosListAccess();
-                    towerPositions.remove(pos);
-                    releaseTowerPosListAccess();
+                    obtainTowerPosListAccess(wh);
+                    wh.towerPositions.remove(pos);
+                    releaseTowerPosListAccess(wh);
                 }
             }
         }
@@ -157,12 +175,13 @@ public class WorldGenHandler implements IWorldGenerator
 
     public static void generateTower(World world, int x, int y, int z, int type, boolean underground)
     {
-        disableGenerationHook++;
+        WorldHandle wh = instance.getWorldHandle(world);
+        wh.disableGenerationHook++;
         instance.generator.generate(world, world.rand, x, y, z, type, underground);
-        obtainTowerPosListAccess();
-        towerPositions.add(instance.new TowerPosition(x, y, z, type, underground));
-        releaseTowerPosListAccess();
-        disableGenerationHook--;
+        obtainTowerPosListAccess(wh);
+        wh.towerPositions.add(instance.new TowerPosition(x, y, z, type, underground));
+        releaseTowerPosListAccess(wh);
+        wh.disableGenerationHook--;
     }
 
     private int getSurfaceBlockHeight(World world, int x, int z)
@@ -200,12 +219,10 @@ public class WorldGenHandler implements IWorldGenerator
         return new TowerStageItemManager(AS_BattleTowersCore.instance.floorItemManagers[floor]);
     }
 
-    private static boolean towerPositionsAccessLock;
-
-    private synchronized static void obtainTowerPosListAccess()
+    private synchronized static void obtainTowerPosListAccess(WorldHandle worldHandle)
     {
         int counter = 0;
-        while (towerPositionsAccessLock)
+        while (worldHandle.towerPositionsAccessLock)
         {
             if (counter >= 0)
                 counter++;
@@ -216,15 +233,15 @@ public class WorldGenHandler implements IWorldGenerator
             }
             Thread.yield();
         }
-        towerPositionsAccessLock = true;
+        worldHandle.towerPositionsAccessLock = true;
     }
 
-    private static void releaseTowerPosListAccess()
+    private static void releaseTowerPosListAccess(WorldHandle worldHandle)
     {
-        towerPositionsAccessLock = false;
+        worldHandle.towerPositionsAccessLock = false;
     }
 
-    private TowerPosition canTowerSpawnAt(World world, int xActual, int zActual)
+    private TowerPosition canTowerSpawnAt(WorldHandle worldHandle, World world, int xActual, int zActual)
     {
         BlockPos spawn = world.getSpawnPoint();
         if (Math.sqrt((spawn.getX() - xActual) * (spawn.getX() - xActual) + (spawn.getZ() - zActual) * (spawn.getZ() - zActual)) < AS_BattleTowersCore.instance.minDistanceFromSpawn)
@@ -235,8 +252,8 @@ public class WorldGenHandler implements IWorldGenerator
         if (AS_BattleTowersCore.instance.minDistanceBetweenTowers > 0)
         {
             double mindist = 9999f;
-            obtainTowerPosListAccess();
-            for (TowerPosition temp : towerPositions)
+            obtainTowerPosListAccess(worldHandle);
+            for (TowerPosition temp : worldHandle.towerPositions)
             {
                 int diffX = temp.x - xActual;
                 int diffZ = temp.z - zActual;
@@ -246,12 +263,13 @@ public class WorldGenHandler implements IWorldGenerator
                 {
                     // System.out.printf("refusing site coords [%d,%d], mindist
                     // %f\n", xActual, zActual, mindist);
-                    releaseTowerPosListAccess();
+                    releaseTowerPosListAccess(worldHandle);
                     return null;
                 }
             }
-            System.out.printf("Logged %d towers so far, accepted new site coords [%d,%d], mindist %f\n", towerPositions.size(), xActual, zActual, mindist);
-            releaseTowerPosListAccess();
+            System.out.printf("Logged %d towers so far for world %s, accepted new site coords [%d,%d], mindist %f\n", worldHandle.towerPositions.size(), worldHandle.worldSaveDirectory, xActual,
+                    zActual, mindist);
+            releaseTowerPosListAccess(worldHandle);
         }
 
         return new TowerPosition(xActual, 0, zActual, 0, false);
@@ -310,21 +328,21 @@ public class WorldGenHandler implements IWorldGenerator
         }
     }
 
-    private static void loadPosFile(File file, World world)
+    private static void loadPosFile(WorldHandle worldHandle, File file, World world)
     {
         if (!file.getAbsolutePath().contains(world.getWorldInfo().getWorldName()))
         {
             return;
         }
 
-        obtainTowerPosListAccess();
+        obtainTowerPosListAccess(worldHandle);
         try
         {
             if (!file.exists())
             {
                 if (!file.createNewFile())
                 {
-                    throw new RuntimeException("Ruins mod crashed trying to create pos file " + file);
+                    throw new RuntimeException("Battletowers mod crashed trying to create pos file " + file);
                 }
             }
             int lineNumber = 1;
@@ -339,9 +357,9 @@ public class WorldGenHandler implements IWorldGenerator
                     try
                     {
                         TowerPosition newtp = tp.fromString(line);
-                        if (!towerPositions.contains(newtp))
+                        if (!worldHandle.towerPositions.contains(newtp))
                         {
-                            towerPositions.add(tp.fromString(line));
+                            worldHandle.towerPositions.add(tp.fromString(line));
                         }
                     }
                     catch (Exception e)
@@ -354,29 +372,29 @@ public class WorldGenHandler implements IWorldGenerator
                 line = br.readLine();
             }
             br.close();
-            System.out.println("Battletower Positions reloaded. Lines " + lineNumber + ", entries " + towerPositions.size());
+            System.out.println("Battletower Positions reloaded. Lines " + lineNumber + ", entries " + worldHandle.towerPositions.size());
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-        releaseTowerPosListAccess();
+        releaseTowerPosListAccess(worldHandle);
     }
 
-    private static void flushCurrentPosListToFile(World world)
+    private static void flushCurrentPosListToFile(WorldHandle worldHandle, File worldSaveFile)
     {
-        if (towerPositions.isEmpty() || world.getWorldInfo().getWorldName().equals("MpServer"))
+        if (worldHandle.towerPositions.isEmpty())
         {
             return;
         }
 
-        obtainTowerPosListAccess();
-        File file = new File(getWorldSaveDir(world), fileName);
+        obtainTowerPosListAccess(worldHandle);
+        File file = new File(worldSaveFile, fileName);
         if (file.exists())
         {
             if (!file.delete())
             {
-                throw new RuntimeException("Ruins mod crashed because it was denied file write access to " + file);
+                throw new RuntimeException("Battletowers mod crashed because it was denied file write access to " + file);
             }
         }
 
@@ -396,7 +414,7 @@ public class WorldGenHandler implements IWorldGenerator
             pw.println("# do not change values once towers have spawned! Either do that before creating a World (put this file in a world named folder)...");
             pw.println("# ... or use /deletebattletowers, exit the game, modify this file any way you want, load the world, then use /regeneratebattletowers!");
 
-            for (TowerPosition t : towerPositions)
+            for (TowerPosition t : worldHandle.towerPositions)
             {
                 pw.println(t.toString());
             }
@@ -408,45 +426,18 @@ public class WorldGenHandler implements IWorldGenerator
         {
             e.printStackTrace();
         }
-        releaseTowerPosListAccess();
-    }
-
-    private static File getWorldSaveDir(World world)
-    {
-        ISaveHandler worldsaver = world.getSaveHandler();
-
-        if (worldsaver.getChunkLoader(world.provider) instanceof AnvilChunkLoader)
-        {
-            AnvilChunkLoader loader = (AnvilChunkLoader) worldsaver.getChunkLoader(world.provider);
-
-            for (Field f : loader.getClass().getDeclaredFields())
-            {
-                if (f.getType().equals(File.class))
-                {
-                    try
-                    {
-                        f.setAccessible(true);
-                        return (File) f.get(loader);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        return null;
+        releaseTowerPosListAccess(worldHandle);
     }
 
     public static TowerPosition deleteNearestTower(World world, int x, int z)
     {
         double lowestDist = 9999d;
         TowerPosition chosen = null;
+        WorldHandle worldHandle = instance.getWorldHandle(world);
 
-        disableGenerationHook++;
-        obtainTowerPosListAccess();
-        for (TowerPosition tp : towerPositions)
+        worldHandle.disableGenerationHook++;
+        obtainTowerPosListAccess(worldHandle);
+        for (TowerPosition tp : worldHandle.towerPositions)
         {
             double dist = Math.sqrt((tp.x - x) * (tp.x - x) + (tp.z - z) * (tp.z - z));
             if (dist < lowestDist)
@@ -455,15 +446,15 @@ public class WorldGenHandler implements IWorldGenerator
                 chosen = tp;
             }
         }
-        releaseTowerPosListAccess();
-        disableGenerationHook--;
+        releaseTowerPosListAccess(worldHandle);
+        worldHandle.disableGenerationHook--;
 
         if (chosen != null)
         {
             instance.generator.generate(world, world.rand, chosen.x, chosen.y, chosen.z, AS_WorldGenTower.TowerTypes.Null.ordinal(), chosen.underground);
-            obtainTowerPosListAccess();
-            towerPositions.remove(chosen);
-            releaseTowerPosListAccess();
+            obtainTowerPosListAccess(worldHandle);
+            worldHandle.towerPositions.remove(chosen);
+            releaseTowerPosListAccess(worldHandle);
         }
 
         return chosen;
@@ -471,12 +462,7 @@ public class WorldGenHandler implements IWorldGenerator
 
     public static void deleteAllTowers(World world, boolean regenerate)
     {
-        if (world != lastWorld)
-        {
-            flushCurrentPosListToFile(lastWorld);
-            loadPosFile(new File(getWorldSaveDir(world), fileName), world);
-            lastWorld = world;
-        }
+        WorldHandle wh = instance.getWorldHandle(world);
 
         for (Object o : world.loadedEntityList)
         {
@@ -486,19 +472,19 @@ public class WorldGenHandler implements IWorldGenerator
             }
         }
 
-        disableGenerationHook++;
-        obtainTowerPosListAccess();
-        for (TowerPosition tp : towerPositions)
+        wh.disableGenerationHook++;
+        obtainTowerPosListAccess(wh);
+        for (TowerPosition tp : wh.towerPositions)
         {
             instance.generator.generate(world, world.rand, tp.x, tp.y, tp.z, regenerate ? tp.type : AS_WorldGenTower.TowerTypes.Null.ordinal(), tp.underground);
         }
 
         if (!regenerate)
         {
-            towerPositions.clear();
+            wh.towerPositions.clear();
         }
-        releaseTowerPosListAccess();
-        disableGenerationHook--;
+        releaseTowerPosListAccess(wh);
+        wh.disableGenerationHook--;
     }
 
 }

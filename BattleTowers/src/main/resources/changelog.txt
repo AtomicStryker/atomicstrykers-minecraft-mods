@@ -1,3 +1,6 @@
+1.6.5
+- implement a world dimension handle system like Ruins has, as there might be more than one single dimension for Battletowers to work with
+
 1.6.4
 - make sure chest attacked packet does not cause off-thread controlflow (thanks Aaron1011)
 

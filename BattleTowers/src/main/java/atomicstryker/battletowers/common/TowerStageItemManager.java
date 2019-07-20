@@ -25,7 +25,6 @@ public class TowerStageItemManager
     private int[] chanceToSpawn;
     private int[] minAmount;
     private int[] maxAmount;
-    private int curIndex = 0;
 
     /**
      * @param configString
@@ -135,15 +134,6 @@ public class TowerStageItemManager
     }
 
     /**
-     * @return true if there is still Items configured to be put into the chest
-     *         of the Managers floor
-     */
-    public boolean floorHasItemsLeft()
-    {
-        return (curIndex < itemID.length);
-    }
-
-    /**
      * @param rand
      *            your WorldGen Random
      * @param teChest
@@ -158,19 +148,19 @@ public class TowerStageItemManager
     {
         List<ItemStack> result = new ArrayList<>();
         int index = 0;
-        while (index++ <= count && floorHasItemsLeft())
+        while (result.size() < count && index < itemID.length)
         {
-            if (itemID[curIndex] instanceof Item && rand.nextInt(100) < chanceToSpawn[curIndex])
+            if (itemID[index] instanceof Item && rand.nextInt(100) < chanceToSpawn[index])
             {
-                result.add(new ItemStack((Item) itemID[curIndex], minAmount[curIndex] + rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]));
+                result.add(new ItemStack((Item) itemID[index], minAmount[index] + rand.nextInt(maxAmount[index]), itemDamage[index]));
             }
-            else if (itemID[curIndex] instanceof Block && rand.nextInt(100) < chanceToSpawn[curIndex])
+            else if (itemID[index] instanceof Block && rand.nextInt(100) < chanceToSpawn[index])
             {
-                result.add(new ItemStack((Block) itemID[curIndex], minAmount[curIndex] + rand.nextInt(maxAmount[curIndex]), itemDamage[curIndex]));
+                result.add(new ItemStack((Block) itemID[index], minAmount[index] + rand.nextInt(maxAmount[index]), itemDamage[index]));
             }
-            else if (itemID[curIndex] instanceof String) // ChestGenHook:strongholdLibrary:5
+            else if (itemID[index] instanceof String) // ChestGenHook:strongholdLibrary:5
             {
-                String[] split = ((String) itemID[curIndex]).split(":");
+                String[] split = ((String) itemID[index]).split(":");
                 LootTable loottable = world.getLootTableManager().getLootTableFromLocation(new ResourceLocation(split[1]));
                 List<ItemStack> generatedItems = loottable.generateLootForPools(rand, new LootContext.Builder((WorldServer) world).build());
 
@@ -189,7 +179,7 @@ public class TowerStageItemManager
                 }
             }
 
-            curIndex++;
+            index++;
         }
         return result;
     }
