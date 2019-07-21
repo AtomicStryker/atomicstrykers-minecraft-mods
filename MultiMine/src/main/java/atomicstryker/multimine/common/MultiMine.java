@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "multimine", name = "Multi Mine", version = "1.6.0")
+@Mod(modid = "multimine", name = "Multi Mine", version = "1.6.1")
 public class MultiMine
 {
     @Instance("multimine")

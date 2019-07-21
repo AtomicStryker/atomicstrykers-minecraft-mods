@@ -28,6 +28,7 @@ public class MultiMineClient
     private static Minecraft mc;
     private static EntityPlayer thePlayer;
     private final PartiallyMinedBlock[] partiallyMinedBlocksArray;
+    private Field vanillaDestroyBlockProgressField = null;
     private Map<Integer, DestroyBlockProgress> vanillaDestroyBlockProgressMap;
     private int arrayOverWriteIndex;
     private BlockPos curBlock;
@@ -58,8 +59,9 @@ public class MultiMineClient
                 f.setAccessible(true);
                 try
                 {
-                    vanillaDestroyBlockProgressMap = (Map) f.get(mc.renderGlobal);
-                    MultiMine.instance().debugPrint("Multi Mine vanilla RenderMap invasion successful, field: " + f.getName());
+                    vanillaDestroyBlockProgressField = f;
+                    vanillaDestroyBlockProgressMap = (Map) vanillaDestroyBlockProgressField.get(mc.renderGlobal);
+                    MultiMine.instance().debugPrint("Multi Mine vanilla RenderMap invasion successful, field: " + vanillaDestroyBlockProgressField.getName());
                     break;
                 }
                 catch (Exception e)
@@ -328,7 +330,29 @@ public class MultiMineClient
     {
         // cache previous object
         DestroyBlockProgress dbp = vanillaDestroyBlockProgressMap.get(0);
-
+        if (dbp == null) {
+            // other mods may have written to the field
+            if (vanillaDestroyBlockProgressField != null) {
+                try
+                {
+                    vanillaDestroyBlockProgressMap = (Map) vanillaDestroyBlockProgressField.get(mc.renderGlobal);
+                    dbp = vanillaDestroyBlockProgressMap.get(0);
+                    MultiMine.instance().debugPrint("Reloaded vanillaDestroyBlockProgressMap, suspect another mod altered it!");
+                    if (dbp == null) {
+                        // total failure, meh
+                        return;
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+        
         // execute code which gets the object assigned the private cloud tick value we want
         mc.renderGlobal.sendBlockBreakProgress(0, new BlockPos((int) thePlayer.posX, (int) thePlayer.posY, (int) thePlayer.posZ), 1);
 
