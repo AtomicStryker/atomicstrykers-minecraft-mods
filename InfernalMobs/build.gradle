@@ -16,7 +16,8 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.14.3'
+def mcversion = '1.14.3'
+version = '1.14.3.1'
 group = 'atomicstryker.infernalmobs'
 archivesBaseName = 'infernalmobs'
 
@@ -102,7 +103,7 @@ jar {
         attributes([
             "Specification-Title": "infernalmobs",
             "Specification-Vendor": "atomicstryker",
-            "Specification-Version": "1.14.3", // We are version 1 of ourselves
+            "Specification-Version": "${version}",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"atomicstryker",
@@ -116,7 +117,7 @@ curseforge {
     project {
         id = '227875'
         releaseType = 'release'
-        addGameVersion version
+        addGameVersion mcversion
         mainArtifact(file('build/libs/infernalmobs-' + version + '.jar')) {
           displayName = 'AtomicStryker\'s Infernal Mobs'
         }

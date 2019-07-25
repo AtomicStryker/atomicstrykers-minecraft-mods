@@ -122,7 +122,7 @@ public class InfernalMobsCore {
     @SubscribeEvent
     public void serverStarted(FMLServerStartingEvent evt) {
 
-        configFile = new File(proxy.getMcFolder(), "\\config\\infernalmobs.cfg");
+        configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
         loadConfig();
 
         evt.getCommandDispatcher().register(InfernalCommandFindEntityClass.BUILDER);
@@ -259,7 +259,7 @@ public class InfernalMobsCore {
      * @param entity Entity in question
      */
     public void processEntitySpawn(LivingEntity entity) {
-        if (!entity.world.isRemote) {
+        if (!entity.world.isRemote && config != null) {
             if (!getIsRareEntity(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.world.rand.nextInt(config.getEliteRarity()) == 0)) {
                     try {
@@ -668,7 +668,7 @@ public class InfernalMobsCore {
             if (System.currentTimeMillis() > entry.getValue() + (existCheckDelay * 2)) {
                 String username = entry.getKey();
                 for (PlayerEntity player : world.getPlayers()) {
-                    if (player.getName().equals(username)) {
+                    if (player.getName().getString().equals(username)) {
                         for (Class<? extends MobModifier> c : mobMods) {
                             try {
                                 MobModifier mod = c.getConstructor(new Class[]{}).newInstance();
