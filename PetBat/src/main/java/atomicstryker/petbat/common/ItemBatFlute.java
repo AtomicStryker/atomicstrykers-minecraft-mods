@@ -1,60 +1,49 @@
 package atomicstryker.petbat.common;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-public class ItemBatFlute extends Item
-{
+public class ItemBatFlute extends Item {
 
-    protected ItemBatFlute()
-    {
-        super();
-        maxStackSize = 1;
-        setMaxDamage(0);
+    protected ItemBatFlute() {
+        super((new Item.Properties()).maxStackSize(1).setNoRepair().group(ItemGroup.MISC));
     }
 
     @Override
-    public boolean getShareTag()
-    {
+    public boolean shouldSyncTag() {
         return true;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
-    {
-        EntityPetBat bat;
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getHeldItem(hand);
-        if (itemStack.getTagCompound() != null)
-        {
-            String batname = itemStack.getTagCompound().getString("batName");
-            for (int i = 0; i < world.loadedEntityList.size(); i++)
-            {
-                if (world.loadedEntityList.get(i) instanceof EntityPetBat)
-                {
-                    bat = (EntityPetBat) world.loadedEntityList.get(i);
-                    if (bat.getName().equals(batname))
-                    {
-                        bat.recallToOwner();
-                        itemStack.setCount(0);
-                    }
+        if (itemStack.getTag() != null) {
+            String batname = itemStack.getTag().getString("batName");
+            for (EntityPetBat petBat : world.getEntitiesWithinAABB(EntityPetBat.class, player.getBoundingBox().expand(16 * 8, 256, 16 * 8))) {
+                if (petBat.getName().getUnformattedComponentText().equals(batname)) {
+                    petBat.recallToOwner();
+                    itemStack.setCount(0);
+                    break;
                 }
             }
-            return new ActionResult<>(EnumActionResult.PASS, itemStack);
+            return new ActionResult<>(ActionResultType.PASS, null);
         }
-        return new ActionResult<>(EnumActionResult.FAIL, null);
+        return new ActionResult<>(ActionResultType.FAIL, null);
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack itemStack)
-    {
-        String batname = itemStack.getTagCompound() != null ? (": " + itemStack.getTagCompound().getString("batName")) : ": unassigned";
-        return TextFormatting.GOLD + super.getItemStackDisplayName(itemStack) + batname;
+    public ITextComponent getDisplayName(ItemStack itemStack) {
+        String batname = itemStack.getTag() != null ? (": " + itemStack.getTag().getString("batName")) : ": unassigned";
+        return new TranslationTextComponent(TextFormatting.GOLD + super.getDisplayName(itemStack).getUnformattedComponentText() + batname);
     }
 
 }

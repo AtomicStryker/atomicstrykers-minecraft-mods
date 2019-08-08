@@ -1,6 +1,6 @@
 [
 {
-  "modid": "PetBat",
+  "modid": "petbat",
   "name": "Pet Bat",
   "description": "Amazing Pet Bats!",
   "mcversion": "${mcversion}",

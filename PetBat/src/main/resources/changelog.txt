@@ -1,3 +1,6 @@
+1.14.3.1
+ported to mc 1.14.3, first build
+
 1.4.8
 bugfixes for issues reported by Tora-B
 
@@ -86,7 +89,7 @@ The Flute disappears upon being dropped. It is only given once per bat flights. 
 fixed weapons that double trigger damage code duping bat items
 
 1.2.6
-fixed xp and health considerations on EntityLivingBase instances
+fixed xp and health considerations on LivingEntity instances
 added fallback xp and health calculation which ALWAYS works
 
 1.2.5

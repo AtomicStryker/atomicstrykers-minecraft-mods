@@ -1,207 +1,174 @@
 package atomicstryker.petbat.common;
 
-import javax.annotation.Nullable;
-
-import atomicstryker.petbat.common.batAI.PetBatAIAttack;
-import atomicstryker.petbat.common.batAI.PetBatAIFindSittingSpot;
-import atomicstryker.petbat.common.batAI.PetBatAIFlying;
-import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacked;
-import atomicstryker.petbat.common.batAI.PetBatAIOwnerAttacks;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.block.state.IBlockState;
+import atomicstryker.petbat.common.batAI.*;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpawnData
-{
-    private String ownerName;
-    private String petName;
-    private EntityPlayer owner;
-    private EntityItem foodAttackTarget;
-    private boolean fluteOut;
-    private boolean isRecalled;
+import javax.annotation.Nullable;
+import java.util.UUID;
 
-    private int lastOwnerX;
-    private int lastOwnerY;
-    private int lastOwnerZ;
-
-    private BlockPos hangSpot;
-
+public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpawnData {
     private static final DataParameter<Byte> BAT_FLAGS = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.BYTE);
     private static final DataParameter<Byte> IS_STAYING = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.BYTE);
     private static final DataParameter<Integer> BAT_XP = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.VARINT);
+    private UUID ownerName;
+    private String petName;
+    private PlayerEntity owner;
+    private ItemEntity foodAttackTarget;
+    private boolean fluteOut;
+    private boolean isRecalled;
+    private int lastOwnerX;
+    private int lastOwnerY;
+    private int lastOwnerZ;
+    private BlockPos hangSpot;
 
-    public EntityPetBat(World par1World)
-    {
-        super(par1World);
-        setSize(0.5F, 0.9F);
+    public EntityPetBat(World par1World) {
+        super(PetBatMod.instance().batEntityType, par1World);
         setIsBatHanging(false);
-        ownerName = "";
+        ownerName = UUID.fromString("");
         petName = "";
         lastOwnerX = lastOwnerY = lastOwnerZ = 0;
         hangSpot = null;
         fluteOut = false;
         isRecalled = false;
-
-        tasks.addTask(1, new PetBatAIAttack(this));
-        tasks.addTask(2, new PetBatAIFlying(this));
-        tasks.addTask(3, new PetBatAIFindSittingSpot(this));
-        targetTasks.addTask(1, new PetBatAIOwnerAttacked(this));
-        targetTasks.addTask(2, new PetBatAIOwnerAttacks(this));
-        targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
+        this.moveController = new PetBatAIFlying(this);
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
-    {
-        ByteBufUtils.writeUTF8String(data, ownerName);
-        ByteBufUtils.writeUTF8String(data, petName);
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new PetBatAIAttack(this));
+        this.goalSelector.addGoal(2, new PetBatAIFindSittingSpot(this));
+        this.targetSelector.addGoal(1, new PetBatAIOwnerAttacked(this));
+        this.targetSelector.addGoal(2, new PetBatAIOwnerAttacks(this));
+        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
-    {
-        ownerName = ByteBufUtils.readUTF8String(data);
-        petName = ByteBufUtils.readUTF8String(data);
+    public void writeSpawnData(PacketBuffer data) {
+        data.writeString(ownerName.toString());
+        data.writeString(petName);
     }
 
     @Override
-    protected void entityInit()
-    {
-        super.entityInit();
+    public void readSpawnData(PacketBuffer data) {
+        ownerName = UUID.fromString(data.readString());
+        petName = data.readString();
+    }
+
+
+    @Override
+    protected void registerData() {
+        super.registerData();
         dataManager.register(BAT_FLAGS, (byte) 0);
         dataManager.register(IS_STAYING, (byte) 0);
         dataManager.register(BAT_XP, 0);
     }
 
-    public void setNames(String ownerName, String petName)
-    {
-        this.ownerName = ownerName;
+    public void setNames(String ownerName, String petName) {
+        this.ownerName = UUID.fromString(ownerName);
         this.petName = petName;
     }
 
-    public String getOwnerName()
-    {
+    public UUID getOwnerName() {
         return ownerName;
     }
 
     @Override
-    public Team getTeam()
-    {
-        return world.getScoreboard().getPlayersTeam(ownerName);
+    public Team getTeam() {
+        return world.getScoreboard().getPlayersTeam(ownerName.toString());
     }
 
     /**
      * Used by PetBat Renderer to display Bat Name
      */
     @Override
-    public ITextComponent getDisplayName()
-    {
-        return new TextComponentTranslation(petName);
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent(petName);
     }
 
-    public EntityPlayer getOwnerEntity()
-    {
+    public PlayerEntity getOwnerEntity() {
         return owner;
     }
 
-    public void setOwnerEntity(EntityPlayer playerEntityByName)
-    {
+    public void setOwnerEntity(PlayerEntity playerEntityByName) {
         owner = playerEntityByName;
     }
 
-    public void updateOwnerCoords()
-    {
+    public void updateOwnerCoords() {
         lastOwnerX = (int) (owner.posX + 0.5D);
         lastOwnerY = (int) (owner.posY + 0.5D);
         lastOwnerZ = (int) (owner.posZ + 0.5D);
     }
 
-    public int getLastOwnerX()
-    {
+    public int getLastOwnerX() {
         return lastOwnerX;
     }
 
-    public int getLastOwnerY()
-    {
+    public int getLastOwnerY() {
         return lastOwnerY;
     }
 
-    public int getLastOwnerZ()
-    {
+    public int getLastOwnerZ() {
         return lastOwnerZ;
     }
 
-    public void setFoodAttackTarget(EntityItem target)
-    {
-        foodAttackTarget = target;
-    }
-
-    public EntityItem getFoodAttackTarget()
-    {
+    public ItemEntity getFoodAttackTarget() {
         return foodAttackTarget;
     }
 
-    public void setHangingSpot(BlockPos coords)
-    {
-        hangSpot = coords;
+    public void setFoodAttackTarget(ItemEntity target) {
+        foodAttackTarget = target;
     }
 
-    public BlockPos getHangingSpot()
-    {
+    public BlockPos getHangingSpot() {
         return hangSpot;
     }
 
-    public boolean getHasTarget()
-    {
-        return getAttackTarget() != null && getAttackTarget().isEntityAlive() || getFoodAttackTarget() != null && getFoodAttackTarget().isEntityAlive();
+    public void setHangingSpot(BlockPos coords) {
+        hangSpot = coords;
+    }
+
+    public boolean getHasTarget() {
+        return getAttackTarget() != null && getAttackTarget().isAlive() || getFoodAttackTarget() != null && getFoodAttackTarget().isAlive();
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount)
-    {
-        if (source.equals(DamageSource.IN_WALL))
-        {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (source.equals(DamageSource.IN_WALL)) {
             return true;
         }
-        if (!world.isRemote)
-        {
-            if (getIsBatHanging())
-            {
+        if (!world.isRemote) {
+            if (getIsBatHanging()) {
                 setIsBatHanging(false);
             }
 
             // if hit by owner
-            if (source.getTrueSource() != null && source.getTrueSource().getName().equals(getOwnerName()))
-            {
+            if (source.getTrueSource() != null && source.getTrueSource().getName().getString().equals(getOwnerName())) {
                 // and in combat with something else
-                if (source.getTrueSource() != getAttackTarget())
-                {
+                if (source.getTrueSource() != getAttackTarget()) {
                     // ignore the hit
                     return true;
                 }
@@ -210,58 +177,46 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
         return super.attackEntityFrom(source, amount);
     }
 
-    public void recallToOwner()
-    {
+    public void recallToOwner() {
         isRecalled = true;
     }
 
     @Override
-    public boolean processInteract(EntityPlayer player, EnumHand hand)
-    {
-        if (getIsBatHanging() && player.getName().equals(ownerName))
-        {
+    public boolean processInteract(PlayerEntity player, Hand hand) {
+        if (getIsBatHanging() && player.getName().equals(ownerName)) {
             setIsBatStaying(!getIsBatStaying());
             player.sendMessage(
-                    new TextComponentTranslation(petName + ": " + (getIsBatStaying() ? I18n.format("translation.PetBat:staying") : I18n.format("translation.PetBat:notstaying"))));
+                    new TranslationTextComponent(petName + ": " + (getIsBatStaying() ? I18n.format("translation.PetBat:staying") : I18n.format("translation.PetBat:notstaying"))));
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean attackEntityAsMob(Entity target)
-    {
+    public boolean attackEntityAsMob(Entity target) {
         int level = getBatLevel();
         int damage = 1 + level;
 
         float prevHealth = 0;
-        EntityLivingBase livingTarget = null;
-        if (target instanceof EntityLivingBase)
-        {
-            livingTarget = (EntityLivingBase) target;
+        LivingEntity livingTarget = null;
+        if (target instanceof LivingEntity) {
+            livingTarget = (LivingEntity) target;
             prevHealth = livingTarget.getHealth();
         }
 
         boolean result = target.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
-        if (result)
-        {
-            if (livingTarget != null)
-            {
+        if (result) {
+            if (livingTarget != null) {
                 float damageDealt = prevHealth - livingTarget.getHealth();
-                if (damageDealt > 0)
-                {
+                if (damageDealt > 0) {
                     addBatExperience((int) Math.max(1, damageDealt));
-                    if (level > 2)
-                    {
+                    if (level > 2) {
                         heal(Math.max(damageDealt / 3, 1));
                     }
                 }
-            }
-            else
-            {
+            } else {
                 addBatExperience(damage);
-                if (level > 2)
-                {
+                if (level > 2) {
                     heal(Math.max(damage / 3, 1));
                 }
             }
@@ -271,130 +226,104 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    protected boolean canDespawn()
-    {
+    public boolean canDespawn(double distanceToClosestPlayer) {
         return false;
     }
 
-    public void setDeadWithoutRecall()
-    {
-        super.setDead();
+    public void setDeadWithoutRecall() {
+        remove();
     }
 
     @Override
-    public void setDead()
-    {
-        if (this.owner != null && !world.isRemote)
-        {
+    public void onDeath(DamageSource cause) {
+        if (this.owner != null && !world.isRemote) {
             setHealth(1);
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
-            if (batstack != ItemStack.EMPTY)
-            {
+            if (batstack != ItemStack.EMPTY) {
                 PetBatMod.instance().removeFluteFromPlayer(owner, petName);
-                if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack))
-                {
+                if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack)) {
                     world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
-                }
-                else
-                {
+                } else {
                     world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
-                    world.spawnEntity(new EntityItem(world, owner.posX, owner.posY, owner.posZ, batstack));
+                    world.addEntity(new ItemEntity(world, owner.posX, owner.posY, owner.posZ, batstack));
                 }
             }
         }
 
-        super.setDead();
+        super.onDeath(cause);
     }
 
     @Override
-    protected float getSoundVolume()
-    {
+    protected float getSoundVolume() {
         return 0.1F;
     }
 
     @Override
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return PetBatMod.soundIdle;
     }
 
     @Override
     @Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSource)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
         return PetBatMod.soundHit;
     }
 
     @Override
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return PetBatMod.soundDeath;
     }
 
     @Override
-    public void setPortal(BlockPos b)
-    {
+    public void setPortal(BlockPos b) {
         // Nope
     }
 
-    public boolean getIsBatHanging()
-    {
+    public boolean getIsBatHanging() {
         return (this.dataManager.get(BAT_FLAGS) & 1) != 0;
     }
 
-    public void setIsBatHanging(boolean par1)
-    {
+    public void setIsBatHanging(boolean par1) {
         setHangingSpot(null);
 
         byte var2 = this.dataManager.get(BAT_FLAGS);
 
-        if (par1)
-        {
+        if (par1) {
             dataManager.set(BAT_FLAGS, (byte) (var2 | 1));
-        }
-        else
-        {
+        } else {
             dataManager.set(BAT_FLAGS, (byte) (var2 & -2));
         }
     }
 
     /**
      * Bat levels up with all damage it inflicts in combat.
-     * 
-     * @param xp
-     *            one experience point for every point of damage inflicted
+     *
+     * @param xp one experience point for every point of damage inflicted
      */
-    private void addBatExperience(int xp)
-    {
-        if (!world.isRemote)
-        {
+    private void addBatExperience(int xp) {
+        if (!world.isRemote) {
             setBatExperience(getBatExperience() + xp);
         }
     }
 
-    public int getBatExperience()
-    {
+    public int getBatExperience() {
         return dataManager.get(BAT_XP);
     }
 
-    public void setBatExperience(int value)
-    {
+    public void setBatExperience(int value) {
         dataManager.set(BAT_XP, value);
-        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(16d + (2 * PetBatMod.instance().getLevelFromExperience(value)));
+        getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(16d + (2 * PetBatMod.instance().getLevelFromExperience(value)));
     }
 
-    public boolean getIsBatStaying()
-    {
+    public boolean getIsBatStaying() {
         return dataManager.get(IS_STAYING) != 0;
     }
 
-    public void setIsBatStaying(boolean cond)
-    {
+    public void setIsBatStaying(boolean cond) {
         dataManager.set(IS_STAYING, (byte) (cond ? 1 : 0));
     }
 
-    public int getBatLevel()
-    {
+    public int getBatLevel() {
         return PetBatMod.instance().getLevelFromExperience(getBatExperience());
     }
 
@@ -402,65 +331,50 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
      * Called to update the entity's position/logic.
      */
     @Override
-    public void onUpdate()
-    {
-        super.onUpdate();
+    public void tick() {
+        super.tick();
 
         checkOwnerFlute();
 
-        if (this.getIsBatHanging())
-        {
-            this.motionX = this.motionY = this.motionZ = 0.0D;
-            this.posY = (double) MathHelper.floor(this.posY) + 1.0D - (double) this.height;
-        }
-        else
-        {
-            this.motionY *= 0.6D;
+        if (this.getIsBatHanging()) {
+            this.setMotion(0, 0, 0);
+            this.posY = (double) MathHelper.floor(this.posY) + 1.0D - (double) this.getHeight();
+        } else {
+            double newY = getMotion().y;
+            newY *= 0.6D;
+            setMotion(getMotion().x, newY, getMotion().z);
         }
 
-        if (isRecalled)
-        {
+        if (isRecalled) {
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
-            if (batstack != ItemStack.EMPTY && owner != null)
-            {
+            if (batstack != ItemStack.EMPTY && owner != null) {
                 ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, petName);
-                if (owner.inventory.addItemStackToInventory(batstack))
-                {
+                if (owner.inventory.addItemStackToInventory(batstack)) {
                     world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                     setDeadWithoutRecall();
-                }
-                else
-                {
+                } else {
                     owner.inventory.addItemStackToInventory(flute);
                 }
             }
         }
     }
 
-    private void checkOwnerFlute()
-    {
-        if (!fluteOut && owner != null && !world.isRemote)
-        {
+    private void checkOwnerFlute() {
+        if (!fluteOut && owner != null && !world.isRemote) {
             boolean found = false;
             final Item fluteItem = PetBatMod.instance().itemBatFlute;
-            for (ItemStack inventoryItem : owner.inventory.mainInventory)
-            {
-                if (inventoryItem.getItem() == fluteItem && inventoryItem.getTagCompound() != null)
-                {
-                    if (inventoryItem.getTagCompound().getString("batName").equals(petName))
-                    {
+            for (ItemStack inventoryItem : owner.inventory.mainInventory) {
+                if (inventoryItem.getItem() == fluteItem && inventoryItem.getTag() != null) {
+                    if (inventoryItem.getTag().getString("batName").equals(petName)) {
                         found = true;
                         break;
                     }
                 }
             }
-            if (!found)
-            {
-                ItemStack newflute = new ItemStack(fluteItem, 1, 0);
-                newflute.setTagCompound(new NBTTagCompound());
-                newflute.getTagCompound().setString("batName", petName);
-                if (owner.inventory.addItemStackToInventory(newflute))
-                {
+            if (!found) {
+                ItemStack newflute = new ItemStack(fluteItem, 1, new CompoundNBT());
+                newflute.getTag().putString("batName", petName);
+                if (owner.inventory.addItemStackToInventory(newflute)) {
                     fluteOut = true;
                 }
             }
@@ -468,76 +382,56 @@ public class EntityPetBat extends EntityCreature implements IEntityAdditionalSpa
     }
 
     @Override
-    protected void updateAITasks()
-    {
+    protected void updateAITasks() {
         super.updateAITasks();
     }
 
     @Override
-    protected boolean canTriggerWalking()
-    {
+    protected boolean canTriggerWalking() {
         return false;
     }
 
     @Override
-    public void fall(float distance, float damageMultiplier)
-    {
+    public void fall(float distance, float damageMultiplier) {
     }
 
     @Override
-    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
-    {
+    protected void updateFallState(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
     }
 
     @Override
-    public boolean doesEntityNotTriggerPressurePlate()
-    {
+    public boolean doesEntityNotTriggerPressurePlate() {
         return true;
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
-    {
-        super.readEntityFromNBT(nbt);
+    public void read(CompoundNBT nbt) {
+        super.read(nbt);
         this.dataManager.set(BAT_FLAGS, nbt.getByte("BatFlags"));
-        dataManager.set(BAT_XP, nbt.getInteger("BatXP"));
-        this.ownerName = nbt.getString("ownerName");
+        dataManager.set(BAT_XP, nbt.getInt("BatXP"));
+        this.ownerName = UUID.fromString(nbt.getString("ownerName"));
         this.petName = nbt.getString("petName");
-        lastOwnerX = nbt.getInteger("lastOwnerX");
-        lastOwnerY = nbt.getInteger("lastOwnerY");
-        lastOwnerZ = nbt.getInteger("lastOwnerZ");
+        lastOwnerX = nbt.getInt("lastOwnerX");
+        lastOwnerY = nbt.getInt("lastOwnerY");
+        lastOwnerZ = nbt.getInt("lastOwnerZ");
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
-    {
-        super.writeEntityToNBT(nbt);
-        nbt.setByte("BatFlags", this.dataManager.get(BAT_FLAGS));
-        nbt.setInteger("BatXP", getBatExperience());
-        nbt.setString("ownerName", this.ownerName);
-        nbt.setString("petName", this.petName);
-        nbt.setInteger("lastOwnerX", lastOwnerX);
-        nbt.setInteger("lastOwnerY", lastOwnerY);
-        nbt.setInteger("lastOwnerZ", lastOwnerZ);
+    public CompoundNBT writeWithoutTypeId(CompoundNBT nbt) {
+        super.writeWithoutTypeId(nbt);
+        nbt.putByte("BatFlags", this.dataManager.get(BAT_FLAGS));
+        nbt.putInt("BatXP", getBatExperience());
+        nbt.putString("ownerName", this.ownerName.toString());
+        nbt.putString("petName", this.petName);
+        nbt.putInt("lastOwnerX", lastOwnerX);
+        nbt.putInt("lastOwnerY", lastOwnerY);
+        nbt.putInt("lastOwnerZ", lastOwnerZ);
+        return nbt;
     }
 
     @Override
-    public boolean getCanSpawnHere()
-    {
-        return super.getCanSpawnHere();
-    }
-
-    @Override
-    public String getName()
-    {
-        return petName;
-    }
-
-    public boolean glister;
-
-    public void setGlistering(boolean set)
-    {
-        glister = set;
+    public ITextComponent getName() {
+        return new StringTextComponent(petName);
     }
 
 }

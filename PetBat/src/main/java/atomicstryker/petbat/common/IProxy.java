@@ -1,13 +1,19 @@
 package atomicstryker.petbat.common;
 
+import atomicstryker.petbat.common.network.BatNamePacket;
 import net.minecraft.item.ItemStack;
 
-public interface IProxy
-{
-    
-    public void onModPreInit();
-    
-    public void onModInit();
+import java.io.File;
 
-    public void displayGui(ItemStack itemStack);
+public interface IProxy {
+
+    void onModPreInit();
+
+    void onModInit();
+
+    void displayGui(ItemStack itemStack);
+
+    void onBatNamePacket(BatNamePacket packet);
+
+    File getMcFolder();
 }

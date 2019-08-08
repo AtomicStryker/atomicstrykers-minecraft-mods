@@ -1,71 +1,63 @@
 package atomicstryker.petbat.common.batAI;
 
 import atomicstryker.petbat.common.EntityPetBat;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PetBatAIFindSittingSpot extends EntityAIBase
-{
+public class PetBatAIFindSittingSpot extends Goal {
+
     private final double OWNER_DISTANCE_ALLOWED_SQ = 36D;
     private final int SEARCH_BELOW_RANGE = 1;
     private final int SEARCH_ABOVE_RANGE = 2;
     private final int SEARCH_XZ_RANGE = 4;
     private final long SEARCH_COOLDOWN_TIME = 5000L;
-    
+
     private final EntityPetBat petBat;
     private boolean isSearching;
     private HangSpotSearch searchThread;
     private long nextSearchTime;
-    
-    public PetBatAIFindSittingSpot(EntityPetBat bat)
-    {
+
+    public PetBatAIFindSittingSpot(EntityPetBat bat) {
         isSearching = false;
         searchThread = null;
         petBat = bat;
         nextSearchTime = 0L;
     }
-    
+
     @Override
-    public boolean shouldExecute()
-    {
+    public boolean shouldExecute() {
         return !isSearching
-            && !petBat.getIsBatHanging()
-            && petBat.getHangingSpot() == null
-            && !petBat.getHasTarget()
-            && checkOwnerNearby()
-            && System.currentTimeMillis() > nextSearchTime;
+                && !petBat.getIsBatHanging()
+                && petBat.getHangingSpot() == null
+                && !petBat.getHasTarget()
+                && checkOwnerNearby()
+                && System.currentTimeMillis() > nextSearchTime;
     }
-    
-    private boolean checkOwnerNearby()
-    {
+
+    private boolean checkOwnerNearby() {
         return !(petBat.getOwnerEntity() != null
                 && petBat.getDistanceSq(petBat.getOwnerEntity()) > OWNER_DISTANCE_ALLOWED_SQ);
     }
 
     @Override
-    public void startExecuting()
-    {
-        if (searchThread == null || !searchThread.isAlive())
-        {
+    public void startExecuting() {
+        if (searchThread == null || !searchThread.isAlive()) {
             searchThread = null;
             startSearch();
         }
-        
+
         super.startExecuting();
     }
-    
+
     @Override
-    public void resetTask()
-    {        
+    public void resetTask() {
         super.resetTask();
     }
-    
-    private synchronized void startSearch()
-    {
-        if (searchThread == null)
-        {
+
+    private synchronized void startSearch() {
+        if (searchThread == null) {
             searchThread = new HangSpotSearch();
             isSearching = true;
             nextSearchTime = System.currentTimeMillis() + SEARCH_COOLDOWN_TIME;
@@ -73,9 +65,8 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
             searchThread.start();
         }
     }
-    
-    private class HangSpotSearch extends Thread
-    {
+
+    private class HangSpotSearch extends Thread {
         int minY;
         int maxY;
         int startX;
@@ -98,107 +89,94 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
          * Steps left to do in current direction
          */
         int stepsToDo;
-        
+
         @Override
-        public void run()
-        {
-            minY = (int)(petBat.posY+0.5D) - SEARCH_BELOW_RANGE;
-            maxY = minY + SEARCH_ABOVE_RANGE*2;
-            
-            startX = (int)(petBat.posX+0.5D);
+        public void run() {
+            minY = (int) (petBat.posY + 0.5D) - SEARCH_BELOW_RANGE;
+            maxY = minY + SEARCH_ABOVE_RANGE * 2;
+
+            startX = (int) (petBat.posX + 0.5D);
             maxX = startX + SEARCH_XZ_RANGE;
-            
-            startZ = (int)(petBat.posZ+0.5D);
-            
+
+            startZ = (int) (petBat.posZ + 0.5D);
+
             World w = petBat.world;
-            for (int y = minY; y <= maxY; y++)
-            {
+            for (int y = minY; y <= maxY; y++) {
                 curX = startX;
                 curZ = startZ;
                 direction = 0;
                 stepLength = 1;
                 stepsToDo = 1;
-                
-                for(;;)
-                {
+
+                for (; ; ) {
                     // arrived at top left corner of search grid, break out of this level
-                    if (curX == maxX && direction == 0 && stepsToDo == 1)
-                    {
+                    if (curX == maxX && direction == 0 && stepsToDo == 1) {
                         // System.out.println("finished a level, debugCounter: "+debugCounter);
                         break;
                     }
-                    
-                    if (w.isAirBlock(new BlockPos(curX, y, curZ)) && w.isAirBlock(new BlockPos(curX, y-1, curZ)))
-                    {
-                        IBlockState ib = w.getBlockState(new BlockPos(curX, y+1, curZ));
-                        if (ib.isNormalCube())
-                        {
+
+
+                    if (w.isAirBlock(new BlockPos(curX, y, curZ)) && w.isAirBlock(new BlockPos(curX, y - 1, curZ))) {
+                        BlockPos bp = new BlockPos(curX, y + 1, curZ);
+                        BlockState ib = w.getBlockState(bp);
+                        if (ib.isNormalCube(w, bp)) {
                             foundSpot(curX, y, curZ);
                             return;
                         }
                     }
-                    
-                    switch (direction)
-                    {
+
+                    switch (direction) {
                         case 0: // going north
                         {
-                            if (stepsToDo > 0)
-                            {
+                            if (stepsToDo > 0) {
                                 curX++;
                                 stepsToDo--;
-                            }
-                            else // turning east, do first step right away
+                            } else // turning east, do first step right away
                             {
                                 direction = 1;
                                 curZ++;
-                                stepsToDo = stepLength-1;
+                                stepsToDo = stepLength - 1;
                             }
                             break;
                         }
                         case 1: // going east
                         {
-                            if (stepsToDo > 0)
-                            {
+                            if (stepsToDo > 0) {
                                 curZ++;
                                 stepsToDo--;
-                            }
-                            else // turning south, do first step right away
+                            } else // turning south, do first step right away
                             {
                                 direction = 2;
                                 stepLength++;
                                 curX--;
-                                stepsToDo = stepLength-1;
+                                stepsToDo = stepLength - 1;
                             }
                             break;
                         }
                         case 2: // going south
                         {
-                            if (stepsToDo > 0)
-                            {
+                            if (stepsToDo > 0) {
                                 curX--;
                                 stepsToDo--;
-                            }
-                            else // turning west, do first step right away
+                            } else // turning west, do first step right away
                             {
                                 direction = 3;
                                 curZ--;
-                                stepsToDo = stepLength-1;
+                                stepsToDo = stepLength - 1;
                             }
                             break;
                         }
                         default: // going west
                         {
-                            if (stepsToDo > 0)
-                            {
+                            if (stepsToDo > 0) {
                                 curZ--;
                                 stepsToDo--;
-                            }
-                            else // turning north, do first step right away
+                            } else // turning north, do first step right away
                             {
                                 direction = 0;
                                 stepLength++;
                                 curX++;
-                                stepsToDo = stepLength-1;
+                                stepsToDo = stepLength - 1;
                             }
                             break;
                         }
@@ -220,12 +198,11 @@ public class PetBatAIFindSittingSpot extends EntityAIBase
                 }
                 */
             }
-            
+
             isSearching = false;
         }
-        
-        private void foundSpot(int x, int y, int z)
-        {
+
+        private void foundSpot(int x, int y, int z) {
             isSearching = false;
             petBat.setHangingSpot(new BlockPos(x, y, z));
         }
