@@ -173,8 +173,8 @@ public class PetBatAIFlying extends MovementController {
     }
 
     private void lookForOwnerEntity() {
-        if (!petBat.getOwnerName().equals("") && System.currentTimeMillis() > nextOwnerCheckTime) {
-            petBat.setOwnerEntity(petBat.world.getPlayerByUuid(petBat.getOwnerName()));
+        if (petBat.getOwnerUUID() != null && System.currentTimeMillis() > nextOwnerCheckTime) {
+            petBat.setOwnerEntity(petBat.world.getPlayerByUuid(petBat.getOwnerUUID()));
             nextOwnerCheckTime = System.currentTimeMillis() + OWNER_FIND_INTERVAL;
         }
     }

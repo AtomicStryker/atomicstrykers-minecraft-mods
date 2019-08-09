@@ -29,7 +29,7 @@ public class PetBatAIOwnerAttacks extends TargetGoal {
             theTarget = batEnt.getOwnerEntity().getLastAttackedEntity();
             if (theTarget instanceof EntityPetBat) {
                 EntityPetBat otherBat = (EntityPetBat) theTarget;
-                if (otherBat.getOwnerName().equals(batEnt.getOwnerName())) {
+                if (otherBat.getOwnerUUID().equals(batEnt.getOwnerUUID())) {
                     theTarget = null;
                     return false;
                 }

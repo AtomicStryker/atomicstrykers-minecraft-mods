@@ -33,11 +33,6 @@ public class ClientProxy implements IProxy {
     }
 
     @Override
-    public void onBatNamePacket(BatNamePacket packet) {
-        // NOOP
-    }
-
-    @Override
     public File getMcFolder() {
         return Minecraft.getInstance().gameDir;
     }

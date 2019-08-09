@@ -1,6 +1,5 @@
 package atomicstryker.petbat.client;
 
-import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
 import atomicstryker.petbat.common.network.BatNamePacket;
 import net.minecraft.client.Minecraft;
@@ -8,7 +7,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.opengl.GL11;
@@ -29,11 +27,11 @@ public class GuiPetBatRename extends Screen {
         super(new TranslationTextComponent("translation.PetBat:gui_title"));
 
         petBatItemStack = stack;
-        xp = stack.getTag() != null ? ((CompoundNBT) stack.getTag().get("petbatmod")).getInt("BatXP") : 0;
+        xp = stack.getTag() != null ? stack.getTag().getCompound("petbatmod").getInt("BatXP") : 0;
         xpToNext = PetBatMod.instance().getMissingExperienceToNextLevel(xp);
         level = PetBatMod.instance().getLevelFromExperience(xp);
         maxHealth = 16d + (level * 2);
-        health = stack.getTag() != null ? ((CompoundNBT) stack.getTag().get("petbatmod")).getFloat("health") : 0;
+        health = stack.getTag() != null ? stack.getTag().getCompound("petbatmod").getFloat("health") : 0;
         attackStrength = 1 + level;
         levelTitle = PetBatMod.instance().getLevelTitle(level);
         levelDesc = PetBatMod.instance().getLevelDescription(level);
@@ -47,7 +45,7 @@ public class GuiPetBatRename extends Screen {
         textfield.setTextColor(-1);
         textfield.setMaxStringLength(30);
         setFocused(textfield);
-        textfield.setText(ItemPocketedPetBat.getBatNameFromItemStack(petBatItemStack));
+        textfield.setText(petBatItemStack.getDisplayName().getUnformattedComponentText());
     }
 
     @Override
@@ -58,10 +56,21 @@ public class GuiPetBatRename extends Screen {
 
     @Override
     public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-        if (textfield.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)) {
-            if (!textfield.getText().equals("")) {
-                PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getInstance().player.getName().getString(),
-                        textfield.getText()));
+        PetBatMod.LOGGER.debug("rename screen key pressed: {}", p_keyPressed_1_);
+        if (!textfield.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)) {
+            PetBatMod.LOGGER.debug("texfield if logic, textfield text: {}", textfield.getText());
+            // escape, close screen
+            if (p_keyPressed_1_ == 256) {
+                onClose();
+                return true;
+            }
+            // enter was pressed!
+            if (p_keyPressed_1_ == 257) {
+                if (!textfield.getText().equals("")) {
+                    PetBatMod.instance().networkHelper.sendPacketToServer(new BatNamePacket(Minecraft.getInstance().player.getName().getString(),
+                            textfield.getText()));
+                }
+                onClose();
                 return true;
             }
         }

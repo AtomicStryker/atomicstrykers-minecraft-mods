@@ -10,13 +10,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +28,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -39,6 +35,8 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ObjectHolder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -49,6 +47,7 @@ import java.util.Random;
 public class PetBatMod implements IProxy {
 
     static final String MOD_ID = "petbat";
+    public static Logger LOGGER;
 
     private static PetBatMod instance;
     public static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> PetBatMod.instance());
@@ -162,6 +161,7 @@ public class PetBatMod implements IProxy {
         instance = this;
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        LOGGER = LogManager.getLogger();
     }
 
     @SubscribeEvent
@@ -180,7 +180,7 @@ public class PetBatMod implements IProxy {
 
     @SubscribeEvent
     public void registerEntityEvent(RegistryEvent.Register<EntityType<?>> event) {
-        batEntityType = EntityType.Builder.create((type, world) -> new EntityPetBat(world), EntityClassification.CREATURE).size(0.5F, 0.9F).setTrackingRange(32).setUpdateInterval(1).setShouldReceiveVelocityUpdates(false).build("petbat");
+        batEntityType = EntityType.Builder.create((type, world) -> new EntityPetBat(world), EntityClassification.CREATURE).size(0.5F, 0.9F).setTrackingRange(32).setUpdateInterval(1).setShouldReceiveVelocityUpdates(false).build("petbat").setRegistryName("petbat");
         event.getRegistry().register(batEntityType);
     }
 
@@ -212,7 +212,7 @@ public class PetBatMod implements IProxy {
 
     @SubscribeEvent
     public void onPlayerLeftClick(BreakSpeed event) {
-        PlayerEntity p = event.getEntityPlayer();
+        PlayerEntity p = event.getPlayer();
         ItemStack item = p.inventory.getCurrentItem();
         if (item.getItem() == TAME_ITEM_ID) {
             List<Entity> entityList = p.world.getEntitiesWithinAABBExcludingEntity(p, p.getBoundingBox().grow(10D, 10D, 10D));
@@ -230,7 +230,7 @@ public class PetBatMod implements IProxy {
     @SubscribeEvent
     public void onEntityInteract(EntityInteractSpecific event) {
         if (event.getTarget() instanceof BatEntity) {
-            PlayerEntity p = event.getEntityPlayer();
+            PlayerEntity p = event.getPlayer();
             if (!p.world.isRemote) {
                 ItemStack item = p.inventory.getCurrentItem();
                 if (item.getItem() == TAME_ITEM_ID) {
@@ -240,7 +240,7 @@ public class PetBatMod implements IProxy {
                     BatEntity b = (BatEntity) event.getTarget();
                     EntityPetBat newPet = new EntityPetBat(p.world);
                     newPet.setLocationAndAngles(b.posX, b.posY, b.posZ, b.rotationYaw, b.rotationPitch);
-                    newPet.setNames(p.getGameProfile().getName(), getRandomBatName());
+                    newPet.setNames(p.getUniqueID(), getRandomBatName());
                     newPet.setOwnerEntity(p);
 
                     p.world.addEntity(newPet);
@@ -254,7 +254,11 @@ public class PetBatMod implements IProxy {
     public void onPlayerAttacksEntity(AttackEntityEvent event) {
         if (event.getTarget() instanceof EntityPetBat) {
             EntityPetBat bat = (EntityPetBat) event.getTarget();
-            if (bat.getOwnerName().toString().equals(event.getEntityPlayer().getName().getString()) && event.getEntityPlayer().getHeldItemMainhand() == ItemStack.EMPTY) {
+            if (bat.getOwnerUUID() == null) {
+                bat.setOwnerEntity(event.getPlayer());
+                bat.setNames(event.getPlayer().getUniqueID(), "Ownerless");
+            }
+            if (event.getPlayer().getUniqueID().equals(bat.getOwnerUUID()) && event.getPlayer().getHeldItemMainhand() == ItemStack.EMPTY) {
                 bat.recallToOwner();
                 event.setCanceled(true);
             }
@@ -390,29 +394,7 @@ public class PetBatMod implements IProxy {
     }
 
     @Override
-    public void onBatNamePacket(BatNamePacket packet) {
-        MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-        server.deferTask(() -> {
-            ServerPlayerEntity p = server.getPlayerList().getPlayerByUsername(packet.getUser());
-            if (p != null) {
-                if (p.getHeldItemMainhand().getItem() == PetBatMod.instance().itemPocketedBat) {
-                    ItemPocketedPetBat.writeBatNameToItemStack(p.getHeldItemMainhand(), packet.getBatName());
-                }
-            }
-        });
-    }
-
-    @Override
     public File getMcFolder() {
         return ServerLifecycleHooks.getCurrentServer().getFile("");
     }
-
-    @Mod.EventBusSubscriber
-    public static class RegistrationHandler {
-        @SubscribeEvent
-        public static void registerSoundEvents(RegistryEvent.Register<SoundEvent> event) {
-            event.getRegistry().registerAll(soundDeath, soundHit, soundIdle, soundLoop, soundTakeoff);
-        }
-    }
-
 }

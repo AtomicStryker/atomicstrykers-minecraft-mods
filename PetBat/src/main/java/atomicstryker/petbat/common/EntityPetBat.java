@@ -34,7 +34,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
     private static final DataParameter<Byte> BAT_FLAGS = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.BYTE);
     private static final DataParameter<Byte> IS_STAYING = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.BYTE);
     private static final DataParameter<Integer> BAT_XP = EntityDataManager.createKey(EntityPetBat.class, DataSerializers.VARINT);
-    private UUID ownerName;
+    private UUID ownerUUID;
     private String petName;
     private PlayerEntity owner;
     private ItemEntity foodAttackTarget;
@@ -48,7 +48,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
     public EntityPetBat(World par1World) {
         super(PetBatMod.instance().batEntityType, par1World);
         setIsBatHanging(false);
-        ownerName = UUID.fromString("");
+        ownerUUID = null;
         petName = "";
         lastOwnerX = lastOwnerY = lastOwnerZ = 0;
         hangSpot = null;
@@ -68,13 +68,18 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
 
     @Override
     public void writeSpawnData(PacketBuffer data) {
-        data.writeString(ownerName.toString());
+        data.writeString(ownerUUID == null ? "null" : ownerUUID.toString());
         data.writeString(petName);
     }
 
     @Override
     public void readSpawnData(PacketBuffer data) {
-        ownerName = UUID.fromString(data.readString());
+        String uid = data.readString();
+        if (!"null".equals(uid)) {
+            ownerUUID = UUID.fromString(uid);
+        } else {
+            ownerUUID = null;
+        }
         petName = data.readString();
     }
 
@@ -87,18 +92,21 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
         dataManager.register(BAT_XP, 0);
     }
 
-    public void setNames(String ownerName, String petName) {
-        this.ownerName = UUID.fromString(ownerName);
+    public void setNames(UUID ownerId, String petName) {
+        this.ownerUUID = ownerId;
         this.petName = petName;
     }
 
-    public UUID getOwnerName() {
-        return ownerName;
+    public UUID getOwnerUUID() {
+        return ownerUUID;
     }
 
     @Override
     public Team getTeam() {
-        return world.getScoreboard().getPlayersTeam(ownerName.toString());
+        if (ownerUUID != null) {
+            return world.getScoreboard().getPlayersTeam(ownerUUID.toString());
+        }
+        return super.getTeam();
     }
 
     /**
@@ -166,7 +174,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
             }
 
             // if hit by owner
-            if (source.getTrueSource() != null && source.getTrueSource().getName().getString().equals(getOwnerName())) {
+            if (source.getTrueSource() != null && source.getTrueSource().getUniqueID().equals(getOwnerUUID())) {
                 // and in combat with something else
                 if (source.getTrueSource() != getAttackTarget()) {
                     // ignore the hit
@@ -183,7 +191,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
 
     @Override
     public boolean processInteract(PlayerEntity player, Hand hand) {
-        if (getIsBatHanging() && player.getName().equals(ownerName)) {
+        if (getIsBatHanging() && player.getUniqueID().equals(ownerUUID)) {
             setIsBatStaying(!getIsBatStaying());
             player.sendMessage(
                     new TranslationTextComponent(petName + ": " + (getIsBatStaying() ? I18n.format("translation.PetBat:staying") : I18n.format("translation.PetBat:notstaying"))));
@@ -372,8 +380,8 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
                 }
             }
             if (!found) {
-                ItemStack newflute = new ItemStack(fluteItem, 1, new CompoundNBT());
-                newflute.getTag().putString("batName", petName);
+                ItemStack newflute = new ItemStack(fluteItem, 1, null);
+                newflute.getOrCreateTag().putString("batName", petName);
                 if (owner.inventory.addItemStackToInventory(newflute)) {
                     fluteOut = true;
                 }
@@ -409,7 +417,12 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
         super.read(nbt);
         this.dataManager.set(BAT_FLAGS, nbt.getByte("BatFlags"));
         dataManager.set(BAT_XP, nbt.getInt("BatXP"));
-        this.ownerName = UUID.fromString(nbt.getString("ownerName"));
+        String uid = nbt.getString("ownerUUID");
+        if (!uid.equals("null")) {
+            this.ownerUUID = UUID.fromString(uid);
+        } else {
+            ownerUUID = null;
+        }
         this.petName = nbt.getString("petName");
         lastOwnerX = nbt.getInt("lastOwnerX");
         lastOwnerY = nbt.getInt("lastOwnerY");
@@ -421,7 +434,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
         super.writeWithoutTypeId(nbt);
         nbt.putByte("BatFlags", this.dataManager.get(BAT_FLAGS));
         nbt.putInt("BatXP", getBatExperience());
-        nbt.putString("ownerName", this.ownerName.toString());
+        nbt.putString("ownerUUID", ownerUUID == null ? "null" : ownerUUID.toString());
         nbt.putString("petName", this.petName);
         nbt.putInt("lastOwnerX", lastOwnerX);
         nbt.putInt("lastOwnerY", lastOwnerY);

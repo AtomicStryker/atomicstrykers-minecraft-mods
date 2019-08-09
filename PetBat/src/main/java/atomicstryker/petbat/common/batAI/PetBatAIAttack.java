@@ -42,7 +42,7 @@ public class PetBatAIAttack extends Goal {
     public boolean shouldContinueExecuting() {
         if (entityTarget instanceof PlayerEntity) {
             PlayerEntity p = (PlayerEntity) entityTarget;
-            if (entityTarget.getName().equals(petBat.getOwnerName()) && p.getHealth() < p.getMaxHealth() / 2) {
+            if (entityTarget.getUniqueID().equals(petBat.getOwnerUUID()) && p.getHealth() < p.getMaxHealth() / 2) {
                 petBat.recallToOwner();
                 return false;
             }

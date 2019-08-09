@@ -35,9 +35,9 @@ public class ItemBatFlute extends Item {
                     break;
                 }
             }
-            return new ActionResult<>(ActionResultType.PASS, null);
+            return new ActionResult<>(ActionResultType.PASS, itemStack);
         }
-        return new ActionResult<>(ActionResultType.FAIL, null);
+        return new ActionResult<>(ActionResultType.FAIL, itemStack);
     }
 
     @Override
