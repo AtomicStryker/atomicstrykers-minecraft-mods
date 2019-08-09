@@ -20,7 +20,7 @@ public class ClientProxy implements IProxy {
     }
 
     @Override
-    public void onModInit() {
+    public void onClientInit() {
 
         ItemRenderer renderItem = Minecraft.getInstance().getItemRenderer();
         renderItem.getItemModelMesher().register(PetBatMod.instance().itemBatFlute, new ModelResourceLocation("petbat:bat_flute", "inventory"));

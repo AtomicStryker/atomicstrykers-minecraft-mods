@@ -28,17 +28,16 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 
 import java.io.File;
@@ -47,7 +46,6 @@ import java.util.List;
 import java.util.Random;
 
 @Mod(PetBatMod.MOD_ID)
-@Mod.EventBusSubscriber(modid = PetBatMod.MOD_ID)
 public class PetBatMod implements IProxy {
 
     static final String MOD_ID = "petbat";
@@ -56,19 +54,19 @@ public class PetBatMod implements IProxy {
     public static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> PetBatMod.instance());
 
     @ObjectHolder("death")
-    public static final SoundEvent soundDeath = createSoundEvent("death");
+    public static final SoundEvent soundDeath = null;
 
     @ObjectHolder("hit")
-    public static final SoundEvent soundHit = createSoundEvent("hit");
+    public static final SoundEvent soundHit = null;
 
     @ObjectHolder("idle")
-    public static final SoundEvent soundIdle = createSoundEvent("idle");
+    public static final SoundEvent soundIdle = null;
 
     @ObjectHolder("loop")
-    public static final SoundEvent soundLoop = createSoundEvent("loop");
+    public static final SoundEvent soundLoop = null;
 
     @ObjectHolder("takeoff")
-    public static final SoundEvent soundTakeoff = createSoundEvent("takeoff");
+    public static final SoundEvent soundTakeoff = null;
 
 
     private final String[] batNames = {"Lucius", "Draco", "Vlad", "Darkwing", "Zubat", "Cecil", "Dragos", "Cezar", "Ciprian", "Daniel", "Dorin", "Mihai", "Mircea", "Radu"};
@@ -149,7 +147,7 @@ public class PetBatMod implements IProxy {
     @SubscribeEvent
     public void serverStarted(FMLServerStartingEvent evt) {
 
-        configFile = new File(proxy.getMcFolder(), "\\config\\infernalmobs.cfg");
+        configFile = new File(proxy.getMcFolder(), "\\config\\petbat.cfg");
         loadConfig();
     }
 
@@ -162,18 +160,16 @@ public class PetBatMod implements IProxy {
 
     public PetBatMod() {
         instance = this;
-
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        modEventBus.addListener(this::registerSoundEvent);
-        modEventBus.addListener(this::registerItemEvent);
-        modEventBus.addListener(this::preInit);
+        MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
     }
 
+    @SubscribeEvent
     public void registerSoundEvent(RegistryEvent.Register<SoundEvent> event) {
-        event.getRegistry().registerAll(soundDeath, soundHit, soundIdle, soundLoop, soundTakeoff);
+        event.getRegistry().registerAll(createSoundEvent("death"), createSoundEvent("hit"), createSoundEvent("idle"), createSoundEvent("loop"), createSoundEvent("takeoff"));
     }
 
+    @SubscribeEvent
     public void registerItemEvent(RegistryEvent.Register<Item> event) {
         itemPocketedBat = new ItemPocketedPetBat().setRegistryName("petbat", "fed_pet_bat");
         event.getRegistry().register(itemPocketedBat);
@@ -182,26 +178,32 @@ public class PetBatMod implements IProxy {
         event.getRegistry().register(itemBatFlute);
     }
 
+    @SubscribeEvent
+    public void registerEntityEvent(RegistryEvent.Register<EntityType<?>> event) {
+        batEntityType = EntityType.Builder.create((type, world) -> new EntityPetBat(world), EntityClassification.CREATURE).size(0.5F, 0.9F).setTrackingRange(32).setUpdateInterval(1).setShouldReceiveVelocityUpdates(false).build("petbat");
+        event.getRegistry().register(batEntityType);
+    }
+
+    @SubscribeEvent
     public void preInit(FMLCommonSetupEvent event) {
 
         TAME_ITEM_ID = Items.PUMPKIN_PIE;
 
-        networkHelper = new NetworkHelper("AS_PB", BatNamePacket.class);
-
-        batEntityType = EntityType.Builder.create((type, world) -> new EntityPetBat(world), EntityClassification.CREATURE).size(0.5F, 0.9F).setTrackingRange(32).setUpdateInterval(1).setShouldReceiveVelocityUpdates(false).build("petbat");
-        ForgeRegistries.ENTITIES.register(batEntityType);
-
-        MinecraftForge.EVENT_BUS.register(this);
+        networkHelper = new NetworkHelper("petbat", BatNamePacket.class);
 
         for (Field f : BatEntity.class.getDeclaredFields()) {
-            if (BlockPos.class.isAssignableFrom(f.getClass())) {
+            if (BlockPos.class.isAssignableFrom(f.getType())) {
                 entityBatFlightCoords = f;
                 entityBatFlightCoords.setAccessible(true);
             }
         }
 
         proxy.onModPreInit();
-        proxy.onModInit();
+    }
+
+    @SubscribeEvent
+    public void clientInit(FMLClientSetupEvent event) {
+        proxy.onClientInit();
     }
 
     public boolean getPetBatInventoryTeleportEnabled() {
@@ -360,7 +362,7 @@ public class PetBatMod implements IProxy {
     }
 
     @Override
-    public void onModInit() {
+    public void onClientInit() {
         // NOOP
     }
 

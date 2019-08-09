@@ -55,7 +55,7 @@ public class PetBatAIOwnerAttacked extends TargetGoal {
 
     @Override
     public void startExecuting() {
-        field_75299_d.setAttackTarget(theOwnerAttacker);
+        goalOwner.setAttackTarget(theOwnerAttacker);
         super.startExecuting();
     }
 }

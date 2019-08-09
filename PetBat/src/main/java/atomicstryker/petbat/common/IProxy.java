@@ -9,7 +9,7 @@ public interface IProxy {
 
     void onModPreInit();
 
-    void onModInit();
+    void onClientInit();
 
     void displayGui(ItemStack itemStack);
 
