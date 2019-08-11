@@ -4,7 +4,7 @@ import atomicstryker.petbat.common.EntityPetBat;
 import atomicstryker.petbat.common.ItemPocketedPetBat;
 import atomicstryker.petbat.common.PetBatMod;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.controller.MovementController;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
@@ -13,7 +13,7 @@ import net.minecraft.util.math.*;
 
 import java.util.Random;
 
-public class PetBatAIFlying extends MovementController {
+public class PetBatAIFlying extends Goal {
 
     private final int BAT_OWNER_FOLLOW_Y_OFFSET = 3;
     private final long OWNER_FIND_INTERVAL = 5000L;
@@ -28,11 +28,16 @@ public class PetBatAIFlying extends MovementController {
     private long sittingSpotAbortTime;
 
     public PetBatAIFlying(EntityPetBat bat) {
-        super(bat);
+        super();
         petBat = bat;
         rand = bat.getRNG();
         nextOwnerCheckTime = System.currentTimeMillis();
         sittingSpotAbortTime = -1L;
+    }
+
+    @Override
+    public boolean shouldExecute() {
+        return true;
     }
 
     @Override

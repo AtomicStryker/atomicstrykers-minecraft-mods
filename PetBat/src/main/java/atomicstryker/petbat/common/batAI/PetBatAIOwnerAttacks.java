@@ -34,6 +34,9 @@ public class PetBatAIOwnerAttacks extends TargetGoal {
                     return false;
                 }
             }
+            if (theTarget == null) {
+                return false;
+            }
             return this.shouldAttackEntity(theTarget, batEnt.getOwnerEntity());
         }
 

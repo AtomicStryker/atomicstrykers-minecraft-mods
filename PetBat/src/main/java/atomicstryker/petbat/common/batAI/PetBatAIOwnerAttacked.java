@@ -27,7 +27,7 @@ public class PetBatAIOwnerAttacked extends TargetGoal {
     public boolean shouldExecute() {
         if (batEnt.getOwnerEntity() != null) {
             theOwnerAttacker = batEnt.getOwnerEntity().getRevengeTarget();
-            return theOwnerAttacker != batEnt.getOwnerEntity() && shouldAttackEntity(theOwnerAttacker, batEnt.getOwnerEntity());
+            return theOwnerAttacker != null && theOwnerAttacker != batEnt.getOwnerEntity() && shouldAttackEntity(theOwnerAttacker, batEnt.getOwnerEntity());
         }
         return false;
     }

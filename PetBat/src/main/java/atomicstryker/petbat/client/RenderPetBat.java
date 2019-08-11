@@ -41,15 +41,6 @@ public class RenderPetBat extends LivingRenderer<EntityPetBat, ModelPetBat> {
         super.applyRotations(par1EntityPetBat, par2, par3, par4);
     }
 
-    @Override
-    public void renderName(EntityPetBat par1LivingEntity, double par2, double par4, double par6) {
-        String name = (par1LivingEntity).getName().getUnformattedComponentText();
-        if (!name.equals("")) {
-            renderLivingLabel(par1LivingEntity, name, par2, par4 - 1D, par6, 64);
-        }
-        super.renderName(par1LivingEntity, par2, par4, par6);
-    }
-
     @Nullable
     @Override
     protected ResourceLocation getEntityTexture(EntityPetBat entity) {

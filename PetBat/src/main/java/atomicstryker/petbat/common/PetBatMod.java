@@ -44,13 +44,13 @@ import java.util.List;
 import java.util.Random;
 
 @Mod(PetBatMod.MOD_ID)
-public class PetBatMod implements IProxy {
+public class PetBatMod {
 
     static final String MOD_ID = "petbat";
     public static Logger LOGGER;
 
     private static PetBatMod instance;
-    public static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> PetBatMod.instance());
+    public static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
     @ObjectHolder("death")
     public static final SoundEvent soundDeath = null;
@@ -256,7 +256,7 @@ public class PetBatMod implements IProxy {
             EntityPetBat bat = (EntityPetBat) event.getTarget();
             if (bat.getOwnerUUID() == null) {
                 bat.setOwnerEntity(event.getPlayer());
-                bat.setNames(event.getPlayer().getUniqueID(), "Ownerless");
+                bat.setNames(event.getPlayer().getUniqueID(), "Battus Genericus");
             }
             if (event.getPlayer().getUniqueID().equals(bat.getOwnerUUID()) && event.getPlayer().getHeldItemMainhand() == ItemStack.EMPTY) {
                 bat.recallToOwner();
@@ -365,16 +365,6 @@ public class PetBatMod implements IProxy {
         }
     }
 
-    @Override
-    public void onClientInit() {
-        // NOOP
-    }
-
-    @Override
-    public void displayGui(ItemStack itemStack) {
-        // NOOP, Proxy only relevant on client
-    }
-
     public ItemStack removeFluteFromPlayer(PlayerEntity player, String petName) {
         for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
             ItemStack item = player.inventory.mainInventory.get(i);
@@ -386,15 +376,5 @@ public class PetBatMod implements IProxy {
             }
         }
         return ItemStack.EMPTY;
-    }
-
-    @Override
-    public void onModPreInit() {
-
-    }
-
-    @Override
-    public File getMcFolder() {
-        return ServerLifecycleHooks.getCurrentServer().getFile("");
     }
 }

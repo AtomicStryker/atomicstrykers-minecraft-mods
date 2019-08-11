@@ -27,11 +27,11 @@ public class GuiPetBatRename extends Screen {
         super(new TranslationTextComponent("translation.PetBat:gui_title"));
 
         petBatItemStack = stack;
-        xp = stack.getTag() != null ? stack.getTag().getCompound("petbatmod").getInt("BatXP") : 0;
+        xp = stack.getTag() != null ? stack.getOrCreateChildTag("petbatmod").getInt("BatXP") : 0;
         xpToNext = PetBatMod.instance().getMissingExperienceToNextLevel(xp);
         level = PetBatMod.instance().getLevelFromExperience(xp);
         maxHealth = 16d + (level * 2);
-        health = stack.getTag() != null ? stack.getTag().getCompound("petbatmod").getFloat("health") : 0;
+        health = stack.getTag() != null ? stack.getOrCreateChildTag("petbatmod").getFloat("health") : 0;
         attackStrength = 1 + level;
         levelTitle = PetBatMod.instance().getLevelTitle(level);
         levelDesc = PetBatMod.instance().getLevelDescription(level);
@@ -99,18 +99,18 @@ public class GuiPetBatRename extends Screen {
 
         int y = 100;
         drawCenteredString(font, (TextFormatting.BOLD + I18n.format("translation.PetBat:level")
-                + TextFormatting.RESET + level + " " + levelTitle), x, y, 0xFFFFFF);
+                + TextFormatting.RESET + " " + level + " " + levelTitle), x, y, 0xFFFFFF);
         y += 12;
         drawCenteredString(
                 font,
-                (TextFormatting.BOLD + I18n.format("translation.PetBat:experience") + TextFormatting.RESET + xp + (xpToNext == -1
-                        ? "" : I18n.format("translation.PetBat:missing_xp") + xpToNext)), x, y, 0xFFFFFF);
+                (TextFormatting.BOLD + I18n.format("translation.PetBat:experience") + TextFormatting.RESET + " " + xp + (xpToNext == -1
+                        ? "" : I18n.format("translation.PetBat:missing_xp") + " " + xpToNext)), x, y, 0xFFFFFF);
         y += 12;
         drawCenteredString(font, (TextFormatting.BOLD + I18n.format("translation.PetBat:health")
-                + TextFormatting.RESET + health + " / " + maxHealth), x, y, 0xFFFFFF);
+                + TextFormatting.RESET + " " + health + " / " + maxHealth), x, y, 0xFFFFFF);
         y += 12;
         drawCenteredString(font, (TextFormatting.BOLD + I18n.format("translation.PetBat:attack_power")
-                + TextFormatting.RESET + attackStrength), x, y, 0xFFFFFF);
+                + TextFormatting.RESET + " " + attackStrength), x, y, 0xFFFFFF);
 
         y += 30;
         drawCenteredString(font, TextFormatting.ITALIC + levelDesc, x, y, 0xC82536);

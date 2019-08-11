@@ -4,7 +4,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -43,7 +42,7 @@ public class ItemPocketedPetBat extends Item {
 
     @Override
     public boolean hasEffect(ItemStack stack) {
-        return stack.getTag() != null && PetBatMod.instance().getLevelFromExperience(stack.getTag().getCompound("petbatmod").getInt("BatXP")) > 5;
+        return stack.getTag() != null && PetBatMod.instance().getLevelFromExperience(stack.getOrCreateChildTag("petbatmod").getInt("BatXP")) > 5;
     }
 
     public static ItemStack fromBatEntity(EntityPetBat batEnt) {
@@ -56,16 +55,16 @@ public class ItemPocketedPetBat extends Item {
         writeCompoundStringToItemStack(batstack, "petbatmod", "Owner", batEnt.getOwnerUUID() == null ? "null" : batEnt.getOwnerUUID().toString());
         writeCompoundIntegerToItemStack(batstack, "petbatmod", "BatXP", batEnt.getBatExperience());
         writeCompoundFloatToItemStack(batstack, "petbatmod", "health", batEnt.getHealth());
-        batstack.getTag().getCompound("petbatmod").putFloat("health", batEnt.getHealth());
+        batstack.getOrCreateChildTag("petbatmod").putFloat("health", batEnt.getHealth());
         batstack.setDamage((int) invertHealthValue(batEnt.getHealth(), batEnt.getMaxHealth()));
         return batstack;
     }
 
     public static EntityPetBat toBatEntity(World world, ItemStack batStack, PlayerEntity player) {
         EntityPetBat batEnt = new EntityPetBat(world);
-        String owner = batStack.getTag() != null ? batStack.getTag().getCompound("petbatmod").getString("Owner") : player.getUniqueID().toString();
+        String owner = batStack.getTag() != null ? batStack.getOrCreateChildTag("petbatmod").getString("Owner") : player.getUniqueID().toString();
         String name = batStack.getDisplayName().getUnformattedComponentText();
-        int xp = batStack.getTag() != null ? batStack.getTag().getCompound("petbatmod").getInt("BatXP") : 0;
+        int xp = batStack.getTag() != null ? batStack.getOrCreateChildTag("petbatmod").getInt("BatXP") : 0;
         if (name.equals("")) {
             name = "Battus Genericus";
         }
@@ -75,10 +74,11 @@ public class ItemPocketedPetBat extends Item {
         } else {
             PetBatMod.LOGGER.debug("about to load UUID from owner string [{}]", owner);
             batEnt.setNames(UUID.fromString(owner), name);
+            batEnt.setOwnerEntity(player);
         }
 
         batEnt.setBatExperience(xp);
-        batEnt.setHealth(batStack.getTag() != null ? batStack.getTag().getCompound("petbatmod").getFloat("health") : batEnt.getMaxHealth());
+        batEnt.setHealth(batStack.getTag() != null ? batStack.getOrCreateChildTag("petbatmod").getFloat("health") : batEnt.getMaxHealth());
         return batEnt;
     }
 
@@ -92,23 +92,16 @@ public class ItemPocketedPetBat extends Item {
     }
 
     public static void writeCompoundIntegerToItemStack(ItemStack stack, String tag, String key, int data) {
-        checkCompoundNBT(stack, tag);
-        stack.getTag().getCompound(tag).putInt(key, data);
+        stack.getOrCreateChildTag(tag).putInt(key, data);
     }
 
     public static void writeCompoundFloatToItemStack(ItemStack stack, String tag, String key, float data) {
-        checkCompoundNBT(stack, tag);
-        stack.getTag().getCompound(tag).putFloat(key, data);
+        stack.getOrCreateChildTag(tag).putFloat(key, data);
     }
 
     public static ItemStack writeCompoundStringToItemStack(ItemStack stack, String tag, String key, String data) {
-        checkCompoundNBT(stack, tag);
-        stack.getTag().getCompound(tag).putString(key, data);
+        stack.getOrCreateChildTag(tag).putString(key, data);
         return stack;
-    }
-
-    private static void checkCompoundNBT(ItemStack stack, String tag) {
-        stack.getOrCreateTag().put(tag, new CompoundNBT());
     }
 
     @Override
