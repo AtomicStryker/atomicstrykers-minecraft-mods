@@ -1,0 +1,32 @@
+{
+    "item.petbat.fed_pet_bat": "Evcil Yarasa",
+    "item.petbat.bat_flute": "Yarasa Flütü",
+
+    "entity.PetBat.PetBat": "Evcil Yarasa",
+
+    "translation.PetBat:gui_title": "İnsan-Yarasa Arayüzü",
+    "translation.PetBat:level": "Seviye",
+    "translation.PetBat:experience": "Tecrübe:",
+    "translation.PetBat:missing_xp": ", ilerki seviye için kalan:",
+    "translation.PetBat:health": "Sağlık:",
+    "translation.PetBat:attack_power": "Saldırı Gücü:",
+
+    "translation.PetBat:batlevel0": "Evcil Yarasa",
+    "translation.PetBat:batlevel1": "Güreşçi Evcil Yarasa",
+    "translation.PetBat:batlevel2": "Dayanıklı Evcil Yarasa",
+    "translation.PetBat:batlevel3": "Elit Evcil Yarasa",
+    "translation.PetBat:batlevel4": "Kabadayı Yarasa",
+    "translation.PetBat:batlevel5": "Süper Kabadayı Yarasa",
+    "translation.PetBat:batlevel6": "En İyi Kabadayı Yarasa",
+
+    "translation.PetBat:batlevel0desc": "Sevilesi ve sadece azıcık silahlandırılmış",
+    "translation.PetBat:batlevel1desc": "Birkaç kavgaya girişmiş, seni bir tutamda devirebilir",
+    "translation.PetBat:batlevel2desc": "\\\"Ben şimdi ciddiyim\\\"",
+    "translation.PetBat:batlevel3desc": "Kan tadı için geliştirildi, Can Çalma özelliği de var",
+    "translation.PetBat:batlevel4desc": "Bu Yarasayla yan yana gelme.",
+    "translation.PetBat:batlevel5desc": "Daha ölümcülü olamaz.",
+    "translation.PetBat:batlevel6desc": "SEN İŞARETLE, ONLAR ÖLSÜN.",
+
+    "translation.PetBat:staying": "Sabit Duruyor.",
+    "translation.PetBat:notstaying": "Sabit Durmuyor."
+}
