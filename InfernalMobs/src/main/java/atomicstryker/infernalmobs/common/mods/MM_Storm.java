@@ -6,7 +6,8 @@ import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
+
 
 public class MM_Storm extends MobModifier {
 
@@ -15,6 +16,7 @@ public class MM_Storm extends MobModifier {
     private static String[] suffix = {"ofLightning", "theRaiden"};
     private static String[] prefix = {"striking", "thundering", "electrified"};
     private long nextAbilityUse = 0L;
+
     public MM_Storm() {
         super();
     }
