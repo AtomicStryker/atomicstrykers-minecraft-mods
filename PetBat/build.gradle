@@ -16,8 +16,8 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-def mcversion = '1.14.3'
-version = '1.14.3.1'
+def mcversion = '1.14.4'
+version = '1.14.4.1'
 group = 'atomicstryker.petbat'
 archivesBaseName = 'petbat'
 
@@ -75,7 +75,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.14.4-28.0.45'
+    minecraft 'net.minecraftforge:forge:1.14.4-28.0.55'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -103,7 +103,7 @@ jar {
         attributes([
             "Specification-Title": "petbat",
             "Specification-Vendor": "atomicstryker",
-            "Specification-Version": "1.14.3", // We are version 1 of ourselves
+            "Specification-Version": "${version}",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"atomicstryker",
