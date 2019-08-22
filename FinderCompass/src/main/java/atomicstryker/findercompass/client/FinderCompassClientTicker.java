@@ -15,9 +15,8 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 import java.util.ArrayList;
 
@@ -52,7 +51,7 @@ public class FinderCompassClientTicker {
 
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent tick) {
-        if (tick.phase == Phase.END && compassLogic != null) {
+        if (tick.phase == TickEvent.Phase.END && compassLogic != null) {
             if (tick.player.getHeldItemMainhand().getItem() == COMPASS_ITEM_ID) {
                 if (mc.gameSettings.keyBindAttack.isKeyDown()) {
                     if (!repeat) {
