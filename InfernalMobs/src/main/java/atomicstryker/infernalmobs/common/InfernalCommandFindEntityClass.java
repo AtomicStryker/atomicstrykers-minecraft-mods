@@ -9,6 +9,7 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class InfernalCommandFindEntityClass extends CommandBase
 {
@@ -64,6 +65,7 @@ public class InfernalCommandFindEntityClass extends CommandBase
                 result += "Nothing found.";
             }
 
+            sender.sendMessage(new TextComponentTranslation(result));
             InfernalMobsCore.LOGGER.log(Level.INFO, sender.getName() + ": " + result);
         }
     }

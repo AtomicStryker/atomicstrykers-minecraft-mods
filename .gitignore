@@ -5,3 +5,6 @@
 */build/tmp/*
 */build/sources/*
 */build/*
+*/gradlew
+*/gradlew.bat
+*/gradle/*
