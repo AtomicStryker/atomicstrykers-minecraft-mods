@@ -1,3 +1,6 @@
+1.14.4.2
+- fix spawninfernal command to working state, fix NPE on world load
+
 1.14.4.1
 - built for minecraft 1.14.4
 

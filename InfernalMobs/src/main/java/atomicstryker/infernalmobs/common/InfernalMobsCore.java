@@ -83,7 +83,6 @@ public class InfernalMobsCore {
         MinecraftForge.EVENT_BUS.register(this);
         proxy.preInit();
 
-        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
 
@@ -116,19 +115,18 @@ public class InfernalMobsCore {
         prepareModList();
 
         proxy.load();
-        LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
-    }
-
-    @SubscribeEvent
-    public void serverStarted(FMLServerStartingEvent evt) {
 
         configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
         loadConfig();
 
+        LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
+        LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
+    }
+
+    @SubscribeEvent
+    public void serverStarted(FMLServerStartingEvent evt) {
         evt.getCommandDispatcher().register(InfernalCommandFindEntityClass.BUILDER);
         evt.getCommandDispatcher().register(InfernalCommandSpawnInfernal.BUILDER);
-
-        LOGGER.info("InfernalMobsCore serverStarted completed! config file at: " + configFile.getAbsolutePath());
     }
 
     /**
