@@ -1,3 +1,6 @@
+1.7.7
+- fixed some issues with the server commands /feclass and /spawninfernal
+
 1.7.6
 - added 3 second time out for the choke modifier bubble overlay in case of a desync
 

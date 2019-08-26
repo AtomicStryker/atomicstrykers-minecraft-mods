@@ -49,21 +49,23 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                     modifier = modifier + " " + args[i];
                 }
 
-                Class<? extends EntityLivingBase> entClass = null;
+                Class<?> entClass = null;
                 for (ResourceLocation rsl : EntityList.getEntityNameList())
                 {
                     if (rsl.getResourcePath().contains(args[3]))
                     {
-                        Object o = EntityList.getClass(rsl);
-                        if (o.getClass().isAssignableFrom(EntityLiving.class))
-                        {
-                            entClass = (Class<? extends EntityLivingBase>) o;
-                        }
+                        entClass = EntityList.getClass(rsl);
+                        break;
                     }
                 }
                 if (entClass != null)
                 {
-                    EntityLivingBase mob = entClass.getConstructor(World.class).newInstance(sender.getEntityWorld());
+                    Object instance = entClass.getConstructor(World.class).newInstance(sender.getEntityWorld());
+                    if (!(instance instanceof EntityLiving))
+                    {
+                        throw new WrongUsageException("Invalid SpawnInfernal command, resulting entity not EntityLiving but type " + instance.getClass().getSimpleName());
+                    }
+                    EntityLivingBase mob = (EntityLivingBase) instance;
                     mob.setPosition(x + 0.5, y + 0.5, z + 0.5);
                     sender.getEntityWorld().spawnEntity(mob);
 
@@ -82,7 +84,7 @@ public class InfernalCommandSpawnInfernal extends CommandBase
                 }
                 else
                 {
-                    throw new WrongUsageException("Invalid SpawnInfernal command, no Entity [" + args[3] + "] known");
+                    throw new WrongUsageException("Invalid SpawnInfernal command, no Entity containing [" + args[3] + "] known");
                 }
             }
             catch (Exception e)
