@@ -252,6 +252,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
         }
 
         super.onDeath(cause);
+        remove();
     }
 
     @Override

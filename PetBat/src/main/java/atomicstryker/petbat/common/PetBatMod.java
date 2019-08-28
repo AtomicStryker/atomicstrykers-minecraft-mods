@@ -33,7 +33,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ObjectHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -146,7 +145,7 @@ public class PetBatMod {
     @SubscribeEvent
     public void serverStarted(FMLServerStartingEvent evt) {
 
-        configFile = new File(proxy.getMcFolder(), "\\config\\petbat.cfg");
+        configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "petbat.cfg");
         loadConfig();
     }
 
@@ -214,7 +213,7 @@ public class PetBatMod {
     public void onPlayerLeftClick(BreakSpeed event) {
         PlayerEntity p = event.getPlayer();
         ItemStack item = p.inventory.getCurrentItem();
-        if (item.getItem() == TAME_ITEM_ID) {
+        if (!p.world.isRemote && item.getItem() == TAME_ITEM_ID) {
             List<Entity> entityList = p.world.getEntitiesWithinAABBExcludingEntity(p, p.getBoundingBox().grow(10D, 10D, 10D));
             BlockPos coords = new BlockPos((int) (p.posX + 0.5D), (int) (p.posY + 1.5D), (int) (p.posZ + 0.5D));
             entityList.stream().filter(ent -> ent instanceof BatEntity).forEach(ent -> {
@@ -231,7 +230,7 @@ public class PetBatMod {
     public void onEntityInteract(EntityInteractSpecific event) {
         if (event.getTarget() instanceof BatEntity) {
             PlayerEntity p = event.getPlayer();
-            if (!p.world.isRemote) {
+            if (!p.world.isRemote && event.getTarget().isAlive()) {
                 ItemStack item = p.inventory.getCurrentItem();
                 if (item.getItem() == TAME_ITEM_ID) {
                     event.setCanceled(true);
@@ -244,6 +243,7 @@ public class PetBatMod {
                     newPet.setOwnerEntity(p);
 
                     p.world.addEntity(newPet);
+                    b.setHealth(0F);
                     b.remove();
                 }
             }

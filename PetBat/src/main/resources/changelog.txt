@@ -1,3 +1,7 @@
+1.14.4.2
+fixed bat duplication on tame
+fixed undead red bat after death
+
 1.14.4.1
 build for mc 1.14.4
 
