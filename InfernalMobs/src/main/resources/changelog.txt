@@ -1,3 +1,6 @@
+1.14.4.3
+- fix serverside startup issue
+
 1.14.4.2
 - fix spawninfernal command to working state, fix NPE on world load
 

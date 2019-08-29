@@ -2,7 +2,9 @@ package atomicstryker.infernalmobs.common;
 
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.LogicalSidedProvider;
 
 import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +59,7 @@ public class InfernalMobsServer implements ISidedProxy {
 
     @Override
     public File getMcFolder() {
-        return ServerLifecycleHooks.getCurrentServer().getFile("");
+        MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+        return server.getFile("");
     }
 }
