@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import atomicstryker.infernalmobs.plugins.waila.WailaRegistrar;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
@@ -166,6 +167,8 @@ public class InfernalMobsCore
         networkHelper = new NetworkHelper("AS_IF", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
 
         LOGGER = evt.getModLog();
+    
+        WailaRegistrar.preInit(evt);
     }
 
     @EventHandler

@@ -30,3 +30,16 @@ curseforge {
         }
     }
 }
+
+repositories {
+    maven {
+        name "Tehnut Maven FS"
+        url "https://tehnut.info/maven"
+    }
+}
+
+apply plugin: 'maven'
+
+dependencies {
+    deobfCompile "mcp.mobius.waila:Hwyla:1.8.26-B41_1.12.2"
+}
