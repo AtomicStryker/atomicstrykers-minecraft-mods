@@ -40,13 +40,9 @@ public class InfernalMobsClient implements ISidedProxy {
     private Minecraft mc;
     private World lastWorld;
     private long nextPacketTime;
-    private ConcurrentHashMap<LivingEntity, MobModifier> rareMobsClient;
+    private final ConcurrentHashMap<LivingEntity, MobModifier> rareMobsClient = new ConcurrentHashMap<>();
     private long healthBarRetainTime;
     private LivingEntity retainedTarget;
-
-    public static void overrideAir(int air) {
-        airOverrideValue = air;
-    }
 
     @Override
     public void preInit() {
@@ -57,7 +53,7 @@ public class InfernalMobsClient implements ISidedProxy {
     @Override
     public void load() {
         nextPacketTime = 0;
-        rareMobsClient = new ConcurrentHashMap<>();
+        rareMobsClient.clear();
 
         MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
         MinecraftForge.EVENT_BUS.register(this);

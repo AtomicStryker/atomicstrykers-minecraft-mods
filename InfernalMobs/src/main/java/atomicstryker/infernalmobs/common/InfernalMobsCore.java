@@ -644,7 +644,7 @@ public class InfernalMobsCore {
             Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
-            mobsmap.keySet().stream().filter(mob -> filterMob(mob)).forEach(InfernalMobsCore::removeEntFromElites);
+            mobsmap.keySet().stream().filter(this::filterMob).forEach(InfernalMobsCore::removeEntFromElites);
 
             resetModifiedPlayerEntitiesAsNeeded(tick.world);
         }

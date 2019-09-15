@@ -11,11 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InfernalMobsServer implements ISidedProxy {
 
-    private ConcurrentHashMap<LivingEntity, MobModifier> rareMobsServer;
-
-    public InfernalMobsServer() {
-        rareMobsServer = new ConcurrentHashMap<>();
-    }
+    private final ConcurrentHashMap<LivingEntity, MobModifier> rareMobsServer = new ConcurrentHashMap<>();
 
     @Override
     public ConcurrentHashMap<LivingEntity, MobModifier> getRareMobs() {
