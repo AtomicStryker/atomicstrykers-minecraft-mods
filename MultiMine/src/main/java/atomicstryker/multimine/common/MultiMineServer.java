@@ -163,7 +163,8 @@ public class MultiMineServer
                         boolean removed;
                         if (iblockstate.getBlock() instanceof BlockDoor)
                         {
-                            // onBlockHarvested in BlockDoor actually sets the block to air, wat
+                            // onBlockHarvested in BlockDoor actually sets the
+                            // block to air, wat
                             removed = true;
                         }
                         else
@@ -230,11 +231,18 @@ public class MultiMineServer
             return result;
         }
 
-        final Configuration config = MultiMine.instance().config;
-        config.load();
-        result = config.get("bannedblocks", ident, false).getBoolean(false);
-        config.save();
-        blacklistedBlocksAndTools.put(ident, result);
+        if (MultiMine.instance().getLazyConfigWriteEnabled())
+        {
+            final Configuration config = MultiMine.instance().config;
+            config.load();
+            result = config.get("bannedblocks", ident, false).getBoolean(false);
+            config.save();
+            blacklistedBlocksAndTools.put(ident, result);
+        }
+        else
+        {
+            return false;
+        }
 
         return result;
     }
@@ -270,16 +278,20 @@ public class MultiMineServer
                 return true;
             }
 
-            final Configuration config = MultiMine.instance().config;
-            config.load();
-            result = config.get("banneditems", ident, false).getBoolean(false);
-            config.save();
-            blacklistedBlocksAndTools.put(ident, result);
-
-            if (result)
+            if (MultiMine.instance().getLazyConfigWriteEnabled())
             {
-                return true;
+                final Configuration config = MultiMine.instance().config;
+                config.load();
+                result = config.get("banneditems", ident, false).getBoolean(false);
+                config.save();
+                blacklistedBlocksAndTools.put(ident, result);
+
+                if (result)
+                {
+                    return true;
+                }
             }
+
         }
         return false;
     }
@@ -335,7 +347,8 @@ public class MultiMineServer
      */
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block, boolean regenerating)
     {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating),
+        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(
+                new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating),
                 new TargetPoint(block.getDimension(), block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D));
     }
 

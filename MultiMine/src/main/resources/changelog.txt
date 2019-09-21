@@ -1,3 +1,6 @@
+1.6.2
+- added config boolean to control if unknown blocks get added to config automatically
+
 1.6.1
 - add support for mods which modify Minecraft.renderGlobal
 
