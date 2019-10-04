@@ -569,3 +569,6 @@ a: setAccessible now true
 
 1.14.4.1
 + built against latest forge
+
+1.14.4.2
++ fix NPE issue on startup

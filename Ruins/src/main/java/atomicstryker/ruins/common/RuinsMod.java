@@ -48,7 +48,7 @@ public class RuinsMod {
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
     public static IProxy proxy = DistExecutor.runForDist(() -> () -> new RuinsClient(), () -> () -> new RuinsServer());
-    private static RuinsMod instance;
+    private static RuinsMod instance = null;
     private final ConcurrentHashMap<Dimension, WorldHandle> generatorMap;
     private long nextInfoTime;
 
@@ -81,7 +81,7 @@ public class RuinsMod {
      */
     public static void decorateChunkHook(WorldGenRegion worldGenRegion) {
 
-        if (worldGenRegion.getWorld().isRemote() || !worldGenRegion.getWorld().getWorldInfo().isMapFeaturesEnabled()) {
+        if (worldGenRegion.getWorld().isRemote() || !worldGenRegion.getWorld().getWorldInfo().isMapFeaturesEnabled() || instance == null) {
             return;
         }
 
