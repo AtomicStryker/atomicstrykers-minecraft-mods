@@ -19,11 +19,6 @@ public abstract class MobModifier {
     protected MobModifier nextMod;
 
     /**
-     * keeps track of our past-max-bounds health patch
-     */
-    private boolean healthHacked;
-
-    /**
      * clientside health value to be displayed, because health is not networked
      */
     private float actualHealth;
@@ -68,7 +63,6 @@ public abstract class MobModifier {
      * Base constructor
      */
     public MobModifier() {
-        healthHacked = false;
         actualHealth = 100;
         actualMaxHealth = -1;
         bufferedSize = 0;
@@ -139,11 +133,11 @@ public abstract class MobModifier {
      * @param entity target mob to attach modifiers to
      */
     public void onSpawningComplete(LivingEntity entity) {
-        String oldTag = entity.getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
+        String oldTag = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated())) {
-            InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [%s], now trying to set [%s] \n", oldTag, getLinkedModNameUntranslated());
+            InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [{}}], now trying to set [{}}] \n", oldTag, getLinkedModNameUntranslated());
         }
-        entity.getEntityData().putString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
+        entity.getPersistentData().putString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
     }
 
     /**
@@ -291,16 +285,16 @@ public abstract class MobModifier {
     public void setHealthAlreadyHacked(LivingEntity mob) {
         if (!mob.world.isRemote) {
             actualMaxHealth = getActualMaxHealth(mob);
-            healthHacked = true;
+            mob.getPersistentData().putBoolean("infernalMaxHealth", true);
         }
     }
 
     private void increaseHealthForMob(LivingEntity mob) {
-        if (!healthHacked) {
+        if (!mob.getPersistentData().getBoolean("infernalMaxHealth")) {
             actualMaxHealth = getActualMaxHealth(mob);
             actualHealth = actualMaxHealth;
             InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
-            healthHacked = true;
+            mob.getPersistentData().putBoolean("infernalMaxHealth", true);
         }
     }
 

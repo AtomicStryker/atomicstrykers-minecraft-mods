@@ -1,3 +1,7 @@
+1.14.4.5
+- built against forge 1.14.4-28.1.37
+- should fix the "max health increase on each savegame load" issue
+
 1.14.4.4
 - fix possible startup NPE
 

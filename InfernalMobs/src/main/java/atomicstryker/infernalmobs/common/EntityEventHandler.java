@@ -31,7 +31,7 @@ public class EntityEventHandler {
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity) {
-            String savedMods = event.getEntity().getEntityData().getString(InfernalMobsCore.instance().getNBTTag());
+            String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
             if (!savedMods.equals("")) {
                 InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) event.getEntity(), savedMods);
             } else {
