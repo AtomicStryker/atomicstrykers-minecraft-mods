@@ -245,6 +245,9 @@ class RuinGenerator {
         if (!nether) {
             for (int y = WORLD_MAX_HEIGHT - 1; y > 7; y--) {
                 BlockPos pos = new BlockPos(x, y, z);
+                if (!world.isBlockPresent(pos)) {
+                    return -1;
+                }
                 final BlockState b = world.getBlockState(pos);
                 if (r.isIgnoredBlock(b, world, pos)) {
                     continue;
@@ -264,7 +267,11 @@ class RuinGenerator {
             if ((x % 2 == 1) ^ (z % 2 == 1)) {
                 // from the top. Find the first air block from the ceiling
                 for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--) {
-                    final BlockState b = world.getBlockState(new BlockPos(x, y, z));
+                    BlockPos basePos = new BlockPos(x, y, z);
+                    if (!world.isBlockPresent(basePos)) {
+                        return -1;
+                    }
+                    final BlockState b = world.getBlockState(basePos);
                     if (b.getBlock() == Blocks.AIR) {
                         // now find the first non-air block from here
                         for (; y > -1; y--) {
@@ -283,6 +290,9 @@ class RuinGenerator {
                 boolean accept = false;
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++) {
                     BlockPos pos = new BlockPos(x, y, z);
+                    if (!world.isBlockPresent(pos)) {
+                        return -1;
+                    }
                     final BlockState b = world.getBlockState(pos);
                     if (!r.isIgnoredBlock(b, world, pos)) {
                         accept = r.isAcceptableSurface(b);

@@ -1,0 +1,320 @@
+
+# Created by Ruins mod version 1.14.3 Ingame Parser
+# authoring Player: litjohn1
+
+# TEMPLATE PARAMETER SETTINGS:
+#
+# criterion expression specifying mod ids required to load template
+# may include plus (AND), minus (AND NOT), comma (OR), and parentheses
+# all required mods listed must be present; no prohibited mods can be
+requiredMods=
+#
+# likelihood this template will be chosen relative to all others
+# e.g., a weight=6 template is chosen 3X as often as one with weight=2
+weight=7
+#
+# list of dimensions in which this template may spawn, even if generic
+# one or more dimension names, separated by commas (blank = all)
+dimensionsToSpawnIn=
+#
+# list of other biomes in which this template may spawn
+# biome corresponding to directory is always assumed, listed or not
+# generic templates should leave this list empty
+biomesToSpawnIn=
+#
+# criterion expression specifying types of biome where template spawns
+# this is in addition to those explicitly listed as biomesToSpawnIn
+# generic templates should leave this list empty
+biomeTypesToSpawnIn=
+#
+# list of biomes in which this template may not spawn
+# takes precedence over biomeTypesToSpawnIn, but NOT biomesToSpawnIn
+# should be empty if biomeTypesToSpawnIn is empty
+biomesToNotSpawnIn=
+#
+# depth template is pushed down into the surface when built
+# offset is min/max range of random additional bury depth
+embed_into_distance=0
+random_height_offset=0,30
+#
+# whitelist/blacklist of block states on which template may be built
+# specify one, not both; leave the other empty (both empty = allow all)
+# CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
+acceptable_target_blocks=
+unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+#
+# size of template (#layers, #rows per layer, #blocks per row)
+dimensions=28,5,5
+#
+# max number of missing blocks allowed in surface beneath template
+allowable_overhang=0
+#
+# depth/height limit affected by terrain leveling
+# also maximum bumpiness tolerated in surface beneath template
+max_leveling=2
+#
+# padding applied to all sides of template horizontal footprint
+# expands area affected by terrain leveling (-1 = no leveling)
+leveling_buffer=-1
+#
+# do not rotate template randomly when built (1 = no rotation)
+preventRotation=0
+#
+# treat water/lava blocks as air and protect them from rule0 (1 = yes)
+preserve_water=0
+preserve_lava=0
+#
+# minimum distance this template must have from instances of itself
+uniqueMinDistance=0
+#
+# min/max distances this template can be from world spawn (0 = no limit)
+# only applies to overworld--i.e., dimension 0
+spawnMinDistance=0
+spawnMaxDistance=0
+#
+# other template built nearby whenever this one is
+# syntax: <name>;<relativeX>;<maxYdifference>;<relativeZ>[;<chance>]
+# may be used more than once to specify multiple neighbors
+adjoining_template=
+
+rule1=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule2=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule3=0,100,{Properties:{axis:"x"},Name:"minecraft:jungle_log"}
+rule4=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:oak_fence"}
+rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
+rule6=0,100,{Properties:{axis:"y"},Name:"minecraft:jungle_log"}
+rule7=0,100,{Properties:{axis:"z"},Name:"minecraft:jungle_log"}
+rule8=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule9=0,100,{Name:"minecraft:white_wool"}
+rule10=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
+rule11=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:oak_fence"}
+rule13=2*0,100,{Name:"minecraft:blue_wool"}
+^0,100,{Name:"minecraft:green_wool"}
+^0,100,{Name:"minecraft:orange_wool"}
+rule14=0,100,{Properties:{unstable:"false"},Name:"minecraft:tnt"}
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,1,0,0
+0,4,3,2,0
+0,0,5,0,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,6,7,6,0
+0,3,0,3,0
+0,6,7,6,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,8,0,8,0
+0,0,0,0,0
+0,8,0,8,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,10,9,1,0
+0,9,11,9,0
+0,4,9,12,0
+0,0,0,0,0
+endlayer
+
+layer
+0,0,13,0,0
+0,9,13,9,0
+13,13,14,13,13
+0,9,13,9,0
+0,0,13,0,0
+endlayer
+
+layer
+0,13,13,13,0
+13,9,9,9,13
+13,9,0,9,13
+13,13,13,13,13
+0,13,13,13,0
+endlayer
+
+layer
+0,0,13,0,0
+0,9,9,9,0
+13,9,9,9,13
+0,9,9,9,0
+0,0,13,0,0
+endlayer
+
+layer
+0,0,0,0,0
+0,0,9,0,0
+0,9,9,9,0
+0,0,9,0,0
+0,0,0,0,0
+endlayer
+

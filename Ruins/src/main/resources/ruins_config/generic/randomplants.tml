@@ -44,7 +44,7 @@ acceptable_target_blocks=
 unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
-dimensions=4,10,11
+dimensions=3,6,6
 #
 # max number of missing blocks allowed in surface beneath template
 allowable_overhang=0
@@ -77,72 +77,42 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule2=0,100,{Properties:{axis:"x"},Name:"minecraft:hay_block"}
-rule3=0,100,{Properties:{axis:"y"},Name:"minecraft:hay_block"}
-rule4=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
-rule5=0,100,{Properties:{facing:"north",open:"false"},Name:"minecraft:barrel"}
-rule6=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule7=0,100,{ruinsTE:{SpawnData:{id:zombie}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
-rule8=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
-rule9=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule10=0,100,{Properties:{rotation:"1"},Name:"minecraft:zombie_head"}
-rule11=0,100,{Properties:{rotation:"15"},Name:"minecraft:zombie_head"}
-rule12=0,100,{Properties:{rotation:"7"},Name:"minecraft:zombie_head"}
-rule13=0,100,{Properties:{rotation:"14"},Name:"minecraft:zombie_head"}
-rule14=0,100,{Properties:{rotation:"4"},Name:"minecraft:zombie_head"}
-rule15=0,100,{Properties:{rotation:"2"},Name:"minecraft:zombie_head"}
-rule16=0,100,{Properties:{axis:"z"},Name:"minecraft:hay_block"}
+rule1=0,100,{Properties:{snowy:"false"},Name:"minecraft:grass_block"}
+rule2=0,100,{Properties:{moisture:"7"},Name:"minecraft:farmland"}
+rule3=0,100,{Properties:{level:"0"},Name:"minecraft:water"}
+rule4=0,100,{Properties:{snowy:"false"},Name:"minecraft:podzol"}
+rule5=0,100,{Properties:{half:"lower"},Name:"minecraft:tall_grass"}
+rule6=0,100,{Name:"minecraft:lily_pad"}
+rule7=0,100,{Properties:{age:"0"},Name:"minecraft:pumpkin_stem"}
+rule8=0,100,{Properties:{age:"0"},Name:"minecraft:sugar_cane"}
+rule9=0,100,{Properties:{age:"1"},Name:"minecraft:melon_stem"}
+rule10=0,100,{Properties:{age:"0"},Name:"minecraft:melon_stem"}
+rule11=0,100,{Properties:{half:"upper"},Name:"minecraft:tall_grass"}
 
 layer
-0,0,0,0,0,0,0,1,0,0,0
-0,0,1,0,3,0,2,0,0,0,0
-0,0,0,4,3,0,3,4,0,1,0
-0,6,4,3,0,0,0,3,5,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,6,3,0,0,7,0,0,2,0,0
-0,0,3,0,8,0,0,0,3,0,0
-0,0,0,3,0,0,0,3,0,1,0
-0,0,1,0,3,3,3,0,0,0,0
-0,0,0,0,0,9,0,0,0,0,0
+1,0,1,0,1,0
+0,2,1,1,1,1
+1,3,4,4,3,1
+1,4,3,4,2,0
+1,2,4,2,3,1
+0,1,1,0,1,0
 endlayer
 
 layer
-0,0,0,0,0,0,0,10,0,0,0
-0,0,0,0,3,0,2,0,0,0,0
-0,0,0,0,3,0,3,0,0,11,0
-0,12,0,3,0,0,0,3,0,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,0,0,3,0,0,0,3,0,13,0
-0,0,14,0,3,3,3,0,0,0,0
-0,0,0,0,0,15,0,0,0,0,0
+0,0,0,0,0,0
+0,0,5,0,5,5
+0,6,0,0,0,0
+5,8,6,5,7,0
+0,10,9,7,6,0
+0,5,0,0,0,0
 endlayer
 
 layer
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,2,0,0,0,0,0
-0,0,0,0,0,2,0,0,0,0,0
-0,0,0,0,16,16,16,0,0,0,0
-0,0,0,2,0,0,0,2,0,0,0
-0,0,0,2,0,0,0,2,0,0,0
-0,0,0,2,0,0,16,2,0,0,0
-0,0,0,0,16,16,16,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-endlayer
-
-layer
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,2,2,2,0,0,0,0
-0,0,0,0,2,16,2,0,0,0,0
-0,0,0,0,16,16,3,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
+0,0,0,0,0,0
+0,0,11,0,11,11
+0,0,0,0,0,0
+11,0,0,11,0,0
+0,0,0,0,0,0
+0,11,0,0,0,0
 endlayer
 

@@ -572,3 +572,7 @@ a: setAccessible now true
 
 1.14.4.2
 + fix NPE issue on startup
+
+1.14.4.3
++ fix deadlock accessing unfinished (generating) chunks
++ adds 1.14 template defaults by the fine people of ProsperCraft servers

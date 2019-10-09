@@ -11,11 +11,11 @@ requiredMods=
 #
 # likelihood this template will be chosen relative to all others
 # e.g., a weight=6 template is chosen 3X as often as one with weight=2
-weight=1
+weight=2
 #
 # list of dimensions in which this template may spawn, even if generic
 # one or more dimension names, separated by commas (blank = all)
-dimensionsToSpawnIn=overworld
+dimensionsToSpawnIn=
 #
 # list of other biomes in which this template may spawn
 # biome corresponding to directory is always assumed, listed or not
@@ -44,7 +44,7 @@ acceptable_target_blocks=
 unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
-dimensions=4,10,11
+dimensions=3,7,7
 #
 # max number of missing blocks allowed in surface beneath template
 allowable_overhang=0
@@ -77,72 +77,41 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule2=0,100,{Properties:{axis:"x"},Name:"minecraft:hay_block"}
-rule3=0,100,{Properties:{axis:"y"},Name:"minecraft:hay_block"}
-rule4=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
-rule5=0,100,{Properties:{facing:"north",open:"false"},Name:"minecraft:barrel"}
+rule1=0,100,{Name:"minecraft:oak_planks"}
+rule2=0,100,{Name:"minecraft:bookshelf"}
+rule3=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
+rule4=0,100,{Name:"minecraft:enchanting_table"}
+rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},Name:"minecraft:oak_fence"}
 rule6=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule7=0,100,{ruinsTE:{SpawnData:{id:zombie}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
-rule8=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
-rule9=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule10=0,100,{Properties:{rotation:"1"},Name:"minecraft:zombie_head"}
-rule11=0,100,{Properties:{rotation:"15"},Name:"minecraft:zombie_head"}
-rule12=0,100,{Properties:{rotation:"7"},Name:"minecraft:zombie_head"}
-rule13=0,100,{Properties:{rotation:"14"},Name:"minecraft:zombie_head"}
-rule14=0,100,{Properties:{rotation:"4"},Name:"minecraft:zombie_head"}
-rule15=0,100,{Properties:{rotation:"2"},Name:"minecraft:zombie_head"}
-rule16=0,100,{Properties:{axis:"z"},Name:"minecraft:hay_block"}
+rule7=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
 
 layer
-0,0,0,0,0,0,0,1,0,0,0
-0,0,1,0,3,0,2,0,0,0,0
-0,0,0,4,3,0,3,4,0,1,0
-0,6,4,3,0,0,0,3,5,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,6,3,0,0,7,0,0,2,0,0
-0,0,3,0,8,0,0,0,3,0,0
-0,0,0,3,0,0,0,3,0,1,0
-0,0,1,0,3,3,3,0,0,0,0
-0,0,0,0,0,9,0,0,0,0,0
+0,0,1,1,1,0,0
+0,1,2,2,2,1,0
+1,2,0,0,0,3,0
+1,2,0,4,0,2,1
+1,2,0,0,0,2,1
+0,1,5,2,2,1,0
+0,0,0,1,1,0,0
 endlayer
 
 layer
-0,0,0,0,0,0,0,10,0,0,0
-0,0,0,0,3,0,2,0,0,0,0
-0,0,0,0,3,0,3,0,0,11,0
-0,12,0,3,0,0,0,3,0,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,0,3,0,0,0,0,0,3,0,0
-0,0,0,3,0,0,0,3,0,13,0
-0,0,14,0,3,3,3,0,0,0,0
-0,0,0,0,0,15,0,0,0,0,0
+0,0,0,1,0,0,0
+0,0,6,2,2,0,0
+0,1,0,0,0,7,0
+0,1,0,0,0,2,1
+0,2,0,0,0,1,0
+0,1,5,2,2,1,0
+0,0,0,1,0,0,0
 endlayer
 
 layer
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,2,0,0,0,0,0
-0,0,0,0,0,2,0,0,0,0,0
-0,0,0,0,16,16,16,0,0,0,0
-0,0,0,2,0,0,0,2,0,0,0
-0,0,0,2,0,0,0,2,0,0,0
-0,0,0,2,0,0,16,2,0,0,0
-0,0,0,0,16,16,16,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-endlayer
-
-layer
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,2,2,2,0,0,0,0
-0,0,0,0,2,16,2,0,0,0,0
-0,0,0,0,16,16,3,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,1,1,0,0
+0,0,1,1,1,0,0
+0,0,1,1,1,1,0
+0,0,1,1,1,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
 endlayer
 

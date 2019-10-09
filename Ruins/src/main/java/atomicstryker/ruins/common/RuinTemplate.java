@@ -172,6 +172,11 @@ public class RuinTemplate {
                 boolean foundSurface = false;
                 for (int iy = topYguess; iy >= minimalCheckedY; iy--) {
                     BlockPos pos = new BlockPos(ix, iy, iz);
+                    if (!world.isBlockPresent(pos)) {
+                        // chunk not generated
+                        RuinsMod.LOGGER.info("Template generation at coordinates [{},{},{}] aborted, outside generated world!", ix, iy, iz);
+                        return -1;
+                    }
                     blockState = world.getBlockState(pos);
                     if (!isIgnoredBlock(blockState, world, pos)) {
                         if (isAcceptableSurface(blockState)) {

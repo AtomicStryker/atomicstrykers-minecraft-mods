@@ -114,7 +114,7 @@ public class RuinsMod {
                                 wh.currentlyGenerating.remove(chunkPos);
                             });
                         }
-                    }, 10000L);
+                    }, 15000L);
                 }
             }
         }
@@ -182,13 +182,15 @@ public class RuinsMod {
 
             for (int xoffset = -4; xoffset <= 4; xoffset++) {
                 for (int zoffset = -4; zoffset <= 4; zoffset++) {
-                    for (TileEntity teo : event.getEntity().world.getChunk(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values()) {
-                        if (teo instanceof CommandBlockTileEntity) {
-                            tecb = (CommandBlockTileEntity) teo;
-                            if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER ")) {
-                                // strip prefix from command
-                                tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
-                                tecblist.add(tecb);
+                    if (event.getEntity().world.chunkExists(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset)) {
+                        for (TileEntity teo : event.getEntity().world.getChunk(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values()) {
+                            if (teo instanceof CommandBlockTileEntity) {
+                                tecb = (CommandBlockTileEntity) teo;
+                                if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER ")) {
+                                    // strip prefix from command
+                                    tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
+                                    tecblist.add(tecb);
+                                }
                             }
                         }
                     }
