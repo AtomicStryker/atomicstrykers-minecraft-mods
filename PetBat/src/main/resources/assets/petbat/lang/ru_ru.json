@@ -1,0 +1,32 @@
+{
+    "item.petbat.fed_pet_bat": "Ручная летучая мышь",
+    "item.petbat.bat_flute": "Флейта летучих мышей",
+
+    "entity.PetBat.PetBat": "Ручная летучая мышь",
+
+    "translation.PetBat:gui_title": "Человеко-летуче мыший интерфейс",
+    "translation.PetBat:level": "Уровень",
+    "translation.PetBat:experience": "Опыт:",
+    "translation.PetBat:missing_xp": ", нехватает до следующего уровня:",
+    "translation.PetBat:health": "Здоровье:",
+    "translation.PetBat:attack_power": "Урон:",
+
+    "translation.PetBat:batlevel0": "Ручная летучая мышь",
+    "translation.PetBat:batlevel1": "Буянящая ручная летучая мышь",
+    "translation.PetBat:batlevel2": "Закалённая ручная летучая мышь",
+    "translation.PetBat:batlevel3": "Элитная летучая мышь",
+    "translation.PetBat:batlevel4": "Крутая летучая мышь",
+    "translation.PetBat:batlevel5": "Супер крутая летучая мышь",
+    "translation.PetBat:batlevel6": "Утра крутая летучая мышь",
+
+    "translation.PetBat:batlevel0desc": "Очаровательная и лишь слегка вооруженная",
+    "translation.PetBat:batlevel1desc": "Была в нескольких боях, может спасти вас при крайней необходимости",
+    "translation.PetBat:batlevel2desc": "\\\"Теперь я серьёзен\\\"",
+    "translation.PetBat:batlevel3desc": "Развил вкус к крови, может вытягивать жизнь",
+    "translation.PetBat:batlevel4desc": "Не переходи дорогу этой летучей мыши.",
+    "translation.PetBat:batlevel5desc": "Она не станет более смертоносней.",
+    "translation.PetBat:batlevel6desc": "ТЫ УКАЗЫВЕШЬ. ОНИ УМИРАЮТ.",
+
+    "translation.PetBat:staying": "Оставаться на месте.",
+    "translation.PetBat:notstaying": "Не оставаться на месте."
+}
