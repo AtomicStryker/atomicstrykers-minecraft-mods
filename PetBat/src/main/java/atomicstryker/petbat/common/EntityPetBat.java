@@ -21,6 +21,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -43,6 +44,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
     private int lastOwnerY;
     private int lastOwnerZ;
     private BlockPos hangSpot;
+    private long nextInteractPossibleTime;
 
     public EntityPetBat(World par1World) {
         super(PetBatMod.instance().batEntityType, par1World);
@@ -54,6 +56,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
         isRecalled = false;
         setCustomName(new StringTextComponent("Battus Genericus"));
         setCustomNameVisible(true);
+        nextInteractPossibleTime = System.currentTimeMillis();
     }
 
     @Override
@@ -69,18 +72,18 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
     @Override
     public void writeSpawnData(PacketBuffer data) {
         data.writeString(ownerUUID == null ? "null" : ownerUUID.toString());
-        data.writeString(getCustomName().getUnformattedComponentText());
+        data.writeString(getCustomNameSafe().getUnformattedComponentText());
     }
 
     @Override
     public void readSpawnData(PacketBuffer data) {
-        String uid = data.readString();
+        String uid = data.readString(32767);
         if (!"null".equals(uid)) {
             ownerUUID = UUID.fromString(uid);
         } else {
             ownerUUID = null;
         }
-        String petName = data.readString();
+        String petName = data.readString(32767);
         setCustomName(new TranslationTextComponent(petName));
     }
 
@@ -184,11 +187,15 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
 
     @Override
     public boolean processInteract(PlayerEntity player, Hand hand) {
-        if (getIsBatHanging() && player.getUniqueID().equals(ownerUUID)) {
-            setIsBatStaying(!getIsBatStaying());
-            player.sendMessage(
-                    new TranslationTextComponent(getCustomName().getUnformattedComponentText() + ": " + (getIsBatStaying() ? I18n.format("translation.PetBat:staying") : I18n.format("translation.PetBat:notstaying"))));
-            return true;
+        if (!player.world.isRemote() && getIsBatHanging() && player.getUniqueID().equals(ownerUUID)) {
+            long time = System.currentTimeMillis();
+            if (time >= nextInteractPossibleTime) {
+                nextInteractPossibleTime = time + 1000L;
+                setIsBatStaying(!getIsBatStaying());
+                player.sendMessage(
+                        new TranslationTextComponent(getCustomNameSafe().getUnformattedComponentText() + ": " + (getIsBatStaying() ? I18n.format("translation.PetBat:staying") : I18n.format("translation.PetBat:notstaying"))));
+                return true;
+            }
         }
         return false;
     }
@@ -241,7 +248,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
             setHealth(1);
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
             if (batstack != ItemStack.EMPTY) {
-                PetBatMod.instance().removeFluteFromPlayer(owner, getCustomName().getUnformattedComponentText());
+                PetBatMod.instance().removeFluteFromPlayer(owner, getCustomNameSafe().getUnformattedComponentText());
                 if (owner.getHealth() > 0 && owner.inventory.addItemStackToInventory(batstack)) {
                     world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                 } else {
@@ -253,6 +260,14 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
 
         super.onDeath(cause);
         remove();
+    }
+
+    private ITextComponent getCustomNameSafe() {
+        ITextComponent result = getCustomName();
+        if (result != null) {
+            return result;
+        }
+        return new StringTextComponent("Nameless Bat");
     }
 
     @Override
@@ -304,7 +319,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
      */
     private void addBatExperience(int xp) {
         if (!world.isRemote) {
-            PetBatMod.LOGGER.debug("bat {} earned xp: {}, is now: {}", getCustomName().getUnformattedComponentText(), xp, getBatExperience() + xp);
+            PetBatMod.LOGGER.debug("bat {} earned xp: {}, is now: {}", getCustomNameSafe().getUnformattedComponentText(), xp, getBatExperience() + xp);
             setBatExperience(getBatExperience() + xp);
         }
     }
@@ -351,7 +366,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
         if (isRecalled) {
             ItemStack batstack = ItemPocketedPetBat.fromBatEntity(this);
             if (batstack != ItemStack.EMPTY && owner != null) {
-                ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, getCustomName().getUnformattedComponentText());
+                ItemStack flute = PetBatMod.instance().removeFluteFromPlayer(owner, getCustomNameSafe().getUnformattedComponentText());
                 if (owner.inventory.addItemStackToInventory(batstack)) {
                     world.playSound(null, new BlockPos(owner), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
                     setDeadWithoutRecall();
@@ -368,7 +383,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
             final Item fluteItem = PetBatMod.instance().itemBatFlute;
             for (ItemStack inventoryItem : owner.inventory.mainInventory) {
                 if (inventoryItem.getItem() == fluteItem && inventoryItem.getTag() != null) {
-                    if (inventoryItem.getTag().getString("batName").equals(getCustomName().getUnformattedComponentText())) {
+                    if (inventoryItem.getTag().getString("batName").equals(getCustomNameSafe().getUnformattedComponentText())) {
                         found = true;
                         break;
                     }
@@ -376,7 +391,7 @@ public class EntityPetBat extends CreatureEntity implements IEntityAdditionalSpa
             }
             if (!found) {
                 ItemStack newflute = new ItemStack(fluteItem, 1, null);
-                newflute.getOrCreateTag().putString("batName", getCustomName().getUnformattedComponentText());
+                newflute.getOrCreateTag().putString("batName", getCustomNameSafe().getUnformattedComponentText());
                 if (owner.inventory.addItemStackToInventory(newflute)) {
                     fluteOut = true;
                 }

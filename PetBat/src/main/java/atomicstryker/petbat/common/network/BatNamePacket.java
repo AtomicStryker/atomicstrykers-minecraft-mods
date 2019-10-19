@@ -33,7 +33,7 @@ public class BatNamePacket implements IPacket {
 
     @Override
     public <MSG> MSG decode(PacketBuffer packetBuffer) {
-        return (MSG) new BatNamePacket(packetBuffer.readString(), packetBuffer.readString());
+        return (MSG) new BatNamePacket(packetBuffer.readString(32767), packetBuffer.readString(32767));
     }
 
     @Override
