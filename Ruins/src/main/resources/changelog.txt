@@ -576,3 +576,6 @@ a: setAccessible now true
 1.14.4.3
 + fix deadlock accessing unfinished (generating) chunks
 + adds 1.14 template defaults by the fine people of ProsperCraft servers
+
+1.14.4.4
++ fix template parser not reading tile entities (chests contents, signs etc)

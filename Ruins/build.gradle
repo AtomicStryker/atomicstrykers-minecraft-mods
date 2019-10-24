@@ -17,7 +17,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 def mcversion = '1.14.4'
-version = '1.14.4.3'
+version = '1.14.4.4'
 group = 'atomicstryker.ruins'
 archivesBaseName = 'ruins'
 
