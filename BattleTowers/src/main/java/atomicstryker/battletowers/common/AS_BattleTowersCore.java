@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
@@ -240,6 +241,13 @@ public class AS_BattleTowersCore
         evt.registerServerCommand(new CommandRegenerateBattleTower());
         evt.registerServerCommand(new CommandRegenerateAllBattleTowers());
         evt.registerServerCommand(new CommandDeleteAllBattleTowers());
+    }
+    
+    @EventHandler
+    public void serverStopped(FMLServerStoppedEvent evt)
+    {
+    	//Wipe world handles to avoid save folder conflicts
+    	WorldGenHandler.wipeWorldHandles();
     }
 
     public void loadForgeConfig()

@@ -54,6 +54,11 @@ public class WorldGenHandler implements IWorldGenerator
         boolean towerPositionsAccessLock;
         int disableGenerationHook;
     }
+    
+    public static void wipeWorldHandles()
+    {
+    	worldMap.clear();
+    }
 
     @SubscribeEvent
     public void eventWorldLoad(WorldEvent.Load evt)
@@ -74,6 +79,21 @@ public class WorldGenHandler implements IWorldGenerator
         {
             result = new WorldHandle();
             result.worldSaveDirectory = world.getSaveHandler().getWorldDirectory();
+            if(result.worldSaveDirectory!=null)
+            {
+            	String dim_folder = "";
+            	if(dimension!=0) dim_folder = "\\"+world.provider.getSaveFolder();
+            	try
+            	{
+            		result.worldSaveDirectory = new File (world.getSaveHandler().getWorldDirectory().getCanonicalPath()+dim_folder);
+            	} 
+            	catch (IOException e) 
+            	{
+            		//Failed, revert to old handling for safety
+            		result.worldSaveDirectory = world.getSaveHandler().getWorldDirectory();
+            		e.printStackTrace();
+            	}
+            }
             result.posFileLoaded = false;
             result.towerPositionsAccessLock = false;
             result.disableGenerationHook = 0;
