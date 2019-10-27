@@ -34,6 +34,7 @@ public class WorldGenHandler implements IWorldGenerator
     private HashMap<String, Boolean> biomesMap;
     private HashMap<String, Boolean> providerMap;
     private final static Map<Integer, WorldHandle> worldMap = new HashMap<>();
+    public static boolean shouldClearWorldMap = false;
 
     private final AS_WorldGenTower generator;
 
@@ -63,6 +64,12 @@ public class WorldGenHandler implements IWorldGenerator
     @SubscribeEvent
     public void eventWorldLoad(WorldEvent.Load evt)
     {
+        if(shouldClearWorldMap)
+        {
+            wipeWorldHandles();
+            shouldClearWorldMap = false;
+        }
+
         WorldHandle wh = getWorldHandle(evt.getWorld());
         if (!wh.posFileLoaded)
         {
@@ -83,7 +90,7 @@ public class WorldGenHandler implements IWorldGenerator
             {
                 String dim_folder = "";
                 if (dimension != 0)
-                    dim_folder = File.pathSeparator + world.provider.getSaveFolder();
+                    dim_folder = File.separator + world.provider.getSaveFolder();
                 try
                 {
                     result.worldSaveDirectory = new File(world.getSaveHandler().getWorldDirectory().getCanonicalPath() + dim_folder);

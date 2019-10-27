@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
@@ -109,6 +110,13 @@ public class AS_BattleTowersCore
     {
         System.out.println(FMLCommonHandler.instance().getEffectiveSide() + " registered ClientConnectedToServerEvent, sending packet to server");
         networkHelper.sendPacketToServer(new LoginPacket());
+    }
+
+    @SubscribeEvent
+    public void onClientDisconnected(ClientDisconnectionFromServerEvent event)
+    {
+        //Tell the client's WorldGenHandler to clear the world map on the next world load
+        WorldGenHandler.shouldClearWorldMap = true;
     }
 
     @SubscribeEvent
