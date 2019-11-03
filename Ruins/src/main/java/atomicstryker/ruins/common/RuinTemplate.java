@@ -1,7 +1,23 @@
 package atomicstryker.ruins.common;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.IGrowable;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -10,13 +26,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RuinTemplate {
 
@@ -41,6 +50,7 @@ public class RuinTemplate {
     private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false;
     private boolean preventRotation = false;
+    private final List<BonemealMarker> bonemealMarkers = new ArrayList<>();
 
     public RuinTemplate(String filename, String simpleName, boolean debug) throws Exception {
         // load in the given file as a template
@@ -372,6 +382,34 @@ public class RuinTemplate {
             }
         }
 
+        // activate bonemeal markers
+        for (BonemealMarker bonemealMarker : bonemealMarkers) {
+            BlockPos position = bonemealMarker.getPosition();
+            BlockState state = world.getBlockState(position);
+            Block growable = state.getBlock();
+            RuinsMod.LOGGER.info("Now considering bonemeal flag at {}, block: {}", position, growable);
+            if (growable instanceof IGrowable)
+            {
+                int count = bonemealMarker.getCount();
+                IGrowable igrowable = (IGrowable) growable;
+                int grows;
+                for (grows = 0; grows < count && igrowable.canGrow(world, position, state, world.isRemote); ++grows) {
+                    igrowable.grow(world, world.rand, position, state);
+                    state = world.getBlockState(position);
+                    growable = state.getBlock();
+                    if (growable instanceof IGrowable) {
+                        igrowable = (IGrowable) growable;
+                    } else {
+                        break;
+                    }
+                }
+                if (grows > 0) {
+                    RuinsMod.LOGGER.info("Applied {} bonemeal at {}, now block: {}", grows, position, growable);
+                }
+            }
+        }
+        bonemealMarkers.clear();
+
         for (AdjoiningTemplateData ad : adjoiningTemplates) {
             RuinsMod.LOGGER.info("Considering to spawn adjoining {} of Ruin {}...", ad.adjoiningTemplate.getName(), getName());
             float randres = (world.rand.nextFloat() * 100);
@@ -569,9 +607,9 @@ public class RuinTemplate {
                                 }
                             } else {
                                 if (debugging) {
-                                    RuinsMod.LOGGER.info("template [{}] line [{}]: creating default (preserving air) rule #0", name, lineIndex);
+                                    RuinsMod.LOGGER.info("template [{}] line [{}]: creating default (ruins:null) rule #0", name, lineIndex);
                                 }
-                                variantRuleset.addVariantGroup(1, 1, new RuinTemplateRule(this, "0,100,{Name:\"minecraft:air\"}"));
+                                variantRuleset.addVariantGroup(1, 1, new RuinTemplateRule(this, "{Name:\"ruins:null\"}"));
                             }
                         } else {
                             if (!hasName) {
@@ -804,6 +842,29 @@ public class RuinTemplate {
         }
     }
 
+    private static class BonemealMarker {
+        private final BlockPos position_;
+        private final int count_;
+
+        public BonemealMarker(BlockPos position, int count) {
+            position_ = new BlockPos(position);
+            count_ = count;
+        }
+
+        public BlockPos getPosition() {
+            return new BlockPos(position_);
+        }
+
+        public int getCount() {
+            return count_;
+        }
+    }
+
+    // save block positions to "fertilize" with bonemeal post-instantiation
+    public void markBlockForBonemeal(BlockPos position, int count) {
+        bonemealMarkers.add(new BonemealMarker(position, count));
+    }
+
     private IForgeRegistry<Biome> getBiomeRegistry() {
         if (biomeRegistry == null) {
             biomeRegistry = GameRegistry.findRegistry(Biome.class);
@@ -813,10 +874,10 @@ public class RuinTemplate {
 
     private BlockState[] fromString(String input) {
         final HashSet<BlockState> stateSet = new HashSet<>();
-        String[] stateArray = RuleStringNbtHelper.splitRuleByBrackets(input);
-        if (stateArray != null) {
-            for (String stateString : stateArray) {
-                BlockState state = RuleStringNbtHelper.blockStateFromString(stateString);
+        List<CompoundNBT> stateList = RuleStringNbtHelper.splitRuleByBrackets(input);
+        if (stateList != null) {
+            for (CompoundNBT stateCompound : stateList) {
+                BlockState state = RuleStringNbtHelper.blockStateFromCompound(stateCompound);
                 if (state.getBlock() != Blocks.AIR) {
                     stateSet.add(state);
                 }

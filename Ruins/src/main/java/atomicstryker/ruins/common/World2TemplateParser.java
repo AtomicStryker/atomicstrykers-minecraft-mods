@@ -1,6 +1,16 @@
 package atomicstryker.ruins.common;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,15 +24,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTables;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 class World2TemplateParser extends Thread {
 
     /**
@@ -31,7 +32,7 @@ class World2TemplateParser extends Thread {
      * templates.
      */
     private final BlockData templateHelperBlock;
-    private final BlockData nothing = new BlockData(Blocks.AIR.getDefaultState(), 0, null);
+    private final BlockData nothing = new BlockData(Blocks.AIR.getDefaultState(), null);
 
     private final List<String> chestLootTableNamesToGenerate = ImmutableList.of(
             LootTables.CHESTS_SIMPLE_DUNGEON.toString(), LootTables.CHESTS_BURIED_TREASURE.toString(),
@@ -92,7 +93,7 @@ class World2TemplateParser extends Thread {
         z = c;
         fileName = fName;
         BlockState state = world.getBlockState(new BlockPos(a, b, c));
-        templateHelperBlock = new BlockData(state, 0, null);
+        templateHelperBlock = new BlockData(state, null);
         usedBlocks = new ArrayList<>();
         layerData = new ArrayList<>();
     }
@@ -190,7 +191,6 @@ class World2TemplateParser extends Thread {
 
                     BlockPos pos = new BlockPos(blockx, blocky, blockz);
                     temp.blockState = world.getBlockState(pos);
-                    temp.spawnRule = 0;
                     temp.tileEntity = world.getTileEntity(pos);
 
                     if (temp.blockState.getBlock() == Blocks.AIR || temp.equals(templateHelperBlock)) {
@@ -378,17 +378,15 @@ class World2TemplateParser extends Thread {
 
     private class BlockData {
         BlockState blockState;
-        int spawnRule;
         TileEntity tileEntity;
 
-        BlockData(BlockState state, int sr, TileEntity te) {
+        BlockData(BlockState state, TileEntity te) {
             blockState = state;
-            spawnRule = sr;
             tileEntity = te;
         }
 
         BlockData copy() {
-            return new BlockData(blockState, spawnRule, tileEntity);
+            return new BlockData(blockState, tileEntity);
         }
 
         boolean matchesBlock(World w, int x, int y, int z) {
@@ -397,7 +395,7 @@ class World2TemplateParser extends Thread {
 
         @Override
         public String toString() {
-            return String.format("%s,100,%s", spawnRule, RuleStringNbtHelper.StringFromBlockState(blockState, tileEntity));
+            return String.format("%s", RuleStringNbtHelper.StringFromBlockState(blockState, tileEntity));
         }
 
         @Override

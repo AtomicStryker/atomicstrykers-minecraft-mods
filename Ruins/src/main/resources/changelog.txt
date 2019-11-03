@@ -579,3 +579,16 @@ a: setAccessible now true
 
 1.14.4.4
 + fix template parser not reading tile entities (chests contents, signs etc)
+
+1.14.4.5 (pending)
++ fixed NBT parsing to correctly handle braces within quoted strings
++ restored old "preserveBlock" directive--now {Name:"ruins:null"} pseudoblock
++ default rule0 changed from "minecraft:air" to "ruins:null"
++ added tag for Ruins-specific block parameter specs--{Ruins:{},...}
++ restored old block weight (e.g., 2.5*dirt) feature--now {Ruins:{weight:2.5},...}
++ restored old "addbonemeal" feature--now {Ruins:{bonemeal:1},...}
++ enhanced bonemeal feature; can be >1 for extra fertilization goodness
++ moved block entity spec from {ruinsTE:{},...} to {Ruins:{entity:{}},...}
++ deprecated "ruinsTE" tag; still supported, but emits warning to log
++ /parseruin updated to generate rules as per current format
++ block entities no longer require "id" tag
