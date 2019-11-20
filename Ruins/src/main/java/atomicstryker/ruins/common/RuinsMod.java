@@ -177,34 +177,38 @@ public class RuinsMod {
     @SubscribeEvent
     public void onEntityEnteringChunk(EntityEvent.EnteringChunk event) {
         if (event.getEntity() instanceof PlayerEntity && !event.getEntity().world.isRemote) {
-            CommandBlockTileEntity tecb;
-            ArrayList<CommandBlockTileEntity> tecblist = new ArrayList<>();
+            event.getEntity().world.getServer().deferTask(() -> executeCommandBlockLogic(event));
+        }
+    }
 
-            for (int xoffset = -4; xoffset <= 4; xoffset++) {
-                for (int zoffset = -4; zoffset <= 4; zoffset++) {
-                    if (event.getEntity().world.chunkExists(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset)) {
-                        for (TileEntity teo : event.getEntity().world.getChunk(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values()) {
-                            if (teo instanceof CommandBlockTileEntity) {
-                                tecb = (CommandBlockTileEntity) teo;
-                                if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER ")) {
-                                    // strip prefix from command
-                                    tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
-                                    tecblist.add(tecb);
-                                }
+    private void executeCommandBlockLogic(EntityEvent.EnteringChunk event) {
+        CommandBlockTileEntity tecb;
+        ArrayList<CommandBlockTileEntity> tecblist = new ArrayList<>();
+
+        for (int xoffset = -4; xoffset <= 4; xoffset++) {
+            for (int zoffset = -4; zoffset <= 4; zoffset++) {
+                if (event.getEntity().world.chunkExists(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset)) {
+                    for (TileEntity teo : event.getEntity().world.getChunk(event.getNewChunkX() + xoffset, event.getNewChunkZ() + zoffset).getTileEntityMap().values()) {
+                        if (teo instanceof CommandBlockTileEntity) {
+                            tecb = (CommandBlockTileEntity) teo;
+                            if (tecb.getCommandBlockLogic().getCommand().startsWith("RUINSTRIGGER ")) {
+                                // strip prefix from command
+                                tecb.getCommandBlockLogic().setCommand((tecb.getCommandBlockLogic().getCommand()).substring(13));
+                                tecblist.add(tecb);
                             }
                         }
                     }
                 }
             }
+        }
 
-            for (CommandBlockTileEntity tecb2 : tecblist) {
-                // call command block execution
-                tecb2.getCommandBlockLogic().trigger(event.getEntity().world);
-                // kill block
-                BlockPos pos = tecb2.getPos();
-                LOGGER.info("Ruins executed and killed Command Block at [{}]", pos);
-                event.getEntity().world.removeBlock(pos, false);
-            }
+        for (CommandBlockTileEntity tecb2 : tecblist) {
+            // call command block execution
+            tecb2.getCommandBlockLogic().trigger(event.getEntity().world);
+            // kill block
+            BlockPos pos = tecb2.getPos();
+            LOGGER.info("Ruins executed and killed Command Block at [{}]", pos);
+            event.getEntity().world.removeBlock(pos, false);
         }
     }
 

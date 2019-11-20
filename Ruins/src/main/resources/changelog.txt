@@ -580,7 +580,7 @@ a: setAccessible now true
 1.14.4.4
 + fix template parser not reading tile entities (chests contents, signs etc)
 
-1.14.4.5 (pending)
+1.14.4.5
 + fixed NBT parsing to correctly handle braces within quoted strings
 + restored old "preserveBlock" directive--now {Name:"ruins:null"} pseudoblock
 + default rule0 changed from "minecraft:air" to "ruins:null"
@@ -592,3 +592,4 @@ a: setAccessible now true
 + deprecated "ruinsTE" tag; still supported, but emits warning to log
 + /parseruin updated to generate rules as per current format
 + block entities no longer require "id" tag
++ move chunk entering command block logic into deferred task to fix deadlock (hopefully)
