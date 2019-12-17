@@ -66,6 +66,15 @@ public class InfernalMobsClient implements ISidedProxy {
     public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote && mc.player != null && (event.getEntity() instanceof MobEntity || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof IMob))) {
             InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getUnformattedComponentText(), event.getEntity().getEntityId(), (byte) 0));
+            InfernalMobsCore.LOGGER.debug("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getEntityId());
+        }
+    }
+
+    private void askServerMods(Entity ent) {
+        if (System.currentTimeMillis() > nextPacketTime && (ent instanceof MobEntity || (ent instanceof LivingEntity && ent instanceof IMob))) {
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getUnformattedComponentText(), ent.getEntityId(), (byte) 0));
+            InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getEntityId());
+            nextPacketTime = System.currentTimeMillis() + 100L;
         }
     }
 
@@ -136,6 +145,8 @@ public class InfernalMobsClient implements ISidedProxy {
                     healthBarRetainTime = System.currentTimeMillis() + 3000L;
                 }
 
+            } else {
+                askServerMods(ent);
             }
         }
     }
