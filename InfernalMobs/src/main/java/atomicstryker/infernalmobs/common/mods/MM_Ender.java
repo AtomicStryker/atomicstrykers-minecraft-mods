@@ -48,27 +48,26 @@ public class MM_Ender extends MobModifier {
     }
 
     private boolean teleportToEntity(LivingEntity mob, Entity par1Entity) {
-        Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.posY + (double) par1Entity.getEyeHeight(),
-                mob.posZ - par1Entity.posZ);
+        Vec3d vector = new Vec3d(mob.func_226277_ct_() - par1Entity.func_226277_ct_(), mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.func_226278_cu_() + (double) par1Entity.getEyeHeight(),
+                mob.func_226281_cx_() - par1Entity.func_226281_cx_());
         vector = vector.normalize();
         double telDist = 16.0D;
-        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.x * telDist;
-        double destY = mob.posY + (double) (mob.world.rand.nextInt(16) - 8) - vector.y * telDist;
-        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.z * telDist;
+        double destX = mob.func_226277_ct_() + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.x * telDist;
+        double destY = mob.func_226278_cu_() + (double) (mob.world.rand.nextInt(16) - 8) - vector.y * telDist;
+        double destZ = mob.func_226281_cx_() + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.z * telDist;
         return teleportTo(mob, destX, destY, destZ);
     }
 
     private boolean teleportTo(LivingEntity mob, double destX, double destY, double destZ) {
-        double oldX = mob.posX;
-        double oldY = mob.posY;
-        double oldZ = mob.posZ;
+        double oldX = mob.func_226277_ct_();
+        double oldY = mob.func_226278_cu_();
+        double oldZ = mob.func_226281_cx_();
         boolean success = false;
-        mob.posX = destX;
-        mob.posY = destY;
-        mob.posZ = destZ;
-        int x = MathHelper.floor(mob.posX);
-        int y = MathHelper.floor(mob.posY);
-        int z = MathHelper.floor(mob.posZ);
+        // setPos
+        mob.func_226288_n_(destX, destY, destZ);
+        int x = MathHelper.floor(mob.func_226277_ct_());
+        int y = MathHelper.floor(mob.func_226278_cu_());
+        int z = MathHelper.floor(mob.func_226281_cx_());
 
         boolean hitGround = false;
         while (!hitGround && y < 96 && y > 0) {
@@ -76,15 +75,16 @@ public class MM_Ender extends MobModifier {
             if (bs.getMaterial().blocksMovement()) {
                 hitGround = true;
             } else {
-                --mob.posY;
+                // setPos
+                mob.func_226288_n_(destX, --destY, destZ);
                 --y;
             }
         }
 
         if (hitGround) {
-            mob.setPosition(mob.posX, mob.posY, mob.posZ);
+            mob.setPosition(mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_());
 
-            if (mob.world.isCollisionBoxesEmpty(mob, mob.getBoundingBox()) && !mob.world.containsAnyLiquid(mob.getBoundingBox())) {
+            if (mob.attemptTeleport(destX, destY, destZ, true)) {
                 success = true;
             }
         } else {
@@ -101,9 +101,9 @@ public class MM_Ender extends MobModifier {
                 float var21 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
                 float var22 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
                 float var23 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
-                double var24 = oldX + (mob.posX - oldX) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
-                double var26 = oldY + (mob.posY - oldY) * var19 + mob.world.rand.nextDouble() * (double) mob.getHeight();
-                double var28 = oldZ + (mob.posZ - oldZ) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
+                double var24 = oldX + (mob.func_226277_ct_() - oldX) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
+                double var26 = oldY + (mob.func_226278_cu_() - oldY) * var19 + mob.world.rand.nextDouble() * (double) mob.getHeight();
+                double var28 = oldZ + (mob.func_226281_cx_() - oldZ) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
                 mob.world.addParticle(ParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
             }
 

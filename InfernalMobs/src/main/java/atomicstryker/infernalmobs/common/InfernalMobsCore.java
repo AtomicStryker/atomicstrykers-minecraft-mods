@@ -528,7 +528,7 @@ public class InfernalMobsCore {
         while (xpValue > 0) {
             int xpDrop = ExperienceOrbEntity.getXPSplit(xpValue);
             xpValue -= xpDrop;
-            mob.world.addEntity(new ExperienceOrbEntity(mob.world, mob.posX, mob.posY, mob.posZ, xpDrop));
+            mob.world.addEntity(new ExperienceOrbEntity(mob.world, mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), xpDrop));
         }
 
         dropRandomEnchantedItems(mob, mods);
@@ -550,7 +550,7 @@ public class InfernalMobsCore {
                     // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
                     // itemStack, item.getItemEnchantability());
                 }
-                ItemEntity itemEnt = new ItemEntity(mob.world, mob.posX, mob.posY, mob.posZ, itemStack);
+                ItemEntity itemEnt = new ItemEntity(mob.world, mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), itemStack);
                 mob.world.addEntity(itemEnt);
                 modStr -= 5;
             } else {
@@ -624,7 +624,7 @@ public class InfernalMobsCore {
     }
 
     public void sendHealthPacket(LivingEntity mob) {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.posX, mob.posY, mob.posZ, 32d, mob.dimension));
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), 32d, mob.dimension));
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {

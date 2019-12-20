@@ -110,7 +110,7 @@ public class InfernalMobsClient implements ISidedProxy {
 
                 String buffer = mod.getEntityDisplayName(ent);
 
-                int screenwidth = mc.mainWindow.getScaledWidth();
+                int screenwidth = mc.func_228018_at_().getScaledWidth();
                 FontRenderer fontR = mc.fontRenderer;
 
                 IngameGui gui = mc.ingameGUI;
@@ -251,8 +251,8 @@ public class InfernalMobsClient implements ISidedProxy {
 
                 int right_height = 39;
 
-                final int left = mc.mainWindow.getScaledWidth() / 2 + 91;
-                final int top = mc.mainWindow.getScaledHeight() - right_height;
+                final int left = mc.func_228018_at_().getScaledWidth() / 2 + 91;
+                final int top = mc.func_228018_at_().getScaledHeight() - right_height;
                 final int full = MathHelper.ceil((double) (airOverrideValue - 2) * 10.0D / 300.0D);
                 final int partial = MathHelper.ceil((double) airOverrideValue * 10.0D / 300.0D) - full;
 

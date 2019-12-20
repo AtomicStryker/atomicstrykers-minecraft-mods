@@ -52,9 +52,9 @@ public class MM_Alchemist extends MobModifier {
         }
 
         if (mob.getDistanceSq(target) > MIN_DISTANCE) {
-            double diffX = target.posX + target.getMotion().x - mob.posX;
-            double diffY = target.posY + (double) target.getEyeHeight() - 1.100000023841858D - mob.posY;
-            double diffZ = target.posZ + target.getMotion().z - mob.posZ;
+            double diffX = target.func_226277_ct_() + target.getMotion().x - mob.func_226277_ct_();
+            double diffY = target.func_226278_cu_() + (double) target.getEyeHeight() - 1.100000023841858D - mob.func_226278_cu_();
+            double diffZ = target.func_226281_cx_() + target.getMotion().z - mob.func_226281_cx_();
             float distance = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
 
             Potion potiontype = Potions.HARMING;
@@ -71,7 +71,7 @@ public class MM_Alchemist extends MobModifier {
             potionentity.setItem(PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
             potionentity.rotationPitch -= -20.0F;
             potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
-            mob.world.playSound(null, mob.posX, mob.posY, mob.posZ, SoundEvents.ENTITY_WITCH_THROW, mob.getSoundCategory(), 1.0F, 0.8F + mob.world.rand.nextFloat() * 0.4F);
+            mob.world.playSound(null, mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), SoundEvents.ENTITY_WITCH_THROW, mob.getSoundCategory(), 1.0F, 0.8F + mob.world.rand.nextFloat() * 0.4F);
             mob.world.addEntity(potionentity);
         }
     }

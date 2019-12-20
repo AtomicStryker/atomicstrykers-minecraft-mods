@@ -47,27 +47,26 @@ public class MM_Ninja extends MobModifier {
     }
 
     private boolean teleportToEntity(LivingEntity mob, Entity par1Entity) {
-        Vec3d vector = new Vec3d(mob.posX - par1Entity.posX, mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.posY + (double) par1Entity.getEyeHeight(),
-                mob.posZ - par1Entity.posZ);
+        Vec3d vector = new Vec3d(mob.func_226277_ct_() - par1Entity.func_226277_ct_(), mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.func_226278_cu_() + (double) par1Entity.getEyeHeight(),
+                mob.func_226281_cx_() - par1Entity.func_226281_cx_());
         vector = vector.normalize();
         double telDist = 8.0D;
-        double destX = mob.posX + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.x * telDist;
-        double destY = mob.posY + (double) (mob.world.rand.nextInt(16) - 4) - vector.y * telDist;
-        double destZ = mob.posZ + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.z * telDist;
+        double destX = mob.func_226277_ct_() + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.x * telDist;
+        double destY = mob.func_226278_cu_() + (double) (mob.world.rand.nextInt(16) - 4) - vector.y * telDist;
+        double destZ = mob.func_226281_cx_() + (mob.world.rand.nextDouble() - 0.5D) * 4.0D - vector.z * telDist;
         return teleportTo(mob, destX, destY, destZ);
     }
 
     private boolean teleportTo(LivingEntity mob, double destX, double destY, double destZ) {
-        double oldX = mob.posX;
-        double oldY = mob.posY;
-        double oldZ = mob.posZ;
+        double oldX = mob.func_226277_ct_();
+        double oldY = mob.func_226278_cu_();
+        double oldZ = mob.func_226281_cx_();
         boolean success = false;
-        mob.posX = destX;
-        mob.posY = destY;
-        mob.posZ = destZ;
-        int x = MathHelper.floor(mob.posX);
-        int y = MathHelper.floor(mob.posY);
-        int z = MathHelper.floor(mob.posZ);
+        // setPos
+        mob.func_226288_n_(destX, destY, destZ);
+        int x = MathHelper.floor(mob.func_226277_ct_());
+        int y = MathHelper.floor(mob.func_226278_cu_());
+        int z = MathHelper.floor(mob.func_226281_cx_());
 
         boolean hitGround = false;
         while (!hitGround && y < 96 && y > 0) {
@@ -75,17 +74,18 @@ public class MM_Ninja extends MobModifier {
             if (bs.getMaterial().blocksMovement()) {
                 hitGround = true;
             } else {
-                --mob.posY;
+                // setPos
+                mob.func_226288_n_(destX, --destY, destZ);
                 --y;
             }
         }
 
         if (hitGround) {
-            mob.setPosition(mob.posX, mob.posY, mob.posZ);
+            mob.setPosition(mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_());
             mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             mob.world.addParticle(ParticleTypes.EXPLOSION, oldX, oldY, oldZ, 0D, 0D, 0D);
 
-            if (mob.world.isCollisionBoxesEmpty(mob, mob.getBoundingBox()) && !mob.world.containsAnyLiquid(mob.getBoundingBox())) {
+            if (mob.attemptTeleport(destX, destY, destZ, true)) {
                 success = true;
             }
         } else {
