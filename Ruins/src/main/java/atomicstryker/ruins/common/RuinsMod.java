@@ -138,11 +138,11 @@ public class RuinsMod {
         if (event.getEntity().getEntityWorld() instanceof ServerWorld) {
             WorldHandle wh = getWorldHandle((ServerWorld) event.getEntity().getEntityWorld());
             if (wh != null && wh.fileHandle.enableStick) {
-                ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
+                ItemStack is = event.getPlayer().getHeldItemMainhand();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    TileEntity te = event.getEntityPlayer().world.getTileEntity(event.getPos());
-                    event.getEntityPlayer().sendMessage(new TranslationTextComponent(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
+                    TileEntity te = event.getPlayer().world.getTileEntity(event.getPos());
+                    event.getPlayer().sendMessage(new TranslationTextComponent(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                 }
             }
         }

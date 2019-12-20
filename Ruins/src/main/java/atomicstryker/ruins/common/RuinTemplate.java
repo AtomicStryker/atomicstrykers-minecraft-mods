@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
@@ -394,7 +395,7 @@ public class RuinTemplate {
                 IGrowable igrowable = (IGrowable) growable;
                 int grows;
                 for (grows = 0; grows < count && igrowable.canGrow(world, position, state, world.isRemote); ++grows) {
-                    igrowable.grow(world, world.rand, position, state);
+                    igrowable.func_225535_a_((ServerWorld) world, world.rand, position, state);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
                     if (growable instanceof IGrowable) {
