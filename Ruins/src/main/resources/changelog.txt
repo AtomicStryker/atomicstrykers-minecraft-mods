@@ -593,3 +593,6 @@ a: setAccessible now true
 + /parseruin updated to generate rules as per current format
 + block entities no longer require "id" tag
 + move chunk entering command block logic into deferred task to fix deadlock (hopefully)
+
+1.15.1.1
++ ported to minecraft 1.15.1
