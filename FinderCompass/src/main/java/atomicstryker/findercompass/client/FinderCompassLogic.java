@@ -37,7 +37,7 @@ public class FinderCompassLogic {
                 nextTime = System.currentTimeMillis() + 1000L;
             }
 
-            BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+            BlockPos pos = new BlockPos(mc.player.func_226277_ct_(), mc.player.func_226278_cu_(), mc.player.func_226281_cx_());
             if (!pos.equals(oldPos)) {
                 oldPos = pos;
                 movement = true;

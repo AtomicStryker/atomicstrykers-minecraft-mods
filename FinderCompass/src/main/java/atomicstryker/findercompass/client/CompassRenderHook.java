@@ -36,9 +36,8 @@ public class CompassRenderHook {
 
         // save modelview matrix for later restoration
         GL11.glPushMatrix();
-        // translate to the pivot of the needle of the default compass icons
-        GL11.glTranslatef(0.53125f, 0.53125f, 0.53125f);
-        // these values were found by painful calculation of 8.5 / 16
+        // translate directly above the normal compass render and center a bit
+        GL11.glTranslatef(0.025f, 0.025f, 1.001f);
 
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
 
@@ -101,8 +100,8 @@ public class CompassRenderHook {
     private static float computeNeedleHeading(BlockPos coords) {
         double angleRadian = 0.0D;
         if (mc.world != null && mc.player != null) {
-            double xdiff = mc.player.posX - (coords.getX() + 0.5D);
-            double zdiff = mc.player.posZ - (coords.getZ() + 0.5D);
+            double xdiff = mc.player.func_226277_ct_() - (coords.getX() + 0.5D);
+            double zdiff = mc.player.func_226281_cx_() - (coords.getZ() + 0.5D);
             angleRadian = (mc.player.rotationYaw - 90.0F) * Math.PI / 180.0D - Math.atan2(zdiff, xdiff);
             if (mc.world.dimension.isNether()) {
                 angleRadian = Math.random() * Math.PI * 2.0D;

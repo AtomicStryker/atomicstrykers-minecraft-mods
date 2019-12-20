@@ -9,17 +9,17 @@ function initializeCoreMod() {
 
     var/*Class/Interface*/ Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
-    // var methodName = "renderItem";
-    var methodName = ASMAPI.mapMethod("func_180454_a");
-    print("func_180454_a was mapped to: ", methodName);
+    // method which calls another method with ForgeHooksClient.renderLitItem inside it
+    var methodName = ASMAPI.mapMethod("func_229111_a_");
+    print("func_229111_a_ was mapped to: ", methodName);
 
     var className = 'net.minecraft.client.renderer.ItemRenderer';
-    var methodDescriptorToModify = "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/model/IBakedModel;)V";
-    var targetNodeDescriptor = "(Lnet/minecraft/client/renderer/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V";
+    var methodDescriptorToModify = "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/model/ItemCameraTransforms$TransformType;ZLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;IILnet/minecraft/client/renderer/model/IBakedModel;)V";
+    var targetNodeDescriptor = "(Lnet/minecraft/client/renderer/model/IBakedModel;Lnet/minecraft/item/ItemStack;IILcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;)V";
     var itemStackVoidDescriptor = "(Lnet/minecraft/item/ItemStack;)V";
-    if (!methodName.equals("renderItem")) {
-        print("detecting obfuscated environment");
-    }
+    // if (!methodName.equals("renderItemModelIntoGUI")) {
+    //     print("detecting obfuscated environment");
+    // }
 
     return {
         'Finder Compass Render Hook': {
