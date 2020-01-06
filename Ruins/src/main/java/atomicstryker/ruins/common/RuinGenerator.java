@@ -249,7 +249,7 @@ class RuinGenerator {
                     return -1;
                 }
                 final BlockState b = world.getBlockState(pos);
-                if (r.isIgnoredBlock(b, world, pos)) {
+                if (r.isIgnoredBlock(b)) {
                     continue;
                 }
 
@@ -276,7 +276,7 @@ class RuinGenerator {
                         // now find the first non-air block from here
                         for (; y > -1; y--) {
                             BlockPos pos = new BlockPos(x, y, z);
-                            if (!r.isIgnoredBlock(world.getBlockState(pos), world, pos)) {
+                            if (!r.isIgnoredBlock(world.getBlockState(pos))) {
                                 if (r.isAcceptableSurface(b)) {
                                     return y + 1;
                                 }
@@ -294,7 +294,7 @@ class RuinGenerator {
                         return -1;
                     }
                     final BlockState b = world.getBlockState(pos);
-                    if (!r.isIgnoredBlock(b, world, pos)) {
+                    if (!r.isIgnoredBlock(b)) {
                         accept = r.isAcceptableSurface(b);
                     } else {
                         return accept ? y : -1;
