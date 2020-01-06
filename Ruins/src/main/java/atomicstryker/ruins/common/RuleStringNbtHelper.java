@@ -3,6 +3,8 @@ package atomicstryker.ruins.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.block.BlockState;
@@ -12,7 +14,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 
 public class RuleStringNbtHelper {
-
+    private static int throttleEntityWarning = 4;
 
     public static String StringFromBlockState(BlockState blockState, TileEntity tileEntity) {
         CompoundNBT tagCompound = NBTUtil.writeBlockState(blockState);
@@ -39,7 +41,12 @@ public class RuleStringNbtHelper {
     public static CompoundNBT tileEntityNBTFromCompound(CompoundNBT defaultValue, CompoundNBT input) {
         CompoundNBT teNbt = defaultValue;
         if (input.contains("ruinsTE", 10)) {
-            RuinsMod.LOGGER.warn("{ruinsTE:{...}} is deprecated; use {Ruins:{entity:{...}}} instead");
+            // emit a few deprecation warnings, then demote to debug
+            final Level level = throttleEntityWarning > 0 ? Level.WARN : Level.DEBUG;
+            RuinsMod.LOGGER.log(level, "{ruinsTE:{...}} is deprecated; use {Ruins:{entity:{...}}} instead");
+            if (throttleEntityWarning > 0 && --throttleEntityWarning < 1) {
+                RuinsMod.LOGGER.warn("suppressing ruinsTE deprecation warnings; limit reached");
+            }
             if (defaultValue == null) {
                 teNbt = input.getCompound("ruinsTE").copy();
                 teNbt.remove("id");
