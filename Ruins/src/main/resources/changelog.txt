@@ -596,3 +596,6 @@ a: setAccessible now true
 
 1.15.1.1
 + ported to minecraft 1.15.1
+
+1.15.1.2
++ fix version id displayed in main menu gui
