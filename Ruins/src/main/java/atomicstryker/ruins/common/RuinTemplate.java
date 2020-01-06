@@ -13,10 +13,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.collect.ImmutableSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.material.Material;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -100,29 +103,30 @@ public class RuinTemplate {
         return biomes;
     }
 
-    public boolean isIgnoredBlock(BlockState blockState, World world, BlockPos pos) {
-        return blockState.getBlock() == Blocks.AIR || blockState.getBlock() == Blocks.SNOW || blockState.getBlock() == Blocks.COBWEB || isPlant(blockState, world, pos) || preserveBlock(blockState);
-    }
+    private static final ImmutableSet<Material> AIRLIKE_MATERIALS = ImmutableSet.of(
+            Material.AIR,
+            Material.PLANTS,
+            Material.TALL_PLANTS,
+            Material.SNOW,
+            Material.FIRE,
+            Material.WEB,
+            Material.BAMBOO_SAPLING,
+            Material.BAMBOO,
+            Material.LEAVES,
+            Material.CACTUS,
+            Material.GOURD);
+    private static final ImmutableSet<Material> WATERLIKE_MATERIALS = ImmutableSet.of(
+            Material.OCEAN_PLANT,
+            Material.SEA_GRASS,
+            Material.WATER,
+            Material.BUBBLE_COLUMN,
+            Material.ICE);
+    private static final ImmutableSet<Material> LAVALIKE_MATERIALS = ImmutableSet.of(
+            Material.LAVA);
 
-    private boolean isPlant(BlockState blockState, World world, BlockPos pos) {
-        return blockState.getBlock().isFoliage(blockState, world, pos);
-    }
-
-    public boolean preserveBlock(BlockState blockState) {
-        if (preserveWater) {
-            if (blockState.getBlock() == Blocks.WATER) {
-                return true;
-            }
-            if (blockState.getBlock() == Blocks.ICE) {
-                return true;
-            }
-        }
-        if (preserveLava) {
-            if (blockState.getBlock() == Blocks.LAVA) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isIgnoredBlock(BlockState blockState) {
+        final Material material = blockState.getMaterial();
+        return AIRLIKE_MATERIALS.contains(material) || preserveWater && WATERLIKE_MATERIALS.contains(material) || preserveLava && LAVALIKE_MATERIALS.contains(material);
     }
 
     public boolean isAcceptableSurface(BlockState blockState) {
@@ -189,7 +193,7 @@ public class RuinTemplate {
                         return -1;
                     }
                     blockState = world.getBlockState(pos);
-                    if (!isIgnoredBlock(blockState, world, pos)) {
+                    if (!isIgnoredBlock(blockState)) {
                         if (isAcceptableSurface(blockState)) {
                             heightMap[ix - x][iz - z] = iy;
                             foundSurface = true;
@@ -442,7 +446,7 @@ public class RuinTemplate {
         for (int y_surface = y - 1; y_surface > y_end; --y_surface) {
             BlockPos pos = new BlockPos(x, y_surface, z);
             BlockState block = world.getBlockState(pos);
-            if (!isIgnoredBlock(block, world, pos)) {
+            if (!isIgnoredBlock(block)) {
                 if (isAcceptableSurface(block)) {
                     fill_block = block;
                 }
@@ -490,7 +494,7 @@ public class RuinTemplate {
                 // fill holes
                 for (int yi = y - leveling; yi < y; yi++) {
                     BlockPos pos = new BlockPos(xi, yi, zi);
-                    if (isIgnoredBlock(world.getBlockState(pos), world, pos)) {
+                    if (isIgnoredBlock(world.getBlockState(pos))) {
                         world.setBlockState(pos, fillBlockID, 2);
                     }
                 }
