@@ -83,7 +83,7 @@ rule3=0,100,{Name:"minecraft:oak_planks"}
 rule4=0,100,{Properties:{part:"head",facing:"west",occupied:"false"},Name:"minecraft:red_bed"}
 rule5=0,100,{Properties:{waterlogged:"false",facing:"south",type:"single"},Name:"minecraft:chest"}
 rule6=0,100,{Properties:{part:"foot",facing:"west",occupied:"false"},Name:"minecraft:red_bed"}
-rule7=0,100,{ruinsTE:{SpawnData:{id:skeleton}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
+rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:skeleton},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 rule8=0,100,{Properties:{part:"foot",facing:"east",occupied:"false"},Name:"minecraft:red_bed"}
 rule9=0,100,{Properties:{part:"head",facing:"east",occupied:"false"},Name:"minecraft:red_bed"}
 rule10=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"south"},Name:"minecraft:oak_stairs"}
@@ -94,7 +94,7 @@ rule14=0,100,{Properties:{waterlogged:"false",facing:"east"},Name:"minecraft:lad
 rule15=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
 rule16=0,100,{Properties:{unstable:"false"},Name:"minecraft:tnt"}
 rule17=0,100,{Properties:{facing:"east",open:"false"},Name:"minecraft:barrel"}
-rule18=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule18=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
 rule19=0,100,{Properties:{waterlogged:"false",type:"bottom"},Name:"minecraft:oak_slab"}
 rule20=0,100,{Properties:{hinge:"right",half:"lower",powered:"false",facing:"west",open:"false"},Name:"minecraft:oak_door"}
 rule21=0,100,{Name:"minecraft:obsidian"}
@@ -128,7 +128,7 @@ rule48=0,100,{Properties:{face:"floor",facing:"east"},Name:"minecraft:grindstone
 rule49=2*0,100,{Name:"minecraft:black_wool"}
 ^0,100,{Name:"minecraft:green_wool"}
 ^0,100,{Name:"minecraft:red_wool"}
-rule50=0,100,{ruinsTE:{SpawnData:{id:drowned}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
+rule50=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:drowned},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 
 layer
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

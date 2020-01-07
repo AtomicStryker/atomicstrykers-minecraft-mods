@@ -109,7 +109,7 @@ rule29=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"tr
 rule30=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
 rule31=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:dark_oak_fence"}
 rule32=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:dark_oak_fence"}
-rule33=0,100,{ruinsTE:{SpawnData:{id:vindicator}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
+rule33=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:vindicator},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 rule34=0,100,{Properties:{waterlogged:"false",type:"bottom"},Name:"minecraft:stone_brick_slab"}
 rule35=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:dark_oak_fence"}
 rule36=0,100,{Properties:{facing:"west",open:"false"},Name:"minecraft:barrel"}
@@ -150,7 +150,7 @@ rule70=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",fac
 rule71=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"south"},Name:"minecraft:stone_brick_stairs"}
 rule72=0,100,{Properties:{half:"top",waterlogged:"false",shape:"straight",facing:"north"},Name:"minecraft:stone_brick_stairs"}
 rule73=0,100,{Properties:{axis:"y"},Name:"minecraft:dark_oak_wood"}
-rule74=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/end_city_treasure"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule74=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/end_city_treasure"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
 rule75=0,100,{Name:"minecraft:black_carpet"}
 rule76=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"west"},Name:"minecraft:stone_brick_stairs"}
 rule77=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"east"},Name:"minecraft:stone_brick_stairs"}
@@ -165,8 +165,8 @@ rule83=2*0,100,{Name:"minecraft:blue_wool"}
 ^0,100,{Name:"minecraft:cyan_wool"}
 ^0,100,{Name:"minecraft:lime_wool"}
 rule84=0,100,{Name:"minecraft:lapis_block"}
-rule85=0,100,{ruinsTE:{SpawnData:{id:evoker}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
-rule86=0,100,{ruinsTE:{SpawnData:{id:phantom}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
+rule85=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:evoker},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
+rule86=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:phantom},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 
 layer
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

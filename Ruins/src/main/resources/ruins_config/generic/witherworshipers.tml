@@ -79,7 +79,7 @@ adjoining_template=
 
 rule1=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
 rule2=0,100,{Name:"minecraft:obsidian"}
-rule3=0,100,{ruinsTE:{SpawnData:{id:evoker}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
+rule3=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:evoker},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 rule4=0,100,{Name:"minecraft:nether_bricks"}
 rule5=0,100,{Properties:{rotation:"12"},Name:"minecraft:skeleton_skull"}
 rule6=0,100,{Properties:{rotation:"9"},Name:"minecraft:skeleton_skull"}
