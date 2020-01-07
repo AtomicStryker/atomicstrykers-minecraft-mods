@@ -87,7 +87,7 @@ rule7=0,100,{Properties:{axis:"z"},Name:"minecraft:jungle_log"}
 rule8=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
 rule9=0,100,{Name:"minecraft:white_wool"}
 rule10=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule11=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule11=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
 rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:oak_fence"}
 rule13=2*0,100,{Name:"minecraft:blue_wool"}
 ^0,100,{Name:"minecraft:green_wool"}

@@ -89,7 +89,7 @@ rule9=0,100,{Properties:{distance:"2",persistent:"true"},Name:"minecraft:birch_l
 rule10=0,100,{Properties:{east:"false",south:"false",north:"false",west:"true",up:"false"},Name:"minecraft:vine"}
 rule11=0,100,{Properties:{east:"false",south:"true",north:"false",west:"false",up:"false"},Name:"minecraft:vine"}
 rule12=0,100,{Properties:{east:"false",south:"false",north:"true",west:"false",up:"false"},Name:"minecraft:vine"}
-rule13=0,100,{ruinsTE:{SpawnData:{id:cave_spider}, id:"minecraft:mob_spawner"}, Name:"minecraft:spawner"}
+rule13=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:cave_spider},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 rule14=0,100,{Properties:{waterlogged:"false",type:"top"},Name:"minecraft:brick_slab"}
 rule15=0,100,{Properties:{half:"top",waterlogged:"false",shape:"straight",facing:"east"},Name:"minecraft:brick_stairs"}
 rule16=0,100,{Properties:{axis:"z"},Name:"minecraft:acacia_log"}
@@ -105,7 +105,7 @@ rule25=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",fac
 rule26=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"outer_right",facing:"south"},Name:"minecraft:brick_stairs"}
 rule27=0,100,{Properties:{axis:"x"},Name:"minecraft:acacia_log"}
 rule28=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"outer_left",facing:"east"},Name:"minecraft:brick_stairs"}
-rule29=0,100,{ruinsTE:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},x:0,y:0,z:0,Items:[],id:"minecraft:chest",Lock:""},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule29=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
 rule30=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"inner_left",facing:"north"},Name:"minecraft:brick_stairs"}
 rule31=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"outer_right",facing:"west"},Name:"minecraft:brick_stairs"}
 
