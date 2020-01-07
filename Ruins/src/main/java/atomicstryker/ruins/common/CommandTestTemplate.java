@@ -89,7 +89,7 @@ class CommandTestTemplate {
                         for (y = ceiling - 1; y > 7; y--) {
                             BlockPos pos = new BlockPos(x, y, z);
                             final BlockState b = world.getBlockState(pos);
-                            if (parsedRuin.isIgnoredBlock(b, world, pos)) {
+                            if (parsedRuin.isIgnoredBlock(b)) {
                                 continue;
                             }
 

@@ -593,3 +593,15 @@ a: setAccessible now true
 + /parseruin updated to generate rules as per current format
 + block entities no longer require "id" tag
 + move chunk entering command block logic into deferred task to fix deadlock (hopefully)
+
+1.14.4.6
++ backport 1.15.1.2 for 1.14
+
+1.15.1.1
++ ported to minecraft 1.15.1
+
+1.15.1.2
++ fix version id displayed in main menu gui
++ limit ruinsTE deprecation warnings (4 max) to avoid log spam
++ properly ignore leaves and grass and stuff
++ update default templates to current format

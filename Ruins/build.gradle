@@ -17,7 +17,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 def mcversion = '1.14.4'
-version = '1.14.4.4'
+version = '1.14.4.6'
 group = 'atomicstryker.ruins'
 archivesBaseName = 'ruins'
 
@@ -31,8 +31,9 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings channel: 'snapshot', version: '20190719-1.14.3'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    
-    // accessTransformer = file('build/resources/main/META-INF/accesstransformer.cfg')
+
+    // dummy access transformer fixes intellij bug where old dependencies show up in references
+    accessTransformer = file('dummyat/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.

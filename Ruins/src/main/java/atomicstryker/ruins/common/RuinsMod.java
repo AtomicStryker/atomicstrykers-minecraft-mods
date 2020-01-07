@@ -43,7 +43,6 @@ public class RuinsMod {
 
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String TEMPLATE_PATH_MC_EXTRACTED = "config/ruins_config/";
-    public static final String TEMPLATE_PATH_JAR = "ruins_config";
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
@@ -138,11 +137,11 @@ public class RuinsMod {
         if (event.getEntity().getEntityWorld() instanceof ServerWorld) {
             WorldHandle wh = getWorldHandle((ServerWorld) event.getEntity().getEntityWorld());
             if (wh != null && wh.fileHandle.enableStick) {
-                ItemStack is = event.getEntityPlayer().getHeldItemMainhand();
+                ItemStack is = event.getPlayer().getHeldItemMainhand();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    TileEntity te = event.getEntityPlayer().world.getTileEntity(event.getPos());
-                    event.getEntityPlayer().sendMessage(new TranslationTextComponent(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
+                    TileEntity te = event.getPlayer().world.getTileEntity(event.getPos());
+                    event.getPlayer().sendMessage(new TranslationTextComponent(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                 }
             }
         }

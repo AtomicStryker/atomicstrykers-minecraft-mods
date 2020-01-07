@@ -68,7 +68,7 @@ class RuinGenerator {
                     try {
                         registeredRuins.add(new RuinData(line));
                     } catch (Exception e) {
-                        System.err.println("Ruins positions file is invalid in line " + lineNumber + ", skipping...");
+                        RuinsMod.LOGGER.error("Ruins positions file is invalid in line {}}, skipping...", lineNumber);
                     }
                 }
 
@@ -100,7 +100,7 @@ class RuinGenerator {
 
     private void createBuilding(World world, Random random, int x, int z, boolean nether) {
         final int rotate = random.nextInt(4);
-        final Biome biome = world.getBiomeBody(new BlockPos(x, 0, z));
+        final Biome biome = world.getBiome(new BlockPos(x, 0, z));
         String biomeID = biome.getRegistryName().getPath();
 
         if (fileHandler.useGeneric(random, biomeID)) {
@@ -134,7 +134,7 @@ class RuinGenerator {
                 int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false, false);
                 if (finalY >= 0) {
                     if (!fileHandler.disableLogging) {
-                        System.out.printf("Creating ruin %s of Biome %s at [%d|%d|%d]\n", ruinTemplate.getName(), biome.getRegistryName().getPath(), x, y, z);
+                        RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biome.getRegistryName().getPath(), x, y, z);
                     }
                     stats.NumCreated++;
 
@@ -166,11 +166,11 @@ class RuinGenerator {
     private void printStats() {
         if (!fileHandler.disableLogging) {
             int total = stats.NumCreated + stats.LevelingFails;
-            System.out.println("Current Stats:");
-            System.out.println("    Total Tries:                 " + total);
-            System.out.println("    Number Created:              " + stats.NumCreated);
-            System.out.println("    Min Dist fail:               " + stats.minDistFails);
-            System.out.println("    Leveling:                    " + stats.LevelingFails);
+            RuinsMod.LOGGER.info("Current Stats:");
+            RuinsMod.LOGGER.info("    Total Tries:                 " + total);
+            RuinsMod.LOGGER.info("    Number Created:              " + stats.NumCreated);
+            RuinsMod.LOGGER.info("    Min Dist fail:               " + stats.minDistFails);
+            RuinsMod.LOGGER.info("    Leveling:                    " + stats.LevelingFails);
 
             Biome bgb;
             for (ResourceLocation rl : getBiomeRegistry().getKeys()) {
@@ -178,13 +178,13 @@ class RuinGenerator {
                 if (bgb != null) {
                     Integer i = stats.biomes.get(bgb.getRegistryName().getPath());
                     if (i != null) {
-                        System.out.println(bgb.getRegistryName().getPath() + ": " + i + " Biome building attempts");
+                        RuinsMod.LOGGER.info(bgb.getRegistryName().getPath() + ": " + i + " Biome building attempts");
                     }
                 }
             }
-            System.out.println("Any-Biome: " + stats.biomes.get(RuinsMod.BIOME_ANY) + " building attempts");
+            RuinsMod.LOGGER.info("Any-Biome: " + stats.biomes.get(RuinsMod.BIOME_ANY) + " building attempts");
 
-            System.out.println();
+            RuinsMod.LOGGER.info("");
         }
     }
 
@@ -249,7 +249,7 @@ class RuinGenerator {
                     return -1;
                 }
                 final BlockState b = world.getBlockState(pos);
-                if (r.isIgnoredBlock(b, world, pos)) {
+                if (r.isIgnoredBlock(b)) {
                     continue;
                 }
 
@@ -276,7 +276,7 @@ class RuinGenerator {
                         // now find the first non-air block from here
                         for (; y > -1; y--) {
                             BlockPos pos = new BlockPos(x, y, z);
-                            if (!r.isIgnoredBlock(world.getBlockState(pos), world, pos)) {
+                            if (!r.isIgnoredBlock(world.getBlockState(pos))) {
                                 if (r.isAcceptableSurface(b)) {
                                     return y + 1;
                                 }
@@ -294,7 +294,7 @@ class RuinGenerator {
                         return -1;
                     }
                     final BlockState b = world.getBlockState(pos);
-                    if (!r.isIgnoredBlock(b, world, pos)) {
+                    if (!r.isIgnoredBlock(b)) {
                         accept = r.isAcceptableSurface(b);
                     } else {
                         return accept ? y : -1;
@@ -351,12 +351,12 @@ class RuinGenerator {
                 pw.println("#");
                 for (RuinData r : registeredRuins) {
                     pw.println(r.toString());
-                    // System.out.println("saved ruin data line ["+r.toString()+"]");
+                    // RuinsMod.LOGGER.info("saved ruin data line ["+r.toString()+"]");
                 }
 
                 pw.flush();
                 pw.close();
-                // System.out.println("Ruins Positions flushed, entries "+registeredRuins.size());
+                // RuinsMod.LOGGER.info("Ruins Positions flushed, entries "+registeredRuins.size());
 
                 // prevent conflict with load operation
                 synchronized (ruinsDataFile) {
