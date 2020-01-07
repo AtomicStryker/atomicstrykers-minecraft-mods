@@ -601,3 +601,4 @@ a: setAccessible now true
 + fix version id displayed in main menu gui
 + limit ruinsTE deprecation warnings (4 max) to avoid log spam
 + properly ignore leaves and grass and stuff
++ update default templates to current format
