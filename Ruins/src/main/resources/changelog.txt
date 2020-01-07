@@ -602,3 +602,6 @@ a: setAccessible now true
 + limit ruinsTE deprecation warnings (4 max) to avoid log spam
 + properly ignore leaves and grass and stuff
 + update default templates to current format
+
+1.15.1.3
++ fixed default template extraction to work again
