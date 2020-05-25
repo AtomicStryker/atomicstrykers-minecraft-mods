@@ -607,7 +607,8 @@ public class RuinTemplateRule
         {
             String[] s = dataString.split(":");
             int targetCount = s.length > 2 ? Integer.valueOf(s[s.length-1].split("-")[0]) : 0;
-            addChestGenChest(world, random, x, y, z, s[1], targetCount, blocknum, rotate);
+            String lootTable = s.length > 3 ? s[1]+s[2] : s[1];
+            addChestGenChest(world, random, x, y, z, lootTable, targetCount, blocknum, rotate);
         }
         else if (dataString.startsWith("IInventory;"))
         {
