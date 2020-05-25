@@ -606,9 +606,12 @@ public class RuinTemplateRule
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
+            if(s.length > 3){
+                s[1] = String.join(":", s[1], s[2]);
+                s[2] = s[3];
+            }
             int targetCount = s.length > 2 ? Integer.valueOf(s[s.length-1].split("-")[0]) : 0;
-            String lootTable = s.length > 3 ? s[1]+s[2] : s[1];
-            addChestGenChest(world, random, x, y, z, lootTable, targetCount, blocknum, rotate);
+            addChestGenChest(world, random, x, y, z, s[1], targetCount, blocknum, rotate);
         }
         else if (dataString.startsWith("IInventory;"))
         {
