@@ -40,7 +40,8 @@ class CommandTestTemplate {
             if (args.length < 4) {
                 if (args.length < 1) {
                     if (parsedRuin != null) {
-                        parsedRuin.doBuild(sender.getEntityWorld(), sender.getEntityWorld().rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
+                        final World world = sender.getEntityWorld();
+                        parsedRuin.doBuild(world, world.rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
                         parsedRuin = null;
                     } else {
                         sender.sendMessage(new TranslationTextComponent("You need to use the command with the target template name, eg. /testruin beach/LightHouse"));

@@ -234,7 +234,7 @@ public class RuinsMod {
 
     private WorldHandle getWorldHandle(ServerWorld world) {
         WorldHandle wh = null;
-        if (!world.getWorld().isRemote) {
+        if (!world.isRemote()) {
             Dimension dimension = world.dimension;
             if (!generatorMap.containsKey(dimension)) {
                 wh = new WorldHandle();
