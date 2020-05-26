@@ -605,3 +605,6 @@ a: setAccessible now true
 
 1.15.1.3
 + fixed default template extraction to work again
+
+1.15.2.1
++ ported to Minecraft 1.15.2 (Forge 31.2.0)
