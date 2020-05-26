@@ -100,7 +100,7 @@ class RuinGenerator {
 
     private void createBuilding(World world, Random random, int x, int z, boolean nether) {
         final int rotate = random.nextInt(4);
-        final Biome biome = world.func_226691_t_(new BlockPos(x, 0, z));
+        final Biome biome = world.getBiome(new BlockPos(x, 8, z));
         String biomeID = biome.getRegistryName().getPath();
 
         if (fileHandler.useGeneric(random, biomeID)) {

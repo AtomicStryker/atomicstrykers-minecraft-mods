@@ -399,7 +399,7 @@ public class RuinTemplate {
                 IGrowable igrowable = (IGrowable) growable;
                 int grows;
                 for (grows = 0; grows < count && igrowable.canGrow(world, position, state, world.isRemote); ++grows) {
-                    igrowable.func_225535_a_((ServerWorld) world, world.rand, position, state);
+                    igrowable.grow((ServerWorld) world, world.rand, position, state);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
                     if (growable instanceof IGrowable) {
