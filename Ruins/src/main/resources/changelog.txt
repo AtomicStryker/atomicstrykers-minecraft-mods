@@ -608,3 +608,4 @@ a: setAccessible now true
 
 1.15.2.1
 + ported to Minecraft 1.15.2 (Forge 31.2.0)
++ don't be a coremod; install pseudo-feature instead
