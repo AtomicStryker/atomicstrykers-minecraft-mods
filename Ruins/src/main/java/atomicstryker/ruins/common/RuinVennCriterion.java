@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +34,7 @@ import org.apache.logging.log4j.Logger;
  * anything following it (unless enclosed in quotes).
  * <p>
  * Example: A criterion created from the expression <code>RED + (YELLOW, GREEN) - BLUE</code> is satisfied by any
- * collection of strings containing RED, either TELLOW or GREEN (or both), but not BLUE.
+ * collection of strings containing RED, either YELLOW or GREEN (or both), but not BLUE.
  * <p>
  * Optionally, a collection of elements may also be provided from which an expression must be constructed. If an
  * element in the expression does not appear in the list of valid elements, an exception is thrown (if strict
@@ -277,10 +276,10 @@ class RuinVennCriterion
                     if (matcher.region(start, end).usePattern(ELEMENT_PATTERN).lookingAt())
                     {
                         // if an element occurs, push it onto the node stack and advance the state
-                        // unescape the element if it is "quoted" to include otherwise-invalid chcracters
+                        // unescape the element if it is "quoted" to include otherwise-invalid characters
 
                         start = matcher.end();
-                        final String element = matcher.group(1) != null ? matcher.group(1) : StringEscapeUtils.unescapeJava(matcher.group(2));
+                        final String element = matcher.group(1) != null ? matcher.group(1) : unescape(matcher.group(2));
                         LOGGER.debug("encountered element '{}'", element);
 
                         if (valid_elements != null && !valid_elements.contains(element))
@@ -651,6 +650,15 @@ class RuinVennCriterion
             default:
                 throw new AssertionError(String.format("no processing defined for operator '%s'", operator.toString()));
             }
+        }
+
+        // replace all escape sequences with the actual characters they represent
+        // temporary method to isolate commons-lang3 deprecation; use commons-text instead, when available
+        //
+        @SuppressWarnings("deprecation")
+        private static String unescape(final String string)
+        {
+            return org.apache.commons.lang3.StringEscapeUtils.unescapeJava(string);
         }
     }
 }

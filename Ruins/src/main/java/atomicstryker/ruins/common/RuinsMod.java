@@ -9,8 +9,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.WorldGenRegion;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,6 +34,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,15 +86,21 @@ public class RuinsMod {
         return proxy.getBaseDir();
     }
 
-    /**
-     * called by the coremod injection from ChunkGenerator.decorate
-     */
+    private static final ConfiguredFeature<?, ?> PSEUDOFEATURE = new Feature<NoFeatureConfig>(NoFeatureConfig::deserialize) {
+        @Override
+        public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos block_pos, NoFeatureConfig config) {
+            decorateChunkHook((WorldGenRegion) world);
+            return false;
+        }
+    }.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG);
+
     public static void decorateChunkHook(WorldGenRegion worldGenRegion) {
 
-        if (worldGenRegion.getWorld().isRemote() || !worldGenRegion.getWorld().getWorldInfo().isMapFeaturesEnabled() || instance == null) {
+        if (worldGenRegion.isRemote() || !worldGenRegion.getWorldInfo().isMapFeaturesEnabled() || instance == null) {
             return;
         }
 
+        @SuppressWarnings("deprecation")
         ServerWorld world = worldGenRegion.getWorld();
         int x = worldGenRegion.getMainChunkX();
         int z = worldGenRegion.getMainChunkZ();
@@ -123,6 +139,10 @@ public class RuinsMod {
     public void preInit(FMLCommonSetupEvent evt) {
         LOGGER.info("Ruins preInit");
         ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
+
+        for (Biome biome : ForgeRegistries.BIOMES) {
+            biome.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, PSEUDOFEATURE);
+        }
     }
 
     @SubscribeEvent
@@ -234,7 +254,7 @@ public class RuinsMod {
 
     private WorldHandle getWorldHandle(ServerWorld world) {
         WorldHandle wh = null;
-        if (!world.getWorld().isRemote) {
+        if (!world.isRemote()) {
             Dimension dimension = world.dimension;
             if (!generatorMap.containsKey(dimension)) {
                 wh = new WorldHandle();

@@ -128,7 +128,7 @@ rule48=0,100,{Properties:{face:"floor",facing:"east"},Name:"minecraft:grindstone
 rule49=2*0,100,{Name:"minecraft:black_wool"}
 ^0,100,{Name:"minecraft:green_wool"}
 ^0,100,{Name:"minecraft:red_wool"}
-rule50=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:drowned},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
+rule50=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:zombie},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
 
 layer
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
