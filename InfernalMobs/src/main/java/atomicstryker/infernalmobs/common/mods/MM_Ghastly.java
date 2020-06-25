@@ -45,19 +45,19 @@ public class MM_Ghastly extends MobModifier {
         }
 
         if (mob.getDistance(target) > MIN_DISTANCE) {
-            double diffX = target.func_226277_ct_() - mob.func_226277_ct_();
-            double diffY = target.getBoundingBox().minY + (double) (target.getHeight() / 2.0F) - (mob.func_226278_cu_() + (double) (mob.getHeight() / 2.0F));
-            double diffZ = target.func_226281_cx_() - mob.func_226281_cx_();
+            double diffX = target.getPosX() - mob.getPosX();
+            double diffY = target.getBoundingBox().minY + (double) (target.getHeight() / 2.0F) - (mob.getPosY() + (double) (mob.getHeight() / 2.0F));
+            double diffZ = target.getPosZ() - mob.getPosZ();
             mob.renderYawOffset = mob.rotationYaw = -((float) Math.atan2(diffX, diffZ)) * 180.0F / (float) Math.PI;
 
-            mob.world.playEvent(null, 1008, new BlockPos((int) mob.func_226277_ct_(), (int) mob.func_226278_cu_(), (int) mob.func_226281_cx_()), 0);
+            mob.world.playEvent(null, 1008, new BlockPos((int) mob.getPosX(), (int) mob.getPosY(), (int) mob.getPosZ()), 0);
             FireballEntity entFB = new FireballEntity(mob.world, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
             Vec3d mobLook = mob.getLook(1.0F);
-            double newX = mob.func_226277_ct_() + mobLook.x * spawnOffset;
-            double newY = mob.func_226278_cu_() + (double) (mob.getHeight() / 2.0F) + 0.5D;
-            double newZ = mob.func_226281_cx_() + mobLook.z * spawnOffset;
-            mob.func_226288_n_(newX, newY, newZ);
+            double newX = mob.getPosX() + mobLook.x * spawnOffset;
+            double newY = mob.getPosY() + (double) (mob.getHeight() / 2.0F) + 0.5D;
+            double newZ = mob.getPosZ() + mobLook.z * spawnOffset;
+            mob.setPosition(newX, newY, newZ);
 
             mob.world.addEntity(entFB);
         }

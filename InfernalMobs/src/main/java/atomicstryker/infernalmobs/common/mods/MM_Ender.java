@@ -48,26 +48,29 @@ public class MM_Ender extends MobModifier {
     }
 
     private boolean teleportToEntity(LivingEntity mob, Entity par1Entity) {
-        Vec3d vector = new Vec3d(mob.func_226277_ct_() - par1Entity.func_226277_ct_(), mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.func_226278_cu_() + (double) par1Entity.getEyeHeight(),
-                mob.func_226281_cx_() - par1Entity.func_226281_cx_());
+        Vec3d vector = new Vec3d(mob.getPosX() - par1Entity.getPosX(), mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.getPosY() + (double) par1Entity.getEyeHeight(),
+                mob.getPosZ() - par1Entity.getPosZ());
         vector = vector.normalize();
         double telDist = 16.0D;
-        double destX = mob.func_226277_ct_() + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.x * telDist;
-        double destY = mob.func_226278_cu_() + (double) (mob.world.rand.nextInt(16) - 8) - vector.y * telDist;
-        double destZ = mob.func_226281_cx_() + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.z * telDist;
+        double destX = mob.getPosX() + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.x * telDist;
+        double destY = mob.getPosY() + (double) (mob.world.rand.nextInt(16) - 8) - vector.y * telDist;
+        double destZ = mob.getPosZ() + (mob.world.rand.nextDouble() - 0.5D) * 8.0D - vector.z * telDist;
+        // forge event hook
+        net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(mob, destX, destY, destZ, 0);
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return false;
+
         return teleportTo(mob, destX, destY, destZ);
     }
 
     private boolean teleportTo(LivingEntity mob, double destX, double destY, double destZ) {
-        double oldX = mob.func_226277_ct_();
-        double oldY = mob.func_226278_cu_();
-        double oldZ = mob.func_226281_cx_();
+        double oldX = mob.getPosX();
+        double oldY = mob.getPosY();
+        double oldZ = mob.getPosZ();
         boolean success = false;
-        // setPos
-        mob.func_226288_n_(destX, destY, destZ);
-        int x = MathHelper.floor(mob.func_226277_ct_());
-        int y = MathHelper.floor(mob.func_226278_cu_());
-        int z = MathHelper.floor(mob.func_226281_cx_());
+        mob.setPosition(destX, destY, destZ);
+        int x = MathHelper.floor(mob.getPosX());
+        int y = MathHelper.floor(mob.getPosY());
+        int z = MathHelper.floor(mob.getPosZ());
 
         boolean hitGround = false;
         while (!hitGround && y < 96 && y > 0) {
@@ -75,14 +78,13 @@ public class MM_Ender extends MobModifier {
             if (bs.getMaterial().blocksMovement()) {
                 hitGround = true;
             } else {
-                // setPos
-                mob.func_226288_n_(destX, --destY, destZ);
+                mob.setPosition(destX, --destY, destZ);
                 --y;
             }
         }
 
         if (hitGround) {
-            mob.setPosition(mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_());
+            mob.setPosition(mob.getPosX(), mob.getPosY(), mob.getPosZ());
 
             if (mob.attemptTeleport(destX, destY, destZ, true)) {
                 success = true;
@@ -101,9 +103,9 @@ public class MM_Ender extends MobModifier {
                 float var21 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
                 float var22 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
                 float var23 = (mob.world.rand.nextFloat() - 0.5F) * 0.2F;
-                double var24 = oldX + (mob.func_226277_ct_() - oldX) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
-                double var26 = oldY + (mob.func_226278_cu_() - oldY) * var19 + mob.world.rand.nextDouble() * (double) mob.getHeight();
-                double var28 = oldZ + (mob.func_226281_cx_() - oldZ) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
+                double var24 = oldX + (mob.getPosX() - oldX) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
+                double var26 = oldY + (mob.getPosY() - oldY) * var19 + mob.world.rand.nextDouble() * (double) mob.getHeight();
+                double var28 = oldZ + (mob.getPosZ() - oldZ) * var19 + (mob.world.rand.nextDouble() - 0.5D) * (double) mob.getWidth() * 2.0D;
                 mob.world.addParticle(ParticleTypes.PORTAL, var24, var26, var28, (double) var21, (double) var22, (double) var23);
             }
 

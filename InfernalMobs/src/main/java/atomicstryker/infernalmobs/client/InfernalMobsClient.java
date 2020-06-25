@@ -110,7 +110,7 @@ public class InfernalMobsClient implements ISidedProxy {
 
                 String buffer = mod.getEntityDisplayName(ent);
 
-                int screenwidth = mc.func_228018_at_().getScaledWidth();
+                int screenwidth = mc.getMainWindow().getScaledWidth();
                 FontRenderer fontR = mc.fontRenderer;
 
                 IngameGui gui = mc.ingameGUI;
@@ -157,7 +157,7 @@ public class InfernalMobsClient implements ISidedProxy {
         if (entity != null && mc.world != null) {
 
             double distance = NAME_VISION_DISTANCE;
-            RayTraceResult result = entity.func_213324_a(distance, partialTicks, false);
+            RayTraceResult result = entity.pick(distance, partialTicks, false);
             Vec3d vec3d = entity.getEyePosition(partialTicks);
 
             double distanceToHit = result.getHitVec().squareDistanceTo(vec3d);
@@ -165,7 +165,7 @@ public class InfernalMobsClient implements ISidedProxy {
             Vec3d vec3d1 = entity.getLook(1.0F);
             Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
             AxisAlignedBB axisalignedbb = entity.getBoundingBox().expand(vec3d1.scale(distance)).grow(1.0D, 1.0D, 1.0D);
-            EntityRayTraceResult entityraytraceresult = ProjectileHelper.func_221273_a(entity, vec3d, vec3d2, axisalignedbb, (p_lambda$getMouseOver$0_0_) -> !p_lambda$getMouseOver$0_0_.isSpectator() && p_lambda$getMouseOver$0_0_.canBeCollidedWith(), distanceToHit);
+            EntityRayTraceResult entityraytraceresult = ProjectileHelper.rayTraceEntities(entity, vec3d, vec3d2, axisalignedbb, (p_lambda$getMouseOver$0_0_) -> !p_lambda$getMouseOver$0_0_.isSpectator() && p_lambda$getMouseOver$0_0_.canBeCollidedWith(), distanceToHit);
             if (entityraytraceresult != null) {
                 Entity entity1 = entityraytraceresult.getEntity();
                 Vec3d vec3d3 = entityraytraceresult.getHitVec();
@@ -251,8 +251,8 @@ public class InfernalMobsClient implements ISidedProxy {
 
                 int right_height = 39;
 
-                final int left = mc.func_228018_at_().getScaledWidth() / 2 + 91;
-                final int top = mc.func_228018_at_().getScaledHeight() - right_height;
+                final int left = mc.getMainWindow().getScaledWidth() / 2 + 91;
+                final int top = mc.getMainWindow().getScaledHeight() - right_height;
                 final int full = MathHelper.ceil((double) (airOverrideValue - 2) * 10.0D / 300.0D);
                 final int partial = MathHelper.ceil((double) airOverrideValue * 10.0D / 300.0D) - full;
 

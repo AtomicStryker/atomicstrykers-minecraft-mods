@@ -48,9 +48,9 @@ public class MM_Storm extends MobModifier {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
                 && mob.getDistance(target) > MIN_DISTANCE
-                && target.world.canBlockSeeSky(new BlockPos(MathHelper.floor(target.func_226277_ct_()), MathHelper.floor(target.func_226278_cu_()), MathHelper.floor(target.func_226281_cx_())))) {
+                && target.world.canBlockSeeSky(new BlockPos(MathHelper.floor(target.getPosX()), MathHelper.floor(target.getPosY()), MathHelper.floor(target.getPosZ())))) {
             nextAbilityUse = time + coolDown;
-            ((ServerWorld) mob.world).addLightningBolt(new LightningBoltEntity(mob.world, target.func_226277_ct_(), target.func_226278_cu_() - 1, target.func_226281_cx_(), false));
+            ((ServerWorld) mob.world).addLightningBolt(new LightningBoltEntity(mob.world, target.getPosX(), target.getPosY() - 1, target.getPosZ(), false));
         }
     }
 

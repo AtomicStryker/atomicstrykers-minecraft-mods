@@ -32,9 +32,9 @@ public class RendererBossGlow {
         Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
         mobsmap.keySet().stream().filter(ent -> ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVector()))
                 && ent.isAlive()).forEach(ent -> mc.worldRenderer.addParticle(ParticleTypes.WITCH,
-                false, ent.func_226277_ct_() + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
-                ent.func_226278_cu_() + ent.world.rand.nextDouble() * (double) ent.getHeight() - 0.25D,
-                ent.func_226281_cx_() + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
+                false, ent.getPosX() + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
+                ent.getPosY() + ent.world.rand.nextDouble() * (double) ent.getHeight() - 0.25D,
+                ent.getPosZ() + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
                 (ent.world.rand.nextDouble() - 0.5D) * 2.0D,
                 -ent.world.rand.nextDouble(),
                 (ent.world.rand.nextDouble() - 0.5D) * 2.0D));

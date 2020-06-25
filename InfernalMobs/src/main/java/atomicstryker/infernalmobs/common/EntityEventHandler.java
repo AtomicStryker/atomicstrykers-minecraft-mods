@@ -98,7 +98,7 @@ public class EntityEventHandler {
                  */
                 if (event.getSource() == DamageSource.CACTUS || event.getSource() == DamageSource.DROWN || event.getSource() == DamageSource.FALL || event.getSource() == DamageSource.IN_WALL
                         || event.getSource() == DamageSource.LAVA || event.getSource().getTrueSource() instanceof FakePlayer) {
-                    Tuple<Integer, Integer> cpair = new Tuple<Integer, Integer>((int) event.getEntityLiving().func_226277_ct_(), (int) event.getEntityLiving().func_226281_cx_());
+                    Tuple<Integer, Integer> cpair = new Tuple<Integer, Integer>((int) event.getEntityLiving().getPosX(), (int) event.getEntityLiving().getPosZ());
                     Float value = damageMap.get(cpair);
                     if (value == null) {
                         for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet()) {

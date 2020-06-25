@@ -1,3 +1,8 @@
+1.15.2.1
+- fix modifier disabling code not interpreting false values correctly
+- update to current forge
+- hook up ninja and ender mods to the forge "enderman teleport" event for mod interactions
+
 1.15.1.1
 - ported to mc 1.15.1
 

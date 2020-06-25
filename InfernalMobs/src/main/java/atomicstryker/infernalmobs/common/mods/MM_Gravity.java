@@ -71,9 +71,9 @@ public class MM_Gravity extends MobModifier {
         if (time > nextAbilityUse) {
             nextAbilityUse = time + coolDown;
 
-            double diffX = target.func_226277_ct_() - mob.func_226277_ct_();
+            double diffX = target.getPosX() - mob.getPosX();
             double diffZ;
-            for (diffZ = target.func_226281_cx_() - mob.func_226281_cx_(); diffX * diffX + diffZ * diffZ < 1.0E-4D; diffZ = (Math.random() - Math.random()) * 0.01D) {
+            for (diffZ = target.getPosZ() - mob.getPosZ(); diffX * diffX + diffZ * diffZ < 1.0E-4D; diffZ = (Math.random() - Math.random()) * 0.01D) {
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
 

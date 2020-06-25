@@ -247,7 +247,7 @@ public class InfernalMobsCore {
         lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER);
         lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER);
 
-        mobMods.removeIf(c -> !config.getModsEnabled().containsKey(c.getSimpleName()));
+        mobMods.removeIf(c -> !config.getModsEnabled().containsKey(c.getSimpleName()) || !config.getModsEnabled().get(c.getSimpleName()));
     }
 
     /**
@@ -528,7 +528,7 @@ public class InfernalMobsCore {
         while (xpValue > 0) {
             int xpDrop = ExperienceOrbEntity.getXPSplit(xpValue);
             xpValue -= xpDrop;
-            mob.world.addEntity(new ExperienceOrbEntity(mob.world, mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), xpDrop));
+            mob.world.addEntity(new ExperienceOrbEntity(mob.world, mob.getPosX(), mob.getPosY(), mob.getPosZ(), xpDrop));
         }
 
         dropRandomEnchantedItems(mob, mods);
@@ -550,7 +550,7 @@ public class InfernalMobsCore {
                     // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
                     // itemStack, item.getItemEnchantability());
                 }
-                ItemEntity itemEnt = new ItemEntity(mob.world, mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), itemStack);
+                ItemEntity itemEnt = new ItemEntity(mob.world, mob.getPosX(), mob.getPosY(), mob.getPosZ(), itemStack);
                 mob.world.addEntity(itemEnt);
                 modStr -= 5;
             } else {
@@ -624,7 +624,7 @@ public class InfernalMobsCore {
     }
 
     public void sendHealthPacket(LivingEntity mob) {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.func_226277_ct_(), mob.func_226278_cu_(), mob.func_226281_cx_(), 32d, mob.dimension));
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getPosX(), mob.getPosY(), mob.getPosZ(), 32d, mob.dimension));
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {

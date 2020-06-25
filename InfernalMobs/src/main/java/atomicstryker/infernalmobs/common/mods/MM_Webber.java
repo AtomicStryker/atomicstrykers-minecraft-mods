@@ -56,9 +56,9 @@ public class MM_Webber extends MobModifier {
             return;
         }
 
-        int x = MathHelper.floor(target.func_226277_ct_());
-        int y = MathHelper.floor(target.func_226278_cu_());
-        int z = MathHelper.floor(target.func_226281_cx_());
+        int x = MathHelper.floor(target.getPosX());
+        int y = MathHelper.floor(target.getPosY());
+        int z = MathHelper.floor(target.getPosZ());
 
         long time = System.currentTimeMillis();
         if (time > lastAbilityUse + coolDown) {
