@@ -1,20 +1,6 @@
 package atomicstryker.ruins.common;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.common.collect.ImmutableSet;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -30,6 +16,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RuinTemplate {
 
@@ -298,7 +291,7 @@ public class RuinTemplate {
         int y_off = -embed + ((randomOffMax > randomOffMin) ? (random.nextInt(randomOffMax - randomOffMin) + randomOffMin) : 0);
 
         // height sanity check
-        final int ceiling = ignore_ceiling ? world.getHeight() : world.getActualHeight();
+        final int ceiling = world.getHeight();
         final int yReturn = Math.max(Math.min(yBase + y_off, ceiling - height), 8);
         final int y = yReturn - y_off;
 
@@ -382,7 +375,7 @@ public class RuinTemplate {
                     yv = yReturn + y1;
                     zv = z + z1;
                     BlockPos pos = new BlockPos(xv, yv, zv);
-                    world.markAndNotifyBlock(pos, null, Blocks.AIR.getDefaultState(), world.getBlockState(pos), 2);
+                    world.markAndNotifyBlock(pos, null, Blocks.AIR.getDefaultState(), world.getBlockState(pos), 2, 512);
                 }
             }
         }
@@ -393,8 +386,7 @@ public class RuinTemplate {
             BlockState state = world.getBlockState(position);
             Block growable = state.getBlock();
             RuinsMod.LOGGER.info("Now considering bonemeal flag at {}, block: {}", position, growable);
-            if (growable instanceof IGrowable)
-            {
+            if (growable instanceof IGrowable) {
                 int count = bonemealMarker.getCount();
                 IGrowable igrowable = (IGrowable) growable;
                 int grows;

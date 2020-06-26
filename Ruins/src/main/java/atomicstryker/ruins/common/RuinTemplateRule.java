@@ -200,7 +200,7 @@ public class RuinTemplateRule {
             if (world.setBlockState(position, blockState, 2)) {
                 TileEntity entity = world.getTileEntity(position);
                 if (entity != null && tileEntityData != null) {
-                    entity = TileEntity.create(entity.write(new CompoundNBT()).merge(tileEntityData));
+                    entity = TileEntity.func_235657_b_(blockState, entity.write(new CompoundNBT()).merge(tileEntityData));
                     world.setTileEntity(position, entity);
 
                     if (entity instanceof LockableLootTileEntity) {

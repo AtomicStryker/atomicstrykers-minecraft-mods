@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -34,9 +35,9 @@ class CommandTestTemplate {
             String[] args = input == null ? new String[0] : input.split(" ");
             RuinsMod.LOGGER.info("called test command with input [{}], args count {}", input, args.length);
             int xpos, ypos, zpos;
-            xpos = sender.getPosition().getX();
-            ypos = sender.getPosition().getY();
-            zpos = sender.getPosition().getZ();
+            xpos = (int) sender.getPosX();
+            ypos = (int) sender.getPosY();
+            zpos = (int) sender.getPosZ();
             if (args.length < 4) {
                 if (args.length < 1) {
                     if (parsedRuin != null) {
@@ -44,7 +45,7 @@ class CommandTestTemplate {
                         parsedRuin.doBuild(world, world.rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
                         parsedRuin = null;
                     } else {
-                        sender.sendMessage(new TranslationTextComponent("You need to use the command with the target template name, eg. /testruin beach/LightHouse"));
+                        sender.sendMessage(new TranslationTextComponent("You need to use the command with the target template name, eg. /testruin beach/LightHouse"), Util.field_240973_b_);
                     }
                 } else {
                     tryBuild(sender, args, xpos, ypos, zpos, true);
@@ -62,7 +63,7 @@ class CommandTestTemplate {
                         tryBuild(sender, args, x, y, z, true);
                     }
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(new TranslationTextComponent("Invalid coordinates specified"));
+                    sender.sendMessage(new TranslationTextComponent("Invalid coordinates specified"), Util.field_240973_b_);
                 }
             }
         } else {
@@ -86,7 +87,7 @@ class CommandTestTemplate {
 
                 if (parsedRuin != null) {
                     if (y < 0) {
-                        final int ceiling = ignore_ceiling ? world.getHeight() : world.getActualHeight();
+                        final int ceiling = world.getHeight();
                         for (y = ceiling - 1; y > 7; y--) {
                             BlockPos pos = new BlockPos(x, y, z);
                             final BlockState b = world.getBlockState(pos);
@@ -97,7 +98,7 @@ class CommandTestTemplate {
                             if (parsedRuin.isAcceptableSurface(b)) {
                                 break;
                             }
-                            sender.sendMessage(new TranslationTextComponent("Could not find acceptable Y coordinate"));
+                            sender.sendMessage(new TranslationTextComponent("Could not find acceptable Y coordinate"), Util.field_240973_b_);
                             return;
                         }
                         ++y;
@@ -106,18 +107,18 @@ class CommandTestTemplate {
                     if (parsedRuin.doBuild(world, world.rand, x, y, z, rotation, is_player, ignore_ceiling) >= 0) {
                         parsedRuin = null;
                     } else {
-                        sender.sendMessage(new TranslationTextComponent("EventRuinTemplateSpawn returned as cancelled, not building that."));
+                        sender.sendMessage(new TranslationTextComponent("EventRuinTemplateSpawn returned as cancelled, not building that."), Util.field_240973_b_);
                     }
                 } else {
-                    sender.sendMessage(new TranslationTextComponent("Could not parse Ruin of file " + file));
+                    sender.sendMessage(new TranslationTextComponent("Could not parse Ruin of file " + file), Util.field_240973_b_);
                 }
             } catch (RuinTemplate.IncompatibleModException e) {
-                sender.sendMessage(new TranslationTextComponent(e.getMessage()));
+                sender.sendMessage(new TranslationTextComponent(e.getMessage()), Util.field_240973_b_);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            sender.sendMessage(new TranslationTextComponent("Could not open/write file " + file));
+            sender.sendMessage(new TranslationTextComponent("Could not open/write file " + file), Util.field_240973_b_);
         }
     }
 

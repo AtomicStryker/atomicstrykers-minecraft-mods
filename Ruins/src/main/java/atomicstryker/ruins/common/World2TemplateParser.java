@@ -1,5 +1,20 @@
 package atomicstryker.ruins.common;
 
+import com.google.common.collect.ImmutableList;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTables;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,21 +23,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.ImmutableList;
-
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootTables;
 
 class World2TemplateParser extends Thread {
 
@@ -102,7 +102,7 @@ class World2TemplateParser extends Thread {
     public void run() {
 
         if (templateHelperBlock.blockState.getBlock() == Blocks.AIR) {
-            player.sendMessage(new TranslationTextComponent("Template Parse fail, chosen Block was air WTF?!"));
+            player.sendMessage(new TranslationTextComponent("Template Parse fail, chosen Block was air WTF?!"), Util.field_240973_b_);
             return;
         }
 
@@ -141,20 +141,20 @@ class World2TemplateParser extends Thread {
         zLength = 1 + zmax - lowestZ;
 
         readBlocks(world);
-        player.sendMessage(new TranslationTextComponent("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
+        player.sendMessage(new TranslationTextComponent("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength), Util.field_240973_b_);
 
         File folder = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/");
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
-                player.sendMessage(new TranslationTextComponent("Failed to create folder structure: " + folder));
+                player.sendMessage(new TranslationTextComponent("Failed to create folder structure: " + folder), Util.field_240973_b_);
                 return;
             }
-            player.sendMessage(new TranslationTextComponent("Created folder structure: " + folder));
+            player.sendMessage(new TranslationTextComponent("Created folder structure: " + folder), Util.field_240973_b_);
         }
         File templateFile = new File(folder, fileName + ".tml");
         toFile(templateFile);
 
-        player.sendMessage(new TranslationTextComponent("Success writing templatefile " + templateFile));
+        player.sendMessage(new TranslationTextComponent("Success writing templatefile " + templateFile), Util.field_240973_b_);
     }
 
     private void checkLockup() {
@@ -371,8 +371,8 @@ class World2TemplateParser extends Thread {
             CommandTestTemplate.parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName());
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendMessage(new TranslationTextComponent("Something broke! See server logfile for exception message and get it to AtomicStryker."));
-            player.sendMessage(new TranslationTextComponent("First line of stacktrace: " + e.getMessage()));
+            player.sendMessage(new TranslationTextComponent("Something broke! See server logfile for exception message and get it to AtomicStryker."), Util.field_240973_b_);
+            player.sendMessage(new TranslationTextComponent("First line of stacktrace: " + e.getMessage()), Util.field_240973_b_);
         }
     }
 

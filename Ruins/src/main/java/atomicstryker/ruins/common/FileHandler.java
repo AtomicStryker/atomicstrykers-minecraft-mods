@@ -1,9 +1,11 @@
 package atomicstryker.ruins.common;
 
 import com.google.common.io.Files;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -19,7 +21,7 @@ class FileHandler {
 
     private final static int WEIGHT = 0, CHANCE = 1;
     private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<>();
-    private final DimensionType dimension;
+    private final ResourceLocation dimension;
     private final HashMap<String, double[]> vars = new HashMap<>();
 
     private static IForgeRegistry<Biome> biomeRegistry = null;
@@ -41,7 +43,7 @@ class FileHandler {
 
     private int templateCount;
 
-    public FileHandler(File worldPath, DimensionType dim) {
+    public FileHandler(File worldPath, ResourceLocation dim) {
         saveFolder = worldPath;
         loaded = false;
         templateCount = 0;
@@ -215,7 +217,7 @@ class FileHandler {
                 anyRuinsMinDistance = Float.parseFloat(check[1]);
             } else if (check[0].equals("anySpawnMinDistance")) {
                 final int value = Integer.parseInt(check[1]);
-                anySpawnMinDistance = value > 0 ? value : 0;
+                anySpawnMinDistance = Math.max(value, 0);
             } else if (check[0].equals("anySpawnMaxDistance")) {
                 final int value = Integer.parseInt(check[1]);
                 anySpawnMaxDistance = value > 0 ? value : Integer.MAX_VALUE;
@@ -227,7 +229,7 @@ class FileHandler {
                 for (int i = 0; i < ints.length; i++) {
                     allowedDimensions[i] = Integer.parseInt(ints[i]);
                 }
-            } else if (dimension == DimensionType.THE_NETHER && check[0].equals("enableFixedWidthRuleIds")) {
+            } else if (dimension.getPath().equals("the_nether") && check[0].equals("enableFixedWidthRuleIds")) {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
@@ -261,7 +263,7 @@ class FileHandler {
         Biome bgb;
         File[] listFiles = path.listFiles();
 
-        String dimensionName = DimensionType.getKey(dimension).getPath();
+        String dimensionName = dimension.getPath();
         if (listFiles != null) {
             for (File f : listFiles) {
                 try {
