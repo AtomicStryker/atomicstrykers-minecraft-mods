@@ -37,7 +37,7 @@ public class FinderCompassLogic {
                 nextTime = System.currentTimeMillis() + 1000L;
             }
 
-            BlockPos pos = new BlockPos(mc.player.func_226277_ct_(), mc.player.func_226278_cu_(), mc.player.func_226281_cx_());
+            BlockPos pos = new BlockPos(mc.player.getPositionVec());
             if (!pos.equals(oldPos)) {
                 oldPos = pos;
                 movement = true;
@@ -63,7 +63,7 @@ public class FinderCompassLogic {
                 if (is15SecInterval && currentSetting.getFeatureNeedle() != null) {
                     FinderCompassMod.instance.networkHelper.sendPacketToServer(
                             new FeatureSearchPacket(mc.player.getName().getString(), currentSetting.getFeatureNeedle(),
-                                    mc.player.getPosition().getX(), mc.player.getPosition().getY(), mc.player.getPosition().getZ()));
+                                    (int) mc.player.getPosX(), (int) mc.player.getPosY(), (int) mc.player.getPosZ()));
                 }
 
                 while (iter.hasNext()) {

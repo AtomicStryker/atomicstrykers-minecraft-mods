@@ -11,8 +11,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.state.IProperty;
-import net.minecraft.state.IStateHolder;
+import net.minecraft.state.Property;
+import net.minecraft.state.StateHolder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -104,7 +104,7 @@ public class FinderCompassMod {
         Map<String, String> blockMap = new HashMap<>();
 
         blockMap.put("block", ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString());
-        for (IProperty<?> property : blockState.getBlock().getStateContainer().getProperties()) {
+        for (Property<?> property : blockState.getBlock().getStateContainer().getProperties()) {
             blockMap.put(property.getName(), blockState.get(property).toString());
         }
         Gson gson = new Gson();
@@ -120,13 +120,13 @@ public class FinderCompassMod {
             return null;
         }
         BlockState reconstructedState = block.getDefaultState();
-        for (IProperty<?> property : block.getStateContainer().getProperties()) {
+        for (Property<?> property : block.getStateContainer().getProperties()) {
             reconstructedState = setValueHelper(reconstructedState, property, property.getName(), blockMap.get(property.getName()));
         }
         return reconstructedState;
     }
 
-    private <S extends IStateHolder<S>, T extends Comparable<T>> S setValueHelper(S blockState, IProperty<T> property, String propertyName, String valueString) {
+    private <S extends StateHolder<?, S>, T extends Comparable<T>> S setValueHelper(S blockState, Property<T> property, String propertyName, String valueString) {
         Optional<T> optional = property.parseValue(valueString);
         if (optional.isPresent()) {
             return (blockState.with(property, optional.get()));
@@ -208,6 +208,39 @@ public class FinderCompassMod {
             shinyStones.setNeedles(needleMap);
             shinyStones.setFeatureNeedle("Stronghold");
             needleSetList.add(shinyStones);
+        }
+
+        {
+            CompassConfig.NeedleSet netherDelights = new CompassConfig.NeedleSet();
+            netherDelights.setName("Nether Delights");
+            Map<String, int[]> needleMap = new HashMap<>();
+
+            {
+                // nether_gold_ore
+                BlockState state = Blocks.field_235334_I_.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                // ancient_debris
+                BlockState state = Blocks.field_235398_nh_.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
+                needleMap.put(string, setting);
+            }
+
+            {
+                BlockState state = Blocks.NETHER_QUARTZ_ORE.getDefaultState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{55, 70, 220, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
+            netherDelights.setNeedles(needleMap);
+            netherDelights.setFeatureNeedle("Fortress");
+            needleSetList.add(netherDelights);
         }
 
         compassConfig.setNeedles(needleSetList);

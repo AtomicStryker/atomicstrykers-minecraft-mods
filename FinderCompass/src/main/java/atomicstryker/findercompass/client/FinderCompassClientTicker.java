@@ -57,7 +57,7 @@ public class FinderCompassClientTicker {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player.world.playSound(null, new BlockPos(tick.player), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
+                        tick.player.world.playSound(null, new BlockPos(tick.player.getPositionVec()), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;
@@ -92,7 +92,7 @@ public class FinderCompassClientTicker {
         FinderCompassLogic.hasFeature = false;
 
         if (mc.world != null) {
-            mc.world.playSound(null, new BlockPos(mc.player), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
+            mc.world.playSound(null, new BlockPos(mc.player.getPositionVec()), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
             mc.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent("Finder Compass Mode: " + currentSetting.getName()));
         }
     }

@@ -100,12 +100,9 @@ public class CompassRenderHook {
     private static float computeNeedleHeading(BlockPos coords) {
         double angleRadian = 0.0D;
         if (mc.world != null && mc.player != null) {
-            double xdiff = mc.player.func_226277_ct_() - (coords.getX() + 0.5D);
-            double zdiff = mc.player.func_226281_cx_() - (coords.getZ() + 0.5D);
+            double xdiff = mc.player.getPosX() - (coords.getX() + 0.5D);
+            double zdiff = mc.player.getPosZ() - (coords.getZ() + 0.5D);
             angleRadian = (mc.player.rotationYaw - 90.0F) * Math.PI / 180.0D - Math.atan2(zdiff, xdiff);
-            if (mc.world.dimension.isNether()) {
-                angleRadian = Math.random() * Math.PI * 2.0D;
-            }
         }
 
         return (float) -(angleRadian * 180f / Math.PI);
