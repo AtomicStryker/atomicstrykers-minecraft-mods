@@ -606,7 +606,12 @@ public class RuinTemplateRule
         else if (dataString.startsWith("ChestGenHook:"))
         {
             String[] s = dataString.split(":");
-            int targetCount = s.length > 1 ? Integer.valueOf(s[2].split("-")[0]) : 0;
+            if (s.length > 3)
+            {
+                s[1] = String.join(":", s[1], s[2]);
+                s[2] = s[3];
+            }
+            int targetCount = s.length > 2 ? Integer.valueOf(s[2].split("-")[0]) : 0;
             addChestGenChest(world, random, x, y, z, s[1], targetCount, blocknum, rotate);
         }
         else if (dataString.startsWith("IInventory;"))
@@ -927,14 +932,7 @@ public class RuinTemplateRule
         TileEntityChest chest = (TileEntityChest) realizeBlock(world, x, y, z, Blocks.CHEST, blocknum, direction);
         if (chest != null)
         {
-            ResourceLocation lootTable;
-            if (gen.contains(":")) {
-                String[] pair = gen.split(":");
-                lootTable = new ResourceLocation(pair[0], pair[1]);
-            } else {
-                lootTable = new ResourceLocation("minecraft", gen);
-            }
-
+            final ResourceLocation lootTable = new ResourceLocation(gen);
             LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
 
             LootContext.Builder lootContextBuilder = new LootContext.Builder((WorldServer) world);
@@ -1065,7 +1063,12 @@ public class RuinTemplateRule
             if (itemDataWithoutNBT.startsWith("ChestGenHook:")) // ChestGenHook:dungeonChest:5
             {
                 String[] input = itemDataWithoutNBT.split(":");
-                ResourceLocation lootTable = new ResourceLocation("minecraft", input[1]);
+                if (input.length > 3)
+                {
+                    input[1] = String.join(":", input[1], input[2]);
+                    input[2] = input[3];
+                }
+                ResourceLocation lootTable = new ResourceLocation(input[1]);
                 LootTable loottable = world.getLootTableManager().getLootTableFromLocation(lootTable);
                 LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer) world);
                 loottable.fillInventory((IInventory) te, random, lootcontext$builder.build());
