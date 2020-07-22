@@ -25,6 +25,7 @@ class RuinGenerator {
     private final RuinStats stats;
     private final ConcurrentSkipListSet<RuinData> registeredRuins;
     private final File ruinsDataFile;
+    private final File ruinsDataFileOld;
     private final File ruinsDataFileWriting;
     private int numTries = 0, LastNumTries = 0;
     private AtomicBoolean flushing;
@@ -36,6 +37,7 @@ class RuinGenerator {
         flushing = new AtomicBoolean(false);
 
         ruinsDataFile = new File(rh.saveFolder, fileName);
+        ruinsDataFileOld = new File(rh.saveFolder, fileName + "_old");
         ruinsDataFileWriting = new File(rh.saveFolder, fileName + "_writing");
 
         new LoadThread().start();
@@ -361,12 +363,23 @@ class RuinGenerator {
                 // prevent conflict with load operation
                 synchronized (ruinsDataFile) {
                     if (ruinsDataFile.exists()) {
-                        if (!ruinsDataFile.delete()) {
-                            throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
+                        // account for nonatomicity of file deletion by renaming file first
+                        if (!ruinsDataFileOld.exists()) {
+                            if (!ruinsDataFile.renameTo(ruinsDataFileOld)) {
+                                throw new RuntimeException("Ruins failed to rename file " + ruinsDataFile);
+                            }
+                        } else {
+                            // if "old" file exists for some reason, straight delete and hope for the best
+                            if (!ruinsDataFile.delete()) {
+                                throw new RuntimeException("Ruins failed to delete file " + ruinsDataFile);
+                            }
+                        }
+                        if (!ruinsDataFileOld.delete()) {
+                            throw new RuntimeException("Ruins failed to delete file " + ruinsDataFileOld);
                         }
                     }
                     if (!ruinsDataFileWriting.renameTo(ruinsDataFile)) {
-                        throw new RuntimeException("Ruins crashed trying to access file " + ruinsDataFileWriting);
+                        throw new RuntimeException("Ruins failed to rename file " + ruinsDataFileWriting);
                     }
                 }
             } catch (IOException e) {
