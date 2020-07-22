@@ -610,3 +610,5 @@ a: setAccessible now true
 + ported to Minecraft 1.15.2 (Forge 31.2.0)
 + don't be a coremod; install pseudo-feature instead
 + put zombies on pirate ships; drowned don't spawn above sea level
+
+1.15.2.2
