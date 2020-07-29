@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class FinderCompassClientTicker {
 
     public static FinderCompassClientTicker instance;
-    private final Minecraft mc;
+    private Minecraft mc;
     public FinderCompassLogic compassLogic;
     private CompassSetting currentSetting;
     private Item COMPASS_ITEM_ID;
@@ -32,9 +32,7 @@ public class FinderCompassClientTicker {
 
     public FinderCompassClientTicker() {
         instance = this;
-        mc = Minecraft.getInstance();
         repeat = false;
-        settingList = FinderCompassMod.instance.settingList;
         currentSetting = null;
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -43,9 +41,11 @@ public class FinderCompassClientTicker {
     public void onLoad() {
         COMPASS_ITEM_ID = Items.COMPASS;
 
+        mc = Minecraft.getInstance();
         ItemModelMesher mesher = mc.getItemRenderer().getItemModelMesher();
         mesher.register(COMPASS_ITEM_ID, new ModelResourceLocation("compass", "inventory"));
 
+        settingList = FinderCompassMod.instance.settingList;
         compassLogic = new FinderCompassLogic(mc);
     }
 

@@ -9,11 +9,35 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.io.File;
 
 public class FinderCompassClient implements ISidedProxy {
+
+    /**
+     * constructor with event bus registering of ourselves
+     */
+    public FinderCompassClient() {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void renderHandHook(RenderHandEvent event) {
+        CompassRenderHook.renderItemInHandHook(event.getItemStack());
+    }
+
+    @Override
+    public void commonSetup() {
+        if (FinderCompassClientTicker.instance == null) {
+            FinderCompassClientTicker.instance = new FinderCompassClientTicker();
+            FinderCompassClientTicker.instance.onLoad();
+            FinderCompassClientTicker.instance.switchSetting();
+        }
+    }
 
     @Override
     public File getMcFolder() {

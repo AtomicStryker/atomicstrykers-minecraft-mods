@@ -20,11 +20,21 @@ public class CompassRenderHook {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }
-            renderCompassNeedles();
+            renderCompassNeedles(false);
         }
     }
 
-    private static void renderCompassNeedles() {
+    public static void renderItemInHandHook(ItemStack stack) {
+        if (stack.getItem() == Items.COMPASS) {
+            if (mc == null) {
+                mc = Minecraft.getInstance();
+            }
+            // TODO: leave this disabled until implemented
+            // renderCompassNeedles(true);
+        }
+    }
+
+    private static void renderCompassNeedles(boolean inHandTranslations) {
         // save current ogl state for later
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 
@@ -36,6 +46,11 @@ public class CompassRenderHook {
 
         // save modelview matrix for later restoration
         GL11.glPushMatrix();
+
+        if (inHandTranslations) {
+            // TODO: need to mimic translations from FirstPersonRenderer.renderArmFirstPerson to get to where the inhand needles should render
+        }
+
         // translate directly above the normal compass render and center a bit
         GL11.glTranslatef(0.025f, 0.025f, 1.001f);
 
@@ -54,7 +69,6 @@ public class CompassRenderHook {
 
         // restore ogl state
         GL11.glPopAttrib();
-
         // restore modelview matrix
         GL11.glPopMatrix();
     }

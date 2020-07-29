@@ -15,6 +15,11 @@ import java.io.File;
 public class FinderCompassServer implements ISidedProxy {
 
     @Override
+    public void commonSetup() {
+        // NOOP
+    }
+
+    @Override
     public File getMcFolder() {
         MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
         return server.getFile("");

@@ -2,7 +2,6 @@ package atomicstryker.findercompass.common;
 
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClient;
-import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
@@ -15,14 +14,11 @@ import net.minecraft.state.Property;
 import net.minecraft.state.StateHolder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +36,7 @@ public class FinderCompassMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static FinderCompassMod instance;
-    public static ISidedProxy proxy = DistExecutor.runForDist(() -> () -> new FinderCompassClient(), () -> () -> new FinderCompassServer());
+    public static ISidedProxy proxy = DistExecutor.safeRunForDist(() -> FinderCompassClient::new, () -> FinderCompassServer::new);
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
@@ -48,18 +44,17 @@ public class FinderCompassMod {
 
     public FinderCompassMod() {
         instance = this;
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::preInit);
-        modEventBus.addListener(this::clientSetup);
         MinecraftForge.EVENT_BUS.register(this);
         networkHelper = new NetworkHelper("findercompass", HandshakePacket.class, FeatureSearchPacket.class);
     }
 
-    public void preInit(FMLCommonSetupEvent evt) {
+    @SubscribeEvent
+    public void serverStarted(FMLServerStartedEvent evt) {
         compassConfig = createDefaultConfig();
         try {
             compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder(), File.separator + "config" + File.separator + "findercompass.cfg"), compassConfig);
             loadSettingListFromConfig(compassConfig);
+            proxy.commonSetup();
         } catch (IOException e) {
             LOGGER.error("IOException parsing config", e);
         }
@@ -87,16 +82,6 @@ public class FinderCompassMod {
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayerEntity) event.getPlayer());
-    }
-
-    @SubscribeEvent
-    public void clientSetup(TickEvent.ClientTickEvent evt) {
-        // hopefully this only executes on client?
-        if (FinderCompassClientTicker.instance == null) {
-            FinderCompassClientTicker.instance = new FinderCompassClientTicker();
-            FinderCompassClientTicker.instance.onLoad();
-            FinderCompassClientTicker.instance.switchSetting();
-        }
     }
 
     private String getStringFromBlockState(BlockState blockState) {
