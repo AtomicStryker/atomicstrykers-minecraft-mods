@@ -32,11 +32,9 @@ public class FinderCompassClient implements ISidedProxy {
 
     @Override
     public void commonSetup() {
-        if (FinderCompassClientTicker.instance == null) {
-            FinderCompassClientTicker.instance = new FinderCompassClientTicker();
-            FinderCompassClientTicker.instance.onLoad();
-            FinderCompassClientTicker.instance.switchSetting();
-        }
+        FinderCompassClientTicker.instance = new FinderCompassClientTicker();
+        FinderCompassClientTicker.instance.onLoad();
+        FinderCompassClientTicker.instance.switchSetting();
     }
 
     @Override

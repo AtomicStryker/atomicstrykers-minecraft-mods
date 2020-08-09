@@ -2,6 +2,7 @@ package atomicstryker.findercompass.common;
 
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClient;
+import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
@@ -13,6 +14,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateHolder;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -50,13 +52,26 @@ public class FinderCompassMod {
 
     @SubscribeEvent
     public void serverStarted(FMLServerStartedEvent evt) {
-        compassConfig = createDefaultConfig();
-        try {
-            compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder(), File.separator + "config" + File.separator + "findercompass.cfg"), compassConfig);
-            loadSettingListFromConfig(compassConfig);
-            proxy.commonSetup();
-        } catch (IOException e) {
-            LOGGER.error("IOException parsing config", e);
+        // dedicated server starting point
+        initIfNeeded();
+    }
+
+    @SubscribeEvent
+    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+        // client starting point, also local servers
+        initIfNeeded();
+    }
+
+    private void initIfNeeded() {
+        if (FinderCompassClientTicker.instance == null) {
+            compassConfig = createDefaultConfig();
+            try {
+                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder(), File.separator + "config" + File.separator + "findercompass.cfg"), compassConfig);
+                loadSettingListFromConfig(compassConfig);
+                proxy.commonSetup();
+            } catch (IOException e) {
+                LOGGER.error("IOException parsing config", e);
+            }
         }
     }
 

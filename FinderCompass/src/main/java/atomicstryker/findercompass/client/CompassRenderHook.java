@@ -16,7 +16,7 @@ public class CompassRenderHook {
     private static Minecraft mc;
 
     public static void renderItemHook(ItemStack stack) {
-        if (stack.getItem() == Items.COMPASS) {
+        if (FinderCompassClientTicker.instance != null && stack.getItem() == Items.COMPASS) {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }
@@ -25,7 +25,7 @@ public class CompassRenderHook {
     }
 
     public static void renderItemInHandHook(ItemStack stack) {
-        if (stack.getItem() == Items.COMPASS) {
+        if (FinderCompassClientTicker.instance != null && stack.getItem() == Items.COMPASS) {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }
