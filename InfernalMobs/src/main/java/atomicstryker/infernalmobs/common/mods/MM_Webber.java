@@ -73,7 +73,7 @@ public class MM_Webber extends MobModifier {
 
             lastAbilityUse = time;
             target.world.setBlockState(new BlockPos(x, y + offset, z), Blocks.COBWEB.getDefaultState());
-            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
         }
     }
 

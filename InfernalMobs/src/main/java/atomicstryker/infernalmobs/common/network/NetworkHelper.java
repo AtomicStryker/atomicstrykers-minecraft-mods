@@ -2,8 +2,9 @@ package atomicstryker.infernalmobs.common.network;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -104,9 +105,9 @@ public class NetworkHelper {
      * @param packet    to send
      * @param dimension serverside dim id to use
      */
-    public void sendPacketToAllInDimension(IPacket packet, int dimension) {
+    public void sendPacketToAllInDimension(IPacket packet, RegistryKey<World> dimension) {
         checkClass(packet.getClass());
-        packetChannel.send(PacketDistributor.DIMENSION.with(() -> DimensionType.getById(dimension)), packet);
+        packetChannel.send(PacketDistributor.DIMENSION.with(() -> dimension), packet);
     }
 
     /**

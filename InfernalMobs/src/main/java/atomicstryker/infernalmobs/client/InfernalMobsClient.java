@@ -6,6 +6,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.mods.MM_Gravity;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IngameGui;
@@ -17,7 +18,11 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -119,21 +124,22 @@ public class InfernalMobsClient implements ISidedProxy {
 
                 int lifeBarLeft = (int) (mod.getActualHealth(ent) / mod.getActualMaxHealth(ent) * (float) (lifeBarLength + 1));
                 byte y = 12;
-                gui.blit(x, y, 0, 74, lifeBarLength, 5);
-                gui.blit(x, y, 0, 74, lifeBarLength, 5);
+                MatrixStack matrixStack = event.getMatrixStack();
+                gui.blit(matrixStack, x, y, 0, 74, lifeBarLength, 5);
+                gui.blit(matrixStack, x, y, 0, 74, lifeBarLength, 5);
 
                 if (lifeBarLeft > 0) {
-                    gui.blit(x, y, 0, 79, lifeBarLeft, 5);
+                    gui.blit(matrixStack, x, y, 0, 79, lifeBarLeft, 5);
                 }
 
                 int yCoord = 10;
-                fontR.drawStringWithShadow(buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, yCoord, 0x2F96EB);
+                fontR.drawStringWithShadow(matrixStack, buffer, screenwidth / 2 - fontR.getStringWidth(buffer) / 2, yCoord, 0x2F96EB);
 
                 String[] display = mod.getDisplayNames();
                 int i = 0;
                 while (i < display.length && display[i] != null) {
                     yCoord += 10;
-                    fontR.drawStringWithShadow(display[i], screenwidth / 2 - fontR.getStringWidth(display[i]) / 2, yCoord, 0xffffff);
+                    fontR.drawStringWithShadow(matrixStack, display[i], screenwidth / 2 - fontR.getStringWidth(display[i]) / 2, yCoord, 0xffffff);
                     i++;
                 }
 
@@ -158,17 +164,17 @@ public class InfernalMobsClient implements ISidedProxy {
 
             double distance = NAME_VISION_DISTANCE;
             RayTraceResult result = entity.pick(distance, partialTicks, false);
-            Vec3d vec3d = entity.getEyePosition(partialTicks);
+            Vector3d vec3d = entity.getEyePosition(partialTicks);
 
             double distanceToHit = result.getHitVec().squareDistanceTo(vec3d);
 
-            Vec3d vec3d1 = entity.getLook(1.0F);
-            Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
+            Vector3d vec3d1 = entity.getLook(1.0F);
+            Vector3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
             AxisAlignedBB axisalignedbb = entity.getBoundingBox().expand(vec3d1.scale(distance)).grow(1.0D, 1.0D, 1.0D);
             EntityRayTraceResult entityraytraceresult = ProjectileHelper.rayTraceEntities(entity, vec3d, vec3d2, axisalignedbb, (p_lambda$getMouseOver$0_0_) -> !p_lambda$getMouseOver$0_0_.isSpectator() && p_lambda$getMouseOver$0_0_.canBeCollidedWith(), distanceToHit);
             if (entityraytraceresult != null) {
                 Entity entity1 = entityraytraceresult.getEntity();
-                Vec3d vec3d3 = entityraytraceresult.getHitVec();
+                Vector3d vec3d3 = entityraytraceresult.getHitVec();
                 double d2 = vec3d.squareDistanceTo(vec3d3);
                 if (d2 < distanceToHit && entity1 instanceof LivingEntity) {
                     return (LivingEntity) entity1;
@@ -257,7 +263,7 @@ public class InfernalMobsClient implements ISidedProxy {
                 final int partial = MathHelper.ceil((double) airOverrideValue * 10.0D / 300.0D) - full;
 
                 for (int i = 0; i < full + partial; ++i) {
-                    mc.ingameGUI.blit(left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
+                    mc.ingameGUI.blit(event.getMatrixStack(), left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
                 }
                 GL11.glDisable(GL11.GL_BLEND);
             }

@@ -59,7 +59,7 @@ public class MM_Blastoff extends MobModifier {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse) {
             nextAbilityUse = time + coolDown;
-            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SLIME_JUMP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_SLIME_JUMP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
 
             if (target.world.isRemote || !(target instanceof ServerPlayerEntity)) {
                 target.addVelocity(0, 1.1D, 0);

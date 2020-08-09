@@ -25,7 +25,7 @@ public class InfernalMobsConfig {
     private List<String> droppedItemIDsUltra = new ArrayList<>();
     private List<String> droppedItemIDsInfernal = new ArrayList<>();
 
-    private List<Integer> dimensionIDBlackList = new ArrayList<>();
+    private List<String> dimensionIDBlackList = new ArrayList<>();
 
     private Map<String, Boolean> modsEnabled = new HashMap<>();
 
@@ -137,11 +137,11 @@ public class InfernalMobsConfig {
         this.droppedItemIDsInfernal = droppedItemIDsInfernal;
     }
 
-    public List<Integer> getDimensionIDBlackList() {
+    public List<String> getDimensionIDBlackList() {
         return dimensionIDBlackList;
     }
 
-    public void setDimensionIDBlackList(List<Integer> dimensionIDBlackList) {
+    public void setDimensionIDBlackList(List<String> dimensionIDBlackList) {
         this.dimensionIDBlackList = dimensionIDBlackList;
     }
 

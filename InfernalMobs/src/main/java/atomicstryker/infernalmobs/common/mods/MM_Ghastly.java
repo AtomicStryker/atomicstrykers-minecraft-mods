@@ -4,7 +4,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class MM_Ghastly extends MobModifier {
 
@@ -53,7 +53,7 @@ public class MM_Ghastly extends MobModifier {
             mob.world.playEvent(null, 1008, new BlockPos((int) mob.getPosX(), (int) mob.getPosY(), (int) mob.getPosZ()), 0);
             FireballEntity entFB = new FireballEntity(mob.world, mob, diffX, diffY, diffZ);
             double spawnOffset = 2.0D;
-            Vec3d mobLook = mob.getLook(1.0F);
+            Vector3d mobLook = mob.getLook(1.0F);
             double newX = mob.getPosX() + mobLook.x * spawnOffset;
             double newY = mob.getPosY() + (double) (mob.getHeight() / 2.0F) + 0.5D;
             double newZ = mob.getPosZ() + mobLook.z * spawnOffset;

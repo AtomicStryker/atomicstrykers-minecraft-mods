@@ -47,7 +47,7 @@ public class MM_Sticky extends MobModifier {
                 ItemEntity drop = p.dropItem(p.inventory.decrStackSize(p.inventory.currentItem, 1), false);
                 if (drop != null) {
                     drop.setPickupDelay(50);
-                    mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+                    mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
                 }
             }
         }

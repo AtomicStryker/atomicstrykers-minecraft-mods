@@ -77,7 +77,7 @@ public class MM_Gravity extends MobModifier {
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
 
-            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
 
             if (mob.world.isRemote || !(target instanceof ServerPlayerEntity)) {
                 knockBack(target, diffX, diffZ);

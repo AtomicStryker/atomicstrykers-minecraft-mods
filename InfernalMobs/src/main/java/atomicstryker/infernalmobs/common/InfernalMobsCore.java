@@ -9,7 +9,7 @@ import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
@@ -20,17 +20,18 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
@@ -46,7 +47,7 @@ public class InfernalMobsCore {
 
     static final String MOD_ID = "infernalmobs";
     public static Logger LOGGER;
-    public static ISidedProxy proxy = DistExecutor.runForDist(() -> InfernalMobsClient::new, () -> InfernalMobsServer::new);
+    public static ISidedProxy proxy = DistExecutor.safeRunForDist(() -> InfernalMobsClient::new, () -> InfernalMobsServer::new);
     private static InfernalMobsCore instance;
     private final long existCheckDelay = 5000L;
     public NetworkHelper networkHelper;
@@ -61,7 +62,7 @@ public class InfernalMobsCore {
     private HashMap<String, Double> classesHealthMap;
     private Entity infCheckA;
     private Entity infCheckB;
-    private ArrayList<Class<? extends MobModifier>> mobMods;
+    private ArrayList<Class<? extends MobModifier>> mobMods = null;
     private ArrayList<Enchantment> enchantmentList;
     /*
      * saves the last timestamp of long term affected players (eg choke) reset
@@ -78,8 +79,6 @@ public class InfernalMobsCore {
         classesHealthMap = new HashMap<>();
         modifiedPlayerTimes = new HashMap<>();
 
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
         proxy.preInit();
 
@@ -111,22 +110,36 @@ public class InfernalMobsCore {
         return "InfernalMobsMod";
     }
 
-    public void commonSetup(FMLCommonSetupEvent evt) {
-        prepareModList();
-
-        proxy.load();
-
-        configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
-        loadConfig();
-
-        LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
-        LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
+    @SubscribeEvent
+    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+        // client starting point, also local servers
+        initIfNeeded();
     }
 
     @SubscribeEvent
-    public void serverStarted(FMLServerStartingEvent evt) {
-        evt.getCommandDispatcher().register(InfernalCommandFindEntityClass.BUILDER);
-        evt.getCommandDispatcher().register(InfernalCommandSpawnInfernal.BUILDER);
+    public void commonSetup(FMLServerStartedEvent evt) {
+        // dedicated server starting point
+        initIfNeeded();
+    }
+
+    private void initIfNeeded() {
+        if (mobMods == null) {
+            prepareModList();
+
+            proxy.load();
+
+            configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
+            loadConfig();
+
+            LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
+            LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
+        }
+    }
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent evt) {
+        evt.getDispatcher().register(InfernalCommandFindEntityClass.BUILDER);
+        evt.getDispatcher().register(InfernalCommandSpawnInfernal.BUILDER);
     }
 
     /**
@@ -261,10 +274,16 @@ public class InfernalMobsCore {
             if (!getIsRareEntity(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.world.rand.nextInt(config.getEliteRarity()) == 0)) {
                     try {
-                        Integer tEntityDim = entity.dimension.getId();
+                        /*
+                            get server world from resource location:
+                            RegistryKey<World> registrykey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, resourcelocation);
+                            ServerWorld serverworld = p_212592_0_.getSource().getServer().getWorld(registrykey);
+                         */
+                        RegistryKey<World> worldRegistryKey = entity.getEntityWorld().func_234923_W_();
+                        ResourceLocation worldResourceLocation = worldRegistryKey.func_240901_a_();
 
-                        // Skip Infernal-Spawn when Dimension is Blacklisted
-                        if (!config.getDimensionIDBlackList().contains(tEntityDim)) {
+                        // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
+                        if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
                             MobModifier mod = instance.createMobModifiers(entity);
                             if (mod != null) {
                                 proxy.getRareMobs().put(entity, mod);
@@ -365,7 +384,7 @@ public class InfernalMobsCore {
      * @param amount value to set
      */
     public void setEntityHealthPastMax(LivingEntity entity, float amount) {
-        entity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(amount);
+        entity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(amount);
         entity.setHealth(amount);
         instance.sendHealthPacket(entity);
     }
@@ -458,6 +477,8 @@ public class InfernalMobsCore {
      */
     public void addEntityModifiersByString(LivingEntity entity, String savedMods) {
         if (!getIsRareEntity(entity)) {
+            // this can fire before the localhost client has logged in, loading a world save, need to init the mod!
+            initIfNeeded();
             MobModifier mod = stringToMobModifiers(savedMods);
             if (mod != null) {
                 proxy.getRareMobs().put(entity, mod);
@@ -624,7 +645,7 @@ public class InfernalMobsCore {
     }
 
     public void sendHealthPacket(LivingEntity mob) {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getPosX(), mob.getPosY(), mob.getPosZ(), 32d, mob.dimension));
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getPosX(), mob.getPosY(), mob.getPosZ(), 32d, mob.getEntityWorld().func_234923_W_()));
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {

@@ -11,7 +11,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class MM_Ninja extends MobModifier {
 
@@ -47,7 +47,7 @@ public class MM_Ninja extends MobModifier {
     }
 
     private boolean teleportToEntity(LivingEntity mob, Entity par1Entity) {
-        Vec3d vector = new Vec3d(mob.getPosX() - par1Entity.getPosX(), mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.getPosY() + (double) par1Entity.getEyeHeight(),
+        Vector3d vector = new Vector3d(mob.getPosX() - par1Entity.getPosX(), mob.getBoundingBox().minY + (double) (mob.getHeight() / 2.0F) - par1Entity.getPosY() + (double) par1Entity.getEyeHeight(),
                 mob.getPosZ() - par1Entity.getPosZ());
         vector = vector.normalize();
         double telDist = 8.0D;
@@ -85,7 +85,7 @@ public class MM_Ninja extends MobModifier {
 
         if (hitGround) {
             mob.setPosition(mob.getPosX(), mob.getPosY(), mob.getPosZ());
-            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             mob.world.addParticle(ParticleTypes.EXPLOSION, oldX, oldY, oldZ, 0D, 0D, 0D);
 
             if (mob.attemptTeleport(destX, destY, destZ, true)) {

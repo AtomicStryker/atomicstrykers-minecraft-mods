@@ -68,7 +68,7 @@ public class MM_Sprint extends MobModifier {
         }
 
         if (entspeed < 0.3D) {
-            if (GetAbsModSpeed() > 0.6D || !(mob.onGround)) {
+            if (GetAbsModSpeed() > 0.6D || !(mob.isOnGround())) {
                 modMotionX /= 1.55;
                 modMotionZ /= 1.55;
             }

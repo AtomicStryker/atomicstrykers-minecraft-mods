@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -27,10 +27,12 @@ public class RendererBossGlow {
     private void renderBossGlow() {
         Minecraft mc = Minecraft.getInstance();
         Entity viewEnt = mc.getRenderViewEntity();
-        Vec3d curPos = viewEnt.getPositionVector();
-
+        if (viewEnt == null) {
+            return;
+        }
+        Vector3d curPos = viewEnt.getPositionVec();
         Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
-        mobsmap.keySet().stream().filter(ent -> ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVector()))
+        mobsmap.keySet().stream().filter(ent -> ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVec()))
                 && ent.isAlive()).forEach(ent -> mc.worldRenderer.addParticle(ParticleTypes.WITCH,
                 false, ent.getPosX() + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),
                 ent.getPosY() + ent.world.rand.nextDouble() * (double) ent.getHeight() - 0.25D,

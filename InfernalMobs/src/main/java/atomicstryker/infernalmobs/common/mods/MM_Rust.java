@@ -41,7 +41,7 @@ public class MM_Rust extends MobModifier {
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity instanceof PlayerEntity) {
-            ((PlayerEntity) entity).inventory.damageArmor(damage * 3);
+            ((PlayerEntity) entity).inventory.func_234563_a_(DamageSource.MAGIC, damage * 3);
         }
 
         return super.onAttack(entity, source, damage);

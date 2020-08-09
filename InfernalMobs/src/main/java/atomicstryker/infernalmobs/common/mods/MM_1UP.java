@@ -31,7 +31,7 @@ public class MM_1UP extends MobModifier {
     public boolean onUpdate(LivingEntity mob) {
         if (!healed && mob.getHealth() < (getActualMaxHealth(mob) * 0.25)) {
             InfernalMobsCore.instance().setEntityHealthPastMax(mob, getActualMaxHealth(mob));
-            mob.world.playSound(null, new BlockPos(mob), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
             healed = true;
         }
         return super.onUpdate(mob);
