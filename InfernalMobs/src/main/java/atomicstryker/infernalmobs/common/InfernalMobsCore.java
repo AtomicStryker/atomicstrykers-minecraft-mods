@@ -23,7 +23,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -111,18 +110,15 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
-        // client starting point, also local servers
-        initIfNeeded();
-    }
-
-    @SubscribeEvent
     public void commonSetup(FMLServerStartedEvent evt) {
         // dedicated server starting point
         initIfNeeded();
     }
 
-    private void initIfNeeded() {
+    /**
+     * is triggered either by server start or by client login event from InfernalMobsClient
+     */
+    public void initIfNeeded() {
         if (mobMods == null) {
             prepareModList();
 

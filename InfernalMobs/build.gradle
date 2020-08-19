@@ -17,7 +17,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 def mcversion = '1.16.1'
-version = '1.16.1.1'
+version = '1.16.1.2'
 group = 'atomicstryker.infernalmobs'
 archivesBaseName = 'infernalmobs'
 
