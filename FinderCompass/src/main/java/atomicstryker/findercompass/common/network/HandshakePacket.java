@@ -10,7 +10,8 @@ import java.util.function.Supplier;
 
 public class HandshakePacket implements IPacket {
 
-    private int MAX_STRING_LENGTH = Integer.MAX_VALUE - 1;
+    private int MAX_NAME_LENGTH = 256;
+    private int MAX_STRING_LENGTH_JSON = 100000;
 
     private String username;
     private String json;
@@ -34,16 +35,16 @@ public class HandshakePacket implements IPacket {
     @Override
     public void encode(Object msg, PacketBuffer packetBuffer) {
         HandshakePacket packet = (HandshakePacket) msg;
-        packetBuffer.writeString(packet.username, MAX_STRING_LENGTH);
+        packetBuffer.writeString(packet.username, MAX_NAME_LENGTH);
         if (packet.username.equals("server")) {
             packet.json = GsonConfig.jsonFromConfig(FinderCompassMod.instance.compassConfig);
-            packetBuffer.writeString(packet.json, MAX_STRING_LENGTH);
+            packetBuffer.writeString(packet.json, MAX_STRING_LENGTH_JSON);
         }
     }
 
     @Override
     public <MSG> MSG decode(PacketBuffer packetBuffer) {
-        HandshakePacket packet = new HandshakePacket(packetBuffer.readString(MAX_STRING_LENGTH), packetBuffer.readString(MAX_STRING_LENGTH));
+        HandshakePacket packet = new HandshakePacket(packetBuffer.readString(MAX_NAME_LENGTH), packetBuffer.readString(MAX_STRING_LENGTH_JSON));
         return (MSG) packet;
     }
 

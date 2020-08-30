@@ -44,9 +44,14 @@ public class FinderCompassClient implements ISidedProxy {
 
     @Override
     public void onReceivedHandshakePacket(HandshakePacket handShakePacket) {
+        FinderCompassMod.instance.initIfNeeded();
+        FinderCompassMod.LOGGER.info("client received Finder Compass HandshakePacket, from username: {}", handShakePacket.getUsername());
         if (handShakePacket.getUsername().equals("server")) {
+            String json = handShakePacket.getJson();
+            FinderCompassMod.LOGGER.info("deferring config override task with json of length {}", json.length());
             Minecraft.getInstance().deferTask(() -> {
-                FinderCompassClientTicker.instance.inputOverrideConfig(handShakePacket.getJson());
+                FinderCompassMod.LOGGER.info("executing deferred config override, FinderCompassClientTicker.instance is: {}", FinderCompassClientTicker.instance);
+                FinderCompassClientTicker.instance.inputOverrideConfig(json);
             });
         }
     }

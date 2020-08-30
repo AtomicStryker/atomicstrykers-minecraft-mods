@@ -14,7 +14,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateHolder;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,13 +55,10 @@ public class FinderCompassMod {
         initIfNeeded();
     }
 
-    @SubscribeEvent
-    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
-        // client starting point, also local servers
-        initIfNeeded();
-    }
-
-    private void initIfNeeded() {
+    /**
+     * called either by serverStarted or by FinderCompassClientTicker.playerLoginToServer
+     */
+    public void initIfNeeded() {
         if (FinderCompassClientTicker.instance == null) {
             compassConfig = createDefaultConfig();
             try {
@@ -96,6 +92,7 @@ public class FinderCompassMod {
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getPlayer().getDisplayName());
         networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayerEntity) event.getPlayer());
     }
 
@@ -217,7 +214,7 @@ public class FinderCompassMod {
 
             {
                 // nether_gold_ore
-                BlockState state = Blocks.field_235334_I_.getDefaultState();
+                BlockState state = Blocks.NETHER_GOLD_ORE.getDefaultState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
@@ -225,7 +222,7 @@ public class FinderCompassMod {
 
             {
                 // ancient_debris
-                BlockState state = Blocks.field_235398_nh_.getDefaultState();
+                BlockState state = Blocks.ANCIENT_DEBRIS.getDefaultState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
                 needleMap.put(string, setting);

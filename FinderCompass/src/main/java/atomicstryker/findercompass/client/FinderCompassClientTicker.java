@@ -14,6 +14,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,7 +29,6 @@ public class FinderCompassClientTicker {
     private CompassSetting currentSetting;
     private Item COMPASS_ITEM_ID;
     private boolean repeat;
-    private ArrayList<CompassSetting> settingList;
 
     public FinderCompassClientTicker() {
         instance = this;
@@ -38,6 +38,12 @@ public class FinderCompassClientTicker {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    @SubscribeEvent
+    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+        // client starting point, also local servers
+        FinderCompassMod.instance.initIfNeeded();
+    }
+
     public void onLoad() {
         COMPASS_ITEM_ID = Items.COMPASS;
 
@@ -45,7 +51,6 @@ public class FinderCompassClientTicker {
         ItemModelMesher mesher = mc.getItemRenderer().getItemModelMesher();
         mesher.register(COMPASS_ITEM_ID, new ModelResourceLocation("compass", "inventory"));
 
-        settingList = FinderCompassMod.instance.settingList;
         compassLogic = new FinderCompassLogic(mc);
     }
 
@@ -72,7 +77,7 @@ public class FinderCompassClientTicker {
     }
 
     public void switchSetting() {
-        if (settingList.isEmpty()) {
+        if (getSettingsList().isEmpty()) {
             return;
         }
 
@@ -82,13 +87,13 @@ public class FinderCompassClientTicker {
         } else {
             currentSetting.onDisableThisConfig();
 
-            nextIndex = settingList.indexOf(currentSetting) + 1;
-            if (nextIndex >= settingList.size()) {
+            nextIndex = getSettingsList().indexOf(currentSetting) + 1;
+            if (nextIndex >= getSettingsList().size()) {
                 nextIndex = 0;
             }
         }
 
-        currentSetting = settingList.get(nextIndex);
+        currentSetting = getSettingsList().get(nextIndex);
         FinderCompassLogic.hasFeature = false;
 
         if (mc.world != null) {
@@ -101,16 +106,21 @@ public class FinderCompassClientTicker {
      * Used by the server packet to override the clientside config
      */
     public void inputOverrideConfig(String json) {
-        settingList.clear();
+        getSettingsList().clear();
+        FinderCompassMod.LOGGER.info("inputting Finder Compass config from serverside: {}", json);
         CompassConfig compassConfig = GsonConfig.loadConfigFromString(CompassConfig.class, json);
         FinderCompassMod.instance.loadSettingListFromConfig(compassConfig);
         mc.ingameGUI.getChatGUI().printChatMessage(
-                new TranslationTextComponent("Finder Compass server config loaded; " + settingList.size() + " custom Setting-Sets loaded"));
+                new TranslationTextComponent("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
     }
 
     public void onFoundChunkCoordinates(BlockPos input, BlockState blockState) {
         // System.out.println("onFoundChunkCoordinates ["+input.posX+"|"+input.posZ+"] for ID "+b+", damage "+meta);
         CompassTargetData key = new CompassTargetData(blockState);
         currentSetting.getNewFoundTargets().put(key, input);
+    }
+
+    private ArrayList<CompassSetting> getSettingsList() {
+        return FinderCompassMod.instance.settingList;
     }
 }

@@ -7,6 +7,7 @@
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
 loaderVersion="[25,)" #mandatory (24 is current forge version)
+license="AtomicStrykers License http://atomicstryker.net/about.php"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
@@ -14,7 +15,7 @@ issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/
 # The modid of the mod
 modId="findercompass" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.14.3.3" #mandatory
+version="1.16.2.1" #mandatory
  # A display name for the mod
 displayName="Finder Compass" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>

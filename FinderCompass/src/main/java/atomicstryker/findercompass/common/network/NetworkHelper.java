@@ -1,12 +1,8 @@
 package atomicstryker.findercompass.common.network;
 
-import com.mojang.serialization.Lifecycle;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.SimpleRegistry;
-import net.minecraft.world.Dimension;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -29,8 +25,6 @@ public class NetworkHelper {
     private final SimpleChannel packetChannel;
 
     private final HashSet<Class<? extends IPacket>> registeredClasses;
-
-    SimpleRegistry<Dimension> simpleregistry = new SimpleRegistry<>(Registry.field_239700_af_, Lifecycle.experimental());
 
     /**
      * Creates an instance of the NetworkHelper with included channels for client and server communication.

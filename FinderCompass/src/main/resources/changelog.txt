@@ -1,3 +1,6 @@
+1.16.2.1
+update to MC 1.16.2, fixed some more problems with client/server connections
+
 1.16.1.3
 should work again when connecting to servers
 
