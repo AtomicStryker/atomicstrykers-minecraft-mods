@@ -10,11 +10,11 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 
 public class MM_Sticky extends MobModifier {
 
     private final static long coolDown = 15000L;
+    private static Class<?>[] modBans = {MM_Storm.class};
     private static String[] suffix = {"ofSnagging", "theQuickFingered", "ofPettyTheft", "yoink"};
     private static String[] prefix = {"thieving", "snagging", "quickfingered"};
     private long nextAbilityUse = 0L;
@@ -58,6 +58,11 @@ public class MM_Sticky extends MobModifier {
     @Override
     public Class<?>[] getBlackListMobClasses() {
         return disallowed;
+    }
+
+    @Override
+    public Class<?>[] getModsNotToMixWith() {
+        return modBans;
     }
 
     @Override

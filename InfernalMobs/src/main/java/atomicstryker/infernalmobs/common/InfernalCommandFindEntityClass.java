@@ -4,13 +4,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
-
-import java.util.Map;
 
 public class InfernalCommandFindEntityClass {
     public static final LiteralArgumentBuilder<CommandSource> BUILDER =
@@ -26,8 +23,8 @@ public class InfernalCommandFindEntityClass {
 
         StringBuilder stringBuilder = new StringBuilder("Found Entity classes: ");
         boolean found = false;
-        for (Map.Entry<ResourceLocation, EntityType<?>> entry : ForgeRegistries.ENTITIES.getEntries()) {
-            String entclass = entry.getKey().getPath();
+        for (ResourceLocation entityResource : ForgeRegistries.ENTITIES.getKeys()) {
+            String entclass = entityResource.getPath();
             if (entclass.toLowerCase().contains(entClass.toLowerCase())) {
                 if (!found) {
                     stringBuilder.append(entclass);

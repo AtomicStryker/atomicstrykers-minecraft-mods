@@ -275,7 +275,7 @@ public class InfernalMobsCore {
                             RegistryKey<World> registrykey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, resourcelocation);
                             ServerWorld serverworld = p_212592_0_.getSource().getServer().getWorld(registrykey);
                          */
-                        RegistryKey<World> worldRegistryKey = entity.getEntityWorld().func_234923_W_();
+                        RegistryKey<World> worldRegistryKey = entity.getEntityWorld().getDimensionKey();
                         ResourceLocation worldResourceLocation = worldRegistryKey.func_240901_a_();
 
                         // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
@@ -641,7 +641,7 @@ public class InfernalMobsCore {
     }
 
     public void sendHealthPacket(LivingEntity mob) {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getPosX(), mob.getPosY(), mob.getPosZ(), 32d, mob.getEntityWorld().func_234923_W_()));
+        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getEntityId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getPosX(), mob.getPosY(), mob.getPosZ(), 32d, mob.getEntityWorld().getDimensionKey()));
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {

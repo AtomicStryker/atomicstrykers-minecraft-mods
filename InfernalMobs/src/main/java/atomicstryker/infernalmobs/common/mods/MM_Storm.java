@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 public class MM_Storm extends MobModifier {
 
     private final static long coolDown = 15000L;
+    private static Class<?>[] modBans = {MM_Sticky.class};
     private final static float MIN_DISTANCE = 3F;
     private static String[] suffix = {"ofLightning", "theRaiden"};
     private static String[] prefix = {"striking", "thundering", "electrified"};
@@ -55,6 +56,11 @@ public class MM_Storm extends MobModifier {
             lightningboltentity.setEffectOnly(false);
             mob.world.addEntity(lightningboltentity);
         }
+    }
+
+    @Override
+    public Class<?>[] getModsNotToMixWith() {
+        return modBans;
     }
 
     @Override

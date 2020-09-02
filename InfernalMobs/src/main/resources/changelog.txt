@@ -1,3 +1,6 @@
+1.16.2.1
+- update to MC 1.16.2, make Sticky and Storm modifiers exclusive to each other (Lightning destroys Items)
+
 1.16.1.2
 - fix problem on dedicated server startup
 
