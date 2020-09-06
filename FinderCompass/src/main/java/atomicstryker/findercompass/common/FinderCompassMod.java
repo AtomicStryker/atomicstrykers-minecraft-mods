@@ -58,7 +58,7 @@ public class FinderCompassMod {
     public void preInit(FMLCommonSetupEvent evt) {
         compassConfig = createDefaultConfig();
         try {
-            compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder(), File.separator + "config" + File.separator + "findercompass.cfg"), compassConfig);
+            compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
             loadSettingListFromConfig(compassConfig);
         } catch (IOException e) {
             LOGGER.error("IOException parsing config", e);
@@ -156,7 +156,7 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.IRON_ORE.getDefaultState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                int[] setting = new int[]{245, 245, 245, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
