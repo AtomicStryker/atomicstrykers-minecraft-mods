@@ -153,7 +153,7 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.IRON_ORE.getDefaultState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                int[] setting = new int[]{245, 245, 245, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
