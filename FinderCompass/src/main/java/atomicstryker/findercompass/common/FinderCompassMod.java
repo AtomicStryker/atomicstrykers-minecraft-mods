@@ -58,7 +58,7 @@ public class FinderCompassMod {
     public void preInit(FMLCommonSetupEvent evt) {
         compassConfig = createDefaultConfig();
         try {
-            compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder(), File.separator + "config" + File.separator + "findercompass.cfg"), compassConfig);
+            compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
             loadSettingListFromConfig(compassConfig);
         } catch (IOException e) {
             LOGGER.error("IOException parsing config", e);
