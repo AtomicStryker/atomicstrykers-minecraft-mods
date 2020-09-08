@@ -66,7 +66,7 @@ public class FinderCompassMod {
         if (FinderCompassClientTicker.instance == null) {
             compassConfig = createDefaultConfig();
             try {
-                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder(), File.separator + "config" + File.separator + "findercompass.cfg"), compassConfig);
+                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
                 loadSettingListFromConfig(compassConfig);
                 proxy.commonSetup();
             } catch (IOException e) {
