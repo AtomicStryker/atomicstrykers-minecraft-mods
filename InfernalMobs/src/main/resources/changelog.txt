@@ -1,3 +1,6 @@
+1.15.2.2
+- fix issue starting on dedicated servers
+
 1.15.2.1
 - fix modifier disabling code not interpreting false values correctly
 - update to current forge

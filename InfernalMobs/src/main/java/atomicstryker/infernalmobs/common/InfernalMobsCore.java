@@ -24,13 +24,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
@@ -78,8 +76,6 @@ public class InfernalMobsCore {
         classesHealthMap = new HashMap<>();
         modifiedPlayerTimes = new HashMap<>();
 
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
         proxy.preInit();
 
@@ -111,16 +107,27 @@ public class InfernalMobsCore {
         return "InfernalMobsMod";
     }
 
-    public void commonSetup(FMLCommonSetupEvent evt) {
-        prepareModList();
+    @SubscribeEvent
+    public void commonSetup(FMLServerStartedEvent evt) {
+        // dedicated server starting point
+        initIfNeeded();
+    }
 
-        proxy.load();
+    /**
+     * is triggered either by server start or by client login event from InfernalMobsClient
+     */
+    public void initIfNeeded() {
+        if (mobMods == null) {
+            prepareModList();
 
-        configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
-        loadConfig();
+            proxy.load();
 
-        LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
-        LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
+            configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
+            loadConfig();
+
+            LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
+            LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
+        }
     }
 
     @SubscribeEvent

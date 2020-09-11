@@ -20,6 +20,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -48,6 +49,12 @@ public class InfernalMobsClient implements ISidedProxy {
     public void preInit() {
         MinecraftForge.EVENT_BUS.register(this);
         mc = Minecraft.getInstance();
+    }
+
+    @SubscribeEvent
+    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+        // client starting point, also local servers
+        InfernalMobsCore.instance().initIfNeeded();
     }
 
     @Override
