@@ -1,0 +1,10 @@
+{
+    "required": true,
+    "package": "atomicstryker.stalkercreepers.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "refmap": "stalkercreepers.refmap.json",
+    "mixins": [
+        "CreeperSwellGoalMixin"
+    ],
+    "minVersion": "0.8"
+}

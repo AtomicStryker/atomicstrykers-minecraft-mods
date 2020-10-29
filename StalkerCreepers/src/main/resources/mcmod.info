@@ -7,6 +7,10 @@
   "url": "http://www.minecraftforum.net/topic/1096447-",
   "authors": [
     "AtomicStryker"
+  ],
+  "logoFile": "assets/stalkercreepers/textures/gui/logo.png",
+  "dependencies": [
+	"Forge"
   ]
 }
 ]

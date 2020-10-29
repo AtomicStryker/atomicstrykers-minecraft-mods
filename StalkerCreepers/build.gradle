@@ -1,31 +1,109 @@
-// For those who want the bleeding edge
 buildscript {
     repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'http://repo.spongepowered.org/maven' }
+        maven { url = 'https://dist.creeper.host/Sponge/maven' }
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 plugins {
     id 'com.matthewprenger.cursegradle' version '1.0.10'
 }
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+repositories {
+    maven {
+        url 'https://www.dogforce-games.com/maven/'
+    }
+}
 
-apply from: '../masterbuild.gradle'
+def mcversion = '1.16.3'
+version = '1.16.3.1'
+group = 'atomicstryker.stalkercreepers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'stalkercreepers'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+minecraft {
+    mappings channel: 'snapshot', version: '20201028-1.16.3'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            arg "-mixin.config=stalkercreepers.mixins.json"
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', ''
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            arg "-mixin.config=stalkercreepers.mixins.json"
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', ''
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.16.3-34.1.34'
+}
+
+// Example for how to get properties into the manifest for reading by the runtime..
+jar {
+    manifest {
+        attributes([
+            "Specification-Title": "${archivesBaseName}",
+            "Specification-Vendor": "AtomicStryker",
+            "Specification-Version": "${version}", // We are version 1 of ourselves
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"AtomicStryker",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "MixinConfigs": "${archivesBaseName}.mixins.json"
+        ])
+    }
+}
+
+mixin {
+    add sourceSets.main, "stalkercreepers.refmap.json"
+}
 
 curseforge {
     apiKey = project.curseForgeApiKey
     project {
         id = '227886'
         releaseType = 'release'
-        addGameVersion version
-        mainArtifact(file('build/libs/StalkerCreepers-' + version + '.jar')) {
+        addGameVersion mcversion
+        mainArtifact(file("build/libs/${archivesBaseName}-" + version + ".jar")) {
           displayName = 'Stalker Creepers'
         }
     }
