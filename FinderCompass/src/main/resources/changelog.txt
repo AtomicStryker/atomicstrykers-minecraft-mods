@@ -1,3 +1,7 @@
+1.16.3.1
+update to MC 1.16.3
+rewritten to use Mixin instead of being a coremod
+
 1.16.2.1
 update to MC 1.16.2, fixed some more problems with client/server connections
 

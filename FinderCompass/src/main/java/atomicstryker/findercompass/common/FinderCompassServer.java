@@ -36,7 +36,7 @@ public class FinderCompassServer implements ISidedProxy {
         server.deferTask(() -> {
             ServerPlayerEntity p = server.getPlayerList().getPlayerByUsername(packet.getUsername());
             if (p != null) {
-                BlockPos result = ((ServerWorld) p.world).getChunkProvider().getChunkGenerator().func_235956_a_((ServerWorld) p.world, Structure.field_236365_a_.get(packet.getFeatureId()), new BlockPos(p.getPositionVec()), FeatureSearchPacket.SEARCH_RADIUS, false);
+                BlockPos result = ((ServerWorld) p.world).getChunkProvider().getChunkGenerator().func_235956_a_((ServerWorld) p.world, Structure.NAME_STRUCTURE_BIMAP.get(packet.getFeatureId()), new BlockPos(p.getPositionVec()), FeatureSearchPacket.SEARCH_RADIUS, false);
                 FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.getFeatureId(), packet.getUsername(), result);
                 if (result != null) {
                     FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new FeatureSearchPacket("server", packet.getFeatureId(), result.getX(), result.getY(), result.getZ()), p);

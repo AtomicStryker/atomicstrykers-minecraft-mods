@@ -9,26 +9,11 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.io.File;
 
 public class FinderCompassClient implements ISidedProxy {
-
-    /**
-     * constructor with event bus registering of ourselves
-     */
-    public FinderCompassClient() {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
-    public void renderHandHook(RenderHandEvent event) {
-        CompassRenderHook.renderItemInHandHook(event.getItemStack());
-    }
 
     @Override
     public void commonSetup() {
@@ -69,7 +54,7 @@ public class FinderCompassClient implements ISidedProxy {
                 ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(packet.getUsername());
                 if (p != null) {
                     // code always found in EyeOfEnderEntity, structure registry is BiMap in structure
-                    BlockPos result = ((ServerWorld) p.world).getChunkProvider().getChunkGenerator().func_235956_a_((ServerWorld) p.world, Structure.field_236365_a_.get(packet.getFeatureId()), new BlockPos(p.getPositionVec()), FeatureSearchPacket.SEARCH_RADIUS, false);
+                    BlockPos result = ((ServerWorld) p.world).getChunkProvider().getChunkGenerator().func_235956_a_((ServerWorld) p.world, Structure.NAME_STRUCTURE_BIMAP.get(packet.getFeatureId()), new BlockPos(p.getPositionVec()), FeatureSearchPacket.SEARCH_RADIUS, false);
                     FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.getFeatureId(), packet.getUsername(), result);
                     if (result != null) {
                         FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new FeatureSearchPacket("server", packet.getFeatureId(), result.getX(), result.getY(), result.getZ()), p);

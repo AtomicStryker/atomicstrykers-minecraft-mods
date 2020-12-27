@@ -1,79 +1,104 @@
 package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector4f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Map.Entry;
+
+import static net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType.*;
 
 public class CompassRenderHook {
 
     private static final float[] strongholdNeedlecolor = {0.4f, 0f, 0.6f};
     private static Minecraft mc;
 
-    public static void renderItemHook(ItemStack stack) {
-        if (FinderCompassClientTicker.instance != null && stack.getItem() == Items.COMPASS) {
+    public static void renderItemHook(ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn) {
+        if (FinderCompassClientTicker.instance != null) {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }
-            renderCompassNeedles(false);
-        }
-    }
-
-    public static void renderItemInHandHook(ItemStack stack) {
-        if (FinderCompassClientTicker.instance != null && stack.getItem() == Items.COMPASS) {
-            if (mc == null) {
-                mc = Minecraft.getInstance();
+            if (transformType == GUI) {
+                renderCompassNeedles(transformType, matrixStackIn);
+            } else if (transformType == FIRST_PERSON_RIGHT_HAND || transformType == FIRST_PERSON_LEFT_HAND) {
+                // disabled. the transforms fight me too much.
+                // renderCompassNeedles(transformType, matrixStackIn);
             }
-            // TODO: leave this disabled until implemented
-            // renderCompassNeedles(true);
         }
     }
 
-    private static void renderCompassNeedles(boolean inHandTranslations) {
+    // these values are here for on-the-fly adjusting in a debugger...
+    private static float lefthandX = 0.3F;
+    private static float lefthandY = 0.3F;
+    private static float lefthandZ = 0F;
+
+    private static float righthandX = -0.2F;
+    private static float righthandY = 0.3F;
+    private static float righthandZ = 0F;
+
+    private static double handMultiplier = 0.5D;
+    private static double debugMultiplier = 1D;
+
+    private static void renderCompassNeedles(ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn) {
+
         // save current ogl state for later
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 
         // switch off ogl stuff that breaks our rendering needs
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+
         // back-face culling can save some (tiny amount of) performance in third person perspective
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_BLEND);
+        // GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glDisable(GL11.GL_BLEND);
 
         // save modelview matrix for later restoration
         GL11.glPushMatrix();
 
-        if (inHandTranslations) {
-            // TODO: need to mimic translations from FirstPersonRenderer.renderArmFirstPerson to get to where the inhand needles should render
+        if (transformType == GUI) {
+            // translate directly above the normal compass render and center a bit
+            GL11.glTranslatef(0.025f, 0.025f, 1.001f);
+        } else {
+            // apply finished vanilla matrix to move with the compass
+            Vector4f pos = new Vector4f(0, 0, 0, 1.0F);
+            Matrix4f matrix = matrixStackIn.getLast().getMatrix();
+            pos.transform(matrix);
+            GL11.glTranslatef(pos.getX(), pos.getY(), pos.getZ());
+            // then try to fix the needle positions, still broken
+            // needs rotation of some kind aswell because the compass is held at a stronger angle
+            if (transformType == FIRST_PERSON_LEFT_HAND) {
+                GL11.glTranslatef(lefthandX, lefthandY, lefthandZ);
+            } else {
+                GL11.glTranslatef(righthandX, righthandY, righthandZ);
+            }
         }
-
-        // translate directly above the normal compass render and center a bit
-        GL11.glTranslatef(0.025f, 0.025f, 1.001f);
 
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
             GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
-            drawNeedle(Tessellator.getInstance(), (float) configInts[0] / 255f, (float) configInts[1] / 255f, (float) configInts[2] / 255f, computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(Tessellator.getInstance(), transformType, (float) configInts[0] / 255f, (float) configInts[1] / 255f, (float) configInts[2] / 255f, computeNeedleHeading(entryTarget.getValue()));
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
             GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
-            drawNeedle(Tessellator.getInstance(), strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(Tessellator.getInstance(), transformType, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
+
+        // restore modelview matrix
+        GL11.glPopMatrix();
 
         // restore ogl state
         GL11.glPopAttrib();
-        // restore modelview matrix
-        GL11.glPopMatrix();
     }
 
-    private static void drawNeedle(Tessellator t, float r, float g, float b, float angle) {
+    private static void drawNeedle(Tessellator t, ItemCameraTransforms.TransformType transformType, float r, float g, float b, float angle) {
         // save modelview matrix for later restoration
         GL11.glPushMatrix();
         // make the needle cover roughly the same elliptical shape as the default pixelled one
@@ -81,29 +106,22 @@ public class CompassRenderHook {
 
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
-        /*
-        // this mc code worked until forge 1592, then the fire nation attacked RIP
-        t.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
-        t.getWorldRenderer().putColorRGB_F(r, g, b, 1); // TODO try values 1-5 for the last arg if problems
+        // make the vertex much bigger for debugging - where did the damn thing go
+        double sizeMultiplier = debugMultiplier;
 
-        // TODO test this
-        t.getWorldRenderer().pos(-0.03f, -0.04f, 0.0f); // lower left
-        t.getWorldRenderer().pos(0.03f, -0.04f, 0.0f); // lower right
-        t.getWorldRenderer().pos(0.03f, 0.2f, 0.0f); // upper right
-        t.getWorldRenderer().pos(-0.03f, 0.2f, 0.0f); // upper left
-
-        t.draw();
-        */
+        if (transformType != GUI) {
+            sizeMultiplier *= handMultiplier;
+        }
 
         // alternative native ogl code
         GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
         GL11.glColor4f(r, g, b, 0.85F); // set color
 
         // now draw each glorious needle as single quad
-        GL11.glVertex3d(-0.03D, -0.04D, 0.0D); // lower left
-        GL11.glVertex3d(0.03D, -0.04D, 0.0D); // lower right
-        GL11.glVertex3d(0.03D, 0.2D, 0.0D); // upper right
-        GL11.glVertex3d(-0.03D, 0.2D, 0.0D); // upper left
+        GL11.glVertex3d(-0.03D * sizeMultiplier, -0.04D * sizeMultiplier, 0.0D); // lower left
+        GL11.glVertex3d(0.03D * sizeMultiplier, -0.04D * sizeMultiplier, 0.0D); // lower right
+        GL11.glVertex3d(0.03D * sizeMultiplier, 0.2D * sizeMultiplier, 0.0D); // upper right
+        GL11.glVertex3d(-0.03D * sizeMultiplier, 0.2D * sizeMultiplier, 0.0D); // upper left
 
         GL11.glEnd(); // let ogl draw it
 
