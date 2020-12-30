@@ -465,6 +465,7 @@ public class InfernalMobsCore {
      */
     public void addEntityModifiersByString(LivingEntity entity, String savedMods) {
         if (!getIsRareEntity(entity)) {
+            initIfNeeded();
             MobModifier mod = stringToMobModifiers(savedMods);
             if (mod != null) {
                 proxy.getRareMobs().put(entity, mod);

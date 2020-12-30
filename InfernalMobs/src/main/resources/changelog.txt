@@ -1,3 +1,6 @@
+1.15.2.3
+- fix another startup issue where init was skipped somehow
+
 1.15.2.2
 - fix issue starting on dedicated servers
 
