@@ -43,7 +43,7 @@ public class InfernalCommandSpawnInfernal {
         mob.setPosition(x + 0.5, y + 0.5, z + 0.5);
         source.getWorld().addEntity(mob);
 
-        InfernalMobsCore.proxy.getRareMobs().remove(mob);
+        SidedCache.getInfernalMobs(mob.world).remove(mob);
         InfernalMobsCore.instance().addEntityModifiersByString(mob, modifiers);
         MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
         if (mod != null) {

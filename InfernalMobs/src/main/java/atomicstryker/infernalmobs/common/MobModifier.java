@@ -132,7 +132,7 @@ public abstract class MobModifier {
      *
      * @param entity target mob to attach modifiers to
      */
-    public void onSpawningComplete(LivingEntity entity) {
+    public void onSpawningCompleteStoreMods(LivingEntity entity) {
         String oldTag = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated())) {
             InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [{}}], now trying to set [{}}] \n", oldTag, getLinkedModNameUntranslated());

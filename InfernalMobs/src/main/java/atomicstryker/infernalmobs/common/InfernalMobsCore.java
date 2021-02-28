@@ -20,6 +20,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -28,7 +29,8 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -44,9 +46,9 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = InfernalMobsCore.MOD_ID)
 public class InfernalMobsCore {
 
-    static final String MOD_ID = "infernalmobs";
+    public static final String MOD_ID = "infernalmobs";
+
     public static Logger LOGGER;
-    public static ISidedProxy proxy = DistExecutor.safeRunForDist(() -> InfernalMobsClient::new, () -> InfernalMobsServer::new);
     private static InfernalMobsCore instance;
     private final long existCheckDelay = 5000L;
     public NetworkHelper networkHelper;
@@ -79,7 +81,6 @@ public class InfernalMobsCore {
         modifiedPlayerTimes = new HashMap<>();
 
         MinecraftForge.EVENT_BUS.register(this);
-        proxy.preInit();
 
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
@@ -94,37 +95,67 @@ public class InfernalMobsCore {
     }
 
     public static MobModifier getMobModifiers(LivingEntity ent) {
-        return proxy.getRareMobs().get(ent);
+        return SidedCache.getInfernalMobs(ent.world).get(ent);
     }
 
-    public static boolean getIsRareEntity(LivingEntity ent) {
-        return proxy.getRareMobs().containsKey(ent);
+    public static boolean getIsRareEntityOnline(LivingEntity ent) {
+        return SidedCache.getInfernalMobs(ent.world).containsKey(ent);
+    }
+
+    public static boolean getWasMobSpawnedBefore(LivingEntity ent) {
+        // check if the entity previously passed infernal mob generation without getting a mod
+        String storedInfernalTag = ent.getPersistentData().getString(instance().getNBTTag());
+        boolean result = !storedInfernalTag.isEmpty() && instance().getNBTMarkerForNonInfernalEntities().equals(storedInfernalTag);
+        if (result) {
+            InfernalMobsCore.LOGGER.debug("entity {} was spawned in unmodified before, not modifying it", ent);
+        }
+        return result;
+    }
+
+    public static void setMobWasSpawnedBefore(LivingEntity ent) {
+        // if infernal mobs decides not to give an entity mods, we still have to mark it to make sure it never goes through "spawning" again for infernal mobs
+        ent.getPersistentData().putString(InfernalMobsCore.instance().getNBTTag(), instance().getNBTMarkerForNonInfernalEntities());
     }
 
     public static void removeEntFromElites(LivingEntity entity) {
-        proxy.getRareMobs().remove(entity);
+        SidedCache.getInfernalMobs(entity.world).remove(entity);
     }
 
     public String getNBTTag() {
         return "InfernalMobsMod";
     }
 
+    /**
+     * as reloading worlds or savegames can "spawn" the same entities over and over, infernal mobs has to mark entities
+     * nbt data as having passed through spawning before, even when no modifiers were applied
+     */
+    public String getNBTMarkerForNonInfernalEntities() {
+        return "notInfernal";
+    }
+
     @SubscribeEvent
     public void commonSetup(FMLServerStartedEvent evt) {
         // dedicated server starting point
-        initIfNeeded();
+        initIfNeeded(evt.getServer().getWorlds().iterator().next());
     }
 
     /**
      * is triggered either by server start or by client login event from InfernalMobsClient
      */
-    public void initIfNeeded() {
+    public void initIfNeeded(World world) {
         if (mobMods == null) {
             prepareModList();
 
-            proxy.load();
+            File mcFolder;
+            if (world.isRemote()) {
+                InfernalMobsClient.load();
+                mcFolder = InfernalMobsClient.getMcFolder();
+            } else {
+                MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+                mcFolder = server.getFile("");
+            }
 
-            configFile = new File(proxy.getMcFolder(), File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
+            configFile = new File(mcFolder, File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
             loadConfig();
 
             LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
@@ -267,7 +298,7 @@ public class InfernalMobsCore {
      */
     public void processEntitySpawn(LivingEntity entity) {
         if (!entity.world.isRemote && config != null) {
-            if (!getIsRareEntity(entity)) {
+            if (!getIsRareEntityOnline(entity) && !getWasMobSpawnedBefore(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.world.rand.nextInt(config.getEliteRarity()) == 0)) {
                     try {
                         /*
@@ -282,8 +313,8 @@ public class InfernalMobsCore {
                         if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
                             MobModifier mod = instance.createMobModifiers(entity);
                             if (mod != null) {
-                                proxy.getRareMobs().put(entity, mod);
-                                mod.onSpawningComplete(entity);
+                                SidedCache.getInfernalMobs(entity.world).put(entity, mod);
+                                mod.onSpawningCompleteStoreMods(entity);
                                 // System.out.println("InfernalMobsCore modded
                                 // mob: "+entity+", id "+entity.getEntityId()+":
                                 // "+mod.getLinkedModName());
@@ -293,6 +324,8 @@ public class InfernalMobsCore {
                         LOGGER.log(Level.ERROR, "processEntitySpawn() threw an exception");
                         e.printStackTrace();
                     }
+                } else {
+                    setMobWasSpawnedBefore(entity);
                 }
             }
         }
@@ -472,13 +505,14 @@ public class InfernalMobsCore {
      * @param savedMods String depicting the MobModifiers, equal to the ingame Display
      */
     public void addEntityModifiersByString(LivingEntity entity, String savedMods) {
-        if (!getIsRareEntity(entity)) {
+        if (!getIsRareEntityOnline(entity)) {
             // this can fire before the localhost client has logged in, loading a world save, need to init the mod!
-            initIfNeeded();
+            initIfNeeded(entity.world);
             MobModifier mod = stringToMobModifiers(savedMods);
+            InfernalMobsCore.LOGGER.debug("reloading mods for {}: {}, mod instance {}", entity, savedMods, mod);
             if (mod != null) {
-                proxy.getRareMobs().put(entity, mod);
-                mod.onSpawningComplete(entity);
+                SidedCache.getInfernalMobs(entity.world).put(entity, mod);
+                mod.onSpawningCompleteStoreMods(entity);
                 mod.setHealthAlreadyHacked(entity);
             } else {
                 System.err.println("Infernal Mobs error, could not instantiate modifier " + savedMods);
@@ -658,7 +692,7 @@ public class InfernalMobsCore {
     public void onTick(TickEvent.WorldTickEvent tick) {
         if (System.currentTimeMillis() > nextExistCheckTime) {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.world);
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
             mobsmap.keySet().stream().filter(this::filterMob).forEach(InfernalMobsCore::removeEntFromElites);

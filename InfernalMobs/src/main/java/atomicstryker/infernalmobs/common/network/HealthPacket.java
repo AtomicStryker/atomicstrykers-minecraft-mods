@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
@@ -53,8 +54,7 @@ public class HealthPacket implements IPacket {
         contextSupplier.get().enqueueWork(() -> {
             HealthPacket healthPacket = (HealthPacket) msg;
             if (healthPacket.maxhealth > 0) {
-                InfernalMobsCore.proxy.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
-
+                InfernalMobsClient.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
             } else {
                 ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
                 if (p != null) {

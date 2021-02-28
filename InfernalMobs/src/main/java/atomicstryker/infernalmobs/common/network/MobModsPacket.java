@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
@@ -50,7 +51,7 @@ public class MobModsPacket implements IPacket {
         MobModsPacket mobModsPacket = (MobModsPacket) msg;
         if (mobModsPacket.sentFromServer != 0) {
             // so we are on client now
-            InfernalMobsCore.proxy.onMobModsPacketToClient(mobModsPacket.stringData, mobModsPacket.entID);
+            InfernalMobsClient.onMobModsPacketToClient(mobModsPacket.stringData, mobModsPacket.entID);
             InfernalMobsCore.LOGGER.debug("client received serverside mods {} for ent-ID {}", mobModsPacket.stringData, mobModsPacket.entID);
         } else {
             // else we are on serverside
@@ -58,10 +59,10 @@ public class MobModsPacket implements IPacket {
             InfernalMobsCore.LOGGER.debug("player {} from string {} querying server for mods of entity id {}", p, mobModsPacket.stringData, mobModsPacket.entID);
             if (p != null) {
                 Entity ent = p.world.getEntityByID(mobModsPacket.entID);
-                InfernalMobsCore.LOGGER.debug("resolves to entity {}", ent);
                 if (ent instanceof LivingEntity) {
                     LivingEntity e = (LivingEntity) ent;
                     MobModifier mod = InfernalMobsCore.getMobModifiers(e);
+                    InfernalMobsCore.LOGGER.debug("resolves to entity {} modifiers {}", ent, mod);
                     if (mod != null) {
                         mobModsPacket.stringData = mod.getLinkedModNameUntranslated();
                         InfernalMobsCore.LOGGER.debug("server sending mods {} for ent-ID {}", mobModsPacket.stringData, mobModsPacket.entID);

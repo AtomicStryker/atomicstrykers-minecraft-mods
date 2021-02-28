@@ -1,3 +1,9 @@
+1.16.2.2
+- infernal mobs now permanently marks entities having passed through its spawn check once
+- reloading worlds or saves should never introduce new mods onto previously normal mobs
+- in a similar vein, loading the same world in single player multiple times should not break infernal mobs
+- (internally: dropped proxies in favor of sided event subscriber classes and static methods behind isRemote checks)
+
 1.16.2.1
 - update to MC 1.16.2, make Sticky and Storm modifiers exclusive to each other (Lightning destroys Items)
 

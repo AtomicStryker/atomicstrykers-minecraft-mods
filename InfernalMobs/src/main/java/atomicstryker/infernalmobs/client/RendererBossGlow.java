@@ -2,21 +2,25 @@ package atomicstryker.infernalmobs.client;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.SidedCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
 
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = InfernalMobsCore.MOD_ID)
 public class RendererBossGlow {
     private static long lastRender = 0L;
 
     @SubscribeEvent
-    public void onRenderWorldLast(RenderWorldLastEvent event) {
+    public static void onRenderWorldLast(RenderWorldLastEvent event) {
         if (System.currentTimeMillis() > lastRender + 10L) {
             lastRender = System.currentTimeMillis();
 
@@ -24,14 +28,14 @@ public class RendererBossGlow {
         }
     }
 
-    private void renderBossGlow() {
+    private static void renderBossGlow() {
         Minecraft mc = Minecraft.getInstance();
         Entity viewEnt = mc.getRenderViewEntity();
         if (viewEnt == null) {
             return;
         }
         Vector3d curPos = viewEnt.getPositionVec();
-        Map<LivingEntity, MobModifier> mobsmap = InfernalMobsCore.proxy.getRareMobs();
+        Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.world);
         mobsmap.keySet().stream().filter(ent -> ent.isInRangeToRenderDist(curPos.squareDistanceTo(ent.getPositionVec()))
                 && ent.isAlive()).forEach(ent -> mc.worldRenderer.addParticle(ParticleTypes.WITCH,
                 false, ent.getPosX() + (ent.world.rand.nextDouble() - 0.5D) * (double) ent.getWidth(),

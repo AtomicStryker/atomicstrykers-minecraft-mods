@@ -1,8 +1,8 @@
 package atomicstryker.infernalmobs.client;
 
-import atomicstryker.infernalmobs.common.ISidedProxy;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import atomicstryker.infernalmobs.common.SidedCache;
 import atomicstryker.infernalmobs.common.mods.MM_Gravity;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
@@ -10,12 +10,12 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IngameGui;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.projectile.ProjectileHelper;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -23,66 +23,54 @@ import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class InfernalMobsClient implements ISidedProxy {
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = InfernalMobsCore.MOD_ID)
+public class InfernalMobsClient {
 
     private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation("textures/gui/bars.png");
     private static int airOverrideValue = -999;
-    private final double NAME_VISION_DISTANCE = 32D;
-    private long airDisplayTimeout;
-    private Minecraft mc;
-    private World lastWorld;
-    private long nextPacketTime;
-    private final ConcurrentHashMap<LivingEntity, MobModifier> rareMobsClient = new ConcurrentHashMap<>();
-    private long healthBarRetainTime;
-    private LivingEntity retainedTarget;
+    private static final double NAME_VISION_DISTANCE = 32D;
+    private static long airDisplayTimeout;
+    private static Minecraft mc;
+    private static long nextPacketTime;
 
-    @Override
-    public void preInit() {
-        MinecraftForge.EVENT_BUS.register(this);
-        mc = Minecraft.getInstance();
-    }
+    private static long healthBarRetainTime;
+    private static LivingEntity retainedTarget;
 
     @SubscribeEvent
-    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+    public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
         // client starting point, also local servers
-        InfernalMobsCore.instance().initIfNeeded();
+        mc = Minecraft.getInstance();
+        if (evt.getPlayer() != null) {
+            InfernalMobsCore.instance().initIfNeeded(evt.getPlayer().world);
+        }
     }
 
-    @Override
-    public void load() {
+    public static void load() {
         nextPacketTime = 0;
-        rareMobsClient.clear();
-
-        MinecraftForge.EVENT_BUS.register(new RendererBossGlow());
-        MinecraftForge.EVENT_BUS.register(this);
-
         healthBarRetainTime = 0;
         retainedTarget = null;
     }
 
     @SubscribeEvent
-    public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
+    public static void onEntityJoinedWorld(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote && mc.player != null && (event.getEntity() instanceof MobEntity || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof IMob))) {
             InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getUnformattedComponentText(), event.getEntity().getEntityId(), (byte) 0));
             InfernalMobsCore.LOGGER.debug("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getEntityId());
         }
     }
 
-    private void askServerMods(Entity ent) {
+    private static void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof MobEntity || (ent instanceof LivingEntity && ent instanceof IMob))) {
             InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getUnformattedComponentText(), ent.getEntityId(), (byte) 0));
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getEntityId());
@@ -90,7 +78,7 @@ public class InfernalMobsClient implements ISidedProxy {
         }
     }
 
-    private void askServerHealth(Entity ent) {
+    private static void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
             InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getUnformattedComponentText(), ent.getEntityId(), 0f, 0f));
             nextPacketTime = System.currentTimeMillis() + 100L;
@@ -98,7 +86,14 @@ public class InfernalMobsClient implements ISidedProxy {
     }
 
     @SubscribeEvent
-    public void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+    public static void playerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent evt) {
+        if (evt.getPlayer() != null && evt.getPlayer().world != null) {
+            SidedCache.getInfernalMobs(evt.getPlayer().world).clear();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         if (InfernalMobsCore.instance().getIsHealthBarDisabled() || event.getType() != RenderGameOverlayEvent.ElementType.BOSSHEALTH || mc.ingameGUI.getBossOverlay().shouldPlayEndBossMusic()) {
             return;
         }
@@ -117,7 +112,7 @@ public class InfernalMobsClient implements ISidedProxy {
                 askServerHealth(ent);
 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
+                mc.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
                 GL11.glDisable(GL11.GL_BLEND);
 
                 String buffer = mod.getEntityDisplayName(ent);
@@ -151,7 +146,7 @@ public class InfernalMobsClient implements ISidedProxy {
                 }
 
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+                mc.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
 
                 if (!retained) {
                     retainedTarget = ent;
@@ -164,7 +159,7 @@ public class InfernalMobsClient implements ISidedProxy {
         }
     }
 
-    private LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {
+    private static LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {
 
         Entity entity = mc.getRenderViewEntity();
         if (entity != null && mc.world != null) {
@@ -191,33 +186,11 @@ public class InfernalMobsClient implements ISidedProxy {
         return null;
     }
 
-    @SubscribeEvent
-    public void onTick(TickEvent.RenderTickEvent tick) {
-        if (mc.world == null || (mc.currentScreen != null && mc.currentScreen.isPauseScreen()))
-            return;
-
-        /* client reset in case of swapping worlds */
-        if (mc.world != lastWorld) {
-            boolean newGame = lastWorld == null;
-            lastWorld = mc.world;
-
-            if (!newGame) {
-                InfernalMobsCore.proxy.getRareMobs().clear();
-            }
-        }
-    }
-
-    @Override
-    public ConcurrentHashMap<LivingEntity, MobModifier> getRareMobs() {
-        return rareMobsClient;
-    }
-
-    @Override
-    public void onHealthPacketForClient(int entID, float health, float maxhealth) {
+    public static void onHealthPacketForClient(int entID, float health, float maxhealth) {
         Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onHealthPacket(entID, health, maxhealth)));
     }
 
-    private void onHealthPacket(int entID, float health, float maxhealth) {
+    private static void onHealthPacket(int entID, float health, float maxhealth) {
         Entity ent = Minecraft.getInstance().world.getEntityByID(entID);
         if (ent instanceof LivingEntity) {
             MobModifier mod = InfernalMobsCore.getMobModifiers((LivingEntity) ent);
@@ -227,34 +200,29 @@ public class InfernalMobsClient implements ISidedProxy {
         }
     }
 
-    @Override
-    public void onKnockBackPacket(float xv, float zv) {
-        Minecraft.getInstance().deferTask(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> MM_Gravity.knockBack(mc.player, xv, zv)));
+    public static void onKnockBackPacket(float xv, float zv) {
+        mc.deferTask(() -> MM_Gravity.knockBack(mc.player, xv, zv));
     }
 
-    @Override
-    public void onMobModsPacketToClient(String stringData, int entID) {
+    public static void onMobModsPacketToClient(String stringData, int entID) {
         InfernalMobsCore.instance().addRemoteEntityModifiers(mc.world, entID, stringData);
     }
 
-    @Override
-    public void onVelocityPacket(float xv, float yv, float zv) {
+    public static void onVelocityPacket(float xv, float yv, float zv) {
         mc.deferTask(() -> mc.player.addVelocity(xv, yv, zv));
     }
 
-    @Override
-    public void onAirPacket(int air) {
+    public static void onAirPacket(int air) {
         airOverrideValue = air;
         airDisplayTimeout = System.currentTimeMillis() + 3000L;
     }
 
-    @Override
-    public File getMcFolder() {
+    public static File getMcFolder() {
         return Minecraft.getInstance().gameDir;
     }
 
     @SubscribeEvent
-    public void onTick(RenderGameOverlayEvent.Pre event) {
+    public static void onTick(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.AIR) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;

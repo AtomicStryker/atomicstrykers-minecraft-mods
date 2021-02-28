@@ -23,7 +23,7 @@ repositories {
 }
 
 def mcversion = '1.16.2'
-version = '1.16.2.1'
+version = '1.16.2.2'
 group = 'atomicstryker.infernalmobs'
 archivesBaseName = 'infernalmobs'
 

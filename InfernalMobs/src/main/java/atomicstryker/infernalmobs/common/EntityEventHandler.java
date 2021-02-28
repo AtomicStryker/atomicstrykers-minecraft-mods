@@ -32,7 +32,7 @@ public class EntityEventHandler {
     public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity) {
             String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
-            if (!savedMods.equals("")) {
+            if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
                 InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) event.getEntity(), savedMods);
             } else {
                 InfernalMobsCore.instance().processEntitySpawn((LivingEntity) event.getEntity());

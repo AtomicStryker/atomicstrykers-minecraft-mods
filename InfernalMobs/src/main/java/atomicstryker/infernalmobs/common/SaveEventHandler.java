@@ -23,7 +23,7 @@ public class SaveEventHandler {
                      * an EntityLiving was just dumped to a save file and
                      * removed from the world
                      */
-                    if (InfernalMobsCore.getIsRareEntity((LivingEntity) newEnt)) {
+                    if (InfernalMobsCore.getIsRareEntityOnline((LivingEntity) newEnt)) {
                         InfernalMobsCore.removeEntFromElites((LivingEntity) newEnt);
                     }
                 }
@@ -43,7 +43,7 @@ public class SaveEventHandler {
                 newEnt = (Entity) o;
                 if (newEnt instanceof LivingEntity) {
                     String savedMods = newEnt.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
-                    if (!savedMods.equals("")) {
+                    if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
                         InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) newEnt, savedMods);
                     }
                 }
