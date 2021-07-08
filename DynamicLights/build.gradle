@@ -1,11 +1,10 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
 plugins {
@@ -16,8 +15,15 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.14.3'
-group = 'atomicstryker.dynamiclights' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+repositories {
+    maven {
+        url 'https://www.dogforce-games.com/maven/'
+    }
+}
+
+def mcversion = '1.16.5'
+version = '1.16.5.1'
+group = 'atomicstryker.dynamiclights'
 archivesBaseName = 'dynamiclights'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -28,7 +34,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20190627-1.14.3'
+    mappings channel: 'official', version: '1.16.5'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     // accessTransformer = file('build/resources/main/META-INF/accesstransformer.cfg')
@@ -46,7 +52,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                ruins {
                     source sourceSets.main
                 }
             }
@@ -56,13 +62,13 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                ruins {
                     source sourceSets.main
                 }
             }
@@ -74,7 +80,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.14.3-27.0.13'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.1.32'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -101,11 +107,11 @@ jar {
     manifest {
         attributes([
             "Specification-Title": "dynamiclights",
-            "Specification-Vendor": "AtomicStryker",
-            "Specification-Version": "1.14.3", // We are version 1 of ourselves
+            "Specification-Vendor": "atomicstryker",
+            "Specification-Version": "${version}",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"AtomicStryker",
+            "Implementation-Vendor" :"atomicstryker",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
@@ -116,7 +122,7 @@ curseforge {
     project {
         id = '227874'
         releaseType = 'release'
-        addGameVersion version
+        addGameVersion mcversion
         mainArtifact(file('build/libs/dynamiclights-' + version + '.jar')) {
           displayName = 'Dynamic Lights'
         }

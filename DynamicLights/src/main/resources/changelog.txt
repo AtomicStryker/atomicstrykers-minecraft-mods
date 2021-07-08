@@ -1,3 +1,11 @@
+1.16.5
+- rewritten to work with MC 1.16.5
+- the mod now uses fake air and water blocks to achieve light (rapidly placing and removing them as light sources move)
+- this has several limitations, only full water blocks can emit dynamic lights (not waterfalls or partial block rivers)
+- it will also not work if the light source is inside some non-air block like foliage or spiderwebs
+- the mod is now a "standard" mod that requires both a client and a server to have it when playing online
+- currently only the player self light and dropped items modules are implemented
+
 1.5.0
 - updated for MC 1.13.2 forge variant
 
