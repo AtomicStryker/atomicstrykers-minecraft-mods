@@ -12,6 +12,5 @@ There is also a "curseforge" build target my successor can probably safely ignor
 Mods with special Needs, aka coremods:
 
 -- Multi Mine
--- Dynamic Lights
 -- Stalker Creepers
 -- Finder Compass
