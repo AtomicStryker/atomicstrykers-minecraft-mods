@@ -2,8 +2,8 @@ package atomicstryker.infernalmobs.common.network;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -21,7 +21,7 @@ public class VelocityPacket implements IPacket {
     }
 
     @Override
-    public void encode(Object msg, PacketBuffer packetBuffer) {
+    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
         VelocityPacket velocityPacket = (VelocityPacket) msg;
         packetBuffer.writeFloat(velocityPacket.xv);
         packetBuffer.writeFloat(velocityPacket.yv);
@@ -29,7 +29,7 @@ public class VelocityPacket implements IPacket {
     }
 
     @Override
-    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
         VelocityPacket velocityPacket = new VelocityPacket();
         velocityPacket.xv = packetBuffer.readFloat();
         velocityPacket.yv = packetBuffer.readFloat();

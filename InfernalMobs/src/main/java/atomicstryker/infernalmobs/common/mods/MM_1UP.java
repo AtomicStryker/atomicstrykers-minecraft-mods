@@ -1,15 +1,13 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Creeper;
 
 public class MM_1UP extends MobModifier {
-    private static Class<?>[] disallowed = {CreeperEntity.class};
+    private static Class<?>[] disallowed = {Creeper.class};
     private static String[] suffix = {"ofRecurrence", "theUndying", "oftwinLives"};
     private static String[] prefix = {"recurring", "undying", "twinlived"};
     private boolean healed;
@@ -29,9 +27,9 @@ public class MM_1UP extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
-        if (!healed && mob.getHealth() < (getActualMaxHealth(mob) * 0.25)) {
-            InfernalMobsCore.instance().setEntityHealthPastMax(mob, getActualMaxHealth(mob));
-            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+        if (!healed && !mob.level.isClientSide && mob.getHealth() < (getActualMaxHealth(mob) * 0.25)) {
+            mob.setHealth(getActualHealth(mob));
+            mob.level.playSound(null, mob.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
             healed = true;
         }
         return super.onUpdate(mob);

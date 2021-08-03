@@ -1,9 +1,9 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class MM_Exhaust extends MobModifier {
 
@@ -25,9 +25,9 @@ public class MM_Exhaust extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getTrueSource() != null
-                && (source.getTrueSource() instanceof PlayerEntity)) {
-            ((PlayerEntity) source.getTrueSource()).addExhaustion(1F);
+        if (source.getEntity() != null
+                && (source.getEntity() instanceof Player)) {
+            ((Player) source.getEntity()).causeFoodExhaustion(1F);
         }
 
         return super.onHurt(mob, source, damage);
@@ -36,8 +36,8 @@ public class MM_Exhaust extends MobModifier {
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity != null
-                && entity instanceof PlayerEntity) {
-            ((PlayerEntity) entity).addExhaustion(1F);
+                && entity instanceof Player) {
+            ((Player) entity).causeFoodExhaustion(1F);
         }
 
         return super.onAttack(entity, source, damage);

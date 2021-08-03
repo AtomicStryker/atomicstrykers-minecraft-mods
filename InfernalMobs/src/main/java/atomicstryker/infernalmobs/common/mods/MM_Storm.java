@@ -1,17 +1,17 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 
 
 public class MM_Storm extends MobModifier {
 
-    private final static long coolDown = 15000L;
+    private final static long coolDown = 25000L;
     private static Class<?>[] modBans = {MM_Sticky.class};
     private final static float MIN_DISTANCE = 3F;
     private static String[] suffix = {"ofLightning", "theRaiden"};
@@ -34,7 +34,7 @@ public class MM_Storm extends MobModifier {
     @Override
     public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
-                && getMobTarget() instanceof PlayerEntity) {
+                && getMobTarget() instanceof Player) {
             tryAbility(mob, getMobTarget());
         }
 
@@ -42,19 +42,19 @@ public class MM_Storm extends MobModifier {
     }
 
     private void tryAbility(LivingEntity mob, LivingEntity target) {
-        if (target == null || target.getRidingEntity() != null || !mob.canEntityBeSeen(target)) {
+        if (target == null || target.getVehicle() != null || !canMobSeeTarget(mob, target)) {
             return;
         }
 
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
-                && mob.getDistance(target) > MIN_DISTANCE
-                && target.world.canBlockSeeSky(new BlockPos(MathHelper.floor(target.getPosX()), MathHelper.floor(target.getPosY()), MathHelper.floor(target.getPosZ())))) {
+                && mob.distanceTo(target) > MIN_DISTANCE
+                && target.level.canSeeSkyFromBelowWater(new BlockPos(Mth.floor(target.getX()), Mth.floor(target.getY()), Mth.floor(target.getZ())))) {
             nextAbilityUse = time + coolDown;
-            LightningBoltEntity lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.world);
-            lightningboltentity.moveForced(target.getPosX(), target.getPosY(), target.getPosZ());
-            lightningboltentity.setEffectOnly(false);
-            mob.world.addEntity(lightningboltentity);
+            LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level);
+            lightningboltentity.moveTo(target.getX(), target.getY(), target.getZ());
+            lightningboltentity.setVisualOnly(false);
+            mob.level.addFreshEntity(lightningboltentity);
         }
     }
 

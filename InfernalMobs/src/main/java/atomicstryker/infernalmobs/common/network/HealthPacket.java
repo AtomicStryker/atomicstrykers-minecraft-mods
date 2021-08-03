@@ -4,12 +4,12 @@ import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 import java.util.function.Supplier;
 
@@ -31,18 +31,18 @@ public class HealthPacket implements IPacket {
     }
 
     @Override
-    public void encode(Object msg, PacketBuffer packetBuffer) {
+    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
         HealthPacket healthPacket = (HealthPacket) msg;
-        packetBuffer.writeString(healthPacket.stringData);
+        packetBuffer.writeUtf(healthPacket.stringData);
         packetBuffer.writeInt(healthPacket.entID);
         packetBuffer.writeFloat(healthPacket.health);
         packetBuffer.writeFloat(healthPacket.maxhealth);
     }
 
     @Override
-    public <MSG> MSG decode(PacketBuffer packetBuffer) {
+    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
         HealthPacket result = new HealthPacket();
-        result.stringData = packetBuffer.readString(32767);
+        result.stringData = packetBuffer.readUtf(32767);
         result.entID = packetBuffer.readInt();
         result.health = packetBuffer.readFloat();
         result.maxhealth = packetBuffer.readFloat();
@@ -56,9 +56,9 @@ public class HealthPacket implements IPacket {
             if (healthPacket.maxhealth > 0) {
                 InfernalMobsClient.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
             } else {
-                ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(healthPacket.stringData);
+                ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData);
                 if (p != null) {
-                    Entity ent = p.world.getEntityByID(healthPacket.entID);
+                    Entity ent = p.level.getEntity(healthPacket.entID);
                     if (ent instanceof LivingEntity) {
                         LivingEntity e = (LivingEntity) ent;
                         MobModifier mod = InfernalMobsCore.getMobModifiers(e);

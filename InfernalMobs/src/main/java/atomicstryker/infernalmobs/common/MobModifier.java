@@ -1,11 +1,11 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
@@ -87,7 +87,7 @@ public abstract class MobModifier {
      * @return the complete List of linked Modifiers as their Names
      */
     public String getLinkedModName() {
-        return (I18n.format("translation.infernalmobs:mod." + getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
+        return (I18n.get("translation.infernalmobs:mod." + getModName()) + " " + ((nextMod != null) ? nextMod.getLinkedModName() : ""));
     }
 
     /**
@@ -132,12 +132,14 @@ public abstract class MobModifier {
      *
      * @param entity target mob to attach modifiers to
      */
-    public void onSpawningCompleteStoreMods(LivingEntity entity) {
+    public void onSpawningCompleteStoreModsAndBuffHealth(LivingEntity entity) {
         String oldTag = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated())) {
             InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [{}}], now trying to set [{}}] \n", oldTag, getLinkedModNameUntranslated());
         }
         entity.getPersistentData().putString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
+
+        increaseMaxHealthForMobIfNeeded(entity);
     }
 
     /**
@@ -202,9 +204,9 @@ public abstract class MobModifier {
     public float onHurt(LivingEntity mob, DamageSource source, float amount) {
         if (nextMod != null) {
             amount = nextMod.onHurt(mob, source, amount);
-        } else if (source.getTrueSource() != null) {
-            if (source.getTrueSource().world.isRemote && source.getTrueSource() instanceof PlayerEntity) {
-                InfernalMobsCore.instance().sendHealthRequestPacket(source.getTrueSource().getName().getUnformattedComponentText(), mob);
+        } else if (source.getEntity() != null) {
+            if (source.getEntity().level.isClientSide && source.getEntity() instanceof Player) {
+                InfernalMobsCore.instance().sendHealthRequestPacket(source.getEntity().getName().getContents(), mob);
             }
         }
 
@@ -236,11 +238,11 @@ public abstract class MobModifier {
             return nextMod.onUpdate(mob);
         } else {
             if (attackTarget == null) {
-                attackTarget = mob.world.getClosestPlayer(mob, 7.5f);
+                attackTarget = mob.level.getNearestPlayer(mob, 7.5f);
             }
 
             if (attackTarget != null) {
-                if (!attackTarget.isAlive() || attackTarget.getDistance(mob) > 15f) {
+                if (!attackTarget.isAlive() || attackTarget.distanceTo(mob) > 15f) {
                     attackTarget = null;
                 }
             }
@@ -271,30 +273,21 @@ public abstract class MobModifier {
      * @param mob entity instance
      */
     public float getActualHealth(LivingEntity mob) {
-        if (!mob.world.isRemote) {
-            increaseHealthForMob(mob);
-        }
-
         return actualHealth;
     }
 
-    /**
-     * Prevents exponential health increase from re-loading the same infernal
-     * mob again and again
-     */
-    public void setHealthAlreadyHacked(LivingEntity mob) {
-        if (!mob.world.isRemote) {
-            actualMaxHealth = getActualMaxHealth(mob);
-            mob.getPersistentData().putBoolean("infernalMaxHealth", true);
+    private void increaseMaxHealthForMobIfNeeded(LivingEntity mob) {
+        if (mob.level.isClientSide) {
+            return;
         }
-    }
-
-    private void increaseHealthForMob(LivingEntity mob) {
-        if (!mob.getPersistentData().getBoolean("infernalMaxHealth")) {
-            actualMaxHealth = getActualMaxHealth(mob);
+        float storedMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth");
+        if (storedMaxHealth < 1F) {
+            actualMaxHealth = (float) (InfernalMobsCore.instance().getMobClassMaxHealth(mob) * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
             actualHealth = actualMaxHealth;
             InfernalMobsCore.instance().setEntityHealthPastMax(mob, actualHealth);
-            mob.getPersistentData().putBoolean("infernalMaxHealth", true);
+            mob.getPersistentData().putFloat("infernalMaxHealth", actualMaxHealth);
+        } else {
+            actualMaxHealth = storedMaxHealth;
         }
     }
 
@@ -303,8 +296,8 @@ public abstract class MobModifier {
      * @return buffered modified max health
      */
     public float getActualMaxHealth(LivingEntity mob) {
-        if (actualMaxHealth < 0) {
-            actualMaxHealth = (float) (InfernalMobsCore.instance().getMobClassMaxHealth(mob) * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
+        if (!mob.level.isClientSide && actualMaxHealth < 1F) {
+            actualMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth");
         }
         return actualMaxHealth;
     }
@@ -394,7 +387,7 @@ public abstract class MobModifier {
             buffer = buffer.replaceFirst("Entity", "");
 
             String entLoc = "translation.infernalmobs:entity." + buffer;
-            String entTrans = I18n.format(entLoc);
+            String entTrans = I18n.get(entLoc);
             if (!entLoc.equals(entTrans)) {
                 buffer = entTrans;
             }
@@ -404,7 +397,7 @@ public abstract class MobModifier {
 
             int size = getModSize();
 
-            int randomMod = target.getRNG().nextInt(getModSize());
+            int randomMod = target.getRandom().nextInt(getModSize());
             MobModifier mod = this;
             while (randomMod > 0) {
                 mod = mod.nextMod;
@@ -413,20 +406,20 @@ public abstract class MobModifier {
 
             String modprefix = "";
             if (mod.getModNamePrefix() != null) {
-                modprefix = mod.getModNamePrefix()[target.getRNG().nextInt(mod.getModNamePrefix().length)];
-                modprefix = I18n.format("translation.infernalmobs:prefix." + modprefix);
+                modprefix = mod.getModNamePrefix()[target.getRandom().nextInt(mod.getModNamePrefix().length)];
+                modprefix = I18n.get("translation.infernalmobs:prefix." + modprefix);
             }
 
-            String prefix = size <= 5 ? TextFormatting.AQUA + I18n.format("translation.infernalmobs:rareClass")
-                    : size <= 10 ? TextFormatting.YELLOW + I18n.format("translation.infernalmobs:ultraClass") : TextFormatting.GOLD + I18n.format("translation.infernalmobs:infernalClass");
+            String prefix = size <= 5 ? ChatFormatting.AQUA + I18n.get("translation.infernalmobs:rareClass")
+                    : size <= 10 ? ChatFormatting.YELLOW + I18n.get("translation.infernalmobs:ultraClass") : ChatFormatting.GOLD + I18n.get("translation.infernalmobs:infernalClass");
 
             buffer = String.format("%s %s %s", prefix, modprefix, buffer);
 
             if (size > 1) {
                 mod = mod.nextMod != null ? mod.nextMod : this;
                 if (mod.getModNameSuffix() != null) {
-                    String pickedSuffix = mod.getModNameSuffix()[target.getRNG().nextInt(mod.getModNameSuffix().length)];
-                    pickedSuffix = I18n.format("translation.infernalmobs:suffix." + pickedSuffix);
+                    String pickedSuffix = mod.getModNameSuffix()[target.getRandom().nextInt(mod.getModNameSuffix().length)];
+                    pickedSuffix = I18n.get("translation.infernalmobs:suffix." + pickedSuffix);
                     buffer = String.format("%s %s", buffer, pickedSuffix);
                 }
             }
@@ -444,8 +437,15 @@ public abstract class MobModifier {
      * infernal'd for a while and triggers this modifiers should override this
      * and clean up their changes when necessary
      */
-    public void resetModifiedVictim(PlayerEntity victim) {
+    public void resetModifiedVictim(Player victim) {
         // NOOP by default
+    }
+
+    /**
+     * helper method to check for target visibility
+     */
+    protected boolean canMobSeeTarget(LivingEntity mob, LivingEntity target) {
+        return target.getVisibilityPercent(mob) >= 0.25D;
     }
 
 }

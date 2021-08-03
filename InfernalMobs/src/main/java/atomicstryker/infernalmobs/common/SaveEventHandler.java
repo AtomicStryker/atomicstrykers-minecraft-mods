@@ -1,54 +1,42 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class SaveEventHandler {
 
     @SubscribeEvent
-    public void onChunkUnload(ChunkEvent.Unload event) {
-        if (!(event.getChunk() instanceof Chunk)) {
-            return;
-        }
-        Chunk chunk = (Chunk) event.getChunk();
-        Entity newEnt;
-        for (int i = 0; i < chunk.getEntityLists().length; i++) {
-            for (Object o : chunk.getEntityLists()[i]) {
-                newEnt = (Entity) o;
-                if (newEnt instanceof LivingEntity) {
-                    /*
-                     * an EntityLiving was just dumped to a save file and
-                     * removed from the world
-                     */
-                    if (InfernalMobsCore.getIsRareEntityOnline((LivingEntity) newEnt)) {
-                        InfernalMobsCore.removeEntFromElites((LivingEntity) newEnt);
-                    }
-                }
-            }
+    public void onWorldSave(WorldEvent.Unload event) {
+        if (event.getWorld() instanceof Level) {
+            Level level = ((Level) event.getWorld());
+            InfernalMobsCore.clearAllElitesOfLevel(level);
         }
     }
 
-    @SubscribeEvent
-    public void onChunkLoad(ChunkEvent.Load event) {
-        if (!(event.getChunk() instanceof Chunk)) {
-            return;
-        }
-        Chunk chunk = (Chunk) event.getChunk();
-        Entity newEnt;
-        for (int i = 0; i < chunk.getEntityLists().length; i++) {
-            for (Object o : chunk.getEntityLists()[i]) {
-                newEnt = (Entity) o;
-                if (newEnt instanceof LivingEntity) {
-                    String savedMods = newEnt.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
-                    if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
-                        InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) newEnt, savedMods);
-                    }
-                }
-            }
-        }
-    }
+    // DOES NOT WORK IN 1.17
+//    @SubscribeEvent
+//    public void onChunkLoad(ChunkEvent.Load event) {
+//        if (event.getWorld() == null || event.getWorld().isClientSide()) {
+//            return;
+//        }
+//        if (event.getChunk() instanceof LevelChunk) {
+//            LevelChunk chunk = (LevelChunk) event.getChunk();
+//            BlockPos leftFrontPos = chunk.getPos().getWorldPosition();
+//            BlockPos rightBackPos = new BlockPos(chunk.getPos().getMaxBlockX(), chunk.getHeight(), chunk.getPos().getMaxBlockZ());
+//
+//            for (LivingEntity livingEntitesInLoadedChunk : event.getWorld().getEntitiesOfClass(LivingEntity.class, new AABB(leftFrontPos, rightBackPos))) {
+//                String savedMods = livingEntitesInLoadedChunk.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
+//                if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
+//                    InfernalMobsCore.instance().addEntityModifiersByString(livingEntitesInLoadedChunk, savedMods);
+//                }
+//            }
+//        }
+//    }
 
 }

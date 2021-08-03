@@ -1,3 +1,9 @@
+1.17.1.1
+- updated to MC 1.17 and the official mojang source mappings
+- reworked Infernal Mobs healthbar to use the built-in boss display
+- fixed various bugs and problems, mostly related to health and damage
+- nerfed Storm and Regen modifiers (slower effects)
+
 1.16.2.2
 - infernal mobs now permanently marks entities having passed through its spawn check once
 - reloading worlds or saves should never introduce new mods onto previously normal mobs

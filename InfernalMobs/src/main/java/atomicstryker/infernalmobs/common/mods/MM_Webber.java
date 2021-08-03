@@ -1,14 +1,14 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 
 public class MM_Webber extends MobModifier {
 
@@ -34,7 +34,7 @@ public class MM_Webber extends MobModifier {
     @Override
     public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
-                && getMobTarget() instanceof PlayerEntity) {
+                && getMobTarget() instanceof Player) {
             tryAbility(mob, getMobTarget());
         }
 
@@ -43,37 +43,37 @@ public class MM_Webber extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getTrueSource() != null
-                && source.getTrueSource() instanceof LivingEntity) {
-            tryAbility(mob, (LivingEntity) source.getTrueSource());
+        if (source.getEntity() != null
+                && source.getEntity() instanceof LivingEntity) {
+            tryAbility(mob, (LivingEntity) source.getEntity());
         }
 
         return super.onHurt(mob, source, damage);
     }
 
     private void tryAbility(LivingEntity mob, LivingEntity target) {
-        if (target == null || !mob.canEntityBeSeen(target)) {
+        if (target == null || !canMobSeeTarget(mob, target)) {
             return;
         }
 
-        int x = MathHelper.floor(target.getPosX());
-        int y = MathHelper.floor(target.getPosY());
-        int z = MathHelper.floor(target.getPosZ());
+        int x = Mth.floor(target.getX());
+        int y = Mth.floor(target.getY());
+        int z = Mth.floor(target.getZ());
 
         long time = System.currentTimeMillis();
         if (time > lastAbilityUse + coolDown) {
             int offset;
-            if (target.world.getBlockState(new BlockPos(x, y - 1, z)).getBlock() == Blocks.AIR) {
+            if (target.level.getBlockState(new BlockPos(x, y - 1, z)).getBlock() == Blocks.AIR) {
                 offset = -1;
-            } else if (target.world.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR) {
+            } else if (target.level.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR) {
                 offset = 0;
             } else {
                 return;
             }
 
             lastAbilityUse = time;
-            target.world.setBlockState(new BlockPos(x, y + offset, z), Blocks.COBWEB.getDefaultState());
-            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_SPIDER_AMBIENT, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            target.level.setBlockAndUpdate(new BlockPos(x, y + offset, z), Blocks.COBWEB.defaultBlockState());
+            mob.level.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
         }
     }
 

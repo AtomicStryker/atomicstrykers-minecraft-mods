@@ -1,17 +1,17 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.SpiderEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class MM_Cloaking extends MobModifier {
 
     private final static long coolDown = 10000L;
-    private static Class<?>[] disallowed = {SpiderEntity.class};
+    private static Class<?>[] disallowed = {Spider.class};
     private static String[] suffix = {"ofStalking", "theUnseen", "thePredator"};
     private static String[] prefix = {"stalking", "unseen", "hunting"};
     private long nextAbilityUse = 0L;
@@ -32,7 +32,7 @@ public class MM_Cloaking extends MobModifier {
     @Override
     public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
-                && getMobTarget() instanceof PlayerEntity) {
+                && getMobTarget() instanceof Player) {
             tryAbility(mob);
         }
 
@@ -41,8 +41,8 @@ public class MM_Cloaking extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getTrueSource() != null
-                && source.getTrueSource() instanceof LivingEntity) {
+        if (source.getEntity() != null
+                && source.getEntity() instanceof LivingEntity) {
             tryAbility(mob);
         }
 
@@ -53,7 +53,7 @@ public class MM_Cloaking extends MobModifier {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse) {
             nextAbilityUse = time + coolDown;
-            mob.addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 200));
+            mob.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 200));
         }
     }
 

@@ -2,13 +2,13 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Creeper;
 
 public class MM_Lifesteal extends MobModifier {
 
-    private static Class<?>[] disallowed = {CreeperEntity.class};
+    private static Class<?>[] disallowed = {Creeper.class};
     private static String[] suffix = {"theVampire", "ofTransfusion", "theBloodsucker"};
     private static String[] prefix = {"vampiric", "transfusing", "bloodsucking"};
 
@@ -27,10 +27,10 @@ public class MM_Lifesteal extends MobModifier {
 
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
-        LivingEntity mob = (LivingEntity) source.getTrueSource();
+        LivingEntity mob = (LivingEntity) source.getEntity();
         if (entity != null
-                && mob.getHealth() < getActualMaxHealth(mob)) {
-            InfernalMobsCore.instance().setEntityHealthPastMax(mob, mob.getHealth() + damage);
+                && !mob.level.isClientSide && mob.getHealth() < getActualMaxHealth(mob)) {
+            mob.setHealth(mob.getHealth() + damage);
         }
 
         return super.onAttack(entity, source, damage);

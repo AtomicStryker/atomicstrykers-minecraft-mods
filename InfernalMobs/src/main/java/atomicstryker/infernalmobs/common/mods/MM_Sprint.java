@@ -1,7 +1,7 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Sprint extends MobModifier {
 
@@ -44,8 +44,8 @@ public class MM_Sprint extends MobModifier {
     }
 
     private void doSprint(LivingEntity mob) {
-        float rotationMovement = (float) ((Math.atan2(mob.getMotion().x, mob.getMotion().z) * 180D) / 3.1415D);
-        float rotationLook = mob.rotationYaw;
+        float rotationMovement = (float) ((Math.atan2(mob.getDeltaMovement().x, mob.getDeltaMovement().z) * 180D) / 3.1415D);
+        float rotationLook = mob.getYRot();
 
         // god fucking dammit notch
         if (rotationLook > 360F) {
@@ -63,8 +63,8 @@ public class MM_Sprint extends MobModifier {
 
         // unfuck velocity lock
         if (Math.abs(rotationMovement + rotationLook) > 10F) {
-            modMotionX = mob.getMotion().x;
-            modMotionZ = mob.getMotion().z;
+            modMotionX = mob.getDeltaMovement().x;
+            modMotionZ = mob.getDeltaMovement().z;
         }
 
         if (entspeed < 0.3D) {
@@ -75,12 +75,12 @@ public class MM_Sprint extends MobModifier {
 
             modMotionX *= 1.5;
             modMotionZ *= 1.5;
-            mob.setMotion(modMotionX, mob.getMotion().y, modMotionZ);
+            mob.setDeltaMovement(modMotionX, mob.getDeltaMovement().y, modMotionZ);
         }
     }
 
     private double GetAbsSpeed(LivingEntity ent) {
-        return Math.sqrt(ent.getMotion().x * ent.getMotion().x + ent.getMotion().z * ent.getMotion().z);
+        return Math.sqrt(ent.getDeltaMovement().x * ent.getDeltaMovement().x + ent.getDeltaMovement().z * ent.getDeltaMovement().z);
     }
 
     private double GetAbsModSpeed() {

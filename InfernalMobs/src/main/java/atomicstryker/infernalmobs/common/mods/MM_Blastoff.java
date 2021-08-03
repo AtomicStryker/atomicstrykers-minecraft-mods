@@ -2,13 +2,12 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
 
 public class MM_Blastoff extends MobModifier {
 
@@ -34,7 +33,7 @@ public class MM_Blastoff extends MobModifier {
     @Override
     public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
-                && getMobTarget() instanceof PlayerEntity) {
+                && getMobTarget() instanceof Player) {
             tryAbility(mob, getMobTarget());
         }
 
@@ -43,28 +42,28 @@ public class MM_Blastoff extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getTrueSource() != null
-                && source.getTrueSource() instanceof LivingEntity) {
-            tryAbility(mob, (LivingEntity) source.getTrueSource());
+        if (source.getEntity() != null
+                && source.getEntity() instanceof LivingEntity) {
+            tryAbility(mob, (LivingEntity) source.getEntity());
         }
 
         return super.onHurt(mob, source, damage);
     }
 
     private void tryAbility(LivingEntity mob, LivingEntity target) {
-        if (target == null || !mob.canEntityBeSeen(target)) {
+        if (target == null || !canMobSeeTarget(mob, target)) {
             return;
         }
 
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse) {
             nextAbilityUse = time + coolDown;
-            mob.world.playSound(null, mob.getPosition(), SoundEvents.ENTITY_SLIME_JUMP, SoundCategory.HOSTILE, 1.0F + mob.getRNG().nextFloat(), mob.getRNG().nextFloat() * 0.7F + 0.3F);
+            mob.level.playSound(null, mob.blockPosition(), SoundEvents.SLIME_JUMP, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
 
-            if (target.world.isRemote || !(target instanceof ServerPlayerEntity)) {
-                target.addVelocity(0, 1.1D, 0);
+            if (target.level.isClientSide || !(target instanceof ServerPlayer)) {
+                target.push(0, 1.1D, 0);
             } else {
-                InfernalMobsCore.instance().sendVelocityPacket((ServerPlayerEntity) target, 0f, 1.1f, 0f);
+                InfernalMobsCore.instance().sendVelocityPacket((ServerPlayer) target, 0f, 1.1f, 0f);
             }
         }
     }

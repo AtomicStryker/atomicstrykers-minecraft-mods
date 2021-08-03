@@ -2,8 +2,8 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class MM_Vengeance extends MobModifier {
 
@@ -25,10 +25,10 @@ public class MM_Vengeance extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getTrueSource() != null
-                && source.getTrueSource() != mob
-                && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getTrueSource())) {
-            source.getTrueSource().attackEntityFrom(DamageSource.causeMobDamage(mob),
+        if (source.getEntity() != null
+                && source.getEntity() != mob
+                && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())) {
+            source.getEntity().hurt(DamageSource.mobAttack(mob),
                     InfernalMobsCore.instance().getLimitedDamage(Math.max(damage / 2, 1)));
         }
 

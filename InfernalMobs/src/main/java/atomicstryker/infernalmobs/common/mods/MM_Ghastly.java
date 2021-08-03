@@ -1,10 +1,10 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.LargeFireball;
+import net.minecraft.world.phys.Vec3;
 
 public class MM_Ghastly extends MobModifier {
 
@@ -33,33 +33,35 @@ public class MM_Ghastly extends MobModifier {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                tryAbility(mob, mob.world.getClosestPlayer(mob, 12f));
+                tryAbility(mob, mob.level.getNearestPlayer(mob, 12f));
             }
         }
         return super.onUpdate(mob);
     }
 
     private void tryAbility(LivingEntity mob, LivingEntity target) {
-        if (target == null || !mob.canEntityBeSeen(target)) {
+        if (target == null || !canMobSeeTarget(mob, target)) {
             return;
         }
 
-        if (mob.getDistance(target) > MIN_DISTANCE) {
-            double diffX = target.getPosX() - mob.getPosX();
-            double diffY = target.getBoundingBox().minY + (double) (target.getHeight() / 2.0F) - (mob.getPosY() + (double) (mob.getHeight() / 2.0F));
-            double diffZ = target.getPosZ() - mob.getPosZ();
-            mob.renderYawOffset = mob.rotationYaw = -((float) Math.atan2(diffX, diffZ)) * 180.0F / (float) Math.PI;
+        if (mob.distanceTo(target) > MIN_DISTANCE) {
+            double diffX = target.getX() - mob.getX();
+            double diffY = target.getBoundingBox().minY + (double) (target.getBbHeight() / 2.0F) - (mob.getY() + (double) (mob.getBbHeight() / 2.0F));
+            double diffZ = target.getZ() - mob.getZ();
+            mob.setYRot(-((float) Math.atan2(diffX, diffZ)) * 180.0F / (float) Math.PI);
+            mob.setYBodyRot(mob.getYRot());
 
-            mob.world.playEvent(null, 1008, new BlockPos((int) mob.getPosX(), (int) mob.getPosY(), (int) mob.getPosZ()), 0);
-            FireballEntity entFB = new FireballEntity(mob.world, mob, diffX, diffY, diffZ);
+            mob.level.levelEvent(null, 1008, new BlockPos((int) mob.getX(), (int) mob.getY(), (int) mob.getZ()), 0);
+            // the last int parameter is explosionpower, apparently 1 is Ghast default
+            LargeFireball entFB = new LargeFireball(mob.level, mob, diffX, diffY, diffZ, 1);
             double spawnOffset = 2.0D;
-            Vector3d mobLook = mob.getLook(1.0F);
-            double newX = mob.getPosX() + mobLook.x * spawnOffset;
-            double newY = mob.getPosY() + (double) (mob.getHeight() / 2.0F) + 0.5D;
-            double newZ = mob.getPosZ() + mobLook.z * spawnOffset;
-            mob.setPosition(newX, newY, newZ);
+            Vec3 mobLook = mob.getViewVector(1.0F);
+            double newX = mob.getX() + mobLook.x * spawnOffset;
+            double newY = mob.getY() + (double) (mob.getBbHeight() / 2.0F) + 0.5D;
+            double newZ = mob.getZ() + mobLook.z * spawnOffset;
+            mob.setPos(newX, newY, newZ);
 
-            mob.world.addEntity(entFB);
+            mob.level.addFreshEntity(entFB);
         }
     }
 

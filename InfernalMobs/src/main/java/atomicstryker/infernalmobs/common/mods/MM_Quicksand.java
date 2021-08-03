@@ -2,9 +2,9 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Quicksand extends MobModifier {
 
@@ -29,10 +29,10 @@ public class MM_Quicksand extends MobModifier {
     public boolean onUpdate(LivingEntity mob) {
         if (hasSteadyTarget()
                 && InfernalMobsCore.instance().getIsEntityAllowedTarget(getMobTarget())
-                && mob.canEntityBeSeen(getMobTarget())
+                && canMobSeeTarget(mob, getMobTarget())
                 && ++ticker == 50) {
             ticker = 0;
-            getMobTarget().addPotionEffect(new EffectInstance(Effects.SLOWNESS, 45, 0));
+            getMobTarget().addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 45, 0));
         }
 
         return super.onUpdate(mob);
