@@ -262,8 +262,9 @@ public class InfernalMobsClient {
     }
 
     @SubscribeEvent
-    public static void onTick(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.LAYER) {
+    public static void onTick(RenderGameOverlayEvent.Post event) {
+        // Post and ALL is after the forge ingame gui has finished rendering, we draw ontop
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;
             }
