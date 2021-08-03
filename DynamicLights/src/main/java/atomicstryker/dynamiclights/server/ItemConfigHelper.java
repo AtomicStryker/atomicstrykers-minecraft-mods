@@ -1,11 +1,11 @@
 package atomicstryker.dynamiclights.server;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +19,7 @@ public class ItemConfigHelper {
         itemStackList = new ArrayList<>();
         for (String json : items) {
             try {
-                CompoundNBT nbt = JsonToNBT.parseTag(json);
+                CompoundTag nbt = TagParser.parseTag(json);
                 ResourceLocation resourceLocation = new ResourceLocation(nbt.getString("nameId"));
                 Item item = ForgeRegistries.ITEMS.getValue(resourceLocation);
 

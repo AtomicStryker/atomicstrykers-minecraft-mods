@@ -3,13 +3,12 @@
 # The overall format is standard TOML format, v0.5.0.
 # Note that there are a couple of TOML lists in this file.
 # Find more information on toml format here:  https://github.com/toml-lang/toml
-license="http://atomicstryker.net/about.php" #mandatory
-# The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[25,)" #mandatory (24 is current forge version)
+loaderVersion="[37,)" #mandatory forge version
+license="AtomicStrykers License http://atomicstryker.net/about.php"
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="http://my.issue.tracker/" #optional
+issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
@@ -23,12 +22,10 @@ displayName="Dynamic Lights" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="http://atomicstryker.org/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="examplemod.png" #optional
+logoFile="logo.png" #optional
 # A text field displayed in the mod UI
-credits="by AtomicStryker" #optional
+# credits="" #optional
 # A text field displayed in the mod UI
-authors="..." #optional
+authors="AtomicStryker" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description='''
-Shine light from held and dropped items
-'''
+description="Shine light from held and dropped items"

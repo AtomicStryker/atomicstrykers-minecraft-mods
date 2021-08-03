@@ -5,24 +5,24 @@ import atomicstryker.dynamiclights.server.blocks.BlockLitCaveAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitWater;
 import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmllegacy.LogicalSidedProvider;
+import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,7 +57,7 @@ public class DynamicLights {
      * the client can only be in a single World, the other Lists just float idle
      * when unused.
      */
-    private ConcurrentHashMap<World, ConcurrentLinkedQueue<atomicstryker.dynamiclights.server.DynamicLightSourceContainer>> worldLightsMap;
+    private ConcurrentHashMap<Level, ConcurrentLinkedQueue<atomicstryker.dynamiclights.server.DynamicLightSourceContainer>> worldLightsMap;
 
     private PlayerSelfLightSource playerSelfLightSource;
     private DroppedItemsLightSource droppedItemsLightSource;
@@ -81,11 +81,11 @@ public class DynamicLights {
 
     @SubscribeEvent
     public static void onBlocksRegistration(final RegistryEvent.Register<Block> event) {
-        Block litAirBlock = new BlockLitAir(AbstractBlock.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
+        Block litAirBlock = new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
         event.getRegistry().register(litAirBlock);
-        Block litWaterBlock = new BlockLitWater(Fluids.WATER, AbstractBlock.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> 15).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
+        Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> 15).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
         event.getRegistry().register(litWaterBlock);
-        Block litCaveAirBlock = new BlockLitCaveAir(AbstractBlock.Properties.of(Material.AIR).noCollission().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
+        Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
         vanillaBlocksToLitBlocksMap.put(Blocks.AIR, litAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.WATER, litWaterBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.CAVE_AIR, litCaveAirBlock);
@@ -151,7 +151,7 @@ public class DynamicLights {
      */
     public static void removeLightSource(IDynamicLightSource lightToRemove) {
         if (lightToRemove != null && lightToRemove.getAttachmentEntity() != null) {
-            World world = lightToRemove.getAttachmentEntity().level;
+            Level world = lightToRemove.getAttachmentEntity().level;
             if (world != null) {
                 DynamicLightSourceContainer iterContainer = null;
                 ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(world);
@@ -206,7 +206,7 @@ public class DynamicLights {
     /**
      * in order to cleanup orphaned dynamic light blocks, they tick randomly and kill themselves unless they are a known dynamic light source
      */
-    public static boolean isKnownLitPosition(World world, BlockPos blockPos) {
+    public static boolean isKnownLitPosition(Level world, BlockPos blockPos) {
         ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = instance.worldLightsMap.get(world);
         if (worldLights != null) {
             for (DynamicLightSourceContainer light : worldLights) {

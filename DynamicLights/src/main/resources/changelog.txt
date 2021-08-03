@@ -1,3 +1,6 @@
+1.17.1
+- updated for MC 1.17.1 and the official source mappings
+
 1.16.5
 - rewritten to work with MC 1.16.5
 - the mod now uses fake air and water blocks to achieve light (rapidly placing and removing them as light sources move)

@@ -4,20 +4,20 @@ import atomicstryker.dynamiclights.server.DynamicLights;
 import atomicstryker.dynamiclights.server.GsonConfig;
 import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,7 @@ public class PlayerSelfLightSource {
     private static ItemConfigHelper itemsMap;
     private static ItemConfigHelper notWaterProofItems;
     private LightConfig config;
-    private final HashMap<PlayerEntity, PlayerLightSourceContainer> playerLightsMap = new HashMap<>();
+    private final HashMap<Player, PlayerLightSourceContainer> playerLightsMap = new HashMap<>();
 
     public PlayerSelfLightSource() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -85,21 +85,21 @@ public class PlayerSelfLightSource {
             int prevLight = playerLightSourceContainer.lightLevel;
 
             ItemStack item = ItemStack.EMPTY;
-            LOGGER.trace("checking for light from main hand item {}", event.player.getItemInHand(Hand.MAIN_HAND));
-            int main = getLightFromItemStack(event.player.getItemInHand(Hand.MAIN_HAND));
-            int off = getLightFromItemStack(event.player.getItemInHand(Hand.OFF_HAND));
+            LOGGER.trace("checking for light from main hand item {}", event.player.getItemInHand(InteractionHand.MAIN_HAND));
+            int main = getLightFromItemStack(event.player.getItemInHand(InteractionHand.MAIN_HAND));
+            int off = getLightFromItemStack(event.player.getItemInHand(InteractionHand.OFF_HAND));
             if (main >= off && main > 0) {
-                item = event.player.getItemInHand(Hand.MAIN_HAND);
+                item = event.player.getItemInHand(InteractionHand.MAIN_HAND);
                 playerLightSourceContainer.lightLevel = main;
             } else if (off >= main && off > 0) {
-                item = event.player.getItemInHand(Hand.OFF_HAND);
+                item = event.player.getItemInHand(InteractionHand.OFF_HAND);
                 playerLightSourceContainer.lightLevel = off;
             } else {
                 playerLightSourceContainer.lightLevel = 0;
             }
             LOGGER.trace("Self light tick, main:{}, off:{}, light:{}, chosen itemstack:{}", main, off, playerLightSourceContainer.lightLevel, item);
 
-            for (ItemStack armor : event.player.inventory.armor) {
+            for (ItemStack armor : event.player.getInventory().armor) {
                 playerLightSourceContainer.lightLevel = Math.max(playerLightSourceContainer.lightLevel, getLightFromItemStack(armor));
             }
 
@@ -112,7 +112,7 @@ public class PlayerSelfLightSource {
                     if (checkPlayerWater(event.player) && notWaterProofItems.contains(item)) {
                         playerLightSourceContainer.lightLevel = 0;
                         LOGGER.trace("Self light tick, water blocked light!");
-                        for (ItemStack armor : event.player.inventory.armor) {
+                        for (ItemStack armor : event.player.getInventory().armor) {
                             if (!notWaterProofItems.contains(armor)) {
                                 playerLightSourceContainer.lightLevel = Math.max(playerLightSourceContainer.lightLevel, getLightFromItemStack(armor));
                             }
@@ -136,11 +136,11 @@ public class PlayerSelfLightSource {
 
     }
 
-    private boolean checkPlayerWater(PlayerEntity thePlayer) {
+    private boolean checkPlayerWater(Player thePlayer) {
         if (thePlayer.isInWater()) {
-            int x = MathHelper.floor(thePlayer.getX() + 0.5D);
-            int y = MathHelper.floor(thePlayer.getY() + thePlayer.getEyeHeight());
-            int z = MathHelper.floor(thePlayer.getZ() + 0.5D);
+            int x = Mth.floor(thePlayer.getX() + 0.5D);
+            int y = Mth.floor(thePlayer.getY() + thePlayer.getEyeHeight());
+            int z = Mth.floor(thePlayer.getZ() + 0.5D);
             BlockState is = thePlayer.level.getBlockState(new BlockPos(x, y, z));
             return is.getMaterial().isLiquid();
         }
@@ -166,7 +166,7 @@ public class PlayerSelfLightSource {
 
     class PlayerLightSourceContainer implements IDynamicLightSource {
 
-        PlayerLightSourceContainer(PlayerEntity player) {
+        PlayerLightSourceContainer(Player player) {
             thePlayer = player;
             lightLevel = 0;
             enabled = false;
@@ -174,7 +174,7 @@ public class PlayerSelfLightSource {
 
         int lightLevel;
         boolean enabled;
-        PlayerEntity thePlayer;
+        Player thePlayer;
 
         @Override
         public Entity getAttachmentEntity() {

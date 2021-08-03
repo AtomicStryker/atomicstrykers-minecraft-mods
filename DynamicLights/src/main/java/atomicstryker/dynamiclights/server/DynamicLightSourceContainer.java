@@ -1,11 +1,11 @@
 package atomicstryker.dynamiclights.server;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
 
@@ -18,8 +18,8 @@ import java.util.Map;
 public class DynamicLightSourceContainer {
     private final IDynamicLightSource lightSource;
 
-    private final BlockPos.Mutable prevPos = new BlockPos.Mutable();
-    private final BlockPos.Mutable curPos = new BlockPos.Mutable();
+    private final BlockPos.MutableBlockPos prevPos = new BlockPos.MutableBlockPos();
+    private final BlockPos.MutableBlockPos curPos = new BlockPos.MutableBlockPos();
 
     private final int yOffset;
 
@@ -77,7 +77,7 @@ public class DynamicLightSourceContainer {
         return false;
     }
 
-    private void removePreviousLight(World world) {
+    private void removePreviousLight(Level world) {
         Block previousBlock = world.getBlockState(prevPos).getBlock();
         for (Map.Entry<Block, Block> vanillaBlockToLitBlockEntry : DynamicLights.vanillaBlocksToLitBlocksMap.entrySet()) {
             if (vanillaBlockToLitBlockEntry.getValue().equals(previousBlock)) {
@@ -87,7 +87,7 @@ public class DynamicLightSourceContainer {
         }
     }
 
-    public void removeLight(World world) {
+    public void removeLight(Level world) {
         // reset previous and current position light blocks if they exist
         removePreviousLight(world);
         Block currentBlock = world.getBlockState(curPos).getBlock();
@@ -99,7 +99,7 @@ public class DynamicLightSourceContainer {
         }
     }
 
-    private void addLight(World world) {
+    private void addLight(Level world) {
         // add light block on current position, depending on what type (air, water)
         BlockState blockState = world.getBlockState(curPos);
         Block currentBlock = blockState.getBlock();
@@ -107,8 +107,8 @@ public class DynamicLightSourceContainer {
             if (currentBlock.equals(vanillaBlockToLitBlockEntry.getKey())) {
 
                 // this check prevents lit water from substituting anything but a "full" water block
-                if (currentBlock instanceof FlowingFluidBlock) {
-                    if (blockState.getValue(FlowingFluidBlock.LEVEL) != 0) {
+                if (currentBlock instanceof LiquidBlock) {
+                    if (blockState.getValue(LiquidBlock.LEVEL) != 0) {
                         return;
                     }
                 }
