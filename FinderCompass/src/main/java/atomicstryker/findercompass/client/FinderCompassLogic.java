@@ -3,9 +3,9 @@ package atomicstryker.findercompass.client;
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -27,7 +27,7 @@ public class FinderCompassLogic {
     }
 
     public void onTick() {
-        if (mc.world != null && mc.player != null) {
+        if (mc.level != null && mc.player != null) {
             boolean isNewSecond = false;
             boolean is15SecInterval = false;
             boolean movement = false;
@@ -37,7 +37,7 @@ public class FinderCompassLogic {
                 nextTime = System.currentTimeMillis() + 1000L;
             }
 
-            BlockPos pos = new BlockPos(mc.player.getPositionVec());
+            BlockPos pos = new BlockPos(mc.player.getOnPos());
             if (!pos.equals(oldPos)) {
                 oldPos = pos;
                 movement = true;
@@ -63,7 +63,7 @@ public class FinderCompassLogic {
                 if (is15SecInterval && currentSetting.getFeatureNeedle() != null) {
                     FinderCompassMod.instance.networkHelper.sendPacketToServer(
                             new FeatureSearchPacket(mc.player.getName().getString(), currentSetting.getFeatureNeedle(),
-                                    (int) mc.player.getPosX(), (int) mc.player.getPosY(), (int) mc.player.getPosZ()));
+                                    mc.player.getOnPos().getX(), mc.player.getOnPos().getY(), mc.player.getOnPos().getZ()));
                 }
 
                 while (iter.hasNext()) {

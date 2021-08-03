@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[25,)" #mandatory (24 is current forge version)
+loaderVersion="[37,)" #mandatory (37 is current forge version)
 license="AtomicStrykers License http://atomicstryker.net/about.php"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues" #optional
@@ -23,31 +23,10 @@ updateJSONURL="http://www.atomicstryker.net/updatemanager/findercompass.json" #o
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="http://atomicstryker.org/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="examplemod.png" #optional
+logoFile="logo.png" #optional
 # A text field displayed in the mod UI
-credits="by AtomicStryker" #optional
+credits="" #optional
 # A text field displayed in the mod UI
-authors="..." #optional
+authors="AtomicStryker" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description='''
-Turn the compass item into a block detection utility
-'''
-# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
-    # the modid of the dependency
-    modId="forge" #mandatory
-    # Does this dependency have to exist - if not, ordering below must be specified
-    mandatory=true #mandatory
-    # The version range of the dependency
-    versionRange="[25,)" #mandatory
-    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
-    ordering="NONE"
-    # Side this dependency is applied on - BOTH, CLIENT or SERVER
-    side="BOTH"
-# Here's another dependency
-[[dependencies.examplemod]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.13.2]"
-    ordering="NONE"
-    side="SERVER"
+description="Turn the compass item into a block detection utility"

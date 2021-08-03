@@ -1,3 +1,6 @@
+1.17.1
+update to MC 1.17 and official source mappings
+
 1.16.3.1
 update to MC 1.16.3
 rewritten to use Mixin instead of being a coremod

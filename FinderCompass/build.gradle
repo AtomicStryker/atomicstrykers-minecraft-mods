@@ -1,21 +1,16 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'http://repo.spongepowered.org/maven' }
-        maven { url = 'https://dist.creeper.host/Sponge/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.+', changing: true
     }
 }
 plugins {
     id 'com.matthewprenger.cursegradle' version '1.0.10'
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -26,20 +21,20 @@ repositories {
     }
 }
 
-def mcversion = '1.16.3'
-version = '1.16.3.1'
-group = 'atomicstryker.findercompass' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+def mcversion = '1.17.1'
+version = '1.17.1.1'
+group = 'atomicstryker.findercompass'
 archivesBaseName = 'findercompass'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+// Mojang ships Java 16 to end users in 1.17+ instead of Java 8 in 1.16 or lower, so your mod should target Java 16.
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    mappings channel: 'official', version: '1.17.1'
 
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=findercompass.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', ''
@@ -48,7 +43,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                findercompass {
                     source sourceSets.main
                 }
             }
@@ -64,7 +59,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                findercompass {
                     source sourceSets.main
                 }
             }
@@ -73,7 +68,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.34'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.18'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -91,9 +86,7 @@ jar {
     }
 }
 
-mixin {
-    add sourceSets.main, "findercompass.refmap.json"
-}
+jar.finalizedBy('reobfJar')
 
 curseforge {
     apiKey = project.curseForgeApiKey

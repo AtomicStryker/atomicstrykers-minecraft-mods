@@ -3,8 +3,8 @@ package atomicstryker.findercompass.common.network;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -33,18 +33,18 @@ public class HandshakePacket implements IPacket {
     }
 
     @Override
-    public void encode(Object msg, PacketBuffer packetBuffer) {
+    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
         HandshakePacket packet = (HandshakePacket) msg;
-        packetBuffer.writeString(packet.username, MAX_NAME_LENGTH);
+        packetBuffer.writeUtf(packet.username, MAX_NAME_LENGTH);
         if (packet.username.equals("server")) {
             packet.json = GsonConfig.jsonFromConfig(FinderCompassMod.instance.compassConfig);
-            packetBuffer.writeString(packet.json, MAX_STRING_LENGTH_JSON);
+            packetBuffer.writeUtf(packet.json, MAX_STRING_LENGTH_JSON);
         }
     }
 
     @Override
-    public <MSG> MSG decode(PacketBuffer packetBuffer) {
-        HandshakePacket packet = new HandshakePacket(packetBuffer.readString(MAX_NAME_LENGTH), packetBuffer.readString(MAX_STRING_LENGTH_JSON));
+    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
+        HandshakePacket packet = new HandshakePacket(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readUtf(MAX_STRING_LENGTH_JSON));
         return (MSG) packet;
     }
 

@@ -1,7 +1,7 @@
 package atomicstryker.findercompass.common;
 
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class CompassTargetData {
 
@@ -27,7 +27,7 @@ public class CompassTargetData {
     @Override
     public int hashCode() {
         int result;
-        if (blockState.getBlock().getStateContainer().getProperties().isEmpty()) {
+        if (blockState.getBlock().getStateDefinition().getProperties().isEmpty()) {
             result = blockState.getBlock().hashCode();
         } else {
             result = blockState.hashCode();

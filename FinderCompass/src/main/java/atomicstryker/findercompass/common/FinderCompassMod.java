@@ -7,19 +7,19 @@ import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import com.google.gson.Gson;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateHolder;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateHolder;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,7 +93,7 @@ public class FinderCompassMod {
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getPlayer().getDisplayName());
-        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayerEntity) event.getPlayer());
+        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayer) event.getPlayer());
     }
 
     private String getStringFromBlockState(BlockState blockState) {
@@ -101,8 +101,8 @@ public class FinderCompassMod {
         Map<String, String> blockMap = new HashMap<>();
 
         blockMap.put("block", ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString());
-        for (Property<?> property : blockState.getBlock().getStateContainer().getProperties()) {
-            blockMap.put(property.getName(), blockState.get(property).toString());
+        for (Property<?> property : blockState.getBlock().getStateDefinition().getProperties()) {
+            blockMap.put(property.getName(), blockState.getValue(property).toString());
         }
         Gson gson = new Gson();
         return gson.toJson(blockMap);
@@ -116,17 +116,17 @@ public class FinderCompassMod {
         if (block == null) {
             return null;
         }
-        BlockState reconstructedState = block.getDefaultState();
-        for (Property<?> property : block.getStateContainer().getProperties()) {
+        BlockState reconstructedState = block.defaultBlockState();
+        for (Property<?> property : block.getStateDefinition().getProperties()) {
             reconstructedState = setValueHelper(reconstructedState, property, property.getName(), blockMap.get(property.getName()));
         }
         return reconstructedState;
     }
 
     private <S extends StateHolder<?, S>, T extends Comparable<T>> S setValueHelper(S blockState, Property<T> property, String propertyName, String valueString) {
-        Optional<T> optional = property.parseValue(valueString);
+        Optional<T> optional = property.getValue(valueString);
         if (optional.isPresent()) {
-            return (blockState.with(property, optional.get()));
+            return (blockState.setValue(property, optional.get()));
         } else {
             LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", propertyName, valueString, blockState.toString());
             return blockState;
@@ -144,21 +144,21 @@ public class FinderCompassMod {
             Map<String, int[]> needleMap = new HashMap<>();
 
             {
-                BlockState state = Blocks.GOLD_ORE.getDefaultState();
+                BlockState state = Blocks.GOLD_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
             {
-                BlockState state = Blocks.IRON_ORE.getDefaultState();
+                BlockState state = Blocks.IRON_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{245, 245, 245, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
             {
-                BlockState state = Blocks.COAL_ORE.getDefaultState();
+                BlockState state = Blocks.COAL_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{51, 26, 0, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
@@ -175,28 +175,28 @@ public class FinderCompassMod {
             Map<String, int[]> needleMap = new HashMap<>();
 
             {
-                BlockState state = Blocks.DIAMOND_ORE.getDefaultState();
+                BlockState state = Blocks.DIAMOND_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
                 needleMap.put(string, setting);
             }
 
             {
-                BlockState state = Blocks.LAPIS_ORE.getDefaultState();
+                BlockState state = Blocks.LAPIS_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{55, 70, 220, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
             {
-                BlockState state = Blocks.REDSTONE_ORE.getDefaultState();
+                BlockState state = Blocks.REDSTONE_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{255, 125, 155, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
             {
-                BlockState state = Blocks.EMERALD_ORE.getDefaultState();
+                BlockState state = Blocks.EMERALD_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{26, 255, 26, 7, 1, 4, 31, 0};
                 needleMap.put(string, setting);
@@ -214,7 +214,7 @@ public class FinderCompassMod {
 
             {
                 // nether_gold_ore
-                BlockState state = Blocks.NETHER_GOLD_ORE.getDefaultState();
+                BlockState state = Blocks.NETHER_GOLD_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
@@ -222,14 +222,14 @@ public class FinderCompassMod {
 
             {
                 // ancient_debris
-                BlockState state = Blocks.ANCIENT_DEBRIS.getDefaultState();
+                BlockState state = Blocks.ANCIENT_DEBRIS.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
                 needleMap.put(string, setting);
             }
 
             {
-                BlockState state = Blocks.NETHER_QUARTZ_ORE.getDefaultState();
+                BlockState state = Blocks.NETHER_QUARTZ_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
                 int[] setting = new int[]{55, 70, 220, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);

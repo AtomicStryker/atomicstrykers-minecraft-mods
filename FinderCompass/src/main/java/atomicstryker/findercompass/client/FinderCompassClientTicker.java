@@ -4,16 +4,17 @@ import atomicstryker.findercompass.common.CompassConfig;
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -48,7 +49,7 @@ public class FinderCompassClientTicker {
         COMPASS_ITEM_ID = Items.COMPASS;
 
         mc = Minecraft.getInstance();
-        ItemModelMesher mesher = mc.getItemRenderer().getItemModelMesher();
+        ItemModelShaper mesher = mc.getItemRenderer().getItemModelShaper();
         mesher.register(COMPASS_ITEM_ID, new ModelResourceLocation("compass", "inventory"));
 
         compassLogic = new FinderCompassLogic(mc);
@@ -57,12 +58,12 @@ public class FinderCompassClientTicker {
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent tick) {
         if (tick.phase == TickEvent.Phase.END && compassLogic != null) {
-            if (tick.player.getHeldItemMainhand().getItem() == COMPASS_ITEM_ID) {
-                if (mc.gameSettings.keyBindAttack.isKeyDown()) {
+            if (tick.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == COMPASS_ITEM_ID) {
+                if (mc.options.keyAttack.isDown()) {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player.world.playSound(null, new BlockPos(tick.player.getPositionVec()), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
+                        tick.player.level.playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK, SoundSource.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;
@@ -96,9 +97,9 @@ public class FinderCompassClientTicker {
         currentSetting = getSettingsList().get(nextIndex);
         FinderCompassLogic.hasFeature = false;
 
-        if (mc.world != null) {
-            mc.world.playSound(null, new BlockPos(mc.player.getPositionVec()), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.3F, 0.6F);
-            mc.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent("Finder Compass Mode: " + currentSetting.getName()));
+        if (mc.level != null) {
+            mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK, SoundSource.BLOCKS, 0.3F, 0.6F);
+            mc.gui.getChat().addMessage(new TextComponent("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
 
@@ -110,8 +111,7 @@ public class FinderCompassClientTicker {
         FinderCompassMod.LOGGER.info("inputting Finder Compass config from serverside: {}", json);
         CompassConfig compassConfig = GsonConfig.loadConfigFromString(CompassConfig.class, json);
         FinderCompassMod.instance.loadSettingListFromConfig(compassConfig);
-        mc.ingameGUI.getChatGUI().printChatMessage(
-                new TranslationTextComponent("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
+        mc.gui.getChat().addMessage(new TextComponent("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
     }
 
     public void onFoundChunkCoordinates(BlockPos input, BlockState blockState) {

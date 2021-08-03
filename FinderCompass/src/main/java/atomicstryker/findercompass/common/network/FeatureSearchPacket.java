@@ -2,8 +2,8 @@ package atomicstryker.findercompass.common.network;
 
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -30,18 +30,18 @@ public class FeatureSearchPacket implements IPacket {
     }
 
     @Override
-    public void encode(Object msg, PacketBuffer packetBuffer) {
+    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
         FeatureSearchPacket packet = (FeatureSearchPacket) msg;
-        packetBuffer.writeString(packet.username, MAX_STRING_LENGTH);
-        packetBuffer.writeString(packet.featureId, MAX_STRING_LENGTH);
+        packetBuffer.writeUtf(packet.username, MAX_STRING_LENGTH);
+        packetBuffer.writeUtf(packet.featureId, MAX_STRING_LENGTH);
         packetBuffer.writeInt(packet.x);
         packetBuffer.writeInt(packet.y);
         packetBuffer.writeInt(packet.z);
     }
 
     @Override
-    public <MSG> MSG decode(PacketBuffer packetBuffer) {
-        return (MSG) new FeatureSearchPacket(packetBuffer.readString(MAX_STRING_LENGTH), packetBuffer.readString(MAX_STRING_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt());
+    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
+        return (MSG) new FeatureSearchPacket(packetBuffer.readUtf(MAX_STRING_LENGTH), packetBuffer.readUtf(MAX_STRING_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt());
     }
 
     @Override
