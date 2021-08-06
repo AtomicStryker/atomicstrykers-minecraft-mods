@@ -5,14 +5,10 @@ import atomicstryker.findercompass.common.FinderCompassMod;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,12 +19,19 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Map.Entry;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
 public class CompassRenderHook {
 
-    private static final float[] strongholdNeedlecolor = {0.4f, 0f, 0.6f};
+    private static final int[] strongholdNeedlecolor = {102, 0, 153};
     private static Minecraft mc = null;
     private static final ItemStack compassStack = new ItemStack(Items.COMPASS);
+
+    private static double onScreenPositionWidth;
+    private static double onScreenPositionHeight;
+    private static double needleWidthOfScreenWidth;
+    private static double needleHeightOfScreenHeight;
+    private static Boolean mustHoldCompassInHandToBeActive = null;
 
     @SubscribeEvent
     public static void onTick(RenderGameOverlayEvent.Post event) {
@@ -38,164 +41,142 @@ public class CompassRenderHook {
                 mc = Minecraft.getInstance();
             }
 
+            updateConfigValues();
             if (playerHasCompass()) {
-                renderCompassNeedles(ItemTransforms.TransformType.GUI, event.getMatrixStack());
+                renderCompassNeedles(event.getMatrixStack());
+                //renderTestQuad(event.getMatrixStack(), 45);
             }
+
+        }
+    }
+
+    /**
+     * copy over config values once
+     */
+    private static void updateConfigValues() {
+        if (mustHoldCompassInHandToBeActive == null) {
+            onScreenPositionWidth = FinderCompassMod.instance.compassConfig.getOnScreenPositionWidth();
+            onScreenPositionHeight = FinderCompassMod.instance.compassConfig.getOnScreenPositionHeight();
+            needleWidthOfScreenWidth = FinderCompassMod.instance.compassConfig.getNeedleWidthOfScreenWidth();
+            needleHeightOfScreenHeight = FinderCompassMod.instance.compassConfig.getNeedleHeightOfScreenHeight();
+            mustHoldCompassInHandToBeActive = FinderCompassMod.instance.compassConfig.isMustHoldCompassInHandToBeActive();
         }
     }
 
     private static boolean playerHasCompass() {
         if (mc.player != null) {
-            return mc.player.getInventory().contains(compassStack);
+            if (mustHoldCompassInHandToBeActive) {
+                if (mc.player.getMainHandItem().getItem() == Items.COMPASS || mc.player.getOffhandItem().getItem() == Items.COMPASS) {
+                    return true;
+                }
+            } else {
+                int compassSlot = mc.player.getInventory().findSlotMatchingItem(compassStack);
+                return Inventory.isHotbarSlot(compassSlot);
+            }
         }
         return false;
     }
 
-//    public static void renderItemHook(ItemTransforms.TransformType transformType, MatrixStack matrixStackIn) {
-//        if (FinderCompassClientTicker.instance != null) {
-//            if (mc == null) {
-//                mc = Minecraft.getInstance();
-//            }
-//            if (transformType == GUI) {
-//                renderCompassNeedles(transformType, matrixStackIn);
-//            } else if (transformType == FIRST_PERSON_RIGHT_HAND || transformType == FIRST_PERSON_LEFT_HAND) {
-//                // disabled. the transforms fight me too much.
-//                // renderCompassNeedles(transformType, matrixStackIn);
-//            }
-//        }
-//    }
+    private static void renderCompassNeedles(PoseStack poseStack) {
 
-    // these values are here for on-the-fly adjusting in a debugger...
-    private static float lefthandX = 0.3F;
-    private static float lefthandY = 0.3F;
-    private static float lefthandZ = 0F;
-
-    private static float righthandX = -0.2F;
-    private static float righthandY = 0.3F;
-    private static float righthandZ = 0F;
-
-    private static double handMultiplier = 0.5D;
-    private static double debugMultiplier = 10000D;
-
-    private static void renderCompassNeedles(ItemTransforms.TransformType transformType, PoseStack poseStack) {
-
-        // save current ogl state for later
-//        GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
-
-        // switch off ogl stuff that breaks our rendering needs
-//        GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-        // back-face culling can save some (tiny amount of) performance in third person perspective
-        // GL11.glEnable(GL11.GL_CULL_FACE);
-//        GL11.glDisable(GL11.GL_BLEND);
-
-        // save modelview matrix for later restoration
-//        GL11.glPushMatrix();
-
-//        if (transformType == GUI) {
-        // translate directly above the normal compass render and center a bit
-//        GL11.glTranslatef(0.025f, 0.025f, 1.001f);
-//        } else {
-//            // apply finished vanilla matrix to move with the compass
-//            Vector4f pos = new Vector4f(0, 0, 0, 1.0F);
-//            Matrix4f matrix = matrixStackIn.getLast().getMatrix();
-//            pos.transform(matrix);
-//            GL11.glTranslatef(pos.getX(), pos.getY(), pos.getZ());
-//            // then try to fix the needle positions, still broken
-//            // needs rotation of some kind aswell because the compass is held at a stronger angle
-//            if (transformType == FIRST_PERSON_LEFT_HAND) {
-//                GL11.glTranslatef(lefthandX, lefthandY, lefthandZ);
-//            } else {
-//                GL11.glTranslatef(righthandX, righthandY, righthandZ);
-//            }
-//        }
-
-        Camera camera = mc.gameRenderer.getMainCamera();
         poseStack.pushPose();
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
-        RenderSystem.enableBlend();
+        int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        poseStack.translate(mc.getWindow().getGuiScaledWidth() / 2, mc.getWindow().getGuiScaledHeight() / 2, mc.gui.getBlitOffset());
-        poseStack.mulPose(Vector3f.XN.rotationDegrees(camera.getXRot()));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(camera.getYRot()));
-        poseStack.scale(-1.0F, -1.0F, -1.0F);
-        RenderSystem.applyModelViewMatrix();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.defaultBlendFunc();
+        // make the needles somewhat transparent
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableTexture();
 
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            // GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
-            poseStack.translate(0, 0, 0.001D);
-            drawNeedle(poseStack, transformType, (float) configInts[0] / 255f, (float) configInts[1] / 255f, (float) configInts[2] / 255f, computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            // GL11.glTranslatef(0, 0, 0.001f); // elevating the needles outside of drawNeedle() is better blackboxing
-            poseStack.translate(0, 0, 0.001D);
-            drawNeedle(poseStack, transformType, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
 
-        poseStack.popPose();
-        RenderSystem.applyModelViewMatrix();
+        RenderSystem.enableTexture();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-//        // restore modelview matrix
-//        GL11.glPopMatrix();
-//
-//        // restore ogl state
-//        GL11.glPopAttrib();
+        poseStack.popPose();
     }
 
-    private static void drawNeedle(PoseStack poseStack, ItemTransforms.TransformType transformType, float r, float g, float b, float angle) {
-        // oldCode(transformType, r, g, b, angle);
+    private static void drawNeedle(int screenWidth, int screenHeight, int r, int g, int b, float angle) {
 
-        double sizeMultiplier = debugMultiplier;
-
-        poseStack.pushPose();
-        GlStateManager._disableTexture();
-        GlStateManager._depthMask(false);
-        GlStateManager._disableCull();
-        RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
-        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+        Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
-
-        poseStack.scale(1.7875f, 0.8125f, 1f);
-
-        /*
-        for doing the same as glRotateF around the Z axis for angle A
-        https://stackoverflow.com/questions/24585454/how-to-convert-glrotatef-to-multiplication-matrice-for-glmultmatrixd
-
-             |  cos(A)  -sin(A)   0   0 |
-         M = |  sin(A)   cos(A)   0   0 |
-             |  0        0        1   0 |
-             |  0        0        0   1 |
-
-         */
-        float a = -angle;
-        float[] matrixForRotationAroundZAxis =
-                {(float) Math.cos(a), (float) -Math.sin(a), 0, 0,
-                        (float) Math.sin(a), (float) Math.cos(a), 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 1};
-        // poseStack.mulPoseMatrix(new Matrix4f(matrixForRotationAroundZAxis));
-
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(-0.03D * sizeMultiplier, -0.04D * sizeMultiplier, 0.0D).color(r, g, b, 0.85F).endVertex();
-        bufferbuilder.vertex(0.03D * sizeMultiplier, -0.04D * sizeMultiplier, 0.0D).color(r, g, b, 0.85F).endVertex();
-        bufferbuilder.vertex(0.03D * sizeMultiplier, 0.2D * sizeMultiplier, 0.0D).color(r, g, b, 0.85F).endVertex();
-        bufferbuilder.vertex(-0.03D * sizeMultiplier, 0.2D * sizeMultiplier, 0.0D).color(r, g, b, 0.85F).endVertex();
+
+        int halfWidthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
+        int halfHeightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
+
+        int originPointX = (int) Math.rint(screenWidth * onScreenPositionWidth);
+        int originPointY = (int) Math.rint(screenHeight * onScreenPositionHeight);
+
+        // we want the resulting thin, long rectangle to point straight up above the origin point unrotated
+        int bottomLeftX = originPointX - halfWidthNeedle;
+        int bottomLeftY = originPointY - halfHeightNeedle;
+
+        int bottomRightX = originPointX + halfWidthNeedle;
+        int bottomRightY = bottomLeftY;
+
+        int topRightX = bottomRightX;
+        int topRightY = bottomLeftY - (2 * halfHeightNeedle);
+
+        int topLeftX = bottomLeftX;
+        int topLeftY = topRightY;
+
+        // now do some "rotate point around another point" math
+        // im sure this is inefficient and terrible. PR me an improvement.
+        double angleRadian = Math.toRadians(angle);
+        Point rotatedBottomLeft = rotateAroundPointByAngle(new Point(bottomLeftX, bottomLeftY), new Point(originPointX, originPointY), angleRadian);
+        Point rotatedBottomRight = rotateAroundPointByAngle(new Point(bottomRightX, bottomRightY), new Point(originPointX, originPointY), angleRadian);
+        Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
+        Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
+
+        // buttom left corner
+        bufferbuilder.vertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0D).color(r, g, b, 120).endVertex();
+        // bottom right corner
+        bufferbuilder.vertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0D).color(r, g, b, 120).endVertex();
+        // top right corner
+        bufferbuilder.vertex(rotatedTopRight.x, rotatedTopRight.y, -90.0D).color(r, g, b, 120).endVertex();
+        // top left corner
+        bufferbuilder.vertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0D).color(r, g, b, 120).endVertex();
 
         tesselator.end();
-        GlStateManager._enableCull();
-        GlStateManager._depthMask(true);
-        GlStateManager._enableTexture();
-        poseStack.popPose();
     }
 
-    private static void oldCode(ItemTransforms.TransformType transformType, float r, float g, float b, float angle) {
+    private static float computeNeedleHeading(BlockPos coords) {
+        double angleRadian = 0.0D;
+        if (mc.level != null && mc.player != null) {
+            double xdiff = mc.player.getX() - (coords.getX() + 0.5D);
+            double zdiff = mc.player.getZ() - (coords.getZ() + 0.5D);
+            angleRadian = (mc.player.getYRot() - 90.0F) * Math.PI / 180.0D - Math.atan2(zdiff, xdiff);
+        }
+
+        return (float) -(angleRadian * 180f / Math.PI);
+    }
+
+    record Point(int x, int y) {
+    }
+
+    private static Point rotateAroundPointByAngle(Point toRotate, Point toRotateAround, double angleRadian) {
+        double xRotated = Math.cos(angleRadian) * (toRotate.x - toRotateAround.x) - Math.sin(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.x;
+        double yRotated = Math.sin(angleRadian) * (toRotate.x - toRotateAround.x) + Math.cos(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.y;
+        return new Point((int) Math.rint(xRotated), (int) Math.rint(yRotated));
+    }
+
+    private static void oldCode(float r, float g, float b, float angle) {
         // save modelview matrix for later restoration
         GL11.glPushMatrix();
         // make the needle cover roughly the same elliptical shape as the default pixelled one
@@ -204,11 +185,7 @@ public class CompassRenderHook {
         GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
 
         // make the vertex much bigger for debugging - where did the damn thing go
-        double sizeMultiplier = debugMultiplier;
-
-        if (transformType != ItemTransforms.TransformType.GUI) {
-            sizeMultiplier *= handMultiplier;
-        }
+        double sizeMultiplier = 100D;
 
         // alternative native ogl code
         GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
@@ -226,14 +203,123 @@ public class CompassRenderHook {
         GL11.glPopMatrix();
     }
 
-    private static float computeNeedleHeading(BlockPos coords) {
-        double angleRadian = 0.0D;
-        if (mc.level != null && mc.player != null) {
-            double xdiff = mc.player.getX() - (coords.getX() + 0.5D);
-            double zdiff = mc.player.getZ() - (coords.getZ() + 0.5D);
-            angleRadian = (mc.player.getYRot() - 90.0F) * Math.PI / 180.0D - Math.atan2(zdiff, xdiff);
-        }
+    private static void renderTestQuad(PoseStack poseStack, int angle) {
 
-        return (float) -(angleRadian * 180f / Math.PI);
+        int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenHeight = mc.getWindow().getGuiScaledHeight();
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.defaultBlendFunc();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableTexture();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        int halfPercentWidth = screenWidth / 200;
+        int fivePercentHeight = screenHeight / 20;
+
+        int originPointX = screenWidth / 2;
+        int originPointY = screenHeight / 2;
+
+        // we want the resulting thin, long rectangle to point straight up above the origin point unrotated
+        int bottomLeftX = originPointX - halfPercentWidth;
+        int bottomLeftY = originPointY - fivePercentHeight;
+
+        int bottomRightX = originPointX + halfPercentWidth;
+        int bottomRightY = bottomLeftY;
+
+        int topRightX = bottomRightX;
+        int topRightY = bottomLeftY - (2 * fivePercentHeight);
+
+        int topLeftX = bottomLeftX;
+        int topLeftY = topRightY;
+
+        // now do some "rotate point around another point" math
+        // im sure this is inefficient and terrible. PR me an improvement.
+        double angleRadian = Math.toRadians(angle);
+        Point rotatedBottomLeft = rotateAroundPointByAngle(new Point(bottomLeftX, bottomLeftY), new Point(originPointX, originPointY), angleRadian);
+        Point rotatedBottomRight = rotateAroundPointByAngle(new Point(bottomRightX, bottomRightY), new Point(originPointX, originPointY), angleRadian);
+        Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
+        Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
+
+        // buttom left corner
+        bufferbuilder.vertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0D).color(255, 0, 0, 255).endVertex();
+        // bottom right corner
+        bufferbuilder.vertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0D).color(255, 0, 0, 255).endVertex();
+        // top right corner
+        bufferbuilder.vertex(rotatedTopRight.x, rotatedTopRight.y, -90.0D).color(255, 0, 0, 255).endVertex();
+        // top left corner
+        bufferbuilder.vertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0D).color(255, 0, 0, 255).endVertex();
+
+        tesselator.end();
+        RenderSystem.enableTexture();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private static void renderTestSpyGlass(PoseStack poseStack) {
+
+        poseStack.pushPose();
+
+        int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenHeight = mc.getWindow().getGuiScaledHeight();
+
+        float scopeScale = 0.9F;
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.defaultBlendFunc();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
+        float radius = (float) Math.min(screenWidth, screenHeight);
+        float screenOccludedRatio = Math.min((float) screenWidth / radius, (float) screenHeight / radius) * scopeScale;
+        float f2 = radius * screenOccludedRatio;
+        float f3 = radius * screenOccludedRatio;
+        float blockWidth = ((float) screenWidth - f2) / 2.0F;
+        float blockedHeight = ((float) screenHeight - f3) / 2.0F;
+        float finalWidth = blockWidth + f2;
+        float finalHeight = blockedHeight + f3;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableTexture();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        // bottom box, drawn from a top left corner x,y system
+        // buttom left corner
+        bufferbuilder.vertex(0.0D, screenHeight, -90.0D).color(255, 0, 0, 255).endVertex();
+        // bottom right corner
+        bufferbuilder.vertex(screenWidth, screenHeight, -90.0D).color(255, 0, 0, 255).endVertex();
+        // top right corner
+        bufferbuilder.vertex(screenWidth, finalHeight, -90.0D).color(255, 0, 0, 255).endVertex();
+        // top left corner
+        bufferbuilder.vertex(0.0D, finalHeight, -90.0D).color(255, 0, 0, 255).endVertex();
+
+        // top box
+        bufferbuilder.vertex(0.0D, blockedHeight, -90.0D).color(0, 255, 0, 255).endVertex();
+        bufferbuilder.vertex(screenWidth, blockedHeight, -90.0D).color(0, 255, 0, 255).endVertex();
+        bufferbuilder.vertex(screenWidth, 0.0D, -90.0D).color(0, 255, 0, 255).endVertex();
+        bufferbuilder.vertex(0.0D, 0.0D, -90.0D).color(0, 255, 0, 255).endVertex();
+
+        // left box
+        bufferbuilder.vertex(0.0D, finalHeight, -90.0D).color(0, 0, 255, 255).endVertex();
+        bufferbuilder.vertex(blockWidth, finalHeight, -90.0D).color(0, 0, 255, 255).endVertex();
+        bufferbuilder.vertex(blockWidth, blockedHeight, -90.0D).color(0, 0, 255, 255).endVertex();
+        bufferbuilder.vertex(0.0D, blockedHeight, -90.0D).color(0, 0, 255, 255).endVertex();
+
+        // right box
+        bufferbuilder.vertex(finalWidth, finalHeight, -90.0D).color(0, 0, 0, 255).endVertex();
+        bufferbuilder.vertex(screenWidth, finalHeight, -90.0D).color(0, 0, 0, 255).endVertex();
+        bufferbuilder.vertex(screenWidth, blockedHeight, -90.0D).color(0, 0, 0, 255).endVertex();
+        bufferbuilder.vertex(finalWidth, blockedHeight, -90.0D).color(0, 0, 0, 255).endVertex();
+
+        tesselator.end();
+        RenderSystem.enableTexture();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+        poseStack.popPose();
     }
 }

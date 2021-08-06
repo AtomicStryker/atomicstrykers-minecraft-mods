@@ -105,7 +105,7 @@ public class InfernalMobsClient {
 
     @SubscribeEvent
     public static void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || event.getType() != RenderGameOverlayEvent.ElementType.CHAT || mc.gui.getBossOverlay().shouldPlayMusic()) {
+        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || event.getType() != RenderGameOverlayEvent.ElementType.ALL || mc.gui.getBossOverlay().shouldPlayMusic()) {
             return;
         }
 

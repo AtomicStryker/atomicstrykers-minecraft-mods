@@ -153,7 +153,7 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.IRON_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{245, 245, 245, 15, 1, 1, 100, 0};
+                int[] setting = new int[]{112, 112, 112, 15, 1, 1, 100, 0};
                 needleMap.put(string, setting);
             }
 
@@ -164,8 +164,15 @@ public class FinderCompassMod {
                 needleMap.put(string, setting);
             }
 
+            {
+                BlockState state = Blocks.COPPER_ORE.defaultBlockState();
+                String string = getStringFromBlockState(state);
+                int[] setting = new int[]{141, 83, 46, 15, 1, 1, 100, 0};
+                needleMap.put(string, setting);
+            }
+
             workingManMineables.setNeedles(needleMap);
-            workingManMineables.setFeatureNeedle("Village");
+            workingManMineables.setFeatureNeedle("village");
             needleSetList.add(workingManMineables);
         }
 
@@ -203,7 +210,7 @@ public class FinderCompassMod {
             }
 
             shinyStones.setNeedles(needleMap);
-            shinyStones.setFeatureNeedle("Stronghold");
+            shinyStones.setFeatureNeedle("stronghold");
             needleSetList.add(shinyStones);
         }
 
@@ -236,11 +243,18 @@ public class FinderCompassMod {
             }
 
             netherDelights.setNeedles(needleMap);
-            netherDelights.setFeatureNeedle("Fortress");
+            netherDelights.setFeatureNeedle("fortress");
             needleSetList.add(netherDelights);
         }
 
         compassConfig.setNeedles(needleSetList);
+
+        compassConfig.setNeedleWidthOfScreenWidth(0.01D);
+        compassConfig.setNeedleHeightOfScreenHeight(0.10D);
+        compassConfig.setOnScreenPositionHeight(0.5D);
+        compassConfig.setOnScreenPositionWidth(0.5D);
+        compassConfig.setMustHoldCompassInHandToBeActive(true);
+
         return compassConfig;
     }
 
