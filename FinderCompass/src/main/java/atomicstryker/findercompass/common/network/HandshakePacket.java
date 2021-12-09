@@ -4,7 +4,7 @@ import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
