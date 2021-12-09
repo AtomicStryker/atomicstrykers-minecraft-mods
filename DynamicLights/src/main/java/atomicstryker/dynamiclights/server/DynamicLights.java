@@ -16,13 +16,13 @@ import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.LogicalSidedProvider;
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,13 +86,14 @@ public class DynamicLights {
         Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> 15).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
         event.getRegistry().register(litWaterBlock);
         Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
+        event.getRegistry().register(litCaveAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.AIR, litAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.WATER, litWaterBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.CAVE_AIR, litCaveAirBlock);
     }
 
     @SubscribeEvent
-    public void serverStarted(FMLServerStartedEvent evt) {
+    public void serverStarted(ServerStartedEvent evt) {
         // dedicated server starting point
         if (config == null) {
             initConfig();
@@ -101,7 +102,7 @@ public class DynamicLights {
 
     private void initConfig() {
         try {
-            MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights.cfg");
             config = GsonConfig.loadConfigWithDefault(DynamicLightsConfig.class, configFile, new DynamicLightsConfig());
         } catch (IOException e) {

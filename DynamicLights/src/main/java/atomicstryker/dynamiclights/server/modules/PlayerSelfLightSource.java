@@ -15,9 +15,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +44,7 @@ public class PlayerSelfLightSource {
     }
 
     @SubscribeEvent
-    public void serverStartEvent(FMLServerAboutToStartEvent event) {
+    public void serverStartEvent(ServerAboutToStartEvent event) {
 
         LightConfig defaultConfig = new LightConfig();
         String torchString = ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH));

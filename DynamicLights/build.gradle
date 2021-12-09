@@ -10,6 +10,7 @@ buildscript {
 plugins {
     id 'com.matthewprenger.cursegradle' version '1.0.10'
 }
+
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
@@ -21,16 +22,16 @@ repositories {
     }
 }
 
-def mcversion = '1.17.1'
-version = '1.17.1.1'
+def mcversion = '1.18'
+version = '1.18.1'
 group = 'atomicstryker.dynamiclights'
 archivesBaseName = 'dynamiclights'
 
-// Mojang ships Java 16 to end users in 1.17+ instead of Java 8 in 1.16 or lower, so your mod should target Java 16.
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: '1.18'
     
     runs {
         client {
@@ -68,7 +69,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.18'
+    minecraft 'net.minecraftforge:forge:1.18-38.0.16'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
