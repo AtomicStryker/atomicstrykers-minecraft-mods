@@ -19,7 +19,7 @@ version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Infernal Mobs" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="http://www.atomicstryker.net/updatemanager/infernalmobs.json" #optional
+# updateJSONURL="http://www.atomicstryker.net/updatemanager/infernalmobs.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="http://atomicstryker.org/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display

@@ -1,3 +1,7 @@
+1.18
+- updated for MC 1.18
+- fix server log being spammed with lit cave air resource error message (harmless but annoying)
+
 1.17.1
 - updated for MC 1.17.1 and the official source mappings
 

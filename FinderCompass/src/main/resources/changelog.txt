@@ -1,3 +1,6 @@
+1.18
+update to MC 1.18
+
 1.17.1
 update to MC 1.17 and official source mappings
 add copper ore to default config under working mans minables

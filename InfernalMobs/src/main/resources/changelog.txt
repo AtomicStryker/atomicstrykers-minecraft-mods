@@ -1,3 +1,6 @@
+1.18
+- updated to MC 1.18
+
 1.17.1.1
 - updated to MC 1.17 and the official mojang source mappings
 - reworked Infernal Mobs healthbar to use the built-in boss display
