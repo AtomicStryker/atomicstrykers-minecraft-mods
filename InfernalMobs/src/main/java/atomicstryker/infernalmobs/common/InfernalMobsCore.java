@@ -28,13 +28,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.LogicalSidedProvider;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -137,7 +136,7 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public void commonSetup(FMLServerStartedEvent evt) {
+    public void commonSetup(ServerStartedEvent evt) {
         // dedicated server starting point
         initIfNeeded(evt.getServer().getAllLevels().iterator().next());
     }
@@ -154,7 +153,7 @@ public class InfernalMobsCore {
                 InfernalMobsClient.load();
                 mcFolder = InfernalMobsClient.getMcFolder();
             } else {
-                MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+                MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
                 mcFolder = server.getFile("");
             }
 

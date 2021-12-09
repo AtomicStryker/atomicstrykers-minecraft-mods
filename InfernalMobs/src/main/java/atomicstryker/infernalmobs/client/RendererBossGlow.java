@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -20,7 +20,7 @@ public class RendererBossGlow {
     private static long lastRender = 0L;
 
     @SubscribeEvent
-    public static void onRenderWorldLast(RenderWorldLastEvent event) {
+    public static void onRenderWorldLast(RenderLevelLastEvent event) {
         if (System.currentTimeMillis() > lastRender + 10L) {
             lastRender = System.currentTimeMillis();
 
