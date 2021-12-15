@@ -1,4 +1,7 @@
-1.18
+1.18.2
+updated setting defaults with new overworld min and max y of -64 and 384
+
+1.18.1
 update to MC 1.18
 
 1.17.1

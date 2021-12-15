@@ -146,28 +146,32 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.GOLD_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{245, 245, 0, 15, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
             {
                 BlockState state = Blocks.IRON_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{112, 112, 112, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{112, 112, 112, 15, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
             {
                 BlockState state = Blocks.COAL_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{51, 26, 0, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{51, 26, 0, 15, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
             {
                 BlockState state = Blocks.COPPER_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{141, 83, 46, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{141, 83, 46, 15, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
@@ -184,6 +188,7 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.DIAMOND_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
                 int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
                 needleMap.put(string, setting);
             }
@@ -191,21 +196,24 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.LAPIS_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{55, 70, 220, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{55, 70, 220, 15, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
             {
                 BlockState state = Blocks.REDSTONE_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{255, 125, 155, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{255, 125, 155, 15, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
             {
                 BlockState state = Blocks.EMERALD_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{26, 255, 26, 7, 1, 4, 31, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{26, 255, 26, 7, 1, -64, 320, 0};
                 needleMap.put(string, setting);
             }
 
@@ -223,7 +231,8 @@ public class FinderCompassMod {
                 // nether_gold_ore
                 BlockState state = Blocks.NETHER_GOLD_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{245, 245, 0, 15, 1, 1, 256, 0};
                 needleMap.put(string, setting);
             }
 
@@ -231,6 +240,7 @@ public class FinderCompassMod {
                 // ancient_debris
                 BlockState state = Blocks.ANCIENT_DEBRIS.defaultBlockState();
                 String string = getStringFromBlockState(state);
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
                 int[] setting = new int[]{51, 255, 204, 15, 1, 1, 16, 0};
                 needleMap.put(string, setting);
             }
@@ -238,7 +248,8 @@ public class FinderCompassMod {
             {
                 BlockState state = Blocks.NETHER_QUARTZ_ORE.defaultBlockState();
                 String string = getStringFromBlockState(state);
-                int[] setting = new int[]{55, 70, 220, 15, 1, 1, 100, 0};
+                // values: color R, color G, color B, xz searchrange, y searchrange, min y, max y, searchEvery15SecOnly
+                int[] setting = new int[]{55, 70, 220, 15, 1, 1, 256, 0};
                 needleMap.put(string, setting);
             }
 
