@@ -22,7 +22,7 @@ repositories {
 }
 
 def mcversion = '1.18'
-version = '1.18.2'
+version = '1.18.3'
 group = 'atomicstryker.findercompass'
 archivesBaseName = 'findercompass'
 
