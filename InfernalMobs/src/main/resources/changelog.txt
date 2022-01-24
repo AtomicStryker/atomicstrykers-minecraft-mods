@@ -1,4 +1,8 @@
-1.18
+1.18.2
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/412
+- log and disregard item enchantments which have min level > max level, because otherwise we crash
+
+1.18.1
 - updated to MC 1.18
 
 1.17.1.1

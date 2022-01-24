@@ -614,12 +614,14 @@ public class InfernalMobsCore {
 
     private EnchantmentInstance getRandomEnchantment(Random rand) {
         if (enchantmentList == null) {
-            enchantmentList = new ArrayList<>(26); // 26 is the vanilla
-            // enchantment count as of
-            // 1.9
+            enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
             for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS) {
-                if (enchantment != null && enchantment.category != null) {
-                    enchantmentList.add(enchantment);
+                if (enchantment != null) {
+                    if (enchantment.getMinLevel() <= enchantment.getMaxLevel()) {
+                        enchantmentList.add(enchantment);
+                    } else {
+                        LOGGER.error("enchantment " + enchantment.getClass().getCanonicalName() + " has min level > max level which is invalid behaviour!");
+                    }
                 }
             }
         }
