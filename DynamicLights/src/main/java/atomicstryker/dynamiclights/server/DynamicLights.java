@@ -120,16 +120,16 @@ public class DynamicLights {
     public static void addLightSource(IDynamicLightSource lightToAdd) {
         if (lightToAdd.getAttachmentEntity() != null) {
             String dimensionLocationPath = lightToAdd.getAttachmentEntity().level.dimension().location().getPath();
-            LOGGER.info("Calling addLightSource on entity {}, dimensionLocationPath {}", lightToAdd.getAttachmentEntity(), dimensionLocationPath);
+            LOGGER.debug("Calling addLightSource on entity {}, dimensionLocationPath {}", lightToAdd.getAttachmentEntity(), dimensionLocationPath);
             if (lightToAdd.getAttachmentEntity().isAlive() && !instance.isBannedDimension(dimensionLocationPath)) {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
                 ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().level);
                 if (lightList != null) {
                     if (!lightList.contains(newLightContainer)) {
-                        LOGGER.info("Successfully registered DynamicLight on Entity: {} in list {}", newLightContainer.getLightSource().getAttachmentEntity(), lightList);
+                        LOGGER.debug("Successfully registered DynamicLight on Entity: {} in list {}", newLightContainer.getLightSource().getAttachmentEntity(), lightList);
                         lightList.add(newLightContainer);
                     } else {
-                        LOGGER.info("Cannot add Dynamic Light: Attachment Entity is already registered!");
+                        LOGGER.debug("Cannot add Dynamic Light: Attachment Entity is already registered!");
                     }
                 } else {
                     lightList = new ConcurrentLinkedQueue<>();
@@ -137,10 +137,10 @@ public class DynamicLights {
                     instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().level, lightList);
                 }
             } else {
-                LOGGER.error("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level.dimension().location().getPath());
+                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level.dimension().location().getPath());
             }
         } else {
-            LOGGER.error("Cannot add Dynamic Light: Attachment Entity is null!");
+            LOGGER.debug("Cannot add Dynamic Light: Attachment Entity is null!");
         }
     }
 
@@ -167,7 +167,7 @@ public class DynamicLights {
                     }
 
                     if (iterContainer != null) {
-                        LOGGER.info("Removing Dynamic Light attached to {}", lightToRemove.getAttachmentEntity());
+                        LOGGER.debug("Removing Dynamic Light attached to {}", lightToRemove.getAttachmentEntity());
                         iterContainer.removeLight(world);
                     }
                 }
