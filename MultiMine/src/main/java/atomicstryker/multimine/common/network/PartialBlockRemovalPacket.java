@@ -2,48 +2,42 @@ package atomicstryker.multimine.common.network;
 
 import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-public class PartialBlockRemovalPacket implements IPacket
-{
+import java.util.function.Supplier;
+
+public class PartialBlockRemovalPacket implements IPacket {
 
     private BlockPos pos;
 
-    public PartialBlockRemovalPacket()
-    {
+    public PartialBlockRemovalPacket() {
     }
 
-    public PartialBlockRemovalPacket(BlockPos p)
-    {
+    public PartialBlockRemovalPacket(BlockPos p) {
         pos = p;
     }
 
     @Override
-    public void writeBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        bytes.writeInt(pos.getX());
-        bytes.writeInt(pos.getY());
-        bytes.writeInt(pos.getZ());
+    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
+        PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
+        packetBuffer.writeInt(packet.pos.getX());
+        packetBuffer.writeInt(packet.pos.getY());
+        packetBuffer.writeInt(packet.pos.getZ());
     }
 
     @Override
-    public void readBytes(ChannelHandlerContext ctx, ByteBuf bytes)
-    {
-        pos = new BlockPos(bytes.readInt(), bytes.readInt(), bytes.readInt());
-        FMLClientHandler.instance().getClient().addScheduledTask(new ScheduledCode());
+    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
+        PartialBlockRemovalPacket packet = new PartialBlockRemovalPacket(new BlockPos(packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt()));
+        return (MSG) packet;
     }
 
-    class ScheduledCode implements Runnable
-    {
-
-        @Override
-        public void run()
-        {
-            MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(pos);
-        }
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
+        MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos);
+        contextSupplier.get().setPacketHandled(true);
     }
 
 }

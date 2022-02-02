@@ -1,90 +1,99 @@
 package atomicstryker.multimine.common;
 
+import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.NetworkHelper;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
-import net.minecraftforge.common.config.Configuration;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
  * to load, keeps the common config file.
  */
-@Mod(modid = "multimine", name = "Multi Mine", version = "1.6.0")
-public class MultiMine
-{
-    @Instance("multimine")
+@Mod(MultiMine.MOD_ID)
+@Mod.EventBusSubscriber(modid = MultiMine.MOD_ID)
+public class MultiMine {
+    public static final String MOD_ID = "multimine";
+
     private static MultiMine instance;
 
-    private boolean blockRegenEnabled;
-    private long initialBlockRegenDelay;
-    private long blockRegenInterval;
-
-    private boolean debugMode;
-    private Logger LOGGER;
-    public Configuration config;
-
-    @SidedProxy(clientSide = "atomicstryker.multimine.client.ClientProxy", serverSide = "atomicstryker.multimine.common.CommonProxy")
-    public static CommonProxy proxy;
+    public static Logger LOGGER;
 
     public NetworkHelper networkHelper;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent evt)
-    {
-        networkHelper = new NetworkHelper("AS_MM", PartialBlockPacket.class, PartialBlockRemovalPacket.class);
+    private File configFile;
+    private MultiMineConfig config;
 
-        config = new Configuration(evt.getSuggestedConfigurationFile());
-        config.load();
-
-        blockRegenEnabled = config.get("general", "Block Regeneration Enabled", true).getBoolean(true);
-        initialBlockRegenDelay = config.get("general", "Initial Block Regen Delay in ms", 5000).getInt();
-        blockRegenInterval = config.get("general", "Block 10 percent Regen Interval in ms", 1000).getInt();
-
-        debugMode = config.get("general", "debugMode", false, "Tons of debug printing. Only enable if really needed.").getBoolean(false);
-
-        config.save();
-
-        proxy.onPreInit();
-        LOGGER = evt.getModLog();
+    public MultiMine() {
+        instance = this;
+        networkHelper = new NetworkHelper("as_mm", PartialBlockPacket.class, PartialBlockRemovalPacket.class);
+        LOGGER = LogManager.getLogger();
+        MultiMine.LOGGER.info("mod instantiated");
+        MinecraftForge.EVENT_BUS.register(new MultiMineServer());
     }
 
-    @EventHandler
-    public void load(FMLInitializationEvent evt)
-    {
-        proxy.onLoad();
+    /**
+     * is triggered either by server start or by client login event from InfernalMobsClient
+     */
+    public void initIfNeeded(Level world) {
+        if (configFile == null) {
+            File mcFolder;
+            if (world.isClientSide()) {
+                mcFolder = MultiMineClient.getMcFolder();
+            } else {
+                MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                mcFolder = server.getFile("");
+            }
+
+            configFile = new File(mcFolder, File.separatorChar + "config" + File.separatorChar + "multimine.cfg");
+            loadConfig();
+        }
     }
 
-    public static MultiMine instance()
-    {
+    private void loadConfig() {
+        MultiMineConfig defaultConfig = new MultiMineConfig();
+        defaultConfig.setDisableForAllTileEntities(false);
+        LOGGER.info("config loading now");
+        config = GsonConfig.loadConfigWithDefault(MultiMineConfig.class, configFile, defaultConfig);
+        LOGGER.info("config loaded successfully");
+    }
+
+    public static MultiMine instance() {
         return instance;
     }
 
-    public boolean getBlockRegenEnabled()
-    {
-        return blockRegenEnabled;
+    public boolean getBlockRegenEnabled() {
+        return config.isBlockRegenerationEnabled();
     }
 
-    public long getInitialBlockRegenDelay()
-    {
-        return initialBlockRegenDelay;
+    public long getInitialBlockRegenDelay() {
+        return config.getInitialBlockRegenDelayMillis();
     }
 
-    public long getBlockRegenInterval()
-    {
-        return blockRegenInterval;
+    public long getBlockRegenInterval() {
+        return config.getBlockRegenIntervalMillis();
     }
 
-    public void debugPrint(String s, Object... params)
-    {
-        if (debugMode)
-        {
+    public MultiMineConfig getConfig() {
+        return config;
+    }
+
+    public void saveConfig() {
+        GsonConfig.saveConfig(config, configFile);
+    }
+
+    public void debugPrint(String s, Object... params) {
+        if (config.isDebugMode()) {
             LOGGER.info(s, params);
         }
     }
