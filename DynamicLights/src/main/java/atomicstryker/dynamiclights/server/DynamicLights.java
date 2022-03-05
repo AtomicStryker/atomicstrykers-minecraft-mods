@@ -211,7 +211,7 @@ public class DynamicLights {
         ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = instance.worldLightsMap.get(world);
         if (worldLights != null) {
             for (DynamicLightSourceContainer light : worldLights) {
-                if (blockPos.equals(light.getPos())) {
+                if (blockPos.equals(light.getLightPos())) {
                     return true;
                 }
             }

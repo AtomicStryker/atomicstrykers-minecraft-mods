@@ -18,8 +18,8 @@ import java.util.Map;
 public class DynamicLightSourceContainer {
     private final IDynamicLightSource lightSource;
 
-    private final BlockPos.MutableBlockPos prevPos = new BlockPos.MutableBlockPos();
-    private final BlockPos.MutableBlockPos curPos = new BlockPos.MutableBlockPos();
+    private final BlockPos.MutableBlockPos activeLightPos = new BlockPos.MutableBlockPos();
+    private final BlockPos.MutableBlockPos curSourcePos = new BlockPos.MutableBlockPos();
 
     private final int yOffset;
 
@@ -43,15 +43,22 @@ public class DynamicLightSourceContainer {
         }
 
         if (hasEntityMoved(ent)) {
-            removePreviousLight(ent.level);
-            addLight(ent.level);
+            BlockPos nextPos = findNewCurLightPos(ent.level);
+            if (nextPos != null && !nextPos.equals(activeLightPos)) {
+                removeLight(ent.level);
+                addLight(ent.level, nextPos);
+            }
+            // note: if no new position can be found, the light will actually remain active at the previous position
         }
 
         return false;
     }
 
-    public BlockPos getPos() {
-        return curPos;
+    /**
+     * get the current light block position, not that this is not necessarily the same as the light source position
+     */
+    public BlockPos getLightPos() {
+        return activeLightPos;
     }
 
     public IDynamicLightSource getLightSource() {
@@ -68,51 +75,59 @@ public class DynamicLightSourceContainer {
 
         // use yOffset so player positions are +1 y, at eye height
         BlockPos newPos = ent.blockPosition().offset(0, yOffset, 0);
-        if (!newPos.equals(curPos)) {
-            prevPos.set(curPos);
-            curPos.set(newPos);
+        if (!newPos.equals(curSourcePos)) {
+            curSourcePos.set(newPos);
             return true;
         }
 
         return false;
     }
 
-    private void removePreviousLight(Level world) {
-        Block previousBlock = world.getBlockState(prevPos).getBlock();
+    public void removeLight(Level world) {
+        Block previousBlock = world.getBlockState(activeLightPos).getBlock();
         for (Map.Entry<Block, Block> vanillaBlockToLitBlockEntry : DynamicLights.vanillaBlocksToLitBlocksMap.entrySet()) {
             if (vanillaBlockToLitBlockEntry.getValue().equals(previousBlock)) {
-                // previous block is lit, reset it to default block
-                world.setBlock(prevPos, vanillaBlockToLitBlockEntry.getKey().defaultBlockState(), 3);
+                // is light substitution block, replace it with the dark original again
+                world.setBlock(activeLightPos, vanillaBlockToLitBlockEntry.getKey().defaultBlockState(), 3);
             }
         }
     }
 
-    public void removeLight(Level world) {
-        // reset previous and current position light blocks if they exist
-        removePreviousLight(world);
-        Block currentBlock = world.getBlockState(curPos).getBlock();
-        for (Map.Entry<Block, Block> vanillaBlockToLitBlockEntry : DynamicLights.vanillaBlocksToLitBlocksMap.entrySet()) {
-            if (vanillaBlockToLitBlockEntry.getValue().equals(currentBlock)) {
-                // current block is lit, reset it to default block
-                world.setBlock(curPos, vanillaBlockToLitBlockEntry.getKey().defaultBlockState(), 3);
+    // when the desired coordinate cannot be substituted, try the adjacent block coords ... up, down, left, right, forward, back
+    final int[][] candidatePositionOffsets = {{0, 0, 0}, {0, 0, 1}, {0, 0, -1}, {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}};
+
+    // try and find a new light substitution block position, return null if none can be found
+    private BlockPos findNewCurLightPos(Level world) {
+        for (int[] offsetTriple : candidatePositionOffsets) {
+            BlockPos posWithOffset = curSourcePos.offset(offsetTriple[0], offsetTriple[1], offsetTriple[2]);
+            BlockState blockState = world.getBlockState(posWithOffset);
+            Block currentBlock = blockState.getBlock();
+            for (Map.Entry<Block, Block> vanillaBlockToLitBlockEntry : DynamicLights.vanillaBlocksToLitBlocksMap.entrySet()) {
+                if (currentBlock.equals(vanillaBlockToLitBlockEntry.getKey())) {
+                    // this check prevents lit water from substituting anything but a "full" water block
+                    if (currentBlock instanceof LiquidBlock) {
+                        if (blockState.getValue(LiquidBlock.LEVEL) != 0) {
+                            continue;
+                        }
+                    }
+                    return posWithOffset;
+                }
             }
         }
+
+        return null;
     }
 
-    private void addLight(Level world) {
-        // add light block on current position, depending on what type (air, water)
-        BlockState blockState = world.getBlockState(curPos);
+    private void addLight(Level world, BlockPos nextPos) {
+        // add light block on for which we already determined substitution is possible
+        BlockState blockState = world.getBlockState(nextPos);
         Block currentBlock = blockState.getBlock();
         for (Map.Entry<Block, Block> vanillaBlockToLitBlockEntry : DynamicLights.vanillaBlocksToLitBlocksMap.entrySet()) {
             if (currentBlock.equals(vanillaBlockToLitBlockEntry.getKey())) {
-
-                // this check prevents lit water from substituting anything but a "full" water block
-                if (currentBlock instanceof LiquidBlock) {
-                    if (blockState.getValue(LiquidBlock.LEVEL) != 0) {
-                        return;
-                    }
-                }
-                world.setBlock(curPos, vanillaBlockToLitBlockEntry.getValue().defaultBlockState(), 3);
+                world.setBlock(nextPos, vanillaBlockToLitBlockEntry.getValue().defaultBlockState(), 3);
+                // schedule a block tick 5 seconds into the future, as fallback for the block to clean itself up
+                world.scheduleTick(nextPos, vanillaBlockToLitBlockEntry.getValue(), 150);
+                activeLightPos.set(nextPos);
                 break;
             }
         }
