@@ -97,6 +97,7 @@ public class MultiMineClient {
         }
 
         TileEntity te = thePlayer.level.getBlockEntity(pos);
+        //this container check is probably very wrong
         if (te instanceof IClearable) {
             // if its any kind of chest or container, just nope out
             MultiMine.instance().debugPrint("aborting because its a container block");

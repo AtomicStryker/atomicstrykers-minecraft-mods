@@ -88,7 +88,7 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
-curseforge {
+/*curseforge {
     apiKey = project.curseForgeApiKey
     project {
         id = '227887'
@@ -98,4 +98,4 @@ curseforge {
             displayName = 'Multi Mine'
         }
     }
-}
+}*/
