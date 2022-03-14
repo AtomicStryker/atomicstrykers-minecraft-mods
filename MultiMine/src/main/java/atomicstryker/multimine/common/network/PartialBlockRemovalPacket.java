@@ -12,6 +12,9 @@ public class PartialBlockRemovalPacket implements IPacket {
 
     private BlockPos pos;
 
+    public PartialBlockRemovalPacket() {
+    }
+
     public PartialBlockRemovalPacket(BlockPos p) {
         pos = p;
     }
