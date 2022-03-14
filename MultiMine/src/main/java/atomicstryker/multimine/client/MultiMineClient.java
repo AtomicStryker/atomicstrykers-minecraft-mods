@@ -1,112 +1,119 @@
 package atomicstryker.multimine.client;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.renderer.DestroyBlockProgress;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.multiplayer.PlayerController;
+import net.minecraft.inventory.IClearable;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraft.entity.player.PlayerEntity;
+import java.io.File;
+import java.lang.reflect.Field;
 
-public class MultiMineClient
-{
-    private static MultiMineClient instance;
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MultiMine.MOD_ID)
+public class MultiMineClient {
+    private static MultiMineClient instance = null;
     private static Minecraft mc;
-    private static EntityPlayer thePlayer;
-    private final PartiallyMinedBlock[] partiallyMinedBlocksArray;
-    private Map<Integer, DestroyBlockProgress> vanillaDestroyBlockProgressMap;
+    private static PlayerEntity thePlayer;
+    private final PartiallyMinedBlock[] partiallyMinedBlocksArray = new PartiallyMinedBlock[30];
+
+    // float MultiPlayerGameMode.destroyProgress
+    private Field vanillaDestroyProgressField = null;
+
     private int arrayOverWriteIndex;
     private BlockPos curBlock;
     private float lastBlockCompletion;
-    private int lastCloudTickReading;
 
     /**
      * Client instance of Multi Mine Mod. Keeps track of whether or not the current Server has the Mod,
      * the current Block being mined, and hacks into the vanilla "partially Destroyed Blocks" RenderMap.
      * Also handles Packets sent from server to announce other people's damaged Blocks.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public MultiMineClient()
-    {
-        instance = this;
-        mc = FMLClientHandler.instance().getClient();
-        partiallyMinedBlocksArray = new PartiallyMinedBlock[30];
+    public void initialize() {
+        MultiMine.LOGGER.info("MultiMineClient initializing");
         arrayOverWriteIndex = 0;
-        curBlock = BlockPos.ORIGIN;
+        curBlock = BlockPos.ZERO;
         lastBlockCompletion = 0F;
-        lastCloudTickReading = 0;
-
-        MultiMine.instance().debugPrint("Multi Mine about to hack vanilla RenderMap");
-        for (Field f : RenderGlobal.class.getDeclaredFields())
-        {
-            if (f.getType().equals(Map.class))
-            {
-                f.setAccessible(true);
-                try
-                {
-                    vanillaDestroyBlockProgressMap = (Map) f.get(mc.renderGlobal);
-                    MultiMine.instance().debugPrint("Multi Mine vanilla RenderMap invasion successful, field: " + f.getName());
-                    break;
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
-    public static MultiMineClient instance()
-    {
+    public static MultiMineClient instance() {
+        if (instance == null) {
+            instance = new MultiMineClient();
+            instance.initialize();
+        }
         return instance;
     }
 
-    /**
-     * Called by the transformed PlayerControllerMP, has the ability to override the internal block mine completion with another value
-     *
-     * @param pos             BlockPos instance being hit
-     * @param blockCompletion mine completion value as currently held by the controller. Values >= 1.0f trigger block breaking
-     * @return value to override blockCompletion in PlayerControllerMP with
-     */
-    @SuppressWarnings("unused")
-    public float eventPlayerDamageBlock(BlockPos pos, float blockCompletion)
-    {
-        thePlayer = FMLClientHandler.instance().getClient().player;
+    @SubscribeEvent
+    public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+        mc = Minecraft.getInstance();
+        PlayerEntity loginPlayer = evt.getPlayer();
+        MultiMine.LOGGER.info("MultiMineClient playerLoginToServer: " + loginPlayer);
+        if (loginPlayer != null) {
 
-        /*
-         * completely disable multi mine on blocks with custom breaking, such as
-         * skulls, chests, signs
-         */
-        IBlockState state = thePlayer.world.getBlockState(pos);
-        if (state.hasCustomBreakingProgress())
-        {
-            return blockCompletion;
+            MultiMine.instance().initIfNeeded(loginPlayer.level);
         }
+    }
+
+    public static File getMcFolder() {
+        return Minecraft.getInstance().gameDirectory;
+    }
+
+    @SubscribeEvent
+    public static void onClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        instance().onClickBlockInstance(event);
+    }
+
+    private void onClickBlockInstance(PlayerInteractEvent.LeftClickBlock event) {
+
+        if (!event.getPlayer().level.isClientSide) {
+            // only clientside pls
+            return;
+        }
+
+        thePlayer = event.getPlayer();
+        BlockPos pos = event.getPos();
+
+        if (!destroyProgressFieldFound()) {
+            // on the very first blockbreak tick, we cant tell which is the target field
+            MultiMine.instance().debugPrint("reflection into destroyProgress not ready, aborting");
+            return;
+        }
+
+        TileEntity te = thePlayer.level.getBlockEntity(pos);
+        if (te instanceof IClearable) {
+            // if its any kind of chest or container, just nope out
+            MultiMine.instance().debugPrint("aborting because its a container block");
+            return;
+        }
+
+        // use reflection to read MultiPlayerGameMode.destroyProgress
+        float destroyProgress = getVanillaDestroyProgressValue();
+        MultiMine.instance().debugPrint("client {} clicked block {}, destroyProgress {}, lastBlockCompletion {}", thePlayer, pos, destroyProgress, lastBlockCompletion);
 
         boolean cachedProgressWasAhead = false;
         // see if we have multimine completion cached somewhere
-        for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
-        {
-            if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(pos))
-            {
+        for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
+            if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(pos)) {
                 float savedProgress = partiallyMinedBlocksArray[i].getProgress();
-                MultiMine.instance().debugPrint("found cached block at index {}, cached: {}, completion: {}", i, savedProgress, blockCompletion);
-                if (savedProgress > blockCompletion)
-                {
+                MultiMine.instance().debugPrint("found cached destroyProgress at index {}, cached: {}, mc: {}", i, savedProgress, destroyProgress);
+                if (savedProgress > destroyProgress) {
                     lastBlockCompletion = savedProgress;
                     cachedProgressWasAhead = true;
                 }
@@ -114,25 +121,69 @@ public class MultiMineClient
             }
         }
 
-        if (!cachedProgressWasAhead)
-        {
-            if (!curBlock.equals(pos))
-            {
+        if (!cachedProgressWasAhead) {
+            if (!curBlock.equals(pos)) {
                 // setup new block values
+                MultiMine.instance().debugPrint("client is destroying new block, was {} and now {}", pos, curBlock);
                 curBlock = pos;
-                lastBlockCompletion = blockCompletion;
+                lastBlockCompletion = destroyProgress;
+            } else if (destroyProgress > lastBlockCompletion) {
+                MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgress, lastBlockCompletion);
+                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getScoreboardName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), destroyProgress, false));
+                MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgress);
+                lastBlockCompletion = destroyProgress;
+                updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), destroyProgress, false);
             }
-            else if (blockCompletion > lastBlockCompletion)
-            {
-                MultiMine.instance().debugPrint("Client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, blockCompletion, lastBlockCompletion);
-                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion, false));
-                MultiMine.instance().debugPrint("Sent block progress packet to server: {}", blockCompletion);
-                lastBlockCompletion = blockCompletion;
-                updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), blockCompletion, false);
+        } else {
+            // use reflection to overwrite MultiPlayerGameMode.destroyProgress with lastBlockCompletion
+            MultiMine.instance().debugPrint("overriding client destroyProgress with cache");
+            setDestroyProgressValue(lastBlockCompletion);
+        }
+    }
+
+    private boolean destroyProgressFieldFound() {
+
+        if (mc.gameMode == null) {
+            return false;
+        }
+
+        if (vanillaDestroyProgressField != null) {
+            return true;
+        }
+
+        for (Field f : PlayerController.class.getDeclaredFields()) {
+            if (f.getType().equals(float.class)) {
+                try {
+                    f.setAccessible(true);
+                    float value = (float) f.get(mc.gameMode);
+                    // on second break tick, the class field will have a uniquely small float value
+                    if (value > 0 && value < 1.0F) {
+                        vanillaDestroyProgressField = f;
+                        return true;
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("vanillaDestroyProgressField read failure", e);
+                }
             }
         }
 
-        return lastBlockCompletion;
+        return false;
+    }
+
+    private float getVanillaDestroyProgressValue() {
+        try {
+            return (float) vanillaDestroyProgressField.get(mc.gameMode);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("vanillaDestroyProgressField read failure", e);
+        }
+    }
+
+    private void setDestroyProgressValue(float lastBlockCompletion) {
+        try {
+            vanillaDestroyProgressField.set(mc.gameMode, lastBlockCompletion);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("vanillaDestroyProgressField write failure", e);
+        }
     }
 
     /**
@@ -142,33 +193,29 @@ public class MultiMineClient
      * @param y coordinate of Block being mined
      * @param z coordinate of Block being mined
      */
-    private void renderBlockDigParticles(int x, int y, int z)
-    {
-        World world = thePlayer.world;
+    private void renderBlockDigParticles(int x, int y, int z) {
+        World world = thePlayer.level;
         BlockPos bp = new BlockPos(x, y, z);
-        IBlockState state = world.getBlockState(bp);
+        BlockState state = world.getBlockState(bp);
         Block block = state.getBlock();
-        if (block != Blocks.AIR)
-        {
+        if (block != Blocks.AIR) {
             SoundType soundtype = block.getSoundType(state, world, bp, thePlayer);
-            mc.getSoundHandler()
-                    .playSound(new PositionedSoundRecord(soundtype.getHitSound(), SoundCategory.NEUTRAL, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, new BlockPos(x, y, z)));
-            mc.effectRenderer.addBlockDestroyEffects(new BlockPos(x, y, z), state);
+            mc.getSoundManager().play(new SimpleSound(soundtype.getHitSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, bp));
         }
+        state.addDestroyEffects(world,bp, mc.particleEngine);
     }
 
     /**
      * Called when a server informs the client about new Block progress. See if it exists locally and update, else add it.
-     *  @param x        coordinate of Block
-     * @param y        coordinate of Block
-     * @param z        coordinate of Block
-     * @param progress of Block Mining, float 0 to 1
+     *
+     * @param x            coordinate of Block
+     * @param y            coordinate of Block
+     * @param z            coordinate of Block
+     * @param progress     of Block Mining, float 0 to 1
      * @param regenerating
      */
-    public void onServerSentPartialBlockData(int x, int y, int z, float progress, boolean regenerating)
-    {
-        if (thePlayer == null)
-        {
+    public void onServerSentPartialBlockData(int x, int y, int z, float progress, boolean regenerating) {
+        if (thePlayer == null) {
             return;
         }
 
@@ -176,37 +223,28 @@ public class MultiMineClient
         updateLocalPartialBlock(x, y, z, progress, regenerating);
     }
 
-    private void updateLocalPartialBlock(int x, int y, int z, float progress, boolean regenerating)
-    {
-        updateCloudTickReading();
+    private void updateLocalPartialBlock(int x, int y, int z, float progress, boolean regenerating) {
 
-        EntityPlayer player = thePlayer;
-        World w = player.world;
+        PlayerEntity player = thePlayer;
+        World w = player.level;
         BlockPos pos = new BlockPos(x, y, z);
-        final IBlockState block = w.getBlockState(pos);
 
-        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.dimension, progress);
+        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.level.dimension(), progress);
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
 
-        if (regenerating && pos.equals(curBlock))
-        {
+        if (regenerating && pos.equals(curBlock)) {
             lastBlockCompletion = progress;
         }
 
-        for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
-        {
+        for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
             iterBlock = partiallyMinedBlocksArray[i];
-            if (iterBlock == null && freeIndex == -1)
-            {
+            if (iterBlock == null && freeIndex == -1) {
                 freeIndex = i;
-            }
-            else if (newBlock.equals(iterBlock))
-            {
+            } else if (newBlock.equals(iterBlock)) {
                 boolean notClientsBlock = false;
                 // if other guy's progress advances, render digging
-                if (iterBlock.getProgress() < progress && !iterBlock.getPos().equals(pos))
-                {
+                if (iterBlock.getProgress() < progress && !iterBlock.getPos().equals(pos)) {
                     renderBlockDigParticles(x, y, z);
                     notClientsBlock = true;
                 }
@@ -214,37 +252,19 @@ public class MultiMineClient
                         iterBlock.getProgress(), progress);
 
                 iterBlock.setProgress(progress);
-                final DestroyBlockProgress newDestroyBP = new DestroyBlockProgress(0, iterBlock.getPos());
-                newDestroyBP.setPartialBlockDamage(Math.min(9, Math.round(10f * iterBlock.getProgress())));
-                newDestroyBP.setCloudUpdateTick(lastCloudTickReading);
-                vanillaDestroyBlockProgressMap.put(i, newDestroyBP);
 
-                if (iterBlock.isFinished())
-                {
-                    w.sendBlockBreakProgress(player.getEntityId(), pos, -1);
+                // last method called in MultiPlayerGameMode.startDestroyBlock
+                mc.level.destroyBlockProgress(i, iterBlock.getPos(), Math.min(9, Math.round(10f * iterBlock.getProgress())));
 
-                    if (block.getBlock() != Blocks.AIR)
-                    {
-                        IBlockState is = w.getBlockState(pos);
-                        if (!notClientsBlock && block.getBlock().removedByPlayer(is, w, pos, player, true))
-                        {
-                            block.getBlock().onBlockDestroyedByPlayer(w, pos, block);
-                            block.getBlock().harvestBlock(w, player, pos, block, w.getTileEntity(pos), player.getHeldItemMainhand());
-                        }
+                if (iterBlock.isFinished()) {
 
-                        SoundType st = block.getBlock().getSoundType(is, w, iterBlock.getPos(), player);
-                        if (st != null)
-                        {
-                            w.playSound(null, pos, st.getBreakSound(), SoundCategory.BLOCKS, st.getVolume() + 1.0F / 2.0F, st.getPitch() * 0.8F);
-                        }
-                    }
-                    onBlockMineFinishedDamagePlayerItem(player, x, y, z);
-
-                    vanillaDestroyBlockProgressMap.remove(i);
+                    // method called in MultiPlayerGameMode.startDestroyBlock, inside the >= 1.0F check if-branch
+                    mc.gameMode.destroyBlock(pos);
+                    // calling this vanilla method with parameter 10 (or -1) will wipe the visible damage cracks
+                    mc.level.destroyBlockProgress(i, iterBlock.getPos(), 10);
                     partiallyMinedBlocksArray[i] = null;
-                    if (curBlock.getX() == x && curBlock.getY() == y && curBlock.getZ() == z)
-                    {
-                        curBlock = BlockPos.ORIGIN;
+                    if (curBlock.getX() == x && curBlock.getY() == y && curBlock.getZ() == z) {
+                        curBlock = BlockPos.ZERO;
                     }
                     MultiMine.instance().debugPrint("Client wiped local finished block [{}|{}|{}], at index {}", x, y, z, i);
                 }
@@ -252,21 +272,16 @@ public class MultiMineClient
             }
         }
 
-        if (progress > 0.99)
-        {
+        if (progress > 0.99) {
             MultiMine.instance().debugPrint("Client ignoring late arrival packet [{}|{}|{}]", x, y, z);
             return;
         }
 
-        if (freeIndex != -1)
-        {
+        if (freeIndex != -1) {
             partiallyMinedBlocksArray[freeIndex] = newBlock;
-        }
-        else
-        {
+        } else {
             partiallyMinedBlocksArray[arrayOverWriteIndex++] = newBlock;
-            if (arrayOverWriteIndex == partiallyMinedBlocksArray.length)
-            {
+            if (arrayOverWriteIndex == partiallyMinedBlocksArray.length) {
                 arrayOverWriteIndex = 0;
             }
         }
@@ -280,22 +295,16 @@ public class MultiMineClient
      * @param y      Coordinates of the Block
      * @param z      Coordinates of the Block
      */
-    private void onBlockMineFinishedDamagePlayerItem(EntityPlayer player, int x, int y, int z)
-    {
-        if (x != this.curBlock.getX() || y != curBlock.getY() || z != curBlock.getZ())
-        {
+    private void onBlockMineFinishedDamagePlayerItem(PlayerEntity player, int x, int y, int z) {
+        if (x != this.curBlock.getX() || y != curBlock.getY() || z != curBlock.getZ()) {
             return;
         }
 
-        ItemStack itemStack = player.getHeldItemMainhand();
-        if (itemStack != null)
-        {
-            BlockPos pos = new BlockPos(x, y, z);
-            itemStack.onBlockDestroyed(player.world, player.world.getBlockState(pos), pos, player);
-            if (itemStack.getCount() == 0)
-            {
-                player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-            }
+        ItemStack itemStack = player.getMainHandItem();
+        BlockPos pos = new BlockPos(x, y, z);
+        itemStack.mineBlock(player.level, player.level.getBlockState(pos), pos, player);
+        if (itemStack.getCount() == 0) {
+            player.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
     }
 
@@ -303,46 +312,21 @@ public class MultiMineClient
      * Called by the server via packet if there is more than the allowed amount of concurrent partial Blocks
      * in play. Causes the client to delete the corresponding local Block.
      */
-    public void onServerSentPartialBlockDeleteCommand(BlockPos p)
-    {
+    public void onServerSentPartialBlockDeleteCommand(BlockPos p) {
         MultiMine.instance().debugPrint("Server sent partial delete command for [{}|{}|{}]", p.getX(), p.getY(), p.getZ());
-        if (curBlock.equals(p))
-        {
+        if (curBlock.equals(p)) {
             MultiMine.instance().debugPrint("was current block, wiping that!");
-            curBlock = BlockPos.ORIGIN;
+            curBlock = BlockPos.ZERO;
             lastBlockCompletion = 0F;
         }
-        for (int i = 0; i < partiallyMinedBlocksArray.length; i++)
-        {
-            if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(p))
-            {
+        for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
+            if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(p)) {
+                // calling this vanilla method with parameter 10 (or -1) will wipe the visible damage cracks
+                mc.level.destroyBlockProgress(i, partiallyMinedBlocksArray[i].getPos(), 10);
                 partiallyMinedBlocksArray[i] = null;
-                vanillaDestroyBlockProgressMap.remove(i);
                 MultiMine.instance().debugPrint("Server sent partial delete matched at index {}, deleted!", i);
                 break;
             }
         }
-    }
-
-    private void updateCloudTickReading()
-    {
-        // cache previous object
-        DestroyBlockProgress dbp = vanillaDestroyBlockProgressMap.get(0);
-
-        // execute code which gets the object assigned the private cloud tick value we want
-        mc.renderGlobal.sendBlockBreakProgress(0, new BlockPos((int) thePlayer.posX, (int) thePlayer.posY, (int) thePlayer.posZ), 1);
-
-        // read the needed value
-        lastCloudTickReading = vanillaDestroyBlockProgressMap.get(0).getCreationCloudUpdateTick();
-
-        // execute code which destroys the helper object
-        mc.renderGlobal.sendBlockBreakProgress(0, new BlockPos((int) thePlayer.posX, (int) thePlayer.posY, (int) thePlayer.posZ), 10);
-
-        // if necessary restore previous object
-        if (dbp != null)
-        {
-            vanillaDestroyBlockProgressMap.put(0, dbp);
-        }
-        // System.out.println("lastCloudTickReading is now "+lastCloudTickReading);
     }
 }
