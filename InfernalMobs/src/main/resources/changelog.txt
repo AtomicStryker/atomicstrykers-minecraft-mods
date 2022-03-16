@@ -1,3 +1,6 @@
+1.18.3
+- build for minecraft 1.18.2 because that is apparently incompatible with 1.18, java.lang.ClassNotFoundException: net.minecraft.tags.Tag$Named
+
 1.18.2
 - https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/412
 - log and disregard item enchantments which have min level > max level, because otherwise we crash
