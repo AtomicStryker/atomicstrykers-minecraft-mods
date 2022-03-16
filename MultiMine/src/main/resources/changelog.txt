@@ -1,3 +1,6 @@
+1.16.5.1
+- set java build target to java 1.8 again to match 1.16 environment
+
 1.18.1 (backported to 1.16.5 by https://github.com/MaximumWoahverdrive)
 - updated to MC 1.18.1 and rewritten, no longer a coremod
 - block popping is now a lot closer to vanilla/forge, so hopefully less drop bugs with mod blocks
