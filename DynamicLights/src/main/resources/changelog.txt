@@ -1,3 +1,6 @@
+1.18.4
+- fix possible deadlock when loading a worlsave with dropped light source entities
+
 1.18.3
 - if the light sources current position cannot be lit up, now try the adjacent blocks aswell
 - if movement brought a light source into un-lightable passable blocks (like plants), the light will remain active at the last viable location

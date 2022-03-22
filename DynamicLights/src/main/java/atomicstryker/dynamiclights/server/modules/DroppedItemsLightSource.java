@@ -132,8 +132,12 @@ public class DroppedItemsLightSource {
                 lightLevel = getLightFromItemStack(entity.getItem());
 
                 BlockPos pos = entity.blockPosition();
-                BlockState is = entity.level.getBlockState(pos);
-                if (notWaterProof && is.getMaterial().isLiquid()) {
+                if (entity.getLevel().isLoaded(pos)) {
+                    BlockState is = entity.level.getBlockState(pos);
+                    if (notWaterProof && is.getMaterial().isLiquid()) {
+                        lightLevel = 0;
+                    }
+                } else {
                     lightLevel = 0;
                 }
             }
