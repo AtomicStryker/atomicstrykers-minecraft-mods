@@ -4,13 +4,11 @@ import atomicstryker.dynamiclights.server.DynamicLights;
 import atomicstryker.dynamiclights.server.GsonConfig;
 import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -130,14 +128,7 @@ public class DroppedItemsLightSource {
                 lightLevel = 15;
             } else {
                 lightLevel = getLightFromItemStack(entity.getItem());
-
-                BlockPos pos = entity.blockPosition();
-                if (entity.getLevel().isLoaded(pos)) {
-                    BlockState is = entity.level.getBlockState(pos);
-                    if (notWaterProof && is.getMaterial().isLiquid()) {
-                        lightLevel = 0;
-                    }
-                } else {
+                if (notWaterProof && entity.isInWater()) {
                     lightLevel = 0;
                 }
             }

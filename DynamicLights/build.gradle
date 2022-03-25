@@ -22,8 +22,8 @@ repositories {
     }
 }
 
-def mcversion = '1.18.2'
-version = '1.18.4'
+def mcversion = '1.18.1'
+version = '1.18.5'
 group = 'atomicstryker.dynamiclights'
 archivesBaseName = 'dynamiclights'
 
@@ -31,7 +31,7 @@ archivesBaseName = 'dynamiclights'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: '1.18.1'
     
     runs {
         client {
@@ -69,7 +69,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18-38.0.16'
+    minecraft 'net.minecraftforge:forge:1.18.1-39.1.2'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

@@ -1,3 +1,6 @@
+1.18.5
+- another hopeful fix for same deadlock problem
+
 1.18.4
 - fix possible deadlock when loading a worlsave with dropped light source entities
 
