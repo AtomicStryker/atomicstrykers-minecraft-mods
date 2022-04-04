@@ -6,6 +6,7 @@ import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
 import atomicstryker.dynamiclights.server.ItemLightLevels;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -33,6 +34,7 @@ import java.util.HashMap;
  * Handheld Items and Armor can give off Light through this Module.
  */
 public class PlayerSelfLightSource {
+    private static final ResourceLocation NOT_WATERPROOF_TAG = new ResourceLocation(DynamicLights.MOD_ID, "not_waterproof");
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static ItemConfigHelper itemsMap;
@@ -109,7 +111,8 @@ public class PlayerSelfLightSource {
                 if (event.player.isOnFire()) {
                     playerLightSourceContainer.lightLevel = 15;
                 } else {
-                    if (checkPlayerWater(event.player) && notWaterProofItems.getLightLevel(item) > 0) {
+                    // 1.18.2: if (checkPlayerWater(event.player) && (notWaterProofItems.getLightLevel(item) > 0 || item.getTags().anyMatch(rl -> rl.equals(NOT_WATERPROOF_TAG)))) {
+                    if (checkPlayerWater(event.player) && (notWaterProofItems.getLightLevel(item) > 0 || item.getItem().getTags().contains(NOT_WATERPROOF_TAG))) {
                         playerLightSourceContainer.lightLevel = 0;
                         LOGGER.trace("Self light tick, water blocked light!");
                         for (ItemStack armor : event.player.getInventory().armor) {
