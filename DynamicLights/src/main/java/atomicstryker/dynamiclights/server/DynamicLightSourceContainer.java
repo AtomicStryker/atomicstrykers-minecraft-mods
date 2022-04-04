@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class DynamicLightSourceContainer {
             BlockPos nextPos = findNewCurLightPos(ent.level);
             if (nextPos != null && !nextPos.equals(activeLightPos)) {
                 removeLight(ent.level);
-                addLight(ent.level, nextPos);
+                addLight(ent.level, nextPos, lightSource.getLightLevel());
             }
             // note: if no new position can be found, the light will actually remain active at the previous position
         }
@@ -118,13 +119,13 @@ public class DynamicLightSourceContainer {
         return null;
     }
 
-    private void addLight(Level world, BlockPos nextPos) {
+    private void addLight(Level world, BlockPos nextPos, int lightLevel) {
         // add light block on for which we already determined substitution is possible
         BlockState blockState = world.getBlockState(nextPos);
         Block currentBlock = blockState.getBlock();
         for (Map.Entry<Block, Block> vanillaBlockToLitBlockEntry : DynamicLights.vanillaBlocksToLitBlocksMap.entrySet()) {
             if (currentBlock.equals(vanillaBlockToLitBlockEntry.getKey())) {
-                world.setBlock(nextPos, vanillaBlockToLitBlockEntry.getValue().defaultBlockState(), 3);
+                world.setBlock(nextPos, vanillaBlockToLitBlockEntry.getValue().defaultBlockState().setValue(BlockStateProperties.POWER, lightLevel), 3);
                 // schedule a block tick 5 seconds into the future, as fallback for the block to clean itself up
                 world.scheduleTick(nextPos, vanillaBlockToLitBlockEntry.getValue(), 150);
                 activeLightPos.set(nextPos);

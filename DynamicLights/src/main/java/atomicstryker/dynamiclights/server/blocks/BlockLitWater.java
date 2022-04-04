@@ -3,9 +3,12 @@ package atomicstryker.dynamiclights.server.blocks;
 import atomicstryker.dynamiclights.server.DynamicLights;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FlowingFluid;
 
 import java.util.Random;
@@ -14,6 +17,13 @@ public class BlockLitWater extends LiquidBlock {
 
     public BlockLitWater(FlowingFluid flowingFluid, Properties properties) {
         super(flowingFluid, properties);
+        this.registerDefaultState(this.getStateDefinition().any().setValue(LEVEL, 0).setValue(BlockStateProperties.POWER, 15));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(BlockStateProperties.POWER);
     }
 
     public boolean isRandomlyTicking(BlockState blockState) {

@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
@@ -81,11 +82,11 @@ public class DynamicLights {
 
     @SubscribeEvent
     public static void onBlocksRegistration(final RegistryEvent.Register<Block> event) {
-        Block litAirBlock = new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
+        Block litAirBlock = new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
         event.getRegistry().register(litAirBlock);
-        Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> 15).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
+        Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
         event.getRegistry().register(litWaterBlock);
-        Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
+        Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
         event.getRegistry().register(litCaveAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.AIR, litAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.WATER, litWaterBlock);
