@@ -119,9 +119,7 @@ public class DroppedItemsLightSource {
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.getLightLevel(eI.getItem()) > 0;
-            // 1.18.2: notWaterProof = notWaterProof || eI.getItem().getTags().anyMatch(rl -> rl.equals(NOT_WATERPROOF_TAG));
-            notWaterProof = notWaterProof || eI.getItem().getItem().getTags().contains(DynamicLights.NOT_WATERPROOF_TAG);
+            notWaterProof = notWaterProofItems.getLightLevel(eI.getItem()) > 0 || eI.getItem().getTags().anyMatch(rl -> rl.location().equals(DynamicLights.NOT_WATERPROOF_TAG));
         }
 
         /**

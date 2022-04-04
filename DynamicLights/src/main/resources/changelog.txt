@@ -1,5 +1,5 @@
 1.18.6
-- courtesy of https://github.com/thraaawn, dynamic light source strenghts are once again configurable
+- courtesy of https://github.com/thraaawn, dynamic light source strength is once again configurable
 - there is also NBT tags other mods can use to signal dynamic lights to make it shine
 - see https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/425
 - minor code cleanup, improve player water handling

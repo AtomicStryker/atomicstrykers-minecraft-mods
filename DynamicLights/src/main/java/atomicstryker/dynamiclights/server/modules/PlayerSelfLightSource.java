@@ -127,8 +127,7 @@ public class PlayerSelfLightSource {
 
     private int getLightFromItemStack(ItemStack stack, boolean isUnderwater) {
         // first check if we are in water and the item is not waterproof
-        // 1.18.2: item.getTags().anyMatch(rl -> rl.equals(DynamicLights.NOT_WATERPROOF_TAG)))
-        if (isUnderwater && notWaterProofItems.getLightLevel(stack) > 0 || stack.getItem().getTags().contains(DynamicLights.NOT_WATERPROOF_TAG)) {
+        if (isUnderwater && (notWaterProofItems.getLightLevel(stack) > 0 || stack.getTags().anyMatch(rl -> rl.location().equals(DynamicLights.NOT_WATERPROOF_TAG)))) {
             return 0;
         }
         // check whether the item has a tag that makes it emit light
