@@ -4,6 +4,8 @@ import atomicstryker.dynamiclights.server.DynamicLights;
 import atomicstryker.dynamiclights.server.GsonConfig;
 import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
+import atomicstryker.dynamiclights.server.ItemLightLevels;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -47,10 +49,9 @@ public class DroppedItemsLightSource {
     public void serverStartEvent(ServerAboutToStartEvent event) {
 
         LightConfig defaultConfig = new LightConfig();
-        String torchString = ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH));
-        defaultConfig.getItemsList().add(torchString);
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE)));
-        defaultConfig.getNotWaterProofList().add(torchString);
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 10));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0));
 
         MinecraftServer server = event.getServer();
         File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_droppeditems.cfg");
@@ -102,10 +103,18 @@ public class DroppedItemsLightSource {
     }
 
     private int getLightFromItemStack(ItemStack stack) {
-        return itemsMap.contains(stack) ? 15 : 0;
+        // First check whether the item has a tag that makes it emit light
+        int level = ItemLightLevels.getLightFromItemStack(stack, "dropped");
+        if(level > 0 && level <= 15) {
+            return level;
+        }
+
+        // Then use our config file
+        return itemsMap.getLightLevel(stack);
     }
 
     private class EntityItemAdapter implements IDynamicLightSource {
+        private static final ResourceLocation NOT_WATERPROOF_TAG = new ResourceLocation(DynamicLights.MOD_ID, "not_waterproof");
 
         private ItemEntity entity;
         private int lightLevel;
@@ -116,7 +125,9 @@ public class DroppedItemsLightSource {
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.contains(eI.getItem());
+            notWaterProof = notWaterProofItems.getLightLevel(eI.getItem()) > 0;
+            // 1.18.2: notWaterProof = notWaterProof || eI.getItem().getTags().anyMatch(rl -> rl.equals(NOT_WATERPROOF_TAG));
+            notWaterProof = notWaterProof || eI.getItem().getItem().getTags().contains(NOT_WATERPROOF_TAG);
         }
 
         /**

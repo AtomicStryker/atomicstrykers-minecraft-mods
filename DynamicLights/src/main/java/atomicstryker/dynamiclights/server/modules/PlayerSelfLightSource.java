@@ -4,7 +4,9 @@ import atomicstryker.dynamiclights.server.DynamicLights;
 import atomicstryker.dynamiclights.server.GsonConfig;
 import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
+import atomicstryker.dynamiclights.server.ItemLightLevels;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -32,6 +34,7 @@ import java.util.HashMap;
  * Handheld Items and Armor can give off Light through this Module.
  */
 public class PlayerSelfLightSource {
+    private static final ResourceLocation NOT_WATERPROOF_TAG = new ResourceLocation(DynamicLights.MOD_ID, "not_waterproof");
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static ItemConfigHelper itemsMap;
@@ -47,10 +50,9 @@ public class PlayerSelfLightSource {
     public void serverStartEvent(ServerAboutToStartEvent event) {
 
         LightConfig defaultConfig = new LightConfig();
-        String torchString = ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH));
-        defaultConfig.getItemsList().add(torchString);
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE)));
-        defaultConfig.getNotWaterProofList().add(torchString);
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 10));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0));
 
         MinecraftServer server = event.getServer();
         File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_selflight.cfg");
@@ -109,11 +111,12 @@ public class PlayerSelfLightSource {
                 if (event.player.isOnFire()) {
                     playerLightSourceContainer.lightLevel = 15;
                 } else {
-                    if (checkPlayerWater(event.player) && notWaterProofItems.contains(item)) {
+                    // 1.18.2: if (checkPlayerWater(event.player) && (notWaterProofItems.getLightLevel(item) > 0 || item.getTags().anyMatch(rl -> rl.equals(NOT_WATERPROOF_TAG)))) {
+                    if (checkPlayerWater(event.player) && (notWaterProofItems.getLightLevel(item) > 0 || item.getItem().getTags().contains(NOT_WATERPROOF_TAG))) {
                         playerLightSourceContainer.lightLevel = 0;
                         LOGGER.trace("Self light tick, water blocked light!");
                         for (ItemStack armor : event.player.getInventory().armor) {
-                            if (!notWaterProofItems.contains(armor)) {
+                            if (notWaterProofItems.getLightLevel(armor) <= 0) {
                                 playerLightSourceContainer.lightLevel = Math.max(playerLightSourceContainer.lightLevel, getLightFromItemStack(armor));
                             }
                         }
@@ -148,10 +151,14 @@ public class PlayerSelfLightSource {
     }
 
     private int getLightFromItemStack(ItemStack stack) {
-        if (itemsMap.contains(stack)) {
-            return 15;
+        // First check whether the item has a tag that makes it emit light
+        int level = ItemLightLevels.getLightFromItemStack(stack, "self");
+        if(level > 0 && level <= 15) {
+            return level;
         }
-        return 0;
+
+        // Then use our config file
+        return itemsMap.getLightLevel(stack);
     }
 
     private void enableLight(PlayerLightSourceContainer container) {

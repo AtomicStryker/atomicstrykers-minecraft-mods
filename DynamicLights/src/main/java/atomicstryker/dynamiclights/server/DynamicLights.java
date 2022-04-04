@@ -7,13 +7,18 @@ import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -81,11 +86,11 @@ public class DynamicLights {
 
     @SubscribeEvent
     public static void onBlocksRegistration(final RegistryEvent.Register<Block> event) {
-        Block litAirBlock = new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
+        Block litAirBlock = new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
         event.getRegistry().register(litAirBlock);
-        Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> 15).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
+        Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
         event.getRegistry().register(litWaterBlock);
-        Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> 15).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
+        Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
         event.getRegistry().register(litCaveAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.AIR, litAirBlock);
         vanillaBlocksToLitBlocksMap.put(Blocks.WATER, litWaterBlock);
@@ -98,6 +103,24 @@ public class DynamicLights {
         if (config == null) {
             initConfig();
         }
+    }
+
+    @SubscribeEvent
+    public void onAddReloadListener(AddReloadListenerEvent event) {
+        // we need to clear our item -> light level cache on reload
+        LOGGER.debug("Adding reload listener for light level cache");
+        event.addListener(new SimplePreparableReloadListener() {
+
+            @Override
+            protected Object prepare(ResourceManager p_10796_, ProfilerFiller p_10797_) {
+                return null;
+            }
+
+            @Override
+            protected void apply(Object p_10793_, ResourceManager p_10794_, ProfilerFiller p_10795_) {
+                ItemLightLevels.clearCache();
+            }
+        });
     }
 
     private void initConfig() {
