@@ -22,14 +22,14 @@ public class ItemLightLevels {
 			return 0;
 		}
 
-		var innerCache = cache.computeIfAbsent(tagName, s -> new HashMap<>());
+		Map<Item, Integer> innerCache = cache.computeIfAbsent(tagName, s -> new HashMap<>());
 
 		// 1.18.2: return innerCache.computeIfAbsent(stack.getItem(), item1 -> stack.getTags().map(t -> getLightLevelByTagName(t.location().toString(), tagName)).filter(t -> t > 0 && t <= 15).max(Integer::compareTo).orElse(0));
 		return innerCache.computeIfAbsent(stack.getItem(), item1 -> stack.getItem().getTags().stream().map(t -> getLightLevelByTagName(t.toString(), tagName)).filter(t -> t > 0 && t <= 15).max(Integer::compareTo).orElse(0));
 	}
 
 	private static int getLightLevelByTagName(String testee, String tagName) {
-		var prefix = DynamicLights.MOD_ID + ":" + tagName;
+		String prefix = DynamicLights.MOD_ID + ":" + tagName;
 		if(!testee.startsWith(prefix)) {
 			return 0;
 		}
@@ -40,7 +40,7 @@ public class ItemLightLevels {
 
 		int level = 0;
 		try {
-			var suffix = testee.substring(prefix.length()+1);
+			String suffix = testee.substring(prefix.length()+1);
 			level = Integer.parseInt(suffix);
 		} catch (Exception ignored) {}
 

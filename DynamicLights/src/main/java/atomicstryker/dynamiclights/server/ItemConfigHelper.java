@@ -52,7 +52,7 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack, int lightLevel) {
-        var resultTag = itemStack.getOrCreateTag();
+        CompoundTag resultTag = itemStack.getOrCreateTag();
         resultTag.putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
         if(lightLevel > 0) {
             resultTag.putShort("lightLevel", (short) lightLevel);
@@ -65,8 +65,8 @@ public class ItemConfigHelper {
             return 0;
         }
 
-        for (var entry : itemStackList.entrySet()) {
-            var is = entry.getKey();
+        for (Map.Entry<ItemStack, Integer> entry : itemStackList.entrySet()) {
+            ItemStack is = entry.getKey();
             if (is.getItem() == stack.getItem() && ItemStack.tagMatches(is, stack)) {
                 return entry.getValue();
             }
