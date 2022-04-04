@@ -10,13 +10,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ItemConfigHelper {
-    private List<ItemStack> itemStackList;
+    private Map<ItemStack, Integer> itemStackList;
 
     public ItemConfigHelper(List<? extends String> items, Logger logger) {
-        itemStackList = new ArrayList<>();
+        itemStackList = new HashMap<>();
         for (String json : items) {
             try {
                 CompoundTag nbt = TagParser.parseTag(json);
@@ -26,11 +28,18 @@ public class ItemConfigHelper {
                 if (item != null) {
                     ItemStack itemStack = new ItemStack(item);
                     nbt.remove("nameId");
+
+                    int lightLevel = 15;
+                    if(nbt.contains("lightLevel")) {
+                        lightLevel = nbt.getShort("lightLevel");
+                        nbt.remove("lightLevel");
+                    }
+
                     if (!nbt.isEmpty()) {
                         // only set tag if non empty, otherwise the comparisons fail later!!
                         itemStack.setTag(nbt);
                     }
-                    itemStackList.add(itemStack);
+                    itemStackList.put(itemStack, lightLevel);
                     logger.info("item config parser identified itemstack {}", itemStack);
                 } else {
                     logger.error("item config parser could not identify item by resourcelocation {}", resourceLocation);
@@ -42,19 +51,27 @@ public class ItemConfigHelper {
         logger.info("item config parser finished, item count: {}", itemStackList.size());
     }
 
-    public static String fromItemStack(ItemStack itemStack) {
-        itemStack.getOrCreateTag().putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
-        return itemStack.getOrCreateTag().toString();
+    public static String fromItemStack(ItemStack itemStack, int lightLevel) {
+        var resultTag = itemStack.getOrCreateTag();
+        resultTag.putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
+        if(lightLevel > 0) {
+            resultTag.putShort("lightLevel", (short) lightLevel);
+        }
+        return resultTag.toString();
     }
 
-    public boolean contains(ItemStack testee) {
-        if (testee != null && testee != ItemStack.EMPTY) {
-            for (ItemStack is : itemStackList) {
-                if (is.getItem() == testee.getItem() && ItemStack.tagMatches(is, testee)) {
-                    return true;
-                }
+    public int getLightLevel(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return 0;
+        }
+
+        for (var entry : itemStackList.entrySet()) {
+            var is = entry.getKey();
+            if (is.getItem() == stack.getItem() && ItemStack.tagMatches(is, stack)) {
+                return entry.getValue();
             }
         }
-        return false;
+
+        return 0;
     }
 }

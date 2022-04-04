@@ -47,10 +47,9 @@ public class PlayerSelfLightSource {
     public void serverStartEvent(ServerAboutToStartEvent event) {
 
         LightConfig defaultConfig = new LightConfig();
-        String torchString = ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH));
-        defaultConfig.getItemsList().add(torchString);
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE)));
-        defaultConfig.getNotWaterProofList().add(torchString);
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 10));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0));
 
         MinecraftServer server = event.getServer();
         File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_selflight.cfg");
@@ -109,11 +108,11 @@ public class PlayerSelfLightSource {
                 if (event.player.isOnFire()) {
                     playerLightSourceContainer.lightLevel = 15;
                 } else {
-                    if (checkPlayerWater(event.player) && notWaterProofItems.contains(item)) {
+                    if (checkPlayerWater(event.player) && notWaterProofItems.getLightLevel(item) > 0) {
                         playerLightSourceContainer.lightLevel = 0;
                         LOGGER.trace("Self light tick, water blocked light!");
                         for (ItemStack armor : event.player.getInventory().armor) {
-                            if (!notWaterProofItems.contains(armor)) {
+                            if (notWaterProofItems.getLightLevel(armor) <= 0) {
                                 playerLightSourceContainer.lightLevel = Math.max(playerLightSourceContainer.lightLevel, getLightFromItemStack(armor));
                             }
                         }
@@ -148,10 +147,7 @@ public class PlayerSelfLightSource {
     }
 
     private int getLightFromItemStack(ItemStack stack) {
-        if (itemsMap.contains(stack)) {
-            return 15;
-        }
-        return 0;
+        return itemsMap.getLightLevel(stack);
     }
 
     private void enableLight(PlayerLightSourceContainer container) {

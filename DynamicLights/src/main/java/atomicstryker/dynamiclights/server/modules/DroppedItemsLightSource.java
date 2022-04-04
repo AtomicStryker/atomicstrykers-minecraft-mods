@@ -47,10 +47,9 @@ public class DroppedItemsLightSource {
     public void serverStartEvent(ServerAboutToStartEvent event) {
 
         LightConfig defaultConfig = new LightConfig();
-        String torchString = ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH));
-        defaultConfig.getItemsList().add(torchString);
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE)));
-        defaultConfig.getNotWaterProofList().add(torchString);
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 10));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0));
 
         MinecraftServer server = event.getServer();
         File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_droppeditems.cfg");
@@ -102,7 +101,7 @@ public class DroppedItemsLightSource {
     }
 
     private int getLightFromItemStack(ItemStack stack) {
-        return itemsMap.contains(stack) ? 15 : 0;
+        return itemsMap.getLightLevel(stack);
     }
 
     private class EntityItemAdapter implements IDynamicLightSource {
@@ -116,7 +115,7 @@ public class DroppedItemsLightSource {
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.contains(eI.getItem());
+            notWaterProof = notWaterProofItems.getLightLevel(eI.getItem()) > 0;
         }
 
         /**
