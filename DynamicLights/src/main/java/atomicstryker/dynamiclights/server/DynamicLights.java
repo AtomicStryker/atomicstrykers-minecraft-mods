@@ -7,6 +7,9 @@ import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -15,6 +18,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -99,6 +103,24 @@ public class DynamicLights {
         if (config == null) {
             initConfig();
         }
+    }
+
+    @SubscribeEvent
+    public void onAddReloadListener(AddReloadListenerEvent event) {
+        // we need to clear our item -> light level cache on reload
+        LOGGER.debug("Adding reload listener for light level cache");
+        event.addListener(new SimplePreparableReloadListener() {
+
+            @Override
+            protected Object prepare(ResourceManager p_10796_, ProfilerFiller p_10797_) {
+                return null;
+            }
+
+            @Override
+            protected void apply(Object p_10793_, ResourceManager p_10794_, ProfilerFiller p_10795_) {
+                ItemLightLevels.clearCache();
+            }
+        });
     }
 
     private void initConfig() {

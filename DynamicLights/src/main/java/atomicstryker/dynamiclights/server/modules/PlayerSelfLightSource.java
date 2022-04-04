@@ -4,6 +4,7 @@ import atomicstryker.dynamiclights.server.DynamicLights;
 import atomicstryker.dynamiclights.server.GsonConfig;
 import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
+import atomicstryker.dynamiclights.server.ItemLightLevels;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
@@ -147,6 +148,13 @@ public class PlayerSelfLightSource {
     }
 
     private int getLightFromItemStack(ItemStack stack) {
+        // First check whether the item has a tag that makes it emit light
+        int level = ItemLightLevels.getLightFromItemStack(stack, "self");
+        if(level > 0 && level <= 15) {
+            return level;
+        }
+
+        // Then use our config file
         return itemsMap.getLightLevel(stack);
     }
 

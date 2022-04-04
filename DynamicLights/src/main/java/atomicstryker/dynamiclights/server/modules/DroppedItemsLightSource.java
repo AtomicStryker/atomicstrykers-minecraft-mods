@@ -4,6 +4,7 @@ import atomicstryker.dynamiclights.server.DynamicLights;
 import atomicstryker.dynamiclights.server.GsonConfig;
 import atomicstryker.dynamiclights.server.IDynamicLightSource;
 import atomicstryker.dynamiclights.server.ItemConfigHelper;
+import atomicstryker.dynamiclights.server.ItemLightLevels;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -101,6 +102,13 @@ public class DroppedItemsLightSource {
     }
 
     private int getLightFromItemStack(ItemStack stack) {
+        // First check whether the item has a tag that makes it emit light
+        int level = ItemLightLevels.getLightFromItemStack(stack, "dropped");
+        if(level > 0 && level <= 15) {
+            return level;
+        }
+
+        // Then use our config file
         return itemsMap.getLightLevel(stack);
     }
 
