@@ -1,11 +1,6 @@
 package atomicstryker.dynamiclights.server.modules;
 
-import atomicstryker.dynamiclights.server.DynamicLights;
-import atomicstryker.dynamiclights.server.GsonConfig;
-import atomicstryker.dynamiclights.server.IDynamicLightSource;
-import atomicstryker.dynamiclights.server.ItemConfigHelper;
-import atomicstryker.dynamiclights.server.ItemLightLevels;
-import net.minecraft.resources.ResourceLocation;
+import atomicstryker.dynamiclights.server.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -49,7 +44,7 @@ public class DroppedItemsLightSource {
     public void serverStartEvent(ServerAboutToStartEvent event) {
 
         LightConfig defaultConfig = new LightConfig();
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 10));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 14));
         defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15));
         defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0));
 
@@ -105,7 +100,7 @@ public class DroppedItemsLightSource {
     private int getLightFromItemStack(ItemStack stack) {
         // First check whether the item has a tag that makes it emit light
         int level = ItemLightLevels.getLightFromItemStack(stack, "dropped");
-        if(level > 0 && level <= 15) {
+        if (level > 0 && level <= 15) {
             return level;
         }
 
@@ -114,7 +109,6 @@ public class DroppedItemsLightSource {
     }
 
     private class EntityItemAdapter implements IDynamicLightSource {
-        private static final ResourceLocation NOT_WATERPROOF_TAG = new ResourceLocation(DynamicLights.MOD_ID, "not_waterproof");
 
         private ItemEntity entity;
         private int lightLevel;
@@ -127,7 +121,7 @@ public class DroppedItemsLightSource {
             entity = eI;
             notWaterProof = notWaterProofItems.getLightLevel(eI.getItem()) > 0;
             // 1.18.2: notWaterProof = notWaterProof || eI.getItem().getTags().anyMatch(rl -> rl.equals(NOT_WATERPROOF_TAG));
-            notWaterProof = notWaterProof || eI.getItem().getItem().getTags().contains(NOT_WATERPROOF_TAG);
+            notWaterProof = notWaterProof || eI.getItem().getItem().getTags().contains(DynamicLights.NOT_WATERPROOF_TAG);
         }
 
         /**

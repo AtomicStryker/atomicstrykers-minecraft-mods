@@ -6,6 +6,7 @@ import atomicstryker.dynamiclights.server.blocks.BlockLitWater;
 import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -52,6 +53,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class DynamicLights {
 
     public static final String MOD_ID = "dynamiclights";
+    public static final ResourceLocation NOT_WATERPROOF_TAG = new ResourceLocation(DynamicLights.MOD_ID, "not_waterproof");
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static DynamicLights instance;
 
@@ -112,12 +115,12 @@ public class DynamicLights {
         event.addListener(new SimplePreparableReloadListener() {
 
             @Override
-            protected Object prepare(ResourceManager p_10796_, ProfilerFiller p_10797_) {
+            protected Object prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
                 return null;
             }
 
             @Override
-            protected void apply(Object p_10793_, ResourceManager p_10794_, ProfilerFiller p_10795_) {
+            protected void apply(Object barrierObject, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
                 ItemLightLevels.clearCache();
             }
         });
@@ -176,23 +179,21 @@ public class DynamicLights {
     public static void removeLightSource(IDynamicLightSource lightToRemove) {
         if (lightToRemove != null && lightToRemove.getAttachmentEntity() != null) {
             Level world = lightToRemove.getAttachmentEntity().level;
-            if (world != null) {
-                DynamicLightSourceContainer iterContainer = null;
-                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(world);
-                if (lightList != null) {
-                    Iterator<DynamicLightSourceContainer> iter = lightList.iterator();
-                    while (iter.hasNext()) {
-                        iterContainer = iter.next();
-                        if (iterContainer.getLightSource().equals(lightToRemove)) {
-                            iter.remove();
-                            break;
-                        }
+            DynamicLightSourceContainer iterContainer = null;
+            ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(world);
+            if (lightList != null) {
+                Iterator<DynamicLightSourceContainer> iter = lightList.iterator();
+                while (iter.hasNext()) {
+                    iterContainer = iter.next();
+                    if (iterContainer.getLightSource().equals(lightToRemove)) {
+                        iter.remove();
+                        break;
                     }
+                }
 
-                    if (iterContainer != null) {
-                        LOGGER.debug("Removing Dynamic Light attached to {}", lightToRemove.getAttachmentEntity());
-                        iterContainer.removeLight(world);
-                    }
+                if (iterContainer != null) {
+                    LOGGER.debug("Removing Dynamic Light attached to {}", lightToRemove.getAttachmentEntity());
+                    iterContainer.removeLight(world);
                 }
             }
         }
