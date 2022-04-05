@@ -7,13 +7,18 @@ import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import com.google.gson.Gson;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -308,6 +313,14 @@ public class FinderCompassMod {
      */
     private int[] getSettingIntArray(int colorRed, int colorGreen, int colorBlue, int xzSearchRange, int ySearchRange, int minY, int maxY, int boolSearchEvery15Sec) {
         return new int[]{colorRed, colorGreen, colorBlue, xzSearchRange, ySearchRange, minY, maxY, boolSearchEvery15Sec};
+    }
+
+    /**
+     * wrap MC structure search mechanic for finder compass
+     */
+    public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
+        TagKey<ConfiguredStructureFeature<?, ?>> configuredStructureFeatureTagKey = TagKey.create(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, new ResourceLocation(featureId));
+        return level.findNearestMapFeature(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 
 }

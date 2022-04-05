@@ -1,3 +1,6 @@
+1.18.4
+adjusted to work with new MC structure registry in MC 1.18.2
+
 1.18.3
 updated setting defaults with the new deepslate ore variants for y -64 to 0, and use 0 to 384 for classic ores
 

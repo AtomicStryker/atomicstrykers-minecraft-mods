@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -56,8 +55,7 @@ public class FinderCompassClient implements ISidedProxy {
             ServerLifecycleHooks.getCurrentServer().submitAsync(() -> {
                 ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.getUsername());
                 if (p != null) {
-                    // code always found in EyeOfEnderEntity, structure registry is BiMap in structure
-                    BlockPos result = ((ServerLevel) p.level).getChunkSource().getGenerator().findNearestMapFeature((ServerLevel) p.level, StructureFeature.STRUCTURES_REGISTRY.get(packet.getFeatureId()), new BlockPos(p.getOnPos()), FeatureSearchPacket.SEARCH_RADIUS, false);
+                    BlockPos result = FinderCompassMod.instance.findLevelStructure((ServerLevel) p.level, p.getOnPos(), packet.getFeatureId());
                     FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.getFeatureId(), packet.getUsername(), result);
                     if (result != null) {
                         FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new FeatureSearchPacket("server", packet.getFeatureId(), result.getX(), result.getY(), result.getZ()), p);
