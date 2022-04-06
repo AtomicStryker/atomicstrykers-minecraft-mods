@@ -55,6 +55,8 @@ public class CompassRenderHook {
      */
     private static void updateConfigValues() {
         if (mustHoldCompassInHandToBeActive == null) {
+            // when connecting a client to a non-Findercompass server, this will be the first call to the config
+            FinderCompassMod.instance.initIfNeeded();
             onScreenPositionWidth = FinderCompassMod.instance.compassConfig.getOnScreenPositionWidth();
             onScreenPositionHeight = FinderCompassMod.instance.compassConfig.getOnScreenPositionHeight();
             needleWidthOfScreenWidth = FinderCompassMod.instance.compassConfig.getNeedleWidthOfScreenWidth();

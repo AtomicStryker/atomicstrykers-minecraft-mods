@@ -1,3 +1,6 @@
+1.18.5
+fixed config missing bug when connecting to a server that does not have finder compass installed
+
 1.18.4
 adjusted to work with new MC structure registry in MC 1.18.2
 

@@ -69,6 +69,7 @@ public class FinderCompassMod {
             try {
                 compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
                 loadSettingListFromConfig(compassConfig);
+                // FinderCompassClientTicker.instance is set in clientside commonSetup
                 proxy.commonSetup();
             } catch (IOException e) {
                 LOGGER.error("IOException parsing config", e);
