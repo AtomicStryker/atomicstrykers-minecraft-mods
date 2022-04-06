@@ -1,3 +1,7 @@
+1.18.4
+- fix item config syntax to be closer to vanilla, fixes inabiltity to deal with itemstack counts greater than 1
+- sadly this means you will have to edit older configs (or delete them and regenerate)
+
 1.18.3
 - build for minecraft 1.18.2 because that is apparently incompatible with 1.18, java.lang.ClassNotFoundException: net.minecraft.tags.Tag$Named
 

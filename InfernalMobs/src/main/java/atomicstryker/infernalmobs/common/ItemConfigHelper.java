@@ -1,11 +1,9 @@
 package atomicstryker.infernalmobs.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
@@ -20,22 +18,14 @@ public class ItemConfigHelper {
         for (String json : items) {
             try {
                 CompoundTag nbt = TagParser.parseTag(json);
-                ResourceLocation resourceLocation = new ResourceLocation(nbt.getString("nameId"));
-                Item item = ForgeRegistries.ITEMS.getValue(resourceLocation);
-
-                if (item != null) {
-                    ItemStack itemStack = new ItemStack(item);
-                    nbt.remove("nameId");
-                    if (!nbt.isEmpty()) {
-                        // only set tag if non empty, otherwise the comparisons fail later!!
-                        itemStack.setTag(nbt);
-                    }
+                ItemStack itemStack = ItemStack.of(nbt);
+                if (!itemStack.isEmpty()) {
                     itemStackList.add(itemStack);
-                    logger.info("item config parser identified itemstack {}", itemStack);
                 } else {
-                    logger.error("item config parser could not identify item by resourcelocation {}", resourceLocation);
+                    logger.error("item config parser could not build item: {}", json);
                 }
             } catch (CommandSyntaxException e) {
+                logger.error("item config parser CommandSyntaxException: {}", json);
                 e.printStackTrace();
             }
         }
@@ -43,7 +33,8 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack) {
-        itemStack.getOrCreateTag().putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
+        itemStack.getOrCreateTag().putString("id", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
+        itemStack.getOrCreateTag().putByte("Count", (byte) itemStack.getCount());
         return itemStack.getOrCreateTag().toString();
     }
 
