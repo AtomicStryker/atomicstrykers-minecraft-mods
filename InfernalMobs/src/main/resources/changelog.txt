@@ -1,3 +1,7 @@
+1.17.1.2
+- fix item config syntax to be closer to vanilla, fixes inabiltity to deal with itemstack counts greater than 1
+- sadly this means you will have to edit older configs (or delete them and regenerate)
+
 1.17.1.1
 - updated to MC 1.17 and the official mojang source mappings
 - reworked Infernal Mobs healthbar to use the built-in boss display
