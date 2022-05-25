@@ -31,7 +31,7 @@ public class RendererBossGlow {
     private static void renderBossGlow() {
         Minecraft mc = Minecraft.getInstance();
         Entity viewEnt = mc.getCameraEntity();
-        if (viewEnt == null) {
+        if (mc.isPaused() || viewEnt == null) {
             return;
         }
         Vec3 curPos = viewEnt.position();

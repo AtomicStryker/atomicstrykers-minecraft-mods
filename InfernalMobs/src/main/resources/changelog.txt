@@ -1,3 +1,6 @@
+1.18.5
+- boss glow particles stop spawning when the game is paused
+
 1.18.4
 - fix item config syntax to be closer to vanilla, fixes inabiltity to deal with itemstack counts greater than 1
 - sadly this means you will have to edit older configs (or delete them and regenerate)
