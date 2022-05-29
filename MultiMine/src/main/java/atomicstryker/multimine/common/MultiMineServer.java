@@ -8,9 +8,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -21,6 +23,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class MultiMineServer {
     private static MultiMineServer instance;
@@ -62,7 +66,9 @@ public class MultiMineServer {
 
         final BlockPos pos = new BlockPos(x, y, z);
         final BlockState iblockstate = player.getLevel().getBlockState(pos);
-        if (isUsingBannedItem(player) || isBlockBanned(iblockstate)) {
+        if (isUsingBannedItem(player) || isBlockBanned(iblockstate) || isItemTagBanned(player.getMainHandItem()) || isBlockTagBanned(iblockstate)) {
+            // notify client that this combo does not have multi mine support and progress should not be cached
+            sendPartiallyMinedBlockToPlayer(player, new PartiallyMinedBlock(x, y, z, dimension, -1F));
             return;
         }
 
@@ -116,16 +122,24 @@ public class MultiMineServer {
     }
 
     private boolean isBlockBanned(BlockState blockState) {
-        String ident = ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString();
-        Boolean result = MultiMine.instance().getConfig().getBannedBlocks().get(ident);
+        String blockIdentifier = ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString();
+        Boolean result = MultiMine.instance().getConfig().getBannedBlocks().get(blockIdentifier);
         if (result != null) {
             return result;
         }
 
         result = false;
-        MultiMine.instance().getConfig().getBannedBlocks().put(ident, result);
+        MultiMine.instance().getConfig().getBannedBlocks().put(blockIdentifier, result);
         MultiMine.instance().saveConfig();
         return result;
+    }
+
+    private boolean isBlockTagBanned(BlockState blockState) {
+        // check for the tag being banned in the config list
+        return blockState.getTags().anyMatch(blockTagKey -> {
+            Boolean boolForTag = MultiMine.instance().getConfig().getBannedBlocks().get(blockTagKey.location().toString());
+            return Objects.requireNonNullElse(boolForTag, false);
+        });
     }
 
     private boolean isUsingBannedItem(Player player) {
@@ -141,6 +155,13 @@ public class MultiMineServer {
         MultiMine.instance().getConfig().getBannedItems().put(ident, result);
         MultiMine.instance().saveConfig();
         return result;
+    }
+
+    private boolean isItemTagBanned(ItemStack handItem) {
+        return handItem.getTags().anyMatch(itemTagKey -> {
+            Boolean boolForTag = MultiMine.instance().getConfig().getBannedItems().get(itemTagKey.location().toString());
+            return Objects.requireNonNullElse(boolForTag, false);
+        });
     }
 
     /**

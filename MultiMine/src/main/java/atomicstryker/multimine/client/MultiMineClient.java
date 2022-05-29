@@ -232,40 +232,47 @@ public class MultiMineClient {
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
 
-        if (regenerating && pos.equals(curBlock)) {
+        if (regenerating && pos.equals(curBlock) && progress >= 0) {
             lastBlockCompletion = progress;
         }
 
-        for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
-            iterBlock = partiallyMinedBlocksArray[i];
+        for (int arrayIndex = 0; arrayIndex < partiallyMinedBlocksArray.length; arrayIndex++) {
+            iterBlock = partiallyMinedBlocksArray[arrayIndex];
             if (iterBlock == null && freeIndex == -1) {
-                freeIndex = i;
+                freeIndex = arrayIndex;
             } else if (newBlock.equals(iterBlock)) {
+
+                if (progress < 0) {
+                    MultiMine.instance().debugPrint("Client was told to forget progress for partial block [{}|{}|{}], at index {}, it is blacklisted", x, y, z, arrayIndex);
+                    partiallyMinedBlocksArray[arrayIndex] = null;
+                    return;
+                }
+
                 boolean notClientsBlock = false;
                 // if other guy's progress advances, render digging
                 if (iterBlock.getProgress() < progress && !iterBlock.getPos().equals(pos)) {
                     renderBlockDigParticles(x, y, z);
                     notClientsBlock = true;
                 }
-                MultiMine.instance().debugPrint("Client updating local partial block [{}|{}|{}], at index {}, notClientsBlock: {}, setting progres from {} to {}", x, y, z, i, notClientsBlock,
+                MultiMine.instance().debugPrint("Client updating local partial block [{}|{}|{}], at index {}, notClientsBlock: {}, setting progress from {} to {}", x, y, z, arrayIndex, notClientsBlock,
                         iterBlock.getProgress(), progress);
 
                 iterBlock.setProgress(progress);
 
                 // last method called in MultiPlayerGameMode.startDestroyBlock
-                mc.level.destroyBlockProgress(i, iterBlock.getPos(), Math.min(9, Math.round(10f * iterBlock.getProgress())));
+                mc.level.destroyBlockProgress(arrayIndex, iterBlock.getPos(), Math.min(9, Math.round(10f * iterBlock.getProgress())));
 
                 if (iterBlock.isFinished()) {
 
                     // method called in MultiPlayerGameMode.startDestroyBlock, inside the >= 1.0F check if-branch
                     mc.gameMode.destroyBlock(pos);
                     // calling this vanilla method with parameter 10 (or -1) will wipe the visible damage cracks
-                    mc.level.destroyBlockProgress(i, iterBlock.getPos(), 10);
-                    partiallyMinedBlocksArray[i] = null;
+                    mc.level.destroyBlockProgress(arrayIndex, iterBlock.getPos(), 10);
+                    partiallyMinedBlocksArray[arrayIndex] = null;
                     if (curBlock.getX() == x && curBlock.getY() == y && curBlock.getZ() == z) {
                         curBlock = BlockPos.ZERO;
                     }
-                    MultiMine.instance().debugPrint("Client wiped local finished block [{}|{}|{}], at index {}", x, y, z, i);
+                    MultiMine.instance().debugPrint("Client wiped local finished block [{}|{}|{}], at index {}", x, y, z, arrayIndex);
                 }
                 return;
             }

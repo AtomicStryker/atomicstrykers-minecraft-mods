@@ -22,7 +22,7 @@ repositories {
 }
 
 def mcversion = '1.18.2'
-version = '1.18.2'
+version = '1.18.3'
 group = 'atomicstryker.multimine'
 archivesBaseName = 'multimine'
 
@@ -68,7 +68,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.17'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.25'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -93,7 +93,7 @@ curseforge {
     project {
         id = '227887'
         releaseType = 'release'
-        addGameVersion version
+        addGameVersion mcversion
         mainArtifact(file('build/libs/MultiMine-' + version + '.jar')) {
             displayName = 'Multi Mine'
         }
