@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -320,8 +320,9 @@ public class FinderCompassMod {
      * wrap MC structure search mechanic for finder compass
      */
     public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
-        TagKey<ConfiguredStructureFeature<?, ?>> configuredStructureFeatureTagKey = TagKey.create(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, new ResourceLocation(featureId));
-        return level.findNearestMapFeature(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
+        // EnderEyeItem is useful for looking up how map structures work if they change
+        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registry.STRUCTURE_REGISTRY, new ResourceLocation(featureId));
+        return level.findNearestMapStructure(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 
 }

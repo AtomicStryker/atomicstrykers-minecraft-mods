@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -20,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class FinderCompassClientTicker {
@@ -99,7 +100,7 @@ public class FinderCompassClientTicker {
 
         if (mc.level != null) {
             mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK, SoundSource.BLOCKS, 0.3F, 0.6F);
-            mc.gui.getChat().addMessage(new TextComponent("Finder Compass Mode: " + currentSetting.getName()));
+            mc.gui.getChat().addMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
 
@@ -111,7 +112,7 @@ public class FinderCompassClientTicker {
         FinderCompassMod.LOGGER.info("inputting Finder Compass config from serverside: {}", json);
         CompassConfig compassConfig = GsonConfig.loadConfigFromString(CompassConfig.class, json);
         FinderCompassMod.instance.loadSettingListFromConfig(compassConfig);
-        mc.gui.getChat().addMessage(new TextComponent("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
+        mc.gui.getChat().addMessage(Component.literal("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
     }
 
     public void onFoundChunkCoordinates(BlockPos input, BlockState blockState) {

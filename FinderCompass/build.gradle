@@ -1,28 +1,11 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
-}
 plugins {
-    id 'com.matthewprenger.cursegradle' version '1.0.10'
-}
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-
-repositories {
-    maven {
-        url 'https://www.dogforce-games.com/maven/'
-    }
+    id 'eclipse'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-def mcversion = '1.18.2'
-version = '1.18.5'
+def mcversion = '1.19'
+version = '1.19.1'
 group = 'atomicstryker.findercompass'
 archivesBaseName = 'findercompass'
 
@@ -30,7 +13,7 @@ archivesBaseName = 'findercompass'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: '1.19'
 
     runs {
         client {
@@ -53,7 +36,7 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -68,7 +51,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.36'
+    minecraft 'net.minecraftforge:forge:1.19-41.0.16'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

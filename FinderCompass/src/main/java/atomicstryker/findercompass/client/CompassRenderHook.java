@@ -43,7 +43,7 @@ public class CompassRenderHook {
 
             updateConfigValues();
             if (playerHasCompass()) {
-                renderCompassNeedles(event.getMatrixStack());
+                renderCompassNeedles(event.getPoseStack());
                 //renderTestQuad(event.getMatrixStack(), 45);
             }
 
