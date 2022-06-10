@@ -20,7 +20,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -28,6 +27,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,6 +74,11 @@ public class DynamicLights {
 
     public static final HashMap<Block, Block> vanillaBlocksToLitBlocksMap = new HashMap<>();
 
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
+    public static final RegistryObject<Block> LIT_AIR_BLOCK = BLOCKS.register("lit_air", () -> new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+    public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () -> new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable()));
+    public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () -> new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+
     public DynamicLights() {
         instance = this;
         worldLightsMap = new ConcurrentHashMap<>();
@@ -85,19 +92,8 @@ public class DynamicLights {
 
         // this one is for FMLServerStartedEvent, WorldTickEvent
         MinecraftForge.EVENT_BUS.register(this);
-    }
 
-    @SubscribeEvent
-    public static void onBlocksRegistration(final RegistryEvent.Register<Block> event) {
-        Block litAirBlock = new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_air");
-        event.getRegistry().register(litAirBlock);
-        Block litWaterBlock = new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops()).setRegistryName(DynamicLights.MOD_ID, "lit_water");
-        event.getRegistry().register(litWaterBlock);
-        Block litCaveAirBlock = new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noDrops().air()).setRegistryName(DynamicLights.MOD_ID, "lit_cave_air");
-        event.getRegistry().register(litCaveAirBlock);
-        vanillaBlocksToLitBlocksMap.put(Blocks.AIR, litAirBlock);
-        vanillaBlocksToLitBlocksMap.put(Blocks.WATER, litWaterBlock);
-        vanillaBlocksToLitBlocksMap.put(Blocks.CAVE_AIR, litCaveAirBlock);
+        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     @SubscribeEvent
@@ -127,6 +123,9 @@ public class DynamicLights {
     }
 
     private void initConfig() {
+        vanillaBlocksToLitBlocksMap.put(Blocks.AIR, LIT_AIR_BLOCK.get());
+        vanillaBlocksToLitBlocksMap.put(Blocks.WATER, LIT_WATER_BLOCK.get());
+        vanillaBlocksToLitBlocksMap.put(Blocks.CAVE_AIR, LIT_CAVE_AIR_BLOCK.get());
         try {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights.cfg");
