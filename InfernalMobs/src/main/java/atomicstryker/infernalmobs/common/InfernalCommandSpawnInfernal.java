@@ -5,10 +5,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
 
@@ -31,13 +31,13 @@ public class InfernalCommandSpawnInfernal {
 
         EntityType<?> chosenType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entClassName));
         if (chosenType == null || chosenType.getCategory().isFriendly() || chosenType.getCategory().isPersistent()) {
-            source.sendFailure(new TextComponent("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
+            source.sendFailure(Component.literal("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
             return;
         }
 
         LivingEntity mob = (LivingEntity) chosenType.create(source.getLevel());
         if (mob == null) {
-            source.sendFailure(new TextComponent("Invalid SpawnInfernal command, failed to create [" + entClassName + "] instance in world"));
+            source.sendFailure(Component.literal("Invalid SpawnInfernal command, failed to create [" + entClassName + "] instance in world"));
         }
 
         mob.setPos(x + 0.5, y + 0.5, z + 0.5);
@@ -50,7 +50,7 @@ public class InfernalCommandSpawnInfernal {
             InfernalMobsCore.LOGGER.log(Level.INFO,
                     source.getTextName() + " spawned: " + InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() + " at [" + x + "|" + y + "|" + z + "]");
         } else {
-            source.sendFailure(new TextComponent("Error adding Infernal Modifier " + modifiers + " to mob " + mob));
+            source.sendFailure(Component.literal("Error adding Infernal Modifier " + modifiers + " to mob " + mob));
         }
     }
 }

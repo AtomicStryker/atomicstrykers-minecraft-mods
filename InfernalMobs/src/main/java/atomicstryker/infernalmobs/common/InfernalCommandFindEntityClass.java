@@ -4,8 +4,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
 
@@ -39,7 +39,7 @@ public class InfernalCommandFindEntityClass {
             stringBuilder.append("Nothing found.");
         }
         String output = stringBuilder.toString();
-        source.sendSuccess(new TextComponent(output), false);
+        source.sendSuccess(Component.literal(output), false);
         InfernalMobsCore.LOGGER.log(Level.INFO, source.getTextName() + ": " + output);
     }
 }

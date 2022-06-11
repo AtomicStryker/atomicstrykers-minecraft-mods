@@ -206,7 +206,7 @@ public abstract class MobModifier {
             amount = nextMod.onHurt(mob, source, amount);
         } else if (source.getEntity() != null) {
             if (source.getEntity().level.isClientSide && source.getEntity() instanceof Player) {
-                InfernalMobsCore.instance().sendHealthRequestPacket(source.getEntity().getName().getContents(), mob);
+                InfernalMobsCore.instance().sendHealthRequestPacket(source.getEntity().getName().getString(), mob);
             }
         }
 

@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -612,7 +613,7 @@ public class InfernalMobsCore {
         }
     }
 
-    private EnchantmentInstance getRandomEnchantment(Random rand) {
+    private EnchantmentInstance getRandomEnchantment(RandomSource rand) {
         if (enchantmentList == null) {
             enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
             for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS) {
@@ -642,7 +643,7 @@ public class InfernalMobsCore {
      * @param itemEnchantability ItemStack max enchantability level
      * @param modStr             MobModifier strength to be used. Should be in range 2-5
      */
-    private void enchantRandomly(Random rand, ItemStack itemStack, int itemEnchantability, int modStr) {
+    private void enchantRandomly(RandomSource rand, ItemStack itemStack, int itemEnchantability, int modStr) {
         int remainStr = (modStr + 1) / 2; // should result in 1-3
         List<?> enchantments = EnchantmentHelper.selectEnchantment(rand, itemStack, itemEnchantability, true);
         Iterator<?> iter = enchantments.iterator();

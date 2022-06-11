@@ -14,7 +14,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -76,14 +75,14 @@ public class InfernalMobsClient {
     @SubscribeEvent
     public static void onEntityJoinedWorld(EntityJoinWorldEvent event) {
         if (event.getWorld().isClientSide && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getContents(), event.getEntity().getId(), (byte) 0));
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0));
             InfernalMobsCore.LOGGER.debug("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getId());
         }
     }
 
     private static void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getContents(), ent.getId(), (byte) 0));
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0));
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
@@ -91,7 +90,7 @@ public class InfernalMobsClient {
 
     private static void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getContents(), ent.getId(), 0f, 0f));
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f));
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
     }
@@ -109,7 +108,7 @@ public class InfernalMobsClient {
             return;
         }
 
-        LivingEntity ent = getEntityCrosshairOver(event.getPartialTicks(), mc);
+        LivingEntity ent = getEntityCrosshairOver(event.getPartialTick(), mc);
         boolean retained = false;
 
         if (ent == null && System.currentTimeMillis() < healthBarRetainTime) {
@@ -144,7 +143,7 @@ public class InfernalMobsClient {
                 askServerHealth(ent);
 
                 UUID uuid = ent.getUUID();
-                Component name = new TextComponent(mod.getEntityDisplayName(ent));
+                Component name = Component.literal(mod.getEntityDisplayName(ent));
                 float progress = mod.getActualHealth(ent) / mod.getActualMaxHealth(ent);
                 if (ent.isDeadOrDying()) {
                     progress = 0.01F;
@@ -184,7 +183,7 @@ public class InfernalMobsClient {
         int screenwidth = mc.getWindow().getGuiScaledWidth();
         Font fontR = mc.font;
 
-        PoseStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
 
         int yCoord = 10;
         String[] display = mod.getDisplayNames();
@@ -287,9 +286,9 @@ public class InfernalMobsClient {
 
                 for (int j5 = 0; j5 < fullBubbles + partialBubbles; ++j5) {
                     if (j5 < fullBubbles) {
-                        mc.gui.blit(event.getMatrixStack(), leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 16, 18, 9, 9);
+                        mc.gui.blit(event.getPoseStack(), leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 16, 18, 9, 9);
                     } else {
-                        mc.gui.blit(event.getMatrixStack(), leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 25, 18, 9, 9);
+                        mc.gui.blit(event.getPoseStack(), leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 25, 18, 9, 9);
                     }
                 }
             }

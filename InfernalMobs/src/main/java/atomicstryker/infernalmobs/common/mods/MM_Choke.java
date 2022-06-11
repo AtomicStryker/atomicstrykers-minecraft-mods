@@ -92,7 +92,7 @@ public class MM_Choke extends MobModifier {
         lastTarget.setAirSupply(lastAir);
         if (lastTarget instanceof ServerPlayer) {
             InfernalMobsCore.instance().sendAirPacket((ServerPlayer) lastTarget, lastAir);
-            InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName().getContents(), System.currentTimeMillis());
+            InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName().getString(), System.currentTimeMillis());
         }
     }
 
