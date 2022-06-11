@@ -34,7 +34,7 @@ public class MultiMineClient {
     private static Player thePlayer;
     private final PartiallyMinedBlock[] partiallyMinedBlocksArray = new PartiallyMinedBlock[30];
 
-    // float MultiPlayerGameMode.destroyProgress
+    // reflects into: float MultiPlayerGameMode.destroyProgress
     private Field vanillaDestroyProgressField = null;
 
     private int arrayOverWriteIndex;
@@ -65,9 +65,7 @@ public class MultiMineClient {
     public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
         mc = Minecraft.getInstance();
         MultiMine.LOGGER.info("MultiMineClient playerLoginToServer: " + evt.getPlayer());
-        if (evt.getPlayer() != null) {
-            MultiMine.instance().initIfNeeded(evt.getPlayer().getLevel());
-        }
+        MultiMine.instance().initIfNeeded(evt.getPlayer().getLevel());
     }
 
     public static File getMcFolder() {
@@ -199,7 +197,7 @@ public class MultiMineClient {
         Block block = state.getBlock();
         if (block != Blocks.AIR) {
             SoundType soundtype = block.getSoundType(state, world, bp, thePlayer);
-            mc.getSoundManager().play(new SimpleSoundInstance(soundtype.getHitSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, bp));
+            mc.getSoundManager().play(new SimpleSoundInstance(soundtype.getHitSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, thePlayer.getRandom(), bp));
         }
         world.addDestroyBlockEffect(bp, state);
     }
@@ -211,7 +209,7 @@ public class MultiMineClient {
      * @param y            coordinate of Block
      * @param z            coordinate of Block
      * @param progress     of Block Mining, float 0 to 1
-     * @param regenerating
+     * @param regenerating true when the block mining progress is reversing
      */
     public void onServerSentPartialBlockData(int x, int y, int z, float progress, boolean regenerating) {
         if (thePlayer == null) {
@@ -224,8 +222,6 @@ public class MultiMineClient {
 
     private void updateLocalPartialBlock(int x, int y, int z, float progress, boolean regenerating) {
 
-        Player player = thePlayer;
-        Level w = player.getLevel();
         BlockPos pos = new BlockPos(x, y, z);
 
         final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.level.dimension(), progress);
@@ -319,6 +315,9 @@ public class MultiMineClient {
      * in play. Causes the client to delete the corresponding local Block.
      */
     public void onServerSentPartialBlockDeleteCommand(BlockPos p) {
+        if (mc.level == null) {
+            return;
+        }
         MultiMine.instance().debugPrint("Server sent partial delete command for [{}|{}|{}]", p.getX(), p.getY(), p.getZ());
         if (curBlock.equals(p)) {
             MultiMine.instance().debugPrint("was current block, wiping that!");
