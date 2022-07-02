@@ -91,11 +91,11 @@ public class MultiMineServer {
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock, false);
 
                 if (iterBlock.isFinished() && !player.getLevel().getBlockState(pos).isAir()) {
-                    MultiMine.instance().debugPrint("Server destroying block at: [{}|{}|{}]", x, y, z);
+                    MultiMine.instance().debugPrint("Server forgetting block at: [{}|{}|{}]", x, y, z);
 
                     // in ServerPlayerGameMode.tick()
-                    // if we do not call this, a "continued" block will only pop with several ticks delay even locally
-                    player.gameMode.destroyBlock(pos);
+                    // popping the block serverside is no longer necessary as we hacked the clientside progress faster
+                    // player.gameMode.destroyBlock(pos);
 
                     partiallyMinedBlocks.remove(iterBlock);
                     blockRegenQueue.remove(iterBlock);

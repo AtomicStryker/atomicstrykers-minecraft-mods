@@ -1,4 +1,7 @@
-1.19
+1.19.2
+- removed no longer needed serverside destroyBlock call which was duping Forge BreakEvents
+
+1.19.1
 - built for MC 1.19
 
 1.18.3
