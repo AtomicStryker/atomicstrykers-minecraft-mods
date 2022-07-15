@@ -199,20 +199,20 @@ public class DynamicLights {
     }
 
     @SubscribeEvent
-    public void serverWorldTick(TickEvent.WorldTickEvent event) {
+    public void serverWorldTick(TickEvent.LevelTickEvent event) {
 
         if (event.side != LogicalSide.SERVER) {
             return;
         }
 
-        ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(event.world);
+        ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(event.level);
         if (worldLights != null) {
             Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
             while (iter.hasNext()) {
                 DynamicLightSourceContainer tickedLightContainer = iter.next();
                 if (tickedLightContainer.onUpdate()) {
                     iter.remove();
-                    tickedLightContainer.removeLight(event.world);
+                    tickedLightContainer.removeLight(event.level);
                     LOGGER.debug("Dynamic Lights killing off LightSource on dead Entity: " + tickedLightContainer.getLightSource().getAttachmentEntity());
                 }
             }

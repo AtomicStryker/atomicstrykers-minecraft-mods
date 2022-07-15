@@ -5,7 +5,7 @@ plugins {
 }
 
 def mcversion = '1.19'
-version = '1.19.1'
+version = '1.19.2'
 group = 'atomicstryker.dynamiclights'
 archivesBaseName = 'dynamiclights'
 
@@ -51,7 +51,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19-41.0.16'
+    minecraft 'net.minecraftforge:forge:1.19-41.0.98'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

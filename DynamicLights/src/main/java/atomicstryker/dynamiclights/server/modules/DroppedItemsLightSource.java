@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -63,14 +63,13 @@ public class DroppedItemsLightSource {
     }
 
     @SubscribeEvent
-    public void entityJoinsWorld(EntityJoinWorldEvent event) {
+    public void entityJoinsWorld(EntityJoinLevelEvent event) {
 
-        if (event.getWorld().isClientSide()) {
+        if (event.getLevel().isClientSide()) {
             return;
         }
 
-        if (event.getEntity() instanceof ItemEntity) {
-            ItemEntity itemEntity = ((ItemEntity) event.getEntity());
+        if (event.getEntity() instanceof ItemEntity itemEntity) {
             int lightLevel = getLightFromItemStack(itemEntity.getItem());
             if (lightLevel > 0) {
                 EntityItemAdapter entityItemAdapter = new EntityItemAdapter(itemEntity);
@@ -80,7 +79,7 @@ public class DroppedItemsLightSource {
     }
 
     @SubscribeEvent
-    public void serverWorldTick(TickEvent.WorldTickEvent event) {
+    public void serverWorldTick(TickEvent.LevelTickEvent event) {
 
         if (event.side != LogicalSide.SERVER) {
             return;
