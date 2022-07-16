@@ -1,20 +1,15 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class SaveEventHandler {
 
     @SubscribeEvent
-    public void onWorldSave(WorldEvent.Unload event) {
-        if (event.getWorld() instanceof Level) {
-            Level level = ((Level) event.getWorld());
+    public void onWorldSave(LevelEvent.Unload event) {
+        if (event.getLevel() instanceof Level) {
+            Level level = ((Level) event.getLevel());
             InfernalMobsCore.clearAllElitesOfLevel(level);
         }
     }

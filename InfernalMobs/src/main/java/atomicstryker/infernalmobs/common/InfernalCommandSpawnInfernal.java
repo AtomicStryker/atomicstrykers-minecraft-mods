@@ -6,9 +6,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
 
@@ -29,7 +29,7 @@ public class InfernalCommandSpawnInfernal {
 
     private static void execute(CommandSourceStack source, int x, int y, int z, String entClassName, String modifiers) {
 
-        EntityType<?> chosenType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entClassName));
+        EntityType<?> chosenType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entClassName));
         if (chosenType == null || chosenType.getCategory().isFriendly() || chosenType.getCategory().isPersistent()) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
             return;

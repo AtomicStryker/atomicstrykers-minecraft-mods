@@ -151,7 +151,6 @@ public class InfernalMobsCore {
 
             File mcFolder;
             if (world.isClientSide()) {
-                InfernalMobsClient.load();
                 mcFolder = InfernalMobsClient.getMcFolder();
             } else {
                 MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -349,7 +348,7 @@ public class InfernalMobsCore {
     private String getEntityNameSafe(Entity entity) {
         String result;
         try {
-            result = ForgeRegistries.ENTITIES.getKey(entity.getType()).getPath();
+            result = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).getPath();
         } catch (Exception e) {
             result = entity.getClass().getSimpleName();
             System.err.println("Entity of class " + result + " crashed when EntityList.getEntityString was queried, for shame! Using classname instead.");
@@ -691,18 +690,18 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.WorldTickEvent tick) {
+    public void onTick(TickEvent.LevelTickEvent tick) {
         if (System.currentTimeMillis() > nextExistCheckTime) {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.world);
+            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.level);
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
             mobsmap.keySet().stream().filter(this::filterMob).forEach(InfernalMobsCore::removeEntFromElites);
 
-            resetModifiedPlayerEntitiesAsNeeded(tick.world);
+            resetModifiedPlayerEntitiesAsNeeded(tick.level);
         }
 
-        if (!tick.world.isClientSide) {
+        if (!tick.level.isClientSide) {
             infCheckA = null;
             infCheckB = null;
         }

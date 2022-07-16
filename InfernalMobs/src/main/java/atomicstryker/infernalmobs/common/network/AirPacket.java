@@ -1,6 +1,6 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.client.InfernalMobsClient;
+import atomicstryker.infernalmobs.client.OverlayChoking;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -33,7 +33,7 @@ public class AirPacket implements IPacket {
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
         AirPacket airPacket = (AirPacket) msg;
-        InfernalMobsClient.onAirPacket(airPacket.air);
+        OverlayChoking.onAirPacket(airPacket.air);
         contextSupplier.get().setPacketHandled(true);
     }
 }

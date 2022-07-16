@@ -23,7 +23,7 @@ public class InfernalCommandFindEntityClass {
 
         StringBuilder stringBuilder = new StringBuilder("Found Entity classes: ");
         boolean found = false;
-        for (ResourceLocation entityResource : ForgeRegistries.ENTITIES.getKeys()) {
+        for (ResourceLocation entityResource : ForgeRegistries.ENTITY_TYPES.getKeys()) {
             String entclass = entityResource.getPath();
             if (entclass.toLowerCase().contains(entClass.toLowerCase())) {
                 if (!found) {
