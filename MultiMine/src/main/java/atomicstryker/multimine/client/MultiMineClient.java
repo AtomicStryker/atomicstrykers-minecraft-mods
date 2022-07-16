@@ -62,7 +62,7 @@ public class MultiMineClient {
     }
 
     @SubscribeEvent
-    public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+    public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggingIn evt) {
         mc = Minecraft.getInstance();
         MultiMine.LOGGER.info("MultiMineClient playerLoginToServer: " + evt.getPlayer());
         MultiMine.instance().initIfNeeded(evt.getPlayer().getLevel());
@@ -79,12 +79,12 @@ public class MultiMineClient {
 
     private void onClickBlockInstance(PlayerInteractEvent.LeftClickBlock event) {
 
-        if (!event.getPlayer().getLevel().isClientSide) {
+        if (!event.getEntity().getLevel().isClientSide) {
             // only clientside pls
             return;
         }
 
-        thePlayer = event.getPlayer();
+        thePlayer = event.getEntity();
         BlockPos pos = event.getPos();
 
         if (!destroyProgressFieldFound()) {

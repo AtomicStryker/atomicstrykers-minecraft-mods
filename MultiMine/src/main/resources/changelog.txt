@@ -1,3 +1,6 @@
+1.19.3
+- updated to forge 41.0.98
+
 1.19.2
 - removed no longer needed serverside destroyBlock call which was duping Forge BreakEvents
 

@@ -8,11 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -23,8 +21,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class MultiMineServer {
     private static MultiMineServer instance;
@@ -181,7 +177,7 @@ public class MultiMineServer {
     }
 
     private void onPlayerLoginInstance(PlayerEvent.PlayerLoggedInEvent event) {
-        final Player player = event.getPlayer();
+        final Player player = event.getEntity();
         ResourceKey<Level> dimensionKey = player.getLevel().dimension();
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimensionKey);
         if (partiallyMinedBlocks != null) {
@@ -236,7 +232,7 @@ public class MultiMineServer {
      * age using a PriorityQueue and start repairing Blocks if they get too old.
      */
     @SubscribeEvent
-    public void onTick(TickEvent.WorldTickEvent tick) {
+    public void onTick(TickEvent.LevelTickEvent tick) {
         if (tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty()) {
             return;
         }
