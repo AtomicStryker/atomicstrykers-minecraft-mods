@@ -98,8 +98,8 @@ public class FinderCompassMod {
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getPlayer().getDisplayName());
-        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayer) event.getPlayer());
+        LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getEntity().getDisplayName());
+        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayer) event.getEntity());
     }
 
     private String getStringFromBlockState(BlockState blockState) {

@@ -20,7 +20,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class FinderCompassClientTicker {
@@ -41,7 +40,7 @@ public class FinderCompassClientTicker {
     }
 
     @SubscribeEvent
-    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggedInEvent evt) {
+    public void playerLoginToServer(ClientPlayerNetworkEvent.LoggingIn evt) {
         // client starting point, also local servers
         FinderCompassMod.instance.initIfNeeded();
     }

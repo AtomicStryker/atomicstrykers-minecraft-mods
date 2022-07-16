@@ -12,7 +12,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
@@ -20,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.Map.Entry;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = FinderCompassMod.MOD_ID)
 public class CompassRenderHook {
 
     private static final int[] strongholdNeedlecolor = {102, 0, 153};
@@ -34,19 +36,22 @@ public class CompassRenderHook {
     private static Boolean mustHoldCompassInHandToBeActive = null;
 
     @SubscribeEvent
-    public static void onTick(RenderGameOverlayEvent.Post event) {
-        // Post and ALL is after the forge ingame gui has finished rendering, we draw ontop
-        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll(FinderCompassMod.MOD_ID, new FinderCompassGuiOverlay());
+    }
+
+    public static class FinderCompassGuiOverlay implements IGuiOverlay {
+        @Override
+        public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }
 
             updateConfigValues();
             if (playerHasCompass()) {
-                renderCompassNeedles(event.getPoseStack());
+                renderCompassNeedles(poseStack);
                 //renderTestQuad(event.getMatrixStack(), 45);
             }
-
         }
     }
 
