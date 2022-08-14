@@ -1,3 +1,6 @@
+1.19.2.1
+- updated to MC 1.19.2
+
 1.19.2
 - updated to forge 41.0.98, rewritten client renderhooks to be seperate overlays
 
