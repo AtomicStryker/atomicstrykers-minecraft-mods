@@ -35,9 +35,8 @@ public class MM_Exhaust extends MobModifier {
 
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
-        if (entity != null
-                && entity instanceof Player) {
-            ((Player) entity).causeFoodExhaustion(1F);
+        if (entity instanceof Player p && !isCreativePlayer(p)) {
+            p.causeFoodExhaustion(1F);
         }
 
         return super.onAttack(entity, source, damage);
