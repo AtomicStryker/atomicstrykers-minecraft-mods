@@ -52,11 +52,11 @@ public class PartialBlockPacket implements IPacket {
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
         PartialBlockPacket packet = (PartialBlockPacket) msg;
         if (packet.user.equals("server")) {
-            MultiMineClient.instance().onServerSentPartialBlockData(packet.x, packet.y, packet.z, packet.value, packet.regenerating);
+            contextSupplier.get().enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockData(packet.x, packet.y, packet.z, packet.value, packet.regenerating));
         } else {
             ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.user);
             if (p != null) {
-                MultiMineServer.instance().onClientSentPartialBlockPacket(p, packet.x, packet.y, packet.z, packet.value);
+                contextSupplier.get().enqueueWork(() -> MultiMineServer.instance().onClientSentPartialBlockPacket(p, packet.x, packet.y, packet.z, packet.value));
             }
         }
         contextSupplier.get().setPacketHandled(true);
