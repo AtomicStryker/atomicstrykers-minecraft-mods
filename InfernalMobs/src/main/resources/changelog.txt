@@ -1,3 +1,6 @@
+1.19.2.3
+- reworked Ninja/Ender to no longer teleport into ground, hopefully
+
 1.19.2.2
 - creative players are no longer targeted by infernal effects
 
