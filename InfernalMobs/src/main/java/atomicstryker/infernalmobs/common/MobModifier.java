@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -257,8 +258,22 @@ public abstract class MobModifier {
      */
     public boolean hasSteadyTarget() {
         if (attackTarget != null) {
-            targetingTicksSteadyTarget++;
-            if (targetingTicksSteadyTarget > TARGETING_TICKS_BEFORE_ATTACK) {
+            if (isCreativePlayer(attackTarget)) {
+                targetingTicksSteadyTarget = 0;
+            } else {
+                targetingTicksSteadyTarget++;
+            }
+            return targetingTicksSteadyTarget > TARGETING_TICKS_BEFORE_ATTACK;
+        }
+        return false;
+    }
+
+    /**
+     * players in creative mode are not considered valid targets
+     */
+    protected boolean isCreativePlayer(Entity entity) {
+        if (entity instanceof Player player) {
+            if (player.isCreative()) {
                 return true;
             }
         }

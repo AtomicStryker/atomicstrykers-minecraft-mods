@@ -1,5 +1,5 @@
 1.18.6
-- backport 1.19 teleportation bugfixes (prevent going into solid ground)
+- backport 1.19 bugfixes (prevent creative mode attacks, prevent teleport going into solid ground)
 
 1.18.5
 - boss glow particles stop spawning when the game is paused

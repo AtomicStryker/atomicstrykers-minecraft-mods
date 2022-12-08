@@ -29,9 +29,9 @@ public class MM_Rust extends MobModifier {
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (source.getEntity() != null
-                && (source.getEntity() instanceof Player)
-                && !(source instanceof IndirectEntityDamageSource)) {
-            Player p = (Player) source.getEntity();
+                && (source.getEntity() instanceof Player p)
+                && !(source instanceof IndirectEntityDamageSource)
+                && !isCreativePlayer(p)) {
             p.getInventory().getSelected();
             p.getInventory().getSelected().hurtAndBreak(4, (LivingEntity) source.getEntity(), (player) -> player.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         }
