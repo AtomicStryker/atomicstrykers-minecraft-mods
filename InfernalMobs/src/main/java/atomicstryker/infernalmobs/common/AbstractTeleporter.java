@@ -79,10 +79,8 @@ public abstract class AbstractTeleporter extends MobModifier {
             if (forgeEvent.isCanceled()) {
                 return false;
             }
-            Vec3 vec3 = mob.position();
             boolean teleportResult = mob.randomTeleport(forgeEvent.getTargetX(), forgeEvent.getTargetY(), forgeEvent.getTargetZ(), true);
             if (teleportResult) {
-                mob.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(mob));
                 if (!mob.isSilent()) {
                     playDestinationEffects(mob);
                 }
