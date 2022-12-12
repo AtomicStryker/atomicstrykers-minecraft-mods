@@ -4,8 +4,8 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-def mcversion = '1.19.2'
-version = '1.19.2.3'
+def mcversion = '1.19.3'
+version = '1.19.3.1'
 group = 'atomicstryker.infernalmobs'
 archivesBaseName = 'infernalmobs'
 
@@ -13,7 +13,7 @@ archivesBaseName = 'infernalmobs'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.19.2'
+    mappings channel: 'official', version: '1.19.3'
     
     runs {
         client {
@@ -51,7 +51,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.0.8'
+    minecraft 'net.minecraftforge:forge:1.19.3-44.0.11'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -81,4 +81,8 @@ curseforge {
           displayName = 'AtomicStryker\'s Infernal Mobs'
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
