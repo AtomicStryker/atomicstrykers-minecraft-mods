@@ -49,8 +49,12 @@ public class FinderCompassClientTicker {
         COMPASS_ITEM_ID = Items.COMPASS;
 
         mc = Minecraft.getInstance();
-        ItemModelShaper mesher = mc.getItemRenderer().getItemModelShaper();
-        mesher.register(COMPASS_ITEM_ID, new ModelResourceLocation("compass", "inventory"));
+
+        // in case we have our own compass renderer? but as of 1.19 no we do not
+        if (COMPASS_ITEM_ID != Items.COMPASS) {
+            ItemModelShaper mesher = mc.getItemRenderer().getItemModelShaper();
+            mesher.register(COMPASS_ITEM_ID, ModelResourceLocation.vanilla("compass", "inventory"));
+        }
 
         compassLogic = new FinderCompassLogic(mc);
     }
@@ -63,7 +67,7 @@ public class FinderCompassClientTicker {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player.level.playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK, SoundSource.BLOCKS, 0.3F, 0.6F);
+                        tick.player.level.playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;
@@ -98,7 +102,7 @@ public class FinderCompassClientTicker {
         FinderCompassLogic.hasFeature = false;
 
         if (mc.level != null) {
-            mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK, SoundSource.BLOCKS, 0.3F, 0.6F);
+            mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
             mc.gui.getChat().addMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
         }
     }

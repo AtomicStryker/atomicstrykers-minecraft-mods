@@ -8,7 +8,7 @@ import atomicstryker.findercompass.common.network.HandshakePacket;
 import atomicstryker.findercompass.common.network.NetworkHelper;
 import com.google.gson.Gson;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -321,7 +321,7 @@ public class FinderCompassMod {
      */
     public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
         // EnderEyeItem is useful for looking up how map structures work if they change
-        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registry.STRUCTURE_REGISTRY, new ResourceLocation(featureId));
+        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, new ResourceLocation(featureId));
         return level.findNearestMapStructure(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 
