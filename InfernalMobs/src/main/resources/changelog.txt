@@ -1,5 +1,6 @@
-
+1.19.3.2
 - added spanish translations, thank you "luskaner" of Github
+- stop attaching InfernalMobs NBT tags to non "Enemy" entities such as Players, which may cause issues
 
 1.19.3.1
 - updated to MC 1.19.3

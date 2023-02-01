@@ -4,6 +4,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -30,7 +31,8 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof LivingEntity) {
+        // make sure we are not catching items or player entities in this
+        if (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy) {
             String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
             if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
                 InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) event.getEntity(), savedMods);

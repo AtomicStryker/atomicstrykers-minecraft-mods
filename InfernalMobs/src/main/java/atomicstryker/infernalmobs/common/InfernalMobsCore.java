@@ -15,7 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
@@ -293,10 +292,10 @@ public class InfernalMobsCore {
     }
 
     /**
-     * Called when an Entity is spawned by natural (Biome Spawning) means, turn
+     * Called when an Enemy is spawned by natural (Biome Spawning) means, turn
      * them into Elites here
      *
-     * @param entity Entity in question
+     * @param entity Entity in question, already asserted to be instanceof Enemy
      */
     public void processEntitySpawn(LivingEntity entity) {
         if (!entity.level.isClientSide && config != null) {
@@ -334,15 +333,10 @@ public class InfernalMobsCore {
     }
 
     private boolean isClassAllowed(LivingEntity entity) {
-        if ((entity instanceof Enemy)) {
-            if (entity instanceof TamableAnimal) {
-                return false;
-            }
-            if (instance.checkEntityClassAllowed(entity)) {
-                return true;
-            }
+        if (entity instanceof TamableAnimal) {
+            return false;
         }
-        return false;
+        return instance.checkEntityClassAllowed(entity);
     }
 
     private String getEntityNameSafe(Entity entity) {
