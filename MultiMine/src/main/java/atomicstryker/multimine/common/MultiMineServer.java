@@ -27,6 +27,7 @@ public class MultiMineServer {
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
     private final BlockRegenQueue blockRegenQueue;
+    private boolean currentlyTicking;
 
     /**
      * Server instance of Multi Mine Mod. Keeps track of Players having the Mod
@@ -38,6 +39,7 @@ public class MultiMineServer {
         instance = this;
         partiallyMinedBlocksListByDimension = Maps.newHashMap();
         blockRegenQueue = new BlockRegenQueue(30, new BlockAgeComparator());
+        currentlyTicking = false;
     }
 
     public static MultiMineServer instance() {
@@ -233,10 +235,11 @@ public class MultiMineServer {
      */
     @SubscribeEvent
     public void onTick(TickEvent.LevelTickEvent tick) {
-        if (tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty()) {
+        if (tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty() || currentlyTicking) {
             return;
         }
 
+        currentlyTicking = true;
         PartiallyMinedBlock block;
         for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext(); ) {
             block = iter.next();
@@ -248,6 +251,7 @@ public class MultiMineServer {
         }
 
         if (blockRegenQueue.isEmpty() || !MultiMine.instance().getBlockRegenEnabled()) {
+            currentlyTicking = false;
             return;
         }
 
@@ -269,6 +273,7 @@ public class MultiMineServer {
                 blockRegenQueue.add(block);
             }
         }
+        currentlyTicking = false;
     }
 
     /**
