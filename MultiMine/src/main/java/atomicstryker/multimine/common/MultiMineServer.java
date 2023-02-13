@@ -8,11 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -23,14 +21,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class MultiMineServer {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
     private final BlockRegenQueue blockRegenQueue;
+    private boolean currentlyTicking;
 
     /**
      * Server instance of Multi Mine Mod. Keeps track of Players having the Mod
@@ -42,6 +39,7 @@ public class MultiMineServer {
         instance = this;
         partiallyMinedBlocksListByDimension = Maps.newHashMap();
         blockRegenQueue = new BlockRegenQueue(30, new BlockAgeComparator());
+        currentlyTicking = false;
     }
 
     public static MultiMineServer instance() {
@@ -237,10 +235,11 @@ public class MultiMineServer {
      */
     @SubscribeEvent
     public void onTick(TickEvent.WorldTickEvent tick) {
-        if (tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty()) {
+        if (tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty() || currentlyTicking) {
             return;
         }
 
+        currentlyTicking = true;
         PartiallyMinedBlock block;
         for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext(); ) {
             block = iter.next();
@@ -252,6 +251,7 @@ public class MultiMineServer {
         }
 
         if (blockRegenQueue.isEmpty() || !MultiMine.instance().getBlockRegenEnabled()) {
+            currentlyTicking = false;
             return;
         }
 
@@ -273,6 +273,7 @@ public class MultiMineServer {
                 blockRegenQueue.add(block);
             }
         }
+        currentlyTicking = false;
     }
 
     /**

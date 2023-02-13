@@ -1,3 +1,6 @@
+1.18.4
+- prevent concurrent execution of world tick logic (??? how)
+
 1.18.3
 - added tag support for items and blocks in the blacklist configuration
 - example: bannedBlocks entry "minecraft:logs": true will prevent Multi Mining on all kinds of tree blocks including mods
