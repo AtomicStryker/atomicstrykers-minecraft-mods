@@ -36,7 +36,9 @@ public class PartialBlockRemovalPacket implements IPacket {
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
         PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
-        contextSupplier.get().enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos));
+        contextSupplier.get().enqueueWork(() -> {
+            contextSupplier.get().enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos));
+        });
         contextSupplier.get().setPacketHandled(true);
     }
 
