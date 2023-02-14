@@ -1,3 +1,6 @@
+1.18.5
+- synchronize packet handling with world tick (that is how)
+
 1.18.4
 - prevent concurrent execution of world tick logic (??? how)
 
