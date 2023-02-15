@@ -233,7 +233,7 @@ public class MultiMineServer {
      */
     @SubscribeEvent
     public void onTick(TickEvent.WorldTickEvent tick) {
-        if (tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty()) {
+        if (tick.side.isClient() || tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty()) {
             return;
         }
 

@@ -22,7 +22,7 @@ repositories {
 }
 
 def mcversion = '1.18.2'
-version = '1.18.5'
+version = '1.18.6'
 group = 'atomicstryker.multimine'
 archivesBaseName = 'multimine'
 
@@ -68,7 +68,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.25'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.2.1'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
