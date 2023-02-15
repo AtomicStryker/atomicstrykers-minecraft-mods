@@ -1,3 +1,7 @@
+1.19.3.4
+- make sure world tick logic runs serverside only
+- update to latest forge
+
 1.19.3.3
 - synchronize packet handling with world tick (that is how)
 

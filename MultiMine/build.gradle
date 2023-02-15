@@ -5,7 +5,7 @@ plugins {
 }
 
 def mcversion = '1.19.3'
-version = '1.19.3.3'
+version = '1.19.3.4'
 group = 'atomicstryker.multimine'
 archivesBaseName = 'multimine'
 
@@ -51,7 +51,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.11'
+    minecraft 'net.minecraftforge:forge:1.19.3-44.1.16'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
