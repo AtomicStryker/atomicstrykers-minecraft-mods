@@ -5,6 +5,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -460,7 +461,14 @@ public abstract class MobModifier {
      * helper method to check for target visibility
      */
     protected boolean canMobSeeTarget(LivingEntity mob, LivingEntity target) {
-        return target.getVisibilityPercent(mob) >= 0.25D;
+        if (mob.distanceTo(target) < 20F) {
+            // should be all of them but check the cast anyway...
+            if (mob instanceof Mob) {
+                return ((Mob) mob).getSensing().hasLineOfSight(target);
+            }
+            return true;
+        }
+        return false;
     }
 
 }
