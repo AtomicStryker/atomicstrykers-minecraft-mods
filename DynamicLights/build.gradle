@@ -4,8 +4,8 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-def mcversion = '1.19.3'
-version = '1.19.3.1'
+def mcversion = '1.19.4'
+version = '1.19.4.1'
 group = 'atomicstryker.dynamiclights'
 archivesBaseName = 'dynamiclights'
 
@@ -13,7 +13,7 @@ archivesBaseName = 'dynamiclights'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.19.3'
+    mappings channel: 'official', version: '1.19.4'
     
     runs {
         client {
@@ -51,7 +51,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.11'
+    minecraft 'net.minecraftforge:forge:1.19.4-45.0.19'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
