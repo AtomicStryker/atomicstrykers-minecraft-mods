@@ -87,11 +87,11 @@ public class MultiMineServer {
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock, false);
 
                 if (iterBlock.isFinished() && !player.getLevel().getBlockState(pos).isAir()) {
-                    MultiMine.instance().debugPrint("Server forgetting block at: [{}|{}|{}]", x, y, z);
+                    MultiMine.instance().debugPrint("Server popping, then forgetting block at: [{}|{}|{}]", x, y, z);
 
-                    // in ServerPlayerGameMode.tick()
-                    // popping the block serverside is no longer necessary as we hacked the clientside progress faster
-                    // player.gameMode.destroyBlock(pos);
+                    // see net.minecraft.server.level.ServerPlayerGameMode.handleBlockBreakAction
+                    // popping the block serverside is necessary as MC now keeps destroyProgress on serverside
+                    player.gameMode.destroyBlock(pos);
 
                     partiallyMinedBlocks.remove(iterBlock);
                     blockRegenQueue.remove(iterBlock);

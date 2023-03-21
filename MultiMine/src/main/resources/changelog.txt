@@ -1,3 +1,6 @@
+1.19.2.3
+- rebuild latest for 1.19.2, make sure serverside triggers block popping
+
 1.19.3.4
 - make sure world tick logic runs serverside only
 - update to latest forge
