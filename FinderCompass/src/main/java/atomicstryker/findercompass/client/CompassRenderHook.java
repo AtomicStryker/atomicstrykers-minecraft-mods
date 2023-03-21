@@ -94,10 +94,10 @@ public class CompassRenderHook {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
+        RenderSystem.enableBlend();
         // make the needles somewhat transparent
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
 
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
 
@@ -110,10 +110,11 @@ public class CompassRenderHook {
             drawNeedle(screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
 
-        RenderSystem.enableTexture();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
     }
@@ -221,7 +222,7 @@ public class CompassRenderHook {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         int halfPercentWidth = screenWidth / 200;
@@ -261,7 +262,7 @@ public class CompassRenderHook {
         bufferbuilder.vertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0D).color(255, 0, 0, 255).endVertex();
 
         tesselator.end();
-        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -290,7 +291,7 @@ public class CompassRenderHook {
         float finalWidth = blockWidth + f2;
         float finalHeight = blockedHeight + f3;
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
+        RenderSystem.disableBlend();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         // bottom box, drawn from a top left corner x,y system
@@ -322,7 +323,7 @@ public class CompassRenderHook {
         bufferbuilder.vertex(finalWidth, blockedHeight, -90.0D).color(0, 0, 0, 255).endVertex();
 
         tesselator.end();
-        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
