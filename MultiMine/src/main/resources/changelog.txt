@@ -1,3 +1,6 @@
+1.19.3.5
+- rebuild latest for 1.19.3 and forge 44.1.23
+
 1.19.2.3
 - rebuild latest for 1.19.2, make sure serverside triggers block popping
 
