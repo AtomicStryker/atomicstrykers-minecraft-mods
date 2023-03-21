@@ -4,12 +4,10 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 public class MM_Sticky extends MobModifier {
 
@@ -35,12 +33,10 @@ public class MM_Sticky extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getEntity() != null
-                && (source.getEntity() instanceof Player p) && !isCreativePlayer(p)) {
+        if (isDirectAttack(source)
+                && (source.getDirectEntity() instanceof Player p) && !isCreativePlayer(p)) {
             long time = System.currentTimeMillis();
-            if (time > nextAbilityUse
-                    && source.getEntity() != null
-                    && !(source instanceof IndirectEntityDamageSource)) {
+            if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
                 ItemEntity drop = p.drop(p.getInventory().removeItem(p.getInventory().selected, 1), false);
                 if (drop != null) {

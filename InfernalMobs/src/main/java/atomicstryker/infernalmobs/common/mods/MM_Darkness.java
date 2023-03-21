@@ -27,9 +27,9 @@ public class MM_Darkness extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getEntity() != null
-                && (source.getEntity() instanceof LivingEntity livingEntity)
-                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity())
+        if (source.getDirectEntity() != null
+                && (source.getDirectEntity() instanceof LivingEntity livingEntity)
+                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getDirectEntity())
                 && !isCreativePlayer(livingEntity)) {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 120, 0));
         }

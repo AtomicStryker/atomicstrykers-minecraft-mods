@@ -1,7 +1,6 @@
 package atomicstryker.infernalmobs.common;
 
 import net.minecraft.util.Tuple;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
@@ -55,11 +54,11 @@ public class EntityEventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityLivingSetAttackTarget(LivingSetAttackTargetEvent event) {
+    public void onEntityLivingSetAttackTarget(LivingChangeTargetEvent event) {
         if (!event.getEntity().level.isClientSide) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
-                mod.onSetAttackTarget(event.getTarget());
+                mod.onSetAttackTarget(event.getNewTarget());
             }
         }
     }
@@ -75,7 +74,7 @@ public class EntityEventHandler {
     @SubscribeEvent
     public void onEntityLivingHurt(LivingHurtEvent event) {
         // dont allow masochism
-        if (event.getSource().getEntity() != event.getEntity()) {
+        if (event.getSource().getDirectEntity() != event.getEntity()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 event.setAmount(mod.onHurt(event.getEntity(), event.getSource(), event.getAmount()));
@@ -85,7 +84,7 @@ public class EntityEventHandler {
              * We use the Hook two-sided, both with the Mob as possible target
              * and attacker
              */
-            Entity attacker = event.getSource().getEntity();
+            Entity attacker = event.getSource().getDirectEntity();
             if (attacker instanceof LivingEntity) {
                 mod = InfernalMobsCore.getMobModifiers((LivingEntity) attacker);
                 if (mod != null) {
@@ -98,9 +97,9 @@ public class EntityEventHandler {
                  * check for an environmental/automated damage type, aka mob
                  * farms
                  */
-                if (event.getSource() == DamageSource.CACTUS || event.getSource() == DamageSource.DROWN || event.getSource() == DamageSource.FALL || event.getSource() == DamageSource.IN_WALL
-                        || event.getSource() == DamageSource.LAVA || event.getSource().getEntity() instanceof FakePlayer) {
-                    Tuple<Integer, Integer> cpair = new Tuple<Integer, Integer>((int) event.getEntity().getX(), (int) event.getEntity().getZ());
+                if (event.getSource() == attacker.damageSources().cactus() || event.getSource() == attacker.damageSources().drown() || event.getSource() == attacker.damageSources().fall() || event.getSource() == attacker.damageSources().inWall()
+                        || event.getSource() == attacker.damageSources().lava() || event.getSource().getDirectEntity() instanceof FakePlayer) {
+                    Tuple<Integer, Integer> cpair = new Tuple<>((int) event.getEntity().getX(), (int) event.getEntity().getZ());
                     Float value = damageMap.get(cpair);
                     if (value == null) {
                         for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet()) {

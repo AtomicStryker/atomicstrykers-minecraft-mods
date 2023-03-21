@@ -54,7 +54,7 @@ public class MM_Choke extends MobModifier {
                     lastAir--;
                     if (lastAir < -19) {
                         lastAir = 0;
-                        lastTarget.hurt(DamageSource.DROWN, 2.0F);
+                        lastTarget.hurt(lastTarget.damageSources().drown(), 2.0F);
                     }
 
                     updateAir();
@@ -67,7 +67,7 @@ public class MM_Choke extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (lastTarget != null && source.getEntity() == lastTarget && lastAir != RESET_AIR_VALUE) {
+        if (lastTarget != null && source.getDirectEntity() == lastTarget && lastAir != RESET_AIR_VALUE) {
             lastAir += 60;
             if (lastAir > lastTarget.getMaxAirSupply()) {
                 lastAir = lastTarget.getMaxAirSupply();

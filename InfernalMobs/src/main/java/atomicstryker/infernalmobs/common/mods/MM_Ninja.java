@@ -8,13 +8,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
 
 public class MM_Ninja extends AbstractTeleporter {
 
@@ -39,10 +34,10 @@ public class MM_Ninja extends AbstractTeleporter {
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         long time = System.currentTimeMillis();
-        if (time > nextAbilityUse && source.getEntity() != null && source.getEntity() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())
-                && tryTeleportWithTarget(mob, source.getEntity())) {
+        if (time > nextAbilityUse && source.getDirectEntity() != null && source.getDirectEntity() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getDirectEntity())
+                && tryTeleportWithTarget(mob, source.getDirectEntity())) {
             nextAbilityUse = time + coolDown;
-            source.getEntity().hurt(DamageSource.mobAttack(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
+            source.getDirectEntity().hurt(source.getDirectEntity().damageSources().mobAttack(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
             return super.onHurt(mob, source, 0);
         }
 
@@ -51,9 +46,9 @@ public class MM_Ninja extends AbstractTeleporter {
 
     @Override
     protected void playStartEffects(LivingEntity mob, double x, double y, double z) {
-        BlockPos soundPos = new BlockPos(x, y, z);
+        BlockPos soundPos = new BlockPos((int) Math.round(x), (int) Math.round(y), (int) Math.round(z));
         mob.level.playSound(null, soundPos, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
-        ((ServerLevel)mob.level).sendParticles(ParticleTypes.EXPLOSION, x, y+1, z, 2, 1D, 0.2D, 0.2D, 0.0D);
+        ((ServerLevel) mob.level).sendParticles(ParticleTypes.EXPLOSION, x, y + 1, z, 2, 1D, 0.2D, 0.2D, 0.0D);
     }
 
     @Override

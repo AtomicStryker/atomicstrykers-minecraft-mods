@@ -2,10 +2,10 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Weakness extends MobModifier {
 
@@ -27,10 +27,10 @@ public class MM_Weakness extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getEntity() != null
-                && (source.getEntity() instanceof LivingEntity)
-                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity())) {
-            ((LivingEntity) source.getEntity()).addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 0));
+        if (source.getDirectEntity() != null
+                && (source.getDirectEntity() instanceof LivingEntity)
+                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getDirectEntity())) {
+            ((LivingEntity) source.getDirectEntity()).addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 0));
         }
 
         return super.onHurt(mob, source, damage);

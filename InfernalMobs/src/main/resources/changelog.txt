@@ -1,3 +1,6 @@
+1.19.4.1
+- updated for mc 1.19.4 (DamageSource rework)
+
 1.19.3.3
 - infernal abilities now have a max range of 20 blocks
 - fixed wrong implementation of "has vision of player" check, abilities should only trigger if the mob sees you

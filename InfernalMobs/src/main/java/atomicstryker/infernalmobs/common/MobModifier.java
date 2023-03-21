@@ -196,6 +196,14 @@ public abstract class MobModifier {
     }
 
     /**
+     * MC 1.19.4 got rid of IndirectDamageSource
+     */
+    protected boolean isDirectAttack(DamageSource source) {
+        return source.getDirectEntity() != null
+                && (source.getDirectEntity() instanceof LivingEntity);
+    }
+
+    /**
      * Modified Mob is being hurt
      *
      * @param mob    entity instance
@@ -206,9 +214,9 @@ public abstract class MobModifier {
     public float onHurt(LivingEntity mob, DamageSource source, float amount) {
         if (nextMod != null) {
             amount = nextMod.onHurt(mob, source, amount);
-        } else if (source.getEntity() != null) {
-            if (source.getEntity().level.isClientSide && source.getEntity() instanceof Player) {
-                InfernalMobsCore.instance().sendHealthRequestPacket(source.getEntity().getName().getString(), mob);
+        } else if (source.getDirectEntity() != null) {
+            if (source.getDirectEntity().level.isClientSide && source.getDirectEntity() instanceof Player) {
+                InfernalMobsCore.instance().sendHealthRequestPacket(source.getDirectEntity().getName().getString(), mob);
             }
         }
 

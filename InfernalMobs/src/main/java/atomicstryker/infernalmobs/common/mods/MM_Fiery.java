@@ -1,9 +1,8 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Fiery extends MobModifier {
 
@@ -25,10 +24,8 @@ public class MM_Fiery extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getEntity() != null
-                && (source.getEntity() instanceof LivingEntity)
-                && !(source instanceof IndirectEntityDamageSource)) {
-            source.getEntity().setSecondsOnFire(3);
+        if (isDirectAttack(source)) {
+            source.getDirectEntity().setSecondsOnFire(3);
         }
 
         mob.clearFire();

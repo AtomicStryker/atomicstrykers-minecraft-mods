@@ -29,10 +29,10 @@ public class MM_Ender extends AbstractTeleporter {
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         long time = System.currentTimeMillis();
-        if (time > nextAbilityUse && source.getEntity() != null && source.getEntity() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getEntity())
-                && tryTeleportWithTarget(mob, source.getEntity())) {
+        if (time > nextAbilityUse && source.getDirectEntity() != null && source.getDirectEntity() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getDirectEntity())
+                && tryTeleportWithTarget(mob, source.getDirectEntity())) {
             nextAbilityUse = time + coolDown;
-            source.getEntity().hurt(DamageSource.mobAttack(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
+            source.getDirectEntity().hurt(source.getDirectEntity().damageSources().mobAttack(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
 
             return super.onHurt(mob, source, 0);
         }

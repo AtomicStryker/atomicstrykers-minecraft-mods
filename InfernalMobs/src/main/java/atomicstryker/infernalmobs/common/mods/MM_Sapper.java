@@ -2,10 +2,10 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Sapper extends MobModifier {
 
@@ -27,10 +27,9 @@ public class MM_Sapper extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getEntity() != null
-                && (source.getEntity() instanceof LivingEntity)
-                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity())) {
-            LivingEntity ent = (LivingEntity) source.getEntity();
+        if (source.getDirectEntity() != null
+                && (source.getDirectEntity() instanceof LivingEntity ent)
+                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getDirectEntity())) {
             if (!ent.hasEffect(MobEffects.HUNGER)) {
                 ent.addEffect(new MobEffectInstance(MobEffects.HUNGER, 120, 0));
             }

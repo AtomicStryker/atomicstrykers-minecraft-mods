@@ -2,9 +2,9 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.damagesource.DamageSource;
 
 public class MM_Berserk extends MobModifier {
 
@@ -27,8 +27,8 @@ public class MM_Berserk extends MobModifier {
 
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
-        if (entity != null) {
-            source.getEntity().hurt(DamageSource.GENERIC, damage);
+        if (entity != null && source.getDirectEntity() != null) {
+            source.getDirectEntity().hurt(entity.damageSources().generic(), damage);
             damage *= 2;
             damage = InfernalMobsCore.instance().getLimitedDamage(damage);
         }

@@ -1,6 +1,5 @@
 package atomicstryker.infernalmobs.common.mods;
 
-import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,13 +26,16 @@ public class MM_Lifesteal extends MobModifier {
 
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
-        LivingEntity mob = (LivingEntity) source.getEntity();
-        if (entity != null
-                && !mob.level.isClientSide && mob.getHealth() < getActualMaxHealth(mob)) {
-            mob.setHealth(mob.getHealth() + damage);
-        }
 
-        return super.onAttack(entity, source, damage);
+        if (entity != null && source.getDirectEntity() != null) {
+            LivingEntity mob = (LivingEntity) source.getDirectEntity();
+            if (!mob.level.isClientSide && mob.getHealth() < getActualMaxHealth(mob)) {
+                mob.setHealth(mob.getHealth() + damage);
+            }
+        }
+        return super.
+                onAttack(entity, source, damage);
+
     }
 
     @Override

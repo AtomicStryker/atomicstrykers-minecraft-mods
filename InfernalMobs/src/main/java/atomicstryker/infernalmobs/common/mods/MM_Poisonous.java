@@ -2,11 +2,10 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Poisonous extends MobModifier {
 
@@ -28,12 +27,10 @@ public class MM_Poisonous extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (source.getEntity() != null
-                && (source.getEntity() instanceof LivingEntity)
-                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getEntity())) {
-            LivingEntity ent = (LivingEntity) source.getEntity();
-            if (!ent.hasEffect(MobEffects.POISON)
-                    && !(source instanceof IndirectEntityDamageSource)) {
+        if (isDirectAttack(source)
+                && InfernalMobsCore.instance().getIsEntityAllowedTarget(source.getDirectEntity())) {
+            LivingEntity ent = (LivingEntity) source.getDirectEntity();
+            if (!ent.hasEffect(MobEffects.POISON)) {
                 ent.addEffect(new MobEffectInstance(MobEffects.POISON, 120, 0));
             }
         }
