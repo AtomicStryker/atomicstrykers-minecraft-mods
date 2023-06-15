@@ -33,7 +33,7 @@ public class MM_Ghastly extends MobModifier {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                tryAbility(mob, mob.level.getNearestPlayer(mob, 12f));
+                tryAbility(mob, mob.level().getNearestPlayer(mob, 12f));
             }
         }
         return super.onUpdate(mob);
@@ -51,9 +51,9 @@ public class MM_Ghastly extends MobModifier {
             mob.setYRot(-((float) Math.atan2(diffX, diffZ)) * 180.0F / (float) Math.PI);
             mob.setYBodyRot(mob.getYRot());
 
-            mob.level.levelEvent(null, 1008, new BlockPos((int) mob.getX(), (int) mob.getY(), (int) mob.getZ()), 0);
+            mob.level().levelEvent(null, 1008, new BlockPos((int) mob.getX(), (int) mob.getY(), (int) mob.getZ()), 0);
             // the last int parameter is explosionpower, apparently 1 is Ghast default
-            LargeFireball entFB = new LargeFireball(mob.level, mob, diffX, diffY, diffZ, 1);
+            LargeFireball entFB = new LargeFireball(mob.level(), mob, diffX, diffY, diffZ, 1);
             double spawnOffset = 2.0D;
             Vec3 mobLook = mob.getViewVector(1.0F);
             double newX = mob.getX() + mobLook.x * spawnOffset;
@@ -61,7 +61,7 @@ public class MM_Ghastly extends MobModifier {
             double newZ = mob.getZ() + mobLook.z * spawnOffset;
             mob.setPos(newX, newY, newZ);
 
-            mob.level.addFreshEntity(entFB);
+            mob.level().addFreshEntity(entFB);
         }
     }
 

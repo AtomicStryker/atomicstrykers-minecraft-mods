@@ -39,7 +39,7 @@ public class InfernalCommandFindEntityClass {
             stringBuilder.append("Nothing found.");
         }
         String output = stringBuilder.toString();
-        source.sendSuccess(Component.literal(output), false);
+        source.sendSuccess(() -> Component.literal(output), false);
         InfernalMobsCore.LOGGER.log(Level.INFO, source.getTextName() + ": " + output);
     }
 }

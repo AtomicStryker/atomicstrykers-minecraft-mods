@@ -5,6 +5,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,22 +29,22 @@ public class RendererBossGlow {
 
     public static class InfernalMobsBossGlowOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             Minecraft mc = Minecraft.getInstance();
             Entity viewEnt = mc.getCameraEntity();
             if (mc.isPaused() || viewEnt == null) {
                 return;
             }
             Vec3 curPos = viewEnt.position();
-            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.level);
+            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.level());
             mobsmap.keySet().stream().filter(ent -> ent.shouldRenderAtSqrDistance(curPos.distanceToSqr(ent.position()))
                     && ent.isAlive()).forEach(ent -> mc.levelRenderer.addParticle(ParticleTypes.WITCH,
-                    false, ent.getX() + (ent.level.random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
-                    ent.getY() + ent.level.random.nextDouble() * (double) ent.getBbHeight() - 0.25D,
-                    ent.getZ() + (ent.level.random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
-                    (ent.level.random.nextDouble() - 0.5D) * 2.0D,
-                    -ent.level.random.nextDouble(),
-                    (ent.level.random.nextDouble() - 0.5D) * 2.0D));
+                    false, ent.getX() + (ent.level().random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
+                    ent.getY() + ent.level().random.nextDouble() * (double) ent.getBbHeight() - 0.25D,
+                    ent.getZ() + (ent.level().random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
+                    (ent.level().random.nextDouble() - 0.5D) * 2.0D,
+                    -ent.level().random.nextDouble(),
+                    (ent.level().random.nextDouble() - 0.5D) * 2.0D));
         }
     }
 }

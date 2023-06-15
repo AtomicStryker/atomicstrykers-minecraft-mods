@@ -47,8 +47,8 @@ public class MM_Ninja extends AbstractTeleporter {
     @Override
     protected void playStartEffects(LivingEntity mob, double x, double y, double z) {
         BlockPos soundPos = new BlockPos((int) Math.round(x), (int) Math.round(y), (int) Math.round(z));
-        mob.level.playSound(null, soundPos, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
-        ((ServerLevel) mob.level).sendParticles(ParticleTypes.EXPLOSION, x, y + 1, z, 2, 1D, 0.2D, 0.2D, 0.0D);
+        mob.level().playSound(null, soundPos, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
+        ((ServerLevel) mob.level()).sendParticles(ParticleTypes.EXPLOSION, x, y + 1, z, 2, 1D, 0.2D, 0.2D, 0.0D);
     }
 
     @Override

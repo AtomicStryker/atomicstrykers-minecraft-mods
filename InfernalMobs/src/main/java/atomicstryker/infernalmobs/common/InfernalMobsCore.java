@@ -93,11 +93,11 @@ public class InfernalMobsCore {
     }
 
     public static MobModifier getMobModifiers(LivingEntity ent) {
-        return SidedCache.getInfernalMobs(ent.level).get(ent);
+        return SidedCache.getInfernalMobs(ent.level()).get(ent);
     }
 
     public static boolean getIsRareEntityOnline(LivingEntity ent) {
-        return SidedCache.getInfernalMobs(ent.level).containsKey(ent);
+        return SidedCache.getInfernalMobs(ent.level()).containsKey(ent);
     }
 
     public static boolean getWasMobSpawnedBefore(LivingEntity ent) {
@@ -120,7 +120,7 @@ public class InfernalMobsCore {
     }
 
     public static void removeEntFromElites(LivingEntity entity) {
-        SidedCache.getInfernalMobs(entity.level).remove(entity);
+        SidedCache.getInfernalMobs(entity.level()).remove(entity);
     }
 
     public String getNBTTag() {
@@ -298,9 +298,9 @@ public class InfernalMobsCore {
      * @param entity Entity in question, already asserted to be instanceof Enemy
      */
     public void processEntitySpawn(LivingEntity entity) {
-        if (!entity.level.isClientSide && config != null) {
+        if (!entity.level().isClientSide && config != null) {
             if (!getIsRareEntityOnline(entity) && !getWasMobSpawnedBefore(entity)) {
-                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level.random.nextInt(config.getEliteRarity()) == 0)) {
+                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {
                         /*
                             get server world from resource location:
@@ -314,7 +314,7 @@ public class InfernalMobsCore {
                         if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
                             MobModifier mod = instance.createMobModifiers(entity);
                             if (mod != null) {
-                                SidedCache.getInfernalMobs(entity.level).put(entity, mod);
+                                SidedCache.getInfernalMobs(entity.level()).put(entity, mod);
                                 mod.onSpawningCompleteStoreModsAndBuffHealth(entity);
                                 // System.out.println("InfernalMobsCore modded
                                 // mob: "+entity+", id "+entity.getEntityId()+":
@@ -423,18 +423,18 @@ public class InfernalMobsCore {
      */
     private MobModifier createMobModifiers(LivingEntity entity) {
         /* 2-5 modifications standard */
-        int number = 2 + entity.level.random.nextInt(3);
+        int number = 2 + entity.level().random.nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
         ArrayList<Class<? extends MobModifier>> possibleMods = Lists.newArrayList(mobMods);
 
-        if (entity.level.random.nextInt(config.getUltraRarity()) == 0) // ultra mobs
+        if (entity.level().random.nextInt(config.getUltraRarity()) == 0) // ultra mobs
         {
-            number += 3 + entity.level.random.nextInt(2);
+            number += 3 + entity.level().random.nextInt(2);
 
-            if (entity.level.random.nextInt(config.getInfernoRarity()) == 0) // infernal
+            if (entity.level().random.nextInt(config.getInfernoRarity()) == 0) // infernal
             // mobs
             {
-                number += 3 + entity.level.random.nextInt(2);
+                number += 3 + entity.level().random.nextInt(2);
             }
         }
 
@@ -443,7 +443,7 @@ public class InfernalMobsCore {
         // and have some
         {
             /* random index of mod list */
-            int index = entity.level.random.nextInt(possibleMods.size());
+            int index = entity.level().random.nextInt(possibleMods.size());
             MobModifier nextMod = null;
 
             /*
@@ -503,11 +503,11 @@ public class InfernalMobsCore {
     public void addEntityModifiersByString(LivingEntity entity, String savedMods) {
         if (!getIsRareEntityOnline(entity)) {
             // this can fire before the localhost client has logged in, loading a world save, need to init the mod!
-            initIfNeeded(entity.level);
+            initIfNeeded(entity.level());
             MobModifier mod = stringToMobModifiers(savedMods);
             InfernalMobsCore.LOGGER.debug("reloading mods for {}: {}, mod instance {}", entity, savedMods, mod);
             if (mod != null) {
-                SidedCache.getInfernalMobs(entity.level).put(entity, mod);
+                SidedCache.getInfernalMobs(entity.level()).put(entity, mod);
                 mod.onSpawningCompleteStoreModsAndBuffHealth(entity);
             } else {
                 System.err.println("Infernal Mobs error, could not instantiate modifier " + savedMods);
@@ -574,7 +574,7 @@ public class InfernalMobsCore {
         while (xpValue > 0) {
             int xpDrop = ExperienceOrb.getExperienceValue(xpValue);
             xpValue -= xpDrop;
-            mob.level.addFreshEntity(new ExperienceOrb(mob.level, mob.getX(), mob.getY(), mob.getZ(), xpDrop));
+            mob.level().addFreshEntity(new ExperienceOrb(mob.level(), mob.getX(), mob.getY(), mob.getZ(), xpDrop));
         }
 
         dropRandomEnchantedItems(mob, mods);
@@ -592,12 +592,12 @@ public class InfernalMobsCore {
                     itemStack = EnchantedBookItem.createForEnchantment(getRandomEnchantment(mob.getRandom()));
                 } else {
                     int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                    enchantRandomly(mob.level.random, itemStack, item.getEnchantmentValue(), usedStr);
+                    enchantRandomly(mob.level().random, itemStack, item.getEnchantmentValue(), usedStr);
                     // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
                     // itemStack, item.getItemEnchantability());
                 }
-                ItemEntity itemEnt = new ItemEntity(mob.level, mob.getX(), mob.getY(), mob.getZ(), itemStack);
-                mob.level.addFreshEntity(itemEnt);
+                ItemEntity itemEnt = new ItemEntity(mob.level(), mob.getX(), mob.getY(), mob.getZ(), itemStack);
+                mob.level().addFreshEntity(itemEnt);
                 modStr -= 5;
             } else {
                 // fixes issue with empty drop lists
@@ -654,7 +654,7 @@ public class InfernalMobsCore {
      */
     private ItemStack getRandomItem(LivingEntity mob, int prefix) {
         List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ? instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
-        return list.size() > 0 ? list.get(mob.level.random.nextInt(list.size())).copy() : null;
+        return list.size() > 0 ? list.get(mob.level().random.nextInt(list.size())).copy() : null;
     }
 
     public void sendVelocityPacket(ServerPlayer target, float xVel, float yVel, float zVel) {

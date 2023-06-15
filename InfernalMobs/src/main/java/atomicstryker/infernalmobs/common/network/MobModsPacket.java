@@ -58,7 +58,7 @@ public class MobModsPacket implements IPacket {
             Player p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(mobModsPacket.stringData);
             InfernalMobsCore.LOGGER.debug("player {} from string {} querying server for mods of entity id {}", p, mobModsPacket.stringData, mobModsPacket.entID);
             if (p != null) {
-                Entity ent = p.level.getEntity(mobModsPacket.entID);
+                Entity ent = p.level().getEntity(mobModsPacket.entID);
                 if (ent instanceof LivingEntity) {
                     LivingEntity e = (LivingEntity) ent;
                     MobModifier mod = InfernalMobsCore.getMobModifiers(e);

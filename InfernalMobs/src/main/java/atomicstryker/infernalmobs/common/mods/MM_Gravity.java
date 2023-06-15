@@ -76,9 +76,9 @@ public class MM_Gravity extends MobModifier {
                 diffX = (Math.random() - Math.random()) * 0.01D;
             }
 
-            mob.level.playSound(null, mob.blockPosition(), SoundEvents.IRON_GOLEM_ATTACK, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
+            mob.level().playSound(null, mob.blockPosition(), SoundEvents.IRON_GOLEM_ATTACK, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
 
-            if (mob.level.isClientSide || !(target instanceof ServerPlayer)) {
+            if (mob.level().isClientSide || !(target instanceof ServerPlayer)) {
                 knockBack(target, diffX, diffZ);
             } else {
                 InfernalMobsCore.instance().sendKnockBackPacket((ServerPlayer) target, (float) diffX, (float) diffZ);

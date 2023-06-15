@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
@@ -60,7 +61,7 @@ public class OverlayBossBar {
 
     public static class InfernalMobsHealthBarGuiOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
                 return;
             }
@@ -119,7 +120,7 @@ public class OverlayBossBar {
 
                     // MC supports multiple bosses. Infernal Mobs does not. hide the modifier subdisplay in multi case
                     if (vanillaBossEventsMap.size() == 1) {
-                        drawModifiersUnderHealthBar(poseStack, ent, mod);
+                        drawModifiersUnderHealthBar(guiGraphics, mod);
                     }
 
                     if (!retained) {
@@ -134,7 +135,7 @@ public class OverlayBossBar {
         }
     }
 
-    private static void drawModifiersUnderHealthBar(PoseStack matrixStack, LivingEntity ent, MobModifier mod) {
+    private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
 
@@ -146,7 +147,7 @@ public class OverlayBossBar {
         int i = 0;
         while (i < display.length && display[i] != null) {
             yCoord += 10;
-            fontR.drawShadow(matrixStack, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, 0xffffff);
+            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, 0xffffff);
             i++;
         }
 

@@ -49,12 +49,12 @@ public class MM_Storm extends MobModifier {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse
                 && mob.distanceTo(target) > MIN_DISTANCE
-                && target.level.canSeeSkyFromBelowWater(new BlockPos(Mth.floor(target.getX()), Mth.floor(target.getY()), Mth.floor(target.getZ())))) {
+                && target.level().canSeeSkyFromBelowWater(new BlockPos(Mth.floor(target.getX()), Mth.floor(target.getY()), Mth.floor(target.getZ())))) {
             nextAbilityUse = time + coolDown;
-            LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level);
+            LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level());
             lightningboltentity.moveTo(target.getX(), target.getY(), target.getZ());
             lightningboltentity.setVisualOnly(false);
-            mob.level.addFreshEntity(lightningboltentity);
+            mob.level().addFreshEntity(lightningboltentity);
         }
     }
 

@@ -28,7 +28,7 @@ public class InfernalMobsClient {
     public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggingIn evt) {
         // client starting point, also local servers
         mc = Minecraft.getInstance();
-        InfernalMobsCore.instance().initIfNeeded(evt.getPlayer().level);
+        InfernalMobsCore.instance().initIfNeeded(evt.getPlayer().level());
     }
 
     @SubscribeEvent
@@ -42,7 +42,7 @@ public class InfernalMobsClient {
     @SubscribeEvent
     public static void playerLoggedOut(ClientPlayerNetworkEvent.LoggingOut evt) {
         if (evt.getPlayer() != null) {
-            SidedCache.getInfernalMobs(evt.getPlayer().level).clear();
+            SidedCache.getInfernalMobs(evt.getPlayer().level()).clear();
         }
     }
 

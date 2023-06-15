@@ -2,9 +2,9 @@ package atomicstryker.infernalmobs.client;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +17,8 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
+
+    protected static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
 
     private static Minecraft mc;
 
@@ -36,7 +38,7 @@ public class OverlayChoking {
 
     public static class InfernalMobsChokingGuiOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;
             }
@@ -45,7 +47,7 @@ public class OverlayChoking {
             if (!mc.player.isEyeInFluid(FluidTags.WATER) && airOverrideValue != -999) {
 
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
+                RenderSystem.setShaderTexture(0, GUI_ICONS_LOCATION);
 
                 int leftScreenCoordinate = mc.getWindow().getGuiScaledWidth() / 2 + 91;
                 int topScreenCoordinate = mc.getWindow().getGuiScaledHeight() - 59;
@@ -59,9 +61,9 @@ public class OverlayChoking {
 
                 for (int j5 = 0; j5 < fullBubbles + partialBubbles; ++j5) {
                     if (j5 < fullBubbles) {
-                        mc.gui.blit(poseStack, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 16, 18, 9, 9);
+                        guiGraphics.blit(GUI_ICONS_LOCATION, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 16, 18, 9, 9);
                     } else {
-                        mc.gui.blit(poseStack, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 25, 18, 9, 9);
+                        guiGraphics.blit(GUI_ICONS_LOCATION, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 25, 18, 9, 9);
                     }
                 }
             }

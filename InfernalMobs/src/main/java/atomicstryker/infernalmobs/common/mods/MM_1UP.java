@@ -27,9 +27,9 @@ public class MM_1UP extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
-        if (!healed && !mob.level.isClientSide && mob.getHealth() < (getActualMaxHealth(mob) * 0.25)) {
+        if (!healed && !mob.level().isClientSide && mob.getHealth() < (getActualMaxHealth(mob) * 0.25)) {
             mob.setHealth(getActualHealth(mob));
-            mob.level.playSound(null, mob.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
+            mob.level().playSound(null, mob.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
             healed = true;
         }
         return super.onUpdate(mob);

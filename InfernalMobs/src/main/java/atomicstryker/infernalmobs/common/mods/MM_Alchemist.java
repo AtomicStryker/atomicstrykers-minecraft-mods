@@ -39,7 +39,7 @@ public class MM_Alchemist extends MobModifier {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                tryAbility(mob, mob.level.getNearestPlayer(mob, 12f));
+                tryAbility(mob, mob.level().getNearestPlayer(mob, 12f));
             }
         }
         return super.onUpdate(mob);
@@ -66,12 +66,12 @@ public class MM_Alchemist extends MobModifier {
                 potiontype = Potions.WEAKNESS;
             }
 
-            ThrownPotion potionentity = new ThrownPotion(mob.level, mob);
+            ThrownPotion potionentity = new ThrownPotion(mob.level(), mob);
             potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potiontype));
             potionentity.setXRot(potionentity.getXRot() + 20.0F);
             potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
-            mob.level.playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level.random.nextFloat() * 0.4F);
-            mob.level.addFreshEntity(potionentity);
+            mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
+            mob.level().addFreshEntity(potionentity);
         }
     }
 

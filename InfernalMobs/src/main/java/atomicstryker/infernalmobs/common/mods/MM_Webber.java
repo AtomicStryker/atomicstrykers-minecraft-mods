@@ -63,17 +63,17 @@ public class MM_Webber extends MobModifier {
         long time = System.currentTimeMillis();
         if (time > lastAbilityUse + coolDown) {
             int offset;
-            if (target.level.getBlockState(new BlockPos(x, y - 1, z)).getBlock() == Blocks.AIR) {
+            if (target.level().getBlockState(new BlockPos(x, y - 1, z)).getBlock() == Blocks.AIR) {
                 offset = -1;
-            } else if (target.level.getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR) {
+            } else if (target.level().getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR) {
                 offset = 0;
             } else {
                 return;
             }
 
             lastAbilityUse = time;
-            target.level.setBlockAndUpdate(new BlockPos(x, y + offset, z), Blocks.COBWEB.defaultBlockState());
-            mob.level.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
+            target.level().setBlockAndUpdate(new BlockPos(x, y + offset, z), Blocks.COBWEB.defaultBlockState());
+            mob.level().playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
         }
     }
 

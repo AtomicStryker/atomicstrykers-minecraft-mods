@@ -27,7 +27,7 @@ public class MM_Regen extends MobModifier {
     public boolean onUpdate(LivingEntity mob) {
         float health = mob.getHealth();
         float actualMaxHealth = getActualMaxHealth(mob);
-        if (!mob.level.isClientSide && health < actualMaxHealth) {
+        if (!mob.level().isClientSide && health < actualMaxHealth) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;

@@ -29,7 +29,7 @@ public class MM_Lifesteal extends MobModifier {
 
         if (entity != null && source.getDirectEntity() != null) {
             LivingEntity mob = (LivingEntity) source.getDirectEntity();
-            if (!mob.level.isClientSide && mob.getHealth() < getActualMaxHealth(mob)) {
+            if (!mob.level().isClientSide && mob.getHealth() < getActualMaxHealth(mob)) {
                 mob.setHealth(mob.getHealth() + damage);
             }
         }
