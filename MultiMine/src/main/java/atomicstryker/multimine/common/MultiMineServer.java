@@ -57,11 +57,11 @@ public class MultiMineServer {
      */
     public void onClientSentPartialBlockPacket(ServerPlayer player, int x, int y, int z, float value) {
         serverInstance = ServerLifecycleHooks.getCurrentServer();
-        ResourceKey<Level> dimension = player.getLevel().dimension();
+        ResourceKey<Level> dimension = player.level().dimension();
         MultiMine.instance().debugPrint("multi mine client {} sent progress packet: {}", player.getName().getContents(), value);
 
         final BlockPos pos = new BlockPos(x, y, z);
-        final BlockState iblockstate = player.getLevel().getBlockState(pos);
+        final BlockState iblockstate = player.level().getBlockState(pos);
         if (isUsingBannedItem(player) || isBlockBanned(iblockstate) || isItemTagBanned(player.getMainHandItem()) || isBlockTagBanned(iblockstate)) {
             // notify client that this combo does not have multi mine support and progress should not be cached
             sendPartiallyMinedBlockToPlayer(player, new PartiallyMinedBlock(x, y, z, dimension, -1F));
@@ -86,7 +86,7 @@ public class MultiMineServer {
                 // send the newly advanced partialblock to all relevant players
                 sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock, false);
 
-                if (iterBlock.isFinished() && !player.getLevel().getBlockState(pos).isAir()) {
+                if (iterBlock.isFinished() && !player.level().getBlockState(pos).isAir()) {
                     MultiMine.instance().debugPrint("Server popping, then forgetting block at: [{}|{}|{}]", x, y, z);
 
                     // see net.minecraft.server.level.ServerPlayerGameMode.handleBlockBreakAction
@@ -178,7 +178,7 @@ public class MultiMineServer {
 
     private void onPlayerLoginInstance(PlayerEvent.PlayerLoggedInEvent event) {
         final Player player = event.getEntity();
-        ResourceKey<Level> dimensionKey = player.getLevel().dimension();
+        ResourceKey<Level> dimensionKey = player.level().dimension();
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimensionKey);
         if (partiallyMinedBlocks != null) {
             for (PartiallyMinedBlock block : partiallyMinedBlocks) {

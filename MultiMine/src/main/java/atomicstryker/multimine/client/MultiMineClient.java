@@ -65,7 +65,7 @@ public class MultiMineClient {
     public static void playerLoginToServer(ClientPlayerNetworkEvent.LoggingIn evt) {
         mc = Minecraft.getInstance();
         MultiMine.LOGGER.info("MultiMineClient playerLoginToServer: " + evt.getPlayer());
-        MultiMine.instance().initIfNeeded(evt.getPlayer().getLevel());
+        MultiMine.instance().initIfNeeded(evt.getPlayer().level());
     }
 
     public static File getMcFolder() {
@@ -79,7 +79,7 @@ public class MultiMineClient {
 
     private void onClickBlockInstance(PlayerInteractEvent.LeftClickBlock event) {
 
-        if (!event.getEntity().getLevel().isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             // only clientside pls
             return;
         }
@@ -93,7 +93,7 @@ public class MultiMineClient {
             return;
         }
 
-        BlockEntity blockentity = thePlayer.getLevel().getBlockEntity(pos);
+        BlockEntity blockentity = thePlayer.level().getBlockEntity(pos);
         if (blockentity instanceof Container) {
             // if its any kind of chest or container, just nope out
             MultiMine.instance().debugPrint("aborting because its a container block");
@@ -191,7 +191,7 @@ public class MultiMineClient {
      * @param z coordinate of Block being mined
      */
     private void renderBlockDigParticles(int x, int y, int z) {
-        Level world = thePlayer.getLevel();
+        Level world = thePlayer.level();
         BlockPos bp = new BlockPos(x, y, z);
         BlockState state = world.getBlockState(bp);
         Block block = state.getBlock();
@@ -224,7 +224,7 @@ public class MultiMineClient {
 
         BlockPos pos = new BlockPos(x, y, z);
 
-        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.level.dimension(), progress);
+        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.level().dimension(), progress);
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
 
@@ -304,7 +304,7 @@ public class MultiMineClient {
 
         ItemStack itemStack = player.getMainHandItem();
         BlockPos pos = new BlockPos(x, y, z);
-        itemStack.mineBlock(player.level, player.level.getBlockState(pos), pos, player);
+        itemStack.mineBlock(player.level(), player.level().getBlockState(pos), pos, player);
         if (itemStack.getCount() == 0) {
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }

@@ -1,3 +1,6 @@
+1.20.1.0
+- built for MC 1.20.1
+
 1.19.4.1
 - rebuild latest for 1.19.4 and forge 45.0.19
 
