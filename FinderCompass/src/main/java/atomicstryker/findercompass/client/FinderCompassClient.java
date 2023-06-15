@@ -55,7 +55,7 @@ public class FinderCompassClient implements ISidedProxy {
             ServerLifecycleHooks.getCurrentServer().submitAsync(() -> {
                 ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.getUsername());
                 if (p != null) {
-                    BlockPos result = FinderCompassMod.instance.findLevelStructure((ServerLevel) p.level, p.getOnPos(), packet.getFeatureId());
+                    BlockPos result = FinderCompassMod.instance.findLevelStructure((ServerLevel) p.level(), p.getOnPos(), packet.getFeatureId());
                     FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.getFeatureId(), packet.getUsername(), result);
                     if (result != null) {
                         FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new FeatureSearchPacket("server", packet.getFeatureId(), result.getX(), result.getY(), result.getZ()), p);

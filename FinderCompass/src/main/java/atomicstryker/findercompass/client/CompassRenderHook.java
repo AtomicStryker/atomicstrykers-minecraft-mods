@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
@@ -42,14 +43,13 @@ public class CompassRenderHook {
 
     public static class FinderCompassGuiOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }
-
             updateConfigValues();
             if (playerHasCompass()) {
-                renderCompassNeedles(poseStack);
+                renderCompassNeedles(guiGraphics.pose());
                 //renderTestQuad(event.getMatrixStack(), 45);
             }
         }
