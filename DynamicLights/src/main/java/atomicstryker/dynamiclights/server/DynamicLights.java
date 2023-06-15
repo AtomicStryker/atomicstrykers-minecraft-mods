@@ -14,10 +14,12 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
@@ -33,6 +35,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,9 +78,16 @@ public class DynamicLights {
     public static final HashMap<Block, Block> vanillaBlocksToLitBlocksMap = new HashMap<>();
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    public static final RegistryObject<Block> LIT_AIR_BLOCK = BLOCKS.register("lit_air", () -> new BlockLitAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
-    public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () -> new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable()));
-    public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () -> new BlockLitCaveAir(BlockBehaviour.Properties.of(Material.AIR).noCollission().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+    public static final RegistryObject<Block> LIT_AIR_BLOCK = BLOCKS.register("lit_air", () ->
+            new BlockLitAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
+                    .randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+    public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
+            new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().mapColor(MapColor.WATER).replaceable()
+                    .noCollission().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable()
+                    .liquid().sound(SoundType.EMPTY).lightLevel((x) -> x.getValue(BlockStateProperties.POWER))));
+    public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
+            new BlockLitCaveAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
+                    .lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public DynamicLights() {
         instance = this;
@@ -111,12 +121,12 @@ public class DynamicLights {
         event.addListener(new SimplePreparableReloadListener() {
 
             @Override
-            protected Object prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+            protected @NotNull Object prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
                 return null;
             }
 
             @Override
-            protected void apply(Object barrierObject, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+            protected void apply(@NotNull Object barrierObject, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
                 ItemLightLevels.clearCache();
             }
         });
@@ -144,11 +154,11 @@ public class DynamicLights {
      */
     public static void addLightSource(IDynamicLightSource lightToAdd) {
         if (lightToAdd.getAttachmentEntity() != null) {
-            String dimensionLocationPath = lightToAdd.getAttachmentEntity().level.dimension().location().getPath();
+            String dimensionLocationPath = lightToAdd.getAttachmentEntity().level().dimension().location().getPath();
             LOGGER.debug("Calling addLightSource on entity {}, dimensionLocationPath {}", lightToAdd.getAttachmentEntity(), dimensionLocationPath);
             if (lightToAdd.getAttachmentEntity().isAlive() && !instance.isBannedDimension(dimensionLocationPath)) {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
-                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().level);
+                ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(lightToAdd.getAttachmentEntity().level());
                 if (lightList != null) {
                     if (!lightList.contains(newLightContainer)) {
                         LOGGER.debug("Successfully registered DynamicLight on Entity: {} in list {}", newLightContainer.getLightSource().getAttachmentEntity(), lightList);
@@ -159,10 +169,10 @@ public class DynamicLights {
                 } else {
                     lightList = new ConcurrentLinkedQueue<>();
                     lightList.add(newLightContainer);
-                    instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().level, lightList);
+                    instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().level(), lightList);
                 }
             } else {
-                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level.dimension().location().getPath());
+                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level().dimension().location().getPath());
             }
         } else {
             LOGGER.debug("Cannot add Dynamic Light: Attachment Entity is null!");
@@ -177,7 +187,7 @@ public class DynamicLights {
      */
     public static void removeLightSource(IDynamicLightSource lightToRemove) {
         if (lightToRemove != null && lightToRemove.getAttachmentEntity() != null) {
-            Level world = lightToRemove.getAttachmentEntity().level;
+            Level world = lightToRemove.getAttachmentEntity().level();
             DynamicLightSourceContainer iterContainer = null;
             ConcurrentLinkedQueue<DynamicLightSourceContainer> lightList = instance.worldLightsMap.get(world);
             if (lightList != null) {

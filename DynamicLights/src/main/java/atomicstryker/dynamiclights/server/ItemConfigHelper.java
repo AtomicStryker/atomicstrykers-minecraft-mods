@@ -9,7 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +66,7 @@ public class ItemConfigHelper {
 
         for (Map.Entry<ItemStack, Integer> entry : itemStackList.entrySet()) {
             ItemStack is = entry.getKey();
-            if (is.getItem() == stack.getItem() && ItemStack.tagMatches(is, stack)) {
+            if (is.getItem() == stack.getItem() && ItemStack.isSameItemSameTags(is, stack)) {
                 return entry.getValue();
             }
         }

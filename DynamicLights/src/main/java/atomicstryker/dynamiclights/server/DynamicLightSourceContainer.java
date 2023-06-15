@@ -44,10 +44,10 @@ public class DynamicLightSourceContainer {
         }
 
         if (hasEntityMoved(ent)) {
-            BlockPos nextPos = findNewCurLightPos(ent.level);
+            BlockPos nextPos = findNewCurLightPos(ent.level());
             if (nextPos != null && !nextPos.equals(activeLightPos)) {
-                removeLight(ent.level);
-                addLight(ent.level, nextPos, lightSource.getLightLevel());
+                removeLight(ent.level());
+                addLight(ent.level(), nextPos, lightSource.getLightLevel());
             }
             // note: if no new position can be found, the light will actually remain active at the previous position
         }
@@ -136,11 +136,8 @@ public class DynamicLightSourceContainer {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DynamicLightSourceContainer) {
-            DynamicLightSourceContainer other = (DynamicLightSourceContainer) o;
-            if (other.lightSource == this.lightSource) {
-                return true;
-            }
+        if (o instanceof DynamicLightSourceContainer other) {
+            return other.lightSource == this.lightSource;
         }
         return false;
     }
