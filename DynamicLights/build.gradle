@@ -30,7 +30,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                dynamiclights {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -46,7 +46,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                dynamiclights {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
