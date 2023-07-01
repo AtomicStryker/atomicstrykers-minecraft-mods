@@ -1,3 +1,7 @@
+1.20.1.0
+rewritten to not use SpongePowered, only Forge
+updated for MC 1.20.1
+
 1.16.3.1
 updated for MC 1.16.3, now uses SpongePowered Mixin
 
