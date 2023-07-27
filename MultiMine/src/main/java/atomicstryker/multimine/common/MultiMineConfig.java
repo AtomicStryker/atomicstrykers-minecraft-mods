@@ -12,6 +12,7 @@ public class MultiMineConfig {
     private HashMap<String, Boolean> bannedBlocks = new HashMap<>();
     private HashMap<String, Boolean> bannedItems = new HashMap<>();
     private boolean disableForAllTileEntities = false;
+    private boolean disableAutoRegisterNames = false;
 
     public boolean isBlockRegenerationEnabled() {
         return blockRegenerationEnabled;
@@ -59,5 +60,13 @@ public class MultiMineConfig {
 
     public void setDisableForAllTileEntities(boolean disableForAllTileEntities) {
         this.disableForAllTileEntities = disableForAllTileEntities;
+    }
+
+    public boolean isDisableAutoRegisterNames() {
+        return disableAutoRegisterNames;
+    }
+
+    public void setDisableAutoRegisterNames(boolean disableAutoRegisterNames) {
+        this.disableAutoRegisterNames = disableAutoRegisterNames;
     }
 }

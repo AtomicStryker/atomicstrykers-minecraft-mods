@@ -1,3 +1,8 @@
+1.20.1.1
+- added new config value "disableAutoRegisterNames", which if true will prevent
+  Multi Mine from automatically populating the blacklist config with items and
+  blocks players use to break blocks
+
 1.20.1.0
 - built for MC 1.20.1
 
