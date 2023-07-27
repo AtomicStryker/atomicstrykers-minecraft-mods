@@ -1,3 +1,8 @@
+1.19.4.2
+- added new config value "disableAutoRegisterNames", which if true will prevent
+  Multi Mine from automatically populating the blacklist config with items and
+  blocks players use to break blocks
+
 1.19.4.1
 - rebuild latest for 1.19.4 and forge 45.0.19
 

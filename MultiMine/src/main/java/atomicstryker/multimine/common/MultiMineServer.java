@@ -125,8 +125,10 @@ public class MultiMineServer {
         }
 
         result = false;
-        MultiMine.instance().getConfig().getBannedBlocks().put(blockIdentifier, result);
-        MultiMine.instance().saveConfig();
+        if (!MultiMine.instance().getConfig().isDisableAutoRegisterNames()) {
+            MultiMine.instance().getConfig().getBannedBlocks().put(blockIdentifier, result);
+            MultiMine.instance().saveConfig();
+        }
         return result;
     }
 
@@ -148,8 +150,10 @@ public class MultiMineServer {
         }
 
         result = false;
-        MultiMine.instance().getConfig().getBannedItems().put(ident, result);
-        MultiMine.instance().saveConfig();
+        if (!MultiMine.instance().getConfig().isDisableAutoRegisterNames()) {
+            MultiMine.instance().getConfig().getBannedItems().put(ident, result);
+            MultiMine.instance().saveConfig();
+        }
         return result;
     }
 
