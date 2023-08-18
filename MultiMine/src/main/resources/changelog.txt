@@ -1,3 +1,6 @@
+1.19.4.3
+- make block regeneration dimension specific to prevent crashes
+
 1.19.4.2
 - added new config value "disableAutoRegisterNames", which if true will prevent
   Multi Mine from automatically populating the blacklist config with items and

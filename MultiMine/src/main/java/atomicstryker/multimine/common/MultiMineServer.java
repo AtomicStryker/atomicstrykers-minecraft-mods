@@ -26,7 +26,7 @@ public class MultiMineServer {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
-    private final BlockRegenQueue blockRegenQueue;
+    private final HashMap<ResourceKey<Level>, BlockRegenQueue> blockRegenQueuesByDimension;
 
     /**
      * Server instance of Multi Mine Mod. Keeps track of Players having the Mod
@@ -37,7 +37,7 @@ public class MultiMineServer {
         MultiMine.LOGGER.info("MultiMineServer initializing");
         instance = this;
         partiallyMinedBlocksListByDimension = Maps.newHashMap();
-        blockRegenQueue = new BlockRegenQueue(30, new BlockAgeComparator());
+        blockRegenQueuesByDimension = Maps.newHashMap();
     }
 
     public static MultiMineServer instance() {
@@ -94,9 +94,9 @@ public class MultiMineServer {
                     player.gameMode.destroyBlock(pos);
 
                     partiallyMinedBlocks.remove(iterBlock);
-                    blockRegenQueue.remove(iterBlock);
+                    getBlockRegenQueueForDimension(dimension).remove(iterBlock);
                 } else {
-                    blockRegenQueue.offer(iterBlock);
+                    getBlockRegenQueueForDimension(dimension).offer(iterBlock);
                 }
 
                 return;
@@ -109,11 +109,11 @@ public class MultiMineServer {
             PartiallyMinedBlock old = partiallyMinedBlocks.get(0);
             sendPartiallyMinedBlockDeleteCommandToAllPlayers(old);
             partiallyMinedBlocks.remove(old);
-            blockRegenQueue.remove(old);
+            getBlockRegenQueueForDimension(dimension).remove(old);
         }
 
         partiallyMinedBlocks.add(newblock);
-        blockRegenQueue.offer(newblock);
+        getBlockRegenQueueForDimension(dimension).offer(newblock);
         sendPartiallyMinedBlockUpdateToAllPlayers(newblock, false);
     }
 
@@ -237,12 +237,17 @@ public class MultiMineServer {
      */
     @SubscribeEvent
     public void onTick(TickEvent.LevelTickEvent tick) {
-        if (tick.side.isClient() || tick.phase != TickEvent.Phase.END || blockRegenQueue.isEmpty()) {
+
+        if (tick.side.isClient() || tick.phase != TickEvent.Phase.END) {
+            return;
+        }
+        BlockRegenQueue queueForDimension = getBlockRegenQueueForDimension(tick.level.dimension());
+        if (queueForDimension.isEmpty()) {
             return;
         }
 
         PartiallyMinedBlock block;
-        for (Iterator<PartiallyMinedBlock> iter = blockRegenQueue.iterator(); iter.hasNext(); ) {
+        for (Iterator<PartiallyMinedBlock> iter = queueForDimension.iterator(); iter.hasNext(); ) {
             block = iter.next();
             if (isBlockGone(block)) {
                 sendPartiallyMinedBlockDeleteCommandToAllPlayers(block);
@@ -251,13 +256,13 @@ public class MultiMineServer {
             }
         }
 
-        if (blockRegenQueue.isEmpty() || !MultiMine.instance().getBlockRegenEnabled()) {
+        if (queueForDimension.isEmpty() || !MultiMine.instance().getBlockRegenEnabled()) {
             return;
         }
 
         long curTime = System.currentTimeMillis();
-        if (blockRegenQueue.peek().getLastTimeMined() + MultiMine.instance().getBlockRegenInterval() < curTime) {
-            block = blockRegenQueue.poll();
+        if (queueForDimension.peek().getLastTimeMined() + MultiMine.instance().getBlockRegenInterval() < curTime) {
+            block = queueForDimension.poll();
 
             block.setProgress(block.getProgress() - 0.1f);
             block.setLastTimeMined(curTime);
@@ -270,7 +275,7 @@ public class MultiMineServer {
                 // send update about this one to all
                 MultiMine.instance().debugPrint("Server sending partial regen update for [{}|{}|{}]", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ());
                 sendPartiallyMinedBlockUpdateToAllPlayers(block, true);
-                blockRegenQueue.add(block);
+                queueForDimension.add(block);
             }
         }
     }
@@ -318,5 +323,17 @@ public class MultiMineServer {
         public int compare(PartiallyMinedBlock b1, PartiallyMinedBlock b2) {
             return Long.compare(b1.getLastTimeMined(), b2.getLastTimeMined());
         }
+    }
+
+    /**
+     * each dimension must have their own block regen queue, else we try accessing blocks that do not exist
+     */
+    private BlockRegenQueue getBlockRegenQueueForDimension(ResourceKey<Level> dimension) {
+        BlockRegenQueue queueForDimension = blockRegenQueuesByDimension.get(dimension);
+        if (queueForDimension == null) {
+            queueForDimension = new BlockRegenQueue(30, new BlockAgeComparator());
+            blockRegenQueuesByDimension.put(dimension, queueForDimension);
+        }
+        return queueForDimension;
     }
 }
