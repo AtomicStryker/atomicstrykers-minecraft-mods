@@ -1,3 +1,6 @@
+1.19.4.2
+- fix problem with i18n system using lowercase entity keys (now always forced to Uppercase like "Zombie")
+
 1.19.4.1
 - updated for mc 1.19.4 (DamageSource rework)
 

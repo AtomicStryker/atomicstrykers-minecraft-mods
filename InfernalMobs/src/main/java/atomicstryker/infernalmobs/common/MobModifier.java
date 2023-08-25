@@ -409,6 +409,8 @@ public abstract class MobModifier {
                 // proceeding
             }
             buffer = buffer.replaceFirst("Entity", "");
+            // https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/482: class string may be lowercase
+            buffer = buffer.substring(0, 1).toUpperCase() + buffer.substring(1);
 
             String entLoc = "translation.infernalmobs:entity." + buffer;
             String entTrans = I18n.get(entLoc);
