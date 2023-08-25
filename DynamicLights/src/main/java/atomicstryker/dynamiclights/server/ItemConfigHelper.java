@@ -30,7 +30,7 @@ public class ItemConfigHelper {
                     nbt.remove("nameId");
 
                     int lightLevel = 15;
-                    if(nbt.contains("lightLevel")) {
+                    if (nbt.contains("lightLevel")) {
                         lightLevel = nbt.getShort("lightLevel");
                         nbt.remove("lightLevel");
                     }
@@ -54,7 +54,7 @@ public class ItemConfigHelper {
     public static String fromItemStack(ItemStack itemStack, int lightLevel) {
         CompoundTag resultTag = itemStack.getOrCreateTag();
         resultTag.putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
-        if(lightLevel > 0) {
+        if (lightLevel > 0) {
             resultTag.putShort("lightLevel", (short) lightLevel);
         }
         return resultTag.toString();
@@ -66,12 +66,19 @@ public class ItemConfigHelper {
         }
 
         for (Map.Entry<ItemStack, Integer> entry : itemStackList.entrySet()) {
-            ItemStack is = entry.getKey();
-            if (is.getItem() == stack.getItem() && ItemStack.tagMatches(is, stack)) {
+            ItemStack configStack = entry.getKey();
+            if (configStack.getItem() == stack.getItem() && tagsMatchWithWildcard(configStack, stack)) {
                 return entry.getValue();
             }
         }
 
         return 0;
+    }
+
+    private boolean tagsMatchWithWildcard(ItemStack configuredStack, ItemStack ingameStack) {
+        if (configuredStack.getTag() != null && configuredStack.getTag().contains("anyNbtMatch")) {
+            return true;
+        }
+        return ItemStack.tagMatches(configuredStack, ingameStack);
     }
 }
