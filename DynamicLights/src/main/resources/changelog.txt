@@ -1,3 +1,6 @@
+1.20.2.1
+- updated for MC 1.20.2
+
 1.20.1.1
 - you can now configure itemstacks to ignore nbt tag equality, to shine light from items that could be
   enchanted or damaged. example: {anyNbtMatch:true,lightLevel:14s,nameId:\"minecraft:flint_and_steel\"}
