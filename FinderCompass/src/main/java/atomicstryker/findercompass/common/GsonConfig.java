@@ -14,12 +14,11 @@ import java.nio.file.Files;
  */
 public class GsonConfig {
 
-    private static JsonParser parser = new JsonParser();
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static <T> T loadConfigWithDefault(Class<T> clazz, File file, T defaultInstance) throws IOException {
         if (file.createNewFile()) {
-            String json = gson.toJson(parser.parse(gson.toJson(defaultInstance)));
+            String json = gson.toJson(JsonParser.parseString(gson.toJson(defaultInstance)));
             try (PrintWriter out = new PrintWriter(file)) {
                 out.println(json);
             }
@@ -35,7 +34,7 @@ public class GsonConfig {
 
     public static void saveConfig(Object config, File file) throws IOException {
         if (file.createNewFile()) {
-            String json = gson.toJson(parser.parse(gson.toJson(config)));
+            String json = gson.toJson(JsonParser.parseString(gson.toJson(config)));
             try (PrintWriter out = new PrintWriter(file)) {
                 out.println(json);
             }
@@ -43,6 +42,6 @@ public class GsonConfig {
     }
 
     public static String jsonFromConfig(Object config) {
-        return gson.toJson(parser.parse(gson.toJson(config)));
+        return gson.toJson(JsonParser.parseString(gson.toJson(config)));
     }
 }

@@ -2,27 +2,13 @@ package atomicstryker.findercompass.common.network;
 
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
-import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
+public record HandshakePacket(String username, String json) {
 
-public class HandshakePacket implements IPacket {
-
-    private int MAX_NAME_LENGTH = 256;
-    private int MAX_STRING_LENGTH_JSON = 100000;
-
-    private String username;
-    private String json;
-
-    public HandshakePacket() {
-    }
-
-    public HandshakePacket(String user, String json) {
-        username = user;
-        this.json = json;
-    }
+    private static int MAX_NAME_LENGTH = 256;
+    private static int MAX_STRING_LENGTH_JSON = 100000;
 
     public String getUsername() {
         return username;
@@ -32,26 +18,20 @@ public class HandshakePacket implements IPacket {
         return json;
     }
 
-    @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        HandshakePacket packet = (HandshakePacket) msg;
-        packetBuffer.writeUtf(packet.username, MAX_NAME_LENGTH);
-        if (packet.username.equals("server")) {
-            packet.json = GsonConfig.jsonFromConfig(FinderCompassMod.instance.compassConfig);
-            packetBuffer.writeUtf(packet.json, MAX_STRING_LENGTH_JSON);
+    public void encode(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeUtf(this.username, MAX_NAME_LENGTH);
+        if (this.username.equals("server")) {
+            String config = GsonConfig.jsonFromConfig(FinderCompassMod.instance.compassConfig);
+            packetBuffer.writeUtf(config, MAX_STRING_LENGTH_JSON);
         }
     }
 
-    @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        HandshakePacket packet = new HandshakePacket(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readUtf(MAX_STRING_LENGTH_JSON));
-        return (MSG) packet;
+    public static HandshakePacket decode(FriendlyByteBuf packetBuffer) {
+        return new HandshakePacket(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readUtf(MAX_STRING_LENGTH_JSON));
     }
 
-    @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        HandshakePacket handShakePacket = (HandshakePacket) msg;
+    public static void handle(HandshakePacket handShakePacket, CustomPayloadEvent.Context context) {
         FinderCompassMod.proxy.onReceivedHandshakePacket(handShakePacket);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

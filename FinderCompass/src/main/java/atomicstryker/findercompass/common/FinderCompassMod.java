@@ -5,7 +5,6 @@ import atomicstryker.findercompass.client.FinderCompassClient;
 import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
-import atomicstryker.findercompass.common.network.NetworkHelper;
 import com.google.gson.Gson;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -25,6 +24,9 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,12 +48,27 @@ public class FinderCompassMod {
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
-    public NetworkHelper networkHelper;
+    public static SimpleChannel networkChannel = ChannelBuilder.named(new ResourceLocation("findercompass")).
+            clientAcceptedVersions((status, version) -> true).
+            serverAcceptedVersions((status, version) -> true).
+            networkProtocolVersion(1)
+            .simpleChannel()
+
+            .messageBuilder(HandshakePacket.class)
+            .decoder(HandshakePacket::decode)
+            .encoder(HandshakePacket::encode)
+            .consumerNetworkThread(HandshakePacket::handle)
+            .add()
+
+            .messageBuilder(FeatureSearchPacket.class)
+            .decoder(FeatureSearchPacket::decode)
+            .encoder(FeatureSearchPacket::encode)
+            .consumerNetworkThread(FeatureSearchPacket::handle)
+            .add();
 
     public FinderCompassMod() {
         instance = this;
         MinecraftForge.EVENT_BUS.register(this);
-        networkHelper = new NetworkHelper("findercompass", HandshakePacket.class, FeatureSearchPacket.class);
     }
 
     @SubscribeEvent
@@ -99,7 +116,8 @@ public class FinderCompassMod {
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getEntity().getDisplayName());
-        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayer) event.getEntity());
+        networkChannel.send(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)),
+                PacketDistributor.PLAYER.with((ServerPlayer) event.getEntity()));
     }
 
     private String getStringFromBlockState(BlockState blockState) {

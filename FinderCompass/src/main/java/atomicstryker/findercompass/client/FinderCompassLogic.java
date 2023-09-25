@@ -6,6 +6,7 @@ import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -61,9 +62,10 @@ public class FinderCompassLogic {
                 //System.out.println("finder compass second ticker");
 
                 if (is15SecInterval && currentSetting.getFeatureNeedle() != null) {
-                    FinderCompassMod.instance.networkHelper.sendPacketToServer(
-                            new FeatureSearchPacket(mc.player.getName().getString(), currentSetting.getFeatureNeedle(),
-                                    mc.player.getOnPos().getX(), mc.player.getOnPos().getY(), mc.player.getOnPos().getZ()));
+                    FinderCompassMod.networkChannel.send(
+                            new FeatureSearchPacket(mc.player.getOnPos().getX(), mc.player.getOnPos().getY(),
+                                    mc.player.getOnPos().getZ(), mc.player.getName().getString(),
+                                    currentSetting.getFeatureNeedle()), PacketDistributor.SERVER.noArg());
                 }
 
                 while (iter.hasNext()) {
