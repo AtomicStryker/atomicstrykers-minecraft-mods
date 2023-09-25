@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ public class InfernalMobsClient {
     @SubscribeEvent
     public static void onEntityJoinedWorld(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0));
+            InfernalMobsCore.networkChannel.send(new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0), PacketDistributor.SERVER.noArg());
             InfernalMobsCore.LOGGER.debug("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getId());
         }
     }

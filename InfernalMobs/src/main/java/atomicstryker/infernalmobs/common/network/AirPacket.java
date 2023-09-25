@@ -1,39 +1,22 @@
 package atomicstryker.infernalmobs.common.network;
 
 import atomicstryker.infernalmobs.client.OverlayChoking;
-import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 
-public class AirPacket implements IPacket {
+public record AirPacket(int air) {
 
-    private int air;
-
-    public AirPacket() {
+    public void encode(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeInt(this.air);
     }
 
-    public AirPacket(int a) {
-        air = a;
+    public static AirPacket decode(FriendlyByteBuf packetBuffer) {
+        return new AirPacket(packetBuffer.readInt());
     }
 
-    @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        AirPacket airPacket = (AirPacket) msg;
-        packetBuffer.writeInt(airPacket.air);
-    }
-
-    @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        return (MSG) new AirPacket(packetBuffer.readInt());
-    }
-
-    @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        AirPacket airPacket = (AirPacket) msg;
+    public static void handle(AirPacket airPacket, CustomPayloadEvent.Context context) {
         OverlayChoking.onAirPacket(airPacket.air);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

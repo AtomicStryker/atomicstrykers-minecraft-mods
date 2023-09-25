@@ -5,7 +5,6 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,6 +29,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -40,7 +40,6 @@ import java.util.UUID;
 public class OverlayBossBar {
 
     private static final double NAME_VISION_DISTANCE = 32D;
-    private static final ResourceLocation GUI_BARS_LOCATION = new ResourceLocation("textures/gui/bars.png");
 
     private static Minecraft mc;
 
@@ -137,7 +136,6 @@ public class OverlayBossBar {
 
     private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
 
         int screenwidth = mc.getWindow().getGuiScaledWidth();
         Font fontR = mc.font;
@@ -184,7 +182,7 @@ public class OverlayBossBar {
 
     private static void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0));
+            InfernalMobsCore.networkChannel.send(new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0), PacketDistributor.SERVER.noArg());
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
@@ -192,7 +190,7 @@ public class OverlayBossBar {
 
     private static void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f));
+            InfernalMobsCore.networkChannel.send(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f), PacketDistributor.SERVER.noArg());
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
     }

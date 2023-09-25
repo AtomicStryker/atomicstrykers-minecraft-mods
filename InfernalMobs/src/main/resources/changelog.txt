@@ -1,3 +1,6 @@
+1.20.2.1
+- updated for MC 1.20.2, changes in networking code
+
 1.20.1.0
 - updated for MC 1.20.1
 

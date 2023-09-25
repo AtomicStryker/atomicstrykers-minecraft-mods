@@ -1,46 +1,23 @@
 package atomicstryker.infernalmobs.common.network;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
+public record VelocityPacket(float xv, float yv, float zv) {
 
-public class VelocityPacket implements IPacket {
-
-    private float xv, yv, zv;
-
-    public VelocityPacket() {
+    public void encode(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeFloat(this.xv);
+        packetBuffer.writeFloat(this.yv);
+        packetBuffer.writeFloat(this.zv);
     }
 
-    public VelocityPacket(float x, float y, float z) {
-        xv = x;
-        yv = y;
-        zv = z;
+    public static VelocityPacket decode(FriendlyByteBuf packetBuffer) {
+        return new VelocityPacket(packetBuffer.readFloat(), packetBuffer.readFloat(), packetBuffer.readFloat());
     }
 
-    @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        VelocityPacket velocityPacket = (VelocityPacket) msg;
-        packetBuffer.writeFloat(velocityPacket.xv);
-        packetBuffer.writeFloat(velocityPacket.yv);
-        packetBuffer.writeFloat(velocityPacket.zv);
-    }
-
-    @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        VelocityPacket velocityPacket = new VelocityPacket();
-        velocityPacket.xv = packetBuffer.readFloat();
-        velocityPacket.yv = packetBuffer.readFloat();
-        velocityPacket.zv = packetBuffer.readFloat();
-        return (MSG) velocityPacket;
-    }
-
-    @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        VelocityPacket velocityPacket = (VelocityPacket) msg;
+    public static void handle(VelocityPacket velocityPacket, CustomPayloadEvent.Context context) {
         InfernalMobsClient.onVelocityPacket(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

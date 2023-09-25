@@ -31,7 +31,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +51,6 @@ public class InfernalMobsCore {
     public static Logger LOGGER;
     private static InfernalMobsCore instance;
     private final long existCheckDelay = 5000L;
-    public NetworkHelper networkHelper;
     protected File configFile;
     protected InfernalMobsConfig config;
     private long nextExistCheckTime;
@@ -69,6 +70,42 @@ public class InfernalMobsCore {
      */
     private HashMap<String, Long> modifiedPlayerTimes;
 
+    public static SimpleChannel networkChannel = ChannelBuilder.named(new ResourceLocation("infernalmobs")).
+            clientAcceptedVersions((status, version) -> true).
+            serverAcceptedVersions((status, version) -> true).
+            networkProtocolVersion(1)
+            .simpleChannel()
+
+            .messageBuilder(MobModsPacket.class)
+            .decoder(MobModsPacket::decode)
+            .encoder(MobModsPacket::encode)
+            .consumerNetworkThread(MobModsPacket::handle)
+            .add()
+
+            .messageBuilder(HealthPacket.class)
+            .decoder(HealthPacket::decode)
+            .encoder(HealthPacket::encode)
+            .consumerNetworkThread(HealthPacket::handle)
+            .add()
+
+            .messageBuilder(VelocityPacket.class)
+            .decoder(VelocityPacket::decode)
+            .encoder(VelocityPacket::encode)
+            .consumerNetworkThread(VelocityPacket::handle)
+            .add()
+
+            .messageBuilder(KnockBackPacket.class)
+            .decoder(KnockBackPacket::decode)
+            .encoder(KnockBackPacket::encode)
+            .consumerNetworkThread(KnockBackPacket::handle)
+            .add()
+
+            .messageBuilder(AirPacket.class)
+            .decoder(AirPacket::decode)
+            .encoder(AirPacket::encode)
+            .consumerNetworkThread(AirPacket::handle)
+            .add();
+
     public InfernalMobsCore() {
         instance = this;
 
@@ -82,8 +119,6 @@ public class InfernalMobsCore {
 
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
-
-        networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
 
         LOGGER = LogManager.getLogger();
     }
@@ -614,7 +649,8 @@ public class InfernalMobsCore {
                     if (enchantment.getMinLevel() <= enchantment.getMaxLevel()) {
                         enchantmentList.add(enchantment);
                     } else {
-                        LOGGER.error("enchantment " + enchantment.getClass().getCanonicalName() + " has min level > max level which is invalid behaviour!");
+                        LOGGER.error("enchantment " + enchantment.getClass().getCanonicalName() +
+                                " has min level > max level which is invalid behaviour!");
                     }
                 }
             }
@@ -653,33 +689,37 @@ public class InfernalMobsCore {
      * @return ItemStack instance to drop to the World
      */
     private ItemStack getRandomItem(LivingEntity mob, int prefix) {
-        List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ? instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
+        List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ?
+                instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
         return list.size() > 0 ? list.get(mob.level().random.nextInt(list.size())).copy() : null;
     }
 
     public void sendVelocityPacket(ServerPlayer target, float xVel, float yVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new VelocityPacket(xVel, yVel, zVel), target);
+            networkChannel.send(new VelocityPacket(xVel, yVel, zVel), PacketDistributor.PLAYER.with(target));
         }
     }
 
     public void sendKnockBackPacket(ServerPlayer target, float xVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new KnockBackPacket(xVel, zVel), target);
+            networkChannel.send(new KnockBackPacket(xVel, zVel), PacketDistributor.PLAYER.with(target));
         }
     }
 
     public void sendHealthPacket(LivingEntity mob) {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getX(), mob.getY(), mob.getZ(), 32d, mob.getCommandSenderWorld().dimension()));
+        networkChannel.send(new HealthPacket("", mob.getId(), mob.getHealth(), mob.getMaxHealth()),
+                PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(mob.getX(), mob.getY(), mob.getZ(),
+                        32d, mob.getCommandSenderWorld().dimension())));
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
-        networkHelper.sendPacketToServer(new HealthPacket(playerName, mob.getId(), 0f, 0f));
+        networkChannel.send(new HealthPacket(playerName, mob.getId(), 0f, 0f),
+                PacketDistributor.SERVER.noArg());
     }
 
     public void sendAirPacket(ServerPlayer target, int lastAir) {
         if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new AirPacket(lastAir), target);
+            networkChannel.send(new AirPacket(lastAir), PacketDistributor.PLAYER.with(target));
         }
     }
 
