@@ -23,6 +23,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -126,7 +127,11 @@ public class MultiMineClient {
                 lastBlockCompletion = destroyProgress;
             } else if (destroyProgress > lastBlockCompletion) {
                 MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgress, lastBlockCompletion);
-                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getScoreboardName(), curBlock.getX(), curBlock.getY(), curBlock.getZ(), destroyProgress, false));
+
+                MultiMine.networkChannel.send(new PartialBlockPacket(thePlayer.getScoreboardName(), curBlock.getX(),
+                        curBlock.getY(), curBlock.getZ(), destroyProgress, false),
+                        PacketDistributor.SERVER.noArg());
+
                 MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgress);
                 lastBlockCompletion = destroyProgress;
                 updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), destroyProgress, false);
