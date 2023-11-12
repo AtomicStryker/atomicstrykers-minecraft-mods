@@ -1,3 +1,6 @@
+1.20.2.2
+- fixes missing model logspam on boot, thanks Tfarcenim from Github
+
 1.20.2.1
 - updated for MC 1.20.2
 
