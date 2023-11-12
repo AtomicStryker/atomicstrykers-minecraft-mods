@@ -3,6 +3,7 @@ package atomicstryker.dynamiclights.server;
 import atomicstryker.dynamiclights.server.blocks.BlockLitAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitCaveAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitWater;
+import atomicstryker.dynamiclights.server.datagen.ModDatagen;
 import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import net.minecraft.core.BlockPos;
@@ -99,6 +100,7 @@ public class DynamicLights {
         // this one is for RegistryEvent
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.register(DynamicLights.class);
+        modEventBus.addListener(ModDatagen::start);
 
         // this one is for FMLServerStartedEvent, WorldTickEvent
         MinecraftForge.EVENT_BUS.register(this);
@@ -118,7 +120,7 @@ public class DynamicLights {
     public void onAddReloadListener(AddReloadListenerEvent event) {
         // we need to clear our item -> light level cache on reload
         LOGGER.debug("Adding reload listener for light level cache");
-        event.addListener(new SimplePreparableReloadListener() {
+        event.addListener(new SimplePreparableReloadListener<>() {
 
             @Override
             protected @NotNull Object prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
