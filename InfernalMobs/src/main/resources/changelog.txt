@@ -1,3 +1,6 @@
+1.20.1.1
+- fixed crash in LivingHurtEvent with null attacker (possibly only other mods do this)
+
 1.20.1.0
 - updated for MC 1.20.1
 

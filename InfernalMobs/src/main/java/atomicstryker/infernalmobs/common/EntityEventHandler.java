@@ -85,6 +85,10 @@ public class EntityEventHandler {
              * and attacker
              */
             Entity attacker = event.getSource().getDirectEntity();
+            if (attacker == null) {
+                // if damage does not have a defined source, ignore it
+                return;
+            }
             if (attacker instanceof LivingEntity) {
                 mod = InfernalMobsCore.getMobModifiers((LivingEntity) attacker);
                 if (mod != null) {
