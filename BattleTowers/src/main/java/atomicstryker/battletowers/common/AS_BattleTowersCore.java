@@ -276,7 +276,7 @@ public class AS_BattleTowersCore
     public static synchronized void onBattleTowerDestroyed(AS_TowerDestroyer td)
     {
         FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
-                .sendPacketToAllPlayers(new SPacketChat(new TextComponentTranslation("A Battletower's Guardian has fallen! Without it's power, the Tower will collapse...")));
+                .sendPacketToAllPlayers(new SPacketChat(new TextComponentTranslation("notif.battletowers.golem_defeated")));
         instance.towerDestroyers.add(td);
     }
 

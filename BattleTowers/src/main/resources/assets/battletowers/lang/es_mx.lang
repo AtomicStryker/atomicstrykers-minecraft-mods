@@ -1,0 +1,4 @@
+entity.BattleTowers.Battletower Golem.name=Golem de Torre de batalla
+entity.Battletower Golem.name=Golem de Torre de batalla
+
+notif.battletowers.golem_defeated=El guardián de la Torre de batalla ha caído! Sin su poder, la torre colapsará...
