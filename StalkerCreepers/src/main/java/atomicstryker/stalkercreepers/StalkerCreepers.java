@@ -19,7 +19,7 @@ public final class StalkerCreepers {
 
     public StalkerCreepers() {
         MinecraftForge.EVENT_BUS.register(this);
-        LOGGER.info("Hello World! Proceeding with Creeper creepification");
+        LOGGER.info("Hello World! Proceeding with Creeper stalkification");
     }
 
     @SubscribeEvent
@@ -42,7 +42,7 @@ public final class StalkerCreepers {
 
             creeper.goalSelector.removeGoal(vanillaSwell);
             creeper.goalSelector.addGoal(vanillaPriority, new StalkerCreeperSwellGoal(creeper));
-            LOGGER.info("modifier Creeper " + creeper);
+            // LOGGER.debug("modified Creeper " + creeper);
         }
     }
 }
