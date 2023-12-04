@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -18,13 +17,11 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 
 public class MultiMineServer {
     private static MultiMineServer instance;
-    private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
     private final HashMap<ResourceKey<Level>, BlockRegenQueue> blockRegenQueuesByDimension;
 
@@ -56,7 +53,6 @@ public class MultiMineServer {
      * @param value  block progression the client reported
      */
     public void onClientSentPartialBlockPacket(ServerPlayer player, int x, int y, int z, float value) {
-        serverInstance = ServerLifecycleHooks.getCurrentServer();
         ResourceKey<Level> dimension = player.level().dimension();
         MultiMine.instance().debugPrint("multi mine client {} sent progress packet: {}", player.getName().getContents(), value);
 
@@ -171,8 +167,9 @@ public class MultiMineServer {
      * @param block partial Block to be deleted
      */
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block) {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockRemovalPacket(block.getPos()),
-                new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 30D, block.getDimension()));
+        MultiMine.networkChannel.send(new PartialBlockRemovalPacket(block.getPos()),
+                PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(block.getPos().getX(),
+                        block.getPos().getY(), block.getPos().getZ(), 30D, block.getDimension())));
     }
 
     @SubscribeEvent
@@ -210,8 +207,10 @@ public class MultiMineServer {
      * @param block PartiallyMinedBlock instance
      */
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block, boolean regenerating) {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating),
-                new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension()));
+        MultiMine.networkChannel.send(new PartialBlockPacket("server", block.getPos().getX(),
+                        block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating),
+                PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(block.getPos().getX(),
+                        block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension())));
     }
 
     /**
@@ -221,7 +220,9 @@ public class MultiMineServer {
      * @param block PartiallyMinedBlock instance
      */
     private void sendPartiallyMinedBlockToPlayer(ServerPlayer p, PartiallyMinedBlock block) {
-        MultiMine.instance().networkHelper.sendPacketToPlayer(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false), p);
+        MultiMine.networkChannel.send(new PartialBlockPacket("server", block.getPos().getX(),
+                block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false),
+                PacketDistributor.PLAYER.with(p));
     }
 
     @SubscribeEvent
@@ -248,7 +249,7 @@ public class MultiMineServer {
         PartiallyMinedBlock block;
         for (Iterator<PartiallyMinedBlock> iter = queueForDimension.iterator(); iter.hasNext(); ) {
             block = iter.next();
-            if (isBlockGone(block)) {
+            if (tick.level.isEmptyBlock(block.getPos())) {
                 sendPartiallyMinedBlockDeleteCommandToAllPlayers(block);
                 getPartiallyMinedBlocksForDimension(block.getDimension()).remove(block);
                 iter.remove();
@@ -277,18 +278,6 @@ public class MultiMineServer {
                 queueForDimension.add(block);
             }
         }
-    }
-
-    /**
-     * Helper method to determine if a Block was removed by other means
-     * (Explosion, Sand/Gravel falling, Pistons...)
-     *
-     * @param block PartiallyMinedBlock to check
-     * @return true if the PartiallyMinedBlock Block coordinates return 0 in a
-     * getBlockId check, false otherwise
-     */
-    private boolean isBlockGone(PartiallyMinedBlock block) {
-        return serverInstance.getLevel(block.getDimension()).isEmptyBlock(block.getPos());
     }
 
     /**
