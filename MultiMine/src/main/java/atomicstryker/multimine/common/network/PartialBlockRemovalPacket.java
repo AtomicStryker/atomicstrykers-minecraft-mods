@@ -1,25 +1,45 @@
 package atomicstryker.multimine.common.network;
 
 import atomicstryker.multimine.client.MultiMineClient;
+import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 
-public record PartialBlockRemovalPacket(BlockPos pos) {
+import java.util.function.Supplier;
 
-    public void encode(FriendlyByteBuf packetBuffer) {
-        packetBuffer.writeInt(this.pos.getX());
-        packetBuffer.writeInt(this.pos.getY());
-        packetBuffer.writeInt(this.pos.getZ());
+public class PartialBlockRemovalPacket implements IPacket {
+
+    private BlockPos pos;
+
+    public PartialBlockRemovalPacket() {
     }
 
-    public static PartialBlockRemovalPacket decode(FriendlyByteBuf packetBuffer) {
-        return new PartialBlockRemovalPacket(new BlockPos(packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt()));
+    public PartialBlockRemovalPacket(BlockPos p) {
+        pos = p;
     }
 
-    public static void handle(PartialBlockRemovalPacket packet, CustomPayloadEvent.Context context) {
-        context.enqueueWork(() -> context.enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos)));
-        context.setPacketHandled(true);
+    @Override
+    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
+        PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
+        packetBuffer.writeInt(packet.pos.getX());
+        packetBuffer.writeInt(packet.pos.getY());
+        packetBuffer.writeInt(packet.pos.getZ());
+    }
+
+    @Override
+    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
+        PartialBlockRemovalPacket packet = new PartialBlockRemovalPacket(new BlockPos(packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt()));
+        return (MSG) packet;
+    }
+
+    @Override
+    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+        PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
+        contextSupplier.get().enqueueWork(() -> {
+            contextSupplier.get().enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos));
+        });
+        contextSupplier.get().setPacketHandled(true);
     }
 
 }
