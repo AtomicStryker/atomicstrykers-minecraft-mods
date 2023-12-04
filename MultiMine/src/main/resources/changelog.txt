@@ -1,3 +1,6 @@
+1.20.2.2
+- fix improper reset of progress when switching blocks sometimes preventing function
+
 1.20.2.1
 - updated for MC 1.20.2, changes in networking code
 

@@ -39,7 +39,7 @@ public class MultiMineClient {
     private Field vanillaDestroyProgressField = null;
 
     private int arrayOverWriteIndex;
-    private BlockPos curBlock;
+    private BlockPos lastClickedBlock;
     private float lastBlockCompletion;
 
     /**
@@ -50,7 +50,7 @@ public class MultiMineClient {
     public void initialize() {
         MultiMine.LOGGER.info("MultiMineClient initializing");
         arrayOverWriteIndex = 0;
-        curBlock = BlockPos.ZERO;
+        lastClickedBlock = BlockPos.ZERO;
         lastBlockCompletion = 0F;
     }
 
@@ -102,16 +102,16 @@ public class MultiMineClient {
         }
 
         // use reflection to read MultiPlayerGameMode.destroyProgress
-        float destroyProgress = getVanillaDestroyProgressValue();
-        MultiMine.instance().debugPrint("client {} clicked block {}, destroyProgress {}, lastBlockCompletion {}", thePlayer, pos, destroyProgress, lastBlockCompletion);
+        float destroyProgressVanilla = getVanillaDestroyProgressValue();
+        MultiMine.instance().debugPrint("client {} clicked block {}, destroyProgress {}, lastBlockCompletion {}", thePlayer, pos, destroyProgressVanilla, lastBlockCompletion);
 
         boolean cachedProgressWasAhead = false;
         // see if we have multimine completion cached somewhere
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
             if (partiallyMinedBlocksArray[i] != null && partiallyMinedBlocksArray[i].getPos().equals(pos)) {
                 float savedProgress = partiallyMinedBlocksArray[i].getProgress();
-                MultiMine.instance().debugPrint("found cached destroyProgress at index {}, cached: {}, mc: {}", i, savedProgress, destroyProgress);
-                if (savedProgress > destroyProgress) {
+                MultiMine.instance().debugPrint("found cached destroyProgress at index {}, cached: {}, mc: {}", i, savedProgress, destroyProgressVanilla);
+                if (savedProgress > destroyProgressVanilla) {
                     lastBlockCompletion = savedProgress;
                     cachedProgressWasAhead = true;
                 }
@@ -120,25 +120,23 @@ public class MultiMineClient {
         }
 
         if (!cachedProgressWasAhead) {
-            if (!curBlock.equals(pos)) {
+            if (!lastClickedBlock.equals(pos)) {
                 // setup new block values
-                MultiMine.instance().debugPrint("client is destroying new block, was {} and now {}", pos, curBlock);
-                curBlock = pos;
-                lastBlockCompletion = destroyProgress;
-            } else if (destroyProgress > lastBlockCompletion) {
-                MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgress, lastBlockCompletion);
-
-                MultiMine.networkChannel.send(new PartialBlockPacket(thePlayer.getScoreboardName(), curBlock.getX(),
-                        curBlock.getY(), curBlock.getZ(), destroyProgress, false),
+                MultiMine.instance().debugPrint("client is destroying new block, was {} and now {}", lastClickedBlock, pos);
+                lastClickedBlock = pos;
+                lastBlockCompletion = 0;
+            } else if (destroyProgressVanilla > lastBlockCompletion) {
+                MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgressVanilla, lastBlockCompletion);
+                MultiMine.networkChannel.send(new PartialBlockPacket(thePlayer.getScoreboardName(), lastClickedBlock.getX(),
+                                lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false),
                         PacketDistributor.SERVER.noArg());
-
-                MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgress);
-                lastBlockCompletion = destroyProgress;
-                updateLocalPartialBlock(curBlock.getX(), curBlock.getY(), curBlock.getZ(), destroyProgress, false);
+                MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgressVanilla);
+                lastBlockCompletion = destroyProgressVanilla;
+                updateLocalPartialBlock(lastClickedBlock.getX(), lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false);
             }
         } else {
             // use reflection to overwrite MultiPlayerGameMode.destroyProgress with lastBlockCompletion
-            MultiMine.instance().debugPrint("overriding client destroyProgress with cache");
+            MultiMine.instance().debugPrint("overriding client destroyProgress {} with multi mine cache {}", destroyProgressVanilla, lastBlockCompletion);
             setDestroyProgressValue(lastBlockCompletion);
         }
     }
@@ -233,7 +231,7 @@ public class MultiMineClient {
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
 
-        if (regenerating && pos.equals(curBlock) && progress >= 0) {
+        if (regenerating && pos.equals(lastClickedBlock) && progress >= 0) {
             lastBlockCompletion = progress;
         }
 
@@ -270,8 +268,8 @@ public class MultiMineClient {
                     // calling this vanilla method with parameter 10 (or -1) will wipe the visible damage cracks
                     mc.level.destroyBlockProgress(arrayIndex, iterBlock.getPos(), 10);
                     partiallyMinedBlocksArray[arrayIndex] = null;
-                    if (curBlock.getX() == x && curBlock.getY() == y && curBlock.getZ() == z) {
-                        curBlock = BlockPos.ZERO;
+                    if (lastClickedBlock.getX() == x && lastClickedBlock.getY() == y && lastClickedBlock.getZ() == z) {
+                        lastClickedBlock = BlockPos.ZERO;
                     }
                     MultiMine.instance().debugPrint("Client wiped local finished block [{}|{}|{}], at index {}", x, y, z, arrayIndex);
                 }
@@ -303,7 +301,7 @@ public class MultiMineClient {
      * @param z      Coordinates of the Block
      */
     private void onBlockMineFinishedDamagePlayerItem(Player player, int x, int y, int z) {
-        if (x != this.curBlock.getX() || y != curBlock.getY() || z != curBlock.getZ()) {
+        if (x != this.lastClickedBlock.getX() || y != lastClickedBlock.getY() || z != lastClickedBlock.getZ()) {
             return;
         }
 
@@ -324,9 +322,9 @@ public class MultiMineClient {
             return;
         }
         MultiMine.instance().debugPrint("Server sent partial delete command for [{}|{}|{}]", p.getX(), p.getY(), p.getZ());
-        if (curBlock.equals(p)) {
+        if (lastClickedBlock.equals(p)) {
             MultiMine.instance().debugPrint("was current block, wiping that!");
-            curBlock = BlockPos.ZERO;
+            lastClickedBlock = BlockPos.ZERO;
             lastBlockCompletion = 0F;
         }
         for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
