@@ -4,9 +4,8 @@ import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.common.util.LogicalSidedProvider;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class PartialBlockRemovalPacket implements IPacket {
 
@@ -34,12 +33,10 @@ public class PartialBlockRemovalPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         PartialBlockRemovalPacket packet = (PartialBlockRemovalPacket) msg;
-        contextSupplier.get().enqueueWork(() -> {
-            contextSupplier.get().enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos));
-        });
-        contextSupplier.get().setPacketHandled(true);
+        LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(packet.pos));
+        context.setPacketHandled(true);
     }
 
 }

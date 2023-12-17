@@ -5,10 +5,9 @@ import atomicstryker.multimine.common.MultiMineServer;
 import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.common.util.LogicalSidedProvider;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.function.Supplier;
 
 public class PartialBlockPacket implements IPacket {
 
@@ -49,19 +48,19 @@ public class PartialBlockPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         PartialBlockPacket packet = (PartialBlockPacket) msg;
-        contextSupplier.get().enqueueWork(() -> {
+        LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> {
             if (packet.user.equals("server")) {
-                contextSupplier.get().enqueueWork(() -> MultiMineClient.instance().onServerSentPartialBlockData(packet.x, packet.y, packet.z, packet.value, packet.regenerating));
+                LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> MultiMineClient.instance().onServerSentPartialBlockData(packet.x, packet.y, packet.z, packet.value, packet.regenerating));
             } else {
                 ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.user);
                 if (p != null) {
-                    contextSupplier.get().enqueueWork(() -> MultiMineServer.instance().onClientSentPartialBlockPacket(p, packet.x, packet.y, packet.z, packet.value));
+                    LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> MultiMineServer.instance().onClientSentPartialBlockPacket(p, packet.x, packet.y, packet.z, packet.value));
                 }
             }
         });
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
 }
