@@ -1,18 +1,16 @@
 package atomicstryker.infernalmobs.common.network;
 
+
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.function.Supplier;
 
 /**
  * Helper class to wrap the 1.13 channels and packets into something
@@ -38,10 +36,10 @@ public class NetworkHelper {
     @SafeVarargs
     public NetworkHelper(String channelName, Class<? extends IPacket>... handledPacketClasses) {
 
-        packetChannel = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(channelName)).
-                clientAcceptedVersions(a -> true).
-                serverAcceptedVersions(a -> true).
-                networkProtocolVersion(() -> "1.0.0")
+        packetChannel = ChannelBuilder.named(new ResourceLocation(channelName)).
+                clientAcceptedVersions((status, version) -> true).
+                serverAcceptedVersions((status, version) -> true).
+                networkProtocolVersion(0)
                 .simpleChannel();
         registeredClasses = new HashSet<>(handledPacketClasses.length);
         registeredClasses.addAll(Arrays.asList(handledPacketClasses));
@@ -50,7 +48,10 @@ public class NetworkHelper {
         for (Class<? extends IPacket> packetClass : handledPacketClasses) {
             try {
                 IPacket instance = packetClass.newInstance();
-                packetChannel.registerMessage(runningIndex++, packetClass, instance::encode, instance::decode, instance::handle);
+                packetChannel.messageBuilder(instance.getClass())
+                        .decoder(instance::decode)
+                        .encoder(instance::encode)
+                        .consumerNetworkThread(instance::handle).add();
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -64,7 +65,7 @@ public class NetworkHelper {
      */
     public void sendPacketToServer(IPacket packet) {
         checkClass(packet.getClass());
-        packetChannel.sendToServer(packet);
+        packetChannel.send(packet, PacketDistributor.SERVER.noArg());
     }
 
     /**
@@ -75,7 +76,7 @@ public class NetworkHelper {
      */
     public void sendPacketToPlayer(IPacket packet, ServerPlayer player) {
         checkClass(packet.getClass());
-        packetChannel.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        packetChannel.send(packet, PacketDistributor.PLAYER.with(player));
     }
 
     /**
@@ -85,7 +86,7 @@ public class NetworkHelper {
      */
     public void sendPacketToAllPlayers(IPacket packet) {
         checkClass(packet.getClass());
-        packetChannel.send(PacketDistributor.ALL.noArg(), packet);
+        packetChannel.send(packet, PacketDistributor.ALL.noArg());
     }
 
     /**
@@ -96,18 +97,7 @@ public class NetworkHelper {
      */
     public void sendPacketToAllAroundPoint(IPacket packet, PacketDistributor.TargetPoint tp) {
         checkClass(packet.getClass());
-        packetChannel.send(PacketDistributor.NEAR.with(() -> tp), packet);
-    }
-
-    /**
-     * Sends a packet from the server to all players in a dimension
-     *
-     * @param packet    to send
-     * @param dimension serverside dim id to use
-     */
-    public void sendPacketToAllInDimension(IPacket packet, ResourceKey<Level> dimension) {
-        checkClass(packet.getClass());
-        packetChannel.send(PacketDistributor.DIMENSION.with(() -> dimension), packet);
+        packetChannel.send(packet, PacketDistributor.NEAR.with((tp)));
     }
 
     /**
@@ -133,7 +123,7 @@ public class NetworkHelper {
 
         <MSG> MSG decode(FriendlyByteBuf packetBuffer);
 
-        void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier);
+        void handle(Object msg, CustomPayloadEvent.Context contextSupplier);
     }
 
 }

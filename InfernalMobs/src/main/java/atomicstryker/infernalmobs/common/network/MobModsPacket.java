@@ -9,10 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.function.Supplier;
 
 public class MobModsPacket implements IPacket {
 
@@ -47,7 +45,7 @@ public class MobModsPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         MobModsPacket mobModsPacket = (MobModsPacket) msg;
         if (mobModsPacket.sentFromServer != 0) {
             // so we are on client now
@@ -72,6 +70,6 @@ public class MobModsPacket implements IPacket {
                 }
             }
         }
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

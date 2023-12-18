@@ -3,9 +3,7 @@ package atomicstryker.infernalmobs.common.network;
 import atomicstryker.infernalmobs.client.OverlayChoking;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 
 public class AirPacket implements IPacket {
@@ -31,9 +29,10 @@ public class AirPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         AirPacket airPacket = (AirPacket) msg;
+        // this method is async and safe to call off-thread
         OverlayChoking.onAirPacket(airPacket.air);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

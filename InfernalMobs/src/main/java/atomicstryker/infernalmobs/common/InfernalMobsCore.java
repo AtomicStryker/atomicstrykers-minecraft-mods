@@ -25,7 +25,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -741,7 +740,7 @@ public class InfernalMobsCore {
     }
 
     public boolean getIsEntityAllowedTarget(Entity entity) {
-        return !(entity instanceof FakePlayer);
+        return entity.isAttackable() && entity.isAlive();
     }
 
     /**

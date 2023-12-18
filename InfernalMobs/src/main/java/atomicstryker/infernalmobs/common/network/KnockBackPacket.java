@@ -3,10 +3,7 @@ package atomicstryker.infernalmobs.common.network;
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
-
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class KnockBackPacket implements IPacket {
 
@@ -36,9 +33,10 @@ public class KnockBackPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
+        // thread synchronization happens later
         InfernalMobsClient.onKnockBackPacket(knockBackPacket.xv, knockBackPacket.zv);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

@@ -8,10 +8,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.common.util.LogicalSidedProvider;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.function.Supplier;
 
 public class HealthPacket implements IPacket {
 
@@ -50,8 +49,8 @@ public class HealthPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
+        LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> {
             HealthPacket healthPacket = (HealthPacket) msg;
             if (healthPacket.maxhealth > 0) {
                 InfernalMobsClient.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
@@ -59,8 +58,7 @@ public class HealthPacket implements IPacket {
                 ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData);
                 if (p != null) {
                     Entity ent = p.level().getEntity(healthPacket.entID);
-                    if (ent instanceof LivingEntity) {
-                        LivingEntity e = (LivingEntity) ent;
+                    if (ent instanceof LivingEntity e) {
                         MobModifier mod = InfernalMobsCore.getMobModifiers(e);
                         if (mod != null) {
                             stringData = healthPacket.stringData;
@@ -73,7 +71,7 @@ public class HealthPacket implements IPacket {
                 }
             }
         });
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     public String getStringData() {

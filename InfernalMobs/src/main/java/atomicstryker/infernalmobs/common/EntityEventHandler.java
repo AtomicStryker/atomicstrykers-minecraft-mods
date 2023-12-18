@@ -4,9 +4,9 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.level.ChunkEvent;
@@ -98,11 +98,11 @@ public class EntityEventHandler {
 
             if (InfernalMobsCore.instance().config.isAntiMobFarm()) {
                 /*
-                 * check for an environmental/automated damage type, aka mob
-                 * farms
+                 * check for an environmental/automated damage type, aka mob farms. FakePlayer is gone so we check for
+                 * Player i guess
                  */
                 if (event.getSource() == attacker.damageSources().cactus() || event.getSource() == attacker.damageSources().drown() || event.getSource() == attacker.damageSources().fall() || event.getSource() == attacker.damageSources().inWall()
-                        || event.getSource() == attacker.damageSources().lava() || event.getSource().getDirectEntity() instanceof FakePlayer) {
+                        || event.getSource() == attacker.damageSources().lava() || event.getSource().getDirectEntity() instanceof Player) {
                     Tuple<Integer, Integer> cpair = new Tuple<>((int) event.getEntity().getX(), (int) event.getEntity().getZ());
                     Float value = damageMap.get(cpair);
                     if (value == null) {
