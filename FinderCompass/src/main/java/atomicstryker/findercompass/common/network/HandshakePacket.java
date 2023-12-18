@@ -4,9 +4,7 @@ import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class HandshakePacket implements IPacket {
 
@@ -49,9 +47,10 @@ public class HandshakePacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         HandshakePacket handShakePacket = (HandshakePacket) msg;
+        // does not need to be thread-synchronized
         FinderCompassMod.proxy.onReceivedHandshakePacket(handShakePacket);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

@@ -3,9 +3,7 @@ package atomicstryker.findercompass.common.network;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class FeatureSearchPacket implements IPacket {
 
@@ -45,10 +43,11 @@ public class FeatureSearchPacket implements IPacket {
     }
 
     @Override
-    public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
+    public void handle(Object msg, CustomPayloadEvent.Context context) {
         FeatureSearchPacket packet = (FeatureSearchPacket) msg;
+        // synchronized to threads deeper in, not here
         FinderCompassMod.proxy.onReceivedSearchPacket(packet);
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     public int getX() {

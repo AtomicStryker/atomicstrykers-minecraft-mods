@@ -1,3 +1,6 @@
+1.20.4.1
+- updated to MC 1.20.4
+
 1.20.1.0
 - updated to MC 1.20.1
 
