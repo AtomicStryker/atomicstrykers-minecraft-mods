@@ -1,3 +1,9 @@
+1.20.1.2
+- implemented new modifier Unyielding, gives immunity to damage knockback
+- caution: existing infernalmobs.cfg files will have it disabled! Must add the following line in "modsEnabled" list
+"MM_Unyielding": true,
+- or delete your config and let it re-generate
+
 1.20.1.1
 - fixed crash in LivingHurtEvent with null attacker (possibly only other mods do this)
 
