@@ -198,6 +198,7 @@ public class InfernalMobsCore {
         mobMods.add(MM_Sprint.class);
         mobMods.add(MM_Sticky.class);
         mobMods.add(MM_Storm.class);
+        mobMods.add(MM_Unyielding.class);
         mobMods.add(MM_Vengeance.class);
         mobMods.add(MM_Weakness.class);
         mobMods.add(MM_Webber.class);

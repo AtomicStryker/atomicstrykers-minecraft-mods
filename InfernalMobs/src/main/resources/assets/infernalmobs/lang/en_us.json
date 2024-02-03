@@ -73,7 +73,9 @@
     "translation.infernalmobs:prefix.Sith Lord": "Sith Lord",
     "translation.infernalmobs:prefix.Dark Lord": "Dark Lord",
     "translation.infernalmobs:prefix.Darth": "Darth",
-
+    "translation.infernalmobs:prefix.ofRelentlessness": "relentless",
+    "translation.infernalmobs:prefix.unyielding": "unyielding",
+    "translation.infernalmobs:prefix.unstoppable": "unstoppable",
 
 
     "translation.infernalmobs:suffix.ofRecurrence": "of Recurrence",
@@ -149,6 +151,9 @@
     "translation.infernalmobs:suffix.ofBreathlessness": "of Breathlessness",
     "translation.infernalmobs:suffix.theAnaerobic": "the Anaerobic",
     "translation.infernalmobs:suffix.ofDeprivation": "of Deprivation",
+    "translation.infernalmobs:suffix.ofRelentlessness": "of Relentlessness",
+    "translation.infernalmobs:suffix.theUnYielding": "the Unyielding",
+    "translation.infernalmobs:suffix.theUnstoppable": "the Unstoppable",
 
 
     "translation.infernalmobs:mod.1UP": "1UP",
@@ -174,6 +179,7 @@
     "translation.infernalmobs:mod.Sprint": "Sprint",
     "translation.infernalmobs:mod.Sticky": "Sticky",
     "translation.infernalmobs:mod.Storm": "Storm",
+    "translation.infernalmobs:mod.Unyielding": "Unyielding",
     "translation.infernalmobs:mod.Vengeance": "Vengeance",
     "translation.infernalmobs:mod.Weakness": "Weakness",
     "translation.infernalmobs:mod.Webber": "Webber",

@@ -123,6 +123,17 @@ public class EntityEventHandler {
         }
     }
 
+    /**
+     * Hook into LivingKnockBackEvent. Is always serverside, assured by mc itself
+     */
+    @SubscribeEvent
+    public void onEntityLivingKnockback(LivingKnockBackEvent event) {
+        MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        if (mod != null) {
+            mod.onKnockBack(event);
+        }
+    }
+
     @SubscribeEvent
     public void onEntityLivingFall(LivingFallEvent event) {
         if (!event.getEntity().level().isClientSide) {
