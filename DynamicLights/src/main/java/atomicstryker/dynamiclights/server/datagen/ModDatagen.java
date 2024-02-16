@@ -2,8 +2,8 @@ package atomicstryker.dynamiclights.server.datagen;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 /**
  * @author Tfarcenim
@@ -13,7 +13,7 @@ import net.minecraftforge.data.event.GatherDataEvent;
 public class ModDatagen {
 
     public static void start(GatherDataEvent event) {
-        
+
         DataGenerator dataGenerator = event.getGenerator();
         PackOutput packOutput = dataGenerator.getPackOutput();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();

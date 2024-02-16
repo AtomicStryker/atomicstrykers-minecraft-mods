@@ -21,19 +21,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -78,34 +76,33 @@ public class DynamicLights {
 
     public static final HashMap<Block, Block> vanillaBlocksToLitBlocksMap = new HashMap<>();
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    public static final RegistryObject<Block> LIT_AIR_BLOCK = BLOCKS.register("lit_air", () ->
-            new BlockLitAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
-                    .randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
-    public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+
+    public static final DeferredBlock<BlockLitAir> LIT_AIR_BLOCK = BLOCKS.register("lit_air", resourceLocation -> new BlockLitAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
+            .randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+
+    public static final DeferredBlock<BlockLitWater> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
             new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().mapColor(MapColor.WATER).replaceable()
                     .noCollission().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable()
                     .liquid().sound(SoundType.EMPTY).lightLevel((x) -> x.getValue(BlockStateProperties.POWER))));
-    public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
+
+    public static final DeferredBlock<BlockLitCaveAir> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
             new BlockLitCaveAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
                     .lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
-    public DynamicLights() {
+    public DynamicLights(IEventBus modEventBus) {
         instance = this;
         worldLightsMap = new ConcurrentHashMap<>();
 
         playerSelfLightSource = new PlayerSelfLightSource();
         droppedItemsLightSource = new DroppedItemsLightSource();
 
-        // this one is for RegistryEvent
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.register(DynamicLights.class);
         modEventBus.addListener(ModDatagen::start);
 
         // this one is for FMLServerStartedEvent, WorldTickEvent
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
 
-        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        BLOCKS.register(modEventBus);
     }
 
     @SubscribeEvent

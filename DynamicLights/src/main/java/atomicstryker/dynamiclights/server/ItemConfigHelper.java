@@ -1,17 +1,18 @@
 package atomicstryker.dynamiclights.server;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ItemConfigHelper {
     private Map<ItemStack, Integer> itemStackList;
@@ -22,10 +23,10 @@ public class ItemConfigHelper {
             try {
                 CompoundTag nbt = TagParser.parseTag(json);
                 ResourceLocation resourceLocation = new ResourceLocation(nbt.getString("nameId"));
-                Item item = ForgeRegistries.ITEMS.getValue(resourceLocation);
+                Optional<Item> optionalItem = BuiltInRegistries.ITEM.getOptional(resourceLocation);
 
-                if (item != null) {
-                    ItemStack itemStack = new ItemStack(item);
+                if (optionalItem.isPresent()) {
+                    ItemStack itemStack = new ItemStack(optionalItem.get());
                     nbt.remove("nameId");
 
                     int lightLevel = 15;
@@ -52,7 +53,7 @@ public class ItemConfigHelper {
 
     public static String fromItemStack(ItemStack itemStack, int lightLevel) {
         CompoundTag resultTag = itemStack.getOrCreateTag();
-        resultTag.putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
+        resultTag.putString("nameId", BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString());
         if (lightLevel > 0) {
             resultTag.putShort("lightLevel", (short) lightLevel);
         }
