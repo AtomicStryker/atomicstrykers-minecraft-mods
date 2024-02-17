@@ -14,14 +14,6 @@ public record AirPacket(int air) implements CustomPacketPayload {
         this(buffer.readInt());
     }
 
-//    @Override
-//    public void handle(Object msg, CustomPayloadEvent.Context context) {
-//        AirPacket airPacket = (AirPacket) msg;
-//        // this method is async and safe to call off-thread
-//        OverlayChoking.onAirPacket(airPacket.air);
-//        context.setPacketHandled(true);
-//    }
-
     @Override
     public void write(FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeInt(air);

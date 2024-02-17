@@ -9,19 +9,6 @@ public record HealthPacket(String stringData, int entID, float health, float max
 
     public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "health");
 
-//    @Override
-//    public void handle(Object msg, CustomPayloadEvent.Context context) {
-//        LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> {
-//            HealthPacket healthPacket = (HealthPacket) msg;
-//            if (healthPacket.maxhealth > 0) {
-//                InfernalMobsClient.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
-//            } else {
-
-//            }
-//        });
-//        context.setPacketHandled(true);
-//    }
-
     public HealthPacket(final FriendlyByteBuf packetBuffer) {
         this(packetBuffer.readUtf(32767), packetBuffer.readInt(), packetBuffer.readFloat(), packetBuffer.readFloat());
     }

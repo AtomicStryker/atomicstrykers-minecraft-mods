@@ -9,14 +9,6 @@ public record VelocityPacket(float xv, float yv, float zv) implements CustomPack
 
     public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "velocity");
 
-//    @Override
-//    public void handle(Object msg, CustomPayloadEvent.Context context) {
-//        VelocityPacket velocityPacket = (VelocityPacket) msg;
-//        // thread synchronization happens later
-//        InfernalMobsClient.onVelocityPacket(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
-//        context.setPacketHandled(true);
-//    }
-
     public VelocityPacket(FriendlyByteBuf packetBuffer) {
         this(packetBuffer.readFloat(), packetBuffer.readFloat(), packetBuffer.readFloat());
     }

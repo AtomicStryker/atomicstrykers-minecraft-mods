@@ -9,14 +9,6 @@ public record KnockBackPacket(float xv, float zv) implements CustomPacketPayload
 
     public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "knockback");
 
-//    @Override
-//    public void handle(Object msg, CustomPayloadEvent.Context context) {
-//        KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
-//        // thread synchronization happens later
-//        InfernalMobsClient.onKnockBackPacket(knockBackPacket.xv, knockBackPacket.zv);
-//        context.setPacketHandled(true);
-//    }
-
     public KnockBackPacket(FriendlyByteBuf packetBuffer) {
         this(packetBuffer.readFloat(), packetBuffer.readFloat());
     }
