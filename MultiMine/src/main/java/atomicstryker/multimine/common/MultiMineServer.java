@@ -5,6 +5,7 @@ import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,15 +13,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.PriorityQueue;
+
 
 public class MultiMineServer {
     private static MultiMineServer instance;
@@ -118,7 +124,7 @@ public class MultiMineServer {
     }
 
     private boolean isBlockBanned(BlockState blockState) {
-        String blockIdentifier = ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString();
+        String blockIdentifier = BuiltInRegistries.BLOCK.getKey(blockState.getBlock()).toString();
         Boolean result = MultiMine.instance().getConfig().getBannedBlocks().get(blockIdentifier);
         if (result != null) {
             return result;
@@ -143,7 +149,7 @@ public class MultiMineServer {
     private boolean isUsingBannedItem(Player player) {
         ItemStack item = player.getMainHandItem();
 
-        String ident = ForgeRegistries.ITEMS.getKey(item.getItem()).toString();
+        String ident = BuiltInRegistries.ITEM.getKey(item.getItem()).toString();
         Boolean result = MultiMine.instance().getConfig().getBannedItems().get(ident);
         if (result != null) {
             return result;
@@ -171,16 +177,12 @@ public class MultiMineServer {
      * @param block partial Block to be deleted
      */
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block) {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockRemovalPacket(block.getPos()),
-                new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 30D, block.getDimension()));
+        PartialBlockRemovalPacket packet = new PartialBlockRemovalPacket(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ());
+        PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension())).send(packet);
     }
 
     @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        instance().onPlayerLoginInstance(event);
-    }
-
-    private void onPlayerLoginInstance(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         final Player player = event.getEntity();
         ResourceKey<Level> dimensionKey = player.level().dimension();
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimensionKey);
@@ -210,8 +212,8 @@ public class MultiMineServer {
      * @param block PartiallyMinedBlock instance
      */
     private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block, boolean regenerating) {
-        MultiMine.instance().networkHelper.sendPacketToAllAroundPoint(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating),
-                new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension()));
+        PartialBlockPacket packet = new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating);
+        PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension())).send(packet);
     }
 
     /**
@@ -221,7 +223,8 @@ public class MultiMineServer {
      * @param block PartiallyMinedBlock instance
      */
     private void sendPartiallyMinedBlockToPlayer(ServerPlayer p, PartiallyMinedBlock block) {
-        MultiMine.instance().networkHelper.sendPacketToPlayer(new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false), p);
+        PartialBlockPacket packet = new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false);
+        PacketDistributor.PLAYER.with(p).send(packet);
     }
 
     @SubscribeEvent

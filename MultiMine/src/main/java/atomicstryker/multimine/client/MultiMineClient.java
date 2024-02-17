@@ -18,11 +18,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -126,7 +127,8 @@ public class MultiMineClient {
                 lastBlockCompletion = 0;
             } else if (destroyProgressVanilla > lastBlockCompletion) {
                 MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgressVanilla, lastBlockCompletion);
-                MultiMine.instance().networkHelper.sendPacketToServer(new PartialBlockPacket(thePlayer.getScoreboardName(), lastClickedBlock.getX(), lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false));
+                PartialBlockPacket partialBlockPacket = new PartialBlockPacket(thePlayer.getScoreboardName(), lastClickedBlock.getX(), lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false);
+                PacketDistributor.SERVER.noArg().send(partialBlockPacket);
                 MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgressVanilla);
                 lastBlockCompletion = destroyProgressVanilla;
                 updateLocalPartialBlock(lastClickedBlock.getX(), lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false);

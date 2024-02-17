@@ -1,66 +1,33 @@
 package atomicstryker.multimine.common.network;
 
-import atomicstryker.multimine.client.MultiMineClient;
-import atomicstryker.multimine.common.MultiMineServer;
-import atomicstryker.multimine.common.network.NetworkHelper.IPacket;
+import atomicstryker.multimine.common.MultiMine;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class PartialBlockPacket implements IPacket {
+public record PartialBlockPacket(String user, int x, int y, int z, float value,
+                                 boolean regenerating) implements CustomPacketPayload {
 
-    private int MAX_NAME_LENGTH = 256;
+    public static final ResourceLocation ID = new ResourceLocation(MultiMine.MOD_ID, "partialblock");
 
-    private String user;
-    private int x, y, z;
-    private float value;
-    private boolean regenerating;
+    private static final int MAX_NAME_LENGTH = 256;
 
-    public PartialBlockPacket() {
-    }
-
-    public PartialBlockPacket(String username, int ix, int iy, int iz, float val, boolean regen) {
-        user = username;
-        x = ix;
-        y = iy;
-        z = iz;
-        value = val;
-        regenerating = regen;
+    public PartialBlockPacket(FriendlyByteBuf packetBuffer) {
+        this(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readFloat(), packetBuffer.readBoolean());
     }
 
     @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        PartialBlockPacket packet = (PartialBlockPacket) msg;
-        packetBuffer.writeUtf(packet.user, MAX_NAME_LENGTH);
-        packetBuffer.writeInt(packet.x);
-        packetBuffer.writeInt(packet.y);
-        packetBuffer.writeInt(packet.z);
-        packetBuffer.writeFloat(packet.value);
-        packetBuffer.writeBoolean(packet.regenerating);
+    public void write(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeUtf(user, MAX_NAME_LENGTH);
+        packetBuffer.writeInt(x);
+        packetBuffer.writeInt(y);
+        packetBuffer.writeInt(z);
+        packetBuffer.writeFloat(value);
+        packetBuffer.writeBoolean(regenerating);
     }
 
     @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        PartialBlockPacket packet = new PartialBlockPacket(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readFloat(), packetBuffer.readBoolean());
-        return (MSG) packet;
+    public ResourceLocation id() {
+        return ID;
     }
-
-    @Override
-    public void handle(Object msg, CustomPayloadEvent.Context context) {
-        PartialBlockPacket packet = (PartialBlockPacket) msg;
-        LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> {
-            if (packet.user.equals("server")) {
-                LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> MultiMineClient.instance().onServerSentPartialBlockData(packet.x, packet.y, packet.z, packet.value, packet.regenerating));
-            } else {
-                ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.user);
-                if (p != null) {
-                    LogicalSidedProvider.WORKQUEUE.get(context.getDirection().getReceptionSide()).submit(() -> MultiMineServer.instance().onClientSentPartialBlockPacket(p, packet.x, packet.y, packet.z, packet.value));
-                }
-            }
-        });
-        context.setPacketHandled(true);
-    }
-
 }

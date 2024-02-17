@@ -1,16 +1,17 @@
 package atomicstryker.multimine.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemConfigHelper {
     private final List<ItemStack> itemStackList;
@@ -21,10 +22,10 @@ public class ItemConfigHelper {
             try {
                 CompoundTag nbt = TagParser.parseTag(json);
                 ResourceLocation resourceLocation = new ResourceLocation(nbt.getString("nameId"));
-                Item item = ForgeRegistries.ITEMS.getValue(resourceLocation);
+                Optional<Item> itemOptional = BuiltInRegistries.ITEM.getOptional(resourceLocation);
 
-                if (item != null) {
-                    ItemStack itemStack = new ItemStack(item);
+                if (itemOptional.isPresent()) {
+                    ItemStack itemStack = new ItemStack(itemOptional.get());
                     nbt.remove("nameId");
                     if (!nbt.isEmpty()) {
                         // only set tag if non empty, otherwise the comparisons fail later!!
@@ -43,7 +44,7 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack) {
-        itemStack.getOrCreateTag().putString("nameId", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
+        itemStack.getOrCreateTag().putString("nameId", BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString());
         return itemStack.getOrCreateTag().toString();
     }
 
