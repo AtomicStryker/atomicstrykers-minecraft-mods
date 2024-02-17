@@ -1,42 +1,34 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class KnockBackPacket implements IPacket {
+public record KnockBackPacket(float xv, float zv) implements CustomPacketPayload {
 
-    private float xv, zv;
+    public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "knockback");
 
-    public KnockBackPacket() {
-    }
+//    @Override
+//    public void handle(Object msg, CustomPayloadEvent.Context context) {
+//        KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
+//        // thread synchronization happens later
+//        InfernalMobsClient.onKnockBackPacket(knockBackPacket.xv, knockBackPacket.zv);
+//        context.setPacketHandled(true);
+//    }
 
-    public KnockBackPacket(float x, float z) {
-        xv = x;
-        zv = z;
-    }
-
-    @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
-        packetBuffer.writeFloat(knockBackPacket.xv);
-        packetBuffer.writeFloat(knockBackPacket.zv);
-    }
-
-    @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        KnockBackPacket knockBackPacket = new KnockBackPacket();
-        knockBackPacket.xv = packetBuffer.readFloat();
-        knockBackPacket.zv = packetBuffer.readFloat();
-        return (MSG) knockBackPacket;
+    public KnockBackPacket(FriendlyByteBuf packetBuffer) {
+        this(packetBuffer.readFloat(), packetBuffer.readFloat());
     }
 
     @Override
-    public void handle(Object msg, CustomPayloadEvent.Context context) {
-        KnockBackPacket knockBackPacket = (KnockBackPacket) msg;
-        // thread synchronization happens later
-        InfernalMobsClient.onKnockBackPacket(knockBackPacket.xv, knockBackPacket.zv);
-        context.setPacketHandled(true);
+    public void write(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeFloat(xv);
+        packetBuffer.writeFloat(zv);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

@@ -1,10 +1,10 @@
 package atomicstryker.infernalmobs.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack) {
-        itemStack.getOrCreateTag().putString("id", ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString());
+        itemStack.getOrCreateTag().putString("id", BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString());
         itemStack.getOrCreateTag().putByte("Count", (byte) itemStack.getCount());
         return itemStack.getOrCreateTag().toString();
     }

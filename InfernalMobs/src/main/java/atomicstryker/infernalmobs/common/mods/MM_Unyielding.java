@@ -1,9 +1,7 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 
 public class MM_Unyielding extends MobModifier {
 

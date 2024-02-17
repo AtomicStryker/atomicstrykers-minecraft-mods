@@ -3,19 +3,20 @@ package atomicstryker.infernalmobs.client;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 
 import java.util.Map;
 
@@ -24,12 +25,12 @@ public class RendererBossGlow {
 
     @SubscribeEvent
     public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll(InfernalMobsCore.MOD_ID + "_bossglow", new InfernalMobsBossGlowOverlay());
+        event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossglow"), new InfernalMobsBossGlowOverlay());
     }
 
     public static class InfernalMobsBossGlowOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             Minecraft mc = Minecraft.getInstance();
             Entity viewEnt = mc.getCameraEntity();
             if (mc.isPaused() || viewEnt == null) {

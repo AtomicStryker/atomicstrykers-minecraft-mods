@@ -1,9 +1,42 @@
 package atomicstryker.infernalmobs.common;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.mods.*;
-import atomicstryker.infernalmobs.common.network.*;
+import atomicstryker.infernalmobs.client.OverlayChoking;
+import atomicstryker.infernalmobs.common.mods.MM_1UP;
+import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
+import atomicstryker.infernalmobs.common.mods.MM_Berserk;
+import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
+import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Choke;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
+import atomicstryker.infernalmobs.common.mods.MM_Darkness;
+import atomicstryker.infernalmobs.common.mods.MM_Ender;
+import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
+import atomicstryker.infernalmobs.common.mods.MM_Fiery;
+import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
+import atomicstryker.infernalmobs.common.mods.MM_Ninja;
+import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
+import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
+import atomicstryker.infernalmobs.common.mods.MM_Regen;
+import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
+import atomicstryker.infernalmobs.common.mods.MM_Sprint;
+import atomicstryker.infernalmobs.common.mods.MM_Sticky;
+import atomicstryker.infernalmobs.common.mods.MM_Storm;
+import atomicstryker.infernalmobs.common.mods.MM_Unyielding;
+import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
+import atomicstryker.infernalmobs.common.mods.MM_Weakness;
+import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
+import atomicstryker.infernalmobs.common.network.AirPacket;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.KnockBackPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import com.google.common.collect.Lists;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -24,23 +57,30 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Mod(InfernalMobsCore.MOD_ID)
-@Mod.EventBusSubscriber(modid = InfernalMobsCore.MOD_ID)
 public class InfernalMobsCore {
 
     public static final String MOD_ID = "infernalmobs";
@@ -48,7 +88,7 @@ public class InfernalMobsCore {
     public static Logger LOGGER;
     private static InfernalMobsCore instance;
     private final long existCheckDelay = 5000L;
-    public NetworkHelper networkHelper;
+
     protected File configFile;
     protected InfernalMobsConfig config;
     private long nextExistCheckTime;
@@ -68,7 +108,7 @@ public class InfernalMobsCore {
      */
     private HashMap<String, Long> modifiedPlayerTimes;
 
-    public InfernalMobsCore() {
+    public InfernalMobsCore(IEventBus modEventBus) {
         instance = this;
 
         nextExistCheckTime = System.currentTimeMillis();
@@ -77,14 +117,97 @@ public class InfernalMobsCore {
         classesHealthMap = new HashMap<>();
         modifiedPlayerTimes = new HashMap<>();
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
 
-        MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
-        MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
+        NeoForge.EVENT_BUS.register(new EntityEventHandler());
+        NeoForge.EVENT_BUS.register(new SaveEventHandler());
 
-        networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
+        if (FMLEnvironment.dist.isClient()) {
+            NeoForge.EVENT_BUS.register(new InfernalMobsClient());
+        }
 
         LOGGER = LogManager.getLogger();
+
+        modEventBus.addListener(this::registerNetworking);
+    }
+
+    private void registerNetworking(final RegisterPayloadHandlerEvent event) {
+
+        final IPayloadRegistrar registrar = event.registrar(MOD_ID);
+
+        registrar.play(AirPacket.ID, AirPacket::new, handler -> handler
+                .client(OverlayChoking::handleAirPacket));
+
+        registrar.play(HealthPacket.ID, HealthPacket::new, handler -> handler
+                .client(instance()::onHealthPacketForClient)
+                .server(instance()::onHealthPacket));
+
+        registrar.play(KnockBackPacket.ID, KnockBackPacket::new, handler -> handler
+                .client(instance()::onKnockBackPacketForClient));
+
+        registrar.play(MobModsPacket.ID, MobModsPacket::new, handler -> handler
+                .client(instance()::onMobModsPacketForClient)
+                .server(instance()::onMobModsPacket));
+
+        registrar.play(VelocityPacket.ID, VelocityPacket::new, handler -> handler
+                .client(instance()::onVelocityPacketForClient));
+    }
+
+    private void onHealthPacketForClient(HealthPacket healthPacket, PlayPayloadContext playPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            InfernalMobsClient.instance().onHealthPacketForClient(healthPacket, playPayloadContext);
+        }
+    }
+
+    private void onKnockBackPacketForClient(KnockBackPacket knockBackPacket, PlayPayloadContext playPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            InfernalMobsClient.instance().onKnockBackPacket(knockBackPacket, playPayloadContext);
+        }
+    }
+
+    private void onMobModsPacketForClient(MobModsPacket mobModsPacket, PlayPayloadContext playPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            InfernalMobsClient.instance().onMobModsPacketToClient(mobModsPacket, playPayloadContext);
+        }
+    }
+
+    private void onVelocityPacketForClient(VelocityPacket velocityPacket, PlayPayloadContext playPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            InfernalMobsClient.instance().onVelocityPacket(velocityPacket, playPayloadContext);
+        }
+    }
+
+    private void onMobModsPacket(MobModsPacket mobModsPacket, PlayPayloadContext playPayloadContext) {
+        Player p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(mobModsPacket.stringData());
+        InfernalMobsCore.LOGGER.trace("player {} from string {} querying server for mods of entity id {}", p, mobModsPacket.stringData(), mobModsPacket.entID());
+        if (p != null) {
+            Entity ent = p.level().getEntity(mobModsPacket.entID());
+            if (ent instanceof LivingEntity) {
+                LivingEntity e = (LivingEntity) ent;
+                MobModifier mod = InfernalMobsCore.getMobModifiers(e);
+                InfernalMobsCore.LOGGER.trace("resolves to entity {} modifiers {}", ent, mod);
+                if (mod != null) {
+                    InfernalMobsCore.LOGGER.trace("server sending mods {} for ent-ID {}", mod.getLinkedModNameUntranslated(), mobModsPacket.entID());
+                    MobModsPacket response = new MobModsPacket(mod.getLinkedModNameUntranslated(), mobModsPacket.entID(), (byte) 1);
+                    PacketDistributor.PLAYER.with((ServerPlayer) p).send(response);
+                    InfernalMobsCore.instance().sendHealthPacket(e);
+                }
+            }
+        }
+    }
+
+    private void onHealthPacket(HealthPacket healthPacket, PlayPayloadContext playPayloadContext) {
+        ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData());
+        if (p != null) {
+            Entity ent = p.level().getEntity(healthPacket.entID());
+            if (ent instanceof LivingEntity e) {
+                MobModifier mod = InfernalMobsCore.getMobModifiers(e);
+                if (mod != null) {
+                    HealthPacket response = new HealthPacket(healthPacket.stringData(), healthPacket.entID(), e.getHealth(), e.getMaxHealth());
+                    PacketDistributor.PLAYER.with(p).send(response);
+                }
+            }
+        }
     }
 
     public static InfernalMobsCore instance() {
@@ -342,7 +465,7 @@ public class InfernalMobsCore {
     private String getEntityNameSafe(Entity entity) {
         String result;
         try {
-            result = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).getPath();
+            result = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath();
         } catch (Exception e) {
             result = entity.getClass().getSimpleName();
             System.err.println("Entity of class " + result + " crashed when EntityList.getEntityString was queried, for shame! Using classname instead.");
@@ -609,7 +732,7 @@ public class InfernalMobsCore {
     private EnchantmentInstance getRandomEnchantment(RandomSource rand) {
         if (enchantmentList == null) {
             enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
-            for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS) {
+            for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
                 if (enchantment != null) {
                     if (enchantment.getMinLevel() <= enchantment.getMaxLevel()) {
                         enchantmentList.add(enchantment);
@@ -659,27 +782,32 @@ public class InfernalMobsCore {
 
     public void sendVelocityPacket(ServerPlayer target, float xVel, float yVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new VelocityPacket(xVel, yVel, zVel), target);
+            VelocityPacket velocityPacket = new VelocityPacket(xVel, yVel, zVel);
+            PacketDistributor.PLAYER.with(target).send(velocityPacket);
         }
     }
 
     public void sendKnockBackPacket(ServerPlayer target, float xVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new KnockBackPacket(xVel, zVel), target);
+            KnockBackPacket knockBackPacket = new KnockBackPacket(xVel, zVel);
+            PacketDistributor.PLAYER.with(target).send(knockBackPacket);
         }
     }
 
     public void sendHealthPacket(LivingEntity mob) {
-        networkHelper.sendPacketToAllAroundPoint(new HealthPacket("", mob.getId(), mob.getHealth(), mob.getMaxHealth()), new PacketDistributor.TargetPoint(mob.getX(), mob.getY(), mob.getZ(), 32d, mob.getCommandSenderWorld().dimension()));
+        HealthPacket healthPacket = new HealthPacket("", mob.getId(), mob.getHealth(), mob.getMaxHealth());
+        PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(mob.getX(), mob.getY(), mob.getZ(), 32d, mob.getCommandSenderWorld().dimension())).send(healthPacket);
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
-        networkHelper.sendPacketToServer(new HealthPacket(playerName, mob.getId(), 0f, 0f));
+        HealthPacket healthPacket = new HealthPacket(playerName, mob.getId(), 0f, 0f);
+        PacketDistributor.SERVER.noArg().send(healthPacket);
     }
 
     public void sendAirPacket(ServerPlayer target, int lastAir) {
         if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new AirPacket(lastAir), target);
+            AirPacket airPacket = new AirPacket(lastAir);
+            PacketDistributor.PLAYER.with(target).send(airPacket);
         }
     }
 

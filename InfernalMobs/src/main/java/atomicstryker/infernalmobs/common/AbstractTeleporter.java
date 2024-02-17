@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
 public abstract class AbstractTeleporter extends MobModifier {
 

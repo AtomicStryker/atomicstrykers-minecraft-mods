@@ -5,7 +5,6 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,12 +23,14 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -52,7 +53,7 @@ public class OverlayBossBar {
 
     @SubscribeEvent
     public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll(InfernalMobsCore.MOD_ID + "_bossbar", new InfernalMobsHealthBarGuiOverlay());
+        event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossbar"), new InfernalMobsHealthBarGuiOverlay());
         mc = Minecraft.getInstance();
         healthBarRetainTime = 0;
         retainedTarget = null;
@@ -61,7 +62,7 @@ public class OverlayBossBar {
 
     public static class InfernalMobsHealthBarGuiOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
                 return;
             }
@@ -137,7 +138,7 @@ public class OverlayBossBar {
 
     private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
+        // RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
 
         int screenwidth = mc.getWindow().getGuiScaledWidth();
         Font fontR = mc.font;
@@ -184,7 +185,8 @@ public class OverlayBossBar {
 
     private static void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0));
+            MobModsPacket mobModsPacket = new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0);
+            PacketDistributor.SERVER.noArg().send(mobModsPacket);
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
@@ -192,7 +194,8 @@ public class OverlayBossBar {
 
     private static void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f));
+            HealthPacket healthPacket = new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f);
+            PacketDistributor.SERVER.noArg().send(healthPacket);
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
     }

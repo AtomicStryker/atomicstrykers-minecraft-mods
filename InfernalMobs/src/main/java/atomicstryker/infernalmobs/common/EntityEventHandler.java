@@ -6,11 +6,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.level.ChunkEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -187,7 +194,7 @@ public class EntityEventHandler {
                     if (maxC != null) {
                         System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getA() + ", " + maxC.getB());
                         if (maxDamage > InfernalMobsCore.instance().config.getMobFarmDamageTrigger()) {
-                            MinecraftForge.EVENT_BUS
+                            NeoForge.EVENT_BUS
                                     .post(new MobFarmDetectedEvent(event.getEntity().level().getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
                         }
                     }

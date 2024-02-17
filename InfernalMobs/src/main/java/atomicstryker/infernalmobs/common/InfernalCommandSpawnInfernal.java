@@ -5,12 +5,14 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
+
+import java.util.Optional;
 
 public class InfernalCommandSpawnInfernal {
 
@@ -29,13 +31,13 @@ public class InfernalCommandSpawnInfernal {
 
     private static void execute(CommandSourceStack source, int x, int y, int z, String entClassName, String modifiers) {
 
-        EntityType<?> chosenType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entClassName));
-        if (chosenType == null || chosenType.getCategory().isFriendly() || chosenType.getCategory().isPersistent()) {
+        Optional<EntityType<?>> chosenType = BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(entClassName));
+        if (chosenType.isEmpty() || chosenType.get().getCategory().isFriendly() || chosenType.get().getCategory().isPersistent()) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
             return;
         }
 
-        LivingEntity mob = (LivingEntity) chosenType.create(source.getLevel());
+        LivingEntity mob = (LivingEntity) chosenType.get().create(source.getLevel());
         if (mob == null) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, failed to create [" + entClassName + "] instance in world"));
         }

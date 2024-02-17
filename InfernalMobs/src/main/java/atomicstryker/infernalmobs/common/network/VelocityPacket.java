@@ -1,45 +1,35 @@
 package atomicstryker.infernalmobs.common.network;
 
-import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.network.NetworkHelper.IPacket;
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class VelocityPacket implements IPacket {
+public record VelocityPacket(float xv, float yv, float zv) implements CustomPacketPayload {
 
-    private float xv, yv, zv;
+    public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "velocity");
 
-    public VelocityPacket() {
-    }
+//    @Override
+//    public void handle(Object msg, CustomPayloadEvent.Context context) {
+//        VelocityPacket velocityPacket = (VelocityPacket) msg;
+//        // thread synchronization happens later
+//        InfernalMobsClient.onVelocityPacket(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
+//        context.setPacketHandled(true);
+//    }
 
-    public VelocityPacket(float x, float y, float z) {
-        xv = x;
-        yv = y;
-        zv = z;
-    }
-
-    @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        VelocityPacket velocityPacket = (VelocityPacket) msg;
-        packetBuffer.writeFloat(velocityPacket.xv);
-        packetBuffer.writeFloat(velocityPacket.yv);
-        packetBuffer.writeFloat(velocityPacket.zv);
+    public VelocityPacket(FriendlyByteBuf packetBuffer) {
+        this(packetBuffer.readFloat(), packetBuffer.readFloat(), packetBuffer.readFloat());
     }
 
     @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        VelocityPacket velocityPacket = new VelocityPacket();
-        velocityPacket.xv = packetBuffer.readFloat();
-        velocityPacket.yv = packetBuffer.readFloat();
-        velocityPacket.zv = packetBuffer.readFloat();
-        return (MSG) velocityPacket;
+    public void write(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeFloat(xv);
+        packetBuffer.writeFloat(yv);
+        packetBuffer.writeFloat(zv);
     }
 
     @Override
-    public void handle(Object msg, CustomPayloadEvent.Context context) {
-        VelocityPacket velocityPacket = (VelocityPacket) msg;
-        // thread synchronization happens later
-        InfernalMobsClient.onVelocityPacket(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
-        context.setPacketHandled(true);
+    public ResourceLocation id() {
+        return ID;
     }
 }

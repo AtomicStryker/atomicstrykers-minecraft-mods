@@ -1,6 +1,7 @@
 package atomicstryker.infernalmobs.client;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import atomicstryker.infernalmobs.common.network.AirPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -8,12 +9,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
@@ -25,20 +28,20 @@ public class OverlayChoking {
     private static int airOverrideValue = -999;
     private static long airDisplayTimeout;
 
-    public static void onAirPacket(int air) {
-        airOverrideValue = air;
+    public static void handleAirPacket(final AirPacket airPacket, final PlayPayloadContext context) {
+        airOverrideValue = airPacket.air();
         airDisplayTimeout = System.currentTimeMillis() + 3000L;
     }
 
     @SubscribeEvent
     public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll(InfernalMobsCore.MOD_ID + "_choking", new InfernalMobsChokingGuiOverlay());
+        event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_choking"), new InfernalMobsChokingGuiOverlay());
         mc = Minecraft.getInstance();
     }
 
     public static class InfernalMobsChokingGuiOverlay implements IGuiOverlay {
         @Override
-        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;
             }

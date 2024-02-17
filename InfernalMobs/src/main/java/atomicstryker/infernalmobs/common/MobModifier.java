@@ -2,14 +2,14 @@ package atomicstryker.infernalmobs.common;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 
 import java.util.Collection;
 
@@ -411,7 +411,7 @@ public abstract class MobModifier {
      */
     public String getEntityDisplayName(LivingEntity target) {
         if (bufferedEntityName == null) {
-            String buffer = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).getPath();
+            String buffer = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).getPath();
             String[] subStrings = buffer.split("\\."); // in case of
             // Package.Class.EntityName
             // derps

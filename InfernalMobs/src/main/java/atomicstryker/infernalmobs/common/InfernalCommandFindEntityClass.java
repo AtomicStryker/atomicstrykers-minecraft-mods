@@ -4,9 +4,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
 
 public class InfernalCommandFindEntityClass {
@@ -23,7 +23,7 @@ public class InfernalCommandFindEntityClass {
 
         StringBuilder stringBuilder = new StringBuilder("Found Entity classes: ");
         boolean found = false;
-        for (ResourceLocation entityResource : ForgeRegistries.ENTITY_TYPES.getKeys()) {
+        for (ResourceLocation entityResource : BuiltInRegistries.ENTITY_TYPE.keySet()) {
             String entclass = entityResource.getPath();
             if (entclass.toLowerCase().contains(entClass.toLowerCase())) {
                 if (!found) {
