@@ -1,72 +1,33 @@
 package atomicstryker.findercompass.common.network;
 
 import atomicstryker.findercompass.common.FinderCompassMod;
-import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
-public class FeatureSearchPacket implements IPacket {
+public record FeatureSearchPacket(int x, int y, int z, String username,
+                                  String featureId) implements CustomPacketPayload {
 
+    public static final ResourceLocation ID = new ResourceLocation(FinderCompassMod.MOD_ID, "featuresearch");
     public static final int SEARCH_RADIUS = 160;
-    private int MAX_STRING_LENGTH = 256;
-    private int x, y, z;
-    private String username;
-    private String featureId;
+    private static final int MAX_STRING_LENGTH = 256;
 
-    public FeatureSearchPacket() {
-    }
-
-    /**
-     *
-     */
-    public FeatureSearchPacket(String user, String id, int a, int b, int c) {
-        username = user;
-        featureId = id;
-        x = a;
-        y = b;
-        z = c;
+    public FeatureSearchPacket(final FriendlyByteBuf buffer) {
+        this(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readUtf(), buffer.readUtf());
     }
 
     @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        FeatureSearchPacket packet = (FeatureSearchPacket) msg;
-        packetBuffer.writeUtf(packet.username, MAX_STRING_LENGTH);
-        packetBuffer.writeUtf(packet.featureId, MAX_STRING_LENGTH);
-        packetBuffer.writeInt(packet.x);
-        packetBuffer.writeInt(packet.y);
-        packetBuffer.writeInt(packet.z);
+    public void write(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeInt(x);
+        packetBuffer.writeInt(y);
+        packetBuffer.writeInt(z);
+        packetBuffer.writeUtf(username, MAX_STRING_LENGTH);
+        packetBuffer.writeUtf(featureId, MAX_STRING_LENGTH);
     }
 
     @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        return (MSG) new FeatureSearchPacket(packetBuffer.readUtf(MAX_STRING_LENGTH), packetBuffer.readUtf(MAX_STRING_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt());
-    }
-
-    @Override
-    public void handle(Object msg, CustomPayloadEvent.Context context) {
-        FeatureSearchPacket packet = (FeatureSearchPacket) msg;
-        // synchronized to threads deeper in, not here
-        FinderCompassMod.proxy.onReceivedSearchPacket(packet);
-        context.setPacketHandled(true);
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getFeatureId() {
-        return featureId;
+    public @NotNull ResourceLocation id() {
+        return ID;
     }
 }

@@ -15,10 +15,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 
 import java.util.ArrayList;
 
@@ -36,7 +36,7 @@ public class FinderCompassClientTicker {
         repeat = false;
         currentSetting = null;
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
@@ -67,7 +67,7 @@ public class FinderCompassClientTicker {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player.level().playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
+                        tick.player.level().playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;
@@ -102,7 +102,7 @@ public class FinderCompassClientTicker {
         FinderCompassLogic.hasFeature = false;
 
         if (mc.level != null) {
-            mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
+            mc.level.playSound(mc.player, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.3F, 0.6F);
             mc.gui.getChat().addMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
         }
     }

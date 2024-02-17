@@ -2,55 +2,34 @@ package atomicstryker.findercompass.common.network;
 
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
-import atomicstryker.findercompass.common.network.NetworkHelper.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
-public class HandshakePacket implements IPacket {
+public record HandshakePacket(String username, String json) implements CustomPacketPayload {
 
-    private int MAX_NAME_LENGTH = 256;
-    private int MAX_STRING_LENGTH_JSON = 100000;
+    public static final ResourceLocation ID = new ResourceLocation(FinderCompassMod.MOD_ID, "handshake");
 
-    private String username;
-    private String json;
+    private static final int MAX_NAME_LENGTH = 256;
+    private static final int MAX_STRING_LENGTH_JSON = 100000;
 
-    public HandshakePacket() {
-    }
-
-    public HandshakePacket(String user, String json) {
-        username = user;
-        this.json = json;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getJson() {
-        return json;
+    public HandshakePacket(final FriendlyByteBuf buffer) {
+        this(buffer.readUtf(), buffer.readUtf());
     }
 
     @Override
-    public void encode(Object msg, FriendlyByteBuf packetBuffer) {
-        HandshakePacket packet = (HandshakePacket) msg;
-        packetBuffer.writeUtf(packet.username, MAX_NAME_LENGTH);
-        if (packet.username.equals("server")) {
-            packet.json = GsonConfig.jsonFromConfig(FinderCompassMod.instance.compassConfig);
-            packetBuffer.writeUtf(packet.json, MAX_STRING_LENGTH_JSON);
+    public void write(FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeUtf(username, MAX_NAME_LENGTH);
+        String jsonResponse = "";
+        if (username.equals("server")) {
+            jsonResponse = GsonConfig.jsonFromConfig(FinderCompassMod.instance.compassConfig);
         }
+        packetBuffer.writeUtf(jsonResponse, MAX_STRING_LENGTH_JSON);
     }
 
     @Override
-    public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
-        HandshakePacket packet = new HandshakePacket(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readUtf(MAX_STRING_LENGTH_JSON));
-        return (MSG) packet;
-    }
-
-    @Override
-    public void handle(Object msg, CustomPayloadEvent.Context context) {
-        HandshakePacket handShakePacket = (HandshakePacket) msg;
-        // does not need to be thread-synchronized
-        FinderCompassMod.proxy.onReceivedHandshakePacket(handShakePacket);
-        context.setPacketHandled(true);
+    public @NotNull ResourceLocation id() {
+        return ID;
     }
 }

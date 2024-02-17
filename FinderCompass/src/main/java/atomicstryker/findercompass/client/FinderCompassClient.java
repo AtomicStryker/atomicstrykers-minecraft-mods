@@ -8,14 +8,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.io.File;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
 public class FinderCompassClient implements ISidedProxy {
+
+    private static final FinderCompassClient INSTANCE = new FinderCompassClient();
+
+    public static FinderCompassClient getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public void commonSetup() {
@@ -29,12 +34,11 @@ public class FinderCompassClient implements ISidedProxy {
         return Minecraft.getInstance().gameDirectory;
     }
 
-    @Override
-    public void onReceivedHandshakePacket(HandshakePacket handShakePacket) {
+    public void handleHandshake(final HandshakePacket handShakePacket, final PlayPayloadContext context) {
         FinderCompassMod.instance.initIfNeeded();
-        FinderCompassMod.LOGGER.info("client received Finder Compass HandshakePacket, from username: {}", handShakePacket.getUsername());
-        if (handShakePacket.getUsername().equals("server")) {
-            String json = handShakePacket.getJson();
+        FinderCompassMod.LOGGER.info("client received Finder Compass HandshakePacket, from username: {}", handShakePacket.username());
+        if (handShakePacket.username().equals("server")) {
+            String json = handShakePacket.json();
             FinderCompassMod.LOGGER.info("deferring config override task with json of length {}", json.length());
             Minecraft.getInstance().submitAsync(() -> {
                 FinderCompassMod.LOGGER.info("executing deferred config override, FinderCompassClientTicker.instance is: {}", FinderCompassClientTicker.instance);
@@ -43,22 +47,22 @@ public class FinderCompassClient implements ISidedProxy {
         }
     }
 
-    @Override
-    public void onReceivedSearchPacket(FeatureSearchPacket packet) {
-        if (packet.getUsername().equals("server")) {
+    public void handleFeatureSearch(final FeatureSearchPacket packet, final PlayPayloadContext context) {
+        if (packet.username().equals("server")) {
             Minecraft.getInstance().submitAsync(() -> {
-                FinderCompassLogic.featureCoords = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
-                FinderCompassMod.LOGGER.debug("Finder Compass server sent Feature {} coords: [{}|{}|{}]", packet.getFeatureId(), packet.getX(), packet.getY(), packet.getZ());
+                FinderCompassLogic.featureCoords = new BlockPos(packet.x(), packet.y(), packet.z());
+                FinderCompassMod.LOGGER.debug("Finder Compass server sent Feature {} coords: [{}|{}|{}]", packet.featureId(), packet.x(), packet.y(), packet.z());
                 FinderCompassLogic.hasFeature = true;
             });
         } else {
             ServerLifecycleHooks.getCurrentServer().submitAsync(() -> {
-                ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.getUsername());
+                ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.username());
                 if (p != null) {
-                    BlockPos result = FinderCompassMod.instance.findLevelStructure((ServerLevel) p.level(), p.getOnPos(), packet.getFeatureId());
-                    FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.getFeatureId(), packet.getUsername(), result);
+                    BlockPos result = FinderCompassMod.instance.findLevelStructure((ServerLevel) p.level(), p.getOnPos(), packet.featureId());
+                    FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.featureId(), packet.username(), result);
                     if (result != null) {
-                        FinderCompassMod.instance.networkHelper.sendPacketToPlayer(new FeatureSearchPacket("server", packet.getFeatureId(), result.getX(), result.getY(), result.getZ()), p);
+                        FeatureSearchPacket featureSearchPacket = new FeatureSearchPacket(result.getX(), result.getY(), result.getZ(), "server", packet.featureId());
+                        PacketDistributor.PLAYER.with(p).send(featureSearchPacket);
                     }
                 }
             });

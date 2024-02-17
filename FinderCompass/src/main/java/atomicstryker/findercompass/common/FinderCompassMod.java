@@ -2,12 +2,11 @@ package atomicstryker.findercompass.common;
 
 import atomicstryker.findercompass.client.CompassSetting;
 import atomicstryker.findercompass.client.FinderCompassClient;
-import atomicstryker.findercompass.client.FinderCompassClientTicker;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
-import atomicstryker.findercompass.common.network.NetworkHelper;
 import com.google.gson.Gson;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -19,22 +18,28 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Mod(FinderCompassMod.MOD_ID)
-@Mod.EventBusSubscriber(modid = FinderCompassMod.MOD_ID)
 public class FinderCompassMod {
 
     public static final String MOD_ID = "findercompass";
@@ -42,16 +47,26 @@ public class FinderCompassMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static FinderCompassMod instance;
-    public static ISidedProxy proxy = DistExecutor.safeRunForDist(() -> FinderCompassClient::new, () -> FinderCompassServer::new);
+    public static ISidedProxy proxy = FMLEnvironment.dist.isClient() ? new FinderCompassClient() : new FinderCompassServer();
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
-    public NetworkHelper networkHelper;
-
-    public FinderCompassMod() {
+    public FinderCompassMod(IEventBus modEventBus) {
         instance = this;
-        MinecraftForge.EVENT_BUS.register(this);
-        networkHelper = new NetworkHelper("findercompass", HandshakePacket.class, FeatureSearchPacket.class);
+        NeoForge.EVENT_BUS.register(this);
+        modEventBus.addListener(this::registerNetworking);
+    }
+
+    private void registerNetworking(final RegisterPayloadHandlerEvent event) {
+
+        final IPayloadRegistrar registrar = event.registrar(MOD_ID);
+
+        registrar.play(HandshakePacket.ID, HandshakePacket::new, handler -> handler
+                .client(FinderCompassClient.getInstance()::handleHandshake));
+
+        registrar.play(FeatureSearchPacket.ID, FeatureSearchPacket::new, handler -> handler
+                .client(FinderCompassClient.getInstance()::handleFeatureSearch)
+                .server(FinderCompassServer.getInstance()::handleFeatureSearch));
     }
 
     @SubscribeEvent
@@ -64,7 +79,7 @@ public class FinderCompassMod {
      * called either by serverStarted or by FinderCompassClientTicker.playerLoginToServer
      */
     public void initIfNeeded() {
-        if (FinderCompassClientTicker.instance == null) {
+        if (compassConfig == null) {
             compassConfig = createDefaultConfig();
             try {
                 compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
@@ -99,14 +114,15 @@ public class FinderCompassMod {
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getEntity().getDisplayName());
-        networkHelper.sendPacketToPlayer(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)), (ServerPlayer) event.getEntity());
+        HandshakePacket packet = new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig));
+        PacketDistributor.PLAYER.with((ServerPlayer) event.getEntity()).send(packet);
     }
 
     private String getStringFromBlockState(BlockState blockState) {
 
         Map<String, String> blockMap = new HashMap<>();
 
-        blockMap.put("block", ForgeRegistries.BLOCKS.getKey(blockState.getBlock()).toString());
+        blockMap.put("block", BuiltInRegistries.BLOCK.getKey(blockState.getBlock()).toString());
         for (Property<?> property : blockState.getBlock().getStateDefinition().getProperties()) {
             blockMap.put(property.getName(), blockState.getValue(property).toString());
         }
@@ -118,10 +134,11 @@ public class FinderCompassMod {
         Gson gson = new Gson();
         Map<String, String> blockMap = gson.fromJson(json, HashMap.class);
         String resourceAsString = blockMap.get("block");
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(resourceAsString));
-        if (block == null) {
+        Optional<Block> blockOptional = BuiltInRegistries.BLOCK.getOptional(new ResourceLocation(resourceAsString));
+        if (blockOptional.isEmpty()) {
             return null;
         }
+        Block block = blockOptional.get();
         BlockState reconstructedState = block.defaultBlockState();
         for (Property<?> property : block.getStateDefinition().getProperties()) {
             reconstructedState = setValueHelper(reconstructedState, property, property.getName(), blockMap.get(property.getName()));
