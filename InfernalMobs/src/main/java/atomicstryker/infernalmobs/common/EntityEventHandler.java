@@ -6,9 +6,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -102,7 +107,7 @@ public class EntityEventHandler {
                  * farms
                  */
                 if (event.getSource() == attacker.damageSources().cactus() || event.getSource() == attacker.damageSources().drown() || event.getSource() == attacker.damageSources().fall() || event.getSource() == attacker.damageSources().inWall()
-                        || event.getSource() == attacker.damageSources().lava() || event.getSource().getDirectEntity() instanceof FakePlayer) {
+                        || event.getSource() == attacker.damageSources().lava()) {
                     Tuple<Integer, Integer> cpair = new Tuple<>((int) event.getEntity().getX(), (int) event.getEntity().getZ());
                     Float value = damageMap.get(cpair);
                     if (value == null) {

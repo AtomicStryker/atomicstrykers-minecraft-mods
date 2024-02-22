@@ -1,8 +1,38 @@
 package atomicstryker.infernalmobs.common;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.mods.*;
-import atomicstryker.infernalmobs.common.network.*;
+import atomicstryker.infernalmobs.common.mods.MM_1UP;
+import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
+import atomicstryker.infernalmobs.common.mods.MM_Berserk;
+import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
+import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Choke;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
+import atomicstryker.infernalmobs.common.mods.MM_Darkness;
+import atomicstryker.infernalmobs.common.mods.MM_Ender;
+import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
+import atomicstryker.infernalmobs.common.mods.MM_Fiery;
+import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
+import atomicstryker.infernalmobs.common.mods.MM_Ninja;
+import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
+import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
+import atomicstryker.infernalmobs.common.mods.MM_Regen;
+import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
+import atomicstryker.infernalmobs.common.mods.MM_Sprint;
+import atomicstryker.infernalmobs.common.mods.MM_Sticky;
+import atomicstryker.infernalmobs.common.mods.MM_Storm;
+import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
+import atomicstryker.infernalmobs.common.mods.MM_Weakness;
+import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
+import atomicstryker.infernalmobs.common.network.AirPacket;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.KnockBackPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +55,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -40,7 +69,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Mod(InfernalMobsCore.MOD_ID)
 @Mod.EventBusSubscriber(modid = InfernalMobsCore.MOD_ID)
@@ -781,7 +814,7 @@ public class InfernalMobsCore {
     }
 
     public boolean getIsEntityAllowedTarget(Entity entity) {
-        return !(entity instanceof FakePlayer);
+        return entity.isAttackable() && entity.isAlive();
     }
 
     /**
