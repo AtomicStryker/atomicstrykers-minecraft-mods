@@ -1,5 +1,8 @@
-1.20.4.1
-- updated to MC 1.20.4
+1.20.4.2NF
+- marked packets as optional so clients and servers can still connect if either lacks this mod
+
+1.20.4.1NF
+- updated to MC 1.20.4, neoforge edition
 
 1.20.1.0
 - updated to MC 1.20.1
