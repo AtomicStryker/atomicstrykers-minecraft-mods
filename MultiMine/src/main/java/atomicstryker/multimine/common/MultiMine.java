@@ -45,7 +45,9 @@ public class MultiMine {
 
     private void registerNetworking(final RegisterPayloadHandlerEvent event) {
 
-        final IPayloadRegistrar registrar = event.registrar(MOD_ID);
+        // the optional method gives us a registrar that does non-mandatory packets
+        // so clients having the mod can still connect to servers which dont have it
+        final IPayloadRegistrar registrar = event.registrar(MOD_ID).optional();
 
         registrar.play(PartialBlockPacket.ID, PartialBlockPacket::new, handler -> handler
                 .client(instance()::onPartialBlockForClient)
