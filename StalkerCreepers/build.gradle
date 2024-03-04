@@ -1,45 +1,23 @@
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'http://repo.spongepowered.org/maven' }
-        maven { url = 'https://dist.creeper.host/Sponge/maven' }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
 plugins {
-    id 'com.matthewprenger.cursegradle' version '1.0.10'
-}
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-
-repositories {
-    maven {
-        url 'https://www.dogforce-games.com/maven/'
-    }
+    id 'eclipse'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-def mcversion = '1.16.3'
-version = '1.16.3.1'
-group = 'atomicstryker.stalkercreepers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+def mcversion = '1.19.2'
+version = '1.19.2.2'
+group = 'atomicstryker.stalkercreepers'
 archivesBaseName = 'stalkercreepers'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
-
+    mappings channel: 'official', version: '1.19.2'
+    
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=stalkercreepers.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', ''
@@ -48,7 +26,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                stalkercreepers {
                     source sourceSets.main
                 }
             }
@@ -56,16 +34,15 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            arg "-mixin.config=stalkercreepers.mixins.json"
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                stalkercreepers {
                     source sourceSets.main
                 }
             }
@@ -74,27 +51,28 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.34'
+    minecraft 'net.minecraftforge:forge:1.19.2-43.3.5'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-            "Specification-Title": "${archivesBaseName}",
-            "Specification-Vendor": "AtomicStryker",
-            "Specification-Version": "${version}", // We are version 1 of ourselves
+            "Specification-Title": "stalkercreepers",
+            "Specification-Vendor": "atomicstryker",
+            "Specification-Version": "${version}",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"AtomicStryker",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "${archivesBaseName}.mixins.json"
+            "Implementation-Vendor" :"atomicstryker",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
 
-mixin {
-    add sourceSets.main, "stalkercreepers.refmap.json"
+jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
 curseforge {
@@ -104,7 +82,7 @@ curseforge {
         releaseType = 'release'
         addGameVersion mcversion
         mainArtifact(file("build/libs/${archivesBaseName}-" + version + ".jar")) {
-          displayName = 'Stalker Creepers'
+            displayName = 'Stalker Creepers'
         }
     }
 }

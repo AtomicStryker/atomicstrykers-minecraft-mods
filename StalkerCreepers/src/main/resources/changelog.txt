@@ -1,3 +1,12 @@
+1.20.2.1
+https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/492
+removed spamming log message
+ported to MC 1.20.2
+
+1.20.1.0
+rewritten to not use SpongePowered, only Forge
+updated for MC 1.20.1
+
 1.16.3.1
 updated for MC 1.16.3, now uses SpongePowered Mixin
 
