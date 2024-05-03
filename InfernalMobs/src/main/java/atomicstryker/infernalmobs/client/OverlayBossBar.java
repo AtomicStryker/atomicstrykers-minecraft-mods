@@ -8,10 +8,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,19 +24,18 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = InfernalMobsCore.MOD_ID)
 public class OverlayBossBar {
 
     private static final double NAME_VISION_DISTANCE = 32D;
@@ -50,17 +49,29 @@ public class OverlayBossBar {
     private static LinkedHashMap<UUID, LerpingBossEvent> vanillaBossEventsMap = null;
 
     @SubscribeEvent
-    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll(InfernalMobsCore.MOD_ID + "_bossbar", new InfernalMobsHealthBarGuiOverlay());
+    public static void onLevelLoad(LevelEvent.Load event) {
         mc = Minecraft.getInstance();
         healthBarRetainTime = 0;
         retainedTarget = null;
         nextPacketTime = 0;
+
+        LayeredDraw layers;
+        for (Field field : mc.gui.getClass().getDeclaredFields()) {
+            if (field.getType().isAssignableFrom(LayeredDraw.class)) {
+                field.setAccessible(true);
+                try {
+                    layers = (LayeredDraw) field.get(mc.gui);
+                    layers.add(new InfernalMobsHealthBarGuiOverlay());
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
-    public static class InfernalMobsHealthBarGuiOverlay implements IGuiOverlay {
+    public static class InfernalMobsHealthBarGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
                 return;
             }

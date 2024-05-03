@@ -4,18 +4,20 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+import java.lang.reflect.Field;
+
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
 
     protected static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
@@ -31,14 +33,26 @@ public class OverlayChoking {
     }
 
     @SubscribeEvent
-    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll(InfernalMobsCore.MOD_ID + "_choking", new InfernalMobsChokingGuiOverlay());
+    public static void onLevelLoad(LevelEvent.Load event) {
         mc = Minecraft.getInstance();
+
+        LayeredDraw layers;
+        for (Field field : mc.gui.getClass().getDeclaredFields()) {
+            if (field.getType().isAssignableFrom(LayeredDraw.class)) {
+                field.setAccessible(true);
+                try {
+                    layers = (LayeredDraw) field.get(mc.gui);
+                    layers.add(new InfernalMobsChokingGuiOverlay());
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
-    public static class InfernalMobsChokingGuiOverlay implements IGuiOverlay {
+    public static class InfernalMobsChokingGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;
             }

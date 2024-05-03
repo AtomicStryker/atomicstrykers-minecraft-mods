@@ -46,6 +46,7 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -225,7 +226,7 @@ public class InfernalMobsCore {
             }
 
             configFile = new File(mcFolder, File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
-            loadConfig();
+            loadConfig(world);
 
             LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
             LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
@@ -276,7 +277,7 @@ public class InfernalMobsCore {
     /**
      * Forge Config file
      */
-    private void loadConfig() {
+    private void loadConfig(Level world) {
         InfernalMobsConfig defaultConfig = new InfernalMobsConfig();
         defaultConfig.setEliteRarity(15);
         defaultConfig.setUltraRarity(7);
@@ -286,59 +287,59 @@ public class InfernalMobsCore {
         defaultConfig.setModHealthFactor(1.0D);
 
         List<String> dropsElite = new ArrayList<>();
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SHOVEL)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_PICKAXE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_AXE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SWORD)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.COOKIE, 5)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SHOVEL), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_PICKAXE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_AXE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SWORD), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.COOKIE, 5), world.registryAccess()));
         defaultConfig.setDroppedItemIDsElite(dropsElite);
 
         List<String> dropsUltra = new ArrayList<>();
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BOW)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_HELMET)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_BOOTS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_CHESTPLATE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_LEGGINGS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_APPLE, 3)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BLAZE_POWDER, 5)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BOW), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_HELMET), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_BOOTS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_CHESTPLATE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_LEGGINGS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_APPLE, 3), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BLAZE_POWDER, 5), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK), world.registryAccess()));
         defaultConfig.setDroppedItemIDsUltra(dropsUltra);
 
         List<String> dropsInfernal = new ArrayList<>();
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND, 3)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SWORD)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_AXE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HOE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_PICKAXE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SHOVEL)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HELMET)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_BOOTS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_CHESTPLATE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_LEGGINGS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENDER_PEARL, 3)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND, 3), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SWORD), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_AXE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HOE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_PICKAXE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SHOVEL), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HELMET), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_BOOTS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_CHESTPLATE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_LEGGINGS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENDER_PEARL, 3), world.registryAccess()));
         defaultConfig.setDroppedItemIDsInfernal(dropsInfernal);
 
         defaultConfig.setMaxDamage(10D);
@@ -352,9 +353,9 @@ public class InfernalMobsCore {
 
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
-        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER);
-        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER);
-        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER);
+        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER, world.registryAccess());
+        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER, world.registryAccess());
+        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER, world.registryAccess());
 
         mobMods.removeIf(c -> !config.getModsEnabled().containsKey(c.getSimpleName()) || !config.getModsEnabled().get(c.getSimpleName()));
     }
@@ -660,9 +661,7 @@ public class InfernalMobsCore {
                     itemStack = EnchantedBookItem.createForEnchantment(getRandomEnchantment(mob.getRandom()));
                 } else {
                     int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                    enchantRandomly(mob.level().random, itemStack, item.getEnchantmentValue(), usedStr);
-                    // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
-                    // itemStack, item.getItemEnchantability());
+                    enchantRandomly(mob.level().enabledFeatures(), mob.level().random, itemStack, item.getEnchantmentValue(), usedStr);
                 }
                 ItemEntity itemEnt = new ItemEntity(mob.level(), mob.getX(), mob.getY(), mob.getZ(), itemStack);
                 mob.level().addFreshEntity(itemEnt);
@@ -705,9 +704,9 @@ public class InfernalMobsCore {
      * @param itemEnchantability ItemStack max enchantability level
      * @param modStr             MobModifier strength to be used. Should be in range 2-5
      */
-    private void enchantRandomly(RandomSource rand, ItemStack itemStack, int itemEnchantability, int modStr) {
+    private void enchantRandomly(FeatureFlagSet featureFlagSet, RandomSource rand, ItemStack itemStack, int itemEnchantability, int modStr) {
         int remainStr = (modStr + 1) / 2; // should result in 1-3
-        List<?> enchantments = EnchantmentHelper.selectEnchantment(rand, itemStack, itemEnchantability, true);
+        List<?> enchantments = EnchantmentHelper.selectEnchantment(featureFlagSet, rand, itemStack, itemEnchantability, true);
         Iterator<?> iter = enchantments.iterator();
         while (iter.hasNext() && remainStr > 0) {
             remainStr--;

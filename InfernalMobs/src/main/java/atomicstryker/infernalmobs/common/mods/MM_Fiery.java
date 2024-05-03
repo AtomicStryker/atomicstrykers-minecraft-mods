@@ -25,7 +25,7 @@ public class MM_Fiery extends MobModifier {
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (isDirectAttack(source)) {
-            source.getDirectEntity().setSecondsOnFire(3);
+            source.getDirectEntity().setRemainingFireTicks(60);
         }
 
         mob.clearFire();
@@ -35,7 +35,7 @@ public class MM_Fiery extends MobModifier {
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity != null) {
-            entity.setSecondsOnFire(3);
+            entity.setRemainingFireTicks(60);
         }
 
         return super.onAttack(entity, source, damage);

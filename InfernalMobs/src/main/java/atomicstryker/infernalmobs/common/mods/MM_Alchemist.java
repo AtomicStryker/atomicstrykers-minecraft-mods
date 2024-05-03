@@ -1,6 +1,7 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -9,7 +10,7 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 
 public class MM_Alchemist extends MobModifier {
@@ -56,7 +57,7 @@ public class MM_Alchemist extends MobModifier {
             float diffZ = (float) (target.getZ() + target.getDeltaMovement().z - mob.getZ());
             float distance = Mth.sqrt(diffX * diffX + diffZ * diffZ);
 
-            Potion potiontype = Potions.HARMING;
+            Holder<Potion> potiontype = Potions.HARMING;
 
             if (distance >= 8.0F && !target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
                 potiontype = Potions.SLOWNESS;
@@ -67,7 +68,7 @@ public class MM_Alchemist extends MobModifier {
             }
 
             ThrownPotion potionentity = new ThrownPotion(mob.level(), mob);
-            potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potiontype));
+            potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potiontype));
             potionentity.setXRot(potionentity.getXRot() + 20.0F);
             potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
             mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
