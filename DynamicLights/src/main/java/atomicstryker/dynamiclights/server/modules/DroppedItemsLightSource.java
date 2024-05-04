@@ -1,7 +1,13 @@
 package atomicstryker.dynamiclights.server.modules;
 
-import atomicstryker.dynamiclights.server.*;
+import atomicstryker.dynamiclights.server.DynamicLights;
+import atomicstryker.dynamiclights.server.GsonConfig;
+import atomicstryker.dynamiclights.server.IDynamicLightSource;
+import atomicstryker.dynamiclights.server.ItemConfigHelper;
+import atomicstryker.dynamiclights.server.ItemLightLevels;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -43,20 +49,23 @@ public class DroppedItemsLightSource {
     @SubscribeEvent
     public void serverStartEvent(ServerAboutToStartEvent event) {
 
-        LightConfig defaultConfig = new LightConfig();
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 14));
-        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15));
-        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0));
-
         MinecraftServer server = event.getServer();
+        RegistryAccess registryAccess = server.registryAccess();
+
+        LightConfig defaultConfig = new LightConfig();
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 14, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15, registryAccess));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0, registryAccess));
+
+
         File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_droppeditems.cfg");
         try {
             config = GsonConfig.loadConfigWithDefault(LightConfig.class, configFile, defaultConfig);
             if (config == null) {
                 throw new UnsupportedOperationException("DroppedItemsLightSource failed parsing config file somehow...");
             }
-            itemsMap = new ItemConfigHelper(config.getItemsList(), LOGGER);
-            notWaterProofItems = new ItemConfigHelper(config.getNotWaterProofList(), LOGGER);
+            itemsMap = new ItemConfigHelper(config.getItemsList(), LOGGER, registryAccess);
+            notWaterProofItems = new ItemConfigHelper(config.getNotWaterProofList(), LOGGER, registryAccess);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,7 +79,7 @@ public class DroppedItemsLightSource {
         }
 
         if (event.getEntity() instanceof ItemEntity itemEntity) {
-            int lightLevel = getLightFromItemStack(itemEntity.getItem());
+            int lightLevel = getLightFromItemStack(itemEntity.getItem(), event.getLevel().registryAccess());
             if (lightLevel > 0) {
                 EntityItemAdapter entityItemAdapter = new EntityItemAdapter(itemEntity);
                 trackedItemMap.put(itemEntity, entityItemAdapter);
@@ -96,7 +105,7 @@ public class DroppedItemsLightSource {
         }
     }
 
-    private int getLightFromItemStack(ItemStack stack) {
+    private int getLightFromItemStack(ItemStack stack, RegistryAccess registryAccess) {
         // First check whether the item has a tag that makes it emit light
         int level = ItemLightLevels.getLightFromItemStack(stack, "dropped");
         if (level > 0 && level <= 15) {
@@ -104,7 +113,7 @@ public class DroppedItemsLightSource {
         }
 
         // Then use our config file
-        return itemsMap.getLightLevel(stack);
+        return itemsMap.getLightLevel(stack, registryAccess);
     }
 
     private class EntityItemAdapter implements IDynamicLightSource {
@@ -118,7 +127,7 @@ public class DroppedItemsLightSource {
             lightLevel = 0;
             enabled = false;
             entity = eI;
-            notWaterProof = notWaterProofItems.getLightLevel(eI.getItem()) > 0 || eI.getItem().getTags().anyMatch(rl -> rl.location().equals(DynamicLights.NOT_WATERPROOF_TAG));
+            notWaterProof = notWaterProofItems.getLightLevel(eI.getItem(), eI.level().registryAccess()) > 0 || eI.getItem().getTags().anyMatch(rl -> rl.location().equals(DynamicLights.NOT_WATERPROOF_TAG));
         }
 
         /**
@@ -129,7 +138,7 @@ public class DroppedItemsLightSource {
             if (entity.isOnFire()) {
                 lightLevel = 15;
             } else {
-                lightLevel = getLightFromItemStack(entity.getItem());
+                lightLevel = getLightFromItemStack(entity.getItem(), entity.level().registryAccess());
                 if (notWaterProof && entity.isInWater()) {
                     lightLevel = 0;
                 }
