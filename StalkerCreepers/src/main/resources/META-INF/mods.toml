@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[25,)" #mandatory (24 is current forge version)
+loaderVersion="[50,)" #mandatory (24 is current forge version)
 license="AtomicStrykers License https://atomicstryker.github.io/"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues" #optional
@@ -23,7 +23,7 @@ displayName="Stalker Creepers" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://atomicstryker.github.io/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="examplemod.png" #optional
+# logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
 credits="by AtomicStryker" #optional
 # A text field displayed in the mod UI
