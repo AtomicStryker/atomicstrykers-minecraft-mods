@@ -4,26 +4,31 @@ import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.Field;
 import java.util.Map.Entry;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = FinderCompassMod.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = FinderCompassMod.MOD_ID)
 public class CompassRenderHook {
 
     private static final int[] strongholdNeedlecolor = {102, 0, 153};
@@ -37,13 +42,26 @@ public class CompassRenderHook {
     private static Boolean mustHoldCompassInHandToBeActive = null;
 
     @SubscribeEvent
-    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll(FinderCompassMod.MOD_ID, new FinderCompassGuiOverlay());
+    public static void onLevelLoad(LevelEvent.Load event) {
+        Minecraft mc = Minecraft.getInstance();
+
+        LayeredDraw layers;
+        for (Field field : mc.gui.getClass().getDeclaredFields()) {
+            if (field.getType().isAssignableFrom(LayeredDraw.class)) {
+                field.setAccessible(true);
+                try {
+                    layers = (LayeredDraw) field.get(mc.gui);
+                    layers.add(new FinderCompassGuiOverlay());
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
-    public static class FinderCompassGuiOverlay implements IGuiOverlay {
+    public static class FinderCompassGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
             if (mc == null) {
                 mc = Minecraft.getInstance();
             }

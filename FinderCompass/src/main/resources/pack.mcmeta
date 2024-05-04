@@ -1,7 +1,6 @@
 {
-    "pack": {
-        "description": "finder compass resources",
-        "pack_format": 6,
-        "_comment": "Note: we require v6 pack meta for all mods."
-    }
+  "pack": {
+    "description": "Finder Compass resources",
+    "pack_format": 32
+  }
 }
