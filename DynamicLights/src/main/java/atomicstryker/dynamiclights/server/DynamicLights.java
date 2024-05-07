@@ -23,12 +23,11 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -208,20 +207,20 @@ public class DynamicLights {
     }
 
     @SubscribeEvent
-    public void serverWorldTick(TickEvent.LevelTickEvent event) {
+    public void serverWorldTick(LevelTickEvent.Post event) {
 
-        if (event.side != LogicalSide.SERVER) {
+        if (event.getLevel().isClientSide()) {
             return;
         }
 
-        ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(event.level);
+        ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(event.getLevel());
         if (worldLights != null) {
             Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
             while (iter.hasNext()) {
                 DynamicLightSourceContainer tickedLightContainer = iter.next();
                 if (tickedLightContainer.onUpdate()) {
                     iter.remove();
-                    tickedLightContainer.removeLight(event.level);
+                    tickedLightContainer.removeLight(event.getLevel());
                     LOGGER.debug("Dynamic Lights killing off LightSource on dead Entity: " + tickedLightContainer.getLightSource().getAttachmentEntity());
                 }
             }
