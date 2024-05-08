@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.io.File;
@@ -34,7 +34,7 @@ public class FinderCompassClient implements ISidedProxy {
         return Minecraft.getInstance().gameDirectory;
     }
 
-    public void handleHandshake(final HandshakePacket handShakePacket, final PlayPayloadContext context) {
+    public void handleHandshake(final HandshakePacket handShakePacket, final IPayloadContext context) {
         FinderCompassMod.instance.initIfNeeded();
         FinderCompassMod.LOGGER.info("client received Finder Compass HandshakePacket, from username: {}", handShakePacket.username());
         if (handShakePacket.username().equals("server")) {
@@ -47,7 +47,7 @@ public class FinderCompassClient implements ISidedProxy {
         }
     }
 
-    public void handleFeatureSearch(final FeatureSearchPacket packet, final PlayPayloadContext context) {
+    public void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {
         if (packet.username().equals("server")) {
             Minecraft.getInstance().submitAsync(() -> {
                 FinderCompassLogic.featureCoords = new BlockPos(packet.x(), packet.y(), packet.z());
@@ -62,7 +62,7 @@ public class FinderCompassClient implements ISidedProxy {
                     FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.featureId(), packet.username(), result);
                     if (result != null) {
                         FeatureSearchPacket featureSearchPacket = new FeatureSearchPacket(result.getX(), result.getY(), result.getZ(), "server", packet.featureId());
-                        PacketDistributor.PLAYER.with(p).send(featureSearchPacket);
+                        PacketDistributor.sendToPlayer(p, featureSearchPacket);
                     }
                 }
             });

@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
 
@@ -60,14 +60,14 @@ public class FinderCompassClientTicker {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.PlayerTickEvent tick) {
-        if (tick.phase == TickEvent.Phase.END && compassLogic != null) {
-            if (tick.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == COMPASS_ITEM_ID) {
+    public void onTick(PlayerTickEvent.Post tick) {
+        if (compassLogic != null) {
+            if (tick.getEntity().getItemInHand(InteractionHand.MAIN_HAND).getItem() == COMPASS_ITEM_ID) {
                 if (mc.options.keyAttack.isDown()) {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player.level().playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.3F, 0.6F);
+                        tick.getEntity().level().playSound(null, new BlockPos(tick.getEntity().getOnPos()), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;

@@ -6,7 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class FinderCompassServer implements ISidedProxy {
         return server.getFile("");
     }
 
-    public void handleFeatureSearch(final FeatureSearchPacket packet, final PlayPayloadContext context) {
+    public void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         server.submitAsync(() -> {
             ServerPlayer p = server.getPlayerList().getPlayerByName(packet.username());
@@ -39,7 +39,7 @@ public class FinderCompassServer implements ISidedProxy {
                 FinderCompassMod.LOGGER.debug("server searched for feature {} for user {}, result {}", packet.featureId(), packet.username(), result);
                 if (result != null) {
                     FeatureSearchPacket featureSearchPacket = new FeatureSearchPacket(result.getX(), result.getY(), result.getZ(), "server", packet.featureId());
-                    PacketDistributor.PLAYER.with(p).send(featureSearchPacket);
+                    PacketDistributor.sendToPlayer(p, featureSearchPacket);
                 }
             }
         });

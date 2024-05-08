@@ -1,33 +1,34 @@
 package atomicstryker.findercompass.common.network;
 
 import atomicstryker.findercompass.common.FinderCompassMod;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public record FeatureSearchPacket(int x, int y, int z, String username,
                                   String featureId) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(FinderCompassMod.MOD_ID, "featuresearch");
+    public static final Type<FeatureSearchPacket> TYPE = new Type<>(new ResourceLocation(FinderCompassMod.MOD_ID, "featuresearch"));
     public static final int SEARCH_RADIUS = 160;
-    private static final int MAX_STRING_LENGTH = 256;
 
-    public FeatureSearchPacket(final FriendlyByteBuf buffer) {
-        this(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readUtf(), buffer.readUtf());
-    }
+    public static final StreamCodec<ByteBuf, FeatureSearchPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            FeatureSearchPacket::x,
+            ByteBufCodecs.INT,
+            FeatureSearchPacket::y,
+            ByteBufCodecs.INT,
+            FeatureSearchPacket::z,
+            ByteBufCodecs.STRING_UTF8,
+            FeatureSearchPacket::username,
+            ByteBufCodecs.STRING_UTF8,
+            FeatureSearchPacket::featureId,
+            FeatureSearchPacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf packetBuffer) {
-        packetBuffer.writeInt(x);
-        packetBuffer.writeInt(y);
-        packetBuffer.writeInt(z);
-        packetBuffer.writeUtf(username, MAX_STRING_LENGTH);
-        packetBuffer.writeUtf(featureId, MAX_STRING_LENGTH);
-    }
-
-    @Override
-    public @NotNull ResourceLocation id() {
-        return ID;
+    public Type<FeatureSearchPacket> type() {
+        return TYPE;
     }
 }

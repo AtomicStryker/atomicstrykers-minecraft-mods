@@ -62,7 +62,7 @@ public class FinderCompassLogic {
 
                 if (is15SecInterval && currentSetting.getFeatureNeedle() != null) {
                     FeatureSearchPacket featureSearchPacket = new FeatureSearchPacket(mc.player.getOnPos().getX(), mc.player.getOnPos().getY(), mc.player.getOnPos().getZ(), mc.player.getName().getString(), currentSetting.getFeatureNeedle());
-                    PacketDistributor.SERVER.noArg().send(featureSearchPacket);
+                    PacketDistributor.sendToServer(featureSearchPacket);
                 }
 
                 while (iter.hasNext()) {

@@ -26,8 +26,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,18 +57,17 @@ public class FinderCompassMod {
         modEventBus.addListener(this::registerNetworking);
     }
 
-    private void registerNetworking(final RegisterPayloadHandlerEvent event) {
+    private void registerNetworking(final RegisterPayloadHandlersEvent event) {
 
         // the optional method gives us a registrar that does non-mandatory packets
         // so clients having the mod can still connect to servers which dont have it
-        final IPayloadRegistrar registrar = event.registrar(MOD_ID).optional();
+        final PayloadRegistrar registrar = event.registrar(MOD_ID).optional();
 
-        registrar.play(HandshakePacket.ID, HandshakePacket::new, handler -> handler
-                .client(FinderCompassClient.getInstance()::handleHandshake));
+        registrar.playToClient(HandshakePacket.TYPE, HandshakePacket.STREAM_CODEC,
+                (payload, context) -> FinderCompassClient.getInstance().handleHandshake(payload, context));
 
-        registrar.play(FeatureSearchPacket.ID, FeatureSearchPacket::new, handler -> handler
-                .client(FinderCompassClient.getInstance()::handleFeatureSearch)
-                .server(FinderCompassServer.getInstance()::handleFeatureSearch));
+        registrar.playBidirectional(FeatureSearchPacket.TYPE, FeatureSearchPacket.STREAM_CODEC,
+                (payload, context) -> FinderCompassMod.proxy.handleFeatureSearch(payload, context));
     }
 
     @SubscribeEvent
@@ -117,7 +116,7 @@ public class FinderCompassMod {
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getEntity().getDisplayName());
         HandshakePacket packet = new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig));
-        PacketDistributor.PLAYER.with((ServerPlayer) event.getEntity()).send(packet);
+        PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), packet);
     }
 
     private String getStringFromBlockState(BlockState blockState) {
