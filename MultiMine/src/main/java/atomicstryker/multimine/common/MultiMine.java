@@ -3,16 +3,14 @@ package atomicstryker.multimine.common;
 import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,48 +26,40 @@ public class MultiMine {
     public static final String MOD_ID = "multimine";
 
     private static MultiMine instance;
+    public static ISidedProxy proxy;
 
     public static Logger LOGGER;
 
     private File configFile;
     private MultiMineConfig config;
+    private MultiMineServer multiMineServer;
 
     public MultiMine(IEventBus modEventBus) {
         instance = this;
         LOGGER = LogManager.getLogger();
         MultiMine.LOGGER.info("mod instantiated");
-        NeoForge.EVENT_BUS.register(new MultiMineServer());
+        proxy = FMLEnvironment.dist.isClient() ? new MultiMineClient() : new MultiMineServer();
+        proxy.commonSetup();
 
         modEventBus.addListener(this::registerNetworking);
+
+        // even if we are on client, we build a multi mine server for local play
+        // if we are in a dedicated server, its the proxy object already built
+        multiMineServer = FMLEnvironment.dist.isClient() ? new MultiMineServer() : (MultiMineServer) proxy;
+        NeoForge.EVENT_BUS.register(multiMineServer);
     }
 
-    private void registerNetworking(final RegisterPayloadHandlerEvent event) {
+    private void registerNetworking(final RegisterPayloadHandlersEvent event) {
 
         // the optional method gives us a registrar that does non-mandatory packets
         // so clients having the mod can still connect to servers which dont have it
-        final IPayloadRegistrar registrar = event.registrar(MOD_ID).optional();
+        final PayloadRegistrar registrar = event.registrar(MOD_ID).optional();
 
-        registrar.play(PartialBlockPacket.ID, PartialBlockPacket::new, handler -> handler
-                .client(instance()::onPartialBlockForClient)
-                .server(instance()::onPartialBlock));
+        registrar.playBidirectional(PartialBlockPacket.TYPE, PartialBlockPacket.STREAM_CODEC,
+                (payload, context) -> proxy.handlePartialBlockPacket(payload, context));
 
-        registrar.play(PartialBlockRemovalPacket.ID, PartialBlockRemovalPacket::new, handler -> handler
-                .client(instance()::onPartialBlockRemovalForClient));
-    }
-
-    private void onPartialBlockForClient(PartialBlockPacket packet, PlayPayloadContext playPayloadContext) {
-        playPayloadContext.workHandler().submitAsync(() -> MultiMineClient.instance().onServerSentPartialBlockData(packet.x(), packet.y(), packet.z(), packet.value(), packet.regenerating()));
-    }
-
-    private void onPartialBlock(PartialBlockPacket packet, PlayPayloadContext playPayloadContext) {
-        ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.user());
-        if (p != null) {
-            playPayloadContext.workHandler().submitAsync(() -> MultiMineServer.instance().onClientSentPartialBlockPacket(p, packet.x(), packet.y(), packet.z(), packet.value()));
-        }
-    }
-
-    private void onPartialBlockRemovalForClient(PartialBlockRemovalPacket packet, PlayPayloadContext playPayloadContext) {
-        playPayloadContext.workHandler().submitAsync(() -> MultiMineClient.instance().onServerSentPartialBlockDeleteCommand(new BlockPos(packet.x(), packet.y(), packet.z())));
+        registrar.playToClient(PartialBlockRemovalPacket.TYPE, PartialBlockRemovalPacket.STREAM_CODEC,
+                (payload, context) -> proxy.handlePartialBlockRemovalPacket(payload, context));
     }
 
     /**
@@ -100,6 +90,10 @@ public class MultiMine {
 
     public static MultiMine instance() {
         return instance;
+    }
+
+    public MultiMineServer getServer() {
+        return multiMineServer;
     }
 
     public boolean getBlockRegenEnabled() {

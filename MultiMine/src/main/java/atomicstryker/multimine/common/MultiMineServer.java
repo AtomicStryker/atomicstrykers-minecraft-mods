@@ -8,16 +8,20 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Comparator;
@@ -27,8 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
-
-public class MultiMineServer {
+public class MultiMineServer implements ISidedProxy {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
@@ -44,6 +47,26 @@ public class MultiMineServer {
         instance = this;
         partiallyMinedBlocksListByDimension = Maps.newHashMap();
         blockRegenQueuesByDimension = Maps.newHashMap();
+    }
+
+    @Override
+    public void commonSetup() {
+        // no proxy action needed
+    }
+
+    @Override
+    public void handlePartialBlockPacket(PartialBlockPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.user());
+            if (p != null) {
+                onClientSentPartialBlockPacket(p, packet.x(), packet.y(), packet.z(), packet.value());
+            }
+        });
+    }
+
+    @Override
+    public void handlePartialBlockRemovalPacket(PartialBlockRemovalPacket payload, IPayloadContext context) {
+        // never called
     }
 
     public static MultiMineServer instance() {
@@ -90,7 +113,7 @@ public class MultiMineServer {
                 MultiMine.instance().debugPrint("Server updating partial block at: [{}|{}|{}], progress now: {}", x, y, z, iterBlock.getProgress());
 
                 // send the newly advanced partialblock to all relevant players
-                sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock, false);
+                sendPartiallyMinedBlockUpdateToAllPlayers(iterBlock, false, (ServerLevel) player.level());
 
                 if (iterBlock.isFinished() && !player.level().getBlockState(pos).isAir()) {
                     MultiMine.instance().debugPrint("Server popping, then forgetting block at: [{}|{}|{}]", x, y, z);
@@ -120,7 +143,7 @@ public class MultiMineServer {
 
         partiallyMinedBlocks.add(newblock);
         getBlockRegenQueueForDimension(dimension).offer(newblock);
-        sendPartiallyMinedBlockUpdateToAllPlayers(newblock, false);
+        sendPartiallyMinedBlockUpdateToAllPlayers(newblock, false, (ServerLevel) player.level());
     }
 
     private boolean isBlockBanned(BlockState blockState) {
@@ -178,7 +201,7 @@ public class MultiMineServer {
      */
     private void sendPartiallyMinedBlockDeleteCommandToAllPlayers(PartiallyMinedBlock block) {
         PartialBlockRemovalPacket packet = new PartialBlockRemovalPacket(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ());
-        PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension())).send(packet);
+        PacketDistributor.sendToAllPlayers(packet);
     }
 
     @SubscribeEvent
@@ -188,7 +211,7 @@ public class MultiMineServer {
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimensionKey);
         if (partiallyMinedBlocks != null) {
             for (PartiallyMinedBlock block : partiallyMinedBlocks) {
-                sendPartiallyMinedBlockToPlayer((ServerPlayer) player, block);
+                instance().sendPartiallyMinedBlockToPlayer((ServerPlayer) player, block);
             }
         }
     }
@@ -208,12 +231,10 @@ public class MultiMineServer {
      * Sends a partial Block Packet to all players in the matching dimension and
      * a certain area. Overwrites their local partial Block instances with
      * whatever you send.
-     *
-     * @param block PartiallyMinedBlock instance
      */
-    private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block, boolean regenerating) {
+    private void sendPartiallyMinedBlockUpdateToAllPlayers(PartiallyMinedBlock block, boolean regenerating, ServerLevel world) {
         PartialBlockPacket packet = new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), regenerating);
-        PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), 32D, block.getDimension())).send(packet);
+        PacketDistributor.sendToPlayersInDimension(world, packet);
     }
 
     /**
@@ -224,7 +245,7 @@ public class MultiMineServer {
      */
     private void sendPartiallyMinedBlockToPlayer(ServerPlayer p, PartiallyMinedBlock block) {
         PartialBlockPacket packet = new PartialBlockPacket("server", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false);
-        PacketDistributor.PLAYER.with(p).send(packet);
+        PacketDistributor.sendToPlayer(p, packet);
     }
 
     @SubscribeEvent
@@ -239,11 +260,11 @@ public class MultiMineServer {
      * age using a PriorityQueue and start repairing Blocks if they get too old.
      */
     @SubscribeEvent
-    public void onTick(TickEvent.LevelTickEvent tick) {
-        if (tick.side.isClient() || tick.phase != TickEvent.Phase.END) {
+    public void onTick(LevelTickEvent.Post tick) {
+        if (tick.getLevel().isClientSide()) {
             return;
         }
-        BlockRegenQueue queueForDimension = getBlockRegenQueueForDimension(tick.level.dimension());
+        BlockRegenQueue queueForDimension = getBlockRegenQueueForDimension(tick.getLevel().dimension());
         if (queueForDimension.isEmpty()) {
             return;
         }
@@ -276,7 +297,7 @@ public class MultiMineServer {
             } else {
                 // send update about this one to all
                 MultiMine.instance().debugPrint("Server sending partial regen update for [{}|{}|{}]", block.getPos().getX(), block.getPos().getY(), block.getPos().getZ());
-                sendPartiallyMinedBlockUpdateToAllPlayers(block, true);
+                sendPartiallyMinedBlockUpdateToAllPlayers(block, true, (ServerLevel) tick.getLevel());
                 queueForDimension.add(block);
             }
         }

@@ -1,33 +1,35 @@
 package atomicstryker.multimine.common.network;
 
 import atomicstryker.multimine.common.MultiMine;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public record PartialBlockPacket(String user, int x, int y, int z, float value,
                                  boolean regenerating) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(MultiMine.MOD_ID, "partialblock");
+    public static final Type<PartialBlockPacket> TYPE = new Type<>(new ResourceLocation(MultiMine.MOD_ID, "partialblock"));
 
-    private static final int MAX_NAME_LENGTH = 256;
-
-    public PartialBlockPacket(FriendlyByteBuf packetBuffer) {
-        this(packetBuffer.readUtf(MAX_NAME_LENGTH), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readInt(), packetBuffer.readFloat(), packetBuffer.readBoolean());
-    }
+    public static final StreamCodec<ByteBuf, PartialBlockPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8,
+            PartialBlockPacket::user,
+            ByteBufCodecs.INT,
+            PartialBlockPacket::x,
+            ByteBufCodecs.INT,
+            PartialBlockPacket::y,
+            ByteBufCodecs.INT,
+            PartialBlockPacket::z,
+            ByteBufCodecs.FLOAT,
+            PartialBlockPacket::value,
+            ByteBufCodecs.BOOL,
+            PartialBlockPacket::regenerating,
+            PartialBlockPacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf packetBuffer) {
-        packetBuffer.writeUtf(user, MAX_NAME_LENGTH);
-        packetBuffer.writeInt(x);
-        packetBuffer.writeInt(y);
-        packetBuffer.writeInt(z);
-        packetBuffer.writeFloat(value);
-        packetBuffer.writeBoolean(regenerating);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PartialBlockPacket> type() {
+        return TYPE;
     }
 }
