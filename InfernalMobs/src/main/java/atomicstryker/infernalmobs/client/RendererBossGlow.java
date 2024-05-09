@@ -5,6 +5,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -13,24 +14,23 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
 public class RendererBossGlow {
 
     @SubscribeEvent
-    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossglow"), new InfernalMobsBossGlowOverlay());
     }
 
-    public static class InfernalMobsBossGlowOverlay implements IGuiOverlay {
+    public static class InfernalMobsBossGlowOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
             Minecraft mc = Minecraft.getInstance();
             Entity viewEnt = mc.getCameraEntity();
             if (mc.isPaused() || viewEnt == null) {

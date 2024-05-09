@@ -17,7 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.io.File;
 
@@ -46,7 +46,7 @@ public class InfernalMobsClient {
     public void onEntityJoinedWorld(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
             MobModsPacket mobModsPacket = new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0);
-            PacketDistributor.SERVER.noArg().send(mobModsPacket);
+            PacketDistributor.sendToServer(mobModsPacket);
             InfernalMobsCore.LOGGER.trace("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getId());
         }
     }
@@ -58,7 +58,7 @@ public class InfernalMobsClient {
         }
     }
 
-    public void onHealthPacketForClient(final HealthPacket healthPacket, final PlayPayloadContext context) {
+    public void onHealthPacketForClient(final HealthPacket healthPacket, final IPayloadContext context) {
         mc.submitAsync(() -> onHealthPacket(healthPacket.entID(), healthPacket.health(), healthPacket.maxhealth()));
     }
 
@@ -72,15 +72,15 @@ public class InfernalMobsClient {
         }
     }
 
-    public void onKnockBackPacket(KnockBackPacket knockBackPacket, PlayPayloadContext playPayloadContext) {
+    public void onKnockBackPacket(KnockBackPacket knockBackPacket, IPayloadContext playPayloadContext) {
         mc.submitAsync(() -> MM_Gravity.knockBack(mc.player, knockBackPacket.xv(), knockBackPacket.zv()));
     }
 
-    public void onMobModsPacketToClient(MobModsPacket mobModsPacket, PlayPayloadContext playPayloadContext) {
+    public void onMobModsPacketToClient(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
         InfernalMobsCore.instance().addRemoteEntityModifiers(mc.level, mobModsPacket.entID(), mobModsPacket.stringData());
     }
 
-    public void onVelocityPacket(VelocityPacket velocityPacket, PlayPayloadContext playPayloadContext) {
+    public void onVelocityPacket(VelocityPacket velocityPacket, IPayloadContext playPayloadContext) {
         mc.submitAsync(() -> mc.player.push(velocityPacket.xv(), velocityPacket.yv(), velocityPacket.zv()));
     }
 

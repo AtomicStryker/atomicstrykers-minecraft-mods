@@ -5,6 +5,7 @@ import atomicstryker.infernalmobs.common.network.AirPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -12,13 +13,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
 
     protected static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
@@ -28,20 +28,20 @@ public class OverlayChoking {
     private static int airOverrideValue = -999;
     private static long airDisplayTimeout;
 
-    public static void handleAirPacket(final AirPacket airPacket, final PlayPayloadContext context) {
+    public static void handleAirPacket(final AirPacket airPacket, final IPayloadContext context) {
         airOverrideValue = airPacket.air();
         airDisplayTimeout = System.currentTimeMillis() + 3000L;
     }
 
     @SubscribeEvent
-    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_choking"), new InfernalMobsChokingGuiOverlay());
         mc = Minecraft.getInstance();
     }
 
-    public static class InfernalMobsChokingGuiOverlay implements IGuiOverlay {
+    public static class InfernalMobsChokingGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;
             }

@@ -49,6 +49,7 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -63,12 +64,13 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -131,56 +133,59 @@ public class InfernalMobsCore {
         modEventBus.addListener(this::registerNetworking);
     }
 
-    private void registerNetworking(final RegisterPayloadHandlerEvent event) {
+    private void registerNetworking(final RegisterPayloadHandlersEvent event) {
 
         // the optional method gives us a registrar that does non-mandatory packets
         // so clients having the mod can still connect to servers which dont have it
-        final IPayloadRegistrar registrar = event.registrar(MOD_ID).optional();
+        final PayloadRegistrar registrar = event.registrar(MOD_ID).optional();
 
-        registrar.play(AirPacket.ID, AirPacket::new, handler -> handler
-                .client(OverlayChoking::handleAirPacket));
+        registrar.playBidirectional(HealthPacket.TYPE, HealthPacket.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, context) -> instance().onHealthPacketForClient(payload, context),
+                        (payload, context) -> instance().onHealthPacket(payload, context)));
 
-        registrar.play(HealthPacket.ID, HealthPacket::new, handler -> handler
-                .client(instance()::onHealthPacketForClient)
-                .server(instance()::onHealthPacket));
+        registrar.playBidirectional(MobModsPacket.TYPE, MobModsPacket.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, context) -> instance().onMobModsPacketForClient(payload, context),
+                        (payload, context) -> instance().onMobModsPacket(payload, context)));
 
-        registrar.play(KnockBackPacket.ID, KnockBackPacket::new, handler -> handler
-                .client(instance()::onKnockBackPacketForClient));
+        if (FMLEnvironment.dist.isClient()) {
+            registrar.playToClient(AirPacket.TYPE, AirPacket.STREAM_CODEC, OverlayChoking::handleAirPacket);
 
-        registrar.play(MobModsPacket.ID, MobModsPacket::new, handler -> handler
-                .client(instance()::onMobModsPacketForClient)
-                .server(instance()::onMobModsPacket));
+            registrar.playToClient(VelocityPacket.TYPE, VelocityPacket.STREAM_CODEC,
+                    instance()::onVelocityPacketForClient);
 
-        registrar.play(VelocityPacket.ID, VelocityPacket::new, handler -> handler
-                .client(instance()::onVelocityPacketForClient));
+            registrar.playToClient(KnockBackPacket.TYPE, KnockBackPacket.STREAM_CODEC,
+                    instance()::onKnockBackPacketForClient);
+        }
     }
 
-    private void onHealthPacketForClient(HealthPacket healthPacket, PlayPayloadContext playPayloadContext) {
+    private void onHealthPacketForClient(HealthPacket healthPacket, IPayloadContext playPayloadContext) {
         if (FMLEnvironment.dist.isClient()) {
             InfernalMobsClient.instance().onHealthPacketForClient(healthPacket, playPayloadContext);
         }
     }
 
-    private void onKnockBackPacketForClient(KnockBackPacket knockBackPacket, PlayPayloadContext playPayloadContext) {
+    private void onKnockBackPacketForClient(KnockBackPacket knockBackPacket, IPayloadContext playPayloadContext) {
         if (FMLEnvironment.dist.isClient()) {
             InfernalMobsClient.instance().onKnockBackPacket(knockBackPacket, playPayloadContext);
         }
     }
 
-    private void onMobModsPacketForClient(MobModsPacket mobModsPacket, PlayPayloadContext playPayloadContext) {
+    private void onMobModsPacketForClient(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
         if (FMLEnvironment.dist.isClient()) {
             InfernalMobsClient.instance().onMobModsPacketToClient(mobModsPacket, playPayloadContext);
         }
     }
 
-    private void onVelocityPacketForClient(VelocityPacket velocityPacket, PlayPayloadContext playPayloadContext) {
+    private void onVelocityPacketForClient(VelocityPacket velocityPacket, IPayloadContext playPayloadContext) {
         if (FMLEnvironment.dist.isClient()) {
             InfernalMobsClient.instance().onVelocityPacket(velocityPacket, playPayloadContext);
         }
     }
 
-    private void onMobModsPacket(MobModsPacket mobModsPacket, PlayPayloadContext playPayloadContext) {
-        Player p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(mobModsPacket.stringData());
+    private void onMobModsPacket(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
+        ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(mobModsPacket.stringData());
         InfernalMobsCore.LOGGER.trace("player {} from string {} querying server for mods of entity id {}", p, mobModsPacket.stringData(), mobModsPacket.entID());
         if (p != null) {
             Entity ent = p.level().getEntity(mobModsPacket.entID());
@@ -191,14 +196,14 @@ public class InfernalMobsCore {
                 if (mod != null) {
                     InfernalMobsCore.LOGGER.trace("server sending mods {} for ent-ID {}", mod.getLinkedModNameUntranslated(), mobModsPacket.entID());
                     MobModsPacket response = new MobModsPacket(mod.getLinkedModNameUntranslated(), mobModsPacket.entID(), (byte) 1);
-                    PacketDistributor.PLAYER.with((ServerPlayer) p).send(response);
+                    PacketDistributor.sendToPlayer(p, response);
                     InfernalMobsCore.instance().sendHealthPacket(e);
                 }
             }
         }
     }
 
-    private void onHealthPacket(HealthPacket healthPacket, PlayPayloadContext playPayloadContext) {
+    private void onHealthPacket(HealthPacket healthPacket, IPayloadContext playPayloadContext) {
         ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData());
         if (p != null) {
             Entity ent = p.level().getEntity(healthPacket.entID());
@@ -206,7 +211,7 @@ public class InfernalMobsCore {
                 MobModifier mod = InfernalMobsCore.getMobModifiers(e);
                 if (mod != null) {
                     HealthPacket response = new HealthPacket(healthPacket.stringData(), healthPacket.entID(), e.getHealth(), e.getMaxHealth());
-                    PacketDistributor.PLAYER.with(p).send(response);
+                    PacketDistributor.sendToPlayer(p, response);
                 }
             }
         }
@@ -281,7 +286,7 @@ public class InfernalMobsCore {
             }
 
             configFile = new File(mcFolder, File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
-            loadConfig();
+            loadConfig(world);
 
             LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
             LOGGER.info("InfernalMobsCore commonSetup completed! config file at: " + configFile.getAbsolutePath());
@@ -333,7 +338,7 @@ public class InfernalMobsCore {
     /**
      * Forge Config file
      */
-    private void loadConfig() {
+    private void loadConfig(Level world) {
         InfernalMobsConfig defaultConfig = new InfernalMobsConfig();
         defaultConfig.setEliteRarity(15);
         defaultConfig.setUltraRarity(7);
@@ -343,59 +348,59 @@ public class InfernalMobsCore {
         defaultConfig.setModHealthFactor(1.0D);
 
         List<String> dropsElite = new ArrayList<>();
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SHOVEL)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_PICKAXE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_AXE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SWORD)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS)));
-        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.COOKIE, 5)));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SHOVEL), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_PICKAXE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_AXE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_SWORD), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS), world.registryAccess()));
+        dropsElite.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.COOKIE, 5), world.registryAccess()));
         defaultConfig.setDroppedItemIDsElite(dropsElite);
 
         List<String> dropsUltra = new ArrayList<>();
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BOW)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_HELMET)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_BOOTS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_CHESTPLATE)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_LEGGINGS)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_APPLE, 3)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BLAZE_POWDER, 5)));
-        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK)));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HOE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BOW), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_HELMET), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_BOOTS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_CHESTPLATE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.IRON_LEGGINGS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_HELMET), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_BOOTS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_CHESTPLATE), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_LEGGINGS), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.GOLDEN_APPLE, 3), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.BLAZE_POWDER, 5), world.registryAccess()));
+        dropsUltra.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK), world.registryAccess()));
         defaultConfig.setDroppedItemIDsUltra(dropsUltra);
 
         List<String> dropsInfernal = new ArrayList<>();
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND, 3)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SWORD)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_AXE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HOE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_PICKAXE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SHOVEL)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HELMET)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_BOOTS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_CHESTPLATE)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_LEGGINGS)));
-        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENDER_PEARL, 3)));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENCHANTED_BOOK), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND, 3), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SWORD), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_AXE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HOE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_PICKAXE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_SHOVEL), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_HELMET), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_BOOTS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_CHESTPLATE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.CHAINMAIL_LEGGINGS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_HELMET), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_BOOTS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_CHESTPLATE), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.DIAMOND_LEGGINGS), world.registryAccess()));
+        dropsInfernal.add(ItemConfigHelper.fromItemStack(new ItemStack(Items.ENDER_PEARL, 3), world.registryAccess()));
         defaultConfig.setDroppedItemIDsInfernal(dropsInfernal);
 
         defaultConfig.setMaxDamage(10D);
@@ -409,9 +414,9 @@ public class InfernalMobsCore {
 
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
-        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER);
-        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER);
-        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER);
+        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER, world.registryAccess());
+        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER, world.registryAccess());
+        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER, world.registryAccess());
 
         mobMods.removeIf(c -> !config.getModsEnabled().containsKey(c.getSimpleName()) || !config.getModsEnabled().get(c.getSimpleName()));
     }
@@ -717,7 +722,7 @@ public class InfernalMobsCore {
                     itemStack = EnchantedBookItem.createForEnchantment(getRandomEnchantment(mob.getRandom()));
                 } else {
                     int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                    enchantRandomly(mob.level().random, itemStack, item.getEnchantmentValue(), usedStr);
+                    enchantRandomly(mob.level().enabledFeatures(), mob.level().random, itemStack, item.getEnchantmentValue(), usedStr);
                     // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
                     // itemStack, item.getItemEnchantability());
                 }
@@ -756,14 +761,15 @@ public class InfernalMobsCore {
     /**
      * Custom Enchanting Helper
      *
+     * @param pEnabledFeatures   level features enabled
      * @param rand               Random gen to use
      * @param itemStack          ItemStack to be enchanted
      * @param itemEnchantability ItemStack max enchantability level
      * @param modStr             MobModifier strength to be used. Should be in range 2-5
      */
-    private void enchantRandomly(RandomSource rand, ItemStack itemStack, int itemEnchantability, int modStr) {
+    private void enchantRandomly(FeatureFlagSet pEnabledFeatures, RandomSource rand, ItemStack itemStack, int itemEnchantability, int modStr) {
         int remainStr = (modStr + 1) / 2; // should result in 1-3
-        List<?> enchantments = EnchantmentHelper.selectEnchantment(rand, itemStack, itemEnchantability, true);
+        List<?> enchantments = EnchantmentHelper.selectEnchantment(pEnabledFeatures, rand, itemStack, itemEnchantability, true);
         Iterator<?> iter = enchantments.iterator();
         while (iter.hasNext() && remainStr > 0) {
             remainStr--;
@@ -785,47 +791,47 @@ public class InfernalMobsCore {
     public void sendVelocityPacket(ServerPlayer target, float xVel, float yVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
             VelocityPacket velocityPacket = new VelocityPacket(xVel, yVel, zVel);
-            PacketDistributor.PLAYER.with(target).send(velocityPacket);
+            PacketDistributor.sendToPlayer(target, velocityPacket);
         }
     }
 
     public void sendKnockBackPacket(ServerPlayer target, float xVel, float zVel) {
         if (getIsEntityAllowedTarget(target)) {
             KnockBackPacket knockBackPacket = new KnockBackPacket(xVel, zVel);
-            PacketDistributor.PLAYER.with(target).send(knockBackPacket);
+            PacketDistributor.sendToPlayer(target, knockBackPacket);
         }
     }
 
     public void sendHealthPacket(LivingEntity mob) {
         HealthPacket healthPacket = new HealthPacket("", mob.getId(), mob.getHealth(), mob.getMaxHealth());
-        PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(mob.getX(), mob.getY(), mob.getZ(), 32d, mob.getCommandSenderWorld().dimension())).send(healthPacket);
+        PacketDistributor.sendToPlayersTrackingEntity(mob, healthPacket);
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
         HealthPacket healthPacket = new HealthPacket(playerName, mob.getId(), 0f, 0f);
-        PacketDistributor.SERVER.noArg().send(healthPacket);
+        PacketDistributor.sendToServer(healthPacket);
     }
 
     public void sendAirPacket(ServerPlayer target, int lastAir) {
         if (getIsEntityAllowedTarget(target)) {
             AirPacket airPacket = new AirPacket(lastAir);
-            PacketDistributor.PLAYER.with(target).send(airPacket);
+            PacketDistributor.sendToPlayer(target, airPacket);
         }
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.LevelTickEvent tick) {
+    public void onTick(LevelTickEvent.Post tick) {
         if (System.currentTimeMillis() > nextExistCheckTime) {
             nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
-            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.level);
+            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.getLevel());
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
             mobsmap.keySet().stream().filter(this::filterMob).forEach(InfernalMobsCore::removeEntFromElites);
 
-            resetModifiedPlayerEntitiesAsNeeded(tick.level);
+            resetModifiedPlayerEntitiesAsNeeded(tick.getLevel());
         }
 
-        if (!tick.level.isClientSide) {
+        if (!tick.getLevel().isClientSide()) {
             infCheckA = null;
             infCheckB = null;
         }

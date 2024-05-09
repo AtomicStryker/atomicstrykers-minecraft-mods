@@ -18,6 +18,7 @@ import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -162,20 +163,21 @@ public class EntityEventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityLivingUpdate(LivingEvent.LivingTickEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+    public void onEntityLivingUpdate(EntityTickEvent.Post event) {
+        if (!event.getEntity().level().isClientSide() && event.getEntity() instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
             // workaround to get save-loaded infernal entities working, init them on their first living tick
             if (event.getEntity().tickCount == 1) {
                 String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
                 if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
-                    InfernalMobsCore.instance().addEntityModifiersByString(event.getEntity(), savedMods);
+                    InfernalMobsCore.instance().addEntityModifiersByString(livingEntity, savedMods);
                 }
             }
 
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+            MobModifier mod = InfernalMobsCore.getMobModifiers(livingEntity);
             if (mod != null) {
-                mod.onUpdate(event.getEntity());
+                mod.onUpdate(livingEntity);
             }
 
             if (InfernalMobsCore.instance().config.isAntiMobFarm() && System.currentTimeMillis() > nextMapEvaluation) {

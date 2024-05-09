@@ -1,26 +1,26 @@
 package atomicstryker.infernalmobs.common.network;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public record KnockBackPacket(float xv, float zv) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "knockback");
+    public static final Type<KnockBackPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "knockback"));
 
-    public KnockBackPacket(FriendlyByteBuf packetBuffer) {
-        this(packetBuffer.readFloat(), packetBuffer.readFloat());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf packetBuffer) {
-        packetBuffer.writeFloat(xv);
-        packetBuffer.writeFloat(zv);
-    }
+    public static final StreamCodec<ByteBuf, KnockBackPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.FLOAT,
+            KnockBackPacket::xv,
+            ByteBufCodecs.FLOAT,
+            KnockBackPacket::zv,
+            KnockBackPacket::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<KnockBackPacket> type() {
+        return TYPE;
     }
 }

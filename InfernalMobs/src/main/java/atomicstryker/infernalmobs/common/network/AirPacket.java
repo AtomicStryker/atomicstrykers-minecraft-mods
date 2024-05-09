@@ -1,26 +1,25 @@
 package atomicstryker.infernalmobs.common.network;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 
 public record AirPacket(int air) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(InfernalMobsCore.MOD_ID, "airchoke");
+    public static final Type<AirPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "airchoke"));
 
-    public AirPacket(final FriendlyByteBuf buffer) {
-        this(buffer.readInt());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeInt(air);
-    }
+    public static final StreamCodec<ByteBuf, AirPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            AirPacket::air,
+            AirPacket::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<AirPacket> type() {
+        return TYPE;
     }
 }

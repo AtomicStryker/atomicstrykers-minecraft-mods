@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
@@ -26,18 +27,17 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
 public class OverlayBossBar {
 
     private static final double NAME_VISION_DISTANCE = 32D;
@@ -52,7 +52,7 @@ public class OverlayBossBar {
     private static LinkedHashMap<UUID, LerpingBossEvent> vanillaBossEventsMap = null;
 
     @SubscribeEvent
-    public static void onRegisterGuis(RegisterGuiOverlaysEvent event) {
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossbar"), new InfernalMobsHealthBarGuiOverlay());
         mc = Minecraft.getInstance();
         healthBarRetainTime = 0;
@@ -60,9 +60,9 @@ public class OverlayBossBar {
         nextPacketTime = 0;
     }
 
-    public static class InfernalMobsHealthBarGuiOverlay implements IGuiOverlay {
+    public static class InfernalMobsHealthBarGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
                 return;
             }
@@ -186,7 +186,7 @@ public class OverlayBossBar {
     private static void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
             MobModsPacket mobModsPacket = new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0);
-            PacketDistributor.SERVER.noArg().send(mobModsPacket);
+            PacketDistributor.sendToServer(mobModsPacket);
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
@@ -195,7 +195,7 @@ public class OverlayBossBar {
     private static void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
             HealthPacket healthPacket = new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f);
-            PacketDistributor.SERVER.noArg().send(healthPacket);
+            PacketDistributor.sendToServer(healthPacket);
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
     }

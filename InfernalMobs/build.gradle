@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
 	id 'idea'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'net.neoforged.gradle.userdev' version '7.0.80'
+    id 'net.neoforged.gradle.userdev' version '7.0.109'
 }
 
 version = mod_version
@@ -17,8 +17,8 @@ base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+// Mojang ships Java 21 to end users in 1.20.5+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 runs {
     configureEach {
@@ -63,7 +63,7 @@ tasks.withType(ProcessResources).configureEach {
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml']) {
+    filesMatching(['META-INF/neoforge.mods.toml']) {
         expand replaceProperties + [project: project]
     }
 }
@@ -97,5 +97,13 @@ curseforge {
         mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
           displayName = mod_name
         }
+    }
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }
