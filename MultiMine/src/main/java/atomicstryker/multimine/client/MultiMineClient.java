@@ -66,6 +66,27 @@ public class MultiMineClient {
         mc = Minecraft.getInstance();
         MultiMine.LOGGER.info("MultiMineClient playerLoginToServer: " + evt.getPlayer());
         MultiMine.instance().initIfNeeded(evt.getPlayer().level());
+        instance().reset();
+    }
+
+    /**
+     * reset local caches when entering any world
+     */
+    private void reset() {
+        if (mc.level == null) {
+            // should never happen, event is only fired when world exists
+            return;
+        }
+        for (int i = 0; i < partiallyMinedBlocksArray.length; i++) {
+            if (partiallyMinedBlocksArray[i] != null) {
+                // when switching worlds or servers, make sure we dont access out of bounds
+                if (mc.level.isLoaded(partiallyMinedBlocksArray[i].getPos())) {
+                    // calling this vanilla method with parameter 10 (or -1) will wipe the visible damage cracks
+                    mc.level.destroyBlockProgress(i, partiallyMinedBlocksArray[i].getPos(), 10);
+                }
+                partiallyMinedBlocksArray[i] = null;
+            }
+        }
     }
 
     public static File getMcFolder() {

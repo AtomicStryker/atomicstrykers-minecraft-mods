@@ -58,6 +58,10 @@ public class MultiMine {
         }
     }
 
+    public void shutDown() {
+        configFile = null;
+    }
+
     private void loadConfig() {
         MultiMineConfig defaultConfig = new MultiMineConfig();
         defaultConfig.setDisableForAllTileEntities(false);
