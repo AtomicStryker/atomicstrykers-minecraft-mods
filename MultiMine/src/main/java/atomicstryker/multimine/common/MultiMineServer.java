@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -230,6 +231,15 @@ public class MultiMineServer {
         // dedicated server starting point
         MultiMine.LOGGER.info("MultiMine ServerStartedEvent");
         MultiMine.instance().initIfNeeded(evt.getServer().getAllLevels().iterator().next());
+    }
+
+    @SubscribeEvent
+    public void stopping(ServerStoppingEvent evt) {
+        MultiMine.LOGGER.info("MultiMine ServerStoppingEvent");
+        MultiMine.instance().shutDown();
+        // prevent any block interactions when reopening worlds because MC will deadlock
+        partiallyMinedBlocksListByDimension.clear();
+        blockRegenQueuesByDimension.clear();
     }
 
     /**
