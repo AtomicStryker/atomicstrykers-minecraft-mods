@@ -7,7 +7,6 @@ import atomicstryker.dynamiclights.server.ItemConfigHelper;
 import atomicstryker.dynamiclights.server.ItemLightLevels;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +57,7 @@ public class DroppedItemsLightSource {
         defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0, registryAccess));
 
 
-        File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_droppeditems.cfg");
+        File configFile = server.getServerDirectory().resolve("config" + File.separatorChar + "dynamiclights_droppeditems.cfg").toFile();
         try {
             config = GsonConfig.loadConfigWithDefault(LightConfig.class, configFile, defaultConfig);
             if (config == null) {
