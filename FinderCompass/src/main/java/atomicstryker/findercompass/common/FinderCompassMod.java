@@ -33,7 +33,11 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Mod(FinderCompassMod.MOD_ID)
 @Mod.EventBusSubscriber(modid = FinderCompassMod.MOD_ID)
@@ -48,7 +52,7 @@ public class FinderCompassMod {
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
-    public static SimpleChannel networkChannel = ChannelBuilder.named(new ResourceLocation("findercompass")).
+    public static SimpleChannel networkChannel = ChannelBuilder.named(ResourceLocation.parse("findercompass")).
             clientAcceptedVersions((status, version) -> true).
             serverAcceptedVersions((status, version) -> true).
             networkProtocolVersion(1)
@@ -84,7 +88,7 @@ public class FinderCompassMod {
         if (FinderCompassClientTicker.instance == null) {
             compassConfig = createDefaultConfig();
             try {
-                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
+                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, proxy.getMcFolder().resolve("config" + File.separator + "findercompass.cfg").toFile(), compassConfig);
                 loadSettingListFromConfig(compassConfig);
                 // FinderCompassClientTicker.instance is set in clientside commonSetup
                 proxy.commonSetup();
@@ -136,7 +140,7 @@ public class FinderCompassMod {
         Gson gson = new Gson();
         Map<String, String> blockMap = gson.fromJson(json, HashMap.class);
         String resourceAsString = blockMap.get("block");
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(resourceAsString));
+        Block block = ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse(resourceAsString));
         if (block == null) {
             return null;
         }
@@ -339,7 +343,7 @@ public class FinderCompassMod {
      */
     public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
         // EnderEyeItem is useful for looking up how map structures work if they change
-        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, new ResourceLocation(featureId));
+        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, ResourceLocation.parse(featureId));
         return level.findNearestMapStructure(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 

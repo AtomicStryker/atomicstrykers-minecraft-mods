@@ -3,7 +3,7 @@ package atomicstryker.findercompass.common;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import atomicstryker.findercompass.common.network.HandshakePacket;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface ISidedProxy {
     void commonSetup();
@@ -12,5 +12,5 @@ public interface ISidedProxy {
 
     void onReceivedHandshakePacket(HandshakePacket handShakePacket);
 
-    File getMcFolder();
+    Path getMcFolder();
 }

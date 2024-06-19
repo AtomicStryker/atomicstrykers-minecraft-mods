@@ -101,7 +101,7 @@ public class FinderCompassClientTicker {
         currentSetting = getSettingsList().get(nextIndex);
         FinderCompassLogic.hasFeature = false;
 
-        if (mc.level != null) {
+        if (mc.level != null && mc.player != null) {
             mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
             mc.gui.getChat().addMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
         }

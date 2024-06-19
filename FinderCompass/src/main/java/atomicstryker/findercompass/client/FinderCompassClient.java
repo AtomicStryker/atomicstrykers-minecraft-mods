@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.io.File;
+import java.nio.file.Path;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
 public class FinderCompassClient implements ISidedProxy {
@@ -26,8 +26,8 @@ public class FinderCompassClient implements ISidedProxy {
     }
 
     @Override
-    public File getMcFolder() {
-        return Minecraft.getInstance().gameDirectory;
+    public Path getMcFolder() {
+        return Minecraft.getInstance().gameDirectory.toPath();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FinderCompassClient implements ISidedProxy {
                             packet.getFeatureId(), packet.getUsername(), result);
                     if (result != null) {
                         FinderCompassMod.networkChannel.send(new FeatureSearchPacket(result.getX(), result.getY(),
-                                result.getZ(), "server", packet.getFeatureId()),
+                                        result.getZ(), "server", packet.getFeatureId()),
                                 PacketDistributor.PLAYER.with(p));
                     }
                 }

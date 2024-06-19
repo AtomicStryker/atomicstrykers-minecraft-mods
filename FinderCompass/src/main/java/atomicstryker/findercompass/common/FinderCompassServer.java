@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class FinderCompassServer implements ISidedProxy {
 
@@ -19,9 +19,8 @@ public class FinderCompassServer implements ISidedProxy {
     }
 
     @Override
-    public File getMcFolder() {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        return server.getFile("");
+    public Path getMcFolder() {
+        return ServerLifecycleHooks.getCurrentServer().getServerDirectory();
     }
 
     @Override
