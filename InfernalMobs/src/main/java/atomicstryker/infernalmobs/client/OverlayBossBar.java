@@ -5,6 +5,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -71,12 +72,12 @@ public class OverlayBossBar {
 
     public static class InfernalMobsHealthBarGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
+        public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
                 return;
             }
 
-            LivingEntity ent = getEntityCrosshairOver(partialTick, mc);
+            LivingEntity ent = getEntityCrosshairOver(partialTick.getRealtimeDeltaTicks(), mc);
             boolean retained = false;
 
             if (ent == null && System.currentTimeMillis() < healthBarRetainTime) {

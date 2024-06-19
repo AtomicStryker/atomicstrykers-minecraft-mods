@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.client;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -21,6 +22,8 @@ import java.util.Map;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = InfernalMobsCore.MOD_ID)
 public class RendererBossGlow {
+
+    protected static long nextParticleTimeMillis;
 
     @SubscribeEvent
     public static void onLevelLoad(LevelEvent.Load event) {
@@ -42,12 +45,16 @@ public class RendererBossGlow {
 
     public static class InfernalMobsBossGlowOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
+        public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             Minecraft mc = Minecraft.getInstance();
             Entity viewEnt = mc.getCameraEntity();
             if (mc.isPaused() || viewEnt == null) {
                 return;
             }
+            if (System.currentTimeMillis() < nextParticleTimeMillis) {
+                return;
+            }
+            nextParticleTimeMillis = System.currentTimeMillis() + 100L;
             Vec3 curPos = viewEnt.position();
             Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.level());
             mobsmap.keySet().stream().filter(ent -> ent.shouldRenderAtSqrDistance(curPos.distanceToSqr(ent.position()))

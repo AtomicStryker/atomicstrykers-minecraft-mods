@@ -29,7 +29,7 @@ public class InfernalCommandSpawnInfernal {
 
     private static void execute(CommandSourceStack source, int x, int y, int z, String entClassName, String modifiers) {
 
-        EntityType<?> chosenType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entClassName));
+        EntityType<?> chosenType = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(entClassName));
         if (chosenType == null || chosenType.getCategory().isFriendly() || chosenType.getCategory().isPersistent()) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
             return;
