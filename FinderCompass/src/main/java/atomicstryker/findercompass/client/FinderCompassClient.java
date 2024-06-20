@@ -12,7 +12,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class FinderCompassClient implements ISidedProxy {
 
@@ -30,8 +30,8 @@ public class FinderCompassClient implements ISidedProxy {
     }
 
     @Override
-    public File getMcFolder() {
-        return Minecraft.getInstance().gameDirectory;
+    public Path getMcFolder() {
+        return Minecraft.getInstance().gameDirectory.toPath();
     }
 
     public void handleHandshake(final HandshakePacket handShakePacket, final IPayloadContext context) {

@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
 	id 'idea'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'net.neoforged.gradle.userdev' version '7.0.109'
+    id 'net.neoforged.gradle.userdev' version '7.0.142'
 }
 
 version = mod_version

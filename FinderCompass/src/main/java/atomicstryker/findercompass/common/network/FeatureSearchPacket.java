@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public record FeatureSearchPacket(int x, int y, int z, String username,
                                   String featureId) implements CustomPacketPayload {
 
-    public static final Type<FeatureSearchPacket> TYPE = new Type<>(new ResourceLocation(FinderCompassMod.MOD_ID, "featuresearch"));
+    public static final Type<FeatureSearchPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FinderCompassMod.MOD_ID, "featuresearch"));
     public static final int SEARCH_RADIUS = 160;
 
     public static final StreamCodec<ByteBuf, FeatureSearchPacket> STREAM_CODEC = StreamCodec.composite(

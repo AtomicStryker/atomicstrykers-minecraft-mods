@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class FinderCompassServer implements ISidedProxy {
 
@@ -25,9 +25,9 @@ public class FinderCompassServer implements ISidedProxy {
     }
 
     @Override
-    public File getMcFolder() {
+    public Path getMcFolder() {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        return server.getFile("");
+        return server.getServerDirectory();
     }
 
     public void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {

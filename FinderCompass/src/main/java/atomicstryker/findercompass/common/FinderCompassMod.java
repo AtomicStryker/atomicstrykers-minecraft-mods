@@ -83,7 +83,7 @@ public class FinderCompassMod {
         if (compassConfig == null) {
             compassConfig = createDefaultConfig();
             try {
-                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, new File(proxy.getMcFolder() + File.separator + "config" + File.separator, "findercompass.cfg"), compassConfig);
+                compassConfig = GsonConfig.loadConfigWithDefault(CompassConfig.class, proxy.getMcFolder().resolve("config" + File.separator + "findercompass.cfg").toFile(), compassConfig);
                 loadSettingListFromConfig(compassConfig);
                 // FinderCompassClientTicker.instance is set in clientside commonSetup
                 proxy.commonSetup();
@@ -135,7 +135,7 @@ public class FinderCompassMod {
         Gson gson = new Gson();
         Map<String, String> blockMap = gson.fromJson(json, HashMap.class);
         String resourceAsString = blockMap.get("block");
-        Optional<Block> blockOptional = BuiltInRegistries.BLOCK.getOptional(new ResourceLocation(resourceAsString));
+        Optional<Block> blockOptional = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(resourceAsString));
         if (blockOptional.isEmpty()) {
             return null;
         }
@@ -339,7 +339,7 @@ public class FinderCompassMod {
      */
     public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
         // EnderEyeItem is useful for looking up how map structures work if they change
-        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, new ResourceLocation(featureId));
+        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, ResourceLocation.parse(featureId));
         return level.findNearestMapStructure(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 

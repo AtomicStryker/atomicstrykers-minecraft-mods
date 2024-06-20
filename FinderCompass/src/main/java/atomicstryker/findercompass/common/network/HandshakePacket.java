@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record HandshakePacket(String username, String json) implements CustomPacketPayload {
 
-    public static final Type<HandshakePacket> TYPE = new Type<>(new ResourceLocation(FinderCompassMod.MOD_ID, "handshake"));
+    public static final Type<HandshakePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FinderCompassMod.MOD_ID, "handshake"));
 
     public static final StreamCodec<ByteBuf, HandshakePacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
