@@ -1,77 +1,49 @@
 plugins {
+    id 'java-library'
     id 'eclipse'
 	id 'idea'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'net.neoforged.gradle.userdev' version '7.0.142'
 }
 
 version = mod_version
 group = mod_group_id
 
+repositories {
+    mavenLocal()
+}
+
 base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+// Mojang ships Java 21 to end users in 1.20.5+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
-	copyIdeResources = true
-    
-    runs {
-        client {
-            workingDirectory project.file('run')
 
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+        modSource project.sourceSets.main
+    }
 
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
+    client {
+        // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
 
-            property 'forge.enabledGameTestNamespaces', mod_id
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        programArgument '--nogui'
+    }
 
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
 
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-		
-		data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
+    data {
+        programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
@@ -79,7 +51,22 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${neo_version}"
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+            neo_version         : neo_version, neo_version_range: neo_version_range,
+            loader_version_range: loader_version_range,
+            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors         : mod_authors, mod_description: mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties + [project: project]
+    }
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -97,20 +84,8 @@ jar {
     }
 }
 
-jar.finalizedBy('reobfJar')
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-// Merge the resources and classes into the same directory.
-// This is done because java expects modules to be in a single directory.
-// And if we have it in multiple we have to do performance intensive hacks like having the UnionFileSystem
-// This will eventually be migrated to ForgeGradle so modders don't need to manually do it. But that is later.
-sourceSets.each {
-    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
-    it.output.resourcesDir = dir
-    it.java.destinationDirectory = dir
 }
 
 curseforge {
@@ -118,9 +93,18 @@ curseforge {
     project {
         id = curseforge_id
         releaseType = 'release'
+		addGameVersion "NeoForge"
         addGameVersion minecraft_version
         mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
           displayName = mod_name
         }
+    }
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }
