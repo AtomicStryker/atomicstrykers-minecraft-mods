@@ -212,7 +212,7 @@ public class EntityEventHandler {
         if (!event.getEntity().level().isClientSide) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
-                mod.onDropItems(event.getEntity(), event.getSource(), event.getDrops(), event.getLootingLevel(), event.isRecentlyHit(), event.getLootingLevel());
+                mod.onDropItems(event.getEntity(), event.getSource(), event.getDrops(), event.isRecentlyHit());
                 InfernalMobsCore.removeEntFromElites(event.getEntity());
             }
         }

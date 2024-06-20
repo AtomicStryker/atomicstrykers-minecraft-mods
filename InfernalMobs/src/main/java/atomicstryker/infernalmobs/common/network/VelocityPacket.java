@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record VelocityPacket(float xv, float yv, float zv) implements CustomPacketPayload {
 
-    public static final Type<VelocityPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "velocity"));
+    public static final Type<VelocityPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "velocity"));
 
     public static final StreamCodec<ByteBuf, VelocityPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT,

@@ -1,5 +1,6 @@
-1.20.6.1NF
-- updated to MC 1.20.6 for Neoforge
+1.21.1NF
+- updated for MC 1.21 and Neoforge
+- reduced particle spam on high FPS
 
 1.20.4.2NF
 - Neoforge variant: Mark packets optional, so clients and servers can still connect with either lacking the mod

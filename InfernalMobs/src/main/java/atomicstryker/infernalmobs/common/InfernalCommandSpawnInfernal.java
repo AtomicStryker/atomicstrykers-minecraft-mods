@@ -31,7 +31,7 @@ public class InfernalCommandSpawnInfernal {
 
     private static void execute(CommandSourceStack source, int x, int y, int z, String entClassName, String modifiers) {
 
-        Optional<EntityType<?>> chosenType = BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(entClassName));
+        Optional<EntityType<?>> chosenType = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(entClassName));
         if (chosenType.isEmpty() || chosenType.get().getCategory().isFriendly() || chosenType.get().getCategory().isPersistent()) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
             return;

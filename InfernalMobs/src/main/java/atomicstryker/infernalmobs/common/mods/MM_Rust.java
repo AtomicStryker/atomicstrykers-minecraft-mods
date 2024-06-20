@@ -5,7 +5,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
@@ -51,8 +50,8 @@ public class MM_Rust extends MobModifier {
     private void hurtArmor(Player player, DamageSource damageSource, float pDamageAmount) {
         if (pDamageAmount > 0.0F) {
             int i = (int) Math.max(1.0F, pDamageAmount / 4.0F);
-            for (int index : Inventory.ALL_ARMOR_SLOTS) {
-                EquipmentSlot equipmentSlot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index);
+            EquipmentSlot[] slots = new EquipmentSlot[]{EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD};
+            for (EquipmentSlot equipmentSlot : slots) {
                 ItemStack itemstack = player.getItemBySlot(equipmentSlot);
                 if (itemstack.getItem() instanceof ArmorItem && itemstack.canBeHurtBy(damageSource)) {
                     itemstack.hurtAndBreak(i, player, equipmentSlot);

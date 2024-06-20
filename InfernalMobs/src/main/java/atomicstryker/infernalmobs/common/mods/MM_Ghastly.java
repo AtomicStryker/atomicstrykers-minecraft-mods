@@ -53,7 +53,7 @@ public class MM_Ghastly extends MobModifier {
 
             mob.level().levelEvent(null, 1008, new BlockPos((int) mob.getX(), (int) mob.getY(), (int) mob.getZ()), 0);
             // the last int parameter is explosionpower, apparently 1 is Ghast default
-            LargeFireball entFB = new LargeFireball(mob.level(), mob, diffX, diffY, diffZ, 1);
+            LargeFireball entFB = new LargeFireball(mob.level(), mob, new Vec3(diffX, diffY, diffZ), 1);
             double spawnOffset = 2.0D;
             Vec3 mobLook = mob.getViewVector(1.0F);
             double newX = mob.getX() + mobLook.x * spawnOffset;

@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record HealthPacket(String stringData, int entID, float health, float maxhealth) implements CustomPacketPayload {
 
-    public static final Type<HealthPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "health"));
+    public static final Type<HealthPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "health"));
 
     public static final StreamCodec<ByteBuf, HealthPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

@@ -158,7 +158,7 @@ public abstract class MobModifier {
     /**
      * Passes the loot drop event to the modifier list
      */
-    public void onDropItems(LivingEntity moddedMob, DamageSource killSource, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit, int specialDropValue) {
+    public void onDropItems(LivingEntity moddedMob, DamageSource killSource, Collection<ItemEntity> drops, boolean recentlyHit) {
         if (recentlyHit) {
             InfernalMobsCore.instance().dropLootForEnt(moddedMob, this);
         }

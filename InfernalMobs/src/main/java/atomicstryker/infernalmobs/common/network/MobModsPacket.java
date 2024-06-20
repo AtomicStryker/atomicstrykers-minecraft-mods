@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record MobModsPacket(String stringData, int entID, byte sentFromServer) implements CustomPacketPayload {
 
-    public static final Type<MobModsPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "mobmods"));
+    public static final Type<MobModsPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "mobmods"));
 
     public static final StreamCodec<ByteBuf, MobModsPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

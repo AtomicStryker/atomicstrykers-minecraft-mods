@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record AirPacket(int air) implements CustomPacketPayload {
 
-    public static final Type<AirPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "airchoke"));
+    public static final Type<AirPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "airchoke"));
 
     public static final StreamCodec<ByteBuf, AirPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

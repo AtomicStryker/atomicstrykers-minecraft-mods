@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record KnockBackPacket(float xv, float zv) implements CustomPacketPayload {
 
-    public static final Type<KnockBackPacket> TYPE = new Type<>(new ResourceLocation(InfernalMobsCore.MOD_ID, "knockback"));
+    public static final Type<KnockBackPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "knockback"));
 
     public static final StreamCodec<ByteBuf, KnockBackPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT,

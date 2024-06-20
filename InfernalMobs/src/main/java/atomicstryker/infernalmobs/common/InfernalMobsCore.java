@@ -36,12 +36,15 @@ import atomicstryker.infernalmobs.common.network.KnockBackPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import com.google.common.collect.Lists;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -49,8 +52,6 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -76,11 +77,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Mod(InfernalMobsCore.MOD_ID)
 public class InfernalMobsCore {
@@ -277,15 +281,15 @@ public class InfernalMobsCore {
         if (mobMods == null) {
             prepareModList();
 
-            File mcFolder;
+            Path mcFolder;
             if (world.isClientSide()) {
-                mcFolder = InfernalMobsClient.getMcFolder();
+                mcFolder = InfernalMobsClient.getMcFolder().toPath();
             } else {
                 MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                mcFolder = server.getFile("");
+                mcFolder = server.getServerDirectory();
             }
 
-            configFile = new File(mcFolder, File.separatorChar + "config" + File.separatorChar + "infernalmobs.cfg");
+            configFile = mcFolder.resolve("config" + File.separatorChar + "infernalmobs.cfg").toFile();
             loadConfig(world);
 
             LOGGER.info("InfernalMobsCore commonSetup completed! Modifiers ready: " + mobMods.size());
@@ -717,15 +721,11 @@ public class InfernalMobsCore {
         while (modStr > 0) {
             ItemStack itemStack = getRandomItem(mob, prefix);
             if (itemStack != null) {
+
                 Item item = itemStack.getItem();
-                if (item instanceof EnchantedBookItem) {
-                    itemStack = EnchantedBookItem.createForEnchantment(getRandomEnchantment(mob.getRandom()));
-                } else {
-                    int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                    enchantRandomly(mob.level().enabledFeatures(), mob.level().random, itemStack, item.getEnchantmentValue(), usedStr);
-                    // EnchantmentHelper.addRandomEnchantment(mob.world.rand,
-                    // itemStack, item.getItemEnchantability());
-                }
+                int usedStr = (modStr - 5 > 0) ? 5 : modStr;
+                enchantRandomly(mob.level(), itemStack, item.getEnchantmentValue(), usedStr);
+
                 ItemEntity itemEnt = new ItemEntity(mob.level(), mob.getX(), mob.getY(), mob.getZ(), itemStack);
                 mob.level().addFreshEntity(itemEnt);
                 modStr -= 5;
@@ -736,40 +736,22 @@ public class InfernalMobsCore {
         }
     }
 
-    private EnchantmentInstance getRandomEnchantment(RandomSource rand) {
-        if (enchantmentList == null) {
-            enchantmentList = new ArrayList<>(26); // 26 is the vanilla enchantment count as of 1.9
-            for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
-                if (enchantment != null) {
-                    if (enchantment.getMinLevel() <= enchantment.getMaxLevel()) {
-                        enchantmentList.add(enchantment);
-                    } else {
-                        LOGGER.error("enchantment " + enchantment.getClass().getCanonicalName() + " has min level > max level which is invalid behaviour!");
-                    }
-                }
-            }
-        }
-
-        Enchantment e = enchantmentList.get(rand.nextInt(enchantmentList.size()));
-        int min = e.getMinLevel();
-        int range = e.getMaxLevel() - min;
-        int lvl = min + rand.nextInt(range + 1);
-        EnchantmentInstance ed = new EnchantmentInstance(e, lvl);
-        return ed;
-    }
-
     /**
      * Custom Enchanting Helper
      *
-     * @param pEnabledFeatures   level features enabled
-     * @param rand               Random gen to use
+     * @param level              level object
      * @param itemStack          ItemStack to be enchanted
      * @param itemEnchantability ItemStack max enchantability level
      * @param modStr             MobModifier strength to be used. Should be in range 2-5
      */
-    private void enchantRandomly(FeatureFlagSet pEnabledFeatures, RandomSource rand, ItemStack itemStack, int itemEnchantability, int modStr) {
+    private void enchantRandomly(Level level, ItemStack itemStack, int itemEnchantability, int modStr) {
         int remainStr = (modStr + 1) / 2; // should result in 1-3
-        List<?> enchantments = EnchantmentHelper.selectEnchantment(pEnabledFeatures, rand, itemStack, itemEnchantability, true);
+
+        Optional<HolderSet.Named<Enchantment>> optional = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getTag(EnchantmentTags.ON_RANDOM_LOOT);
+        Stream<Holder<Enchantment>> holderStream = optional.map(HolderSet::stream)
+                .orElseGet(() -> level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).holders().map(e -> e));
+        List<?> enchantments = EnchantmentHelper.selectEnchantment(level.getRandom(), itemStack, itemEnchantability, holderStream);
+
         Iterator<?> iter = enchantments.iterator();
         while (iter.hasNext() && remainStr > 0) {
             remainStr--;

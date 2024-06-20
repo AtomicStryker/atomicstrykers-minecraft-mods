@@ -5,6 +5,7 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,7 +42,6 @@ import java.util.UUID;
 public class OverlayBossBar {
 
     private static final double NAME_VISION_DISTANCE = 32D;
-    private static final ResourceLocation GUI_BARS_LOCATION = new ResourceLocation("textures/gui/bars.png");
 
     private static Minecraft mc;
 
@@ -53,7 +53,7 @@ public class OverlayBossBar {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossbar"), new InfernalMobsHealthBarGuiOverlay());
+        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossbar"), new InfernalMobsHealthBarGuiOverlay());
         mc = Minecraft.getInstance();
         healthBarRetainTime = 0;
         retainedTarget = null;
@@ -62,12 +62,12 @@ public class OverlayBossBar {
 
     public static class InfernalMobsHealthBarGuiOverlay implements LayeredDraw.Layer {
         @Override
-        public void render(@NotNull GuiGraphics guiGraphics, float partialTick) {
+        public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
                 return;
             }
 
-            LivingEntity ent = getEntityCrosshairOver(partialTick, mc);
+            LivingEntity ent = getEntityCrosshairOver(partialTick.getRealtimeDeltaTicks(), mc);
             boolean retained = false;
 
             if (ent == null && System.currentTimeMillis() < healthBarRetainTime) {
