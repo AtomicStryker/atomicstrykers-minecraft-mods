@@ -18,10 +18,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        final ResourceLocation airModel = new ResourceLocation("block/air");
+        final ResourceLocation airModel = ResourceLocation.parse("block/air");
 
         simpleBlock(DynamicLights.LIT_AIR_BLOCK.get(), models().getExistingFile(airModel));
         simpleBlock(DynamicLights.LIT_CAVE_AIR_BLOCK.get(), models().getExistingFile(airModel));
-        simpleBlock(DynamicLights.LIT_WATER_BLOCK.get(), models().getExistingFile(new ResourceLocation("block/water")));
+        simpleBlock(DynamicLights.LIT_WATER_BLOCK.get(), models().getExistingFile(ResourceLocation.parse("block/water")));
     }
 }

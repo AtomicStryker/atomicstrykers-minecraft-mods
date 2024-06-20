@@ -53,7 +53,7 @@ public class PlayerSelfLightSource {
         defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15, registryAccess));
         defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0, registryAccess));
 
-        File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights_selflight.cfg");
+        File configFile = server.getServerDirectory().resolve("config" + File.separatorChar + "dynamiclights_selflight.cfg").toFile();
         try {
             config = GsonConfig.loadConfigWithDefault(LightConfig.class, configFile, defaultConfig);
             if (config == null) {

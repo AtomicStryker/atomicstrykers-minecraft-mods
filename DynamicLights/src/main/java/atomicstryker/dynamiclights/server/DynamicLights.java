@@ -56,7 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class DynamicLights {
 
     public static final String MOD_ID = "dynamiclights";
-    public static final ResourceLocation NOT_WATERPROOF_TAG = new ResourceLocation(DynamicLights.MOD_ID, "not_waterproof");
+    public static final ResourceLocation NOT_WATERPROOF_TAG = ResourceLocation.fromNamespaceAndPath(DynamicLights.MOD_ID, "not_waterproof");
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static DynamicLights instance;
@@ -136,7 +136,7 @@ public class DynamicLights {
         vanillaBlocksToLitBlocksMap.put(Blocks.CAVE_AIR, LIT_CAVE_AIR_BLOCK.get());
         try {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            File configFile = new File(server.getFile(""), File.separatorChar + "config" + File.separatorChar + "dynamiclights.cfg");
+            File configFile = server.getServerDirectory().resolve("config" + File.separatorChar + "dynamiclights.cfg").toFile();
             config = GsonConfig.loadConfigWithDefault(DynamicLightsConfig.class, configFile, new DynamicLightsConfig());
         } catch (IOException e) {
             LOGGER.error("IOException parsing config", e);
