@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public record PartialBlockPacket(String user, int x, int y, int z, float value,
                                  boolean regenerating) implements CustomPacketPayload {
 
-    public static final Type<PartialBlockPacket> TYPE = new Type<>(new ResourceLocation(MultiMine.MOD_ID, "partialblock"));
+    public static final Type<PartialBlockPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MultiMine.MOD_ID, "partialblock"));
 
     public static final StreamCodec<ByteBuf, PartialBlockPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

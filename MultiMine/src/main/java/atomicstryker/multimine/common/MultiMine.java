@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * FML superclass causing all of the things to happen. Registers everything, causes the Mod parts
@@ -67,15 +68,15 @@ public class MultiMine {
      */
     public void initIfNeeded(Level world) {
         if (configFile == null) {
-            File mcFolder;
+            Path mcFolder;
             if (world.isClientSide()) {
-                mcFolder = MultiMineClient.getMcFolder();
+                mcFolder = MultiMineClient.getMcFolder().toPath();
             } else {
                 MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                mcFolder = server.getFile("");
+                mcFolder = server.getServerDirectory();
             }
 
-            configFile = new File(mcFolder, File.separatorChar + "config" + File.separatorChar + "multimine.cfg");
+            configFile = mcFolder.resolve("config" + File.separatorChar + "multimine.cfg").toFile();
             loadConfig();
         }
     }

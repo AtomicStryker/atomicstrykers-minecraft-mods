@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record PartialBlockRemovalPacket(int x, int y, int z) implements CustomPacketPayload {
 
-    public static final Type<PartialBlockRemovalPacket> TYPE = new Type<>(new ResourceLocation(MultiMine.MOD_ID, "partialblockremoval"));
+    public static final Type<PartialBlockRemovalPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MultiMine.MOD_ID, "partialblockremoval"));
 
     public static final StreamCodec<ByteBuf, PartialBlockRemovalPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
