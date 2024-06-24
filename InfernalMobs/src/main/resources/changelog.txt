@@ -1,3 +1,7 @@
+1.21.2
+- fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/510, late init if player login event somehow
+  didnt trigger
+
 1.21.1
 - updated for MC 1.21 and Forge 51.0.13
 - reduced particle spam on high FPS
