@@ -33,6 +33,11 @@ public class InfernalMobsClient {
 
     @SubscribeEvent
     public static void onEntityJoinedWorld(EntityJoinLevelEvent event) {
+        if (mc == null) {
+            // github issue 510, missing init
+            mc = Minecraft.getInstance();
+            InfernalMobsCore.instance().initIfNeeded(event.getLevel());
+        }
         if (event.getLevel().isClientSide && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
             InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0));
             InfernalMobsCore.LOGGER.debug("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getId());
