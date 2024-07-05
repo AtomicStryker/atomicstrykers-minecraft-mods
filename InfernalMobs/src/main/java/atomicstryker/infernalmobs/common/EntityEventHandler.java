@@ -9,13 +9,12 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -71,21 +70,17 @@ public class EntityEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public void onEntityLivingAttacked(LivingAttackEvent event) {
-        /* fires both client and server before hurt, but we dont need this */
-    }
-
     /**
      * Hook into EntityLivingHurt. Is always serverside, assured by mc itself
      */
     @SubscribeEvent
-    public void onEntityLivingHurt(LivingHurtEvent event) {
+    public void onEntityLivingHurt(LivingDamageEvent.Pre event) {
         // dont allow masochism
         if (event.getSource().getDirectEntity() != event.getEntity()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
-                event.setAmount(mod.onHurt(event.getEntity(), event.getSource(), event.getAmount()));
+                // note we dont use original damage so mods can chain modify
+                event.setNewDamage(mod.onHurt(event.getEntity(), event.getSource(), event.getNewDamage()));
             }
 
             /*
@@ -100,7 +95,7 @@ public class EntityEventHandler {
             if (attacker instanceof LivingEntity) {
                 mod = InfernalMobsCore.getMobModifiers((LivingEntity) attacker);
                 if (mod != null) {
-                    event.setAmount(mod.onAttack(event.getEntity(), event.getSource(), event.getAmount()));
+                    event.setNewDamage(mod.onAttack(event.getEntity(), event.getSource(), event.getNewDamage()));
                 }
             }
 
@@ -117,13 +112,13 @@ public class EntityEventHandler {
                         for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet()) {
                             if (Math.abs(e.getKey().getA() - cpair.getA()) < 3) {
                                 if (Math.abs(e.getKey().getB() - cpair.getB()) < 3) {
-                                    e.setValue(e.getValue() + event.getAmount());
+                                    e.setValue(e.getValue() + event.getNewDamage());
                                     break;
                                 }
                             }
                         }
                     } else {
-                        damageMap.put(cpair, value + event.getAmount());
+                        damageMap.put(cpair, value + event.getNewDamage());
                         GsonConfig.saveConfig(InfernalMobsCore.instance().config, InfernalMobsCore.instance().configFile);
                     }
                 }

@@ -1,3 +1,6 @@
+1.21.2NF
+- updated for NeoForge 21.0.59-beta
+
 1.21.1NF
 - updated for MC 1.21 and Neoforge
 - reduced particle spam on high FPS
