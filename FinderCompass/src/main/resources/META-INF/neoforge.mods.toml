@@ -28,4 +28,4 @@ logoFile="logo.png" #optional
 # A text field displayed in the mod UI
 authors="AtomicStryker" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description="Turn the compass item into a block detection utility"
+description="${mod_description}"
