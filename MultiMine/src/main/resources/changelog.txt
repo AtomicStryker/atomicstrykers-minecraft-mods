@@ -1,3 +1,7 @@
+1.21.2
+- multi mine now shields blocks it destroyed from other breaking for 10 ticks,
+  which should hopefully prevent duping issues with other mods involved
+
 1.21.1
 - updated for MC 1.21 and Forge 51.0.13
 
