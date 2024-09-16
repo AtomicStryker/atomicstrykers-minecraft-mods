@@ -14,19 +14,33 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
 
 public class MultiMineServer {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
     private final HashMap<ResourceKey<Level>, BlockRegenQueue> blockRegenQueuesByDimension;
+
+    /**
+     * any block destroyed by multi mine has its coordinates entered into a blacklist for 10 ticks,
+     * during which Multi Mine will block any further block destruction.
+     * this is to prevent race conditions with vanilla and other mod interactions
+     */
+    private final HashMap<ResourceKey<Level>, HashMap<BlockPos, Integer>> blocksRecentlyDestroyedByWorld;
 
     /**
      * Server instance of Multi Mine Mod. Keeps track of Players having the Mod
@@ -38,6 +52,7 @@ public class MultiMineServer {
         instance = this;
         partiallyMinedBlocksListByDimension = Maps.newHashMap();
         blockRegenQueuesByDimension = Maps.newHashMap();
+        blocksRecentlyDestroyedByWorld = Maps.newHashMap();
     }
 
     public static MultiMineServer instance() {
@@ -69,7 +84,6 @@ public class MultiMineServer {
         }
 
         List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimension);
-
         if (partiallyMinedBlocks == null) {
             partiallyMinedBlocks = Lists.newArrayList();
             partiallyMinedBlocksListByDimension.put(dimension, partiallyMinedBlocks);
@@ -93,6 +107,11 @@ public class MultiMineServer {
                     // popping the block serverside is necessary as MC now keeps destroyProgress on serverside
                     player.gameMode.destroyBlock(pos);
 
+                    HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
+                            .computeIfAbsent(dimension, k -> Maps.newHashMap());
+                    // multi mine bans the block coordinates from further destruction for a short time
+                    blocksRecentlyDestroyed.put(pos, 10);
+
                     partiallyMinedBlocks.remove(iterBlock);
                     getBlockRegenQueueForDimension(dimension).remove(iterBlock);
                 } else {
@@ -115,6 +134,20 @@ public class MultiMineServer {
         partiallyMinedBlocks.add(newblock);
         getBlockRegenQueueForDimension(dimension).offer(newblock);
         sendPartiallyMinedBlockUpdateToAllPlayers(newblock, false);
+    }
+
+    @SubscribeEvent
+    public void onBlockBreak(BlockEvent.BreakEvent event) {
+        HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
+                .computeIfAbsent(event.getPlayer().getLevel().dimension(), k -> Maps.newHashMap());
+        /*
+         * any block destroyed by multi mine has its coordinates entered into a blacklist for 10 ticks,
+         * during which Multi Mine will block any further block destruction.
+         * this is to prevent race conditions with vanilla and other mod interactions
+         */
+        if (blocksRecentlyDestroyed.containsKey(event.getPos())) {
+            event.setCanceled(true);
+        }
     }
 
     private boolean isBlockBanned(BlockState blockState) {
@@ -241,6 +274,22 @@ public class MultiMineServer {
         if (tick.side.isClient() || tick.phase != TickEvent.Phase.END) {
             return;
         }
+
+        HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
+                .computeIfAbsent(tick.level.dimension(), k -> Maps.newHashMap());
+        Iterator<Map.Entry<BlockPos, Integer>> iterator = blocksRecentlyDestroyed.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<BlockPos, Integer> entry = iterator.next();
+            int remainingTicks = entry.getValue() - 1;
+            if (remainingTicks > 0) {
+                entry.setValue(remainingTicks);
+            } else {
+                iterator.remove();
+                MultiMine.instance().debugPrint("Server Blacklist timed out: [{}|{}|{}]",
+                        entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
+            }
+        }
+
         BlockRegenQueue queueForDimension = getBlockRegenQueueForDimension(tick.level.dimension());
         if (queueForDimension.isEmpty()) {
             return;

@@ -1,3 +1,7 @@
+1.19.4.4
+- multi mine now shields blocks it destroyed from other breaking for 10 ticks,
+  which should hopefully prevent duping issues with other mods involved
+
 1.19.4.3
 - make block regeneration dimension specific to prevent crashes
 
