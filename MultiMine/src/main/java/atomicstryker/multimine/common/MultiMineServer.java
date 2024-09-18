@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,6 +24,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +38,7 @@ public class MultiMineServer implements ISidedProxy {
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
     private final HashMap<ResourceKey<Level>, BlockRegenQueue> blockRegenQueuesByDimension;
+    private final List<Field> serverSideDestroyBlockPosFields;
 
     /**
      * any block destroyed by multi mine has its coordinates entered into a blacklist for 10 ticks,
@@ -55,6 +58,7 @@ public class MultiMineServer implements ISidedProxy {
         partiallyMinedBlocksListByDimension = Maps.newHashMap();
         blockRegenQueuesByDimension = Maps.newHashMap();
         blocksRecentlyDestroyedByWorld = Maps.newHashMap();
+        serverSideDestroyBlockPosFields = Lists.newArrayList();
     }
 
     @Override
@@ -128,6 +132,7 @@ public class MultiMineServer implements ISidedProxy {
                     // see net.minecraft.server.level.ServerPlayerGameMode.handleBlockBreakAction
                     // popping the block serverside is necessary as MC now keeps destroyProgress on serverside
                     player.gameMode.destroyBlock(pos);
+                    resetServerSideBreakProgress(player.gameMode);
 
                     HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
                             .computeIfAbsent(dimension, k -> Maps.newHashMap());
@@ -156,6 +161,31 @@ public class MultiMineServer implements ISidedProxy {
         partiallyMinedBlocks.add(newblock);
         getBlockRegenQueueForDimension(dimension).offer(newblock);
         sendPartiallyMinedBlockUpdateToAllPlayers(newblock, false, (ServerLevel) player.level());
+    }
+
+    /**
+     * use reflection to clear the serverside block breaking progress, fixes
+     * https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/520
+     */
+    private void resetServerSideBreakProgress(ServerPlayerGameMode gameMode) {
+
+        if (serverSideDestroyBlockPosFields.isEmpty()) {
+            for (Field declaredField : ServerPlayerGameMode.class.getDeclaredFields()) {
+                if (BlockPos.class.equals(declaredField.getType())) {
+                    declaredField.setAccessible(true);
+                    serverSideDestroyBlockPosFields.add(declaredField);
+                }
+            }
+            MultiMine.LOGGER.info("Serverside BlockPos hacked: {}", serverSideDestroyBlockPosFields.size());
+        }
+        // this sets BlockPos destroyPos and BlockPos delayedDestroyPos to BlockPos.ZERO
+        for (Field serverSideBlockPosField : serverSideDestroyBlockPosFields) {
+            try {
+                serverSideBlockPosField.set(gameMode, BlockPos.ZERO);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @SubscribeEvent

@@ -1,6 +1,11 @@
+1.21.3NF
+- multi mine now resets serverside block destroy tracking to sidestep a bug
+  with breaking waterlogged blocks and replacing them, github issue 520
+- updated to neoforge 21.0.167
+
 1.21.2NF
 - multi mine now shields blocks it destroyed from other breaking for 10 ticks,
-  which should hopefully prevent duping issues with other mods involved
+  which should hopefully prevent duping issues with other mods involved, github issue 519
 
 1.21.1NF
 - updated to MC 1.21 neoforge
