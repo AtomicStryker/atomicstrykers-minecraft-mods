@@ -1,3 +1,10 @@
+1.19.4.5
+- multi mine now resets serverside block destroy tracking to sidestep a bug
+  with breaking waterlogged blocks and replacing them, github issue 520
+
+1.19.2.4 (backport)
+- rebuild latest against 1.19.2 for github issue 519
+
 1.19.4.4
 - multi mine now shields blocks it destroyed from other breaking for 10 ticks,
   which should hopefully prevent duping issues with other mods involved
