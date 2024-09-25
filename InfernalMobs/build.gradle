@@ -1,8 +1,8 @@
 plugins {
     id 'eclipse'
 	id 'idea'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
+    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
 version = mod_version
@@ -95,15 +95,17 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-curseforge {
-    apiKey = curseForgeApiKey
-    project {
-        id = curseforge_id
-        releaseType = 'release'
-        addGameVersion minecraft_version
-        mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
-          displayName = mod_name
-        }
+publishMods {
+    file = jar.archiveFile
+    changelog = curseforge_changelog
+    type = STABLE
+    modLoaders.add("forge")
+
+    curseforge {
+        projectId = curseforge_id
+        projectSlug = mod_id // Required for discord webhook
+        accessToken = curseForgeApiKey
+        minecraftVersions.add(minecraft_version)
     }
 }
 
