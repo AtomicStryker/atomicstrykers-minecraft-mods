@@ -1,11 +1,9 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-
 plugins {
     id 'java-library'
     id 'eclipse'
 	id 'idea'
     id 'net.neoforged.moddev' version '1.0.17'
-    id 'net.darkhax.curseforgegradle' version '1.1.15'
+    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -150,13 +148,18 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-task publishCurseForge(type: TaskPublishCurseForge) {
+publishMods {
+    file = jar.archiveFile
+    changelog = curseforge_changelog
+    type = STABLE
+    modLoaders.add("neoforge")
 
-    apiToken = curseForgeApiKey
-
-    def libjar = file('build/libs/' + mod_id + '-' + version + '.jar')
-    def mainFile = upload(curseforge_id, libjar)
-    mainFile.releaseType = 'release'
+    curseforge {
+        projectId = curseforge_id
+        projectSlug = mod_id // Required for discord webhook
+        accessToken = curseForgeApiKey
+        minecraftVersions.add(minecraft_version)
+    }
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
