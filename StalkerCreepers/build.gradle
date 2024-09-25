@@ -1,9 +1,11 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
     id 'java-library'
     id 'eclipse'
 	id 'idea'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'net.neoforged.moddev' version '1.0.17'
+    id 'net.darkhax.curseforgegradle' version '1.1.15'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -148,17 +150,27 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-curseforge {
-    apiKey = curseForgeApiKey
-    project {
-        id = curseforge_id
-        releaseType = 'release'
-		addGameVersion "NeoForge"
-        addGameVersion minecraft_version
-        mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
-          displayName = mod_name
-        }
-    }
+//curseforge {
+//    apiKey = curseForgeApiKey
+//    project {
+//        id = curseforge_id
+//        releaseType = 'release'
+//		addGameVersion "NeoForge"
+//        addGameVersion minecraft_version
+//        mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
+//          displayName = mod_name
+//        }
+//    }
+//}
+
+task publishCurseForge(type: TaskPublishCurseForge) {
+
+    apiToken = curseForgeApiKey
+
+    def libjar = file('build/libs/' + mod_id + '-' + version + '.jar')
+    def mainFile = upload(curseforge_id, libjar)
+    mainFile.releaseType = 'release'
+    mainFile.changelog = 'Stalker Creepers for 1.21.1 NeoForge'
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
