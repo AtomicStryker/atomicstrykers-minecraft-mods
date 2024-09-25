@@ -157,7 +157,7 @@ task publishCurseForge(type: TaskPublishCurseForge) {
     def libjar = file('build/libs/' + mod_id + '-' + version + '.jar')
     def mainFile = upload(curseforge_id, libjar)
     mainFile.releaseType = 'release'
-    mainFile.changelog = 'Stalker Creepers for 1.21.1 NeoForge'
+    mainFile.changelog = curse_changelog
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
