@@ -153,15 +153,13 @@ public class InfernalMobsCore {
                         (payload, context) -> instance().onMobModsPacketForClient(payload, context),
                         (payload, context) -> instance().onMobModsPacket(payload, context)));
 
-        if (FMLEnvironment.dist.isClient()) {
-            registrar.playToClient(AirPacket.TYPE, AirPacket.STREAM_CODEC, OverlayChoking::handleAirPacket);
+        registrar.playToClient(AirPacket.TYPE, AirPacket.STREAM_CODEC, instance()::onAirPacketForClient);
 
-            registrar.playToClient(VelocityPacket.TYPE, VelocityPacket.STREAM_CODEC,
-                    instance()::onVelocityPacketForClient);
+        registrar.playToClient(VelocityPacket.TYPE, VelocityPacket.STREAM_CODEC,
+                instance()::onVelocityPacketForClient);
 
-            registrar.playToClient(KnockBackPacket.TYPE, KnockBackPacket.STREAM_CODEC,
-                    instance()::onKnockBackPacketForClient);
-        }
+        registrar.playToClient(KnockBackPacket.TYPE, KnockBackPacket.STREAM_CODEC,
+                instance()::onKnockBackPacketForClient);
     }
 
     private void onHealthPacketForClient(HealthPacket healthPacket, IPayloadContext playPayloadContext) {
@@ -179,6 +177,12 @@ public class InfernalMobsCore {
     private void onMobModsPacketForClient(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
         if (FMLEnvironment.dist.isClient()) {
             InfernalMobsClient.instance().onMobModsPacketToClient(mobModsPacket, playPayloadContext);
+        }
+    }
+
+    private void onAirPacketForClient(AirPacket airPacket, IPayloadContext playPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            InfernalMobsClient.instance().onAirPacket(airPacket, playPayloadContext);
         }
     }
 

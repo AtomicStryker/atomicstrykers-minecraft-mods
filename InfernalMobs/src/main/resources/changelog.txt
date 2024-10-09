@@ -1,3 +1,9 @@
+1.21.1.2NF
+- fixed packet crash with chocking, blastoff, gravity mods
+
+1.21.1.1NF
+- updated for MC 1.21.1 and NeoForge 21.1.58
+
 1.21.3NF
 - updated for NeoForge 21.0.113-beta, thanks saucyexpress
 

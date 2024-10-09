@@ -4,6 +4,7 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
 import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.network.AirPacket;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.KnockBackPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
@@ -78,6 +79,10 @@ public class InfernalMobsClient {
 
     public void onMobModsPacketToClient(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
         InfernalMobsCore.instance().addRemoteEntityModifiers(mc.level, mobModsPacket.entID(), mobModsPacket.stringData());
+    }
+
+    public void onAirPacket(AirPacket airPacket, IPayloadContext playPayloadContext) {
+        mc.submitAsync(() -> OverlayChoking.handleAirPacket(airPacket, playPayloadContext));
     }
 
     public void onVelocityPacket(VelocityPacket velocityPacket, IPayloadContext playPayloadContext) {
