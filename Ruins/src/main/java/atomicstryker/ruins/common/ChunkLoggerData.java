@@ -15,7 +15,7 @@ public class ChunkLoggerData extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
+    public void load(CompoundNBT nbt) {
         int[] xload = nbt.getIntArray("xcoords");
         int[] zload = nbt.getIntArray("zcoords");
         System.out.println("Ruins chunks logged: " + xload.length);
@@ -28,7 +28,7 @@ public class ChunkLoggerData extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
+    public CompoundNBT save(CompoundNBT nbt) {
         int[] xsave = new int[coords.size()];
         int[] zsave = new int[coords.size()];
         for (int i = 0; i < xsave.length; i++) {

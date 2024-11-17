@@ -61,7 +61,7 @@ public class RuinTemplateRule {
                 blockBonemeal = extractBonemeal(blockBonemeal, parameters);
                 blockEntity = extractEntity(blockEntity, parameters);
                 if (!parameters.isEmpty()) {
-                    RuinsMod.LOGGER.warn("ignoring invalid Ruins parameters {} in rule {}", () -> parameters.keySet().toString(), () -> rule);
+                    RuinsMod.LOGGER.warn("ignoring invalid Ruins parameters {} in rule {}", () -> parameters.getAllKeys().toString(), () -> rule);
                 }
                 stateCompound.remove(PARAMETERS_TAG);
             }
@@ -189,19 +189,16 @@ public class RuinTemplateRule {
         if (world != null && blockState != null) {
 
             // clobber existing tile entity block, if any
-            TileEntity existing_entity = world.getTileEntity(position);
+            TileEntity existing_entity = world.getBlockEntity(position);
             if (existing_entity != null) {
-                if (existing_entity instanceof IInventory) {
-                    ((IInventory) existing_entity).clear();
-                }
-                world.setBlockState(position, Blocks.AIR.getDefaultState(), 4);
+                world.setBlock(position, Blocks.AIR.defaultBlockState(), 4);
             }
 
-            if (world.setBlockState(position, blockState, 2)) {
-                TileEntity entity = world.getTileEntity(position);
+            if (world.setBlock(position, blockState, 2)) {
+                TileEntity entity = world.getBlockEntity(position);
                 if (entity != null && tileEntityData != null) {
-                    entity = TileEntity.func_235657_b_(blockState, entity.write(new CompoundNBT()).merge(tileEntityData));
-                    world.setTileEntity(position, entity);
+                    entity = TileEntity.loadStatic(blockState, entity.save(new CompoundNBT()).merge(tileEntityData));
+                    world.setBlockEntity(position, entity);
 
                     if (entity instanceof LockableLootTileEntity) {
                         CompoundNBT nbtTagCompound = entity.getTileData();
@@ -215,7 +212,7 @@ public class RuinTemplateRule {
 
                             LockableLootTileEntity tileEntityLockableLoot = (LockableLootTileEntity) entity;
                             tileEntityLockableLoot.setLootTable(new ResourceLocation(lootTable), lootSeed);
-                            tileEntityLockableLoot.fillWithLoot(null);
+                            tileEntityLockableLoot.unpackLootTable(null);
                         }
                     }
                 }

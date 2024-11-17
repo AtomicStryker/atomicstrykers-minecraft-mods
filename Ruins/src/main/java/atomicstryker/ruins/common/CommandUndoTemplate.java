@@ -20,7 +20,7 @@ public class CommandUndoTemplate {
     private static final ArrayList<TemplateArea> savedLocations = new ArrayList<>();
     public static final LiteralArgumentBuilder<CommandSource> BUILDER =
             Commands.literal("undoruin")
-                    .requires((caller) -> caller.hasPermissionLevel(2))
+                    .requires((caller) -> caller.hasPermission(2))
                     .executes((caller) -> {
                         execute(caller.getSource());
                         return 1;
@@ -32,24 +32,24 @@ public class CommandUndoTemplate {
     }
 
     private static void execute(CommandSource source) {
-        World w = source.getWorld();
+        World w = source.getLevel();
         if (savedLocations.isEmpty()) {
-            source.sendErrorMessage(new TranslationTextComponent("There is nothing cached to be undone..."));
+            source.sendFailure(new TranslationTextComponent("There is nothing cached to be undone..."));
         } else {
             for (TemplateArea ta : savedLocations) {
                 for (int x = 0; x < ta.blockArray.length; x++) {
                     for (int y = 0; y < ta.blockArray[0].length; y++) {
                         for (int z = 0; z < ta.blockArray[0][0].length; z++) {
-                            w.setBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z), ta.blockArray[x][y][z], 2);
+                            w.setBlock(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z), ta.blockArray[x][y][z], 2);
                         }
                     }
                 }
 
                 // kill off the resulting entityItems instances
-                w.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1, ta.zBase - 1),
-                        new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))).forEach(Entity::onKillCommand);
+                w.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1, ta.zBase - 1),
+                        new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))).forEach(Entity::kill);
             }
-            source.sendFeedback(new TranslationTextComponent("Cleared away " + savedLocations.size() + " template sites."), false);
+            source.sendSuccess(new TranslationTextComponent("Cleared away " + savedLocations.size() + " template sites."), false);
             savedLocations.clear();
         }
     }
