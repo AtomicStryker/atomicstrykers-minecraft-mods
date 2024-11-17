@@ -20,7 +20,7 @@ public class RuleStringNbtHelper {
         CompoundNBT tagCompound = NBTUtil.writeBlockState(blockState);
         if (tileEntity != null) {
             CompoundNBT parameters = new CompoundNBT();
-            CompoundNBT tagTileEntity = tileEntity.write(new CompoundNBT());
+            CompoundNBT tagTileEntity = tileEntity.save(new CompoundNBT());
             tagTileEntity.remove("id");
             tagTileEntity.remove("x");
             tagTileEntity.remove("y");
@@ -85,7 +85,7 @@ public class RuleStringNbtHelper {
                 } else if (bracketCounter == 0) {
                     CompoundNBT nbtTagCompound;
                     try {
-                        nbtTagCompound = JsonToNBT.getTagFromJson(rule.substring(currentBracketStartIndex, i + 1));
+                        nbtTagCompound = JsonToNBT.parseTag(rule.substring(currentBracketStartIndex, i + 1));
                     } catch (CommandSyntaxException e) {
                         RuinsMod.LOGGER.error("Error in rule {} starting at character {}: unbalanced brackets!", rule, currentBracketStartIndex);
                         return null;

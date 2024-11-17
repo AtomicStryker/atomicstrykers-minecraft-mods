@@ -19,15 +19,15 @@ class CommandTestTemplate {
 
     public static final LiteralArgumentBuilder<CommandSource> BUILDER =
             Commands.literal("testruin")
-                    .requires((caller) -> caller.hasPermissionLevel(2))
+                    .requires((caller) -> caller.hasPermission(2))
                     .then(Commands.argument("input", StringArgumentType.greedyString())
                             .executes((caller) -> {
                                 execute(caller.getSource(), StringArgumentType.getString(caller, "input"));
                                 return 1;
                             })).executes((caller) -> {
-                execute(caller.getSource(), null);
-                return 1;
-            });
+                        execute(caller.getSource(), null);
+                        return 1;
+                    });
 
     private static void execute(CommandSource source, String input) {
         if (source.getEntity() instanceof PlayerEntity) {
@@ -35,17 +35,17 @@ class CommandTestTemplate {
             String[] args = input == null ? new String[0] : input.split(" ");
             RuinsMod.LOGGER.info("called test command with input [{}], args count {}", input, args.length);
             int xpos, ypos, zpos;
-            xpos = (int) sender.getPosX();
-            ypos = (int) sender.getPosY();
-            zpos = (int) sender.getPosZ();
+            xpos = (int) sender.getX();
+            ypos = (int) sender.getY();
+            zpos = (int) sender.getZ();
             if (args.length < 4) {
                 if (args.length < 1) {
                     if (parsedRuin != null) {
-                        final World world = sender.getEntityWorld();
-                        parsedRuin.doBuild(world, world.rand, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
+                        final World world = sender.getCommandSenderWorld();
+                        parsedRuin.doBuild(world, world.random, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
                         parsedRuin = null;
                     } else {
-                        sender.sendMessage(new TranslationTextComponent("You need to use the command with the target template name, eg. /testruin beach/LightHouse"), Util.field_240973_b_);
+                        sender.sendMessage(new TranslationTextComponent("You need to use the command with the target template name, eg. /testruin beach/LightHouse"), Util.NIL_UUID);
                     }
                 } else {
                     tryBuild(sender, args, xpos, ypos, zpos, true);
@@ -63,11 +63,11 @@ class CommandTestTemplate {
                         tryBuild(sender, args, x, y, z, true);
                     }
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(new TranslationTextComponent("Invalid coordinates specified"), Util.field_240973_b_);
+                    sender.sendMessage(new TranslationTextComponent("Invalid coordinates specified"), Util.NIL_UUID);
                 }
             }
         } else {
-            source.sendErrorMessage(new TranslationTextComponent("Command is only available for ingame player entities, or with coordinates specified"));
+            source.sendFailure(new TranslationTextComponent("Command is only available for ingame player entities, or with coordinates specified"));
         }
     }
 
@@ -83,7 +83,7 @@ class CommandTestTemplate {
                 parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName(), is_player);
                 int rotation = (args.length > 4) ? Integer.parseInt(args[4]) : RuinsMod.DIR_NORTH;
                 final boolean ignore_ceiling = args.length > 5 && Boolean.parseBoolean(args[5]);
-                final World world = sender.getEntityWorld();
+                final World world = sender.getCommandSenderWorld();
 
                 if (parsedRuin != null) {
                     if (y < 0) {
@@ -98,27 +98,27 @@ class CommandTestTemplate {
                             if (parsedRuin.isAcceptableSurface(b)) {
                                 break;
                             }
-                            sender.sendMessage(new TranslationTextComponent("Could not find acceptable Y coordinate"), Util.field_240973_b_);
+                            sender.sendMessage(new TranslationTextComponent("Could not find acceptable Y coordinate"), Util.NIL_UUID);
                             return;
                         }
                         ++y;
                     }
 
-                    if (parsedRuin.doBuild(world, world.rand, x, y, z, rotation, is_player, ignore_ceiling) >= 0) {
+                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) >= 0) {
                         parsedRuin = null;
                     } else {
-                        sender.sendMessage(new TranslationTextComponent("EventRuinTemplateSpawn returned as cancelled, not building that."), Util.field_240973_b_);
+                        sender.sendMessage(new TranslationTextComponent("EventRuinTemplateSpawn returned as cancelled, not building that."), Util.NIL_UUID);
                     }
                 } else {
-                    sender.sendMessage(new TranslationTextComponent("Could not parse Ruin of file " + file), Util.field_240973_b_);
+                    sender.sendMessage(new TranslationTextComponent("Could not parse Ruin of file " + file), Util.NIL_UUID);
                 }
             } catch (RuinTemplate.IncompatibleModException e) {
-                sender.sendMessage(new TranslationTextComponent(e.getMessage()), Util.field_240973_b_);
+                sender.sendMessage(new TranslationTextComponent(e.getMessage()), Util.NIL_UUID);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            sender.sendMessage(new TranslationTextComponent("Could not open/write file " + file), Util.field_240973_b_);
+            sender.sendMessage(new TranslationTextComponent("Could not open/write file " + file), Util.NIL_UUID);
         }
     }
 

@@ -2,8 +2,11 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Dimension;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -189,8 +192,8 @@ class RuinGenerator {
 
     private boolean checkMinDistance(World world, RuinTemplate ruinTemplate, RuinData ruinData) {
         // in overworld, check min/max distances from world spawn
-        if (world.getDimension() instanceof OverworldDimension) {
-            BlockPos spawn = world.getSpawnPoint();
+        if (world.dimension().getRegistryName().getPath().equals("overworld")) {
+            BlockPos spawn = new BlockPos(world.getLevelData().getXSpawn(), world.getLevelData().getYSpawn(), world.getLevelData().getZSpawn());
             final int min_distance = Math.max(fileHandler.anySpawnMinDistance, ruinTemplate.spawnMinDistance);
             if (
                     ruinData.xMin - spawn.getX() < min_distance && spawn.getX() - ruinData.xMax < min_distance &&
@@ -244,7 +247,7 @@ class RuinGenerator {
         if (!nether) {
             for (int y = WORLD_MAX_HEIGHT - 1; y > 7; y--) {
                 BlockPos pos = new BlockPos(x, y, z);
-                if (!world.isBlockPresent(pos)) {
+                if (world.getBlockState(pos).isAir()) {
                     return -1;
                 }
                 final BlockState b = world.getBlockState(pos);
@@ -267,7 +270,7 @@ class RuinGenerator {
                 // from the top. Find the first air block from the ceiling
                 for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--) {
                     BlockPos basePos = new BlockPos(x, y, z);
-                    if (!world.isBlockPresent(basePos)) {
+                    if (world.getBlockState(basePos).isAir()) {
                         return -1;
                     }
                     final BlockState b = world.getBlockState(basePos);
@@ -289,7 +292,7 @@ class RuinGenerator {
                 boolean accept = false;
                 for (int y = 0; y < WORLD_MAX_HEIGHT; y++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    if (!world.isBlockPresent(pos)) {
+                    if (world.getBlockState(pos).isAir()) {
                         return -1;
                     }
                     final BlockState b = world.getBlockState(pos);
