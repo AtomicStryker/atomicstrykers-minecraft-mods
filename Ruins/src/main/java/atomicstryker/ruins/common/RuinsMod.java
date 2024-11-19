@@ -20,7 +20,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -80,6 +79,9 @@ public class RuinsMod {
         MinecraftForge.EVENT_BUS.register(new CommandUndoTemplate());
         LOGGER.info("Ruins instance built, events registered");
 
+        // must register the feature, else it crashes on map load
+        ForgeRegistries.FEATURES.register("ruins", RUINS_PSEUDO_FEATURE);
+
         final DeferredRegister<Codec<? extends BiomeModifier>> serializers = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
         serializers.register(modEventBus);
         serializers.register("ruins_gen_hook", RuinsBiomeModifier::makeCodec);
@@ -106,12 +108,13 @@ public class RuinsMod {
     public record RuinsBiomeModifier() implements BiomeModifier {
 
         private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER =
-                RegistryObject.create(new ResourceLocation(MOD_ID+":gen_hook"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
+                RegistryObject.create(new ResourceLocation(MOD_ID + ":gen_hook"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
 
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.AFTER_EVERYTHING) {
                 builder.getGenerationSettings().addFeature(GenerationStep.Decoration.TOP_LAYER_MODIFICATION, PLACED_RUINS);
+                RuinsMod.LOGGER.info("RuinsBiomeModifier.modify was executed, feature added");
             }
         }
 
@@ -119,7 +122,7 @@ public class RuinsMod {
             return SERIALIZER.get();
         }
 
-        public static Codec<RuinsBiomeModifier> makeCodec(){
+        public static Codec<RuinsBiomeModifier> makeCodec() {
             return Codec.unit(RuinsBiomeModifier::new);
         }
     }
@@ -145,6 +148,7 @@ public class RuinsMod {
 
     public static void decorateChunkHook(WorldGenLevel worldGenLevel, BlockPos blockPos) {
 
+        LOGGER.debug("decorateChunkHook {}", blockPos);
         if (worldGenLevel.isClientSide()
                 || !worldGenLevel.getLevel().structureManager().shouldGenerateStructures()
                 || instance == null) {
@@ -156,7 +160,7 @@ public class RuinsMod {
         int chunkX = (int) Math.floor(blockPos.getX() / 16.0D);
         int chunkY = (int) Math.floor(blockPos.getY() / 16.0D);
         ChunkPos chunkPos = new ChunkPos(chunkX, chunkY);
-        LOGGER.trace("Ruins chunk decoration [{}|{}]", chunkX, chunkY);
+        LOGGER.debug("Ruins chunk decoration [{}|{}]", chunkX, chunkY);
         final WorldHandle wh = instance.getWorldHandle(world);
         if (wh != null) {
 
