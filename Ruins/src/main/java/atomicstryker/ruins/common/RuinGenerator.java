@@ -2,23 +2,28 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Dimension;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class RuinGenerator {
-    static final int WORLD_MAX_HEIGHT = 256;
+
+    // google says world height is between 320 and -64, max height has a getter
+    static final int WORLD_MIN_HEIGHT = -64;
     private final static String fileName = "RuinsPositionsFile.txt";
 
     private static IForgeRegistry<Biome> biomeRegistry = null;
@@ -128,8 +133,7 @@ class RuinGenerator {
             if (checkMinDistance(world, ruinTemplate, ruinTemplate.getRuinData(x, y, z, rotate))) {
                 y = ruinTemplate.checkArea(world, x, y, z, rotate);
                 if (y < 0) {
-                    stats.LevelingFails++;
-                    // System.out.println("checkArea fail");
+                    stats.levelingFails++;
                     return;
                 }
 
@@ -138,21 +142,19 @@ class RuinGenerator {
                     if (!fileHandler.disableLogging) {
                         RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biome.getRegistryName().getPath(), x, y, z);
                     }
-                    stats.NumCreated++;
+                    stats.numCreated++;
 
                     registeredRuins.add(ruinTemplate.getRuinData(x, y, z, rotate));
                 }
             } else {
-                // System.out.println("Min Dist fail");
                 stats.minDistFails++;
                 return;
             }
         } else {
-            // System.out.println("y fail");
-            stats.LevelingFails++;
+            stats.noSurfaceFails++;
         }
 
-        if (numTries > (LastNumTries + 1000)) {
+        if (numTries > (LastNumTries + 5000)) {
             LastNumTries = numTries;
             printStats();
         }
@@ -167,12 +169,13 @@ class RuinGenerator {
 
     private void printStats() {
         if (!fileHandler.disableLogging) {
-            int total = stats.NumCreated + stats.LevelingFails;
+            int total = stats.numCreated + stats.levelingFails;
             RuinsMod.LOGGER.info("Current Stats:");
             RuinsMod.LOGGER.info("    Total Tries:                 " + total);
-            RuinsMod.LOGGER.info("    Number Created:              " + stats.NumCreated);
-            RuinsMod.LOGGER.info("    Min Dist fail:               " + stats.minDistFails);
-            RuinsMod.LOGGER.info("    Leveling:                    " + stats.LevelingFails);
+            RuinsMod.LOGGER.info("    Number Created:              " + stats.numCreated);
+            RuinsMod.LOGGER.info("    Min Dist fails:              " + stats.minDistFails);
+            RuinsMod.LOGGER.info("    No Surface fails:            " + stats.noSurfaceFails);
+            RuinsMod.LOGGER.info("    Leveling fails:              " + stats.levelingFails);
 
             Biome bgb;
             for (ResourceLocation rl : getBiomeRegistry().getKeys()) {
@@ -245,21 +248,22 @@ class RuinGenerator {
 
     private int findSuitableY(World world, RuinTemplate r, int x, int z, boolean nether) {
         if (!nether) {
-            for (int y = WORLD_MAX_HEIGHT - 1; y > 7; y--) {
+            for (int y = world.getMaxBuildHeight() - 1; y > WORLD_MIN_HEIGHT; y--) {
                 BlockPos pos = new BlockPos(x, y, z);
-                if (world.getBlockState(pos).isAir()) {
+                final BlockState b = world.getBlockState(pos);
+                if (b.is(Blocks.BEDROCK)) {
                     return -1;
                 }
-                final BlockState b = world.getBlockState(pos);
                 if (r.isIgnoredBlock(b)) {
                     continue;
                 }
 
-                if (r.isAcceptableSurface(b)) {
+                if (r.isAcceptableSurface(world, b, pos)) {
                     return y + 1;
                 }
-                return -1;
             }
+            // how did we reach here? no bedrock?
+            return -1;
         } else {
             /*
              * The Nether has an entirely different topography so we'll use two
@@ -268,18 +272,18 @@ class RuinGenerator {
              */
             if ((x % 2 == 1) ^ (z % 2 == 1)) {
                 // from the top. Find the first air block from the ceiling
-                for (int y = WORLD_MAX_HEIGHT - 1; y > -1; y--) {
+                for (int y = world.getMaxBuildHeight() - 1; y > WORLD_MIN_HEIGHT; y--) {
                     BlockPos basePos = new BlockPos(x, y, z);
-                    if (world.getBlockState(basePos).isAir()) {
+                    final BlockState b = world.getBlockState(basePos);
+                    if (b.is(Blocks.BEDROCK)) {
                         return -1;
                     }
-                    final BlockState b = world.getBlockState(basePos);
-                    if (b.getBlock() == Blocks.AIR) {
+                    if (b.is(Blocks.AIR)) {
                         // now find the first non-air block from here
-                        for (; y > -1; y--) {
+                        for (; y > WORLD_MIN_HEIGHT; y--) {
                             BlockPos pos = new BlockPos(x, y, z);
                             if (!r.isIgnoredBlock(world.getBlockState(pos))) {
-                                if (r.isAcceptableSurface(b)) {
+                                if (r.isAcceptableSurface(world, b, pos)) {
                                     return y + 1;
                                 }
                                 return -1;
@@ -290,14 +294,14 @@ class RuinGenerator {
             } else {
                 // from the bottom. find the first air block from the floor
                 boolean accept = false;
-                for (int y = 0; y < WORLD_MAX_HEIGHT; y++) {
+                for (int y = 0; y < world.getMaxBuildHeight(); y++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    if (world.getBlockState(pos).isAir()) {
+                    final BlockState b = world.getBlockState(pos);
+                    if (b.is(Blocks.BEDROCK)) {
                         return -1;
                     }
-                    final BlockState b = world.getBlockState(pos);
                     if (!r.isIgnoredBlock(b)) {
-                        accept = r.isAcceptableSurface(b);
+                        accept = r.isAcceptableSurface(world, b, pos);
                     } else {
                         return accept ? y : -1;
                     }
