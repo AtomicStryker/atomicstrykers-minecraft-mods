@@ -51,7 +51,7 @@ allowable_overhang=0
 #
 # depth/height limit affected by terrain leveling
 # also maximum bumpiness tolerated in surface beneath template
-max_leveling=2
+max_leveling=6
 #
 # padding applied to all sides of template horizontal footprint
 # expands area affected by terrain leveling (-1 = no leveling)

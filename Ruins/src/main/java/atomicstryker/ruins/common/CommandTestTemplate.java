@@ -95,7 +95,7 @@ class CommandTestTemplate {
                                 continue;
                             }
 
-                            if (parsedRuin.isAcceptableSurface(b)) {
+                            if (parsedRuin.isAcceptableSurface(world, b, pos)) {
                                 break;
                             }
                             sender.sendMessage(new TranslationTextComponent("Could not find acceptable Y coordinate"), Util.NIL_UUID);

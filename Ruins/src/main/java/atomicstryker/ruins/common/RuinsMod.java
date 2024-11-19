@@ -36,7 +36,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -129,10 +128,8 @@ public class RuinsMod {
         final WorldHandle wh = instance.getWorldHandle(world);
         if (wh != null) {
 
-            if (wh.currentlyGenerating.contains(chunkPos)) {
-                LOGGER.error("Ruins Mod caught recursive generator call at chunk {}", chunkPos);
-            } else {
-                if (wh.fileHandle.allowsDimension(world.dimension().getRegistryName().getPath()) && (wh.chunkLogger == null || !wh.chunkLogger.catchChunkBug(chunkPos))) {
+            if (!wh.currentlyGenerating.contains(chunkPos)) {
+                if (wh.fileHandle.allowsDimension(world.dimension().location().getPath()) && (wh.chunkLogger == null || !wh.chunkLogger.catchChunkBug(chunkPos))) {
                     wh.currentlyGenerating.add(chunkPos);
                     // sigh. no proper event for this. lets try it like this
                     Timer timer = new Timer();
@@ -145,6 +142,7 @@ public class RuinsMod {
                                 } else
                                 // normal world
                                 {
+                                    int decoratorYCoordinate = blockPos.getY();
                                     instance.generateSurface(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
                                 }
                                 wh.currentlyGenerating.remove(chunkPos);

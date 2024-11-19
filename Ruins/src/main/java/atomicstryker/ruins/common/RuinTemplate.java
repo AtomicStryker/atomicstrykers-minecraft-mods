@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -56,7 +55,7 @@ public class RuinTemplate {
     private BlockState[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private double weight = 1;
-    private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
+    private int leveling = 4, lbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false;
     private boolean preventRotation = false;
     private final List<BonemealMarker> bonemealMarkers = new ArrayList<>();
@@ -111,10 +110,10 @@ public class RuinTemplate {
 
     public boolean isIgnoredBlock(BlockState blockState) {
         final Material material = blockState.getMaterial();
-        return material.blocksMotion() || preserveWater && material.isLiquid() || preserveLava && material.equals(Material.LAVA);
+        return !material.isSolid() || preserveWater && material.isLiquid() || preserveLava && material.equals(Material.LAVA);
     }
 
-    public boolean isAcceptableSurface(BlockState blockState) {
+    public boolean isAcceptableSurface(World world, BlockState blockState, BlockPos pos) {
         for (BlockState b : deniedSurfaces) {
             if (blockState == b) {
                 return false;
@@ -122,7 +121,8 @@ public class RuinTemplate {
         }
 
         if (acceptedSurfaces.length == 0) {
-            return true;
+            // if no accepted surfaces are defined, any solid block will do
+            return blockState.getMaterial().isSolid();
         }
 
         for (BlockState b : acceptedSurfaces) {
@@ -172,16 +172,9 @@ public class RuinTemplate {
                 boolean foundSurface = false;
                 for (int iy = topYguess; iy >= minimalCheckedY; iy--) {
                     BlockPos pos = new BlockPos(ix, iy, iz);
-                    int chunkX = MathHelper.floor(ix / 16.0D);
-                    int chunkY = MathHelper.floor(iy / 16.0D);
-                    if (!world.hasChunk(chunkX, chunkY)) {
-                        // chunk not generated
-                        RuinsMod.LOGGER.info("Template generation at coordinates [{},{},{}] aborted, outside generated world!", ix, iy, iz);
-                        return -1;
-                    }
                     blockState = world.getBlockState(pos);
                     if (!isIgnoredBlock(blockState)) {
-                        if (isAcceptableSurface(blockState)) {
+                        if (isAcceptableSurface(world, blockState, pos)) {
                             heightMap[ix - x][iz - z] = iy;
                             foundSurface = true;
                             break;
@@ -217,10 +210,12 @@ public class RuinTemplate {
                 if (value < 0) {
                     if (--localOverhang < 0) {
                         // too much overhang, abort
+                        RuinsMod.LOGGER.debug("overhang fail");
                         return -1;
                     }
                 } else if (Math.abs(newY - value) > leveling) {
                     // too much surface noise, abort
+                    RuinsMod.LOGGER.debug("leveling fail: {} > {}", Math.abs(newY - value), leveling);
                     return -1;
                 }
             }
@@ -369,7 +364,7 @@ public class RuinTemplate {
                     yv = yReturn + y1;
                     zv = z + z1;
                     BlockPos pos = new BlockPos(xv, yv, zv);
-                    world.markAndNotifyBlock(pos, null, Blocks.AIR.defaultBlockState(), world.getBlockState(pos), 2, 512);
+                    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
                 }
             }
         }
@@ -433,7 +428,7 @@ public class RuinTemplate {
             BlockPos pos = new BlockPos(x, y_surface, z);
             BlockState block = world.getBlockState(pos);
             if (!isIgnoredBlock(block)) {
-                if (isAcceptableSurface(block)) {
+                if (isAcceptableSurface(world, block, pos)) {
                     fill_block = block;
                 }
                 break;
@@ -1069,5 +1064,10 @@ public class RuinTemplate {
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "RuinTemplate + " + getName();
     }
 }
