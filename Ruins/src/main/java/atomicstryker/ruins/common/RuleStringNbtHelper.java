@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.Level;
@@ -34,7 +35,12 @@ public class RuleStringNbtHelper {
         CompoundTag nbtTagCompound = input.copy();
         // strip this away here
         nbtTagCompound.remove("ruinsTE");
-        return NbtUtils.readBlockState(nbtTagCompound);
+        try {
+            return NbtUtils.readBlockState(nbtTagCompound);
+        } catch (Exception e) {
+            RuinsMod.LOGGER.error("failed translating CompoundTag {} to block", nbtTagCompound, e);
+            return Blocks.AIR.defaultBlockState();
+        }
     }
 
     public static CompoundTag tileEntityNBTFromCompound(CompoundTag defaultValue, CompoundTag input) {

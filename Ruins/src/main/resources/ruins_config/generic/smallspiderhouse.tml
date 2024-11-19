@@ -105,7 +105,7 @@ rule25=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",fac
 rule26=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"outer_right",facing:"south"},Name:"minecraft:brick_stairs"}
 rule27=0,100,{Properties:{axis:"x"},Name:"minecraft:acacia_log"}
 rule28=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"outer_left",facing:"east"},Name:"minecraft:brick_stairs"}
-rule29=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule29=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-5434073760637359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
 rule30=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"inner_left",facing:"north"},Name:"minecraft:brick_stairs"}
 rule31=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"outer_right",facing:"west"},Name:"minecraft:brick_stairs"}
 

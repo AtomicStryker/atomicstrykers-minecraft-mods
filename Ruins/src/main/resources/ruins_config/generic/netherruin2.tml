@@ -132,12 +132,12 @@ rule52=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"f
 rule53=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true",up:"true"},Name:"minecraft:red_nether_brick_wall"}
 rule54=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"true",west:"true",up:"true"},Name:"minecraft:red_nether_brick_wall"}
 rule55=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"true",west:"false",up:"true"},Name:"minecraft:red_nether_brick_wall"}
-rule56=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/nether_bridge"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}
+rule56=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/nether_bridge",LootTableSeed:-4494073760637359447L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}
 rule57=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:dark_oak_fence"}
 rule58=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:dark_oak_fence"}
 rule59=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"true",west:"false"},Name:"minecraft:black_stained_glass_pane"}
 rule60=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false",up:"true"},Name:"minecraft:red_nether_brick_wall"}
-rule61=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/nether_bridge"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}
+rule61=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/nether_bridge",LootTableSeed:-4494073733337359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}
 rule62=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"true",west:"false"},Name:"minecraft:glass_pane"}
 rule63=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"true",up:"true"},Name:"minecraft:red_nether_brick_wall"}
 
