@@ -1,19 +1,18 @@
 package atomicstryker.ruins.common;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,9 +34,9 @@ class World2TemplateParser extends Thread {
     private final BlockData nothing = new BlockData(Blocks.AIR.defaultBlockState(), null);
 
     private final List<String> chestLootTableNamesToGenerate = ImmutableList.of(
-            LootTables.SIMPLE_DUNGEON.toString(), LootTables.BURIED_TREASURE.toString(),
-            LootTables.ABANDONED_MINESHAFT.toString(), LootTables.STRONGHOLD_CORRIDOR.toString(),
-            LootTables.STRONGHOLD_CROSSING.toString(), LootTables.STRONGHOLD_LIBRARY.toString());
+            BuiltInLootTables.SIMPLE_DUNGEON.toString(), BuiltInLootTables.BURIED_TREASURE.toString(),
+            BuiltInLootTables.ABANDONED_MINESHAFT.toString(), BuiltInLootTables.STRONGHOLD_CORRIDOR.toString(),
+            BuiltInLootTables.STRONGHOLD_CROSSING.toString(), BuiltInLootTables.STRONGHOLD_LIBRARY.toString());
 
     /**
      * Starting point for the template parse scan
@@ -51,7 +50,7 @@ class World2TemplateParser extends Thread {
     /**
      * World instance
      */
-    private final World world;
+    private final Level world;
     /**
      * Template target filename
      */
@@ -59,7 +58,7 @@ class World2TemplateParser extends Thread {
     /**
      * Player that executed the command
      */
-    private final PlayerEntity player;
+    private final Player player;
     /**
      * These values denote the template size and location
      */
@@ -85,7 +84,7 @@ class World2TemplateParser extends Thread {
      * same Block which defines the template size. Any different Blocks found
      * above this plate are considered to make up the template.
      */
-    public World2TemplateParser(PlayerEntity p, int a, int b, int c, String fName) {
+    public World2TemplateParser(Player p, int a, int b, int c, String fName) {
         player = p;
         world = p.level;
         x = a;
@@ -102,7 +101,7 @@ class World2TemplateParser extends Thread {
     public void run() {
 
         if (templateHelperBlock.blockState.getBlock() == Blocks.AIR) {
-            player.sendMessage(new TranslationTextComponent("Template Parse fail, chosen Block was air WTF?!"), Util.NIL_UUID);
+            player.sendSystemMessage(Component.literal("Template Parse fail, chosen Block was air WTF?!"));
             return;
         }
 
@@ -141,20 +140,20 @@ class World2TemplateParser extends Thread {
         zLength = 1 + zmax - lowestZ;
 
         readBlocks(world);
-        player.sendMessage(new TranslationTextComponent("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength), Util.NIL_UUID);
+        player.sendSystemMessage(Component.literal("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
 
         File folder = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/");
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
-                player.sendMessage(new TranslationTextComponent("Failed to create folder structure: " + folder), Util.NIL_UUID);
+                player.sendSystemMessage(Component.literal("Failed to create folder structure: " + folder));
                 return;
             }
-            player.sendMessage(new TranslationTextComponent("Created folder structure: " + folder), Util.NIL_UUID);
+            player.sendSystemMessage(Component.literal("Created folder structure: " + folder));
         }
         File templateFile = new File(folder, fileName + ".tml");
         toFile(templateFile);
 
-        player.sendMessage(new TranslationTextComponent("Success writing templatefile " + templateFile), Util.NIL_UUID);
+        player.sendSystemMessage(Component.literal("Success writing templatefile " + templateFile));
     }
 
     private void checkLockup() {
@@ -163,7 +162,7 @@ class World2TemplateParser extends Thread {
         }
     }
 
-    private void readBlocks(World world) {
+    private void readBlocks(Level world) {
         yPadding = 0;
         int highestY = y + 1;
         BlockData temp = nothing.copy();
@@ -203,8 +202,8 @@ class World2TemplateParser extends Thread {
                     }
                     highestY = yi;
 
-                    if (temp.tileEntity instanceof ChestTileEntity && isIInventoryEmpty((IInventory) temp.tileEntity)) {
-                        CompoundNBT teData = temp.tileEntity.getTileData();
+                    if (temp.tileEntity instanceof ChestBlockEntity && isIInventoryEmpty((Container) temp.tileEntity)) {
+                        CompoundTag teData = temp.tileEntity.getPersistentData();
                         // use vanilla method of placing loot!
                         teData.putString("LootTable", chestLootTableNamesToGenerate.get(world.random.nextInt(chestLootTableNamesToGenerate.size())));
                         teData.putLong("LootTableSeed", world.random.nextLong());
@@ -223,7 +222,7 @@ class World2TemplateParser extends Thread {
         }
     }
 
-    private boolean isIInventoryEmpty(IInventory inventory) {
+    private boolean isIInventoryEmpty(Container inventory) {
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             if (inventory.getItem(slot) != ItemStack.EMPTY) {
                 return false;
@@ -371,16 +370,16 @@ class World2TemplateParser extends Thread {
             CommandTestTemplate.parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName());
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendMessage(new TranslationTextComponent("Something broke! See server logfile for exception message and get it to AtomicStryker."), Util.NIL_UUID);
-            player.sendMessage(new TranslationTextComponent("First line of stacktrace: " + e.getMessage()), Util.NIL_UUID);
+            player.sendSystemMessage(Component.literal("Something broke! See server logfile for exception message and get it to AtomicStryker."));
+            player.sendSystemMessage(Component.literal("First line of stacktrace: " + e.getMessage()));
         }
     }
 
     private class BlockData {
         BlockState blockState;
-        TileEntity tileEntity;
+        BlockEntity tileEntity;
 
-        BlockData(BlockState state, TileEntity te) {
+        BlockData(BlockState state, BlockEntity te) {
             blockState = state;
             tileEntity = te;
         }
@@ -389,7 +388,7 @@ class World2TemplateParser extends Thread {
             return new BlockData(blockState, tileEntity);
         }
 
-        boolean matchesBlock(World w, int x, int y, int z) {
+        boolean matchesBlock(Level w, int x, int y, int z) {
             return w.getBlockState(new BlockPos(x, y, z)) == blockState;
         }
 

@@ -1,34 +1,35 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.storage.WorldSavedData;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
 
-public class ChunkLoggerData extends WorldSavedData {
+public class ChunkLoggerData extends SavedData {
     private final ArrayList<ChunkPos> coords;
 
-    public ChunkLoggerData(String name) {
-        super(name);
+    public ChunkLoggerData() {
+        super();
         coords = new ArrayList<>();
     }
 
-    @Override
-    public void load(CompoundNBT nbt) {
+    public static ChunkLoggerData load(CompoundTag nbt) {
+        ChunkLoggerData data = new ChunkLoggerData();
         int[] xload = nbt.getIntArray("xcoords");
         int[] zload = nbt.getIntArray("zcoords");
         System.out.println("Ruins chunks logged: " + xload.length);
         if (xload.length > 0) {
-            coords.clear();
             for (int i = 0; i < xload.length; i++) {
-                coords.add(new ChunkPos(xload[i], zload[i]));
+                data.coords.add(new ChunkPos(xload[i], zload[i]));
             }
         }
+        return data;
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         int[] xsave = new int[coords.size()];
         int[] zsave = new int[coords.size()];
         for (int i = 0; i < xsave.length; i++) {

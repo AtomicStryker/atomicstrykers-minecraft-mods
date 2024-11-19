@@ -1,12 +1,15 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.BufferedReader;
@@ -16,6 +19,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,7 +30,7 @@ class RuinGenerator {
     static final int WORLD_MIN_HEIGHT = -64;
     private final static String fileName = "RuinsPositionsFile.txt";
 
-    private static IForgeRegistry<Biome> biomeRegistry = null;
+    private static IForgeRegistry<Biome> biomeRegistry = ForgeRegistries.BIOMES;
 
     private final FileHandler fileHandler;
     private final RuinStats stats;
@@ -36,7 +40,7 @@ class RuinGenerator {
     private int numTries = 0, LastNumTries = 0;
     private AtomicBoolean flushing;
 
-    public RuinGenerator(FileHandler rh, World world) {
+    public RuinGenerator(FileHandler rh, Level world) {
         fileHandler = rh;
         stats = new RuinStats();
         registeredRuins = new ConcurrentSkipListSet<>();
@@ -89,7 +93,7 @@ class RuinGenerator {
         }
     }
 
-    void generateNormal(World world, Random random, int xBase, int zBase) {
+    void generateNormal(Level world, RandomSource random, int xBase, int zBase) {
         for (int c = 0; c < fileHandler.triesPerChunkNormal; c++) {
             if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNormal) {
                 createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), false);
@@ -97,7 +101,7 @@ class RuinGenerator {
         }
     }
 
-    void generateNether(World world, Random random, int xBase, int zBase) {
+    void generateNether(Level world, RandomSource random, int xBase, int zBase) {
         for (int c = 0; c < fileHandler.triesPerChunkNether; c++) {
             if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNether) {
                 createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), true);
@@ -105,10 +109,11 @@ class RuinGenerator {
         }
     }
 
-    private void createBuilding(World world, Random random, int x, int z, boolean nether) {
+    private void createBuilding(Level world, RandomSource random, int x, int z, boolean nether) {
         final int rotate = random.nextInt(4);
-        final Biome biome = world.getBiome(new BlockPos(x, 8, z));
-        String biomeID = biome.getRegistryName().getPath();
+        final Biome biome = world.getBiome(new BlockPos(x, 8, z)).get();
+
+        String biomeID = biomeRegistry.getKey(biome).getPath();
 
         if (fileHandler.useGeneric(random, biomeID)) {
             biomeID = RuinsMod.BIOME_ANY;
@@ -140,7 +145,7 @@ class RuinGenerator {
                 int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false, false);
                 if (finalY >= 0) {
                     if (!fileHandler.disableLogging) {
-                        RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biome.getRegistryName().getPath(), x, y, z);
+                        RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biomeRegistry.getKey(biome).getPath(), x, y, z);
                     }
                     stats.numCreated++;
 
@@ -160,13 +165,6 @@ class RuinGenerator {
         }
     }
 
-    private IForgeRegistry<Biome> getBiomeRegistry() {
-        if (biomeRegistry == null) {
-            biomeRegistry = GameRegistry.findRegistry(Biome.class);
-        }
-        return biomeRegistry;
-    }
-
     private void printStats() {
         if (!fileHandler.disableLogging) {
             int total = stats.numCreated + stats.levelingFails;
@@ -177,13 +175,12 @@ class RuinGenerator {
             RuinsMod.LOGGER.info("    No Surface fails:            " + stats.noSurfaceFails);
             RuinsMod.LOGGER.info("    Leveling fails:              " + stats.levelingFails);
 
-            Biome bgb;
-            for (ResourceLocation rl : getBiomeRegistry().getKeys()) {
-                bgb = getBiomeRegistry().getValue(rl);
-                if (bgb != null) {
-                    Integer i = stats.biomes.get(bgb.getRegistryName().getPath());
+            for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
+                Biome biome = entry.getValue();
+                if (biome != null) {
+                    Integer i = stats.biomes.get(biomeRegistry.getKey(biome).getPath());
                     if (i != null) {
-                        RuinsMod.LOGGER.info(bgb.getRegistryName().getPath() + ": " + i + " Biome building attempts");
+                        RuinsMod.LOGGER.info(biomeRegistry.getKey(biome).getPath() + ": " + i + " Biome building attempts");
                     }
                 }
             }
@@ -193,9 +190,9 @@ class RuinGenerator {
         }
     }
 
-    private boolean checkMinDistance(World world, RuinTemplate ruinTemplate, RuinData ruinData) {
+    private boolean checkMinDistance(Level world, RuinTemplate ruinTemplate, RuinData ruinData) {
         // in overworld, check min/max distances from world spawn
-        if (world.dimension().getRegistryName().getPath().equals("overworld")) {
+        if (world.dimension().location().getPath().equals("overworld")) {
             BlockPos spawn = new BlockPos(world.getLevelData().getXSpawn(), world.getLevelData().getYSpawn(), world.getLevelData().getZSpawn());
             final int min_distance = Math.max(fileHandler.anySpawnMinDistance, ruinTemplate.spawnMinDistance);
             if (
@@ -246,7 +243,7 @@ class RuinGenerator {
         return true;
     }
 
-    private int findSuitableY(World world, RuinTemplate r, int x, int z, boolean nether) {
+    private int findSuitableY(Level world, RuinTemplate r, int x, int z, boolean nether) {
         if (!nether) {
             for (int y = world.getMaxBuildHeight() - 1; y > WORLD_MIN_HEIGHT; y--) {
                 BlockPos pos = new BlockPos(x, y, z);

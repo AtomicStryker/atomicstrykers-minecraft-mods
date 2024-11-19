@@ -1,24 +1,21 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.IGrowable;
-import net.minecraft.block.material.Material;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.BiomeDictionary;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.BufferedReader;
@@ -29,8 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +36,6 @@ public class RuinTemplate {
     private static final Pattern patternRuleRaw = Pattern.compile("(?:[^*=^]*\\*)?(?:rule[^=^]*)?[=^]");
     private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
     private static Set<String> installed_mods_ = null;
-    private static Set<String> installed_biome_types_ = null;
     private final String name;
     private final VariantRuleset variantRuleset;
     private final ArrayList<RuinTemplateLayer> layers;
@@ -113,7 +108,7 @@ public class RuinTemplate {
         return !material.isSolid() || preserveWater && material.isLiquid() || preserveLava && material.equals(Material.LAVA);
     }
 
-    public boolean isAcceptableSurface(World world, BlockState blockState, BlockPos pos) {
+    public boolean isAcceptableSurface(Level world, BlockState blockState, BlockPos pos) {
         for (BlockState b : deniedSurfaces) {
             if (blockState == b) {
                 return false;
@@ -133,11 +128,11 @@ public class RuinTemplate {
         return false;
     }
 
-    public int checkArea(World world, int xBase, int y, int zBase, int rotate) {
+    public int checkArea(Level world, int xBase, int y, int zBase, int rotate) {
         return checkArea(world, xBase, y, zBase, rotate, 0);
     }
 
-    private int checkArea(World world, int xBase, int y, int zBase, int rotate, int additionalYRangeChecked) {
+    private int checkArea(Level world, int xBase, int y, int zBase, int rotate, int additionalYRangeChecked) {
         // setup some variable defaults (north/south)
         int x = xBase + w_off;
         int z = zBase + l_off;
@@ -251,7 +246,7 @@ public class RuinTemplate {
     /**
      * @return the finalized y value of the embedded template or -1 if there was an exception
      */
-    public int doBuild(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player, boolean ignore_ceiling) {
+    public int doBuild(Level world, RandomSource random, int xBase, int yBase, int zBase, int rotate, boolean is_player, boolean ignore_ceiling) {
         try {
             return doBuildNested(world, random, xBase, yBase, zBase, rotate, is_player, ignore_ceiling);
         } catch (Exception e) {
@@ -262,7 +257,7 @@ public class RuinTemplate {
         }
     }
 
-    private int doBuildNested(World world, Random random, int xBase, int yBase, int zBase, int rotate, boolean is_player, boolean ignore_ceiling) {
+    private int doBuildNested(Level world, RandomSource random, int xBase, int yBase, int zBase, int rotate, boolean is_player, boolean ignore_ceiling) {
         /*
          * we need to shift the base coordinates and take care of any rotations
          * before we can begin creating the layers.
@@ -375,16 +370,16 @@ public class RuinTemplate {
             BlockState state = world.getBlockState(position);
             Block growable = state.getBlock();
             RuinsMod.LOGGER.info("Now considering bonemeal flag at {}, block: {}", position, growable);
-            if (growable instanceof IGrowable) {
+            if (growable instanceof BonemealableBlock) {
                 int count = bonemealMarker.getCount();
-                IGrowable igrowable = (IGrowable) growable;
+                BonemealableBlock igrowable = (BonemealableBlock) growable;
                 int grows;
                 for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state, world.isClientSide); ++grows) {
-                    igrowable.performBonemeal((ServerWorld) world, world.random, position, state);
+                    igrowable.performBonemeal((ServerLevel) world, world.random, position, state);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
-                    if (growable instanceof IGrowable) {
-                        igrowable = (IGrowable) growable;
+                    if (growable instanceof BonemealableBlock) {
+                        igrowable = (BonemealableBlock) growable;
                     } else {
                         break;
                     }
@@ -420,7 +415,7 @@ public class RuinTemplate {
     }
 
     // try to recover the original acceptable surface block or suitable substitute, if any
-    private BlockState getLevelingFillBlock(World world, int x, int y, int z) {
+    private BlockState getLevelingFillBlock(Level world, int x, int y, int z) {
         BlockState fill_block = null;
 
         int y_end = Math.max(y - height, 0) - 1;
@@ -438,7 +433,7 @@ public class RuinTemplate {
         return fill_block;
     }
 
-    private void doLateRuns(World world, Random random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun) {
+    private void doLateRuns(Level world, RandomSource random, ArrayList<RuinRuleProcess> laterun, ArrayList<RuinRuleProcess> lastrun) {
         for (RuinRuleProcess rp : laterun) {
             rp.doBlock(world, random);
         }
@@ -448,7 +443,7 @@ public class RuinTemplate {
         }
     }
 
-    private void levelSite(World world, BlockState fillBlockID, int xBase, int y, int zBase, boolean eastwest, Random random, RuinTemplateRule rule0) {
+    private void levelSite(Level world, BlockState fillBlockID, int xBase, int y, int zBase, boolean eastwest, RandomSource random, RuinTemplateRule rule0) {
         /*
          * Add blocks around the build site to level it in as needed. setup some
          * variable defaults (north/south)
@@ -623,15 +618,8 @@ public class RuinTemplate {
             ModList.get().getMods().forEach(mod -> installed_mods_.add(mod.getModId()));
         }
 
-        // collect list of currently installed biome types on first pass and keep for future reference
-        if (installed_biome_types_ == null) {
-            installed_biome_types_ = new HashSet<>();
-            BiomeDictionary.Type.getAll().forEach(type -> installed_biome_types_.add(type.getName()));
-        }
-
         Set<String> included_biomes = new HashSet<>();
         Set<String> excluded_biomes = new HashSet<>();
-        List<RuinVennCriterion> biome_type_criteria = new ArrayList<>();
 
         Iterator<String> i = variables.iterator();
         String line;
@@ -668,22 +656,6 @@ public class RuinTemplate {
                     String[] check = line.split("=");
                     if (check.length > 1) {
                         Collections.addAll(excluded_biomes, check[1].split(","));
-                    }
-                } else if (line.startsWith("biomeTypesToSpawnIn")) {
-                    String[] check = line.split("=");
-                    if (check.length > 1) {
-                        if (debugging) {
-                            RuinsMod.LOGGER.info("adding biomeTypesToSpawnIn criterion for template \"{}\": specs=\"{}\"", name, check[1]);
-                        }
-                        RuinVennCriterion criterion = null;
-                        try {
-                            criterion = RuinVennCriterion.parseExpression(check[1]);
-                        } catch (RuntimeException exception) {
-                            RuinsMod.LOGGER.error("template [{}]: invalid biomeTypesToSpawnIn expression [{}]", name, check[1], exception);
-                        }
-                        if (criterion != null && !criterion.isEmpty()) {
-                            biome_type_criteria.add(criterion);
-                        }
                     }
                 } else if (line.startsWith("weight")) {
                     String[] check = line.split("=");
@@ -785,26 +757,12 @@ public class RuinTemplate {
         // 1) biomes listed as biomesToSpawnIn are added (regardless of biomesToNotSpawnIn)
         // 2) biomes listed as biomesToNotSpawnIn are not added (regardless of biomeTypesToSpawnIn)
         // 3) biomes satisfying at least one biomeTypesToSpawnIn criterion are added
-        for (Iterator<Biome> biome_iter = getBiomeRegistry().iterator(); biome_iter.hasNext(); ) {
-            Biome biome = biome_iter.next();
-            String biome_name = biome.getRegistryName().getPath();
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
+            Biome biome = entry.getValue();
+            String biome_name = entry.getKey().location().getPath();
             if (!biomes.contains(biome_name)) {
                 if (included_biomes.contains(biome_name)) {
                     biomes.add(biome_name);
-                } else if (!excluded_biomes.contains(biome_name) && !biome_type_criteria.isEmpty()) {
-                    Set<String> biome_types = new HashSet<>();
-                    MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-                    Optional<RegistryKey<Biome>> optional = server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getResourceKey(biome);
-                    if (!optional.isPresent()) {
-                        continue;
-                    }
-                    BiomeDictionary.getTypes(optional.get()).forEach(type -> biome_types.add(type.getName()));
-                    for (RuinVennCriterion criterion : biome_type_criteria) {
-                        if (criterion.isSatisfiedBy(biome_types)) {
-                            biomes.add(biome_name);
-                            break;
-                        }
-                    }
                 }
             }
         }
@@ -856,18 +814,11 @@ public class RuinTemplate {
         bonemealMarkers.add(new BonemealMarker(position, count));
     }
 
-    private IForgeRegistry<Biome> getBiomeRegistry() {
-        if (biomeRegistry == null) {
-            biomeRegistry = GameRegistry.findRegistry(Biome.class);
-        }
-        return biomeRegistry;
-    }
-
     private BlockState[] fromString(String input) {
         final HashSet<BlockState> stateSet = new HashSet<>();
-        List<CompoundNBT> stateList = RuleStringNbtHelper.splitRuleByBrackets(input);
+        List<CompoundTag> stateList = RuleStringNbtHelper.splitRuleByBrackets(input);
         if (stateList != null) {
-            for (CompoundNBT stateCompound : stateList) {
+            for (CompoundTag stateCompound : stateList) {
                 BlockState state = RuleStringNbtHelper.blockStateFromCompound(stateCompound);
                 if (state.getBlock() != Blocks.AIR) {
                     stateSet.add(state);
@@ -926,7 +877,7 @@ public class RuinTemplate {
         }
 
         // resolve all the VariantRules in this group by selecting one variant for each
-        public ArrayList<RuinTemplateRule> getVariants(Random random) {
+        public ArrayList<RuinTemplateRule> getVariants(RandomSource random) {
             final ArrayList<RuinTemplateRule> variants = new ArrayList<>();
             for (final VariantGroup variantGroup : variantGroups) {
                 variants.addAll(variantGroup.getVariants(random, variants.size()));
@@ -982,7 +933,7 @@ public class RuinTemplate {
             }
 
             // resolve all the VariantRules in this group by selecting one variant for each
-            public ArrayList<RuinTemplateRule> getVariants(Random random, final int ruleIndexInitial) {
+            public ArrayList<RuinTemplateRule> getVariants(RandomSource random, final int ruleIndexInitial) {
                 final ArrayList<RuinTemplateRule> variants = new ArrayList<>();
                 for (int i = 0; i < repeatCount; ++i) {
                     // selector is an unweighted random index; the same value is used for all members of the group
@@ -1038,7 +989,7 @@ public class RuinTemplate {
                 }
 
                 // generate a random selector based on the variants in this VariantRule
-                public int getRandomSelector(Random random, final int ruleIndex) {
+                public int getRandomSelector(RandomSource random, final int ruleIndex) {
                     final int selector = random.nextInt(weightsTotal);
                     if (debugging && weightsTotal > 1) {
                         RuinsMod.LOGGER.info("template [{}] rule [{}]: group selector drawn (from 1-{}) = {}", name, ruleIndex, weightsTotal, selector + 1);
