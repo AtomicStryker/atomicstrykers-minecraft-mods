@@ -302,7 +302,7 @@ class World2TemplateParser extends Thread {
             pw.println("#");
             pw.println("# depth/height limit affected by terrain leveling");
             pw.println("# also maximum bumpiness tolerated in surface beneath template");
-            pw.println("max_leveling=2");
+            pw.println("max_leveling=4");
             pw.println("#");
             pw.println("# padding applied to all sides of template horizontal footprint");
             pw.println("# expands area affected by terrain leveling (-1 = no leveling)");

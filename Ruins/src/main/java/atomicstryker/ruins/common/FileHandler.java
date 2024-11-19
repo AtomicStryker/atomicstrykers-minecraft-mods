@@ -286,7 +286,7 @@ class FileHandler {
                             }
                         }
                     }
-                    // pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
+                    RuinsMod.LOGGER.info("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                     templateCount++;
                 } catch (RuinTemplate.IncompatibleModException e) {
                     RuinsMod.LOGGER.error("IncompatibleModException", e);
@@ -359,7 +359,7 @@ class FileHandler {
         pw.println("enableStick=true");
         pw.println("#");
         pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
-        pw.println("allowedDimensions=0,1,-1");
+        pw.println("allowedDimensions=overworld,the_end,the_nether");
         pw.println("#");
         pw.println("# make /parseruin rule IDs line up nicely in template files");
         pw.println("# note: overworld (i.e., dimension 0) setting applies to all dimensions");

@@ -1,18 +1,22 @@
 package atomicstryker.ruins.common;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -20,7 +24,14 @@ import net.minecraftforge.registries.IForgeRegistry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +55,7 @@ public class RuinTemplate {
     private BlockState[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private double weight = 1;
-    private int leveling = 2, lbuffer = 0, w_off = 0, l_off = 0;
+    private int leveling = 4, lbuffer = 0, w_off = 0, l_off = 0;
     private boolean preserveWater = false, preserveLava = false;
     private boolean preventRotation = false;
     private final List<BonemealMarker> bonemealMarkers = new ArrayList<>();
@@ -96,33 +107,13 @@ public class RuinTemplate {
         return biomes;
     }
 
-    private static final ImmutableSet<Material> AIRLIKE_MATERIALS = ImmutableSet.of(
-            Material.AIR,
-            Material.PLANTS,
-            Material.TALL_PLANTS,
-            Material.SNOW,
-            Material.FIRE,
-            Material.WEB,
-            Material.BAMBOO_SAPLING,
-            Material.BAMBOO,
-            Material.LEAVES,
-            Material.CACTUS,
-            Material.GOURD);
-    private static final ImmutableSet<Material> WATERLIKE_MATERIALS = ImmutableSet.of(
-            Material.OCEAN_PLANT,
-            Material.SEA_GRASS,
-            Material.WATER,
-            Material.BUBBLE_COLUMN,
-            Material.ICE);
-    private static final ImmutableSet<Material> LAVALIKE_MATERIALS = ImmutableSet.of(
-            Material.LAVA);
 
     public boolean isIgnoredBlock(BlockState blockState) {
         final Material material = blockState.getMaterial();
-        return AIRLIKE_MATERIALS.contains(material) || preserveWater && WATERLIKE_MATERIALS.contains(material) || preserveLava && LAVALIKE_MATERIALS.contains(material);
+        return !material.isSolid() || preserveWater && material.isLiquid() || preserveLava && material.equals(Material.LAVA);
     }
 
-    public boolean isAcceptableSurface(BlockState blockState) {
+    public boolean isAcceptableSurface(World world, BlockState blockState, BlockPos pos) {
         for (BlockState b : deniedSurfaces) {
             if (blockState == b) {
                 return false;
@@ -130,7 +121,8 @@ public class RuinTemplate {
         }
 
         if (acceptedSurfaces.length == 0) {
-            return true;
+            // if no accepted surfaces are defined, any solid block will do
+            return blockState.getMaterial().isSolid();
         }
 
         for (BlockState b : acceptedSurfaces) {
@@ -180,14 +172,9 @@ public class RuinTemplate {
                 boolean foundSurface = false;
                 for (int iy = topYguess; iy >= minimalCheckedY; iy--) {
                     BlockPos pos = new BlockPos(ix, iy, iz);
-                    if (!world.isBlockPresent(pos)) {
-                        // chunk not generated
-                        RuinsMod.LOGGER.info("Template generation at coordinates [{},{},{}] aborted, outside generated world!", ix, iy, iz);
-                        return -1;
-                    }
                     blockState = world.getBlockState(pos);
                     if (!isIgnoredBlock(blockState)) {
-                        if (isAcceptableSurface(blockState)) {
+                        if (isAcceptableSurface(world, blockState, pos)) {
                             heightMap[ix - x][iz - z] = iy;
                             foundSurface = true;
                             break;
@@ -223,10 +210,12 @@ public class RuinTemplate {
                 if (value < 0) {
                     if (--localOverhang < 0) {
                         // too much overhang, abort
+                        RuinsMod.LOGGER.debug("overhang fail");
                         return -1;
                     }
                 } else if (Math.abs(newY - value) > leveling) {
                     // too much surface noise, abort
+                    RuinsMod.LOGGER.debug("leveling fail: {} > {}", Math.abs(newY - value), leveling);
                     return -1;
                 }
             }
@@ -375,7 +364,7 @@ public class RuinTemplate {
                     yv = yReturn + y1;
                     zv = z + z1;
                     BlockPos pos = new BlockPos(xv, yv, zv);
-                    world.markAndNotifyBlock(pos, null, Blocks.AIR.getDefaultState(), world.getBlockState(pos), 2, 512);
+                    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
                 }
             }
         }
@@ -390,8 +379,8 @@ public class RuinTemplate {
                 int count = bonemealMarker.getCount();
                 IGrowable igrowable = (IGrowable) growable;
                 int grows;
-                for (grows = 0; grows < count && igrowable.canGrow(world, position, state, world.isRemote); ++grows) {
-                    igrowable.grow((ServerWorld) world, world.rand, position, state);
+                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state, world.isClientSide); ++grows) {
+                    igrowable.performBonemeal((ServerWorld) world, world.random, position, state);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
                     if (growable instanceof IGrowable) {
@@ -409,9 +398,9 @@ public class RuinTemplate {
 
         for (AdjoiningTemplateData ad : adjoiningTemplates) {
             RuinsMod.LOGGER.info("Considering to spawn adjoining {} of Ruin {}...", ad.adjoiningTemplate.getName(), getName());
-            float randres = (world.rand.nextFloat() * 100);
+            float randres = (world.random.nextFloat() * 100);
             if (randres < ad.spawnchance) {
-                int newrot = world.rand.nextInt(4);
+                int newrot = world.random.nextInt(4);
                 int targetX = xBase + ad.relativeX;
                 int targetZ = zBase + ad.relativeZ;
                 int targetY = ad.adjoiningTemplate.checkArea(world, targetX, yReturn, targetZ, newrot, ad.acceptableY);
@@ -439,7 +428,7 @@ public class RuinTemplate {
             BlockPos pos = new BlockPos(x, y_surface, z);
             BlockState block = world.getBlockState(pos);
             if (!isIgnoredBlock(block)) {
-                if (isAcceptableSurface(block)) {
+                if (isAcceptableSurface(world, block, pos)) {
                     fill_block = block;
                 }
                 break;
@@ -487,7 +476,7 @@ public class RuinTemplate {
                 for (int yi = y - leveling; yi < y; yi++) {
                     BlockPos pos = new BlockPos(xi, yi, zi);
                     if (isIgnoredBlock(world.getBlockState(pos))) {
-                        world.setBlockState(pos, fillBlockID, 2);
+                        world.setBlock(pos, fillBlockID, 2);
                     }
                 }
                 // flatten bumps
@@ -804,7 +793,12 @@ public class RuinTemplate {
                     biomes.add(biome_name);
                 } else if (!excluded_biomes.contains(biome_name) && !biome_type_criteria.isEmpty()) {
                     Set<String> biome_types = new HashSet<>();
-                    BiomeDictionary.getTypes(biome).forEach(type -> biome_types.add(type.getName()));
+                    MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+                    Optional<RegistryKey<Biome>> optional = server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getResourceKey(biome);
+                    if (!optional.isPresent()) {
+                        continue;
+                    }
+                    BiomeDictionary.getTypes(optional.get()).forEach(type -> biome_types.add(type.getName()));
                     for (RuinVennCriterion criterion : biome_type_criteria) {
                         if (criterion.isSatisfiedBy(biome_types)) {
                             biomes.add(biome_name);
@@ -1070,5 +1064,10 @@ public class RuinTemplate {
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "RuinTemplate + " + getName();
     }
 }
