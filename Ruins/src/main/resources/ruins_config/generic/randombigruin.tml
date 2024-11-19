@@ -83,7 +83,7 @@ rule3=0,100,{Name:"minecraft:mossy_stone_bricks"}
 rule4=0,100,{Name:"minecraft:dirt"}
 rule5=0,100,{Properties:{snowy:"false"},Name:"minecraft:grass_block"}
 rule6=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760637359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}{Ruins:{entity:{LootTable:"minecraft:chests/jungle_temple"}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/desert_pyramid"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}
-rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{Entity:{id:zombie},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{Entity:{id:skeleton},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{Entity:{id:spider},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{Entity:{id:cave_spider},Weight:1}],Delay:-1}}, Name:"minecraft:spawner"}
+rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:skeleton"}}}]}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:spider"}}}]}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:cave_spider"}}}]}}, Name:"minecraft:spawner"}
 
 layer
 0,0,2,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
