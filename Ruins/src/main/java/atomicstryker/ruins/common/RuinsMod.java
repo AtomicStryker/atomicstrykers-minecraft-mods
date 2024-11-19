@@ -42,6 +42,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,11 +70,12 @@ public class RuinsMod {
     private final ConcurrentHashMap<ResourceLocation, WorldHandle> generatorMap;
     private long nextInfoTime;
 
-    public RuinsMod() {
+    public RuinsMod(FMLJavaModLoadingContext context) {
         instance = this;
         generatorMap = new ConcurrentHashMap<>();
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final IEventBus modEventBus = context.getModEventBus();
         modEventBus.addListener(this::preInit);
+        modEventBus.addListener(this::registration);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         MinecraftForge.EVENT_BUS.register(new CommandUndoTemplate());
@@ -84,7 +86,13 @@ public class RuinsMod {
 
         final DeferredRegister<Codec<? extends BiomeModifier>> serializers = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
         serializers.register(modEventBus);
-        serializers.register("ruins_gen_hook", RuinsBiomeModifier::makeCodec);
+        serializers.register("gen_hook", RuinsBiomeModifier::makeCodec);
+    }
+
+    public void registration(RegisterEvent event) {
+        event.register(ForgeRegistries.Keys.BIOME_MODIFIERS,
+                helper -> helper.register("ruins_gen_hook", new RuinsBiomeModifier())
+        );
     }
 
     protected static final Feature<NoneFeatureConfiguration> RUINS_PSEUDO_FEATURE = new RuinsFeature(NoneFeatureConfiguration.CODEC);
@@ -108,13 +116,13 @@ public class RuinsMod {
     public record RuinsBiomeModifier() implements BiomeModifier {
 
         private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER =
-                RegistryObject.create(new ResourceLocation(MOD_ID + ":gen_hook"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
+                RegistryObject.create(new ResourceLocation("ruins:gen_hook"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
 
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.AFTER_EVERYTHING) {
                 builder.getGenerationSettings().addFeature(GenerationStep.Decoration.TOP_LAYER_MODIFICATION, PLACED_RUINS);
-                RuinsMod.LOGGER.info("RuinsBiomeModifier.modify was executed, feature added");
+                RuinsMod.LOGGER.trace("RuinsBiomeModifier.modify was executed for biome {}, feature added", biome.unwrapKey().get());
             }
         }
 
@@ -148,7 +156,7 @@ public class RuinsMod {
 
     public static void decorateChunkHook(WorldGenLevel worldGenLevel, BlockPos blockPos) {
 
-        LOGGER.debug("decorateChunkHook {}", blockPos);
+        LOGGER.trace("decorateChunkHook {}", blockPos);
         if (worldGenLevel.isClientSide()
                 || !worldGenLevel.getLevel().structureManager().shouldGenerateStructures()
                 || instance == null) {
@@ -160,7 +168,7 @@ public class RuinsMod {
         int chunkX = (int) Math.floor(blockPos.getX() / 16.0D);
         int chunkY = (int) Math.floor(blockPos.getY() / 16.0D);
         ChunkPos chunkPos = new ChunkPos(chunkX, chunkY);
-        LOGGER.debug("Ruins chunk decoration [{}|{}]", chunkX, chunkY);
+        LOGGER.trace("Ruins chunk decoration [{}|{}]", chunkX, chunkY);
         final WorldHandle wh = instance.getWorldHandle(world);
         if (wh != null) {
 

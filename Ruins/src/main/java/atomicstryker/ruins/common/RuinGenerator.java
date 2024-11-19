@@ -3,14 +3,12 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,7 +18,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,8 +26,6 @@ class RuinGenerator {
     // google says world height is between 320 and -64, max height has a getter
     static final int WORLD_MIN_HEIGHT = -64;
     private final static String fileName = "RuinsPositionsFile.txt";
-
-    private static IForgeRegistry<Biome> biomeRegistry = ForgeRegistries.BIOMES;
 
     private final FileHandler fileHandler;
     private final RuinStats stats;
@@ -111,10 +106,8 @@ class RuinGenerator {
 
     private void createBuilding(Level world, RandomSource random, int x, int z, boolean nether) {
         final int rotate = random.nextInt(4);
-        final Biome biome = world.getBiome(new BlockPos(x, 8, z)).get();
-
-        String biomeID = biomeRegistry.getKey(biome).getPath();
-
+        // note in 1.19+ a chunk can contain different biomes at different heights ... we usually want the surface
+        String biomeID = world.getBiome(new BlockPos(x, world.getSeaLevel(), z)).unwrapKey().get().location().getPath();
         if (fileHandler.useGeneric(random, biomeID)) {
             biomeID = RuinsMod.BIOME_ANY;
         }
@@ -145,7 +138,7 @@ class RuinGenerator {
                 int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false, false);
                 if (finalY >= 0) {
                     if (!fileHandler.disableLogging) {
-                        RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biomeRegistry.getKey(biome).getPath(), x, y, z);
+                        RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biomeID, x, y, z);
                     }
                     stats.numCreated++;
 
@@ -178,9 +171,9 @@ class RuinGenerator {
             for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
                 Biome biome = entry.getValue();
                 if (biome != null) {
-                    Integer i = stats.biomes.get(biomeRegistry.getKey(biome).getPath());
+                    Integer i = stats.biomes.get(ForgeRegistries.BIOMES.getKey(biome).getPath());
                     if (i != null) {
-                        RuinsMod.LOGGER.info(biomeRegistry.getKey(biome).getPath() + ": " + i + " Biome building attempts");
+                        RuinsMod.LOGGER.info(ForgeRegistries.BIOMES.getKey(biome).getPath() + ": " + i + " Biome building attempts");
                     }
                 }
             }
