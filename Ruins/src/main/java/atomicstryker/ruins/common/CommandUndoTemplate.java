@@ -1,15 +1,17 @@
 package atomicstryker.ruins.common;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -18,11 +20,11 @@ import java.util.ArrayList;
 public class CommandUndoTemplate {
 
     private static final ArrayList<TemplateArea> savedLocations = new ArrayList<>();
-    public static final LiteralArgumentBuilder<CommandSource> BUILDER =
+    public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("undoruin")
-                    .requires((caller) -> caller.hasPermissionLevel(2))
+                    .requires((caller) -> caller.hasPermission(2))
                     .executes((caller) -> {
-                        execute(caller.getSource());
+                        execute(caller.getSource().source);
                         return 1;
                     });
     private static RuinTemplate runningTemplateSpawn;
@@ -32,24 +34,29 @@ public class CommandUndoTemplate {
     }
 
     private static void execute(CommandSource source) {
-        World w = source.getWorld();
+        if (!(source instanceof Player)) {
+            source.sendSystemMessage(Component.literal("Only for ingame players."));
+            return;
+        }
+        Player player = (Player) source;
+        Level w = player.getLevel();
         if (savedLocations.isEmpty()) {
-            source.sendErrorMessage(new TranslationTextComponent("There is nothing cached to be undone..."));
+            source.sendSystemMessage(Component.literal("There is nothing cached to be undone..."));
         } else {
             for (TemplateArea ta : savedLocations) {
                 for (int x = 0; x < ta.blockArray.length; x++) {
                     for (int y = 0; y < ta.blockArray[0].length; y++) {
                         for (int z = 0; z < ta.blockArray[0][0].length; z++) {
-                            w.setBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z), ta.blockArray[x][y][z], 2);
+                            w.setBlock(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z), ta.blockArray[x][y][z], 2);
                         }
                     }
                 }
 
                 // kill off the resulting entityItems instances
-                w.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(new BlockPos(ta.xBase - 1, ta.yBase - 1, ta.zBase - 1),
-                        new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))).forEach(Entity::onKillCommand);
+                w.getEntitiesOfClass(ItemEntity.class, new AABB(new BlockPos(ta.xBase - 1, ta.yBase - 1, ta.zBase - 1),
+                        new BlockPos(ta.xBase + ta.blockArray.length + 1, ta.yBase + ta.blockArray[0].length + 1, ta.zBase + ta.blockArray[0][0].length + 1))).forEach(Entity::kill);
             }
-            source.sendFeedback(new TranslationTextComponent("Cleared away " + savedLocations.size() + " template sites."), false);
+            source.sendSystemMessage(Component.literal("Cleared away " + savedLocations.size() + " template sites."));
             savedLocations.clear();
         }
     }
@@ -77,7 +84,7 @@ public class CommandUndoTemplate {
                 for (int x = 0; x < ta.blockArray.length; x++) {
                     for (int y = 0; y < ta.blockArray[0].length; y++) {
                         for (int z = 0; z < ta.blockArray[0][0].length; z++) {
-                            ta.blockArray[x][y][z] = event.getWorld().getBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z));
+                            ta.blockArray[x][y][z] = event.getLevel().getBlockState(new BlockPos(ta.xBase + x, ta.yBase + y, ta.zBase + z));
                         }
                     }
                 }
