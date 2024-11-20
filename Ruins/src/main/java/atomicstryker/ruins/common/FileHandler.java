@@ -29,8 +29,6 @@ class FileHandler {
     private final ResourceLocation dimension;
     private final HashMap<String, double[]> vars = new HashMap<>();
 
-    private static IForgeRegistry<Biome> biomeRegistry = null;
-
     int triesPerChunkNormal = 6, triesPerChunkNether = 6;
     float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
     private String[] allowedDimensions = {"the_nether", "overworld", "the_end"};

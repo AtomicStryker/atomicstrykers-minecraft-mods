@@ -45,7 +45,8 @@ public class CommandParseTemplate {
             // have to defer parsing to main thread, else all Tile Entities read as null
             MinecraftServer server = player.level.getServer();
             if (server != null) {
-                server.addTickable(new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName));
+                World2TemplateParser world2TemplateParser = new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName);
+                world2TemplateParser.execute();
             }
             player = null;
             event.setCanceled(true);

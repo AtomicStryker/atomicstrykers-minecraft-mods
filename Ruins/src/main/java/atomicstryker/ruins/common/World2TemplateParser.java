@@ -23,7 +23,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-class World2TemplateParser extends Thread {
+class World2TemplateParser {
 
     /**
      * Block upon which the parser is started, is used to define the template
@@ -97,8 +97,7 @@ class World2TemplateParser extends Thread {
         layerData = new ArrayList<>();
     }
 
-    @Override
-    public void run() {
+    public void execute() {
 
         if (templateHelperBlock.blockState.getBlock() == Blocks.AIR) {
             player.sendSystemMessage(Component.literal("Template Parse fail, chosen Block was air WTF?!"));

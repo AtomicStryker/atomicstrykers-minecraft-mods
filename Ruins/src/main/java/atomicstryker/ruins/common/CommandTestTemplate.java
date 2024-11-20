@@ -88,9 +88,9 @@ class CommandTestTemplate {
                 final Level world = sender.getCommandSenderWorld();
 
                 if (parsedRuin != null) {
-                    if (y < 0) {
+                    if (y < world.getMinBuildHeight()) {
                         final int ceiling = world.getHeight();
-                        for (y = ceiling - 1; y > 7; y--) {
+                        for (y = ceiling - 1; y > world.getMinBuildHeight(); y--) {
                             BlockPos pos = new BlockPos(x, y, z);
                             final BlockState b = world.getBlockState(pos);
                             if (parsedRuin.isIgnoredBlock(b)) {
@@ -106,7 +106,7 @@ class CommandTestTemplate {
                         ++y;
                     }
 
-                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) >= 0) {
+                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) > world.getMinBuildHeight()) {
                         parsedRuin = null;
                     } else {
                         sender.sendSystemMessage(Component.literal("EventRuinTemplateSpawn returned as cancelled, not building that."));

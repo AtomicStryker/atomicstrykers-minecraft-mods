@@ -77,8 +77,8 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule2=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule1=0,100,{Name:"minecraft:oak_fence"}
+rule2=0,100,{Name:"minecraft:oak_fence"}
 rule3=0,100,{Properties:{axis:"x"},Name:"minecraft:jungle_log"}
 rule4=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:oak_fence"}
 rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}

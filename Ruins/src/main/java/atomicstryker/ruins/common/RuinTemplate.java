@@ -175,12 +175,12 @@ public class RuinTemplate {
                             break;
                         } else {
                             // ran into unwanted surface? abort
-                            return -1;
+                            return world.getMinBuildHeight() - 1;
                         }
                     }
                 }
                 if (!foundSurface) {
-                    heightMap[ix - x][iz - z] = -1;
+                    heightMap[ix - x][iz - z] = world.getMinBuildHeight() - 1;
                 }
             }
         }
@@ -190,28 +190,28 @@ public class RuinTemplate {
         double vals = 0;
         for (int[] row : heightMap) {
             for (int value : row) {
-                if (value > 0) {
+                if (value > world.getMinBuildHeight()) {
                     vals++;
                     sum += value;
                 }
             }
         }
-        final int newY = vals > 0 ? (int) Math.round(sum / vals) : y;
+        final int newY = vals > world.getMinBuildHeight() ? (int) Math.round(sum / vals) : y;
 
         // check if the resulting levelling and overhang in the build site surface is acceptable
         int localOverhang = overhang;
         for (int[] row : heightMap) {
             for (int value : row) {
-                if (value < 0) {
+                if (value < world.getMinBuildHeight()) {
                     if (--localOverhang < 0) {
                         // too much overhang, abort
-                        RuinsMod.LOGGER.debug("overhang fail");
-                        return -1;
+                        RuinsMod.LOGGER.debug("overhang fail at [{}|{}|{}]", x, newY, z);
+                        return world.getMinBuildHeight() - 1;
                     }
                 } else if (Math.abs(newY - value) > leveling) {
                     // too much surface noise, abort
-                    RuinsMod.LOGGER.debug("leveling fail: {} > {}", Math.abs(newY - value), leveling);
-                    return -1;
+                    RuinsMod.LOGGER.debug("leveling fail at [{}|{}|{}]: {} > {}", x, newY, z, Math.abs(newY - value), leveling);
+                    return world.getMinBuildHeight() - 1;
                 }
             }
         }
@@ -253,7 +253,7 @@ public class RuinTemplate {
             RuinsMod.LOGGER.error("An Exception was thrown while building Ruin: {}", getName());
             System.err.println("Faulty Template name: " + getName());
             e.printStackTrace();
-            return -1;
+            return world.getMinBuildHeight() - 1;
         }
     }
 
@@ -276,7 +276,7 @@ public class RuinTemplate {
 
         // height sanity check
         final int ceiling = world.getHeight();
-        final int yReturn = Math.max(Math.min(yBase + y_off, ceiling - height), 8);
+        final int yReturn = Math.max(Math.min(yBase + y_off, ceiling - height), world.getMinBuildHeight());
         final int y = yReturn - y_off;
 
         // override rotation wishes if its locked by template
@@ -287,7 +287,7 @@ public class RuinTemplate {
         // post pre-build event after y position and rotation are resolved
         if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, true))) {
             RuinsMod.LOGGER.info("Forge Event came back negative, no spawn");
-            return -1;
+            return world.getMinBuildHeight() - 1;
         }
 
         if ((rotate == RuinsMod.DIR_EAST) || (rotate == RuinsMod.DIR_WEST)) {
@@ -351,19 +351,6 @@ public class RuinTemplate {
         // get the late runs and finish up
         doLateRuns(world, random, laterun, lastrun);
 
-        int xv, yv, zv;
-        for (int x1 = 0; x1 < xDim; x1++) {
-            for (int z1 = 0; z1 < zDim; z1++) {
-                for (int y1 = 0; y1 < layers.size(); y1++) {
-                    xv = x + x1;
-                    yv = yReturn + y1;
-                    zv = z + z1;
-                    BlockPos pos = new BlockPos(xv, yv, zv);
-                    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
-                }
-            }
-        }
-
         // activate bonemeal markers
         for (BonemealMarker bonemealMarker : bonemealMarkers) {
             BlockPos position = bonemealMarker.getPosition();
@@ -399,7 +386,7 @@ public class RuinTemplate {
                 int targetX = xBase + ad.relativeX;
                 int targetZ = zBase + ad.relativeZ;
                 int targetY = ad.adjoiningTemplate.checkArea(world, targetX, yReturn, targetZ, newrot, ad.acceptableY);
-                if (targetY >= 0 && Math.abs(yReturn - targetY) <= ad.acceptableY) {
+                if (targetY > world.getMinBuildHeight() && Math.abs(yReturn - targetY) <= ad.acceptableY) {
                     RuinsMod.LOGGER.info("Creating adjoining {} of Ruin {} at [{}|{}|{}], rot:{}", ad.adjoiningTemplate.getName(), getName(), targetX, targetY, targetZ, newrot);
                     ad.adjoiningTemplate.doBuild(world, random, targetX, targetY, targetZ, newrot, false, ignore_ceiling);
                 } else {
@@ -1019,6 +1006,6 @@ public class RuinTemplate {
 
     @Override
     public String toString() {
-        return "RuinTemplate + " + getName();
+        return "RuinTemplate " + getName();
     }
 }

@@ -77,7 +77,7 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule1=0,100,{Name:"minecraft:oak_fence"}
 rule2=0,100,{Properties:{axis:"x"},Name:"minecraft:hay_block"}
 rule3=0,100,{Properties:{axis:"y"},Name:"minecraft:hay_block"}
 rule4=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
