@@ -43,7 +43,7 @@ public class CommandParseTemplate {
     public void onBlockBroken(BlockEvent.BreakEvent event) {
         if (event.getPlayer() == player) {
             // have to defer parsing to main thread, else all Tile Entities read as null
-            MinecraftServer server = player.level.getServer();
+            MinecraftServer server = player.level().getServer();
             if (server != null) {
                 World2TemplateParser world2TemplateParser = new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName);
                 world2TemplateParser.execute();

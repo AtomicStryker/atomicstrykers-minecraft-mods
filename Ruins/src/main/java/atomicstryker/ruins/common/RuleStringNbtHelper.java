@@ -1,13 +1,13 @@
 package atomicstryker.ruins.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class RuleStringNbtHelper {
         CompoundTag tagCompound = NbtUtils.writeBlockState(blockState);
         if (tileEntity != null) {
             CompoundTag parameters = new CompoundTag();
-            CompoundTag tagTileEntity = tileEntity.getPersistentData();
+            CompoundTag tagTileEntity = tileEntity.saveWithFullMetadata(tileEntity.getLevel().registryAccess());
             tagTileEntity.remove("id");
             tagTileEntity.remove("x");
             tagTileEntity.remove("y");
@@ -36,7 +36,7 @@ public class RuleStringNbtHelper {
         // strip this away here
         nbtTagCompound.remove("ruinsTE");
         try {
-            return NbtUtils.readBlockState(nbtTagCompound);
+            return NbtUtils.readBlockState(RuinsMod.getInstance().getLastLoadedLevel().holderLookup(Registries.BLOCK), nbtTagCompound);
         } catch (Exception e) {
             RuinsMod.LOGGER.error("failed translating CompoundTag {} to block", nbtTagCompound, e);
             return Blocks.AIR.defaultBlockState();
@@ -47,7 +47,9 @@ public class RuleStringNbtHelper {
         CompoundTag teNbt = defaultValue;
         if (input.contains("ruinsTE", 10)) {
             // emit a few deprecation warnings, then demote to debug
-            final Level level = throttleEntityWarning > 0 ? Level.WARN : Level.DEBUG;
+            final org.apache.logging.log4j.Level level = throttleEntityWarning > 0
+                    ? org.apache.logging.log4j.Level.WARN
+                    : org.apache.logging.log4j.Level.DEBUG;
             RuinsMod.LOGGER.log(level, "{ruinsTE:{...}} is deprecated; use {Ruins:{entity:{...}}} instead");
             if (throttleEntityWarning > 0 && --throttleEntityWarning < 1) {
                 RuinsMod.LOGGER.warn("suppressing ruinsTE deprecation warnings; limit reached");

@@ -86,7 +86,7 @@ class World2TemplateParser {
      */
     public World2TemplateParser(Player p, int a, int b, int c, String fName) {
         player = p;
-        world = p.level;
+        world = p.level();
         x = a;
         y = b;
         z = c;
@@ -202,7 +202,7 @@ class World2TemplateParser {
                     highestY = yi;
 
                     if (temp.tileEntity instanceof ChestBlockEntity && isIInventoryEmpty((Container) temp.tileEntity)) {
-                        CompoundTag teData = temp.tileEntity.getPersistentData();
+                        CompoundTag teData = temp.tileEntity.saveWithFullMetadata(world.registryAccess());
                         // use vanilla method of placing loot!
                         teData.putString("LootTable", chestLootTableNamesToGenerate.get(world.random.nextInt(chestLootTableNamesToGenerate.size())));
                         teData.putLong("LootTableSeed", world.random.nextLong());

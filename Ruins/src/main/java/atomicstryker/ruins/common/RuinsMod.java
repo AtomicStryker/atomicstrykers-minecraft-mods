@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -50,6 +50,8 @@ public class RuinsMod {
     private static RuinsMod instance = null;
     private final ConcurrentHashMap<ResourceLocation, WorldHandle> generatorMap;
     private long nextInfoTime;
+    // MC now needs this for registry access all over the place, just buffer the latest one
+    private Level lastLoadedLevel;
 
     public RuinsMod(FMLJavaModLoadingContext context) {
         instance = this;
@@ -59,6 +61,10 @@ public class RuinsMod {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         LOGGER.info("Ruins instance built, events registered");
+    }
+
+    public static RuinsMod getInstance() {
+        return instance;
     }
 
     private static File getWorldSaveDir(Level iWorld) {
@@ -91,12 +97,12 @@ public class RuinsMod {
          */
         if (instance != null
                 && event.getEntity() instanceof Player
-                && !event.getEntity().getLevel().isClientSide()) {
+                && !event.getEntity().level().isClientSide()) {
 
             ServerLevel world;
             WorldHandle wh;
-            if (event.getEntity().getLevel() instanceof ServerLevel) {
-                world = (ServerLevel) event.getEntity().getLevel();
+            if (event.getEntity().level() instanceof ServerLevel) {
+                world = (ServerLevel) event.getEntity().level();
                 if (!world.structureManager().shouldGenerateStructures()) {
                     return;
                 }
@@ -184,13 +190,13 @@ public class RuinsMod {
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-        if (event.getEntity().level instanceof ServerLevel) {
-            WorldHandle wh = getWorldHandle((ServerLevel) event.getEntity().level);
+        if (event.getEntity().level() instanceof ServerLevel) {
+            WorldHandle wh = getWorldHandle((ServerLevel) event.getEntity().level());
             if (wh != null && wh.fileHandle.enableStick) {
                 ItemStack is = event.getEntity().getMainHandItem();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    BlockEntity te = event.getEntity().level.getBlockEntity(event.getPosition().get());
+                    BlockEntity te = event.getEntity().level().getBlockEntity(event.getPosition().get());
                     event.getEntity().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                 }
             }
@@ -199,13 +205,13 @@ public class RuinsMod {
 
     @SubscribeEvent
     public void onBreak(BlockEvent.BreakEvent event) {
-        if (event.getPlayer() != null && !(event.getPlayer() instanceof FakePlayer) && event.getLevel() instanceof ServerLevel) {
+        if (event.getPlayer() != null && event.getLevel() instanceof ServerLevel) {
             WorldHandle wh = getWorldHandle((ServerLevel) event.getLevel());
             if (wh != null && wh.fileHandle.enableStick) {
                 ItemStack is = event.getPlayer().getMainHandItem();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
-                    BlockEntity te = event.getPlayer().level.getBlockEntity(event.getPos());
+                    BlockEntity te = event.getPlayer().level().getBlockEntity(event.getPos());
                     event.getPlayer().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                     event.setCanceled(true);
                 }
@@ -225,9 +231,13 @@ public class RuinsMod {
 
     @SubscribeEvent
     public void onEntityEnteringChunk(EntityEvent.EnteringSection event) {
-        if (event.getEntity() instanceof Player && !event.getEntity().level.isClientSide) {
+        if (event.getEntity() instanceof Player && !event.getEntity().level().isClientSide) {
             executeCommandBlockLogic(event);
         }
+    }
+
+    public Level getLastLoadedLevel() {
+        return lastLoadedLevel;
     }
 
     private void executeCommandBlockLogic(EntityEvent.EnteringSection event) {
@@ -236,8 +246,8 @@ public class RuinsMod {
 
         for (int xoffset = -4; xoffset <= 4; xoffset++) {
             for (int zoffset = -4; zoffset <= 4; zoffset++) {
-                if (event.getEntity().level.hasChunk(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset)) {
-                    for (BlockEntity teo : event.getEntity().level.getChunk(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset).getBlockEntities().values()) {
+                if (event.getEntity().level().hasChunk(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset)) {
+                    for (BlockEntity teo : event.getEntity().level().getChunk(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset).getBlockEntities().values()) {
                         if (teo instanceof CommandBlockEntity) {
                             tecb = (CommandBlockEntity) teo;
                             if (tecb.getCommandBlock().getCommand().startsWith("RUINSTRIGGER ")) {
@@ -253,11 +263,11 @@ public class RuinsMod {
 
         for (CommandBlockEntity tecb2 : tecblist) {
             // call command block execution
-            tecb2.getCommandBlock().performCommand(event.getEntity().level);
+            tecb2.getCommandBlock().performCommand(event.getEntity().level());
             // kill block
             BlockPos pos = tecb2.getBlockPos();
             LOGGER.info("Ruins executed and killed Command Block at [{}]", pos);
-            event.getEntity().level.removeBlock(pos, false);
+            event.getEntity().level().removeBlock(pos, false);
         }
     }
 
@@ -282,7 +292,8 @@ public class RuinsMod {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
             worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().location());
-            worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world.getLevel());
+            worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
+            lastLoadedLevel = world;
 
         } catch (Exception e) {
             LOGGER.error("There was a problem loading the ruins mod:");

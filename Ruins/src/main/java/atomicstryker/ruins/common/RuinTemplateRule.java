@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -10,6 +11,8 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.List;
 
@@ -138,19 +141,12 @@ public class RuinTemplateRule {
 
     // get rotation (minecraft enum) corresponding to given direction (ruins int)
     private static Rotation getDirectionalRotation(int direction) {
-        Rotation rotation = Rotation.NONE;
-        switch (direction) {
-            case RuinsMod.DIR_EAST:
-                rotation = Rotation.CLOCKWISE_90;
-                break;
-            case RuinsMod.DIR_SOUTH:
-                rotation = Rotation.CLOCKWISE_180;
-                break;
-            case RuinsMod.DIR_WEST:
-                rotation = Rotation.COUNTERCLOCKWISE_90;
-                break;
-        }
-        return rotation;
+        return switch (direction) {
+            case RuinsMod.DIR_EAST -> Rotation.CLOCKWISE_90;
+            case RuinsMod.DIR_SOUTH -> Rotation.CLOCKWISE_180;
+            case RuinsMod.DIR_WEST -> Rotation.COUNTERCLOCKWISE_90;
+            default -> Rotation.NONE;
+        };
     }
 
     public void doBlock(Level world, RandomSource random, BlockPos pos, int rotate) {
@@ -184,7 +180,7 @@ public class RuinTemplateRule {
 
     // make specified block manifest in world, with given metadata and direction
     // returns associated tile entity, if there is one
-    private void realizeBlock(Level world, BlockPos position, BlockState blockState, CompoundTag tileEntityData) {
+    private void realizeBlock(Level world, BlockPos position, BlockState blockState, CompoundTag nbtTagCompound) {
         if (world != null && blockState != null) {
 
             // clobber existing tile entity block, if any
@@ -202,16 +198,15 @@ public class RuinTemplateRule {
                 // if there was equality, just continue
             }
             BlockEntity entity = world.getBlockEntity(position);
-            if (entity != null && tileEntityData != null) {
+            if (nbtTagCompound != null) {
                 if (entity == null) {
                     RuinsMod.LOGGER.error("no BlockEntity created from {}", blockState);
                     return;
                 }
-                // merge Ruins stored NBT data into the entity
-                entity.getPersistentData().merge(tileEntityData);
+                // load Ruins stored NBT data into the entity
+                entity.loadWithComponents(nbtTagCompound, world.registryAccess());
 
                 if (entity instanceof RandomizableContainerBlockEntity) {
-                    CompoundTag nbtTagCompound = entity.getPersistentData();
                     // unwrap forgedata if needed?
                     if (nbtTagCompound.contains("ForgeData")) {
                         nbtTagCompound = nbtTagCompound.getCompound("ForgeData");
@@ -220,9 +215,15 @@ public class RuinTemplateRule {
                         String lootTable = nbtTagCompound.getString("LootTable");
                         long lootSeed = nbtTagCompound.getLong("LootTableSeed");
 
+                        ResourceLocation lootResourceLocation = ResourceLocation.parse(lootTable);
                         RandomizableContainerBlockEntity tileEntityLockableLoot = (RandomizableContainerBlockEntity) entity;
-                        tileEntityLockableLoot.setLootTable(new ResourceLocation(lootTable), lootSeed);
-                        tileEntityLockableLoot.unpackLootTable(null);
+                        for (ResourceKey<LootTable> lootTableResourceKey : BuiltInLootTables.all()) {
+                            if (lootTableResourceKey.location().equals(lootResourceLocation)) {
+                                tileEntityLockableLoot.setLootTable(lootTableResourceKey, lootSeed);
+                                tileEntityLockableLoot.unpackLootTable(null);
+                                break;
+                            }
+                        }
                     }
                 }
             }

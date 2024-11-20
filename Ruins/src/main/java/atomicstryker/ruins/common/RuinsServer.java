@@ -9,6 +9,6 @@ public class RuinsServer implements IProxy {
     @Override
     public File getBaseDir() {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        return server.getFile("");
+        return server.getFile("").toFile();
     }
 }

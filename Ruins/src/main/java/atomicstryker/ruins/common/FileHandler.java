@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +30,7 @@ class FileHandler {
 
     int triesPerChunkNormal = 6, triesPerChunkNether = 6;
     float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
-    private int[] allowedDimensions = {-1, 0, 1};
+    private String[] allowedDimensions = {"the_nether", "overworld", "the_end"};
 
     public boolean loaded;
     boolean disableLogging = true;
@@ -159,7 +158,7 @@ class FileHandler {
 
     boolean useGeneric(RandomSource random, String biome) {
         double[] val = vars.get(biome);
-        return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextDouble() >= val[CHANCE]);
+        return RuinsMod.BIOME_ANY.equals(biome) || val == null || random.nextDouble() >= val[CHANCE];
     }
 
     private void loadSpecificTemplates(File dir, String bname) throws Exception {
@@ -220,10 +219,10 @@ class FileHandler {
             } else if (check[0].equals("enableStick")) {
                 enableStick = Boolean.parseBoolean(check[1]);
             } else if (check[0].equals("allowedDimensions") && check.length > 1) {
-                String[] ints = check[1].split(",");
-                allowedDimensions = new int[ints.length];
-                for (int i = 0; i < ints.length; i++) {
-                    allowedDimensions[i] = Integer.parseInt(ints[i]);
+                String[] strings = check[1].split(",");
+                allowedDimensions = new String[strings.length];
+                for (int i = 0; i < strings.length; i++) {
+                    allowedDimensions[i] = strings[i];
                 }
             } else if (dimension.getPath().equals("the_nether") && check[0].equals("enableFixedWidthRuleIds")) {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
@@ -295,9 +294,9 @@ class FileHandler {
         }
     }
 
-    boolean allowsDimension(int dimensionId) {
-        for (int i : allowedDimensions) {
-            if (i == dimensionId) {
+    boolean allowsDimension(String dimensionId) {
+        for (String i : allowedDimensions) {
+            if (i.equalsIgnoreCase(dimensionId)) {
                 return true;
             }
         }

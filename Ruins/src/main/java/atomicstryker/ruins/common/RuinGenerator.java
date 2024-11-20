@@ -182,7 +182,7 @@ class RuinGenerator {
     private boolean checkMinDistance(Level world, RuinTemplate ruinTemplate, RuinData ruinData) {
         // in overworld, check min/max distances from world spawn
         if (world.dimension().location().getPath().equals("overworld")) {
-            BlockPos spawn = new BlockPos(world.getLevelData().getXSpawn(), world.getLevelData().getYSpawn(), world.getLevelData().getZSpawn());
+            BlockPos spawn = world.getLevelData().getSpawnPos();
             final int min_distance = Math.max(fileHandler.anySpawnMinDistance, ruinTemplate.spawnMinDistance);
             if (
                     ruinData.xMin - spawn.getX() < min_distance && spawn.getX() - ruinData.xMax < min_distance &&

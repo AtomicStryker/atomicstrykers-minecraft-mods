@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -104,8 +103,7 @@ public class RuinTemplate {
 
 
     public boolean isIgnoredBlock(BlockState blockState) {
-        final Material material = blockState.getMaterial();
-        return !material.isSolid() || preserveWater && material.isLiquid() || preserveLava && material.equals(Material.LAVA);
+        return !blockState.isSolid() || preserveWater && blockState.is(Blocks.WATER) || preserveLava && blockState.is(Blocks.LAVA);
     }
 
     public boolean isAcceptableSurface(Level world, BlockState blockState, BlockPos pos) {
@@ -117,7 +115,7 @@ public class RuinTemplate {
 
         if (acceptedSurfaces.length == 0) {
             // if no accepted surfaces are defined, any solid block will do
-            return blockState.getMaterial().isSolid();
+            return blockState.isSolid();
         }
 
         for (BlockState b : acceptedSurfaces) {
@@ -361,7 +359,7 @@ public class RuinTemplate {
                 int count = bonemealMarker.getCount();
                 BonemealableBlock igrowable = (BonemealableBlock) growable;
                 int grows;
-                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state, world.isClientSide); ++grows) {
+                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state); ++grows) {
                     igrowable.performBonemeal((ServerLevel) world, world.random, position, state);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
