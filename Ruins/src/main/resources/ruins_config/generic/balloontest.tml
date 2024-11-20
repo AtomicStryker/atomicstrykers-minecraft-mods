@@ -51,7 +51,7 @@ allowable_overhang=0
 #
 # depth/height limit affected by terrain leveling
 # also maximum bumpiness tolerated in surface beneath template
-max_leveling=2
+max_leveling=4
 #
 # padding applied to all sides of template horizontal footprint
 # expands area affected by terrain leveling (-1 = no leveling)
@@ -77,8 +77,8 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule2=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule1=0,100,{Name:"minecraft:oak_fence"}
+rule2=0,100,{Name:"minecraft:oak_fence"}
 rule3=0,100,{Properties:{axis:"x"},Name:"minecraft:jungle_log"}
 rule4=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:oak_fence"}
 rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
@@ -87,7 +87,7 @@ rule7=0,100,{Properties:{axis:"z"},Name:"minecraft:jungle_log"}
 rule8=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
 rule9=0,100,{Name:"minecraft:white_wool"}
 rule10=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule11=0,100,{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/simple_dungeon"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
+rule11=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760127359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
 rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:oak_fence"}
 rule13=2*0,100,{Name:"minecraft:blue_wool"}
 ^0,100,{Name:"minecraft:green_wool"}

@@ -1,21 +1,26 @@
 package atomicstryker.ruins.common;
 
 import com.google.common.io.Files;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.biome.Biome;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 class FileHandler {
 
@@ -24,11 +29,9 @@ class FileHandler {
     private final ResourceLocation dimension;
     private final HashMap<String, double[]> vars = new HashMap<>();
 
-    private static IForgeRegistry<Biome> biomeRegistry = null;
-
     int triesPerChunkNormal = 6, triesPerChunkNether = 6;
     float chanceToSpawnNormal = 10, chanceToSpawnNether = 10;
-    private int[] allowedDimensions = {-1, 0, 1};
+    private String[] allowedDimensions = {"the_nether", "overworld", "the_end"};
 
     public boolean loaded;
     boolean disableLogging = true;
@@ -101,17 +104,14 @@ class FileHandler {
              * dynamic Biome config loader, gets all information straight from
              * Biome
              */
-            Biome bgb;
-            IForgeRegistry<Biome> biomeRegistry = getBiomeRegistry();
-            for (ResourceLocation rl : biomeRegistry.getKeys()) {
-                bgb = biomeRegistry.getValue(rl);
-                if (bgb != null) {
-                    try {
-                        loadSpecificTemplates(templPath, bgb.getRegistryName().getPath());
-                        // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
-                    } catch (Exception e) {
-                        RuinsMod.LOGGER.error("There was an error when loading the {}" + bgb.getRegistryName().getPath() + " ruins templates:", e);
-                    }
+            HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+            Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
+            for (Holder.Reference<Biome> biomeReference : biomeSet) {
+                try {
+                    loadSpecificTemplates(templPath, biomeReference.getKey().location().getPath());
+                    // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
+                } catch (Exception e) {
+                    RuinsMod.LOGGER.error("There was an error when loading the {} ruins templates:", biomeReference.getKey().location().getPath(), e);
                 }
             }
 
@@ -138,14 +138,7 @@ class FileHandler {
         }
     }
 
-    private IForgeRegistry<Biome> getBiomeRegistry() {
-        if (biomeRegistry == null) {
-            biomeRegistry = GameRegistry.findRegistry(Biome.class);
-        }
-        return biomeRegistry;
-    }
-
-    RuinTemplate getTemplate(Random random, String biome) {
+    RuinTemplate getTemplate(RandomSource random, String biome) {
         try {
             double rand = random.nextDouble() * vars.get(biome)[WEIGHT];
             RuinTemplate retval = null;
@@ -161,9 +154,9 @@ class FileHandler {
         }
     }
 
-    boolean useGeneric(Random random, String biome) {
+    boolean useGeneric(RandomSource random, String biome) {
         double[] val = vars.get(biome);
-        return RuinsMod.BIOME_ANY.equals(biome) || (val != null && random.nextDouble() >= val[CHANCE]);
+        return RuinsMod.BIOME_ANY.equals(biome) || val == null || random.nextDouble() >= val[CHANCE];
     }
 
     private void loadSpecificTemplates(File dir, String bname) throws Exception {
@@ -224,25 +217,26 @@ class FileHandler {
             } else if (check[0].equals("enableStick")) {
                 enableStick = Boolean.parseBoolean(check[1]);
             } else if (check[0].equals("allowedDimensions") && check.length > 1) {
-                String[] ints = check[1].split(",");
-                allowedDimensions = new int[ints.length];
-                for (int i = 0; i < ints.length; i++) {
-                    allowedDimensions[i] = Integer.parseInt(ints[i]);
+                String[] strings = check[1].split(",");
+                allowedDimensions = new String[strings.length];
+                for (int i = 0; i < strings.length; i++) {
+                    allowedDimensions[i] = strings[i];
                 }
             } else if (dimension.getPath().equals("the_nether") && check[0].equals("enableFixedWidthRuleIds")) {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
-                Biome bgb;
-                IForgeRegistry<Biome> biomeRegistry = getBiomeRegistry();
-                for (ResourceLocation rl : biomeRegistry.getKeys()) {
-                    bgb = biomeRegistry.getValue(rl);
-                    if (bgb != null && bgb.getRegistryName().getPath().equals(matcher.group(1))) {
-                        double[] val = vars.get(bgb.getRegistryName().getPath());
+                HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+                Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
+                for (Holder.Reference<Biome> biomeReference : biomeSet) {
+                    Biome bgb = biomeReference.value();
+                    ResourceLocation rl = biomeReference.getKey().location();
+                    if (bgb != null && rl.getPath().equals(matcher.group(1))) {
+                        double[] val = vars.get(rl.getPath());
                         if (val != null) {
                             val[CHANCE] = Math.min(Math.max(Double.parseDouble(matcher.group(2)) / 100, 0), 1);
                             found = true;
-                            vars.put(bgb.getRegistryName().getPath(), val);
+                            vars.put(rl.getPath(), val);
                             break;
                         }
                     }
@@ -260,7 +254,6 @@ class FileHandler {
 
     private void addRuins(File path, String name, HashSet<RuinTemplate> targetList) {
         RuinTemplate r;
-        Biome bgb;
         File[] listFiles = path.listFiles();
 
         String dimensionName = dimension.getPath();
@@ -272,10 +265,12 @@ class FileHandler {
                         continue;
                     }
                     targetList.add(r);
+                    HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+                    Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
                     for (String biomeName : r.getBiomesToSpawnIn()) {
-                        for (ResourceLocation rl : getBiomeRegistry().getKeys()) {
-                            bgb = getBiomeRegistry().getValue(rl);
-                            if (bgb != null && bgb.getRegistryName().getPath().equals(biomeName)) {
+                        for (Holder.Reference<Biome> biomeReference : biomeSet) {
+                            ResourceLocation rl = biomeReference.getKey().location();
+                            if (rl.getPath().equals(biomeName)) {
                                 if (!biomeName.equals(name)) {
                                     // if no template entry for this biome, create (empty) one
                                     if (!templates.containsKey(biomeName)) {
@@ -286,7 +281,7 @@ class FileHandler {
                             }
                         }
                     }
-                    // pw.println("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
+                    RuinsMod.LOGGER.info("Successfully loaded template " + f.getName() + " with weight " + r.getWeight() + ".");
                     templateCount++;
                 } catch (RuinTemplate.IncompatibleModException e) {
                     RuinsMod.LOGGER.error("IncompatibleModException", e);
@@ -299,9 +294,9 @@ class FileHandler {
         }
     }
 
-    boolean allowsDimension(int dimensionId) {
-        for (int i : allowedDimensions) {
-            if (i == dimensionId) {
+    boolean allowsDimension(String dimensionId) {
+        for (String i : allowedDimensions) {
+            if (i.equalsIgnoreCase(dimensionId)) {
                 return true;
             }
         }
@@ -359,7 +354,7 @@ class FileHandler {
         pw.println("enableStick=true");
         pw.println("#");
         pw.println("# dimension IDs whitelisted for ruins spawning, add custom dimensions IDs here as needed");
-        pw.println("allowedDimensions=0,1,-1");
+        pw.println("allowedDimensions=overworld,the_end,the_nether");
         pw.println("#");
         pw.println("# make /parseruin rule IDs line up nicely in template files");
         pw.println("# note: overworld (i.e., dimension 0) setting applies to all dimensions");
@@ -369,12 +364,10 @@ class FileHandler {
         pw.println("teblocks=");
         pw.println();
         // print all the biomes!
-        Biome bgb;
-        for (ResourceLocation rl : getBiomeRegistry().getKeys()) {
-            bgb = getBiomeRegistry().getValue(rl);
-            if (bgb != null) {
-                pw.println("specific_" + bgb.getRegistryName().getPath() + "=75");
-            }
+        HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+        Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
+        for (Holder.Reference<Biome> biomeReference : biomeSet) {
+            pw.println("specific_" + biomeReference.getKey().location().getPath() + "=75");
         }
         pw.flush();
         pw.close();

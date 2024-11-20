@@ -8,6 +8,6 @@ public class RuinsClient implements IProxy {
     @Override
     public File getBaseDir() {
         final Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.gameDir;
+        return minecraft.gameDirectory;
     }
 }
