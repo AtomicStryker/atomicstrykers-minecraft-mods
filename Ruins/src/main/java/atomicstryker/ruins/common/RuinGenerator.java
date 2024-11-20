@@ -90,17 +90,13 @@ class RuinGenerator {
 
     void generateNormal(Level world, RandomSource random, int xBase, int zBase) {
         for (int c = 0; c < fileHandler.triesPerChunkNormal; c++) {
-            if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNormal) {
-                createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), false);
-            }
+            createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), false);
         }
     }
 
     void generateNether(Level world, RandomSource random, int xBase, int zBase) {
         for (int c = 0; c < fileHandler.triesPerChunkNether; c++) {
-            if (random.nextFloat() * 100 < fileHandler.chanceToSpawnNether) {
-                createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), true);
-            }
+            createBuilding(world, random, xBase + random.nextInt(16), zBase + random.nextInt(16), true);
         }
     }
 
@@ -127,16 +123,16 @@ class RuinGenerator {
         numTries++;
 
         int y = findSuitableY(world, ruinTemplate, x, z, nether);
-        if (y > 0) {
+        if (y > world.getMinBuildHeight()) {
             if (checkMinDistance(world, ruinTemplate, ruinTemplate.getRuinData(x, y, z, rotate))) {
                 y = ruinTemplate.checkArea(world, x, y, z, rotate);
-                if (y < 0) {
+                if (y < world.getMinBuildHeight()) {
                     stats.levelingFails++;
                     return;
                 }
 
                 int finalY = ruinTemplate.doBuild(world, random, x, y, z, rotate, false, false);
-                if (finalY >= 0) {
+                if (finalY > world.getMinBuildHeight()) {
                     if (!fileHandler.disableLogging) {
                         RuinsMod.LOGGER.info("Creating ruin {} of Biome {} at [{}|{}|{}]\n", ruinTemplate.getName(), biomeID, x, y, z);
                     }
@@ -238,11 +234,12 @@ class RuinGenerator {
 
     private int findSuitableY(Level world, RuinTemplate r, int x, int z, boolean nether) {
         if (!nether) {
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
             for (int y = world.getMaxBuildHeight() - 1; y > WORLD_MIN_HEIGHT; y--) {
-                BlockPos pos = new BlockPos(x, y, z);
+                pos.set(x, y, z);
                 final BlockState b = world.getBlockState(pos);
                 if (b.is(Blocks.BEDROCK)) {
-                    return -1;
+                    return world.getMinBuildHeight() - 1;
                 }
                 if (r.isIgnoredBlock(b)) {
                     continue;
@@ -253,7 +250,7 @@ class RuinGenerator {
                 }
             }
             // how did we reach here? no bedrock?
-            return -1;
+            return world.getMinBuildHeight() - 1;
         } else {
             /*
              * The Nether has an entirely different topography so we'll use two
@@ -266,7 +263,7 @@ class RuinGenerator {
                     BlockPos basePos = new BlockPos(x, y, z);
                     final BlockState b = world.getBlockState(basePos);
                     if (b.is(Blocks.BEDROCK)) {
-                        return -1;
+                        return world.getMinBuildHeight() - 1;
                     }
                     if (b.is(Blocks.AIR)) {
                         // now find the first non-air block from here
@@ -276,7 +273,7 @@ class RuinGenerator {
                                 if (r.isAcceptableSurface(world, b, pos)) {
                                     return y + 1;
                                 }
-                                return -1;
+                                return world.getMinBuildHeight() - 1;
                             }
                         }
                     }
@@ -288,17 +285,17 @@ class RuinGenerator {
                     BlockPos pos = new BlockPos(x, y, z);
                     final BlockState b = world.getBlockState(pos);
                     if (b.is(Blocks.BEDROCK)) {
-                        return -1;
+                        return world.getMinBuildHeight() - 1;
                     }
                     if (!r.isIgnoredBlock(b)) {
                         accept = r.isAcceptableSurface(world, b, pos);
                     } else {
-                        return accept ? y : -1;
+                        return accept ? y : world.getMinBuildHeight() - 1;
                     }
                 }
             }
         }
-        return -1;
+        return world.getMinBuildHeight() - 1;
     }
 
     private class LoadThread extends Thread {

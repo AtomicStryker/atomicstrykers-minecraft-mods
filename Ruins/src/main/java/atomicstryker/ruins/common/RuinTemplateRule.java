@@ -190,34 +190,39 @@ public class RuinTemplateRule {
             // clobber existing tile entity block, if any
             BlockEntity existing_entity = world.getBlockEntity(position);
             if (existing_entity != null) {
-                world.setBlock(position, Blocks.AIR.defaultBlockState(), 4);
+                world.setBlock(position, Blocks.AIR.defaultBlockState(), 3);
             }
+            boolean success = world.setBlock(position, blockState, 3);
+            if (!success) {
+                // there is a notable edge case where setting a block fails if the block is already equal, catch that
+                if (!world.getBlockState(position).is(blockState.getBlock())) {
+                    RuinsMod.LOGGER.error("world setBlock({}, {}) returned false, current blockstate: {}", position, blockState, world.getBlockState(position));
+                    return;
+                }
+                // if there was equality, just continue
+            }
+            BlockEntity entity = world.getBlockEntity(position);
+            if (entity != null && tileEntityData != null) {
+                if (entity == null) {
+                    RuinsMod.LOGGER.error("no BlockEntity created from {}", blockState);
+                    return;
+                }
+                // merge Ruins stored NBT data into the entity
+                entity.getPersistentData().merge(tileEntityData);
 
-            if (world.setBlock(position, blockState, 2)) {
-                BlockEntity entity = world.getBlockEntity(position);
-                if (entity != null && tileEntityData != null) {
-                    entity = BlockEntity.loadStatic(position, blockState, entity.getPersistentData().merge(tileEntityData));
-                    if (entity == null) {
-                        RuinsMod.LOGGER.error("failed to create BlockEntity from {}", tileEntityData);
-                        return;
+                if (entity instanceof RandomizableContainerBlockEntity) {
+                    CompoundTag nbtTagCompound = entity.getPersistentData();
+                    // unwrap forgedata if needed?
+                    if (nbtTagCompound.contains("ForgeData")) {
+                        nbtTagCompound = nbtTagCompound.getCompound("ForgeData");
                     }
+                    if (nbtTagCompound.contains("LootTable")) {
+                        String lootTable = nbtTagCompound.getString("LootTable");
+                        long lootSeed = nbtTagCompound.getLong("LootTableSeed");
 
-                    world.setBlockEntity(entity);
-
-                    if (entity instanceof RandomizableContainerBlockEntity) {
-                        CompoundTag nbtTagCompound = entity.getPersistentData();
-                        // unwrap forgedata if needed?
-                        if (nbtTagCompound.contains("ForgeData")) {
-                            nbtTagCompound = nbtTagCompound.getCompound("ForgeData");
-                        }
-                        if (nbtTagCompound.contains("LootTable")) {
-                            String lootTable = nbtTagCompound.getString("LootTable");
-                            long lootSeed = nbtTagCompound.getLong("LootTableSeed");
-
-                            RandomizableContainerBlockEntity tileEntityLockableLoot = (RandomizableContainerBlockEntity) entity;
-                            tileEntityLockableLoot.setLootTable(new ResourceLocation(lootTable), lootSeed);
-                            tileEntityLockableLoot.unpackLootTable(null);
-                        }
+                        RandomizableContainerBlockEntity tileEntityLockableLoot = (RandomizableContainerBlockEntity) entity;
+                        tileEntityLockableLoot.setLootTable(new ResourceLocation(lootTable), lootSeed);
+                        tileEntityLockableLoot.unpackLootTable(null);
                     }
                 }
             }
