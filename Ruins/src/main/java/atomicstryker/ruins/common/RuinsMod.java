@@ -66,9 +66,13 @@ public class RuinsMod {
         if (iWorld instanceof ServerLevel) {
             ServerLevel world = (ServerLevel) iWorld;
             try {
-                Field declaredField = world.getChunkSource().getDataStorage().getClass().getDeclaredField("dataFolder");
-                declaredField.setAccessible(true);
-                return (File) declaredField.get(world.getChunkSource().getDataStorage());
+                for (Field declaredField : world.getChunkSource().getDataStorage().getClass().getDeclaredFields()) {
+                    if (declaredField.getType().equals(File.class)) {
+                        declaredField.setAccessible(true);
+                        return (File) declaredField.get(world.getChunkSource().getDataStorage());
+                    }
+                }
+                throw new RuntimeException("Ruins mod could not find field File DimensionDataStorage.dataFolder");
             } catch (Exception e) {
                 e.printStackTrace();
             }
