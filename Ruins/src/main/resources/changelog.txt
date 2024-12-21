@@ -615,3 +615,10 @@ a: setAccessible now true
 + updated to Minecraft 1.16.5 (min Forge 36.2.42)
 + spawning works by using a fake biome feature hook and a 15 sec delay (does not appear to work in superflat)
 + map generation is quite full by now, not much flat empty spaces left
+
+1.16.5.2
++ fix reported obfuscation issue https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/529
++ backport the Ruins generation from 1.19.2 ff
+  spawning is now triggered by a player entering chunks, Ruins will move several chunks ahead of that player and try
+  creating templates there. this can only happen once per chunk, which is marked by setting each chunks starting block
+  from BEDROCK to BARRIER blocks

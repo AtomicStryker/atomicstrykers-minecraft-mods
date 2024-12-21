@@ -1,5 +1,7 @@
 package atomicstryker.ruins.common;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -9,16 +11,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.ISeedReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.WorldGenRegion;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,7 +20,6 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -35,7 +28,6 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,8 +35,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -72,24 +62,6 @@ public class RuinsMod {
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         MinecraftForge.EVENT_BUS.register(new CommandUndoTemplate());
         LOGGER.info("Ruins instance built, events registered");
-
-        RUINS_PSEUDO_FEATURE.setRegistryName(MOD_ID, "pseudofeature");
-        ForgeRegistries.FEATURES.register(RUINS_PSEUDO_FEATURE);
-    }
-
-    private Feature RUINS_PSEUDO_FEATURE = new Feature<NoFeatureConfig>(NoFeatureConfig.CODEC) {
-        @Override
-        public boolean place(ISeedReader iSeedReader, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, NoFeatureConfig noFeatureConfig) {
-            if (iSeedReader instanceof WorldGenRegion) {
-                decorateChunkHook((WorldGenRegion) iSeedReader, blockPos);
-            }
-            return false;
-        }
-    };
-
-    @SubscribeEvent
-    public void onBiomeLoading(BiomeLoadingEvent event) {
-        event.getGeneration().addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, RUINS_PSEUDO_FEATURE.configured(IFeatureConfig.NONE));
     }
 
     private static File getWorldSaveDir(IWorld iWorld) {
@@ -115,46 +87,95 @@ public class RuinsMod {
         return proxy.getBaseDir();
     }
 
-    public static void decorateChunkHook(WorldGenRegion worldGenRegion, BlockPos blockPos) {
+    @SubscribeEvent
+    public void onEnteringChunk(EntityEvent.EnteringChunk event) {
+        /*
+         * new concept of triggering Ruins generation: a player moving from one chunk to another shoots a "beam" several
+         * chunks infront of them. at a certain minimum distance, this starts analyzing the chunk hit and its
+         * surrounding chunks to try and spawn ruins in them. for performance, there can only be one such
+         * beam executing at a time, it will never trigger worldgen, and we mark processed chunks by setting a block
+         * in the bottom most/bedrock layer to some specific block
+         */
+        if (instance != null
+                && event.getEntity() instanceof PlayerEntity
+                && !event.getEntity().level.isClientSide()) {
 
-        if (worldGenRegion.isClientSide()
-                || !worldGenRegion.getLevel().structureFeatureManager().shouldGenerateFeatures()
-                || instance == null) {
+            ServerWorld world;
+            WorldHandle wh;
+            if (event.getEntity().level instanceof ServerWorld) {
+                world = (ServerWorld) event.getEntity().level;
+                if (!world.structureFeatureManager().shouldGenerateFeatures()) {
+                    return;
+                }
+                wh = instance.getWorldHandle(world);
+                if (wh == null
+                        || !wh.fileHandle.loaded
+                        || !wh.fileHandle.allowsDimension(world.dimension().location().getPath())) {
+                    return;
+                }
+            } else {
+                return;
+            }
+
+            // determine direction of movement, round anything faster than a chunk down to one
+            int xMove = 0;
+            int zMove = 0;
+
+            if (event.getNewChunkX() > event.getOldChunkX()) {
+                xMove = 1;
+            } else if (event.getNewChunkX() < event.getOldChunkX()) {
+                xMove = -1;
+            }
+            if (event.getNewChunkZ() > event.getOldChunkZ()) {
+                zMove = 1;
+            } else if (event.getNewChunkZ() < event.getOldChunkZ()) {
+                zMove = -1;
+            }
+            if (xMove == 0 && zMove == 0) {
+                // no movement? how? ok, get outta here
+                return;
+            }
+
+            // project the movement forward
+            int projectedChunkX = event.getNewChunkX() + (xMove * 7);
+            int projectedChunkZ = event.getNewChunkZ() + (zMove * 7);
+            // iterate all the surrounding chunks from that
+            for (int iterX = projectedChunkX - 2; iterX <= projectedChunkX + 2; iterX++) {
+                for (int iterZ = projectedChunkZ - 2; iterZ <= projectedChunkZ + 2; iterZ++) {
+                    // we dont want to spawn closer to the player, so do a simple min distance logic
+                    int deltaX = iterX - event.getNewChunkX();
+                    int deltaZ = iterZ - event.getNewChunkZ();
+                    double euclidChunkDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+                    if (euclidChunkDistance < 5) {
+                        continue;
+                    }
+                    inspectChunk(world, new ChunkPos(iterX, iterZ), wh);
+                }
+            }
+        }
+    }
+
+    private void inspectChunk(ServerWorld world, ChunkPos chunkPos, WorldHandle worldHandle) {
+
+        if (!world.hasChunk(chunkPos.x, chunkPos.z)) {
             return;
         }
 
-        @SuppressWarnings("deprecation")
-        ServerWorld world = worldGenRegion.getLevel();
-        int chunkX = MathHelper.floor(blockPos.getX() / 16.0D);
-        int chunkY = MathHelper.floor(blockPos.getY() / 16.0D);
-        ChunkPos chunkPos = new ChunkPos(chunkX, chunkY);
-        LOGGER.trace("Ruins chunk decoration [{}|{}]", chunkX, chunkY);
-        final WorldHandle wh = instance.getWorldHandle(world);
-        if (wh != null) {
+        // back in 1.16.5 minimum block height was simply zero
+        BlockPos ruinsMarkerBlockPos = new BlockPos(chunkPos.getMinBlockX(), 0, chunkPos.getMinBlockZ());
+        BlockState blockState = world.getBlockState(ruinsMarkerBlockPos);
+        if (blockState.is(Blocks.BARRIER)) {
+            return;
+        }
+        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), 3);
 
-            if (!wh.currentlyGenerating.contains(chunkPos)) {
-                if (wh.fileHandle.allowsDimension(world.dimension().location().getPath()) && (wh.chunkLogger == null || !wh.chunkLogger.catchChunkBug(chunkPos))) {
-                    wh.currentlyGenerating.add(chunkPos);
-                    // sigh. no proper event for this. lets try it like this
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            world.getServer().addTickable(() -> {
-                                if (world.dimension().getRegistryName().getPath().equals("the_nether")) {
-                                    instance.generateNether(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
-                                } else
-                                // normal world
-                                {
-                                    int decoratorYCoordinate = blockPos.getY();
-                                    instance.generateSurface(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
-                                }
-                                wh.currentlyGenerating.remove(chunkPos);
-                            });
-                        }
-                    }, 15000L);
-                }
-            }
+        LOGGER.trace("Ruins generation for chunk {}", chunkPos);
+        if (world.dimension().location().getPath().equals("the_nether")) {
+            worldHandle.generator.generateNether(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
+        } else
+        // normal world
+        {
+            worldHandle.generator.generateNormal(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
         }
     }
 
