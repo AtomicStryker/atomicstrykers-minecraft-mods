@@ -624,3 +624,6 @@ a: setAccessible now true
 + updated tons of old template issues until they stopped throwing errors on load
 + now supports y coordinates below zero
 + removed server command /undoruin, porting it was too much of a hassle
+
+1.19.2.2
++ fixes possible obfuscation issues
