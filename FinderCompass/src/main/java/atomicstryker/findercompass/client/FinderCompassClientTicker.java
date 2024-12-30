@@ -5,7 +5,8 @@ import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelShaper;
+
+import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -28,7 +29,6 @@ public class FinderCompassClientTicker {
     private Minecraft mc;
     public FinderCompassLogic compassLogic;
     private CompassSetting currentSetting;
-    private Item COMPASS_ITEM_ID;
     private boolean repeat;
 
     public FinderCompassClientTicker() {
@@ -46,15 +46,7 @@ public class FinderCompassClientTicker {
     }
 
     public void onLoad() {
-        COMPASS_ITEM_ID = Items.COMPASS;
-
         mc = Minecraft.getInstance();
-
-        // in case we have our own compass renderer? but as of 1.19 no we do not
-        if (COMPASS_ITEM_ID != Items.COMPASS) {
-            ItemModelShaper mesher = mc.getItemRenderer().getItemModelShaper();
-            mesher.register(COMPASS_ITEM_ID, ModelResourceLocation.vanilla("compass", "inventory"));
-        }
 
         compassLogic = new FinderCompassLogic(mc);
     }
@@ -62,7 +54,7 @@ public class FinderCompassClientTicker {
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent tick) {
         if (tick.phase == TickEvent.Phase.END && compassLogic != null) {
-            if (tick.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == COMPASS_ITEM_ID) {
+            if (tick.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == Items.COMPASS) {
                 if (mc.options.keyAttack.isDown()) {
                     if (!repeat) {
                         repeat = true;
