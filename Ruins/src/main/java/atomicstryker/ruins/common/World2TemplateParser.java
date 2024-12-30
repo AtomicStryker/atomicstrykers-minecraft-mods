@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +59,7 @@ class World2TemplateParser {
     /**
      * Player that executed the command
      */
-    private final Player player;
+    private final ServerPlayer player;
     /**
      * These values denote the template size and location
      */
@@ -84,7 +85,7 @@ class World2TemplateParser {
      * same Block which defines the template size. Any different Blocks found
      * above this plate are considered to make up the template.
      */
-    public World2TemplateParser(Player p, int a, int b, int c, String fName) {
+    public World2TemplateParser(ServerPlayer p, int a, int b, int c, String fName) {
         player = p;
         world = p.level();
         x = a;

@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,7 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CommandParseTemplate {
 
-    private static Player player;
+    private static ServerPlayer player;
     private static String templateName;
     public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("parseruin")
@@ -26,11 +27,11 @@ public class CommandParseTemplate {
                             }));
 
     private static void execute(CommandSource source, String input) {
-        if (source instanceof Player) {
+        if (source instanceof ServerPlayer) {
             if (input == null || input.isEmpty()) {
                 source.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /parseruin funhouse"));
             } else {
-                player = (Player) source;
+                player = (ServerPlayer) source;
                 templateName = input;
                 source.sendSystemMessage(Component.literal("Template parser ready to create " + templateName + ". Break any block of the baseplate now."));
             }

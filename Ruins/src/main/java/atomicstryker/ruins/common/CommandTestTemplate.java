@@ -8,6 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,8 +33,8 @@ class CommandTestTemplate {
                     });
 
     private static void execute(CommandSource source, String input) {
-        if (source instanceof Player) {
-            Player sender = (Player) source;
+        if (source instanceof ServerPlayer) {
+            ServerPlayer sender = (ServerPlayer) source;
             String[] args = input == null ? new String[0] : input.split(" ");
             RuinsMod.LOGGER.info("called test command with input [{}], args count {}", input, args.length);
             int xpos, ypos, zpos;
@@ -73,7 +74,7 @@ class CommandTestTemplate {
         }
     }
 
-    private static void tryBuild(Player sender, String[] args, int x, int y, int z, boolean is_player) {
+    private static void tryBuild(ServerPlayer sender, String[] args, int x, int y, int z, boolean is_player) {
         String target = args[0];
         if (!target.contains("/")) {
             target = "templateparser/" + target;
@@ -88,9 +89,9 @@ class CommandTestTemplate {
                 final Level world = sender.getCommandSenderWorld();
 
                 if (parsedRuin != null) {
-                    if (y < world.getMinBuildHeight()) {
+                    if (y < world.getMinY()) {
                         final int ceiling = world.getHeight();
-                        for (y = ceiling - 1; y > world.getMinBuildHeight(); y--) {
+                        for (y = ceiling - 1; y > world.getMinY(); y--) {
                             BlockPos pos = new BlockPos(x, y, z);
                             final BlockState b = world.getBlockState(pos);
                             if (parsedRuin.isIgnoredBlock(b)) {
@@ -106,7 +107,7 @@ class CommandTestTemplate {
                         ++y;
                     }
 
-                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) > world.getMinBuildHeight()) {
+                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) > world.getMinY()) {
                         parsedRuin = null;
                     } else {
                         sender.sendSystemMessage(Component.literal("EventRuinTemplateSpawn returned as cancelled, not building that."));
