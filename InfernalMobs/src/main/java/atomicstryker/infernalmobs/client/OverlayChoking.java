@@ -7,6 +7,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -22,7 +23,9 @@ import org.jetbrains.annotations.NotNull;
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
 
-    protected static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");
+    private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");
+    private static final ResourceLocation AIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/air");
+    private static final ResourceLocation AIR_POPPING_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_bursting");
 
     private static Minecraft mc;
 
@@ -65,9 +68,9 @@ public class OverlayChoking {
 
                 for (int j5 = 0; j5 < fullBubbles + partialBubbles; ++j5) {
                     if (j5 < fullBubbles) {
-                        guiGraphics.blit(GUI_ICONS_LOCATION, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 16, 18, 9, 9);
+                        guiGraphics.blitSprite(RenderType::guiTextured, AIR_SPRITE, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 9, 9);
                     } else {
-                        guiGraphics.blit(GUI_ICONS_LOCATION, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 25, 18, 9, 9);
+                        guiGraphics.blitSprite(RenderType::guiTextured, AIR_POPPING_SPRITE, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 9, 9);
                     }
                 }
             }

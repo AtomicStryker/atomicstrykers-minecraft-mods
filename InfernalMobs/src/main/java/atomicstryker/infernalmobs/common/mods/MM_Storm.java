@@ -1,12 +1,13 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 
 public class MM_Storm extends MobModifier {
@@ -51,7 +52,7 @@ public class MM_Storm extends MobModifier {
                 && mob.distanceTo(target) > MIN_DISTANCE
                 && target.level().canSeeSkyFromBelowWater(new BlockPos(Mth.floor(target.getX()), Mth.floor(target.getY()), Mth.floor(target.getZ())))) {
             nextAbilityUse = time + coolDown;
-            LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level());
+            LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level(), EntitySpawnReason.MOB_SUMMONED);
             lightningboltentity.moveTo(target.getX(), target.getY(), target.getZ());
             lightningboltentity.setVisualOnly(false);
             mob.level().addFreshEntity(lightningboltentity);

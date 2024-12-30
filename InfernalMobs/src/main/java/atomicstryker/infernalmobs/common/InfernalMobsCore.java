@@ -728,7 +728,7 @@ public class InfernalMobsCore {
 
                 Item item = itemStack.getItem();
                 int usedStr = (modStr - 5 > 0) ? 5 : modStr;
-                enchantRandomly(mob.level(), itemStack, item.getEnchantmentValue(), usedStr);
+                enchantRandomly(mob.level(), itemStack, 3, usedStr);
 
                 ItemEntity itemEnt = new ItemEntity(mob.level(), mob.getX(), mob.getY(), mob.getZ(), itemStack);
                 mob.level().addFreshEntity(itemEnt);
@@ -751,9 +751,9 @@ public class InfernalMobsCore {
     private void enchantRandomly(Level level, ItemStack itemStack, int itemEnchantability, int modStr) {
         int remainStr = (modStr + 1) / 2; // should result in 1-3
 
-        Optional<HolderSet.Named<Enchantment>> optional = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getTag(EnchantmentTags.ON_RANDOM_LOOT);
+        Optional<HolderSet.Named<Enchantment>> optional = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(EnchantmentTags.ON_RANDOM_LOOT);
         Stream<Holder<Enchantment>> holderStream = optional.map(HolderSet::stream)
-                .orElseGet(() -> level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).holders().map(e -> e));
+                .orElseGet(() -> level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements().map(ref -> ref));
         List<?> enchantments = EnchantmentHelper.selectEnchantment(level.getRandom(), itemStack, itemEnchantability, holderStream);
 
         Iterator<?> iter = enchantments.iterator();
