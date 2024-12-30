@@ -1,3 +1,6 @@
+1.24.4.1
+- updated for MC 1.21.4 and Forge 54.0.13
+
 1.21.3
 - multi mine now resets serverside block destroy tracking to sidestep a bug
   with breaking waterlogged blocks and replacing them, github issue 520
