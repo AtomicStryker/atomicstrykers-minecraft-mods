@@ -1,3 +1,6 @@
+1.21.4.1NF
+- updated to MC 1.21.4 with neoforge 21.4.47-beta
+
 1.21.3NF
 - multi mine now resets serverside block destroy tracking to sidestep a bug
   with breaking waterlogged blocks and replacing them, github issue 520
