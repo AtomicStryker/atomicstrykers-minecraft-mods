@@ -5,14 +5,11 @@ import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelShaper;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,7 +25,6 @@ public class FinderCompassClientTicker {
     private Minecraft mc;
     public FinderCompassLogic compassLogic;
     private CompassSetting currentSetting;
-    private Item COMPASS_ITEM_ID;
     private boolean repeat;
 
     public FinderCompassClientTicker() {
@@ -46,15 +42,7 @@ public class FinderCompassClientTicker {
     }
 
     public void onLoad() {
-        COMPASS_ITEM_ID = Items.COMPASS;
-
         mc = Minecraft.getInstance();
-
-        // in case we have our own compass renderer? but as of 1.19 no we do not
-        if (COMPASS_ITEM_ID != Items.COMPASS) {
-            ItemModelShaper mesher = mc.getItemRenderer().getItemModelShaper();
-            mesher.register(COMPASS_ITEM_ID, ModelResourceLocation.vanilla("compass", "inventory"));
-        }
 
         compassLogic = new FinderCompassLogic(mc);
     }
@@ -62,7 +50,7 @@ public class FinderCompassClientTicker {
     @SubscribeEvent
     public void onTick(PlayerTickEvent.Post tick) {
         if (compassLogic != null) {
-            if (tick.getEntity().getItemInHand(InteractionHand.MAIN_HAND).getItem() == COMPASS_ITEM_ID) {
+            if (tick.getEntity().getItemInHand(InteractionHand.MAIN_HAND).getItem() == Items.COMPASS) {
                 if (mc.options.keyAttack.isDown()) {
                     if (!repeat) {
                         repeat = true;

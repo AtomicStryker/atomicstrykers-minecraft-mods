@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'eclipse'
 	id 'idea'
-    id 'net.neoforged.moddev' version '1.0.17'
+    id 'net.neoforged.moddev' version '1.0.23'
     id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
@@ -66,8 +66,8 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
-        data {
-            data()
+        clientData {
+            clientData()
 
             // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
             // gameDirectory = project.file('run-data')

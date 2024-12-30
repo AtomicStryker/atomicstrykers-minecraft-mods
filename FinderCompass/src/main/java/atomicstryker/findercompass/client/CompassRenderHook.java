@@ -14,6 +14,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -106,7 +107,7 @@ public class CompassRenderHook {
         RenderSystem.enableBlend();
         // make the needles somewhat transparent
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
 
@@ -217,123 +218,5 @@ public class CompassRenderHook {
 
         // restore modelview matrix
         GL11.glPopMatrix();
-    }
-
-    private static void renderTestQuad(PoseStack poseStack, int angle) {
-
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
-        Tesselator tesselator = Tesselator.getInstance();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-        int halfPercentWidth = screenWidth / 200;
-        int fivePercentHeight = screenHeight / 20;
-
-        int originPointX = screenWidth / 2;
-        int originPointY = screenHeight / 2;
-
-        // we want the resulting thin, long rectangle to point straight up above the origin point unrotated
-        int bottomLeftX = originPointX - halfPercentWidth;
-        int bottomLeftY = originPointY - fivePercentHeight;
-
-        int bottomRightX = originPointX + halfPercentWidth;
-        int bottomRightY = bottomLeftY;
-
-        int topRightX = bottomRightX;
-        int topRightY = bottomLeftY - (2 * fivePercentHeight);
-
-        int topLeftX = bottomLeftX;
-        int topLeftY = topRightY;
-
-        // now do some "rotate point around another point" math
-        // im sure this is inefficient and terrible. PR me an improvement.
-        double angleRadian = Math.toRadians(angle);
-        Point rotatedBottomLeft = rotateAroundPointByAngle(new Point(bottomLeftX, bottomLeftY), new Point(originPointX, originPointY), angleRadian);
-        Point rotatedBottomRight = rotateAroundPointByAngle(new Point(bottomRightX, bottomRightY), new Point(originPointX, originPointY), angleRadian);
-        Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
-        Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
-
-        // buttom left corner
-        bufferbuilder.addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F).setColor(255, 0, 0, 255);
-        // bottom right corner
-        bufferbuilder.addVertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0F).setColor(255, 0, 0, 255);
-        // top right corner
-        bufferbuilder.addVertex(rotatedTopRight.x, rotatedTopRight.y, -90.0F).setColor(255, 0, 0, 255);
-        // top left corner
-        bufferbuilder.addVertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0F).setColor(255, 0, 0, 255);
-
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-        RenderSystem.enableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    private static void renderTestSpyGlass(PoseStack poseStack) {
-
-        poseStack.pushPose();
-
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
-
-        float scopeScale = 0.9F;
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
-        Tesselator tesselator = Tesselator.getInstance();
-        float radius = (float) Math.min(screenWidth, screenHeight);
-        float screenOccludedRatio = Math.min((float) screenWidth / radius, (float) screenHeight / radius) * scopeScale;
-        float f2 = radius * screenOccludedRatio;
-        float f3 = radius * screenOccludedRatio;
-        float blockWidth = ((float) screenWidth - f2) / 2.0F;
-        float blockedHeight = ((float) screenHeight - f3) / 2.0F;
-        float finalWidth = blockWidth + f2;
-        float finalHeight = blockedHeight + f3;
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableBlend();
-        BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-        // bottom box, drawn from a top left corner x,y system
-        // buttom left corner
-        bufferbuilder.addVertex(0.0F, screenHeight, -90.0F).setColor(255, 0, 0, 255);
-        // bottom right corner
-        bufferbuilder.addVertex(screenWidth, screenHeight, -90.0F).setColor(255, 0, 0, 255);
-        // top right corner
-        bufferbuilder.addVertex(screenWidth, finalHeight, -90.0F).setColor(255, 0, 0, 255);
-        // top left corner
-        bufferbuilder.addVertex(0.0F, finalHeight, -90.0F).setColor(255, 0, 0, 255);
-
-        // top box
-        bufferbuilder.addVertex(0.0F, blockedHeight, -90.0F).setColor(0, 255, 0, 255);
-        bufferbuilder.addVertex(screenWidth, blockedHeight, -90.0F).setColor(0, 255, 0, 255);
-        bufferbuilder.addVertex(screenWidth, 0.0F, -90.0F).setColor(0, 255, 0, 255);
-        bufferbuilder.addVertex(0.0F, 0.0F, -90.0F).setColor(0, 255, 0, 255);
-
-        // left box
-        bufferbuilder.addVertex(0.0F, finalHeight, -90.0F).setColor(0, 0, 255, 255);
-        bufferbuilder.addVertex(blockWidth, finalHeight, -90.0F).setColor(0, 0, 255, 255);
-        bufferbuilder.addVertex(blockWidth, blockedHeight, -90.0F).setColor(0, 0, 255, 255);
-        bufferbuilder.addVertex(0.0F, blockedHeight, -90.0F).setColor(0, 0, 255, 255);
-
-        // right box
-        bufferbuilder.addVertex(finalWidth, finalHeight, -90.0F).setColor(0, 0, 0, 255);
-        bufferbuilder.addVertex(screenWidth, finalHeight, -90.0F).setColor(0, 0, 0, 255);
-        bufferbuilder.addVertex(screenWidth, blockedHeight, -90.0F).setColor(0, 0, 0, 255);
-        bufferbuilder.addVertex(finalWidth, blockedHeight, -90.0F).setColor(0, 0, 0, 255);
-
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-        RenderSystem.enableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        poseStack.popPose();
     }
 }
