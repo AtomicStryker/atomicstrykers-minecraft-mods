@@ -3,10 +3,11 @@ package atomicstryker.dynamiclights.server;
 import atomicstryker.dynamiclights.server.blocks.BlockLitAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitCaveAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitWater;
-import atomicstryker.dynamiclights.server.datagen.ModDatagen;
 import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -77,17 +78,25 @@ public class DynamicLights {
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
 
-    public static final DeferredBlock<BlockLitAir> LIT_AIR_BLOCK = BLOCKS.register("lit_air", resourceLocation -> new BlockLitAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
-            .randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+    public static final DeferredBlock<BlockLitAir> LIT_AIR_BLOCK = BLOCKS.register("lit_air", resourceLocation ->
+            new BlockLitAir(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_air")))
+                    .replaceable().noCollission().noLootTable().air().randomTicks().lightLevel((x)
+                            -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public static final DeferredBlock<BlockLitWater> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
-            new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().mapColor(MapColor.WATER).replaceable()
-                    .noCollission().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable()
-                    .liquid().sound(SoundType.EMPTY).lightLevel((x) -> x.getValue(BlockStateProperties.POWER))));
+            new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_water")))
+                    .mapColor(MapColor.WATER).replaceable().noCollission().strength(100.0F)
+                    .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
+                    .lightLevel((x)
+                            -> x.getValue(BlockStateProperties.POWER))));
 
     public static final DeferredBlock<BlockLitCaveAir> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
-            new BlockLitCaveAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
-                    .lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+            new BlockLitCaveAir(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_cave_air")))
+                    .replaceable().noCollission().noLootTable().air().lightLevel((x)
+                            -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public DynamicLights(IEventBus modEventBus) {
         instance = this;
@@ -95,8 +104,6 @@ public class DynamicLights {
 
         playerSelfLightSource = new PlayerSelfLightSource();
         droppedItemsLightSource = new DroppedItemsLightSource();
-
-        modEventBus.addListener(ModDatagen::start);
 
         // this one is for FMLServerStartedEvent, WorldTickEvent
         NeoForge.EVENT_BUS.register(this);
