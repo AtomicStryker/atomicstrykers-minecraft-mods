@@ -100,7 +100,7 @@ class World2TemplateParser {
     public void execute() {
 
         if (templateHelperBlock.blockState.getBlock() == Blocks.AIR) {
-            player.sendSystemMessage(Component.literal("Template Parse fail, chosen Block was air WTF?!"));
+            player.displayClientMessage(Component.literal("Template Parse fail, chosen Block was air WTF?!"), false);
             return;
         }
 
@@ -139,20 +139,20 @@ class World2TemplateParser {
         zLength = 1 + zmax - lowestZ;
 
         readBlocks(world);
-        player.sendSystemMessage(Component.literal("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength));
+        player.displayClientMessage(Component.literal("Block reading finished. Rules: " + usedBlocks.size() + ", layers: " + layerData.size() + ", xlen: " + xLength + ", zlen: " + zLength), false);
 
         File folder = new File(RuinsMod.getMinecraftBaseDir(), RuinsMod.TEMPLATE_PATH_MC_EXTRACTED + "templateparser/");
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
-                player.sendSystemMessage(Component.literal("Failed to create folder structure: " + folder));
+                player.displayClientMessage(Component.literal("Failed to create folder structure: " + folder), false);
                 return;
             }
-            player.sendSystemMessage(Component.literal("Created folder structure: " + folder));
+            player.displayClientMessage(Component.literal("Created folder structure: " + folder), false);
         }
         File templateFile = new File(folder, fileName + ".tml");
         toFile(templateFile);
 
-        player.sendSystemMessage(Component.literal("Success writing templatefile " + templateFile));
+        player.displayClientMessage(Component.literal("Success writing templatefile " + templateFile), false);
     }
 
     private void checkLockup() {
@@ -369,8 +369,8 @@ class World2TemplateParser {
             CommandTestTemplate.parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName());
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendSystemMessage(Component.literal("Something broke! See server logfile for exception message and get it to AtomicStryker."));
-            player.sendSystemMessage(Component.literal("First line of stacktrace: " + e.getMessage()));
+            player.displayClientMessage(Component.literal("Something broke! See server logfile for exception message and get it to AtomicStryker."), false);
+            player.displayClientMessage(Component.literal("First line of stacktrace: " + e.getMessage()), false);
         }
     }
 

@@ -627,3 +627,6 @@ a: setAccessible now true
 
 1.21.1.1NF
 + updated to Minecraft 1.21.1 (min NeoForge 21.1.58)
+
+1.21.4.1NF
++ updated to Minecraft 1.21.4 (min NeoForge 21.4.47-beta)

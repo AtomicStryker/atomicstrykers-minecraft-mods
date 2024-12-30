@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -70,9 +71,14 @@ public class RuinsMod {
         if (iWorld instanceof ServerLevel) {
             ServerLevel world = (ServerLevel) iWorld;
             try {
-                Field declaredField = world.getChunkSource().getDataStorage().getClass().getDeclaredField("dataFolder");
-                declaredField.setAccessible(true);
-                return (File) declaredField.get(world.getChunkSource().getDataStorage());
+                for (Field declaredField : world.getChunkSource().getDataStorage().getClass().getDeclaredFields()) {
+                    if (declaredField.getType().equals(Path.class)) {
+                        declaredField.setAccessible(true);
+                        Path path = (Path) declaredField.get(world.getChunkSource().getDataStorage());
+                        return path.toFile();
+                    }
+                }
+                throw new RuntimeException("Ruins mod could not find field File DimensionDataStorage.dataFolder");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -157,7 +163,7 @@ public class RuinsMod {
             return;
         }
 
-        BlockPos ruinsMarkerBlockPos = new BlockPos(chunkPos.getMinBlockX(), world.getMinBuildHeight(), chunkPos.getMinBlockZ());
+        BlockPos ruinsMarkerBlockPos = new BlockPos(chunkPos.getMinBlockX(), world.getMinY(), chunkPos.getMinBlockZ());
         BlockState blockState = world.getBlockState(ruinsMarkerBlockPos);
         if (blockState.is(Blocks.BARRIER)) {
             return;
@@ -195,7 +201,7 @@ public class RuinsMod {
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
                     BlockEntity te = event.getEntity().level().getBlockEntity(event.getPosition().get());
-                    event.getEntity().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
+                    event.getEntity().displayClientMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)), false);
                 }
             }
         }
@@ -210,7 +216,7 @@ public class RuinsMod {
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
                     nextInfoTime = System.currentTimeMillis() + 1000L;
                     BlockEntity te = event.getPlayer().level().getBlockEntity(event.getPos());
-                    event.getPlayer().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
+                    event.getPlayer().displayClientMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)), false);
                     event.setCanceled(true);
                 }
             }
