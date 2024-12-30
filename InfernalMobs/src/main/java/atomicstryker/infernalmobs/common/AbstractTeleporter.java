@@ -67,7 +67,7 @@ public abstract class AbstractTeleporter extends MobModifier {
     protected boolean tryTeleportTo(LivingEntity mob, double x, double y, double z) {
         BlockPos.MutableBlockPos destination = new BlockPos.MutableBlockPos(x, y, z);
 
-        while (destination.getY() > mob.level().getMinBuildHeight() && !mob.level().getBlockState(destination).blocksMotion()) {
+        while (destination.getY() > mob.level().getMinY() && !mob.level().getBlockState(destination).blocksMotion()) {
             destination.move(Direction.DOWN);
         }
 

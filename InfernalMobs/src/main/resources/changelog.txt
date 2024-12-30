@@ -1,3 +1,6 @@
+1.21.4.1
+- updated for MC 1.21.4 and Forge 54.0.13
+
 1.21.2
 - fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/510, late init if player login event somehow
   didnt trigger

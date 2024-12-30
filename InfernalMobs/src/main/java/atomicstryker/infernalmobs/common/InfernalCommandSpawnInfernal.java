@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -35,7 +36,7 @@ public class InfernalCommandSpawnInfernal {
             return;
         }
 
-        LivingEntity mob = (LivingEntity) chosenType.create(source.getLevel());
+        LivingEntity mob = (LivingEntity) chosenType.create(source.getLevel(), EntitySpawnReason.COMMAND);
         if (mob == null) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, failed to create [" + entClassName + "] instance in world"));
         }

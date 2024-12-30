@@ -67,8 +67,7 @@ public class MM_Alchemist extends MobModifier {
                 potiontype = Potions.WEAKNESS;
             }
 
-            ThrownPotion potionentity = new ThrownPotion(mob.level(), mob);
-            potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potiontype));
+            ThrownPotion potionentity = new ThrownPotion(mob.level(), mob, PotionContents.createItemStack(Items.SPLASH_POTION, potiontype));
             potionentity.setXRot(potionentity.getXRot() + 20.0F);
             potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
             mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
