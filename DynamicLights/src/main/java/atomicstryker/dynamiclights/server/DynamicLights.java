@@ -80,17 +80,21 @@ public class DynamicLights {
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final RegistryObject<Block> LIT_AIR_BLOCK = BLOCKS.register("lit_air", () ->
-            new BlockLitAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
-                    .randomTicks().lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+            new BlockLitAir(BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_air"))
+                    .replaceable().noCollission().noLootTable().air().randomTicks().lightLevel((x)
+                            -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
     public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
-            new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().mapColor(MapColor.WATER).replaceable()
-                    .noCollission().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable()
-                    .liquid().sound(SoundType.EMPTY).lightLevel((x) -> x.getValue(BlockStateProperties.POWER))));
+            new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_water"))
+                    .mapColor(MapColor.WATER).replaceable().noCollission().strength(100.0F)
+                    .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
+                    .lightLevel((x)
+                            -> x.getValue(BlockStateProperties.POWER))));
     public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
-            new BlockLitCaveAir(BlockBehaviour.Properties.of().replaceable().noCollission().noLootTable().air()
-                    .lightLevel((x) -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
+            new BlockLitCaveAir(BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_cave_air"))
+                    .replaceable().noCollission().noLootTable().air().lightLevel((x)
+                            -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
-    public DynamicLights() {
+    public DynamicLights(FMLJavaModLoadingContext context) {
         instance = this;
         worldLightsMap = new ConcurrentHashMap<>();
 
@@ -98,14 +102,14 @@ public class DynamicLights {
         droppedItemsLightSource = new DroppedItemsLightSource();
 
         // this one is for RegistryEvent
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final IEventBus modEventBus = context.getModEventBus();
         modEventBus.register(DynamicLights.class);
         modEventBus.addListener(ModDatagen::start);
 
         // this one is for FMLServerStartedEvent, WorldTickEvent
         MinecraftForge.EVENT_BUS.register(this);
 
-        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        BLOCKS.register(modEventBus);
     }
 
     @SubscribeEvent
