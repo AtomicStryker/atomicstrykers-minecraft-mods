@@ -630,3 +630,6 @@ a: setAccessible now true
 
 1.21.4.1NF
 + updated to Minecraft 1.21.4 (min NeoForge 21.4.47-beta)
+
+1.21.4.2NF
++ fix server commands not working
