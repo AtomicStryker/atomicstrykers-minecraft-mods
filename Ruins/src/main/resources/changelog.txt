@@ -610,3 +610,23 @@ a: setAccessible now true
 + ported to Minecraft 1.15.2 (Forge 31.2.0)
 + don't be a coremod; install pseudo-feature instead
 + put zombies on pirate ships; drowned don't spawn above sea level
+
+1.16.5.1
++ updated to Minecraft 1.16.5 (min Forge 36.2.42)
++ spawning works by using a fake biome feature hook and a 15 sec delay (does not appear to work in superflat)
++ map generation is quite full by now, not much flat empty spaces left
+
+1.19.2.1
++ updated to Minecraft 1.19.2 (min Forge 43.4.5)
+  spawning is now triggered by a player entering chunks, Ruins will move several chunks ahead of that player and try
+  creating templates there. this can only happen once per chunk, which is marked by setting each chunks starting block
+  from BEDROCK to BARRIER blocks
++ updated tons of old template issues until they stopped throwing errors on load
++ now supports y coordinates below zero
++ removed server command /undoruin, porting it was too much of a hassle
+
+1.21.1.1
++ updated to Minecraft 1.21.1 (min Forge 52.0.16)
+
+1.20.1.1
++ backported to Minecraft 1.20.1 with Forge

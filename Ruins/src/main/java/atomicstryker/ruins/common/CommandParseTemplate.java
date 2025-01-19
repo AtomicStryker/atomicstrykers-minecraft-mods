@@ -2,49 +2,52 @@ package atomicstryker.ruins.common;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
+
 
 public class CommandParseTemplate {
 
-    private static PlayerEntity player;
+    private static Player player;
     private static String templateName;
-    public static final LiteralArgumentBuilder<CommandSource> BUILDER =
+    public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("parseruin")
-                    .requires((caller) -> caller.hasPermissionLevel(2))
+                    .requires((caller) -> caller.hasPermission(2))
                     .then(Commands.argument("input", StringArgumentType.greedyString())
                             .executes((caller) -> {
-                                execute(caller.getSource(), StringArgumentType.getString(caller, "input"));
+                                execute(caller.getSource().source, StringArgumentType.getString(caller, "input"));
                                 return 1;
                             }));
 
     private static void execute(CommandSource source, String input) {
-        if (source.getEntity() instanceof PlayerEntity) {
+        if (source instanceof Player) {
             if (input == null || input.isEmpty()) {
-                source.sendErrorMessage(new TranslationTextComponent("You need to use the command with the target template name, eg. /parseruin funhouse"));
+                source.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /parseruin funhouse"));
             } else {
-                player = (PlayerEntity) source.getEntity();
+                player = (Player) source;
                 templateName = input;
-                source.sendFeedback(new TranslationTextComponent("Template parser ready to create " + templateName + ". Break any block of the baseplate now."), false);
+                source.sendSystemMessage(Component.literal("Template parser ready to create " + templateName + ". Break any block of the baseplate now."));
             }
         } else {
-            source.sendErrorMessage(new TranslationTextComponent("Command only available for ingame player entities."));
+            source.sendSystemMessage(Component.literal("Command only available for ingame player entities."));
         }
     }
 
     @SubscribeEvent
-    public void onBlockBroken(BreakEvent event) {
+    public void onBlockBroken(BlockEvent.BreakEvent event) {
         if (event.getPlayer() == player) {
             // have to defer parsing to main thread, else all Tile Entities read as null
-            MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-            server.deferTask(new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName));
+            MinecraftServer server = player.level().getServer();
+            if (server != null) {
+                World2TemplateParser world2TemplateParser = new World2TemplateParser(player, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), templateName);
+                world2TemplateParser.execute();
+            }
             player = null;
             event.setCanceled(true);
         }

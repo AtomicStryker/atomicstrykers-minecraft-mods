@@ -1,9 +1,9 @@
 package atomicstryker.ruins.common;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-import java.util.Random;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 
 class RuinRuleProcess {
 
@@ -18,7 +18,7 @@ class RuinRuleProcess {
         rotate = rot;
     }
 
-    public void doBlock(World world, Random random) {
+    public void doBlock(Level world, RandomSource random) {
         rule.doBlock(world, random, new BlockPos(x, y, z), rotate);
     }
 }

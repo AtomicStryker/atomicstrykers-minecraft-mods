@@ -5,7 +5,8 @@ import java.util.HashMap;
 class RuinStats
 {
     public final HashMap<String, Integer> biomes = new HashMap<>();
-    int NumCreated = 0;
-    int LevelingFails = 0;
+    int numCreated = 0;
+    int noSurfaceFails = 0;
+    int levelingFails = 0;
     int minDistFails = 0;
 }

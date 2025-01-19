@@ -1,26 +1,26 @@
 package atomicstryker.ruins.common;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
-
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
 
 public class RuleStringNbtHelper {
     private static int throttleEntityWarning = 4;
 
-    public static String StringFromBlockState(BlockState blockState, TileEntity tileEntity) {
-        CompoundNBT tagCompound = NBTUtil.writeBlockState(blockState);
+    public static String StringFromBlockState(BlockState blockState, BlockEntity tileEntity) {
+        CompoundTag tagCompound = NbtUtils.writeBlockState(blockState);
         if (tileEntity != null) {
-            CompoundNBT parameters = new CompoundNBT();
-            CompoundNBT tagTileEntity = tileEntity.write(new CompoundNBT());
+            CompoundTag parameters = new CompoundTag();
+            CompoundTag tagTileEntity = tileEntity.saveWithFullMetadata();
             tagTileEntity.remove("id");
             tagTileEntity.remove("x");
             tagTileEntity.remove("y");
@@ -31,18 +31,25 @@ public class RuleStringNbtHelper {
         return tagCompound.toString();
     }
 
-    public static BlockState blockStateFromCompound(CompoundNBT input) {
-        CompoundNBT nbtTagCompound = input.copy();
+    public static BlockState blockStateFromCompound(CompoundTag input) {
+        CompoundTag nbtTagCompound = input.copy();
         // strip this away here
         nbtTagCompound.remove("ruinsTE");
-        return NBTUtil.readBlockState(nbtTagCompound);
+        try {
+            return NbtUtils.readBlockState(RuinsMod.getInstance().getLastLoadedLevel().holderLookup(Registries.BLOCK), nbtTagCompound);
+        } catch (Exception e) {
+            RuinsMod.LOGGER.error("failed translating CompoundTag {} to block", nbtTagCompound, e);
+            return Blocks.AIR.defaultBlockState();
+        }
     }
 
-    public static CompoundNBT tileEntityNBTFromCompound(CompoundNBT defaultValue, CompoundNBT input) {
-        CompoundNBT teNbt = defaultValue;
+    public static CompoundTag tileEntityNBTFromCompound(CompoundTag defaultValue, CompoundTag input) {
+        CompoundTag teNbt = defaultValue;
         if (input.contains("ruinsTE", 10)) {
             // emit a few deprecation warnings, then demote to debug
-            final Level level = throttleEntityWarning > 0 ? Level.WARN : Level.DEBUG;
+            final org.apache.logging.log4j.Level level = throttleEntityWarning > 0
+                    ? org.apache.logging.log4j.Level.WARN
+                    : org.apache.logging.log4j.Level.DEBUG;
             RuinsMod.LOGGER.log(level, "{ruinsTE:{...}} is deprecated; use {Ruins:{entity:{...}}} instead");
             if (throttleEntityWarning > 0 && --throttleEntityWarning < 1) {
                 RuinsMod.LOGGER.warn("suppressing ruinsTE deprecation warnings; limit reached");
@@ -59,8 +66,8 @@ public class RuleStringNbtHelper {
     }
 
     // assuming we can have multiple blockstates {nbt}{nbt}{nbt}, split them into a TAG_Compound list. a normal rule will have 1
-    public static List<CompoundNBT> splitRuleByBrackets(String rule) {
-        List<CompoundNBT> result = new ArrayList<>();
+    public static List<CompoundTag> splitRuleByBrackets(String rule) {
+        List<CompoundTag> result = new ArrayList<>();
         int currentBracketStartIndex = 0;
         int bracketCounter = 0;
         char quote = 0;
@@ -83,9 +90,9 @@ public class RuleStringNbtHelper {
                     RuinsMod.LOGGER.error("Error in rule {} at character {}: unbalanced brackets!", rule, i);
                     return null;
                 } else if (bracketCounter == 0) {
-                    CompoundNBT nbtTagCompound;
+                    CompoundTag nbtTagCompound;
                     try {
-                        nbtTagCompound = JsonToNBT.getTagFromJson(rule.substring(currentBracketStartIndex, i + 1));
+                        nbtTagCompound = TagParser.parseTag(rule.substring(currentBracketStartIndex, i + 1));
                     } catch (CommandSyntaxException e) {
                         RuinsMod.LOGGER.error("Error in rule {} starting at character {}: unbalanced brackets!", rule, currentBracketStartIndex);
                         return null;
