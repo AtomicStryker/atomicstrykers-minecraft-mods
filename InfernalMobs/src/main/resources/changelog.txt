@@ -1,3 +1,7 @@
+1.21.4.2
+- implement entityTagBlackList in config which allows to define nbt keys which, when encountered, prevent
+  infernal mobs from touching an entity. Default is "affixes" which is a tag used by the champions mod
+
 1.21.4.1
 - updated for MC 1.21.4 and Forge 54.0.13
 

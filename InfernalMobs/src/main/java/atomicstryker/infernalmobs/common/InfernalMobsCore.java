@@ -37,6 +37,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -49,7 +50,6 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -173,14 +173,23 @@ public class InfernalMobsCore {
         return SidedCache.getInfernalMobs(ent.level()).containsKey(ent);
     }
 
-    public static boolean getWasMobSpawnedBefore(LivingEntity ent) {
+    public static boolean isBlockedBeingInfernal(LivingEntity ent) {
         // check if the entity previously passed infernal mob generation without getting a mod
-        String storedInfernalTag = ent.getPersistentData().getString(instance().getNBTTag());
+        CompoundTag persistentData = ent.getPersistentData();
+        String storedInfernalTag = persistentData.getString(instance().getNBTTag());
         boolean result = !storedInfernalTag.isEmpty() && instance().getNBTMarkerForNonInfernalEntities().equals(storedInfernalTag);
         if (result) {
             InfernalMobsCore.LOGGER.debug("entity {} was spawned in unmodified before, not modifying it", ent);
+            return true;
         }
-        return result;
+        // check the configurable list of banned entity nbt tags
+        for (String bannedTag : instance().config.getEntityTagBlackList()) {
+            // example: 'affixes' is used by the Champions mod
+            if (persistentData.contains(bannedTag)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void setMobWasSpawnedBefore(LivingEntity ent) {
@@ -355,6 +364,11 @@ public class InfernalMobsCore {
         }
         defaultConfig.setModsEnabled(modsEnabledMap);
 
+        List<String> entityTagBlackList = new ArrayList<>();
+        // tag used by the champions mod
+        entityTagBlackList.add("affixes");
+        defaultConfig.setEntityTagBlackList(entityTagBlackList);
+
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
         lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER, world.registryAccess());
@@ -372,7 +386,7 @@ public class InfernalMobsCore {
      */
     public void processEntitySpawn(LivingEntity entity) {
         if (!entity.level().isClientSide && config != null) {
-            if (!getIsRareEntityOnline(entity) && !getWasMobSpawnedBefore(entity)) {
+            if (!getIsRareEntityOnline(entity) && !isBlockedBeingInfernal(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {
                         /*
