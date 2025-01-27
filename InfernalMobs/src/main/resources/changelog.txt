@@ -1,3 +1,7 @@
+1.20.1.4
+- implement entityTagBlackList in config which allows to define nbt keys which, when encountered, prevent
+  infernal mobs from touching an entity. Default is "affixes" which is a tag used by the champions mod
+
 1.20.1.3
 - fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/510, late init if player login event somehow
   didnt trigger

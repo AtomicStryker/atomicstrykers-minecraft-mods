@@ -1,9 +1,42 @@
 package atomicstryker.infernalmobs.common;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.mods.*;
-import atomicstryker.infernalmobs.common.network.*;
+import atomicstryker.infernalmobs.common.mods.MM_1UP;
+import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
+import atomicstryker.infernalmobs.common.mods.MM_Berserk;
+import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
+import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Choke;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
+import atomicstryker.infernalmobs.common.mods.MM_Darkness;
+import atomicstryker.infernalmobs.common.mods.MM_Ender;
+import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
+import atomicstryker.infernalmobs.common.mods.MM_Fiery;
+import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
+import atomicstryker.infernalmobs.common.mods.MM_Ninja;
+import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
+import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
+import atomicstryker.infernalmobs.common.mods.MM_Regen;
+import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
+import atomicstryker.infernalmobs.common.mods.MM_Sprint;
+import atomicstryker.infernalmobs.common.mods.MM_Sticky;
+import atomicstryker.infernalmobs.common.mods.MM_Storm;
+import atomicstryker.infernalmobs.common.mods.MM_Unyielding;
+import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
+import atomicstryker.infernalmobs.common.mods.MM_Weakness;
+import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
+import atomicstryker.infernalmobs.common.network.AirPacket;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.KnockBackPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import atomicstryker.infernalmobs.common.network.NetworkHelper;
+import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import com.google.common.collect.Lists;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -38,7 +71,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Mod(InfernalMobsCore.MOD_ID)
 @Mod.EventBusSubscriber(modid = InfernalMobsCore.MOD_ID)
@@ -100,14 +137,23 @@ public class InfernalMobsCore {
         return SidedCache.getInfernalMobs(ent.level()).containsKey(ent);
     }
 
-    public static boolean getWasMobSpawnedBefore(LivingEntity ent) {
+    public static boolean isBlockedBeingInfernal(LivingEntity ent) {
         // check if the entity previously passed infernal mob generation without getting a mod
-        String storedInfernalTag = ent.getPersistentData().getString(instance().getNBTTag());
+        CompoundTag persistentData = ent.getPersistentData();
+        String storedInfernalTag = persistentData.getString(instance().getNBTTag());
         boolean result = !storedInfernalTag.isEmpty() && instance().getNBTMarkerForNonInfernalEntities().equals(storedInfernalTag);
         if (result) {
             InfernalMobsCore.LOGGER.debug("entity {} was spawned in unmodified before, not modifying it", ent);
+            return true;
         }
-        return result;
+        // check the configurable list of banned entity nbt tags
+        for (String bannedTag : instance().config.getEntityTagBlackList()) {
+            // example: 'affixes' is used by the Champions mod
+            if (persistentData.contains(bannedTag)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void setMobWasSpawnedBefore(LivingEntity ent) {
@@ -283,6 +329,11 @@ public class InfernalMobsCore {
         }
         defaultConfig.setModsEnabled(modsEnabledMap);
 
+        List<String> entityTagBlackList = new ArrayList<>();
+        // tag used by the champions mod
+        entityTagBlackList.add("affixes");
+        defaultConfig.setEntityTagBlackList(entityTagBlackList);
+
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
         lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER);
@@ -300,7 +351,7 @@ public class InfernalMobsCore {
      */
     public void processEntitySpawn(LivingEntity entity) {
         if (!entity.level().isClientSide && config != null) {
-            if (!getIsRareEntityOnline(entity) && !getWasMobSpawnedBefore(entity)) {
+            if (!getIsRareEntityOnline(entity) && !isBlockedBeingInfernal(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {
                         /*
