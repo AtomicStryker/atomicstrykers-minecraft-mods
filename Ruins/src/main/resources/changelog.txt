@@ -630,3 +630,6 @@ a: setAccessible now true
 
 1.21.4.1
 + updated to Minecraft 1.21.4 (min Forge 54.0.13)
+
+1.21.4.2
++ fixes server commands not working

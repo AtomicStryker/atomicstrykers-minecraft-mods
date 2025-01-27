@@ -2,17 +2,13 @@ package atomicstryker.ruins.common;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.Util;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-
 
 import java.io.File;
 
@@ -25,52 +21,48 @@ class CommandTestTemplate {
                     .requires((caller) -> caller.hasPermission(2))
                     .then(Commands.argument("input", StringArgumentType.greedyString())
                             .executes((caller) -> {
-                                execute(caller.getSource().source, StringArgumentType.getString(caller, "input"));
+                                execute(caller.getSource().getPlayerOrException(), StringArgumentType.getString(caller, "input"));
                                 return 1;
                             })).executes((caller) -> {
-                        execute(caller.getSource().source, null);
+                        execute(caller.getSource().getPlayerOrException(), null);
                         return 1;
                     });
 
-    private static void execute(CommandSource source, String input) {
-        if (source instanceof ServerPlayer) {
-            ServerPlayer sender = (ServerPlayer) source;
-            String[] args = input == null ? new String[0] : input.split(" ");
-            RuinsMod.LOGGER.info("called test command with input [{}], args count {}", input, args.length);
-            int xpos, ypos, zpos;
-            xpos = (int) sender.getX();
-            ypos = (int) sender.getY();
-            zpos = (int) sender.getZ();
-            if (args.length < 4) {
-                if (args.length < 1) {
-                    if (parsedRuin != null) {
-                        final Level world = sender.getCommandSenderWorld();
-                        parsedRuin.doBuild(world, world.random, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
-                        parsedRuin = null;
-                    } else {
-                        sender.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /testruin beach/LightHouse"));
-                    }
+    private static void execute(ServerPlayer source, String input) {
+        ServerPlayer sender = source;
+        String[] args = input == null ? new String[0] : input.split(" ");
+        RuinsMod.LOGGER.info("called test command with input [{}], args count {}", input, args.length);
+        int xpos, ypos, zpos;
+        xpos = (int) sender.getX();
+        ypos = (int) sender.getY();
+        zpos = (int) sender.getZ();
+        if (args.length < 4) {
+            if (args.length < 1) {
+                if (parsedRuin != null) {
+                    final Level world = sender.getCommandSenderWorld();
+                    parsedRuin.doBuild(world, world.random, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
+                    parsedRuin = null;
                 } else {
-                    tryBuild(sender, args, xpos, ypos, zpos, true);
+                    sender.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /testruin beach/LightHouse"));
                 }
             } else {
-                try {
-                    if (args[2].equals("_")) {
-                        int x = Integer.valueOf(args[1]);
-                        int z = Integer.valueOf(args[3]);
-                        tryBuild(sender, args, x, -1, z, true);
-                    } else {
-                        int x = Integer.valueOf(args[1]);
-                        int y = Integer.valueOf(args[2]);
-                        int z = Integer.valueOf(args[3]);
-                        tryBuild(sender, args, x, y, z, true);
-                    }
-                } catch (NumberFormatException e) {
-                    sender.sendSystemMessage(Component.literal("Invalid coordinates specified"));
-                }
+                tryBuild(sender, args, xpos, ypos, zpos, true);
             }
         } else {
-            source.sendSystemMessage(Component.literal("Command is only available for ingame player entities, or with coordinates specified"));
+            try {
+                if (args[2].equals("_")) {
+                    int x = Integer.valueOf(args[1]);
+                    int z = Integer.valueOf(args[3]);
+                    tryBuild(sender, args, x, -1, z, true);
+                } else {
+                    int x = Integer.valueOf(args[1]);
+                    int y = Integer.valueOf(args[2]);
+                    int z = Integer.valueOf(args[3]);
+                    tryBuild(sender, args, x, y, z, true);
+                }
+            } catch (NumberFormatException e) {
+                sender.sendSystemMessage(Component.literal("Invalid coordinates specified"));
+            }
         }
     }
 

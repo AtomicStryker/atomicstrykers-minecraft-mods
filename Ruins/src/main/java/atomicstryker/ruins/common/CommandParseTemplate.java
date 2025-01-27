@@ -2,13 +2,11 @@ package atomicstryker.ruins.common;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -22,21 +20,17 @@ public class CommandParseTemplate {
                     .requires((caller) -> caller.hasPermission(2))
                     .then(Commands.argument("input", StringArgumentType.greedyString())
                             .executes((caller) -> {
-                                execute(caller.getSource().source, StringArgumentType.getString(caller, "input"));
+                                execute(caller.getSource().getPlayerOrException(), StringArgumentType.getString(caller, "input"));
                                 return 1;
                             }));
 
-    private static void execute(CommandSource source, String input) {
-        if (source instanceof ServerPlayer) {
-            if (input == null || input.isEmpty()) {
-                source.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /parseruin funhouse"));
-            } else {
-                player = (ServerPlayer) source;
-                templateName = input;
-                source.sendSystemMessage(Component.literal("Template parser ready to create " + templateName + ". Break any block of the baseplate now."));
-            }
+    private static void execute(ServerPlayer source, String input) {
+        if (input == null || input.isEmpty()) {
+            source.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /parseruin funhouse"));
         } else {
-            source.sendSystemMessage(Component.literal("Command only available for ingame player entities."));
+            player = source;
+            templateName = input;
+            source.sendSystemMessage(Component.literal("Template parser ready to create " + templateName + ". Break any block of the baseplate now."));
         }
     }
 
