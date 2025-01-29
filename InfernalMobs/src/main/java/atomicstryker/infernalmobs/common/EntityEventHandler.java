@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common;
 
+import atomicstryker.infernalmobs.common.compat.ChampionsCompat;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,15 +32,27 @@ public class EntityEventHandler {
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinLevelEvent event) {
         // make sure we are not catching items or player entities in this
-        if (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy) {
-            String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
-            if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
-                InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) event.getEntity(), savedMods);
-            } else {
-                InfernalMobsCore.instance().processEntitySpawn((LivingEntity) event.getEntity());
+        var entity = event.getEntity();
+        var level = event.getLevel();
+        // check level is server level first
+        if (!level.isClientSide()) {
+            // champions mob compat start
+            if (InfernalMobsCore.instance().isChampionLoaded() && ChampionsCompat.isChampionEntity(entity)) {
+                InfernalMobsCore.LOGGER.debug("Stop spawning {} infernal mob at {} uuid: {}, Because entity already handled by champions mod.", entity.getName().getString(), entity.blockPosition(), entity.getUUID());
+                return;
+            }
+            // champions mob compat end
+            if (entity instanceof LivingEntity livingEntity && entity instanceof Enemy) {
+                String savedMods = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
+                if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
+                    InfernalMobsCore.instance().addEntityModifiersByString(livingEntity, savedMods);
+                } else {
+                    InfernalMobsCore.instance().processEntitySpawn((LivingEntity) event.getEntity());
+                }
             }
         }
     }
+
 
     @SubscribeEvent
     public void onEntityLivingDeath(LivingDeathEvent event) {
