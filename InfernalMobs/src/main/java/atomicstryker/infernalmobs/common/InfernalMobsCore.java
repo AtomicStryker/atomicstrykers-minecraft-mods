@@ -4,6 +4,7 @@ import atomicstryker.infernalmobs.client.InfernalMobsClient;
 import atomicstryker.infernalmobs.common.mods.*;
 import atomicstryker.infernalmobs.common.network.*;
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -36,8 +37,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.*;
@@ -48,7 +48,7 @@ public class InfernalMobsCore {
 
     public static final String MOD_ID = "infernalmobs";
 
-    public static Logger LOGGER;
+    private static Logger LOGGER = LogUtils.getLogger();
     private static InfernalMobsCore instance;
     private static boolean championLoaded = false;
     private final long existCheckDelay = 5000L;
@@ -88,8 +88,6 @@ public class InfernalMobsCore {
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
 
         networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
-
-        LOGGER = LogManager.getLogger();
     }
 
     public static InfernalMobsCore instance() {
@@ -134,6 +132,10 @@ public class InfernalMobsCore {
 
     public static void removeEntFromElites(LivingEntity entity) {
         SidedCache.getInfernalMobs(entity.level()).remove(entity);
+    }
+
+    public static Logger getLogger() {
+        return LOGGER;
     }
 
     public String getNBTTag() {
@@ -303,9 +305,9 @@ public class InfernalMobsCore {
 
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
-        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite(), LOGGER);
-        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra(), LOGGER);
-        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal(), LOGGER);
+        lootItemDropsElite = new ItemConfigHelper(config.getDroppedItemIDsElite());
+        lootItemDropsUltra = new ItemConfigHelper(config.getDroppedItemIDsUltra());
+        lootItemDropsInfernal = new ItemConfigHelper(config.getDroppedItemIDsInfernal());
 
         mobMods.removeIf(c -> !config.getModsEnabled().containsKey(c.getSimpleName()) || !config.getModsEnabled().get(c.getSimpleName()));
     }
@@ -317,36 +319,33 @@ public class InfernalMobsCore {
      * @param entity Entity in question, already asserted to be instanceof Enemy
      */
     public void processEntitySpawn(LivingEntity entity) {
-        if (!entity.level().isClientSide && config != null) {
-            if (!getIsRareEntityOnline(entity) && !isBlockedBeingInfernal(entity)) {
-                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
-                    try {
+        if (config != null && !getIsRareEntityOnline(entity) && !isBlockedBeingInfernal(entity)) {
+            if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.getRandom().nextInt(config.getEliteRarity()) == 0)) {
+                try {
                         /*
                             get server world from resource location:
                             RegistryKey<World> registrykey = RegistryKey.create(Registry.WORLD_KEY, resourcelocation);
                             ServerWorld serverworld = p_212592_0_.getSource().getServer().getWorld(registrykey);
                          */
-                        ResourceKey<Level> worldRegistryKey = entity.getCommandSenderWorld().dimension();
-                        ResourceLocation worldResourceLocation = worldRegistryKey.location();
+                    ResourceKey<Level> worldRegistryKey = entity.getCommandSenderWorld().dimension();
+                    ResourceLocation worldResourceLocation = worldRegistryKey.location();
 
-                        // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
-                        if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
-                            MobModifier mod = instance.createMobModifiers(entity);
-                            if (mod != null) {
-                                SidedCache.getInfernalMobs(entity.level()).put(entity, mod);
-                                mod.onSpawningCompleteStoreModsAndBuffHealth(entity);
-                                // System.out.println("InfernalMobsCore modded
-                                // mob: "+entity+", id "+entity.getEntityId()+":
-                                // "+mod.getLinkedModName());
-                            }
+                    // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
+                    if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
+                        MobModifier mod = instance.createMobModifiers(entity);
+                        if (mod != null) {
+                            SidedCache.getInfernalMobs(entity.level()).put(entity, mod);
+                            mod.onSpawningCompleteStoreModsAndBuffHealth(entity);
+                            // System.out.println("InfernalMobsCore modded
+                            // mob: "+entity+", id "+entity.getEntityId()+":
+                            // "+mod.getLinkedModName());
                         }
-                    } catch (Exception e) {
-                        LOGGER.log(org.apache.logging.log4j.Level.ERROR, "processEntitySpawn() threw an exception");
-                        e.printStackTrace();
                     }
-                } else {
-                    setMobWasSpawnedBefore(entity);
+                } catch (Exception e) {
+                    LOGGER.error("processEntitySpawn() threw an exception",e);
                 }
+            } else {
+                setMobWasSpawnedBefore(entity);
             }
         }
     }
@@ -364,8 +363,8 @@ public class InfernalMobsCore {
             result = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).getPath();
         } catch (Exception e) {
             result = entity.getClass().getSimpleName();
-            System.err.println("Entity of class " + result + " crashed when EntityList.getEntityString was queried, for shame! Using classname instead.");
-            System.err.println("If this message is spamming too much for your taste set useSimpleEntityClassnames true in your Infernal Mobs config");
+            getLogger().error("Entity of class " + result + " crashed when EntityList.getEntityString was queried, for shame! Using classname instead.");
+            getLogger().error("If this message is spamming too much for your taste set useSimpleEntityClassnames true in your Infernal Mobs config");
         }
         return result;
     }
@@ -442,18 +441,18 @@ public class InfernalMobsCore {
      */
     private MobModifier createMobModifiers(LivingEntity entity) {
         /* 2-5 modifications standard */
-        int number = 2 + entity.level().random.nextInt(3);
+        int number = 2 + entity.getRandom().nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
         ArrayList<Class<? extends MobModifier>> possibleMods = Lists.newArrayList(mobMods);
 
-        if (entity.level().random.nextInt(config.getUltraRarity()) == 0) // ultra mobs
+        if (entity.getRandom().nextInt(config.getUltraRarity()) == 0) // ultra mobs
         {
-            number += 3 + entity.level().random.nextInt(2);
+            number += 3 + entity.getRandom().nextInt(2);
 
-            if (entity.level().random.nextInt(config.getInfernoRarity()) == 0) // infernal
+            if (entity.getRandom().nextInt(config.getInfernoRarity()) == 0) // infernal
             // mobs
             {
-                number += 3 + entity.level().random.nextInt(2);
+                number += 3 + entity.getRandom().nextInt(2);
             }
         }
 
@@ -462,7 +461,7 @@ public class InfernalMobsCore {
         // and have some
         {
             /* random index of mod list */
-            int index = entity.level().random.nextInt(possibleMods.size());
+            int index = entity.getRandom().nextInt(possibleMods.size());
             MobModifier nextMod = null;
 
             /*
@@ -529,7 +528,7 @@ public class InfernalMobsCore {
                 SidedCache.getInfernalMobs(entity.level()).put(entity, mod);
                 mod.onSpawningCompleteStoreModsAndBuffHealth(entity);
             } else {
-                System.err.println("Infernal Mobs error, could not instantiate modifier " + savedMods);
+                getLogger().error("Infernal Mobs error, could not instantiate modifier " + savedMods);
             }
         }
     }

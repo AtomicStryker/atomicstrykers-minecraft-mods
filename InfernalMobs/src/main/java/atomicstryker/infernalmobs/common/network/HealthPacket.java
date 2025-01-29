@@ -18,7 +18,7 @@ public class HealthPacket implements IPacket {
     private String stringData;
     private int entID;
     private float health;
-    private float maxhealth;
+    private float maxHealth;
 
     public HealthPacket() {
     }
@@ -27,7 +27,7 @@ public class HealthPacket implements IPacket {
         stringData = u;
         entID = i;
         health = entHealth;
-        maxhealth = entMaxHealth;
+        maxHealth = entMaxHealth;
     }
 
     @Override
@@ -36,42 +36,51 @@ public class HealthPacket implements IPacket {
         packetBuffer.writeUtf(healthPacket.stringData);
         packetBuffer.writeInt(healthPacket.entID);
         packetBuffer.writeFloat(healthPacket.health);
-        packetBuffer.writeFloat(healthPacket.maxhealth);
+        packetBuffer.writeFloat(healthPacket.maxHealth);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
         HealthPacket result = new HealthPacket();
         result.stringData = packetBuffer.readUtf(32767);
         result.entID = packetBuffer.readInt();
         result.health = packetBuffer.readFloat();
-        result.maxhealth = packetBuffer.readFloat();
+        result.maxHealth = packetBuffer.readFloat();
         return (MSG) result;
     }
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
         contextSupplier.get().enqueueWork(() -> {
-            HealthPacket healthPacket = (HealthPacket) msg;
-            if (healthPacket.maxhealth > 0) {
-                InfernalMobsClient.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxhealth);
-            } else {
-                ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData);
-                if (p != null) {
-                    Entity ent = p.level().getEntity(healthPacket.entID);
-                    if (ent instanceof LivingEntity) {
-                        LivingEntity e = (LivingEntity) ent;
-                        MobModifier mod = InfernalMobsCore.getMobModifiers(e);
-                        if (mod != null) {
-                            stringData = healthPacket.stringData;
-                            entID = healthPacket.entID;
-                            health = e.getHealth();
-                            maxhealth = e.getMaxHealth();
-                            InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new HealthPacket(stringData, entID, health, maxhealth), p);
+            // make sure health packet is health packet
+            if (!(msg instanceof HealthPacket healthPacket)) {
+                return;
+            }
+
+            var context = contextSupplier.get();
+            context.enqueueWork(() -> {
+                if (context.getDirection().getReceptionSide().isClient()) {
+                    // handel by client
+                    InfernalMobsClient.onHealthPacketForClient(healthPacket.entID, healthPacket.health, healthPacket.maxHealth);
+                } else {
+                    // handel by server
+                    ServerPlayer serverPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData);
+                    if (serverPlayer != null) {
+                        Entity entity = serverPlayer.level().getEntity(healthPacket.entID);
+                        if (entity instanceof LivingEntity livingEntity) {
+                            MobModifier mod = InfernalMobsCore.getMobModifiers(livingEntity);
+                            if (mod != null) {
+                                stringData = healthPacket.stringData;
+                                entID = healthPacket.entID;
+                                health = livingEntity.getHealth();
+                                maxHealth = livingEntity.getMaxHealth();
+                                InfernalMobsCore.instance().networkHelper.sendPacketToPlayer(new HealthPacket(stringData, entID, health, maxHealth), serverPlayer);
+                            }
                         }
                     }
                 }
-            }
+            });
         });
         contextSupplier.get().setPacketHandled(true);
     }
@@ -88,7 +97,7 @@ public class HealthPacket implements IPacket {
         return health;
     }
 
-    public float getMaxhealth() {
-        return maxhealth;
+    public float getMaxHealth() {
+        return maxHealth;
     }
 }

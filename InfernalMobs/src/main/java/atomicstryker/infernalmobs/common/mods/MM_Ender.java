@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 public class MM_Ender extends AbstractTeleporter {
 
     private final static long coolDown = 15000L;
-    private static String[] suffix = {"theEnderborn", "theTrickster"};
-    private static String[] prefix = {"enderborn", "tricky"};
+    private static final String[] suffix = {"theEnderborn", "theTrickster"};
+    private static final String[] prefix = {"enderborn", "tricky"};
     private long nextAbilityUse = 0L;
 
     public MM_Ender() {

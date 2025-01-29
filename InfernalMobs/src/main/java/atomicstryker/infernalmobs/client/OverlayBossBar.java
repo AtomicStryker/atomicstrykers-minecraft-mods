@@ -5,7 +5,6 @@ import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -57,6 +56,68 @@ public class OverlayBossBar {
         healthBarRetainTime = 0;
         retainedTarget = null;
         nextPacketTime = 0;
+    }
+
+    private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
+
+        int screenwidth = mc.getWindow().getGuiScaledWidth();
+        Font fontR = mc.font;
+
+        int yCoord = 10;
+        String[] display = mod.getDisplayNames();
+        int i = 0;
+        while (i < display.length && display[i] != null) {
+            yCoord += 10;
+            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, 0xffffff);
+            i++;
+        }
+
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+    }
+
+    private static LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {
+
+        Entity entity = mc.getCameraEntity();
+        if (entity != null && mc.level != null) {
+
+            double distance = NAME_VISION_DISTANCE;
+            HitResult result = entity.pick(distance, partialTicks, false);
+            Vec3 vec3d = entity.getEyePosition(partialTicks);
+
+            double distanceToHit = result.getLocation().distanceToSqr(vec3d);
+
+            Vec3 vec3d1 = entity.getViewVector(1.0F);
+            Vec3 vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
+            AABB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(distance)).inflate(1.0D, 1.0D, 1.0D);
+            EntityHitResult entityraytraceresult = ProjectileUtil.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (p_lambda$getMouseOver$0_0_) -> !p_lambda$getMouseOver$0_0_.isSpectator() && p_lambda$getMouseOver$0_0_.isPickable(), distanceToHit);
+            if (entityraytraceresult != null) {
+                Entity entity1 = entityraytraceresult.getEntity();
+                Vec3 vec3d3 = entityraytraceresult.getLocation();
+                double d2 = vec3d.distanceToSqr(vec3d3);
+                if (d2 < distanceToHit && entity1 instanceof LivingEntity) {
+                    return (LivingEntity) entity1;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static void askServerMods(Entity ent) {
+        if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), ent.getId()));
+            InfernalMobsCore.getLogger().debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
+            nextPacketTime = System.currentTimeMillis() + 250L;
+        }
+    }
+
+    private static void askServerHealth(Entity ent) {
+        if (System.currentTimeMillis() > nextPacketTime) {
+            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f));
+            nextPacketTime = System.currentTimeMillis() + 250L;
+        }
     }
 
     public static class InfernalMobsHealthBarGuiOverlay implements IGuiOverlay {
@@ -132,68 +193,6 @@ public class OverlayBossBar {
                     askServerMods(ent);
                 }
             }
-        }
-    }
-
-    private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
-
-        int screenwidth = mc.getWindow().getGuiScaledWidth();
-        Font fontR = mc.font;
-
-        int yCoord = 10;
-        String[] display = mod.getDisplayNames();
-        int i = 0;
-        while (i < display.length && display[i] != null) {
-            yCoord += 10;
-            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, 0xffffff);
-            i++;
-        }
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-    }
-
-    private static LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {
-
-        Entity entity = mc.getCameraEntity();
-        if (entity != null && mc.level != null) {
-
-            double distance = NAME_VISION_DISTANCE;
-            HitResult result = entity.pick(distance, partialTicks, false);
-            Vec3 vec3d = entity.getEyePosition(partialTicks);
-
-            double distanceToHit = result.getLocation().distanceToSqr(vec3d);
-
-            Vec3 vec3d1 = entity.getViewVector(1.0F);
-            Vec3 vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
-            AABB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(distance)).inflate(1.0D, 1.0D, 1.0D);
-            EntityHitResult entityraytraceresult = ProjectileUtil.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (p_lambda$getMouseOver$0_0_) -> !p_lambda$getMouseOver$0_0_.isSpectator() && p_lambda$getMouseOver$0_0_.isPickable(), distanceToHit);
-            if (entityraytraceresult != null) {
-                Entity entity1 = entityraytraceresult.getEntity();
-                Vec3 vec3d3 = entityraytraceresult.getLocation();
-                double d2 = vec3d.distanceToSqr(vec3d3);
-                if (d2 < distanceToHit && entity1 instanceof LivingEntity) {
-                    return (LivingEntity) entity1;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static void askServerMods(Entity ent) {
-        if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0));
-            InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
-            nextPacketTime = System.currentTimeMillis() + 250L;
-        }
-    }
-
-    private static void askServerHealth(Entity ent) {
-        if (System.currentTimeMillis() > nextPacketTime) {
-            InfernalMobsCore.instance().networkHelper.sendPacketToServer(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f));
-            nextPacketTime = System.currentTimeMillis() + 250L;
         }
     }
 }

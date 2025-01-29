@@ -7,8 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Vengeance extends MobModifier {
 
-    private static String[] suffix = {"ofRetribution", "theThorned", "ofStrikingBack"};
-    private static String[] prefix = {"thorned", "thorny", "spiky"};
+    private static final String[] suffix = {"ofRetribution", "theThorned", "ofStrikingBack"};
+    private static final String[] prefix = {"thorned", "thorny", "spiky"};
 
     public MM_Vengeance() {
         super();

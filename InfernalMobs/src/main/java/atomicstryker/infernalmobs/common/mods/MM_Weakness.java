@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Weakness extends MobModifier {
 
-    private static String[] suffix = {"ofApathy", "theDeceiver"};
-    private static String[] prefix = {"apathetic", "deceiving"};
+    private static final String[] suffix = {"ofApathy", "theDeceiver"};
+    private static final String[] prefix = {"apathetic", "deceiving"};
 
     public MM_Weakness() {
         super();

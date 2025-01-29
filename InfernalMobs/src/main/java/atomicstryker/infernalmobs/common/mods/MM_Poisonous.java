@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Poisonous extends MobModifier {
 
-    private static String[] suffix = {"ofVenom", "thedeadlyChalice"};
-    private static String[] prefix = {"poisonous", "stinging", "despoiling"};
+    private static final String[] suffix = {"ofVenom", "thedeadlyChalice"};
+    private static final String[] prefix = {"poisonous", "stinging", "despoiling"};
 
     public MM_Poisonous() {
         super();

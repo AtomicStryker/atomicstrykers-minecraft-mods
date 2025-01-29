@@ -138,7 +138,7 @@ public abstract class MobModifier {
     public void onSpawningCompleteStoreModsAndBuffHealth(LivingEntity entity) {
         String oldTag = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated())) {
-            InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [{}}], now trying to set [{}}] \n", oldTag, getLinkedModNameUntranslated());
+            InfernalMobsCore.getLogger().info("Infernal Mobs tag mismatch!! Was [{}}], now trying to set [{}}] \n", oldTag, getLinkedModNameUntranslated());
         }
         entity.getPersistentData().putString(InfernalMobsCore.instance().getNBTTag(), getLinkedModNameUntranslated());
 
@@ -294,9 +294,7 @@ public abstract class MobModifier {
      */
     protected boolean isCreativePlayer(Entity entity) {
         if (entity instanceof Player player) {
-            if (player.isCreative()) {
-                return true;
-            }
+            return player.isCreative();
         }
         return false;
     }

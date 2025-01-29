@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Sapper extends MobModifier {
 
-    private static String[] suffix = {"ofHunger", "thePaleRider"};
-    private static String[] prefix = {"hungering", "starving"};
+    private static final String[] suffix = {"ofHunger", "thePaleRider"};
+    private static final String[] prefix = {"hungering", "starving"};
 
     public MM_Sapper() {
         super();

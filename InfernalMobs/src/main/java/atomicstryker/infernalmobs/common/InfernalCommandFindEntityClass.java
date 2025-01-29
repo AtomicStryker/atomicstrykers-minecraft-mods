@@ -7,7 +7,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.Level;
 
 public class InfernalCommandFindEntityClass {
     public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
@@ -40,6 +39,6 @@ public class InfernalCommandFindEntityClass {
         }
         String output = stringBuilder.toString();
         source.sendSuccess(() -> Component.literal(output), false);
-        InfernalMobsCore.LOGGER.log(Level.INFO, source.getTextName() + ": " + output);
+        InfernalMobsCore.getLogger().info("{}: {}", source.getTextName(), output);
     }
 }

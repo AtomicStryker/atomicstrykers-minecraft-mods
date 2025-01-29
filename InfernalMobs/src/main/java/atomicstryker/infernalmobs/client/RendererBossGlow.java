@@ -3,7 +3,6 @@ package atomicstryker.infernalmobs.client;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.particles.ParticleTypes;
@@ -37,14 +36,14 @@ public class RendererBossGlow {
             }
             Vec3 curPos = viewEnt.position();
             Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.level());
-            mobsmap.keySet().stream().filter(ent -> ent.shouldRenderAtSqrDistance(curPos.distanceToSqr(ent.position()))
-                    && ent.isAlive()).forEach(ent -> mc.levelRenderer.addParticle(ParticleTypes.WITCH,
-                    false, ent.getX() + (ent.level().random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
-                    ent.getY() + ent.level().random.nextDouble() * (double) ent.getBbHeight() - 0.25D,
-                    ent.getZ() + (ent.level().random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
-                    (ent.level().random.nextDouble() - 0.5D) * 2.0D,
-                    -ent.level().random.nextDouble(),
-                    (ent.level().random.nextDouble() - 0.5D) * 2.0D));
+            mobsmap.keySet().stream().filter(entity -> entity.shouldRenderAtSqrDistance(curPos.distanceToSqr(entity.position()))
+                    && entity.isAlive()).forEach(entity -> mc.levelRenderer.addParticle(ParticleTypes.WITCH,
+                    false, entity.getX() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getBbWidth(),
+                    entity.getY() + entity.getRandom().nextDouble() * (double) entity.getBbHeight() - 0.25D,
+                    entity.getZ() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getBbWidth(),
+                    (entity.getRandom().nextDouble() - 0.5D) * 2.0D,
+                    -entity.getRandom().nextDouble(),
+                    (entity.getRandom().nextDouble() - 0.5D) * 2.0D));
         }
     }
 }

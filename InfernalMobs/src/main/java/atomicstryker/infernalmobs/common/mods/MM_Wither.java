@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Wither extends MobModifier {
 
-    private static String[] suffix = {"ofDarkSkulls", "Doomskull"};
-    private static String[] prefix = {"withering"};
+    private static final String[] suffix = {"ofDarkSkulls", "Doomskull"};
+    private static final String[] prefix = {"withering"};
 
     public MM_Wither() {
         super();

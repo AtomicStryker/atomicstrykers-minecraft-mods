@@ -8,8 +8,7 @@ public class SaveEventHandler {
 
     @SubscribeEvent
     public void onWorldSave(LevelEvent.Unload event) {
-        if (event.getLevel() instanceof Level) {
-            Level level = ((Level) event.getLevel());
+        if (event.getLevel() instanceof Level level) {
             InfernalMobsCore.clearAllElitesOfLevel(level);
         }
     }

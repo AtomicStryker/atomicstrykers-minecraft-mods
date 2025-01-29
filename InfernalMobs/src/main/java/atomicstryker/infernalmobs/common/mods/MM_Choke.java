@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 
 public class MM_Choke extends MobModifier {
 
-    private static String[] suffix = {"ofBreathlessness", "theAnaerobic", "ofDeprivation"};
-    private static String[] prefix = {"Sith Lord", "Dark Lord", "Darth"};
+    private static final String[] suffix = {"ofBreathlessness", "theAnaerobic", "ofDeprivation"};
+    private static final String[] prefix = {"Sith Lord", "Dark Lord", "Darth"};
     private final int RESET_AIR_VALUE = -999;
     private LivingEntity lastTarget;
     private int lastAir;

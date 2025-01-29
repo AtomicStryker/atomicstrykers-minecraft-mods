@@ -6,8 +6,8 @@ import net.minecraft.world.entity.LivingEntity;
 public class MM_Sprint extends MobModifier {
 
     private final static long coolDown = 5000L;
-    private static String[] suffix = {"ofBolting", "theSwiftOne", "ofbeinginyourFace"};
-    private static String[] prefix = {"sprinting", "swift", "charging"};
+    private static final String[] suffix = {"ofBolting", "theSwiftOne", "ofbeinginyourFace"};
+    private static final String[] prefix = {"sprinting", "swift", "charging"};
     private long nextAbilityUse = 0L;
     private boolean sprinting;
     private double modMotionX;

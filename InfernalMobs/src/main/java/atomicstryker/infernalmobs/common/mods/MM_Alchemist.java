@@ -16,8 +16,8 @@ public class MM_Alchemist extends MobModifier {
 
     private final static long coolDown = 6000L;
     private final static float MIN_DISTANCE = 2F;
-    private static String[] suffix = {"theWitchkin", "theBrewmaster", "theSinged"};
-    private static String[] prefix = {"witchkin", "brewing", "singed"};
+    private static final String[] suffix = {"theWitchkin", "theBrewmaster", "theSinged"};
+    private static final String[] prefix = {"witchkin", "brewing", "singed"};
     private long nextAbilityUse = 0L;
 
     public MM_Alchemist() {

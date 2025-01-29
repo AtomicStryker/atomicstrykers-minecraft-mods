@@ -12,9 +12,9 @@ import net.minecraft.world.entity.player.Player;
 public class MM_Gravity extends MobModifier {
 
     private final static long coolDown = 5000L;
-    private static Class<?>[] modBans = {MM_Webber.class};
-    private static String[] suffix = {"ofRepulsion", "theFlipper"};
-    private static String[] prefix = {"repulsing", "sproing"};
+    private static final Class<?>[] modBans = {MM_Webber.class};
+    private static final String[] suffix = {"ofRepulsion", "theFlipper"};
+    private static final String[] prefix = {"repulsing", "sproing"};
     private long nextAbilityUse = 0L;
 
     public MM_Gravity() {
@@ -38,7 +38,7 @@ public class MM_Gravity extends MobModifier {
         motionY /= 2.0D;
         motionZ /= 2.0D;
         motionX -= x / (double) normalizedPower * (double) knockPower;
-        motionY += (double) knockPower;
+        motionY += knockPower;
         motionZ -= z / (double) normalizedPower * (double) knockPower;
 
         if (motionY > 0.4000000059604645D) {

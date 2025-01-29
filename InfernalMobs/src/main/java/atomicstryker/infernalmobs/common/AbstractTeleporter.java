@@ -34,7 +34,7 @@ public abstract class AbstractTeleporter extends MobModifier {
                 }
             }
         }
-        // fallback: if teleporting towards target doesnt work, try doing it randomly
+        // fallback: if teleporting towards target doesn't work, try doing it randomly
         for (int attempts = 0; attempts < 5; attempts++) {
             if (teleportRandomly(mob)) {
                 playStartEffects(mob, startX, startY, startZ);

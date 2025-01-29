@@ -144,14 +144,14 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-curseforge {
-    apiKey = curseForgeApiKey
-    project {
-        id = curseforge_id
-        releaseType = 'release'
-        addGameVersion minecraft_version
-        mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
-          displayName = mod_name
-        }
-    }
-}
+//curseforge {
+//    apiKey = curseForgeApiKey
+//    project {
+//        id = curseforge_id
+//        releaseType = 'release'
+//        addGameVersion minecraft_version
+//        mainArtifact(file('build/libs/' + mod_id + '-' + version + '.jar')) {
+//          displayName = mod_name
+//        }
+//    }
+//}

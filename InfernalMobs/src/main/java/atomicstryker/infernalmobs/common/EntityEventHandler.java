@@ -2,7 +2,6 @@ package atomicstryker.infernalmobs.common;
 
 import atomicstryker.infernalmobs.common.compat.ChampionsCompat;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -38,7 +37,7 @@ public class EntityEventHandler {
         if (!level.isClientSide()) {
             // champions mob compat start
             if (InfernalMobsCore.instance().isChampionLoaded() && ChampionsCompat.isChampionEntity(entity)) {
-                InfernalMobsCore.LOGGER.debug("Stop spawning {} infernal mob at {} uuid: {}, Because entity already handled by champions mod.", entity.getName().getString(), entity.blockPosition(), entity.getUUID());
+                InfernalMobsCore.getLogger().debug("Stop spawning {} infernal mob at {} uuid: {}, Because entity already handled by champions mod.", entity.getName().getString(), entity.blockPosition(), entity.getUUID());
                 return;
             }
             // champions mob compat end
@@ -56,8 +55,9 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingDeath(LivingDeathEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        var entity = event.getEntity();
+        if (!entity.level().isClientSide()) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers(entity);
             if (mod != null) {
                 if (mod.onDeath()) {
                     event.setCanceled(true);
@@ -68,7 +68,8 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingSetAttackTarget(LivingChangeTargetEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        var entity = event.getEntity();
+        if (!entity.level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onSetAttackTarget(event.getNewTarget());
@@ -87,23 +88,28 @@ public class EntityEventHandler {
     @SubscribeEvent
     public void onEntityLivingHurt(LivingHurtEvent event) {
         // dont allow masochism
-        if (event.getSource().getDirectEntity() != event.getEntity()) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        var entity = event.getEntity();
+        var damageSource = event.getSource();
+        var attacker = event.getSource().getDirectEntity();
+
+        /*
+         * We use the Hook two-sided, both with the Mob as possible target
+         * and attacker
+         */
+        if (attacker == null) {
+            // if damage does not have a defined source, ignore it
+            return;
+        }
+
+        if (attacker != entity) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers(entity);
             if (mod != null) {
                 event.setAmount(mod.onHurt(event.getEntity(), event.getSource(), event.getAmount()));
             }
 
-            /*
-             * We use the Hook two-sided, both with the Mob as possible target
-             * and attacker
-             */
-            Entity attacker = event.getSource().getDirectEntity();
-            if (attacker == null) {
-                // if damage does not have a defined source, ignore it
-                return;
-            }
-            if (attacker instanceof LivingEntity) {
-                mod = InfernalMobsCore.getMobModifiers((LivingEntity) attacker);
+
+            if (attacker instanceof LivingEntity livingEntity) {
+                mod = InfernalMobsCore.getMobModifiers(livingEntity);
                 if (mod != null) {
                     event.setAmount(mod.onAttack(event.getEntity(), event.getSource(), event.getAmount()));
                 }
@@ -114,8 +120,8 @@ public class EntityEventHandler {
                  * check for an environmental/automated damage type, aka mob
                  * farms
                  */
-                if (event.getSource() == attacker.damageSources().cactus() || event.getSource() == attacker.damageSources().drown() || event.getSource() == attacker.damageSources().fall() || event.getSource() == attacker.damageSources().inWall()
-                        || event.getSource() == attacker.damageSources().lava() || event.getSource().getDirectEntity() instanceof FakePlayer) {
+                if (damageSource == attacker.damageSources().cactus() || damageSource == attacker.damageSources().drown() || damageSource == attacker.damageSources().fall() || damageSource == attacker.damageSources().inWall()
+                        || damageSource == attacker.damageSources().lava() || damageSource.getDirectEntity() instanceof FakePlayer) {
                     Tuple<Integer, Integer> cpair = new Tuple<>((int) event.getEntity().getX(), (int) event.getEntity().getZ());
                     Float value = damageMap.get(cpair);
                     if (value == null) {
@@ -149,18 +155,21 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingFall(LivingFallEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        var entity = event.getEntity();
+        var distance = event.getDistance();
+        if (!entity.level().isClientSide()) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers(entity);
             if (mod != null) {
-                event.setCanceled(mod.onFall(event.getDistance()));
+                event.setCanceled(mod.onFall(distance));
             }
         }
     }
 
     @SubscribeEvent
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        var entity = event.getEntity();
+        if (!entity.level().isClientSide()) {
+            MobModifier mod = InfernalMobsCore.getMobModifiers(entity);
             if (mod != null) {
                 mod.onJump(event.getEntity());
             }
@@ -169,19 +178,21 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingUpdate(LivingEvent.LivingTickEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        var entity = event.getEntity();
+        var level = entity.level();
+        if (!level.isClientSide()) {
 
             // workaround to get save-loaded infernal entities working, init them on their first living tick
-            if (event.getEntity().tickCount == 1) {
-                String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
+            if (entity.tickCount == 1) {
+                String savedMods = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
                 if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
                     InfernalMobsCore.instance().addEntityModifiersByString(event.getEntity(), savedMods);
                 }
             }
 
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+            MobModifier mod = InfernalMobsCore.getMobModifiers(entity);
             if (mod != null) {
-                mod.onUpdate(event.getEntity());
+                mod.onUpdate(entity);
             }
 
             if (InfernalMobsCore.instance().config.isAntiMobFarm() && System.currentTimeMillis() > nextMapEvaluation) {
@@ -198,10 +209,10 @@ public class EntityEventHandler {
                     }
 
                     if (maxC != null) {
-                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getA() + ", " + maxC.getB());
+                        InfernalMobsCore.getLogger().info("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value {} near coords {}, {}", maxDamage, maxC.getA(), maxC.getB());
                         if (maxDamage > InfernalMobsCore.instance().config.getMobFarmDamageTrigger()) {
                             MinecraftForge.EVENT_BUS
-                                    .post(new MobFarmDetectedEvent(event.getEntity().level().getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
+                                    .post(new MobFarmDetectedEvent(level.getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
                         }
                     }
                     damageMap.clear();
@@ -213,10 +224,16 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingDrops(LivingDropsEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        var entity = event.getEntity();
+
+        if (!entity.level().isClientSide()) {
+            var damageSource = event.getSource();
+            var drops = event.getDrops();
+            var lootingLevel = event.getLootingLevel();
+            var isRecentlyHit = event.isRecentlyHit();
+            MobModifier mod = InfernalMobsCore.getMobModifiers(entity);
             if (mod != null) {
-                mod.onDropItems(event.getEntity(), event.getSource(), event.getDrops(), event.getLootingLevel(), event.isRecentlyHit(), event.getLootingLevel());
+                mod.onDropItems(entity, damageSource, drops, lootingLevel, isRecentlyHit, lootingLevel);
                 InfernalMobsCore.removeEntFromElites(event.getEntity());
             }
         }

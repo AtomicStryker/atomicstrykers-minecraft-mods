@@ -1,13 +1,13 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Bulwark extends MobModifier {
 
-    private static String[] suffix = {"ofTurtling", "theDefender", "ofeffingArmor"};
-    private static String[] prefix = {"turtling", "defensive", "armoured"};
+    private static final String[] suffix = {"ofTurtling", "theDefender", "ofeffingArmor"};
+    private static final String[] prefix = {"turtling", "defensive", "armoured"};
 
     public MM_Bulwark() {
         super();

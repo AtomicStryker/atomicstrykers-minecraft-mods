@@ -14,8 +14,8 @@ import java.nio.file.Files;
  */
 public class GsonConfig {
 
-    private static JsonParser parser = new JsonParser();
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final JsonParser parser = new JsonParser();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static <T> T loadConfigWithDefault(Class<T> clazz, File file, T defaultInstance) {
         try {

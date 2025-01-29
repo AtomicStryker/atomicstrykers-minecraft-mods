@@ -2,19 +2,19 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
 
 public class MM_Blastoff extends MobModifier {
 
     private final static long coolDown = 15000L;
-    private static Class<?>[] modBans = {MM_Webber.class};
-    private static String[] suffix = {"ofMissionControl", "theNASA", "ofWEE"};
-    private static String[] prefix = {"thumping", "trolling", "byebye"};
+    private static final Class<?>[] modBans = {MM_Webber.class};
+    private static final String[] suffix = {"ofMissionControl", "theNASA", "ofWEE"};
+    private static final String[] prefix = {"thumping", "trolling", "byebye"};
     private long nextAbilityUse = 0L;
 
     public MM_Blastoff() {

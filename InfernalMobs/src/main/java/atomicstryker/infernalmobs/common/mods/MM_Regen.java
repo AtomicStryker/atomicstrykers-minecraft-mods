@@ -6,8 +6,8 @@ import net.minecraft.world.entity.LivingEntity;
 public class MM_Regen extends MobModifier {
 
     private final static long coolDown = 1000L;
-    private static String[] suffix = {"ofWTFIMBA", "theCancerous", "ofFirstAid"};
-    private static String[] prefix = {"regenerating", "healing", "nighunkillable"};
+    private static final String[] suffix = {"ofWTFIMBA", "theCancerous", "ofFirstAid"};
+    private static final String[] prefix = {"regenerating", "healing", "nighunkillable"};
     private long nextAbilityUse = 0L;
 
     public MM_Regen() {

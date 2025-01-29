@@ -29,6 +29,7 @@ public class VelocityPacket implements IPacket {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
         VelocityPacket velocityPacket = new VelocityPacket();
         velocityPacket.xv = packetBuffer.readFloat();
@@ -39,7 +40,9 @@ public class VelocityPacket implements IPacket {
 
     @Override
     public void handle(Object msg, Supplier<NetworkEvent.Context> contextSupplier) {
-        VelocityPacket velocityPacket = (VelocityPacket) msg;
+        if (!(msg instanceof VelocityPacket velocityPacket)) {
+            return;
+        }
         InfernalMobsClient.onVelocityPacket(velocityPacket.xv, velocityPacket.yv, velocityPacket.zv);
         contextSupplier.get().setPacketHandled(true);
     }

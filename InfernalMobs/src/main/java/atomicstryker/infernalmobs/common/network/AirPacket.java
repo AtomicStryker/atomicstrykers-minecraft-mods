@@ -26,6 +26,7 @@ public class AirPacket implements IPacket {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
         return (MSG) new AirPacket(packetBuffer.readInt());
     }

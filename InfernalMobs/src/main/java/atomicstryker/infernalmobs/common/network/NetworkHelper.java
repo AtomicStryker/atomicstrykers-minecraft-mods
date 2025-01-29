@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.network;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -52,7 +53,7 @@ public class NetworkHelper {
                 IPacket instance = packetClass.newInstance();
                 packetChannel.registerMessage(runningIndex++, packetClass, instance::encode, instance::decode, instance::handle);
             } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+                InfernalMobsCore.getLogger().error(e.getMessage());
             }
         }
     }

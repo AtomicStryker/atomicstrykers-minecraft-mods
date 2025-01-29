@@ -28,6 +28,7 @@ public class KnockBackPacket implements IPacket {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <MSG> MSG decode(FriendlyByteBuf packetBuffer) {
         KnockBackPacket knockBackPacket = new KnockBackPacket();
         knockBackPacket.xv = packetBuffer.readFloat();
