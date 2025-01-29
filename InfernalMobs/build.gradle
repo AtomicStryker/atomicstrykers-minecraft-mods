@@ -119,8 +119,8 @@ dependencies {
 
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    implementation fg.deobf("curse.maven:champions-unofficial-1074990:${cf_champions}")
-    implementation fg.deobf("curse.maven:jade-324717:${cf_jade}")
+    compileOnly fg.deobf("curse.maven:champions-unofficial-1074990:${cf_champions}")
+    compileOnly fg.deobf("curse.maven:jade-324717:${cf_jade}")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
