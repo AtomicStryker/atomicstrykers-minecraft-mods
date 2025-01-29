@@ -6,8 +6,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Fiery extends MobModifier {
 
-    private static String[] suffix = {"ofConflagration", "thePhoenix", "ofCrispyness"};
-    private static String[] prefix = {"burning", "toasting"};
+    private static final String[] suffix = {"ofConflagration", "thePhoenix", "ofCrispyness"};
+    private static final String[] prefix = {"burning", "toasting"};
 
     public MM_Fiery() {
         super();

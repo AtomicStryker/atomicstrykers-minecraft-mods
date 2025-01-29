@@ -2,15 +2,15 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Darkness extends MobModifier {
 
-    private static String[] suffix = {"ofDarkness", "theShadow", "theEclipse"};
-    private static String[] prefix = {"dark", "shadowkin", "eclipsed"};
+    private static final String[] suffix = {"ofDarkness", "theShadow", "theEclipse"};
+    private static final String[] prefix = {"dark", "shadowkin", "eclipsed"};
 
     public MM_Darkness() {
         super();

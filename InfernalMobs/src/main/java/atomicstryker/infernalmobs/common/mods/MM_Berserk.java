@@ -8,9 +8,9 @@ import net.minecraft.world.entity.monster.Creeper;
 
 public class MM_Berserk extends MobModifier {
 
-    private static Class<?>[] disallowed = {Creeper.class};
-    private static String[] suffix = {"ofRecklessness", "theRaging", "ofSmashing"};
-    private static String[] prefix = {"reckless", "raging", "smashing"};
+    private static final Class<?>[] disallowed = {Creeper.class};
+    private static final String[] suffix = {"ofRecklessness", "theRaging", "ofSmashing"};
+    private static final String[] prefix = {"reckless", "raging", "smashing"};
 
     public MM_Berserk() {
         super();

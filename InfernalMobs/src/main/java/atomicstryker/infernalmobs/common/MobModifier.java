@@ -294,9 +294,7 @@ public abstract class MobModifier {
      */
     protected boolean isCreativePlayer(Entity entity) {
         if (entity instanceof Player player) {
-            if (player.isCreative()) {
-                return true;
-            }
+            return player.isCreative();
         }
         return false;
     }

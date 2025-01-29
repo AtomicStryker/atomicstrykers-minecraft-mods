@@ -1,21 +1,21 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 
 public class MM_Storm extends MobModifier {
 
     private final static long coolDown = 25000L;
-    private static Class<?>[] modBans = {MM_Sticky.class};
     private final static float MIN_DISTANCE = 3F;
-    private static String[] suffix = {"ofLightning", "theRaiden"};
-    private static String[] prefix = {"striking", "thundering", "electrified"};
+    private static final Class<?>[] modBans = {MM_Sticky.class};
+    private static final String[] suffix = {"ofLightning", "theRaiden"};
+    private static final String[] prefix = {"striking", "thundering", "electrified"};
     private long nextAbilityUse = 0L;
 
     public MM_Storm() {

@@ -7,9 +7,9 @@ import net.minecraft.world.entity.monster.Creeper;
 
 public class MM_Lifesteal extends MobModifier {
 
-    private static Class<?>[] disallowed = {Creeper.class};
-    private static String[] suffix = {"theVampire", "ofTransfusion", "theBloodsucker"};
-    private static String[] prefix = {"vampiric", "transfusing", "bloodsucking"};
+    private static final Class<?>[] disallowed = {Creeper.class};
+    private static final String[] suffix = {"theVampire", "ofTransfusion", "theBloodsucker"};
+    private static final String[] prefix = {"vampiric", "transfusing", "bloodsucking"};
 
     public MM_Lifesteal() {
         super();

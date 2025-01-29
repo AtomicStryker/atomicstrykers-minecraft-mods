@@ -8,8 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MM_Quicksand extends MobModifier {
 
-    private static String[] suffix = {"ofYouCantRun", "theSlowingB"};
-    private static String[] prefix = {"slowing", "Quicksand"};
+    private static final String[] suffix = {"ofYouCantRun", "theSlowingB"};
+    private static final String[] prefix = {"slowing", "Quicksand"};
     int ticker = 0;
 
     public MM_Quicksand() {

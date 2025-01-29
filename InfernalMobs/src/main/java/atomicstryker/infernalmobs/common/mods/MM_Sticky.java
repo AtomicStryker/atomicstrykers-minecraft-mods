@@ -12,11 +12,11 @@ import net.minecraft.world.entity.player.Player;
 public class MM_Sticky extends MobModifier {
 
     private final static long coolDown = 15000L;
-    private static Class<?>[] modBans = {MM_Storm.class};
-    private static String[] suffix = {"ofSnagging", "theQuickFingered", "ofPettyTheft", "yoink"};
-    private static String[] prefix = {"thieving", "snagging", "quickfingered"};
+    private static final Class<?>[] modBans = {MM_Storm.class};
+    private static final String[] suffix = {"ofSnagging", "theQuickFingered", "ofPettyTheft", "yoink"};
+    private static final String[] prefix = {"thieving", "snagging", "quickfingered"};
     private long nextAbilityUse = 0L;
-    private Class<?>[] disallowed = {Creeper.class};
+    private final Class<?>[] disallowed = {Creeper.class};
 
     public MM_Sticky() {
         super();

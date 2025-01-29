@@ -16,8 +16,8 @@ public class MM_Alchemist extends MobModifier {
 
     private final static long coolDown = 6000L;
     private final static float MIN_DISTANCE = 2F;
-    private static String[] suffix = {"theWitchkin", "theBrewmaster", "theSinged"};
-    private static String[] prefix = {"witchkin", "brewing", "singed"};
+    private static final String[] suffix = {"theWitchkin", "theBrewmaster", "theSinged"};
+    private static final String[] prefix = {"witchkin", "brewing", "singed"};
     private long nextAbilityUse = 0L;
 
     public MM_Alchemist() {
@@ -70,7 +70,7 @@ public class MM_Alchemist extends MobModifier {
             potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potiontype));
             potionentity.setXRot(potionentity.getXRot() + 20.0F);
             potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
-            mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
+            mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.getRandom().nextFloat() * 0.4F);
             mob.level().addFreshEntity(potionentity);
         }
     }

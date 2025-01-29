@@ -1,14 +1,14 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.damagesource.DamageSource;
 
 public class MM_Exhaust extends MobModifier {
 
-    private static String[] suffix = {"ofFatigue", "theDrainer"};
-    private static String[] prefix = {"exhausting", "draining"};
+    private static final String[] suffix = {"ofFatigue", "theDrainer"};
+    private static final String[] prefix = {"exhausting", "draining"};
 
     public MM_Exhaust() {
         super();

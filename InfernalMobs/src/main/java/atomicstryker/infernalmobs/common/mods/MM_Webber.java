@@ -1,21 +1,21 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Blocks;
 
 public class MM_Webber extends MobModifier {
 
     private final static long coolDown = 15000L;
-    private static Class<?>[] modBans = {MM_Gravity.class, MM_Blastoff.class};
-    private static String[] suffix = {"ofTraps", "theMutated", "theSpider"};
-    private static String[] prefix = {"ensnaring", "webbing"};
+    private static final Class<?>[] modBans = {MM_Gravity.class, MM_Blastoff.class};
+    private static final String[] suffix = {"ofTraps", "theMutated", "theSpider"};
+    private static final String[] prefix = {"ensnaring", "webbing"};
     private long lastAbilityUse = 0L;
 
     public MM_Webber() {

@@ -1,3 +1,12 @@
+1.20.1.5
+- We should check if entity is champion, not only check champion entity's persistent data, because when champion created, entity does not have persistent data yet.
+- Only do spawn process and entity attributes modifier if entity joined world
+- Add ChampionsCompat
+- use entity random source instead level random
+- Upgrade project forge version
+- Simply the logger usage
+- by CrychicTeam, kumoe
+
 1.20.1.4
 - implement entityTagBlackList in config which allows to define nbt keys which, when encountered, prevent
   infernal mobs from touching an entity. Default is "affixes" which is a tag used by the champions mod

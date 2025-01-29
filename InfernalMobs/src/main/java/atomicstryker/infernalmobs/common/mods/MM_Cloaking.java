@@ -1,19 +1,19 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.damagesource.DamageSource;
 
 public class MM_Cloaking extends MobModifier {
 
     private final static long coolDown = 10000L;
-    private static Class<?>[] disallowed = {Spider.class};
-    private static String[] suffix = {"ofStalking", "theUnseen", "thePredator"};
-    private static String[] prefix = {"stalking", "unseen", "hunting"};
+    private static final Class<?>[] disallowed = {Spider.class};
+    private static final String[] suffix = {"ofStalking", "theUnseen", "thePredator"};
+    private static final String[] prefix = {"stalking", "unseen", "hunting"};
     private long nextAbilityUse = 0L;
 
     public MM_Cloaking() {

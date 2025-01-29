@@ -36,6 +36,24 @@ public class OverlayChoking {
         mc = Minecraft.getInstance();
     }
 
+    private static int getVehicleMaxHearts(LivingEntity livingEntity) {
+        if (livingEntity != null && livingEntity.showVehicleHealth()) {
+            float maxHealth = livingEntity.getMaxHealth();
+            int roundedHalf = (int) (maxHealth + 0.5F) / 2;
+            if (roundedHalf > 30) {
+                roundedHalf = 30;
+            }
+
+            return roundedHalf;
+        } else {
+            return 0;
+        }
+    }
+
+    private static int getVisibleVehicleHeartRows(int heartCount) {
+        return (int) Math.ceil((double) heartCount / 10.0D);
+    }
+
     public static class InfernalMobsChokingGuiOverlay implements IGuiOverlay {
         @Override
         public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -68,24 +86,6 @@ public class OverlayChoking {
                 }
             }
         }
-    }
-
-    private static int getVehicleMaxHearts(LivingEntity livingEntity) {
-        if (livingEntity != null && livingEntity.showVehicleHealth()) {
-            float maxHealth = livingEntity.getMaxHealth();
-            int roundedHalf = (int) (maxHealth + 0.5F) / 2;
-            if (roundedHalf > 30) {
-                roundedHalf = 30;
-            }
-
-            return roundedHalf;
-        } else {
-            return 0;
-        }
-    }
-
-    private static int getVisibleVehicleHeartRows(int heartCount) {
-        return (int) Math.ceil((double) heartCount / 10.0D);
     }
 
 }

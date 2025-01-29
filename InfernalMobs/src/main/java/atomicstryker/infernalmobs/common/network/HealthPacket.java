@@ -59,8 +59,7 @@ public class HealthPacket implements IPacket {
                 ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(healthPacket.stringData);
                 if (p != null) {
                     Entity ent = p.level().getEntity(healthPacket.entID);
-                    if (ent instanceof LivingEntity) {
-                        LivingEntity e = (LivingEntity) ent;
+                    if (ent instanceof LivingEntity e) {
                         MobModifier mod = InfernalMobsCore.getMobModifiers(e);
                         if (mod != null) {
                             stringData = healthPacket.stringData;

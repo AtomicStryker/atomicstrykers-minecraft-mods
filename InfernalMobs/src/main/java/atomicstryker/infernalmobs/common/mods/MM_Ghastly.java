@@ -10,8 +10,8 @@ public class MM_Ghastly extends MobModifier {
 
     private final static long coolDown = 6000L;
     private final static float MIN_DISTANCE = 3F;
-    private static String[] suffix = {"OMFGFIREBALLS", "theBomber", "ofBallsofFire"};
-    private static String[] prefix = {"bombing", "fireballsy"};
+    private static final String[] suffix = {"OMFGFIREBALLS", "theBomber", "ofBallsofFire"};
+    private static final String[] prefix = {"bombing", "fireballsy"};
     private long nextAbilityUse = 0L;
 
     public MM_Ghastly() {

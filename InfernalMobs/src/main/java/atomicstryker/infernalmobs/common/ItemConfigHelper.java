@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 public class ItemConfigHelper {
     private final List<ItemStack> itemStackList;
 
-    public ItemConfigHelper(List<? extends String> items, Logger logger) {
+    public ItemConfigHelper(List<? extends String> items) {
         itemStackList = new ArrayList<>();
         for (String json : items) {
             try {
@@ -22,14 +21,13 @@ public class ItemConfigHelper {
                 if (!itemStack.isEmpty()) {
                     itemStackList.add(itemStack);
                 } else {
-                    logger.error("item config parser could not build item: {}", json);
+                    InfernalMobsCore.LOGGER.error("item config parser could not build item: {}", json);
                 }
             } catch (CommandSyntaxException e) {
-                logger.error("item config parser CommandSyntaxException: {}", json);
-                e.printStackTrace();
+                InfernalMobsCore.LOGGER.error("item config parser CommandSyntaxException: {}", json, e);
             }
         }
-        logger.info("item config parser finished, item count: {}", itemStackList.size());
+        InfernalMobsCore.LOGGER.info("item config parser finished, item count: {}", itemStackList.size());
     }
 
     public static String fromItemStack(ItemStack itemStack) {

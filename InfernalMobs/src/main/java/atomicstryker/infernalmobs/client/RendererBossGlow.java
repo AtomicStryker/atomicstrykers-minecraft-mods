@@ -3,7 +3,6 @@ package atomicstryker.infernalmobs.client;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.SidedCache;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,12 +38,12 @@ public class RendererBossGlow {
             Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.level());
             mobsmap.keySet().stream().filter(ent -> ent.shouldRenderAtSqrDistance(curPos.distanceToSqr(ent.position()))
                     && ent.isAlive()).forEach(ent -> mc.levelRenderer.addParticle(ParticleTypes.WITCH,
-                    false, ent.getX() + (ent.level().random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
-                    ent.getY() + ent.level().random.nextDouble() * (double) ent.getBbHeight() - 0.25D,
-                    ent.getZ() + (ent.level().random.nextDouble() - 0.5D) * (double) ent.getBbWidth(),
-                    (ent.level().random.nextDouble() - 0.5D) * 2.0D,
-                    -ent.level().random.nextDouble(),
-                    (ent.level().random.nextDouble() - 0.5D) * 2.0D));
+                    false, ent.getX() + (ent.getRandom().nextDouble() - 0.5D) * (double) ent.getBbWidth(),
+                    ent.getY() + ent.getRandom().nextDouble() * (double) ent.getBbHeight() - 0.25D,
+                    ent.getZ() + (ent.getRandom().nextDouble() - 0.5D) * (double) ent.getBbWidth(),
+                    (ent.getRandom().nextDouble() - 0.5D) * 2.0D,
+                    -ent.getRandom().nextDouble(),
+                    (ent.getRandom().nextDouble() - 0.5D) * 2.0D));
         }
     }
 }

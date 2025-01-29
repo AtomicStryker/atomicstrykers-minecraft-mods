@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.Level;
 
 public class InfernalCommandSpawnInfernal {
 
@@ -47,8 +46,7 @@ public class InfernalCommandSpawnInfernal {
         InfernalMobsCore.instance().addEntityModifiersByString(mob, modifiers);
         MobModifier mod = InfernalMobsCore.getMobModifiers(mob);
         if (mod != null) {
-            InfernalMobsCore.LOGGER.log(Level.INFO,
-                    source.getTextName() + " spawned: " + InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated() + " at [" + x + "|" + y + "|" + z + "]");
+            InfernalMobsCore.LOGGER.info("{} spawned: {} at [{}|{}|{}]", source.getTextName(), InfernalMobsCore.getMobModifiers(mob).getLinkedModNameUntranslated(), x, y, z);
         } else {
             source.sendFailure(Component.literal("Error adding Infernal Modifier " + modifiers + " to mob " + mob));
         }

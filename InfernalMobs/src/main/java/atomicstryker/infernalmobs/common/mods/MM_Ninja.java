@@ -14,8 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 public class MM_Ninja extends AbstractTeleporter {
 
     private final static long coolDown = 15000L;
-    private static String[] suffix = {"theZenMaster", "ofEquilibrium", "ofInnerPeace"};
-    private static String[] prefix = {"totallyzen", "innerlypeaceful", "Ronin"};
+    private static final String[] suffix = {"theZenMaster", "ofEquilibrium", "ofInnerPeace"};
+    private static final String[] prefix = {"totallyzen", "innerlypeaceful", "Ronin"};
     private long nextAbilityUse = 0L;
 
     public MM_Ninja() {

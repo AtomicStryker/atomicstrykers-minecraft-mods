@@ -1,14 +1,12 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 
 public class MM_Unyielding extends MobModifier {
 
-    private static String[] suffix = {"ofRelentlessness", "theUnYielding", "theUnstoppable"};
-    private static String[] prefix = {"relentless", "unyielding", "unstoppable"};
+    private static final String[] suffix = {"ofRelentlessness", "theUnYielding", "theUnstoppable"};
+    private static final String[] prefix = {"relentless", "unyielding", "unstoppable"};
 
     public MM_Unyielding() {
         super();

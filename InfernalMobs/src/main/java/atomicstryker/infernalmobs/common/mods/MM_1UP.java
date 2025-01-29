@@ -7,9 +7,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 
 public class MM_1UP extends MobModifier {
-    private static Class<?>[] disallowed = {Creeper.class};
-    private static String[] suffix = {"ofRecurrence", "theUndying", "oftwinLives"};
-    private static String[] prefix = {"recurring", "undying", "twinlived"};
+    private static final Class<?>[] disallowed = {Creeper.class};
+    private static final String[] suffix = {"ofRecurrence", "theUndying", "oftwinLives"};
+    private static final String[] prefix = {"recurring", "undying", "twinlived"};
     private boolean healed;
 
     public MM_1UP() {

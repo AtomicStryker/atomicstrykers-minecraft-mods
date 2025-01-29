@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 
 public class MM_Rust extends MobModifier {
 
-    private static String[] suffix = {"ofDecay", "theEquipmentHaunter"};
-    private static String[] prefix = {"rusting", "decaying"};
+    private static final String[] suffix = {"ofDecay", "theEquipmentHaunter"};
+    private static final String[] prefix = {"rusting", "decaying"};
 
     public MM_Rust() {
         super();
