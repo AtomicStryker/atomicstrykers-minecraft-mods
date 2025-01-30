@@ -43,7 +43,7 @@ public class ChampionsCompat {
 
 
         // if not use infernal mob, then handle by champion
-        if (!config.getUseInfernalMobs()) {
+        if (!config.championMobCanBecomeInfernal()) {
             InfernalMobsCore.LOGGER.debug("Stop spawning {} infernal mob at {} uuid: {}, because entity is already handled by Champions mod.",
                     entity.getName().getString(), entity.blockPosition(), entity.getUUID());
             return true;

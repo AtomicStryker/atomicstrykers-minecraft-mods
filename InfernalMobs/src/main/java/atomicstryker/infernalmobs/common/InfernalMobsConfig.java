@@ -34,7 +34,7 @@ public class InfernalMobsConfig {
     private Map<String, Boolean> entitiesalwaysinfernal = new HashMap<>();
     private Map<String, Double> entitybasehealth = new HashMap<>();
     private boolean enableChampionCompat;
-    private boolean useInfernalMobs;
+    private boolean championMobCanBecomeInfernal;
     private boolean useRandomChampionSelection;
     private boolean allowBothChampionAndInfernal;
     private double championSelectionChance;
@@ -191,12 +191,12 @@ public class InfernalMobsConfig {
         this.entityTagBlackList = entityTagBlackList;
     }
 
-    public boolean getUseInfernalMobs() {
-        return useInfernalMobs;
+    public boolean championMobCanBecomeInfernal() {
+        return championMobCanBecomeInfernal;
     }
 
-    public void setUseInfernalMobs(boolean useInfernalMobs) {
-        this.useInfernalMobs = useInfernalMobs;
+    public void setChampionMobCanBecomeInfernal(boolean championMobCanBecomeInfernal) {
+        this.championMobCanBecomeInfernal = championMobCanBecomeInfernal;
     }
 
     public boolean isEnableChampionCompat() {

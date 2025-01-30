@@ -304,7 +304,7 @@ public class InfernalMobsCore {
 
         // mod compat config
         defaultConfig.setEnableChampionCompat(true);
-        defaultConfig.setUseInfernalMobs(true);
+        defaultConfig.setChampionMobCanBecomeInfernal(true);
         defaultConfig.setAllowBothChampionAndInfernal(false);
         defaultConfig.setUseRandomChampionSelection(false);
         defaultConfig.setChampionSelectionChance(50F);
