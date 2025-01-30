@@ -33,6 +33,11 @@ public class InfernalMobsConfig {
     private Map<String, Boolean> permittedentities = new HashMap<>();
     private Map<String, Boolean> entitiesalwaysinfernal = new HashMap<>();
     private Map<String, Double> entitybasehealth = new HashMap<>();
+    private boolean enableChampionCompat;
+    private boolean infernalMobsReplacesChampions;
+    private boolean useRandomChampionSelection;
+    private boolean allowBothChampionAndInfernal;
+    private double championSelectionChance;
 
     public boolean isAntiMobFarm() {
         return antiMobFarm;
@@ -184,5 +189,45 @@ public class InfernalMobsConfig {
 
     public void setEntityTagBlackList(List<String> entityTagBlackList) {
         this.entityTagBlackList = entityTagBlackList;
+    }
+
+    public boolean championMobCanBecomeInfernal() {
+        return infernalMobsReplacesChampions;
+    }
+
+    public void setInfernalMobsReplacesChampions(boolean infernalMobsReplacesChampions) {
+        this.infernalMobsReplacesChampions = infernalMobsReplacesChampions;
+    }
+
+    public boolean isEnableChampionCompat() {
+        return enableChampionCompat;
+    }
+
+    public void setEnableChampionCompat(boolean enableChampionCompat) {
+        this.enableChampionCompat = enableChampionCompat;
+    }
+
+    public void setUseRandomChampionSelection(boolean useRandomChampionSelection) {
+        this.useRandomChampionSelection = useRandomChampionSelection;
+    }
+
+    public double getChampionSelectionChance() {
+        return championSelectionChance;
+    }
+
+    public void setChampionSelectionChance(double championSelectionChance) {
+        this.championSelectionChance = championSelectionChance;
+    }
+
+    public boolean useRandomChampionSelection() {
+        return useRandomChampionSelection;
+    }
+
+    public boolean allowBothChampionAndInfernal() {
+        return allowBothChampionAndInfernal;
+    }
+
+    public void setAllowBothChampionAndInfernal(boolean allowBothChampionAndInfernal) {
+        this.allowBothChampionAndInfernal = allowBothChampionAndInfernal;
     }
 }
