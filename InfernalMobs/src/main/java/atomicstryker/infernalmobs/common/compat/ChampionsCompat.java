@@ -26,7 +26,7 @@ public class ChampionsCompat {
      */
     public static boolean shouldChampionHandleEntity(Entity entity) {
         var core = InfernalMobsCore.instance();
-        var config = core.getModCompatConfig();
+        var config = core.getConfig();
 
         // if disabled champion compat, or champion mod not loaded, stop process compat
         if (!config.isEnableChampionCompat() || !core.isChampionLoaded()) {
