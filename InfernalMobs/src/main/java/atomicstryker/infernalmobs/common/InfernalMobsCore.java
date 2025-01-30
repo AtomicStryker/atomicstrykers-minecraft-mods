@@ -38,6 +38,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.champions.Champions;
 
 import java.io.File;
 import java.util.*;
@@ -80,7 +81,7 @@ public class InfernalMobsCore {
         classesForcedMap = new HashMap<>();
         classesHealthMap = new HashMap<>();
         modifiedPlayerTimes = new HashMap<>();
-        championLoaded = ModList.get().isLoaded("champions");
+        championLoaded = ModList.get().isLoaded(Champions.MODID);
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -300,6 +301,12 @@ public class InfernalMobsCore {
         // tag used by the champions mod
         entityTagBlackList.add("affixes");
         defaultConfig.setEntityTagBlackList(entityTagBlackList);
+
+        // mod compat config
+        defaultConfig.setEnableChampionCompat(true);
+        defaultConfig.setUseInfernalMobs(true);
+        defaultConfig.setUseRandomChampionSelection(false);
+        defaultConfig.setChampionSelectionChance(50F);
 
         config = GsonConfig.loadConfigWithDefault(InfernalMobsConfig.class, configFile, defaultConfig);
 
@@ -790,5 +797,9 @@ public class InfernalMobsCore {
 
     public boolean isChampionLoaded() {
         return championLoaded;
+    }
+
+    public InfernalMobsConfig getModCompatConfig() {
+        return config;
     }
 }

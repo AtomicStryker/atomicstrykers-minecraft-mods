@@ -36,12 +36,9 @@ public class EntityEventHandler {
         var level = event.getLevel();
         // check level is server level first
         if (!level.isClientSide()) {
-            // champions mob compat start
-            if (InfernalMobsCore.instance().isChampionLoaded() && ChampionsCompat.isChampionEntity(entity)) {
-                InfernalMobsCore.LOGGER.debug("Stop spawning {} infernal mob at {} uuid: {}, Because entity already handled by champions mod.", entity.getName().getString(), entity.blockPosition(), entity.getUUID());
+            if (ChampionsCompat.shouldChampionHandleEntity(entity)) {
                 return;
             }
-            // champions mob compat end
             if (entity instanceof LivingEntity livingEntity && entity instanceof Enemy) {
                 String savedMods = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
                 if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
