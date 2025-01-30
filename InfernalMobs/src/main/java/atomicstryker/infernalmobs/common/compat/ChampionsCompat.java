@@ -28,13 +28,9 @@ public class ChampionsCompat {
         var core = InfernalMobsCore.instance();
         var config = core.getConfig();
 
-        // if disabled champion compat, or champion mod not loaded, stop process compat
-        if (!config.isEnableChampionCompat() || !core.isChampionLoaded()) {
-            return false;
-        }
-
-        // Check if entity is champion mob
-        if (!ChampionHelper.isChampionEntity(entity)) {
+        /* if disabled champion compat,or allow both champion and infernal mob, or champion mod not loaded, or entity is not champion, stop process compat */
+        if (!config.isEnableChampionCompat() || !core.isChampionLoaded()
+                || config.allowBothChampionAndInfernal() || !ChampionHelper.isChampionEntity(entity)) {
             return false;
         }
 
@@ -44,6 +40,7 @@ public class ChampionsCompat {
         if (config.useRandomChampionSelection() && livingEntity.getRandom().nextDouble() > config.getChampionSelectionChance()) {
             return false; // handle by Infernal Mobs
         }
+
 
         // if not use infernal mob, then handle by champion
         if (!config.getUseInfernalMobs()) {

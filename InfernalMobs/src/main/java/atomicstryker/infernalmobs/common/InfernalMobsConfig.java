@@ -36,6 +36,7 @@ public class InfernalMobsConfig {
     private boolean enableChampionCompat;
     private boolean useInfernalMobs;
     private boolean useRandomChampionSelection;
+    private boolean allowBothChampionAndInfernal;
     private double championSelectionChance;
 
     public boolean isAntiMobFarm() {
@@ -220,5 +221,13 @@ public class InfernalMobsConfig {
 
     public boolean useRandomChampionSelection() {
         return useRandomChampionSelection;
+    }
+
+    public boolean allowBothChampionAndInfernal() {
+        return allowBothChampionAndInfernal;
+    }
+
+    public void setAllowBothChampionAndInfernal(boolean allowBothChampionAndInfernal) {
+        this.allowBothChampionAndInfernal = allowBothChampionAndInfernal;
     }
 }
