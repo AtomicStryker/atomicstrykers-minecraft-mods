@@ -1,12 +1,12 @@
 1.20.1.5
 - Added Champions Compat
-- Added flexible config allow user control mob will handel by champions or Infernal mob, or handel by both
+- Added flexible config allow user control mob will be handled, handled by both.
 - Updated the Champions mod to use the new API, allowing it to track whether an entity is a champion and independently manage affixes, rank, and entity modifiers.
 - Added `enableChampionCompat` (boolean) to toggle compatibility with the Champions mod.(default true)
-- Added `championMobCanBecomeInfernal` (boolean) to allow or prevent Infernal Mobs from handling champion entities.(default true)
+- Added `infernalMobsReplacesChampions` (boolean) to allow or prevent Infernal Mobs from handling champion entities.(default true)
 - Added `useRandomChampionSelection` (boolean) to enable probability-based entity handling.(default false)
 - Added `championSelectionChance` (double, 0-100) to configure the probability of Champions handling entities instead of Infernal Mobs.(default 50.0)
-- Added `allowBothChampionAndInfernal` to configure mob handel by both mod(default false), for masochists.(default false)
+- Added `allowBothChampionAndInfernal` to configure mob being changed by both mods (default false)
 - Refactored `shouldChampionHandleEntity()` to integrate the new configuration options.
 - by CrychicTeam, kumoe
 
