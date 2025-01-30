@@ -799,7 +799,7 @@ public class InfernalMobsCore {
         return championLoaded;
     }
 
-    public InfernalMobsConfig getModCompatConfig() {
+    public InfernalMobsConfig getConfig() {
         return config;
     }
 }
