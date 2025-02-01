@@ -9,7 +9,14 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -36,6 +43,8 @@ public class EntityEventHandler {
         var level = event.getLevel();
         // check level is server level first
         if (!level.isClientSide()) {
+            // this can fire before the localhost client has logged in, loading a world save, need to init the mod!
+            InfernalMobsCore.instance().initIfNeeded(entity.level());
             if (ChampionsCompat.shouldChampionHandleEntity(entity)) {
                 return;
             }
@@ -167,6 +176,8 @@ public class EntityEventHandler {
     @SubscribeEvent
     public void onEntityLivingUpdate(LivingEvent.LivingTickEvent event) {
         if (!event.getEntity().level().isClientSide) {
+            // this can fire before the localhost client has logged in, loading a world save, need to init the mod!
+            InfernalMobsCore.instance().initIfNeeded(event.getEntity().level());
 
             // workaround to get save-loaded infernal entities working, init them on their first living tick
             if (event.getEntity().tickCount == 1) {

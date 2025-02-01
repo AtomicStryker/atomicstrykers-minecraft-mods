@@ -1,3 +1,7 @@
+1.20.1.6
+- fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/533
+- uninitialized config crash with Champions Compat
+
 1.20.1.5
 - Added Champions Compat
 - Added flexible config allow user control mob will be handled, handled by both.

@@ -1,8 +1,40 @@
 package atomicstryker.infernalmobs.common;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.common.mods.*;
-import atomicstryker.infernalmobs.common.network.*;
+import atomicstryker.infernalmobs.common.mods.MM_1UP;
+import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
+import atomicstryker.infernalmobs.common.mods.MM_Berserk;
+import atomicstryker.infernalmobs.common.mods.MM_Blastoff;
+import atomicstryker.infernalmobs.common.mods.MM_Bulwark;
+import atomicstryker.infernalmobs.common.mods.MM_Choke;
+import atomicstryker.infernalmobs.common.mods.MM_Cloaking;
+import atomicstryker.infernalmobs.common.mods.MM_Darkness;
+import atomicstryker.infernalmobs.common.mods.MM_Ender;
+import atomicstryker.infernalmobs.common.mods.MM_Exhaust;
+import atomicstryker.infernalmobs.common.mods.MM_Fiery;
+import atomicstryker.infernalmobs.common.mods.MM_Ghastly;
+import atomicstryker.infernalmobs.common.mods.MM_Gravity;
+import atomicstryker.infernalmobs.common.mods.MM_Lifesteal;
+import atomicstryker.infernalmobs.common.mods.MM_Ninja;
+import atomicstryker.infernalmobs.common.mods.MM_Poisonous;
+import atomicstryker.infernalmobs.common.mods.MM_Quicksand;
+import atomicstryker.infernalmobs.common.mods.MM_Regen;
+import atomicstryker.infernalmobs.common.mods.MM_Rust;
+import atomicstryker.infernalmobs.common.mods.MM_Sapper;
+import atomicstryker.infernalmobs.common.mods.MM_Sprint;
+import atomicstryker.infernalmobs.common.mods.MM_Sticky;
+import atomicstryker.infernalmobs.common.mods.MM_Storm;
+import atomicstryker.infernalmobs.common.mods.MM_Unyielding;
+import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
+import atomicstryker.infernalmobs.common.mods.MM_Weakness;
+import atomicstryker.infernalmobs.common.mods.MM_Webber;
+import atomicstryker.infernalmobs.common.mods.MM_Wither;
+import atomicstryker.infernalmobs.common.network.AirPacket;
+import atomicstryker.infernalmobs.common.network.HealthPacket;
+import atomicstryker.infernalmobs.common.network.KnockBackPacket;
+import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import atomicstryker.infernalmobs.common.network.NetworkHelper;
+import atomicstryker.infernalmobs.common.network.VelocityPacket;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -41,7 +73,11 @@ import org.apache.logging.log4j.Logger;
 import top.theillusivec4.champions.Champions;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Mod(InfernalMobsCore.MOD_ID)
 @Mod.EventBusSubscriber(modid = InfernalMobsCore.MOD_ID)
@@ -158,7 +194,7 @@ public class InfernalMobsCore {
     /**
      * is triggered either by server start or by client login event from InfernalMobsClient
      */
-    public void initIfNeeded(Level world) {
+    public synchronized void initIfNeeded(Level world) {
         if (mobMods == null) {
             prepareModList();
 
@@ -529,8 +565,6 @@ public class InfernalMobsCore {
      */
     public void addEntityModifiersByString(LivingEntity entity, String savedMods) {
         if (!getIsRareEntityOnline(entity)) {
-            // this can fire before the localhost client has logged in, loading a world save, need to init the mod!
-            initIfNeeded(entity.level());
             MobModifier mod = stringToMobModifiers(savedMods);
             InfernalMobsCore.LOGGER.debug("reloading mods for {}: {}, mod instance {}", entity, savedMods, mod);
             if (mod != null) {
@@ -590,6 +624,7 @@ public class InfernalMobsCore {
     public void addRemoteEntityModifiers(Level world, int entID, String mods) {
         Entity ent = world.getEntity(entID);
         if (ent != null) {
+            initIfNeeded(world);
             addEntityModifiersByString((LivingEntity) ent, mods);
             // System.out.println("Client added remote infernal mod on entity
             // "+ent+", is now "+mod.getModName());
