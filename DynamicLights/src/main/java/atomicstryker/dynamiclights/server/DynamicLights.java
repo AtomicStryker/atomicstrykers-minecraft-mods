@@ -5,6 +5,7 @@ import atomicstryker.dynamiclights.server.blocks.BlockLitCaveAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitWater;
 import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
+import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -26,7 +27,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -120,14 +121,14 @@ public class DynamicLights {
     }
 
     @SubscribeEvent
-    public void onAddReloadListener(AddReloadListenerEvent event) {
+    public void onResourceReload(AddServerReloadListenersEvent event) {
         // we need to clear our item -> light level cache on reload
         LOGGER.debug("Adding reload listener for light level cache");
-        event.addListener(new SimplePreparableReloadListener<>() {
+        event.addListener(ResourceLocation.fromNamespaceAndPath(MOD_ID, "reloadlistener"), new SimplePreparableReloadListener<>() {
 
             @Override
             protected @NotNull Object prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
-                return null;
+                return new JsonObject();
             }
 
             @Override
