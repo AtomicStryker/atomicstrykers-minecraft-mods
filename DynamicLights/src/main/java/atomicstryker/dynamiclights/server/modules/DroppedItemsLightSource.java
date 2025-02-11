@@ -52,8 +52,19 @@ public class DroppedItemsLightSource {
 
         LightConfig defaultConfig = new LightConfig();
         defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 14, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.LANTERN), 15, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.CAMPFIRE), 15, registryAccess));
         defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.GLOWSTONE), 15, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.REDSTONE_TORCH), 10, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.REDSTONE_ORE), 10, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.REDSTONE_BLOCK), 10, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.SOUL_LANTERN), 15, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.SOUL_CAMPFIRE), 15, registryAccess));
+        defaultConfig.getItemsList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.SOUL_TORCH), 14, registryAccess));
         defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.TORCH), 0, registryAccess));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.SOUL_TORCH), 0, registryAccess));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.CAMPFIRE), 0, registryAccess));
+        defaultConfig.getNotWaterProofList().add(ItemConfigHelper.fromItemStack(new ItemStack(Blocks.SOUL_CAMPFIRE), 0, registryAccess));
 
         File configFile = server.getServerDirectory().resolve("config" + File.separatorChar + "dynamiclights_droppeditems.cfg").toFile();
         try {
