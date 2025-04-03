@@ -633,3 +633,6 @@ a: setAccessible now true
 
 1.21.4.2
 + fixes server commands not working
+
+1.21.4.3
++ fix for a possible crash on dedicated server startup, remove proxy pattern

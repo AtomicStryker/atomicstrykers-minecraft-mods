@@ -21,12 +21,10 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,7 +44,6 @@ public class RuinsMod {
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
-    public static IProxy proxy = DistExecutor.runForDist(() -> () -> new RuinsClient(), () -> () -> new RuinsServer());
     private static RuinsMod instance = null;
     private final ConcurrentHashMap<ResourceLocation, WorldHandle> generatorMap;
     private long nextInfoTime;
@@ -56,8 +53,6 @@ public class RuinsMod {
     public RuinsMod(FMLJavaModLoadingContext context) {
         instance = this;
         generatorMap = new ConcurrentHashMap<>();
-        final IEventBus modEventBus = context.getModEventBus();
-        modEventBus.addListener(this::preInit);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         LOGGER.info("Ruins instance built, events registered");
@@ -88,7 +83,7 @@ public class RuinsMod {
     }
 
     public static File getMinecraftBaseDir() {
-        return proxy.getBaseDir();
+        return FMLPaths.GAMEDIR.get().toFile();
     }
 
     @SubscribeEvent
@@ -179,11 +174,6 @@ public class RuinsMod {
         {
             worldHandle.generator.generateNormal(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
         }
-    }
-
-    public void preInit(FMLCommonSetupEvent evt) {
-        LOGGER.info("Ruins preInit");
-        ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
     @SubscribeEvent
@@ -281,6 +271,7 @@ public class RuinsMod {
         if (!world.isClientSide()) {
             if (!generatorMap.containsKey(world.dimension().location())) {
                 wh = new WorldHandle();
+                ConfigFolderPreparator.copyFromJarIfNotPresent(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
                 initWorldHandle(wh, world);
                 generatorMap.put(world.dimension().location(), wh);
             } else {
