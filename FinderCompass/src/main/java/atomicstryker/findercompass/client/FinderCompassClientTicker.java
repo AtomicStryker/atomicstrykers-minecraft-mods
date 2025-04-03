@@ -5,15 +5,11 @@ import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.GsonConfig;
 import net.minecraft.client.Minecraft;
-
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
