@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ItemConfigHelper {
     private Map<ItemStack, Integer> itemStackList;
@@ -18,13 +19,14 @@ public class ItemConfigHelper {
         itemStackList = new HashMap<>();
         for (String json : items) {
             try {
-                CompoundTag nbt = TagParser.parseTag(json);
-                ItemStack itemStack = ItemStack.parseOptional(registryAccess, nbt);
+                CompoundTag nbt = TagParser.parseCompoundFully(json);
+                Optional<ItemStack> optionalItemStack = ItemStack.parse(registryAccess, nbt);
 
-                if (!itemStack.isEmpty()) {
+                if (optionalItemStack.isPresent()) {
+                    ItemStack itemStack = optionalItemStack.get();
                     int lightLevel = 15;
                     if (nbt.contains("lightLevel")) {
-                        lightLevel = nbt.getShort("lightLevel");
+                        lightLevel = nbt.getShort("lightLevel").get();
                         nbt.remove("lightLevel");
                     }
                     itemStackList.put(itemStack, lightLevel);
