@@ -1,3 +1,6 @@
+1.21.5.1
+- updated for MC 1.21.5 and Forge 55.0.3
+
 1.21.4.1
 - updated for MC 1.21.4 and Forge 54.0.13
 
