@@ -14,13 +14,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -37,7 +34,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mod(RuinsMod.MOD_ID)
-@EventBusSubscriber(modid = RuinsMod.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class RuinsMod {
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -46,7 +42,6 @@ public class RuinsMod {
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
-    public static IProxy proxy = FMLEnvironment.dist.isClient() ? new RuinsClient() : new RuinsServer();
     private static RuinsMod instance = null;
     private final ConcurrentHashMap<ResourceLocation, WorldHandle> generatorMap;
     private long nextInfoTime;
@@ -56,7 +51,6 @@ public class RuinsMod {
     public RuinsMod(IEventBus modEventBus) {
         instance = this;
         generatorMap = new ConcurrentHashMap<>();
-        modEventBus.addListener(this::preInit);
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new CommandParseTemplate());
         LOGGER.info("Ruins instance built, events registered");
@@ -87,7 +81,7 @@ public class RuinsMod {
     }
 
     public static File getMinecraftBaseDir() {
-        return proxy.getBaseDir();
+        return FMLPaths.GAMEDIR.get().toFile();
     }
 
     @SubscribeEvent
@@ -157,7 +151,7 @@ public class RuinsMod {
         }
     }
 
-    private void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
+    private static void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
 
         if (!world.hasChunk(chunkPos.x, chunkPos.z)) {
             return;
@@ -180,11 +174,6 @@ public class RuinsMod {
         }
     }
 
-    public void preInit(FMLCommonSetupEvent evt) {
-        LOGGER.info("Ruins preInit");
-        ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
-    }
-
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent evt) {
         LOGGER.info("Ruins registerCommands");
@@ -198,8 +187,8 @@ public class RuinsMod {
             WorldHandle wh = getWorldHandle((ServerLevel) event.getEntity().level());
             if (wh != null && wh.fileHandle.enableStick) {
                 ItemStack is = event.getEntity().getMainHandItem();
-                if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
-                    nextInfoTime = System.currentTimeMillis() + 1000L;
+                if (is.getItem() == Items.STICK && System.currentTimeMillis() > instance.nextInfoTime) {
+                    instance.nextInfoTime = System.currentTimeMillis() + 1000L;
                     BlockEntity te = event.getEntity().level().getBlockEntity(event.getPosition().get());
                     event.getEntity().displayClientMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)), false);
                 }
@@ -213,8 +202,8 @@ public class RuinsMod {
             WorldHandle wh = getWorldHandle((ServerLevel) event.getLevel());
             if (wh != null && wh.fileHandle.enableStick) {
                 ItemStack is = event.getPlayer().getMainHandItem();
-                if (is.getItem() == Items.STICK && System.currentTimeMillis() > nextInfoTime) {
-                    nextInfoTime = System.currentTimeMillis() + 1000L;
+                if (is.getItem() == Items.STICK && System.currentTimeMillis() > instance.nextInfoTime) {
+                    instance.nextInfoTime = System.currentTimeMillis() + 1000L;
                     BlockEntity te = event.getPlayer().level().getBlockEntity(event.getPos());
                     event.getPlayer().displayClientMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)), false);
                     event.setCanceled(true);
@@ -244,7 +233,7 @@ public class RuinsMod {
         return lastLoadedLevel;
     }
 
-    private void executeCommandBlockLogic(EntityEvent.EnteringSection event) {
+    private static void executeCommandBlockLogic(EntityEvent.EnteringSection event) {
         CommandBlockEntity tecb;
         ArrayList<CommandBlockEntity> tecblist = new ArrayList<>();
 
@@ -275,29 +264,30 @@ public class RuinsMod {
         }
     }
 
-    private WorldHandle getWorldHandle(ServerLevel world) {
+    private static WorldHandle getWorldHandle(ServerLevel world) {
         WorldHandle wh = null;
         if (!world.isClientSide()) {
-            if (!generatorMap.containsKey(world.dimension().location())) {
+            if (!instance.generatorMap.containsKey(world.dimension().location())) {
                 wh = new WorldHandle();
+                ConfigFolderPreparator.copyFromJarIfNotPresent(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
                 initWorldHandle(wh, world);
-                generatorMap.put(world.dimension().location(), wh);
+                instance.generatorMap.put(world.dimension().location(), wh);
             } else {
-                wh = generatorMap.get(world.dimension().location());
+                wh = instance.generatorMap.get(world.dimension().location());
             }
         }
 
         return wh;
     }
 
-    private void initWorldHandle(WorldHandle worldHandle, ServerLevel world) {
+    private static void initWorldHandle(WorldHandle worldHandle, ServerLevel world) {
         // load in defaults
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
             worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().location());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
-            lastLoadedLevel = world;
+            instance.lastLoadedLevel = world;
 
         } catch (Exception e) {
             LOGGER.error("There was a problem loading the ruins mod:");
@@ -306,7 +296,7 @@ public class RuinsMod {
         }
     }
 
-    private class WorldHandle {
+    private static class WorldHandle {
         FileHandler fileHandle;
         RuinGenerator generator;
     }

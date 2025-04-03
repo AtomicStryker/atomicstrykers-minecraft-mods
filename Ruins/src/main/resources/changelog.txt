@@ -633,3 +633,6 @@ a: setAccessible now true
 
 1.21.4.2NF
 + fix server commands not working
+
+1.21.4.3NF
++ fix possible crash on dedicated server start, remove proxy pattern, upgrade NeoForge
