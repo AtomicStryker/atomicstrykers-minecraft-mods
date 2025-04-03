@@ -2,7 +2,6 @@ package atomicstryker.ruins.common;
 
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -22,12 +21,9 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,8 +52,6 @@ public class RuinsMod {
     public RuinsMod() {
         instance = this;
         generatorMap = new ConcurrentHashMap<>();
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::preInit);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         LOGGER.info("Ruins instance built, events registered");
@@ -176,11 +170,6 @@ public class RuinsMod {
         }
     }
 
-    public void preInit(FMLCommonSetupEvent evt) {
-        LOGGER.info("Ruins preInit");
-        ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
-    }
-
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent evt) {
         LOGGER.info("Ruins registerCommands");
@@ -276,6 +265,7 @@ public class RuinsMod {
         if (!world.isClientSide()) {
             if (!generatorMap.containsKey(world.dimension().location())) {
                 wh = new WorldHandle();
+                ConfigFolderPreparator.copyFromJarIfNotPresent(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
                 initWorldHandle(wh, world);
                 generatorMap.put(world.dimension().location(), wh);
             } else {

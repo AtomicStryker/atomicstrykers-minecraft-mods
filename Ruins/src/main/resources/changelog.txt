@@ -630,3 +630,6 @@ a: setAccessible now true
 
 1.20.1.1
 + backported to Minecraft 1.20.1 with Forge
+
+1.20.1.2
++ fix crash on dedicated server start (https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/539)

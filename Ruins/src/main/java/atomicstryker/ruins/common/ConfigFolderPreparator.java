@@ -16,9 +16,8 @@ public class ConfigFolderPreparator {
      * check if target folder .minecraft/config/ruins_config exists, if not,
      * copy it from the jar
      *
-     * @param ruinsMod
      */
-    public static void copyFromJarIfNotPresent(RuinsMod ruinsMod, File targetDir) {
+    public static void copyFromJarIfNotPresent(File targetDir) {
         if (targetDir.exists()) {
             RuinsMod.LOGGER.info("config/ruins_config exists, not extracting");
             return;
