@@ -2,26 +2,12 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.DepthTestFunction;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -33,10 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
 import java.util.Map.Entry;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = FinderCompassMod.MOD_ID)
@@ -78,8 +61,7 @@ public class CompassRenderHook {
             }
             updateConfigValues();
             if (playerHasCompass()) {
-                renderCompassNeedles(guiGraphics.pose());
-                //renderTestQuad(event.getMatrixStack(), 45);
+                renderCompassNeedles(guiGraphics);
             }
         }
     }
@@ -113,77 +95,31 @@ public class CompassRenderHook {
         return false;
     }
 
-    private static void renderCompassNeedles(PoseStack poseStack) {
+    private static void renderCompassNeedles(GuiGraphics guiGraphics) {
 
-        // CloudRenderer serves as most bare-metal example of rendering now, i guess
-
-        poseStack.pushPose();
+        // push pose to not mess up other renderers
+        guiGraphics.pose().pushPose();
+        // use the standard gui vertex consumer which is already set up for simple quads
+        VertexConsumer vertexconsumer = guiGraphics.getBufferSource().getBuffer(RenderType.gui());
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
-
-        // old implementation
-//        RenderSystem.disableDepthTest();
-//        RenderSystem.depthMask(false);
-//        RenderSystem.defaultBlendFunc();
-//        RenderSystem.enableBlend();
-//        // make the needles somewhat transparent
-//        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-//        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
-
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawNeedle(bufferbuilder, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            drawNeedle(bufferbuilder, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
 
-        MeshData meshData = bufferbuilder.build();
-        if (meshData != null) {
-            ByteBuffer vertexBuffer = meshData.vertexBuffer();
-            int vertexBufferSize = vertexBuffer.remaining();
-
-            RenderPipeline renderpipeline = RenderPipelines.GUI_OVERLAY;
-
-            RenderSystem.AutoStorageIndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
-
-            RenderTarget rendertarget = Minecraft.getInstance().getMainRenderTarget();
-            GpuTexture gputexture = rendertarget.getColorTexture();
-            GpuTexture gputexture1 = rendertarget.getDepthTexture();
-            GpuBuffer gpuBuffer = indexBuffer.getBuffer(vertexBufferSize);
-
-            try (RenderPass renderpass = RenderSystem.getDevice()
-                    .createCommandEncoder()
-                    .createRenderPass(gputexture, OptionalInt.empty(), gputexture1, OptionalDouble.empty())) {
-                renderpass.setPipeline(renderpipeline);
-                renderpass.setVertexBuffer(0, gpuBuffer);
-                renderpass.setIndexBuffer(gpuBuffer, indexBuffer.type());
-
-                CommandEncoder commandencoder = RenderSystem.getDevice().createCommandEncoder();
-                commandencoder.writeToBuffer(gpuBuffer, vertexBuffer, 0);
-
-                renderpass.drawIndexed(0, meshData.drawState().indexCount());
-            }
-        }
-
-        // reset renderer?
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-//        RenderSystem.defaultBlendFunc();
-//        RenderSystem.disableBlend();
-//        RenderSystem.depthMask(true);
-//        RenderSystem.enableDepthTest();
-
-        poseStack.popPose();
+        // pop pose to reset rendering to where it was before we started drawing
+        guiGraphics.pose().popPose();
     }
 
-    private static void drawNeedle(BufferBuilder bufferbuilder, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
+    private static void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
 
         int halfWidthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
         int halfHeightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
@@ -212,25 +148,22 @@ public class CompassRenderHook {
         Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
         Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
 
-        // buttom left corner
-        bufferbuilder.addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F).setColor(r, g, b, 120);
+        // bottom left corner of quad
+        vertexConsumer
+                .addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F)
+                .setColor(r, g, b, 120);
         // bottom right corner
-        bufferbuilder.addVertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0F).setColor(r, g, b, 120);
+        vertexConsumer
+                .addVertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0F)
+                .setColor(r, g, b, 120);
         // top right corner
-        bufferbuilder.addVertex(rotatedTopRight.x, rotatedTopRight.y, -90.0F).setColor(r, g, b, 120);
+        vertexConsumer
+                .addVertex(rotatedTopRight.x, rotatedTopRight.y, -90.0F)
+                .setColor(r, g, b, 120);
         // top left corner
-        bufferbuilder.addVertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0F).setColor(r, g, b, 120);
-
-        // old call that doesnt exist anymore
-        // BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-
-        // use guigraphics instead?
-//        GuiGraphics guiGraphics;
-//        guiGraphics.pose().pushPose();
-//        VertexConsumer vertexconsumer = guiGraphics.getBufferSource().getBuffer(RenderType.gui());
-//        vertexconsumer.addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F).setColor(r, g, b, 120);
-//        [...]
-//        guiGraphics.pose().popPose();
+        vertexConsumer
+                .addVertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0F)
+                .setColor(r, g, b, 120);
     }
 
     private static float computeNeedleHeading(BlockPos coords) {
