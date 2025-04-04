@@ -176,7 +176,7 @@ public class InfernalMobsCore {
     public static boolean isBlockedBeingInfernal(LivingEntity ent) {
         // check if the entity previously passed infernal mob generation without getting a mod
         CompoundTag persistentData = ent.getPersistentData();
-        String storedInfernalTag = persistentData.getString(instance().getNBTTag());
+        String storedInfernalTag = persistentData.getString(instance().getNBTTag()).orElse("");
         boolean result = !storedInfernalTag.isEmpty() && instance().getNBTMarkerForNonInfernalEntities().equals(storedInfernalTag);
         if (result) {
             InfernalMobsCore.LOGGER.debug("entity {} was spawned in unmodified before, not modifying it", ent);
@@ -708,7 +708,7 @@ public class InfernalMobsCore {
         while (iter.hasNext() && remainStr > 0) {
             remainStr--;
             EnchantmentInstance eData = (EnchantmentInstance) iter.next();
-            itemStack.enchant(eData.enchantment, eData.level);
+            itemStack.enchant(eData.enchantment(), eData.level());
         }
     }
 

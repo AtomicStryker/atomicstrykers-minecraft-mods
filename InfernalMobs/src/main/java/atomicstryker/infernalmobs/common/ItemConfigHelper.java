@@ -2,12 +2,9 @@ package atomicstryker.infernalmobs.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
@@ -20,8 +17,8 @@ public class ItemConfigHelper {
         itemStackList = new ArrayList<>();
         for (String json : items) {
             try {
-                CompoundTag nbt = TagParser.parseTag(json);
-                ItemStack itemStack = ItemStack.parseOptional(registryAccess, nbt);
+                CompoundTag nbt = TagParser.parseCompoundFully(json);
+                ItemStack itemStack = ItemStack.parse(registryAccess, nbt).orElse(ItemStack.EMPTY);
                 if (!itemStack.isEmpty()) {
                     itemStackList.add(itemStack);
                 } else {
@@ -36,7 +33,7 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack, RegistryAccess registryAccess) {
-        return itemStack.save(registryAccess).getAsString();
+        return itemStack.save(registryAccess).toString();
     }
 
     public List<ItemStack> getItemStackList() {

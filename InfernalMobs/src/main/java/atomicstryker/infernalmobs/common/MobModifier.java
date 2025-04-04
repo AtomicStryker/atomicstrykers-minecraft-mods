@@ -135,7 +135,7 @@ public abstract class MobModifier {
      * @param entity target mob to attach modifiers to
      */
     public void onSpawningCompleteStoreModsAndBuffHealth(LivingEntity entity) {
-        String oldTag = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
+        String oldTag = entity.getPersistentData().getString(InfernalMobsCore.instance().getNBTTag()).orElse("");
         if (!oldTag.isEmpty() && !oldTag.equals(getLinkedModNameUntranslated())) {
             InfernalMobsCore.LOGGER.info("Infernal Mobs tag mismatch!! Was [{}}], now trying to set [{}}] \n", oldTag, getLinkedModNameUntranslated());
         }
@@ -226,7 +226,7 @@ public abstract class MobModifier {
     /**
      * passes the fall event to the modifier list
      */
-    public boolean onFall(float distance) {
+    public boolean onFall(double distance) {
         return nextMod != null && nextMod.onFall(distance);
     }
 
@@ -304,7 +304,7 @@ public abstract class MobModifier {
         if (mob.level().isClientSide) {
             return;
         }
-        float storedMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth");
+        float storedMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth").orElse(0.0F);
         if (storedMaxHealth < 1F) {
             actualMaxHealth = (float) (InfernalMobsCore.instance().getMobClassMaxHealth(mob) * getModSize() * InfernalMobsCore.instance().getMobModHealthFactor());
             actualHealth = actualMaxHealth;
@@ -321,7 +321,7 @@ public abstract class MobModifier {
      */
     public float getActualMaxHealth(LivingEntity mob) {
         if (!mob.level().isClientSide && actualMaxHealth < 1F) {
-            actualMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth");
+            actualMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth").orElse(0.0F);
         }
         return actualMaxHealth;
     }

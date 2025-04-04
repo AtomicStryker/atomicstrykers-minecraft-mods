@@ -32,7 +32,7 @@ public class MM_Quicksand extends MobModifier {
                 && canMobSeeTarget(mob, getMobTarget())
                 && ++ticker == 50) {
             ticker = 0;
-            getMobTarget().addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 45, 0));
+            getMobTarget().addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 45, 0));
         }
 
         return super.onUpdate(mob);

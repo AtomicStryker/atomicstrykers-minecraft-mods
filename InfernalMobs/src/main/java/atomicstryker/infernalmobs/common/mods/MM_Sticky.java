@@ -38,7 +38,7 @@ public class MM_Sticky extends MobModifier {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                ItemEntity drop = p.drop(p.getInventory().removeItem(p.getInventory().selected, 1), false);
+                ItemEntity drop = p.drop(p.getInventory().removeItem(p.getInventory().getSelectedSlot(), 1), false);
                 if (drop != null) {
                     drop.setPickUpDelay(50);
                     mob.level().playSound(null, mob.blockPosition(), SoundEvents.SLIME_ATTACK, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);

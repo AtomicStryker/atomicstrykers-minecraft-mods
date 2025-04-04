@@ -5,7 +5,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 
 public class MM_Rust extends MobModifier {
@@ -31,8 +30,8 @@ public class MM_Rust extends MobModifier {
         if (isDirectAttack(source)
                 && (source.getDirectEntity() instanceof Player p)
                 && !isCreativePlayer(p)) {
-            p.getInventory().getSelected();
-            p.getInventory().getSelected().hurtAndBreak(4, (LivingEntity) source.getDirectEntity(), EquipmentSlot.MAINHAND);
+            ItemStack equippedStack = p.getInventory().getEquipment().get(EquipmentSlot.MAINHAND);
+            equippedStack.hurtAndBreak(4, (LivingEntity) source.getDirectEntity(), EquipmentSlot.MAINHAND);
         }
 
         return super.onHurt(mob, source, damage);
@@ -52,8 +51,9 @@ public class MM_Rust extends MobModifier {
             int i = (int) Math.max(1.0F, damage / 4.0F);
             for (EquipmentSlot equipmentSlot : equipmentSlots) {
                 ItemStack itemstack = player.getItemBySlot(equipmentSlot);
-                if (itemstack.getItem() instanceof ArmorItem && itemstack.canBeHurtBy(damageSource)) {
+                if (itemstack.canBeHurtBy(damageSource)) {
                     itemstack.hurtAndBreak(i, player, equipmentSlot);
+                    break;
                 }
             }
         }

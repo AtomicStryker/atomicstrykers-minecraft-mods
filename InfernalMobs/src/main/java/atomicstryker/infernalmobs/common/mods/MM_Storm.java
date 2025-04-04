@@ -53,7 +53,7 @@ public class MM_Storm extends MobModifier {
                 && target.level().canSeeSkyFromBelowWater(new BlockPos(Mth.floor(target.getX()), Mth.floor(target.getY()), Mth.floor(target.getZ())))) {
             nextAbilityUse = time + coolDown;
             LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level(), EntitySpawnReason.MOB_SUMMONED);
-            lightningboltentity.moveTo(target.getX(), target.getY(), target.getZ());
+            lightningboltentity.setPos(target.getX(), target.getY(), target.getZ());
             lightningboltentity.setVisualOnly(false);
             mob.level().addFreshEntity(lightningboltentity);
         }

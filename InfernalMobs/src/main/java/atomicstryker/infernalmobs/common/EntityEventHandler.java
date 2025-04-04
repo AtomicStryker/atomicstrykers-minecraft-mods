@@ -37,7 +37,7 @@ public class EntityEventHandler {
     public void onEntityJoinedWorld(EntityJoinLevelEvent event) {
         // make sure we are not catching items or player entities in this
         if (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy) {
-            String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
+            String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag()).orElse("");
             if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
                 InfernalMobsCore.instance().addEntityModifiersByString((LivingEntity) event.getEntity(), savedMods);
             } else {
@@ -154,7 +154,7 @@ public class EntityEventHandler {
 
             // workaround to get save-loaded infernal entities working, init them on their first living tick
             if (event.getEntity().tickCount == 1) {
-                String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag());
+                String savedMods = event.getEntity().getPersistentData().getString(InfernalMobsCore.instance().getNBTTag()).orElse("");
                 if (!savedMods.isEmpty() && !savedMods.equals(InfernalMobsCore.instance().getNBTMarkerForNonInfernalEntities())) {
                     InfernalMobsCore.instance().addEntityModifiersByString(event.getEntity(), savedMods);
                 }
