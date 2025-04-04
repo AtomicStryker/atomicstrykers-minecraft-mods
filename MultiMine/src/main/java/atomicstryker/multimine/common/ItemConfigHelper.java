@@ -20,8 +20,8 @@ public class ItemConfigHelper {
         itemStackList = new ArrayList<>();
         for (String json : items) {
             try {
-                CompoundTag nbt = TagParser.parseTag(json);
-                ItemStack itemStack = ItemStack.parseOptional(registryAccess, nbt);
+                CompoundTag nbt = TagParser.parseCompoundFully(json);
+                ItemStack itemStack = ItemStack.parse(registryAccess, nbt).orElse(ItemStack.EMPTY);
                 if (!itemStack.isEmpty()) {
                     itemStackList.add(itemStack);
                 } else {
@@ -36,7 +36,7 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack, RegistryAccess registryAccess) {
-        return itemStack.save(registryAccess).getAsString();
+        return itemStack.save(registryAccess).toString();
     }
 
     public List<ItemStack> getItemStackList() {
