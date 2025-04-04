@@ -636,3 +636,6 @@ a: setAccessible now true
 
 1.21.4.3
 + fix for a possible crash on dedicated server startup, remove proxy pattern
+
+1.21.5.1
++ updated to Minecraft 1.21.5 (min Forge 55.0.3)
