@@ -14,13 +14,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mod(RuinsMod.MOD_ID)
-@EventBusSubscriber(modid = RuinsMod.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class RuinsMod {
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -45,7 +42,6 @@ public class RuinsMod {
     public final static int DIR_NORTH = 0, DIR_EAST = 1, DIR_SOUTH = 2, DIR_WEST = 3;
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
-    public static IProxy proxy = FMLEnvironment.dist.isClient() ? new RuinsClient() : new RuinsServer();
     private static RuinsMod instance = null;
     private final ConcurrentHashMap<ResourceLocation, WorldHandle> generatorMap;
     private long nextInfoTime;
@@ -81,7 +77,7 @@ public class RuinsMod {
     }
 
     public static File getMinecraftBaseDir() {
-        return proxy.getBaseDir();
+        return FMLPaths.GAMEDIR.get().toFile();
     }
 
     @SubscribeEvent

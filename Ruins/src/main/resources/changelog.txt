@@ -627,3 +627,6 @@ a: setAccessible now true
 
 1.21.1.1NF
 + updated to Minecraft 1.21.1 (min NeoForge 21.1.58)
+
+1.21.1.2NF
++ updated to neoforge 21.1.141, fix startup crash, remove iproxy pattern
