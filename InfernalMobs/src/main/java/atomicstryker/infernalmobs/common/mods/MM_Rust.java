@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -40,16 +41,15 @@ public class MM_Rust extends MobModifier {
     @Override
     public float onAttack(LivingEntity entity, DamageSource source, float damage) {
         if (entity instanceof Player) {
-            hurtEquipment((Player) entity, entity.damageSources().magic(), damage * 3,
-                    new EquipmentSlot[]{EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD});
+            hurtEquipment((Player) entity, entity.damageSources().magic(), damage * 3);
         }
         return super.onAttack(entity, source, damage);
     }
 
-    private void hurtEquipment(Player player, DamageSource damageSource, float damage, EquipmentSlot[] equipmentSlots) {
+    private void hurtEquipment(Player player, DamageSource damageSource, float damage) {
         if (damage > 0.0F) {
             int i = (int) Math.max(1.0F, damage / 4.0F);
-            for (EquipmentSlot equipmentSlot : equipmentSlots) {
+            for (EquipmentSlot equipmentSlot : EquipmentSlotGroup.ARMOR) {
                 ItemStack itemstack = player.getItemBySlot(equipmentSlot);
                 if (itemstack.canBeHurtBy(damageSource)) {
                     itemstack.hurtAndBreak(i, player, equipmentSlot);
