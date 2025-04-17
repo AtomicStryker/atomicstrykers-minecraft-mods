@@ -8,8 +8,8 @@ import atomicstryker.dynamiclights.server.ItemLightLevels;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -95,31 +95,25 @@ public class PlayerSelfLightSource {
             }
 
             int prevLight = playerLightSourceContainer.lightLevel;
-            boolean isUnderwater = checkPlayerWater(player);
+            boolean isUnderwater = checkPlayerWater(event.getEntity());
 
-            ItemStack item = ItemStack.EMPTY;
-            LOGGER.trace("checking for light from main hand item {}", player.getItemInHand(InteractionHand.MAIN_HAND));
-            int main = getLightFromItemStack(player.getItemInHand(InteractionHand.MAIN_HAND), isUnderwater, player.registryAccess());
-            int off = getLightFromItemStack(player.getItemInHand(InteractionHand.OFF_HAND), isUnderwater, player.registryAccess());
-            if (main >= off && main > 0) {
-                item = player.getItemInHand(InteractionHand.MAIN_HAND);
-                playerLightSourceContainer.lightLevel = main;
-            } else if (off >= main && off > 0) {
-                item = player.getItemInHand(InteractionHand.OFF_HAND);
-                playerLightSourceContainer.lightLevel = off;
-            } else {
-                playerLightSourceContainer.lightLevel = 0;
+            ItemStack itemStack = ItemStack.EMPTY;
+            playerLightSourceContainer.lightLevel = 0;
+            // equipmentSlot enum includes main and off hand and all armor pieces
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                ItemStack equippedStack = event.getEntity().getItemBySlot(equipmentSlot);
+                int itemLight = getLightFromItemStack(equippedStack, isUnderwater, event.getEntity().level().registryAccess());
+                if (itemLight > playerLightSourceContainer.lightLevel) {
+                    playerLightSourceContainer.lightLevel = itemLight;
+                    itemStack = equippedStack;
+                }
             }
-            LOGGER.trace("Self light tick, main:{}, off:{}, light:{}, chosen itemstack:{}", main, off, playerLightSourceContainer.lightLevel, item);
-
-            for (ItemStack armor : player.getInventory().armor) {
-                playerLightSourceContainer.lightLevel = Math.max(playerLightSourceContainer.lightLevel, getLightFromItemStack(armor, isUnderwater, player.registryAccess()));
-            }
+            LOGGER.trace("Self light tick, light:{}  from itemstack:{}", playerLightSourceContainer.lightLevel, itemStack);
 
             if (prevLight != 0 && playerLightSourceContainer.lightLevel != prevLight) {
                 playerLightSourceContainer.lightLevel = 0;
             } else {
-                if (player.isOnFire()) {
+                if (event.getEntity().isOnFire()) {
                     playerLightSourceContainer.lightLevel = 15;
                 }
             }

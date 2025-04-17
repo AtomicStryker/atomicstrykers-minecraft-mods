@@ -1,3 +1,6 @@
+1.21.5.1NF
+- updated to MC 1.21.5 with NeoForged 21.5.40-beta
+
 1.21.4.2NF
 - updated default shining items list to include more things such as redstone or soul torches
 - updated to NeoForge 21.4.88-beta
