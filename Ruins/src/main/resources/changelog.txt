@@ -636,3 +636,6 @@ a: setAccessible now true
 
 1.21.4.3NF
 + fix possible crash on dedicated server start, remove proxy pattern, upgrade NeoForge
+
+1.21.5.1NF
++ updated to Minecraft 1.21.5 (NeoForge 21.5.40-beta)

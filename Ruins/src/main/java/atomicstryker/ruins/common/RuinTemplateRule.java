@@ -57,13 +57,13 @@ public class RuinTemplateRule {
             double blockWeight = 1;
             int blockBonemeal = 0;
             CompoundTag blockEntity = null;
-            if (stateCompound.contains(PARAMETERS_TAG, 10)) {
-                CompoundTag parameters = stateCompound.getCompound(PARAMETERS_TAG);
+            if (stateCompound.contains(PARAMETERS_TAG)) {
+                CompoundTag parameters = stateCompound.getCompoundOrEmpty(PARAMETERS_TAG);
                 blockWeight = extractWeight(blockWeight, parameters);
                 blockBonemeal = extractBonemeal(blockBonemeal, parameters);
                 blockEntity = extractEntity(blockEntity, parameters);
                 if (!parameters.isEmpty()) {
-                    RuinsMod.LOGGER.warn("ignoring invalid Ruins parameters {} in rule {}", () -> parameters.getAllKeys().toString(), () -> rule);
+                    RuinsMod.LOGGER.warn("ignoring invalid Ruins parameters {} in rule {}", () -> parameters.keySet().toString(), () -> rule);
                 }
                 stateCompound.remove(PARAMETERS_TAG);
             }
@@ -98,8 +98,8 @@ public class RuinTemplateRule {
     // get Ruins weight parameter (numeric, cast to double; must be non-negative)
     private static double extractWeight(double defaultValue, CompoundTag parameters) {
         double weight = defaultValue;
-        if (parameters.contains(PARAMETER_WEIGHT_TAG, 99)) {
-            double value = parameters.getDouble(PARAMETER_WEIGHT_TAG);
+        if (parameters.contains(PARAMETER_WEIGHT_TAG)) {
+            double value = parameters.getDouble(PARAMETER_WEIGHT_TAG).orElse(0D);
             if (value >= 0) {
                 weight = value;
                 parameters.remove(PARAMETER_WEIGHT_TAG);
@@ -113,8 +113,8 @@ public class RuinTemplateRule {
     // get Ruins bonemeal parameter (int; must be non-negative)
     private static int extractBonemeal(int defaultValue, CompoundTag parameters) {
         int bonemeal = defaultValue;
-        if (parameters.contains(PARAMETER_BONEMEAL_TAG, 3)) {
-            int value = parameters.getInt(PARAMETER_BONEMEAL_TAG);
+        if (parameters.contains(PARAMETER_BONEMEAL_TAG)) {
+            int value = parameters.getInt(PARAMETER_BONEMEAL_TAG).orElse(0);
             if (value >= 0) {
                 bonemeal = value;
                 parameters.remove(PARAMETER_BONEMEAL_TAG);
@@ -128,8 +128,8 @@ public class RuinTemplateRule {
     // get Ruins block_entity parameter (compound)
     private static CompoundTag extractEntity(CompoundTag defaultValue, CompoundTag parameters) {
         CompoundTag entity = defaultValue;
-        if (parameters.contains(PARAMETER_ENTITY_TAG, 10)) {
-            entity = parameters.getCompound(PARAMETER_ENTITY_TAG).copy();
+        if (parameters.contains(PARAMETER_ENTITY_TAG)) {
+            entity = parameters.getCompound(PARAMETER_ENTITY_TAG).get();
             entity.remove("id");
             entity.remove("x");
             entity.remove("y");
@@ -209,11 +209,11 @@ public class RuinTemplateRule {
                 if (entity instanceof RandomizableContainerBlockEntity) {
                     // unwrap forgedata if needed?
                     if (nbtTagCompound.contains("ForgeData")) {
-                        nbtTagCompound = nbtTagCompound.getCompound("ForgeData");
+                        nbtTagCompound = nbtTagCompound.getCompound("ForgeData").get();
                     }
                     if (nbtTagCompound.contains("LootTable")) {
-                        String lootTable = nbtTagCompound.getString("LootTable");
-                        long lootSeed = nbtTagCompound.getLong("LootTableSeed");
+                        String lootTable = nbtTagCompound.getString("LootTable").get();
+                        long lootSeed = nbtTagCompound.getLong("LootTableSeed").get();
 
                         ResourceLocation lootResourceLocation = ResourceLocation.parse(lootTable);
                         RandomizableContainerBlockEntity tileEntityLockableLoot = (RandomizableContainerBlockEntity) entity;

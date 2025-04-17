@@ -45,7 +45,7 @@ public class RuleStringNbtHelper {
 
     public static CompoundTag tileEntityNBTFromCompound(CompoundTag defaultValue, CompoundTag input) {
         CompoundTag teNbt = defaultValue;
-        if (input.contains("ruinsTE", 10)) {
+        if (input.contains("ruinsTE")) {
             // emit a few deprecation warnings, then demote to debug
             final org.apache.logging.log4j.Level level = throttleEntityWarning > 0
                     ? org.apache.logging.log4j.Level.WARN
@@ -55,7 +55,7 @@ public class RuleStringNbtHelper {
                 RuinsMod.LOGGER.warn("suppressing ruinsTE deprecation warnings; limit reached");
             }
             if (defaultValue == null) {
-                teNbt = input.getCompound("ruinsTE").copy();
+                teNbt = input.getCompound("ruinsTE").get();
                 teNbt.remove("id");
                 teNbt.remove("x");
                 teNbt.remove("y");
@@ -92,7 +92,7 @@ public class RuleStringNbtHelper {
                 } else if (bracketCounter == 0) {
                     CompoundTag nbtTagCompound;
                     try {
-                        nbtTagCompound = TagParser.parseTag(rule.substring(currentBracketStartIndex, i + 1));
+                        nbtTagCompound = TagParser.parseCompoundFully(rule.substring(currentBracketStartIndex, i + 1));
                     } catch (CommandSyntaxException e) {
                         RuinsMod.LOGGER.error("Error in rule {} starting at character {}: unbalanced brackets!", rule, currentBracketStartIndex);
                         return null;
