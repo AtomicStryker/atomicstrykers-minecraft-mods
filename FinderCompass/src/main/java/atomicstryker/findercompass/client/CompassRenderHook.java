@@ -2,20 +2,12 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.client.renderer.CoreShaders;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,7 +18,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Map.Entry;
 
@@ -59,8 +50,7 @@ public class CompassRenderHook {
             }
             updateConfigValues();
             if (playerHasCompass()) {
-                renderCompassNeedles(guiGraphics.pose());
-                //renderTestQuad(event.getMatrixStack(), 45);
+                renderCompassNeedles(guiGraphics);
             }
         }
     }
@@ -94,45 +84,31 @@ public class CompassRenderHook {
         return false;
     }
 
-    private static void renderCompassNeedles(PoseStack poseStack) {
+    private static void renderCompassNeedles(GuiGraphics guiGraphics) {
 
-        poseStack.pushPose();
+        // push pose to not mess up other renderers
+        guiGraphics.pose().pushPose();
+        // use the standard gui vertex consumer which is already set up for simple quads
+        VertexConsumer vertexconsumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.gui());
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableBlend();
-        // make the needles somewhat transparent
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
-
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawNeedle(screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            drawNeedle(screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-
-        poseStack.popPose();
+        // pop pose to reset rendering to where it was before we started drawing
+        guiGraphics.pose().popPose();
     }
 
-    private static void drawNeedle(int screenWidth, int screenHeight, int r, int g, int b, float angle) {
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+    private static void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
 
         int halfWidthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
         int halfHeightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
@@ -161,16 +137,22 @@ public class CompassRenderHook {
         Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
         Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
 
-        // buttom left corner
-        bufferbuilder.addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F).setColor(r, g, b, 120);
+        // bottom left corner of quad
+        vertexConsumer
+                .addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F)
+                .setColor(r, g, b, 120);
         // bottom right corner
-        bufferbuilder.addVertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0F).setColor(r, g, b, 120);
+        vertexConsumer
+                .addVertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0F)
+                .setColor(r, g, b, 120);
         // top right corner
-        bufferbuilder.addVertex(rotatedTopRight.x, rotatedTopRight.y, -90.0F).setColor(r, g, b, 120);
+        vertexConsumer
+                .addVertex(rotatedTopRight.x, rotatedTopRight.y, -90.0F)
+                .setColor(r, g, b, 120);
         // top left corner
-        bufferbuilder.addVertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0F).setColor(r, g, b, 120);
-
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        vertexConsumer
+                .addVertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0F)
+                .setColor(r, g, b, 120);
     }
 
     private static float computeNeedleHeading(BlockPos coords) {
@@ -191,32 +173,5 @@ public class CompassRenderHook {
         double xRotated = Math.cos(angleRadian) * (toRotate.x - toRotateAround.x) - Math.sin(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.x;
         double yRotated = Math.sin(angleRadian) * (toRotate.x - toRotateAround.x) + Math.cos(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.y;
         return new Point((int) Math.rint(xRotated), (int) Math.rint(yRotated));
-    }
-
-    private static void oldCode(float r, float g, float b, float angle) {
-        // save modelview matrix for later restoration
-        GL11.glPushMatrix();
-        // make the needle cover roughly the same elliptical shape as the default pixelled one
-        GL11.glScalef(1.7875f, 0.8125f, 1f);
-
-        GL11.glRotatef(-angle, 0, 0, 1f); // rotate around z axis, which is in the icon middle after our translation
-
-        // make the vertex much bigger for debugging - where did the damn thing go
-        double sizeMultiplier = 100D;
-
-        // alternative native ogl code
-        GL11.glBegin(GL11.GL_QUADS); // set ogl mode, need quads
-        GL11.glColor4f(r, g, b, 0.85F); // set color
-
-        // now draw each glorious needle as single quad
-        GL11.glVertex3d(-0.03D * sizeMultiplier, -0.04D * sizeMultiplier, 0.0D); // lower left
-        GL11.glVertex3d(0.03D * sizeMultiplier, -0.04D * sizeMultiplier, 0.0D); // lower right
-        GL11.glVertex3d(0.03D * sizeMultiplier, 0.2D * sizeMultiplier, 0.0D); // upper right
-        GL11.glVertex3d(-0.03D * sizeMultiplier, 0.2D * sizeMultiplier, 0.0D); // upper left
-
-        GL11.glEnd(); // let ogl draw it
-
-        // restore modelview matrix
-        GL11.glPopMatrix();
     }
 }

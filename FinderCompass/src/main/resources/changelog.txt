@@ -1,3 +1,6 @@
+1.21.5.1NF
+- updated to MC 1.21.5, neoforge 21.5.40-beta
+
 1.21.4NF
 - updated to MC 1.21.4, neoforge edition
 
