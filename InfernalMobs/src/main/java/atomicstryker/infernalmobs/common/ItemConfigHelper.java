@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemConfigHelper {
     private final List<ItemStack> itemStackList;
@@ -17,12 +18,12 @@ public class ItemConfigHelper {
         itemStackList = new ArrayList<>();
         for (String json : items) {
             try {
-                CompoundTag nbt = TagParser.parseTag(json);
-                ItemStack itemStack = ItemStack.parseOptional(registryAccess, nbt);
+                CompoundTag nbt = TagParser.parseCompoundFully(json);
+                Optional<ItemStack> itemStack = ItemStack.parse(registryAccess, nbt);
 
-                if (!itemStack.isEmpty()) {
-                    itemStackList.add(itemStack);
-                    logger.info("item config parser identified itemstack {}", itemStack);
+                if (itemStack.isPresent()) {
+                    itemStackList.add(itemStack.get());
+                    logger.info("item config parser identified itemstack {}", itemStack.get());
                 } else {
                     logger.error("item config parser could not create itemStack from {}", json);
                 }

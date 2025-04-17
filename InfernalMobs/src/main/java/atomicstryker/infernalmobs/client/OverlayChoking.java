@@ -54,7 +54,6 @@ public class OverlayChoking {
             if (!mc.player.isEyeInFluid(FluidTags.WATER) && airOverrideValue != -999) {
 
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.setShaderTexture(0, GUI_ICONS_LOCATION);
 
                 int leftScreenCoordinate = mc.getWindow().getGuiScaledWidth() / 2 + 91;
                 int topScreenCoordinate = mc.getWindow().getGuiScaledHeight() - 59;

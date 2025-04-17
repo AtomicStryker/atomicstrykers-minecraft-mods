@@ -1,12 +1,11 @@
 package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 
 public class MM_Rust extends MobModifier {
@@ -32,8 +31,8 @@ public class MM_Rust extends MobModifier {
         if (isDirectAttack(source)
                 && (source.getDirectEntity() instanceof Player p)
                 && !isCreativePlayer(p)) {
-            p.getInventory().getSelected().hurtAndBreak(4,
-                    (LivingEntity) source.getDirectEntity(), LivingEntity.getSlotForHand(InteractionHand.MAIN_HAND));
+            ItemStack equippedStack = p.getItemBySlot(EquipmentSlot.MAINHAND);
+            equippedStack.hurtAndBreak(4, (LivingEntity) source.getDirectEntity(), EquipmentSlot.MAINHAND);
         }
 
         return super.onHurt(mob, source, damage);
@@ -50,11 +49,11 @@ public class MM_Rust extends MobModifier {
     private void hurtArmor(Player player, DamageSource damageSource, float pDamageAmount) {
         if (pDamageAmount > 0.0F) {
             int i = (int) Math.max(1.0F, pDamageAmount / 4.0F);
-            EquipmentSlot[] slots = new EquipmentSlot[]{EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD};
-            for (EquipmentSlot equipmentSlot : slots) {
+            for (EquipmentSlot equipmentSlot : EquipmentSlotGroup.ARMOR) {
                 ItemStack itemstack = player.getItemBySlot(equipmentSlot);
-                if (itemstack.getItem() instanceof ArmorItem && itemstack.canBeHurtBy(damageSource)) {
+                if (itemstack.canBeHurtBy(damageSource)) {
                     itemstack.hurtAndBreak(i, player, equipmentSlot);
+                    break;
                 }
             }
         }

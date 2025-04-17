@@ -239,7 +239,7 @@ public class InfernalMobsCore {
 
     public static boolean getWasMobSpawnedBefore(LivingEntity ent) {
         // check if the entity previously passed infernal mob generation without getting a mod
-        String storedInfernalTag = ent.getPersistentData().getString(instance().getNBTTag());
+        String storedInfernalTag = ent.getPersistentData().getString(instance().getNBTTag()).orElse("");
         boolean result = !storedInfernalTag.isEmpty() && instance().getNBTMarkerForNonInfernalEntities().equals(storedInfernalTag);
         if (result) {
             InfernalMobsCore.LOGGER.debug("entity {} was spawned in unmodified before, not modifying it", ent);
@@ -760,7 +760,7 @@ public class InfernalMobsCore {
         while (iter.hasNext() && remainStr > 0) {
             remainStr--;
             EnchantmentInstance eData = (EnchantmentInstance) iter.next();
-            itemStack.enchant(eData.enchantment, eData.level);
+            itemStack.enchant(eData.enchantment(), eData.level());
         }
     }
 
@@ -771,7 +771,7 @@ public class InfernalMobsCore {
      */
     private ItemStack getRandomItem(LivingEntity mob, int prefix) {
         List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ? instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
-        return list.size() > 0 ? list.get(mob.level().random.nextInt(list.size())).copy() : null;
+        return !list.isEmpty() ? list.get(mob.level().random.nextInt(list.size())).copy() : null;
     }
 
     public void sendVelocityPacket(ServerPlayer target, float xVel, float yVel, float zVel) {

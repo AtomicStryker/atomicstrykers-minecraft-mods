@@ -154,7 +154,6 @@ public class OverlayBossBar {
         }
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
     }
 
     private static LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {

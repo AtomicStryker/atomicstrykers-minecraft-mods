@@ -2,15 +2,19 @@ package atomicstryker.infernalmobs.common.mods;
 
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ThrownSplashPotion;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.phys.Vec3;
 
 public class MM_Alchemist extends MobModifier {
 
@@ -58,7 +62,7 @@ public class MM_Alchemist extends MobModifier {
 
             Holder<Potion> potiontype = Potions.HARMING;
 
-            if (distance >= 8.0F && !target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+            if (distance >= 8.0F && !target.hasEffect(MobEffects.SLOWNESS)) {
                 potiontype = Potions.SLOWNESS;
             } else if (target.getHealth() >= 8.0F && !target.hasEffect(MobEffects.POISON)) {
                 potiontype = Potions.POISON;
@@ -66,11 +70,17 @@ public class MM_Alchemist extends MobModifier {
                 potiontype = Potions.WEAKNESS;
             }
 
-            ThrownPotion potionentity = new ThrownPotion(mob.level(), mob, PotionContents.createItemStack(Items.SPLASH_POTION, potiontype));
-            potionentity.setXRot(potionentity.getXRot() + 20.0F);
-            potionentity.shoot(diffX, diffY + (double) (distance * 0.2F), diffZ, 0.75F, 8.0F);
-            mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
-            mob.level().addFreshEntity(potionentity);
+            if (mob.level() instanceof ServerLevel serverLevel) {
+                Vec3 vec3 = target.getDeltaMovement();
+                double xDistance = target.getX() + vec3.x - mob.getX();
+                double yDistance = target.getEyeY() - 1.1F - mob.getY();
+                double zDistance = target.getZ() + vec3.z - mob.getZ();
+                double absDistance = Math.sqrt(xDistance * xDistance + zDistance * zDistance);
+                ItemStack itemstack = PotionContents.createItemStack(Items.SPLASH_POTION, potiontype);
+                Projectile.spawnProjectileUsingShoot(ThrownSplashPotion::new, serverLevel, itemstack, mob, xDistance, yDistance + absDistance * 0.2, zDistance, 0.75F, 8.0F);
+
+                mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
+            }
         }
     }
 
