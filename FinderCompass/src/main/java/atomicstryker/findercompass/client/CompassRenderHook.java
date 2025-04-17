@@ -46,6 +46,7 @@ public class CompassRenderHook {
                 try {
                     layers = (LayeredDraw) field.get(mc.gui);
                     layers.add(new FinderCompassGuiOverlay());
+                    break;
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
