@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class MM_Sticky extends MobModifier {
 
@@ -38,10 +39,15 @@ public class MM_Sticky extends MobModifier {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                ItemEntity drop = p.drop(p.getInventory().removeItem(p.getInventory().selected, 1), false);
+                ItemStack droppedStack = p.getInventory().removeItem(p.getInventory().selected, 1);
+                ItemEntity drop = p.drop(droppedStack, false);
                 if (drop != null) {
                     drop.setPickUpDelay(50);
                     mob.level().playSound(null, mob.blockPosition(), SoundEvents.SLIME_ATTACK, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
+                } else {
+                    // drop was cancelled by forge hook, restore the item
+                    // see https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/541
+                    p.getInventory().add(droppedStack);
                 }
             }
         }
