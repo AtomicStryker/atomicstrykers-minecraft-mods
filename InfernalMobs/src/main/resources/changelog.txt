@@ -1,3 +1,7 @@
+1.20.1.10
+- fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/541 again (sorry)
+- removal of the item wasnt working in last version
+
 1.20.1.9
 - fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/541 again (sorry)
 - if forge hooks prevent sticky from dropping items, just do nothing

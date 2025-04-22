@@ -41,7 +41,7 @@ public class MM_Sticky extends MobModifier {
                 nextAbilityUse = time + coolDown;
                 ItemStack equippedStack = p.getMainHandItem();
                 if (ItemStack.EMPTY != equippedStack) {
-                    p.getInventory().removeFromSelected(false);
+                    p.getInventory().removeItem(equippedStack);
                     ItemEntity drop = p.drop(equippedStack, false);
                     if (drop != null) {
                         // drop may be cancelled by forge event hook, but if it was, restoring the lost item
