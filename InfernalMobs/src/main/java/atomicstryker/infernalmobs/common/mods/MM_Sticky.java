@@ -41,11 +41,11 @@ public class MM_Sticky extends MobModifier {
                 nextAbilityUse = time + coolDown;
                 ItemStack equippedStack = p.getMainHandItem();
                 if (ItemStack.EMPTY != equippedStack) {
-                    // drop may be cancelled by forge event hook
+                    p.getInventory().removeFromSelected(false);
                     ItemEntity drop = p.drop(equippedStack, false);
                     if (drop != null) {
-                        // assert successful drop to actually remove the item from inventory
-                        p.getInventory().removeFromSelected(false);
+                        // drop may be cancelled by forge event hook, but if it was, restoring the lost item
+                        // is the responsibility of that outside party
                         drop.setPickUpDelay(50);
                         mob.level().playSound(null, mob.blockPosition(), SoundEvents.SLIME_ATTACK, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
                     }
