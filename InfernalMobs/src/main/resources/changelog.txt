@@ -1,3 +1,8 @@
+1.20.1.9
+- fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/541 again (sorry)
+- if forge hooks prevent sticky from dropping items, just do nothing
+- it is the responsibility of the drop blocking mod to restore the item in that case
+
 1.20.1.8
 - fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/541 again
 - if forge hooks prevent sticky from dropping items, never remove them from the player inventory
