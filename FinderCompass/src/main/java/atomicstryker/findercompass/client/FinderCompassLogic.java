@@ -60,7 +60,10 @@ public class FinderCompassLogic {
                 iter = currentSetting.getCustomNeedles().entrySet().iterator();
                 //System.out.println("finder compass second ticker");
 
-                if (is15SecInterval && currentSetting.getFeatureNeedle() != null) {
+                if (is15SecInterval
+                        && currentSetting.getFeatureNeedle() != null
+                        // dont send packets to a server that does not know them
+                        && mc.player.connection.hasChannel(FeatureSearchPacket.TYPE.id())) {
                     FeatureSearchPacket featureSearchPacket = new FeatureSearchPacket(mc.player.getOnPos().getX(), mc.player.getOnPos().getY(), mc.player.getOnPos().getZ(), mc.player.getName().getString(), currentSetting.getFeatureNeedle());
                     PacketDistributor.sendToServer(featureSearchPacket);
                 }
