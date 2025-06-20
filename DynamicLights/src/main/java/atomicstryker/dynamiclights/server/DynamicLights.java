@@ -22,11 +22,12 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,14 +104,15 @@ public class DynamicLights {
         droppedItemsLightSource = new DroppedItemsLightSource();
 
         // this one is for RegistryEvent
-        final IEventBus modEventBus = context.getModEventBus();
-        modEventBus.register(DynamicLights.class);
-        modEventBus.addListener(ModDatagen::start);
+        BusGroup.DEFAULT.register(MethodHandles.lookup(), this);
+
+        var modBusGroup = context.getModBusGroup();
+        GatherDataEvent.getBus(modBusGroup).addListener(ModDatagen::start);
 
         // this one is for FMLServerStartedEvent, WorldTickEvent
         MinecraftForge.EVENT_BUS.register(this);
 
-        BLOCKS.register(modEventBus);
+        BLOCKS.register(modBusGroup);
     }
 
     @SubscribeEvent
