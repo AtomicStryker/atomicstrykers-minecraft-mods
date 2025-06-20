@@ -1,7 +1,7 @@
 If you want to use these mods in modpacks, see the license at the bottom of https://atomicstryker.github.io/
 
-This readme applies to Minecraft 1.17 and newer, and only to mods which have been updated to the respective versions of minecraft.
-There is outdated/unmaintained mods in the repository also, be aware.
+This readme applies to Minecraft 1.17 and newer.
+For mods i no longer maintain, check older version branches.
 
 In the respective mod folder, run "gradlew build" and verify it succeeds.
 If it does not, the mod might lack the basic setup for the newer MC versions, to be done in gradle.build and by replacing the gradle wrapper to one taken from a matching forge MDK.
