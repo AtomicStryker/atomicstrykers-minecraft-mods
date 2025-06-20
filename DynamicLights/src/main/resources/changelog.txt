@@ -1,3 +1,6 @@
+1.21.6.1
+- updated for MC 1.21.6 and Forge 58.0.3 with EventBus 7
+
 1.21.5.1
 - updated for MC 1.21.5 and Forge 55.0.3
 
