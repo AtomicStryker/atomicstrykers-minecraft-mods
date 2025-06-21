@@ -8,14 +8,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Path;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
 public class FinderCompassClient implements ISidedProxy {
 
     @Override

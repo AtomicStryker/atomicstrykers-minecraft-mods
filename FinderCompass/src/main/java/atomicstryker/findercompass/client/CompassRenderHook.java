@@ -2,23 +2,20 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.Map.Entry;
 
 @SuppressWarnings("unused")
@@ -36,34 +33,13 @@ public class CompassRenderHook {
     private static Boolean mustHoldCompassInHandToBeActive = null;
 
     @SubscribeEvent
-    public static void onLevelLoad(LevelEvent.Load event) {
-        Minecraft mc = Minecraft.getInstance();
-
-        LayeredDraw layers;
-        for (Field field : mc.gui.getClass().getDeclaredFields()) {
-            if (field.getType().isAssignableFrom(LayeredDraw.class)) {
-                field.setAccessible(true);
-                try {
-                    layers = (LayeredDraw) field.get(mc.gui);
-                    layers.add(new FinderCompassGuiOverlay());
-                    break;
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+    public static void renderEvent(RenderHandEvent event) {
+        if (mc == null) {
+            mc = Minecraft.getInstance();
         }
-    }
-
-    public static class FinderCompassGuiOverlay implements LayeredDraw.Layer {
-        @Override
-        public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
-            if (mc == null) {
-                mc = Minecraft.getInstance();
-            }
-            updateConfigValues();
-            if (playerHasCompass()) {
-                renderCompassNeedles(guiGraphics);
-            }
+        updateConfigValues();
+        if (playerHasCompass()) {
+            renderCompassNeedles(event.getPoseStack(), event.getMultiBufferSource());
         }
     }
 
@@ -96,12 +72,12 @@ public class CompassRenderHook {
         return false;
     }
 
-    private static void renderCompassNeedles(GuiGraphics guiGraphics) {
+    private static void renderCompassNeedles(PoseStack poseStack, MultiBufferSource multiBufferSource) {
 
         // push pose to not mess up other renderers
-        guiGraphics.pose().pushPose();
-        // use the standard gui vertex consumer which is already set up for simple quads
-        VertexConsumer vertexconsumer = guiGraphics.getBufferSource().getBuffer(RenderType.gui());
+        poseStack.pushPose();
+        // use a vertex consumer which is already set up for simple quads
+        VertexConsumer vertexconsumer = multiBufferSource.getBuffer(RenderType.debugQuads());
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
@@ -117,7 +93,7 @@ public class CompassRenderHook {
         }
 
         // pop pose to reset rendering to where it was before we started drawing
-        guiGraphics.pose().popPose();
+        poseStack.popPose();
     }
 
     private static void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {

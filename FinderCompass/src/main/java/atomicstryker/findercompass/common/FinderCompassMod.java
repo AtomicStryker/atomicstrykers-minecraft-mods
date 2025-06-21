@@ -21,9 +21,9 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.SimpleChannel;
@@ -48,7 +48,7 @@ public class FinderCompassMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static FinderCompassMod instance;
-    public static ISidedProxy proxy = DistExecutor.safeRunForDist(() -> FinderCompassClient::new, () -> FinderCompassServer::new);
+    public static ISidedProxy proxy = FMLEnvironment.dist.isDedicatedServer() ? new FinderCompassServer() : new FinderCompassClient();
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
@@ -76,9 +76,9 @@ public class FinderCompassMod {
     }
 
     @SubscribeEvent
-    public void serverStarted(ServerStartedEvent evt) {
+    public static void serverStarted(ServerStartedEvent evt) {
         // dedicated server starting point
-        initIfNeeded();
+        instance.initIfNeeded();
     }
 
     /**
@@ -118,9 +118,9 @@ public class FinderCompassMod {
     }
 
     @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         LOGGER.info("Server sending Finder Compass Handshake to player {}", event.getEntity().getDisplayName());
-        networkChannel.send(new HandshakePacket("server", GsonConfig.jsonFromConfig(compassConfig)),
+        networkChannel.send(new HandshakePacket("server", GsonConfig.jsonFromConfig(instance.compassConfig)),
                 PacketDistributor.PLAYER.with((ServerPlayer) event.getEntity()));
     }
 
