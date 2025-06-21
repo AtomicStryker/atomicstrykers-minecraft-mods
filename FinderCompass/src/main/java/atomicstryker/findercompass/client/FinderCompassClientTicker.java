@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 
 import java.util.ArrayList;
 
@@ -48,8 +48,8 @@ public class FinderCompassClientTicker {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.PlayerTickEvent tick) {
-        if (tick.phase == TickEvent.Phase.END && compassLogic != null) {
+    public void onTick(TickEvent.PlayerTickEvent.Post tick) {
+        if (compassLogic != null) {
             if (tick.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == Items.COMPASS) {
                 if (mc.options.keyAttack.isDown()) {
                     if (!repeat) {
