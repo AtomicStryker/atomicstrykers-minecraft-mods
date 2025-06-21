@@ -76,7 +76,8 @@ public abstract class AbstractTeleporter extends MobModifier {
         boolean isWater = destinationFloorState.getFluidState().is(FluidTags.WATER);
         if (blocksMotion && !isWater) {
             EntityTeleportEvent forgeEvent = getForgeEvent(mob, x, y, z);
-            if (forgeEvent.isCanceled()) {
+            // forge API may cancel the teleport event
+            if (EntityTeleportEvent.BUS.post(forgeEvent)) {
                 return false;
             }
             Vec3 vec3 = mob.position();
