@@ -1,14 +1,20 @@
 package atomicstryker.infernalmobs.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueOutput;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemConfigHelper {
     private final List<ItemStack> itemStackList;
@@ -18,9 +24,9 @@ public class ItemConfigHelper {
         for (String json : items) {
             try {
                 CompoundTag nbt = TagParser.parseCompoundFully(json);
-                ItemStack itemStack = ItemStack.parse(registryAccess, nbt).orElse(ItemStack.EMPTY);
-                if (!itemStack.isEmpty()) {
-                    itemStackList.add(itemStack);
+                Optional<Pair<ItemStack, Tag>> optionalItemStack = ItemStack.CODEC.decode(NbtOps.INSTANCE, nbt).result();
+                if (!optionalItemStack.isEmpty()) {
+                    itemStackList.add(optionalItemStack.get().getFirst());
                 } else {
                     logger.error("item config parser could not build item: {}", json);
                 }
@@ -33,7 +39,10 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack, RegistryAccess registryAccess) {
-        return itemStack.save(registryAccess).toString();
+        TagValueOutput tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registryAccess);
+        tagValueOutput.store(ItemStack.MAP_CODEC, itemStack);
+        CompoundTag resultTag = tagValueOutput.buildResult();
+        return resultTag.toString();
     }
 
     public List<ItemStack> getItemStackList() {

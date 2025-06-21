@@ -5,7 +5,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
@@ -15,7 +14,8 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.ChunkEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.bus.EventBus;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -47,15 +47,14 @@ public class EntityEventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityLivingDeath(LivingDeathEvent event) {
+    public boolean onEntityLivingDeath(LivingDeathEvent event) {
         if (!event.getEntity().level().isClientSide) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
-                if (mod.onDeath()) {
-                    event.setCanceled(true);
-                }
+                return mod.onDeath();
             }
         }
+        return false;
     }
 
     @SubscribeEvent
@@ -129,13 +128,14 @@ public class EntityEventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityLivingFall(LivingFallEvent event) {
+    public boolean onEntityLivingFall(LivingFallEvent event) {
         if (!event.getEntity().level().isClientSide) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
-                event.setCanceled(mod.onFall(event.getDistance()));
+                return mod.onFall(event.getDistance());
             }
         }
+        return false;
     }
 
     @SubscribeEvent
@@ -181,8 +181,7 @@ public class EntityEventHandler {
                     if (maxC != null) {
                         System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getA() + ", " + maxC.getB());
                         if (maxDamage > InfernalMobsCore.instance().config.getMobFarmDamageTrigger()) {
-                            MinecraftForge.EVENT_BUS
-                                    .post(new MobFarmDetectedEvent(event.getEntity().level().getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
+                            MobFarmDetectedEvent.BUS.post(new MobFarmDetectedEvent(event.getEntity().level().getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
                         }
                     }
                     damageMap.clear();
@@ -204,6 +203,8 @@ public class EntityEventHandler {
     }
 
     public static class MobFarmDetectedEvent extends ChunkEvent {
+        public static final EventBus<MobFarmDetectedEvent> BUS = EventBus.create(MobFarmDetectedEvent.class);
+
         public final long triggeringInterval;
         public final float triggeringDamage;
 

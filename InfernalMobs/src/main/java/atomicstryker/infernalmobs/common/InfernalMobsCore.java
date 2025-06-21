@@ -59,8 +59,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
@@ -156,7 +157,7 @@ public class InfernalMobsCore {
         MinecraftForge.EVENT_BUS.register(this);
 
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
-        MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
+        LevelEvent.Unload.BUS.addListener(new SaveEventHandler());
 
         LOGGER = LogManager.getLogger();
     }
@@ -218,9 +219,9 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public void commonSetup(ServerStartedEvent evt) {
+    public static void commonSetup(ServerStartedEvent evt) {
         // dedicated server starting point
-        initIfNeeded(evt.getServer().getAllLevels().iterator().next());
+        instance().initIfNeeded(evt.getServer().getAllLevels().iterator().next());
     }
 
     /**
@@ -247,7 +248,7 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent evt) {
+    public static void registerCommands(RegisterCommandsEvent evt) {
         evt.getDispatcher().register(InfernalCommandFindEntityClass.BUILDER);
         evt.getDispatcher().register(InfernalCommandSpawnInfernal.BUILDER);
     }
@@ -389,12 +390,7 @@ public class InfernalMobsCore {
             if (!getIsRareEntityOnline(entity) && !isBlockedBeingInfernal(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {
-                        /*
-                            get server world from resource location:
-                            RegistryKey<World> registrykey = RegistryKey.create(Registry.WORLD_KEY, resourcelocation);
-                            ServerWorld serverworld = p_212592_0_.getSource().getServer().getWorld(registrykey);
-                         */
-                        ResourceKey<Level> worldRegistryKey = entity.getCommandSenderWorld().dimension();
+                        ResourceKey<Level> worldRegistryKey = entity.level().dimension();
                         ResourceLocation worldResourceLocation = worldRegistryKey.location();
 
                         // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
@@ -738,7 +734,7 @@ public class InfernalMobsCore {
     public void sendHealthPacket(LivingEntity mob) {
         networkChannel.send(new HealthPacket("", mob.getId(), mob.getHealth(), mob.getMaxHealth()),
                 PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(mob.getX(), mob.getY(), mob.getZ(),
-                        32d, mob.getCommandSenderWorld().dimension())));
+                        32d, mob.level().dimension())));
     }
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
@@ -753,20 +749,20 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.LevelTickEvent tick) {
-        if (System.currentTimeMillis() > nextExistCheckTime) {
-            nextExistCheckTime = System.currentTimeMillis() + existCheckDelay;
+    public static void onTick(TickEvent.LevelTickEvent tick) {
+        if (System.currentTimeMillis() > instance().nextExistCheckTime) {
+            instance().nextExistCheckTime = System.currentTimeMillis() + instance().existCheckDelay;
             Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.level);
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
-            mobsmap.keySet().stream().filter(this::filterMob).forEach(InfernalMobsCore::removeEntFromElites);
+            mobsmap.keySet().stream().filter(instance()::filterMob).forEach(InfernalMobsCore::removeEntFromElites);
 
-            resetModifiedPlayerEntitiesAsNeeded(tick.level);
+            instance().resetModifiedPlayerEntitiesAsNeeded(tick.level);
         }
 
         if (!tick.level.isClientSide) {
-            infCheckA = null;
-            infCheckB = null;
+            instance().infCheckA = null;
+            instance().infCheckB = null;
         }
     }
 
@@ -798,7 +794,7 @@ public class InfernalMobsCore {
     }
 
     public boolean getIsHealthBarDisabled() {
-        return config.isDisableHealthBar();
+        return config != null && config.isDisableHealthBar();
     }
 
     public double getMobModHealthFactor() {

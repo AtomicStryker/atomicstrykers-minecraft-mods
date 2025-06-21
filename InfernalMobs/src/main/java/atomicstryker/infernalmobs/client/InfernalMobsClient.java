@@ -13,9 +13,9 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.io.File;
@@ -53,7 +53,9 @@ public class InfernalMobsClient {
     }
 
     public static void onHealthPacketForClient(int entID, float health, float maxhealth) {
-        Minecraft.getInstance().submitAsync(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> onHealthPacket(entID, health, maxhealth)));
+        if (!FMLEnvironment.dist.isDedicatedServer()) {
+            Minecraft.getInstance().submitAsync(() -> onHealthPacket(entID, health, maxhealth));
+        }
     }
 
     private static void onHealthPacket(int entID, float health, float maxhealth) {
