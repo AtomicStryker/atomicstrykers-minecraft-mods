@@ -22,7 +22,6 @@ import java.nio.file.Path;
  * to load, keeps the common config file.
  */
 @Mod(MultiMine.MOD_ID)
-@Mod.EventBusSubscriber(modid = MultiMine.MOD_ID)
 public class MultiMine {
     public static final String MOD_ID = "multimine";
 
