@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -11,6 +12,8 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 
@@ -204,7 +207,8 @@ public class RuinTemplateRule {
                     return;
                 }
                 // load Ruins stored NBT data into the entity
-                entity.loadWithComponents(nbtTagCompound, world.registryAccess());
+                ValueInput valueInput = TagValueInput.create(ProblemReporter.DISCARDING, world.registryAccess(), nbtTagCompound);
+                entity.loadWithComponents(valueInput);
 
                 if (entity instanceof RandomizableContainerBlockEntity) {
                     // unwrap forgedata if needed?
