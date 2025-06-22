@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -283,7 +282,7 @@ public class RuinTemplate {
         }
 
         // post pre-build event after y position and rotation are resolved
-        if (MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, true))) {
+        if (EventRuinTemplateSpawn.BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, true))) {
             RuinsMod.LOGGER.info("Forge Event came back negative, no spawn");
             return world.getMinY() - 1;
         }
@@ -395,7 +394,7 @@ public class RuinTemplate {
             }
         }
 
-        MinecraftForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, false));
+        EventRuinTemplateSpawn.BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, false));
         return yReturn;
     }
 

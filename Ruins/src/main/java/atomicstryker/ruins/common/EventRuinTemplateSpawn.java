@@ -2,15 +2,18 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.bus.EventBus;
+import net.minecraftforge.eventbus.api.event.characteristic.Cancellable;
+
 
 /**
  * Executed before and after a Ruins template is created in the world by the Worldgen Hook.
  * Does also fire before manually spawning a template with /testruin.
  * Note: Only the isPrior=false event has the final y value for the boundaries after embedding
  */
-@Cancelable
-public class EventRuinTemplateSpawn extends LevelEvent {
+public class EventRuinTemplateSpawn extends LevelEvent implements Cancellable {
+
+    public static final EventBus<EventRuinTemplateSpawn> BUS = EventBus.create(EventRuinTemplateSpawn.class);
 
     public final RuinTemplate template;
     public final int x, y, z, rotation;
