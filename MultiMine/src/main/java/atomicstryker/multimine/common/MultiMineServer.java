@@ -17,7 +17,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -165,7 +165,7 @@ public class MultiMineServer {
     }
 
     @SubscribeEvent
-    public void onBlockBreak(BlockEvent.BreakEvent event) {
+    public boolean onBlockBreak(BlockEvent.BreakEvent event) {
         HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
                 .computeIfAbsent(event.getPlayer().level().dimension(), k -> Maps.newHashMap());
         /*
@@ -173,9 +173,7 @@ public class MultiMineServer {
          * during which Multi Mine will block any further block destruction.
          * this is to prevent race conditions with vanilla and other mod interactions
          */
-        if (blocksRecentlyDestroyed.containsKey(event.getPos())) {
-            event.setCanceled(true);
-        }
+        return blocksRecentlyDestroyed.containsKey(event.getPos());
     }
 
     private boolean isBlockBanned(BlockState blockState) {
@@ -239,11 +237,10 @@ public class MultiMineServer {
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        instance().onPlayerLoginInstance(event);
+        instance().onPlayerLoginInstance(event.getEntity());
     }
 
-    private void onPlayerLoginInstance(PlayerEvent.PlayerLoggedInEvent event) {
-        final Player player = event.getEntity();
+    private void onPlayerLoginInstance(Player player) {
         ResourceKey<Level> dimensionKey = player.level().dimension();
         final List<PartiallyMinedBlock> partiallyMinedBlocks = getPartiallyMinedBlocksForDimension(dimensionKey);
         if (partiallyMinedBlocks != null) {
@@ -286,7 +283,7 @@ public class MultiMineServer {
      */
     private void sendPartiallyMinedBlockToPlayer(ServerPlayer p, PartiallyMinedBlock block) {
         MultiMine.networkChannel.send(new PartialBlockPacket("server", block.getPos().getX(),
-                block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false),
+                        block.getPos().getY(), block.getPos().getZ(), block.getProgress(), false),
                 PacketDistributor.PLAYER.with(p));
     }
 
@@ -311,8 +308,8 @@ public class MultiMineServer {
      * age using a PriorityQueue and start repairing Blocks if they get too old.
      */
     @SubscribeEvent
-    public void onTick(TickEvent.LevelTickEvent tick) {
-        if (tick.side.isClient() || tick.phase != TickEvent.Phase.END) {
+    public void onTick(TickEvent.LevelTickEvent.Post tick) {
+        if (tick.side.isClient()) {
             return;
         }
 

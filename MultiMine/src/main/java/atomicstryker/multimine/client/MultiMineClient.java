@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -96,18 +96,17 @@ public class MultiMineClient {
 
     @SubscribeEvent
     public static void onClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-        instance().onClickBlockInstance(event);
+        instance().onClickBlockInstance(event.getEntity(), event.getPos());
     }
 
-    private void onClickBlockInstance(PlayerInteractEvent.LeftClickBlock event) {
+    private void onClickBlockInstance(Player player, BlockPos pos) {
 
-        if (!event.getEntity().level().isClientSide) {
+        if (!player.level().isClientSide) {
             // only clientside pls
             return;
         }
 
-        thePlayer = event.getEntity();
-        BlockPos pos = event.getPos();
+        thePlayer = player;
 
         if (!destroyProgressFieldFound()) {
             // on the very first blockbreak tick, we cant tell which is the target field
