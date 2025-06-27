@@ -2,19 +2,21 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Matrix4fStack;
 
 import java.util.Map.Entry;
 
@@ -32,15 +34,7 @@ public class CompassRenderHook {
     private static double needleHeightOfScreenHeight;
     private static Boolean mustHoldCompassInHandToBeActive = null;
 
-    @SubscribeEvent
-    public static void renderEvent(RenderHandEvent event) {
-        if (mc == null) {
-            mc = Minecraft.getInstance();
-        }
-        updateConfigValues();
-        if (playerHasCompass()) {
-            renderCompassNeedles(event.getPoseStack(), event.getMultiBufferSource());
-        }
+    record Point(int x, int y) {
     }
 
     /**
@@ -72,12 +66,25 @@ public class CompassRenderHook {
         return false;
     }
 
-    private static void renderCompassNeedles(PoseStack poseStack, MultiBufferSource multiBufferSource) {
+    @SubscribeEvent
+    public static void renderEvent(TickEvent.RenderTickEvent.Post event) {
+        if (mc == null) {
+            mc = Minecraft.getInstance();
+        }
+        updateConfigValues();
 
-        // push pose to not mess up other renderers
-        poseStack.pushPose();
-        // use a vertex consumer which is already set up for simple quads
-        VertexConsumer vertexconsumer = multiBufferSource.getBuffer(RenderType.debugQuads());
+        if (playerHasCompass()) {
+            renderCompassNeedles(event.getTimer());
+        }
+    }
+
+    private static void renderCompassNeedles(DeltaTracker deltaTracker) {
+
+        Camera camera = mc.gameRenderer.getMainCamera();
+        VertexConsumer vertexConsumer = mc.renderBuffers().bufferSource().getBuffer(RenderType.debugQuads());
+
+        Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
+        matrix4fstack.pushMatrix();
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
@@ -85,15 +92,14 @@ public class CompassRenderHook {
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawNeedle(vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(vertexConsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            drawNeedle(vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(vertexConsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
 
-        // pop pose to reset rendering to where it was before we started drawing
-        poseStack.popPose();
+        matrix4fstack.popMatrix();
     }
 
     private static void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
@@ -152,9 +158,6 @@ public class CompassRenderHook {
         }
 
         return (float) -(angleRadian * 180f / Math.PI);
-    }
-
-    record Point(int x, int y) {
     }
 
     private static Point rotateAroundPointByAngle(Point toRotate, Point toRotateAround, double angleRadian) {
