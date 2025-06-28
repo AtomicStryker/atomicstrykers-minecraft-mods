@@ -622,3 +622,6 @@ a: setAccessible now true
   spawning is now triggered by a player entering chunks, Ruins will move several chunks ahead of that player and try
   creating templates there. this can only happen once per chunk, which is marked by setting each chunks starting block
   from BEDROCK to BARRIER blocks
+
+1.16.5.3
++ should fix reported startup server startup crash https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/547

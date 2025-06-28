@@ -22,12 +22,9 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,8 +53,6 @@ public class RuinsMod {
     public RuinsMod() {
         instance = this;
         generatorMap = new ConcurrentHashMap<>();
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::preInit);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new CommandParseTemplate());
         MinecraftForge.EVENT_BUS.register(new CommandUndoTemplate());
@@ -177,11 +172,6 @@ public class RuinsMod {
         {
             worldHandle.generator.generateNormal(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
         }
-    }
-
-    public void preInit(FMLCommonSetupEvent evt) {
-        LOGGER.info("Ruins preInit");
-        ConfigFolderPreparator.copyFromJarIfNotPresent(this, new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
     }
 
     @SubscribeEvent
@@ -307,6 +297,7 @@ public class RuinsMod {
     }
 
     private void initWorldHandle(WorldHandle worldHandle, ServerWorld world) {
+        ConfigFolderPreparator.copyFromJarIfNotPresent(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
         // load in defaults
         try {
             File worlddir = getWorldSaveDir(world);
