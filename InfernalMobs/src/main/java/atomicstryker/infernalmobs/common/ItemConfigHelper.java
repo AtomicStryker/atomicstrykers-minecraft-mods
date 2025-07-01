@@ -1,10 +1,15 @@
 package atomicstryker.infernalmobs.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueOutput;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
@@ -19,11 +24,12 @@ public class ItemConfigHelper {
         for (String json : items) {
             try {
                 CompoundTag nbt = TagParser.parseCompoundFully(json);
-                Optional<ItemStack> itemStack = ItemStack.parse(registryAccess, nbt);
+                Optional<Pair<ItemStack, Tag>> optionalItemStack = ItemStack.CODEC.decode(NbtOps.INSTANCE, nbt).result();
 
-                if (itemStack.isPresent()) {
-                    itemStackList.add(itemStack.get());
-                    logger.info("item config parser identified itemstack {}", itemStack.get());
+                if (optionalItemStack.isPresent()) {
+                    ItemStack itemStack = optionalItemStack.get().getFirst();
+                    itemStackList.add(itemStack);
+                    logger.info("item config parser identified itemstack {}", itemStack);
                 } else {
                     logger.error("item config parser could not create itemStack from {}", json);
                 }
@@ -35,7 +41,9 @@ public class ItemConfigHelper {
     }
 
     public static String fromItemStack(ItemStack itemStack, RegistryAccess registryAccess) {
-        CompoundTag resultTag = (CompoundTag) itemStack.save(registryAccess);
+        TagValueOutput tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registryAccess);
+        tagValueOutput.store(ItemStack.MAP_CODEC, itemStack);
+        CompoundTag resultTag = tagValueOutput.buildResult();
         return resultTag.toString();
     }
 

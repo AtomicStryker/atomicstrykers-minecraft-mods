@@ -9,10 +9,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.BossEvent;
@@ -31,6 +29,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +60,7 @@ public class OverlayBossBar {
         nextPacketTime = 0;
     }
 
-    public static class InfernalMobsHealthBarGuiOverlay implements LayeredDraw.Layer {
+    public static class InfernalMobsHealthBarGuiOverlay implements GuiLayer {
         @Override
         public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
@@ -138,7 +137,7 @@ public class OverlayBossBar {
     }
 
     private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
 
         int screenwidth = mc.getWindow().getGuiScaledWidth();
@@ -153,7 +152,7 @@ public class OverlayBossBar {
             i++;
         }
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private static LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {

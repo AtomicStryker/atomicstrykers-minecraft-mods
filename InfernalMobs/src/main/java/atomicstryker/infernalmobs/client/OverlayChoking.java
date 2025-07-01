@@ -6,7 +6,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -17,6 +18,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +45,7 @@ public class OverlayChoking {
         mc = Minecraft.getInstance();
     }
 
-    public static class InfernalMobsChokingGuiOverlay implements LayeredDraw.Layer {
+    public static class InfernalMobsChokingGuiOverlay implements GuiLayer {
         @Override
         public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
@@ -53,7 +55,7 @@ public class OverlayChoking {
             // modded Gui.renderPlayerHealth 'air' section
             if (!mc.player.isEyeInFluid(FluidTags.WATER) && airOverrideValue != -999) {
 
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
                 int leftScreenCoordinate = mc.getWindow().getGuiScaledWidth() / 2 + 91;
                 int topScreenCoordinate = mc.getWindow().getGuiScaledHeight() - 59;
@@ -67,9 +69,9 @@ public class OverlayChoking {
 
                 for (int j5 = 0; j5 < fullBubbles + partialBubbles; ++j5) {
                     if (j5 < fullBubbles) {
-                        guiGraphics.blitSprite(RenderType::guiTextured, AIR_SPRITE, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 9, 9);
+                        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_SPRITE, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 9, 9);
                     } else {
-                        guiGraphics.blitSprite(RenderType::guiTextured, AIR_POPPING_SPRITE, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 9, 9);
+                        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_POPPING_SPRITE, leftScreenCoordinate - j5 * 8 - 9, topScreenCoordinate, 9, 9);
                     }
                 }
             }

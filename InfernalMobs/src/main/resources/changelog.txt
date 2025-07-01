@@ -1,3 +1,7 @@
+1.21.6.1NF
+- updated for MC 1.21.6 and NeoForge 21.6.4-beta
+- note rendering modifiers is currently broken
+
 1.21.5.1NF
 - updated for MC 1.21.5 and NeoForge 21.5.40-beta
 

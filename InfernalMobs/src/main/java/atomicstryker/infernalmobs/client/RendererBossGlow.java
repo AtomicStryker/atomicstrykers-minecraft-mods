@@ -6,7 +6,6 @@ import atomicstryker.infernalmobs.common.SidedCache;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ public class RendererBossGlow {
         event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossglow"), new InfernalMobsBossGlowOverlay());
     }
 
-    public static class InfernalMobsBossGlowOverlay implements LayeredDraw.Layer {
+    public static class InfernalMobsBossGlowOverlay implements GuiLayer {
         @Override
         public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             Minecraft mc = Minecraft.getInstance();

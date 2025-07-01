@@ -445,7 +445,7 @@ public class InfernalMobsCore {
                             RegistryKey<World> registrykey = RegistryKey.create(Registry.WORLD_KEY, resourcelocation);
                             ServerWorld serverworld = p_212592_0_.getSource().getServer().getWorld(registrykey);
                          */
-                        ResourceKey<Level> worldRegistryKey = entity.getCommandSenderWorld().dimension();
+                        ResourceKey<Level> worldRegistryKey = entity.level().dimension();
                         ResourceLocation worldResourceLocation = worldRegistryKey.location();
 
                         // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
