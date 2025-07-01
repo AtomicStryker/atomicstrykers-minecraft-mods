@@ -1,5 +1,6 @@
 1.21.6.1
 - updated for MC 1.21.6 and Forge 56.0.3
+- note: rendering of modifier strings is broken. i cant seem to fix it.
 
 1.21.5.1
 - updated for MC 1.21.5 and Forge 55.0.3
