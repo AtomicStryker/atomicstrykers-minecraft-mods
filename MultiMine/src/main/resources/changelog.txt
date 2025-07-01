@@ -1,10 +1,13 @@
-1.24.6.1
+1.21.7.1
+- updated for MC 1.21.7 and Forge 57.0.0
+
+1.21.6.1
 - updated for MC 1.21.6 and Forge 56.0.3, eventbus 7
 
-1.24.5.1
+1.21.5.1
 - updated for MC 1.21.5 and Forge 55.0.3
 
-1.24.4.1
+1.21.4.1
 - updated for MC 1.21.4 and Forge 54.0.13
 
 1.21.3
