@@ -1,7 +1,6 @@
 package atomicstryker.infernalmobs.common;
 
 import atomicstryker.infernalmobs.client.InfernalMobsClient;
-import atomicstryker.infernalmobs.client.OverlayChoking;
 import atomicstryker.infernalmobs.common.mods.MM_1UP;
 import atomicstryker.infernalmobs.common.mods.MM_Alchemist;
 import atomicstryker.infernalmobs.common.mods.MM_Berserk;
@@ -63,13 +62,13 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -134,32 +133,21 @@ public class InfernalMobsCore {
 
         LOGGER = LogManager.getLogger();
 
-        modEventBus.addListener(this::registerNetworking);
+        modEventBus.addListener(this::registerNetworkingServer);
     }
 
-    private void registerNetworking(final RegisterPayloadHandlersEvent event) {
-
+    private void registerNetworkingServer(final RegisterPayloadHandlersEvent event) {
         // the optional method gives us a registrar that does non-mandatory packets
         // so clients having the mod can still connect to servers which dont have it
         final PayloadRegistrar registrar = event.registrar(MOD_ID).optional();
-
         registrar.playBidirectional(HealthPacket.TYPE, HealthPacket.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> instance().onHealthPacketForClient(payload, context),
-                        (payload, context) -> instance().onHealthPacket(payload, context)));
-
+                instance()::onHealthPacket, instance()::onHealthPacketForClient);
         registrar.playBidirectional(MobModsPacket.TYPE, MobModsPacket.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> instance().onMobModsPacketForClient(payload, context),
-                        (payload, context) -> instance().onMobModsPacket(payload, context)));
+                instance()::onMobModsPacket, instance()::onMobModsPacketForClient);
 
         registrar.playToClient(AirPacket.TYPE, AirPacket.STREAM_CODEC, instance()::onAirPacketForClient);
-
-        registrar.playToClient(VelocityPacket.TYPE, VelocityPacket.STREAM_CODEC,
-                instance()::onVelocityPacketForClient);
-
-        registrar.playToClient(KnockBackPacket.TYPE, KnockBackPacket.STREAM_CODEC,
-                instance()::onKnockBackPacketForClient);
+        registrar.playToClient(VelocityPacket.TYPE, VelocityPacket.STREAM_CODEC, instance()::onVelocityPacketForClient);
+        registrar.playToClient(KnockBackPacket.TYPE, KnockBackPacket.STREAM_CODEC, instance()::onKnockBackPacketForClient);
     }
 
     private void onHealthPacketForClient(HealthPacket healthPacket, IPayloadContext playPayloadContext) {
@@ -795,7 +783,7 @@ public class InfernalMobsCore {
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
         HealthPacket healthPacket = new HealthPacket(playerName, mob.getId(), 0f, 0f);
-        PacketDistributor.sendToServer(healthPacket);
+        ClientPacketDistributor.sendToServer(healthPacket);
     }
 
     public void sendAirPacket(ServerPlayer target, int lastAir) {

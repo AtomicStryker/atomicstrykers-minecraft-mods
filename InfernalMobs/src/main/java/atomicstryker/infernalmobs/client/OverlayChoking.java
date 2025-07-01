@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
 
     private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");

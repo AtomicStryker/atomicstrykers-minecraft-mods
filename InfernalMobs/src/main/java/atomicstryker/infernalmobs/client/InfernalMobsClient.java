@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -47,7 +48,7 @@ public class InfernalMobsClient {
     public void onEntityJoinedWorld(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
             MobModsPacket mobModsPacket = new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0);
-            PacketDistributor.sendToServer(mobModsPacket);
+            ClientPacketDistributor.sendToServer(mobModsPacket);
             InfernalMobsCore.LOGGER.trace("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getId());
         }
     }

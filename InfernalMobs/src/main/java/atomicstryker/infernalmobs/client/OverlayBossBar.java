@@ -30,6 +30,7 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = InfernalMobsCore.MOD_ID)
 public class OverlayBossBar {
 
     private static final double NAME_VISION_DISTANCE = 32D;
@@ -148,7 +149,7 @@ public class OverlayBossBar {
         int i = 0;
         while (i < display.length && display[i] != null) {
             yCoord += 10;
-            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, 0xffffff);
+            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, -1);
             i++;
         }
 
@@ -185,7 +186,7 @@ public class OverlayBossBar {
     private static void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
             MobModsPacket mobModsPacket = new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0);
-            PacketDistributor.sendToServer(mobModsPacket);
+            ClientPacketDistributor.sendToServer(mobModsPacket);
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
@@ -194,7 +195,7 @@ public class OverlayBossBar {
     private static void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
             HealthPacket healthPacket = new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f);
-            PacketDistributor.sendToServer(healthPacket);
+            ClientPacketDistributor.sendToServer(healthPacket);
             nextPacketTime = System.currentTimeMillis() + 250L;
         }
     }
