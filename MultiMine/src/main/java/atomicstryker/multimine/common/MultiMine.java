@@ -10,6 +10,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +28,6 @@ public class MultiMine {
     public static final String MOD_ID = "multimine";
 
     private static MultiMine instance;
-    public static ISidedProxy proxy;
 
     public static Logger LOGGER;
 
@@ -39,14 +39,13 @@ public class MultiMine {
         instance = this;
         LOGGER = LogManager.getLogger();
         MultiMine.LOGGER.info("mod instantiated");
-        proxy = FMLEnvironment.dist.isClient() ? new MultiMineClient() : new MultiMineServer();
-        proxy.commonSetup();
-
+        if (FMLEnvironment.dist.isClient()) {
+            // triggers instance init
+            new MultiMineClient().commonSetup();
+        }
         modEventBus.addListener(this::registerNetworking);
 
-        // even if we are on client, we build a multi mine server for local play
-        // if we are in a dedicated server, its the proxy object already built
-        multiMineServer = FMLEnvironment.dist.isClient() ? new MultiMineServer() : (MultiMineServer) proxy;
+        multiMineServer = new MultiMineServer();
         NeoForge.EVENT_BUS.register(multiMineServer);
     }
 
@@ -56,11 +55,21 @@ public class MultiMine {
         // so clients having the mod can still connect to servers which dont have it
         final PayloadRegistrar registrar = event.registrar(MOD_ID).optional();
 
-        registrar.playBidirectional(PartialBlockPacket.TYPE, PartialBlockPacket.STREAM_CODEC,
-                (payload, context) -> proxy.handlePartialBlockPacket(payload, context));
+        registrar.playBidirectional(PartialBlockPacket.TYPE, PartialBlockPacket.STREAM_CODEC, MultiMineServer::handlePartialBlockPacket, this::handlePartialBlockPacketClient);
 
-        registrar.playToClient(PartialBlockRemovalPacket.TYPE, PartialBlockRemovalPacket.STREAM_CODEC,
-                (payload, context) -> proxy.handlePartialBlockRemovalPacket(payload, context));
+        registrar.playToClient(PartialBlockRemovalPacket.TYPE, PartialBlockRemovalPacket.STREAM_CODEC, this::handlePartialBlockRemovalPacketClient);
+    }
+
+    private void handlePartialBlockPacketClient(PartialBlockPacket partialBlockPacket, IPayloadContext iPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            MultiMineClient.handlePartialBlockPacket(partialBlockPacket, iPayloadContext);
+        }
+    }
+
+    private void handlePartialBlockRemovalPacketClient(PartialBlockRemovalPacket partialBlockRemovalPacket, IPayloadContext iPayloadContext) {
+        if (FMLEnvironment.dist.isClient()) {
+            MultiMineClient.handlePartialBlockRemovalPacket(partialBlockRemovalPacket, iPayloadContext);
+        }
     }
 
     /**

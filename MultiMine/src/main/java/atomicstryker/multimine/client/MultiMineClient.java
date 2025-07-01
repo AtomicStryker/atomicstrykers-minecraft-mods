@@ -1,6 +1,5 @@
 package atomicstryker.multimine.client;
 
-import atomicstryker.multimine.common.ISidedProxy;
 import atomicstryker.multimine.common.MultiMine;
 import atomicstryker.multimine.common.PartiallyMinedBlock;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
@@ -25,15 +24,15 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.io.File;
 import java.lang.reflect.Field;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = MultiMine.MOD_ID)
-public class MultiMineClient implements ISidedProxy {
+public class MultiMineClient {
     private static MultiMineClient instance = null;
     private static Minecraft mc;
     private static Player thePlayer;
@@ -51,7 +50,6 @@ public class MultiMineClient implements ISidedProxy {
      * the current Block being mined, and hacks into the vanilla "partially Destroyed Blocks" RenderMap.
      * Also handles Packets sent from server to announce other people's damaged Blocks.
      */
-    @Override
     public void commonSetup() {
         MultiMine.LOGGER.info("MultiMineClient initializing");
         arrayOverWriteIndex = 0;
@@ -60,11 +58,10 @@ public class MultiMineClient implements ISidedProxy {
         instance = this;
     }
 
-    @Override
-    public void handlePartialBlockPacket(PartialBlockPacket packet, IPayloadContext context) {
+    public static void handlePartialBlockPacket(PartialBlockPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().isClientbound()) {
-                onServerSentPartialBlockData(packet.x(), packet.y(), packet.z(), packet.value(), packet.regenerating());
+                instance().onServerSentPartialBlockData(packet.x(), packet.y(), packet.z(), packet.value(), packet.regenerating());
             } else {
                 // client is also receiving singleplayer/localhost server packets, reroute these
                 MultiMine.instance().getServer().onClientSentPartialBlockPacket((ServerPlayer) context.player(), packet.x(), packet.y(), packet.z(), packet.value());
@@ -72,10 +69,9 @@ public class MultiMineClient implements ISidedProxy {
         });
     }
 
-    @Override
-    public void handlePartialBlockRemovalPacket(PartialBlockRemovalPacket payload, IPayloadContext context) {
+    public static void handlePartialBlockRemovalPacket(PartialBlockRemovalPacket payload, IPayloadContext context) {
         context.enqueueWork(() ->
-                onServerSentPartialBlockDeleteCommand(new BlockPos(payload.x(), payload.y(), payload.z())));
+                instance().onServerSentPartialBlockDeleteCommand(new BlockPos(payload.x(), payload.y(), payload.z())));
     }
 
     public static MultiMineClient instance() {
@@ -148,7 +144,7 @@ public class MultiMineClient implements ISidedProxy {
             } else if (destroyProgressVanilla > lastBlockCompletion) {
                 MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgressVanilla, lastBlockCompletion);
                 PartialBlockPacket partialBlockPacket = new PartialBlockPacket(thePlayer.getScoreboardName(), lastClickedBlock.getX(), lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false);
-                PacketDistributor.sendToServer(partialBlockPacket);
+                ClientPacketDistributor.sendToServer(partialBlockPacket);
                 MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgressVanilla);
                 lastBlockCompletion = destroyProgressVanilla;
                 updateLocalPartialBlock(lastClickedBlock.getX(), lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false);

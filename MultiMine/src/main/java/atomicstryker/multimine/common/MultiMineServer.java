@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
-public class MultiMineServer implements ISidedProxy {
+public class MultiMineServer {
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
@@ -61,24 +61,13 @@ public class MultiMineServer implements ISidedProxy {
         serverSideDestroyBlockPosFields = Lists.newArrayList();
     }
 
-    @Override
-    public void commonSetup() {
-        // no proxy action needed
-    }
-
-    @Override
-    public void handlePartialBlockPacket(PartialBlockPacket packet, IPayloadContext context) {
+    public static void handlePartialBlockPacket(PartialBlockPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(packet.user());
             if (p != null) {
-                onClientSentPartialBlockPacket(p, packet.x(), packet.y(), packet.z(), packet.value());
+                instance().onClientSentPartialBlockPacket(p, packet.x(), packet.y(), packet.z(), packet.value());
             }
         });
-    }
-
-    @Override
-    public void handlePartialBlockRemovalPacket(PartialBlockRemovalPacket payload, IPayloadContext context) {
-        // never called
     }
 
     public static MultiMineServer instance() {
