@@ -1,3 +1,7 @@
+1.21.7.1
+- updated for MC 1.21.7 and Forge 57.0.0
+- note: rendering of modifier strings is broken. i cant seem to fix it.
+
 1.21.6.1
 - updated for MC 1.21.6 and Forge 56.0.3
 - note: rendering of modifier strings is broken. i cant seem to fix it.
