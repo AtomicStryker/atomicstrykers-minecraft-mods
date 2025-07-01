@@ -40,7 +40,7 @@ class CommandTestTemplate {
         if (args.length < 4) {
             if (args.length < 1) {
                 if (parsedRuin != null) {
-                    final Level world = sender.getCommandSenderWorld();
+                    final Level world = sender.level();
                     parsedRuin.doBuild(world, world.random, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
                     parsedRuin = null;
                 } else {
@@ -79,7 +79,7 @@ class CommandTestTemplate {
                 parsedRuin = new RuinTemplate(file.getCanonicalPath(), file.getName(), is_player);
                 int rotation = (args.length > 4) ? Integer.parseInt(args[4]) : RuinsMod.DIR_NORTH;
                 final boolean ignore_ceiling = args.length > 5 && Boolean.parseBoolean(args[5]);
-                final Level world = sender.getCommandSenderWorld();
+                final Level world = sender.level();
 
                 if (parsedRuin != null) {
                     if (y < world.getMinY()) {
