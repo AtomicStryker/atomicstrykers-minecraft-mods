@@ -1,3 +1,6 @@
+1.21.6.1NF
+- updated to MC 1.21.6, neoforge 21.6.4-beta
+
 1.21.5.2NF
 - fixes crash when server does not have the mod
 

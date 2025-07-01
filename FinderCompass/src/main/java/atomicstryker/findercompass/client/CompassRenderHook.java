@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +16,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map.Entry;
@@ -42,7 +42,7 @@ public class CompassRenderHook {
                 new FinderCompassGuiOverlay());
     }
 
-    public static class FinderCompassGuiOverlay implements LayeredDraw.Layer {
+    public static class FinderCompassGuiOverlay implements GuiLayer {
         @Override
         public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
             if (mc == null) {
@@ -87,25 +87,32 @@ public class CompassRenderHook {
     private static void renderCompassNeedles(GuiGraphics guiGraphics) {
 
         // push pose to not mess up other renderers
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         // use the standard gui vertex consumer which is already set up for simple quads
-        VertexConsumer vertexconsumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.gui());
+        VertexConsumer vertexconsumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.debugQuads());
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
+        boolean drewSomething = false;
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
             drawNeedle(vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drewSomething = true;
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
             drawNeedle(vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drewSomething = true;
+        }
+
+        if (drewSomething) {
+            Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
         }
 
         // pop pose to reset rendering to where it was before we started drawing
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     private static void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
