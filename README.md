@@ -14,7 +14,8 @@ run "gradlew genIntellijRuns" to get IDEA project files for the project, and sta
 Use Intellij to open the folder or the gradle.build (Open as project).
 
 
-In the ideal case all that is required to upgrade to a newer MC version is changing the variables "mcversion", "version" and "mappings channel:" and also updating the "minecraft" dependency pointing to a relevant forge version. Forge builds can be found here: https://files.minecraftforge.net/net/minecraftforge/forge/
+In the ideal case all that is required to upgrade to a newer MC version is changing the variables "mcversion", "version" and "mappings channel:" and also updating the "minecraft" dependency pointing to a relevant neoforge version.
+NeoForge MDK can be found here: https://github.com/orgs/NeoForgeMDKs/repositories?q=template%3Atrue+archived%3Afalse
 
 
 For really ancient (earlier than 2017) downloadable versions of my mods, see https://github.com/kevinvanrijn/atomicstrykers-files
