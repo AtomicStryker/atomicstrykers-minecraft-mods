@@ -4,6 +4,9 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,6 +14,8 @@ import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,18 +45,15 @@ public class OverlayBossBar {
     private static Minecraft mc;
     private static GuiRenderState guiRenderState = new GuiRenderState();
 
-    private static long healthBarRetainTime;
-    private static LivingEntity retainedTarget;
-    private static long nextPacketTime;
+    private static long healthBarRetainTime = 0;
+    private static LivingEntity retainedTarget = null;
+    private static long nextPacketTime = 0;
 
     private static LinkedHashMap<UUID, LerpingBossEvent> vanillaBossEventsMap = null;
 
     @SubscribeEvent
     public static void onRenderTickPost(TickEvent.RenderTickEvent.Post event) {
         mc = Minecraft.getInstance();
-        healthBarRetainTime = 0;
-        retainedTarget = null;
-        nextPacketTime = 0;
 
         if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
             return;
@@ -111,8 +113,21 @@ public class OverlayBossBar {
 
                 // MC supports multiple bosses. Infernal Mobs does not. hide the modifier subdisplay in multi case
                 if (vanillaBossEventsMap.size() == 1) {
+
+                    RenderTarget rendertarget = mc.getMainRenderTarget();
+                    RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(rendertarget.getDepthTexture(), 1.0);
+                    mc.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
+                    guiRenderState.reset();
+
                     GuiGraphics guigraphics = new GuiGraphics(mc, guiRenderState);
+
+                    guigraphics.nextStratum();
+                    ProfilerFiller profilerfiller = Profiler.get();
+                    profilerfiller.push("infernalMobs");
+
                     drawModifiersUnderHealthBar(guigraphics, mod);
+
+                    profilerfiller.pop();
                 }
 
                 if (!retained) {
@@ -138,7 +153,7 @@ public class OverlayBossBar {
         int i = 0;
         while (i < display.length && display[i] != null) {
             yCoord += 10;
-            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, 0xffffff);
+            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, -1);
             i++;
         }
 
