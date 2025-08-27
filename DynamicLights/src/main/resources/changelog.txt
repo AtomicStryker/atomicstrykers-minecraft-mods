@@ -1,27 +1,30 @@
+1.21.8.1NF
+- updated to MC 1.21.8 with NeoForge 21.8.39
+
 1.21.7.1NF
-- updated to MC 1.21.7 with NeoForged 21.7.1-beta
+- updated to MC 1.21.7 with NeoForge 21.7.1-beta
 
 1.21.6.1NF
-- updated to MC 1.21.6 with NeoForged 21.6.4-beta
+- updated to MC 1.21.6 with NeoForge 21.6.4-beta
 
 1.21.5.1NF
-- updated to MC 1.21.5 with NeoForged 21.5.40-beta
+- updated to MC 1.21.5 with NeoForge 21.5.40-beta
 
 1.21.4.2NF
 - updated default shining items list to include more things such as redstone or soul torches
 - updated to NeoForge 21.4.88-beta
 
 1.21.4.1NF
-- updated to MC 1.21.4 with NeoForged 21.4.47-beta
+- updated to MC 1.21.4 with NeoForge 21.4.47-beta
 
 1.21NF
-- updated to MC 1.21 with NeoForged 21.0.0-beta
+- updated to MC 1.21 with NeoForge 21.0.0-beta
 
 1.20.6.1NF
-- updated to MC 1.20.6 with NeoForged 20.6.42
+- updated to MC 1.20.6 with NeoForge 20.6.42
 
 1.20.4.1
-- updated to MC 1.20.4 with NeoForged
+- updated to MC 1.20.4 with NeoForge
 
 1.20.1.2
 - fixes missing model logspam on boot, thanks Tfarcenim from Github

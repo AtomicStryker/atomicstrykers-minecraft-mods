@@ -5,7 +5,6 @@
 # Find more information on toml format here:  https://github.com/toml-lang/toml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="${loader_version_range}" #mandatory
 license="AtomicStrykers License https://atomicstryker.github.io/"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues" #optional
