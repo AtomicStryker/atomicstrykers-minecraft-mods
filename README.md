@@ -9,8 +9,7 @@ If it does not, the mod might lack the basic setup for the newer MC versions, to
 Note: For older versions of Minecraft, there is always the possibility the online resources that were used for building mods no longer exist in their old forms.
 If you need to build for an old MC and this doesn't work out of the box, use google, usually there is a fix or successor resource available.
 
-run "gradlew genIntellijRuns" to get IDEA project files for the project, and starting client and server for testing and debugging.
-
+For NeoForge, setup of project in Intellij should be fully automatic
 Use Intellij to open the folder or the gradle.build (Open as project).
 
 
