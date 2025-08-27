@@ -2,37 +2,37 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+import net.minecraftforge.client.gui.overlay.ForgeLayer;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Matrix4fStack;
 
 import java.util.Map.Entry;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = FinderCompassMod.MOD_ID)
-public class CompassRenderHook {
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = FinderCompassMod.MOD_ID)
+public class CompassRenderHook implements ForgeLayer {
 
-    private static final int[] strongholdNeedlecolor = {102, 0, 153};
-    private static Minecraft mc = null;
-    private static final ItemStack compassStack = new ItemStack(Items.COMPASS);
+    private final int[] strongholdNeedlecolor = {102, 0, 153};
+    private Minecraft mc = null;
+    private final ItemStack compassStack = new ItemStack(Items.COMPASS);
 
-    private static double onScreenPositionWidth;
-    private static double onScreenPositionHeight;
-    private static double needleWidthOfScreenWidth;
-    private static double needleHeightOfScreenHeight;
-    private static Boolean mustHoldCompassInHandToBeActive = null;
+    private double onScreenPositionWidth;
+    private double onScreenPositionHeight;
+    private double needleWidthOfScreenWidth;
+    private double needleHeightOfScreenHeight;
+    private Boolean mustHoldCompassInHandToBeActive = null;
 
     record Point(int x, int y) {
     }
@@ -40,7 +40,7 @@ public class CompassRenderHook {
     /**
      * copy over config values once
      */
-    private static void updateConfigValues() {
+    private void updateConfigValues() {
         if (mustHoldCompassInHandToBeActive == null) {
             // when connecting a client to a non-Findercompass server, this will be the first call to the config
             FinderCompassMod.instance.initIfNeeded();
@@ -52,7 +52,7 @@ public class CompassRenderHook {
         }
     }
 
-    private static boolean playerHasCompass() {
+    private boolean playerHasCompass() {
         if (mc.player != null) {
             if (mustHoldCompassInHandToBeActive) {
                 if (mc.player.getMainHandItem().getItem() == Items.COMPASS || mc.player.getOffhandItem().getItem() == Items.COMPASS) {
@@ -67,42 +67,54 @@ public class CompassRenderHook {
     }
 
     @SubscribeEvent
-    public static void renderEvent(TickEvent.RenderTickEvent.Post event) {
+    public static void renderEvent(AddGuiOverlayLayersEvent event) {
+        event.getLayeredDraw().add(ResourceLocation.fromNamespaceAndPath("findercompass", "findercompass"), new CompassRenderHook());
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (mc == null) {
             mc = Minecraft.getInstance();
         }
         updateConfigValues();
 
         if (playerHasCompass()) {
-            renderCompassNeedles(event.getTimer());
+            renderCompassNeedles(guiGraphics);
         }
     }
 
-    private static void renderCompassNeedles(DeltaTracker deltaTracker) {
+    private void renderCompassNeedles(GuiGraphics guiGraphics) {
 
-        Camera camera = mc.gameRenderer.getMainCamera();
-        VertexConsumer vertexConsumer = mc.renderBuffers().bufferSource().getBuffer(RenderType.debugQuads());
-
-        Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
-        matrix4fstack.pushMatrix();
+        // push pose to not mess up other renderers
+        guiGraphics.pose().pushMatrix();
+        // use the standard gui vertex consumer which is already set up for simple quads
+        VertexConsumer vertexconsumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.debugQuads());
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
+        boolean drewSomething = false;
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawNeedle(vertexConsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drewSomething = true;
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            drawNeedle(vertexConsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drewSomething = true;
         }
 
-        matrix4fstack.popMatrix();
+        if (drewSomething) {
+            Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
+        }
+
+        // pop pose to reset rendering to where it was before we started drawing
+        guiGraphics.pose().popMatrix();
     }
 
-    private static void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
+    private void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
 
         int halfWidthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
         int halfHeightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
@@ -149,7 +161,7 @@ public class CompassRenderHook {
                 .setColor(r, g, b, 120);
     }
 
-    private static float computeNeedleHeading(BlockPos coords) {
+    private float computeNeedleHeading(BlockPos coords) {
         double angleRadian = 0.0D;
         if (mc.level != null && mc.player != null) {
             double xdiff = mc.player.getX() - (coords.getX() + 0.5D);
@@ -160,7 +172,7 @@ public class CompassRenderHook {
         return (float) -(angleRadian * 180f / Math.PI);
     }
 
-    private static Point rotateAroundPointByAngle(Point toRotate, Point toRotateAround, double angleRadian) {
+    private Point rotateAroundPointByAngle(Point toRotate, Point toRotateAround, double angleRadian) {
         double xRotated = Math.cos(angleRadian) * (toRotate.x - toRotateAround.x) - Math.sin(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.x;
         double yRotated = Math.sin(angleRadian) * (toRotate.x - toRotateAround.x) + Math.cos(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.y;
         return new Point((int) Math.rint(xRotated), (int) Math.rint(yRotated));
