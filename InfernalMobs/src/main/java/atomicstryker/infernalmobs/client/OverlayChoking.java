@@ -1,6 +1,7 @@
 package atomicstryker.infernalmobs.client;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.state.GuiRenderState;
@@ -10,30 +11,38 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+import net.minecraftforge.client.gui.overlay.ForgeLayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = InfernalMobsCore.MOD_ID)
-public class OverlayChoking {
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+public class OverlayChoking implements ForgeLayer {
 
-    private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");
-    private static final ResourceLocation AIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/air");
-    private static final ResourceLocation AIR_POPPING_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_bursting");
+    private static final OverlayChoking INSTANCE = new OverlayChoking();
 
-    private static Minecraft mc;
-    private static GuiRenderState guiRenderState = new GuiRenderState();
+    private final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");
+    private final ResourceLocation AIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/air");
+    private final ResourceLocation AIR_POPPING_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_bursting");
 
-    private static int airOverrideValue = -999;
-    private static long airDisplayTimeout;
+    private Minecraft mc;
+
+    private int airOverrideValue = -999;
+    private long airDisplayTimeout;
 
     public static void onAirPacket(int air) {
-        airOverrideValue = air;
-        airDisplayTimeout = System.currentTimeMillis() + 3000L;
+        INSTANCE.airOverrideValue = air;
+        INSTANCE.airDisplayTimeout = System.currentTimeMillis() + 3000L;
     }
 
     @SubscribeEvent
-    public static void onRenderTickPost(TickEvent.RenderTickEvent.Post event) {
+    public static void renderEvent(AddGuiOverlayLayersEvent event) {
+        event.getLayeredDraw().add(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "overlaychoking"), INSTANCE);
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) {
             return;
@@ -45,10 +54,6 @@ public class OverlayChoking {
 
         // modded Gui.renderPlayerHealth 'air' section
         if (!mc.player.isEyeInFluid(FluidTags.WATER) && airOverrideValue != -999) {
-
-            //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            //RenderSystem.setShaderTexture(0, GUI_ICONS_LOCATION);
-            GuiGraphics guiGraphics = new GuiGraphics(mc, guiRenderState);
 
             int leftScreenCoordinate = mc.getWindow().getGuiScaledWidth() / 2 + 91;
             int topScreenCoordinate = mc.getWindow().getGuiScaledHeight() - 59;
@@ -70,7 +75,7 @@ public class OverlayChoking {
         }
     }
 
-    private static int getVehicleMaxHearts(LivingEntity livingEntity) {
+    private int getVehicleMaxHearts(LivingEntity livingEntity) {
         if (livingEntity != null && livingEntity.showVehicleHealth()) {
             float maxHealth = livingEntity.getMaxHealth();
             int roundedHalf = (int) (maxHealth + 0.5F) / 2;
@@ -84,7 +89,7 @@ public class OverlayChoking {
         }
     }
 
-    private static int getVisibleVehicleHeartRows(int heartCount) {
+    private int getVisibleVehicleHeartRows(int heartCount) {
         return (int) Math.ceil((double) heartCount / 10.0D);
     }
 

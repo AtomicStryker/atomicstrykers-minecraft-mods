@@ -7,6 +7,7 @@ import atomicstryker.infernalmobs.common.network.MobModsPacket;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.BossEvent;
@@ -27,6 +29,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+import net.minecraftforge.client.gui.overlay.ForgeLayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,29 +41,35 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = InfernalMobsCore.MOD_ID)
-public class OverlayBossBar {
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = InfernalMobsCore.MOD_ID)
+public class OverlayBossBar implements ForgeLayer {
 
-    private static final double NAME_VISION_DISTANCE = 32D;
+    private final double NAME_VISION_DISTANCE = 32D;
 
-    private static Minecraft mc;
-    private static GuiRenderState guiRenderState = new GuiRenderState();
+    private Minecraft mc;
+    private GuiRenderState guiRenderState = new GuiRenderState();
 
-    private static long healthBarRetainTime = 0;
-    private static LivingEntity retainedTarget = null;
-    private static long nextPacketTime = 0;
+    private long healthBarRetainTime = 0;
+    private LivingEntity retainedTarget = null;
+    private long nextPacketTime = 0;
 
-    private static LinkedHashMap<UUID, LerpingBossEvent> vanillaBossEventsMap = null;
+    private LinkedHashMap<UUID, LerpingBossEvent> vanillaBossEventsMap = null;
 
     @SubscribeEvent
-    public static void onRenderTickPost(TickEvent.RenderTickEvent.Post event) {
+    public static void renderEvent(AddGuiOverlayLayersEvent event) {
+        event.getLayeredDraw().add(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "overlaybossbar"), new OverlayBossBar());
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+
         mc = Minecraft.getInstance();
 
         if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
             return;
         }
 
-        LivingEntity ent = getEntityCrosshairOver(event.getTimer().getRealtimeDeltaTicks(), mc);
+        LivingEntity ent = getEntityCrosshairOver(deltaTracker.getRealtimeDeltaTicks(), mc);
         boolean retained = false;
 
         if (ent == null && System.currentTimeMillis() < healthBarRetainTime) {
@@ -119,13 +129,11 @@ public class OverlayBossBar {
                     mc.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
                     guiRenderState.reset();
 
-                    GuiGraphics guigraphics = new GuiGraphics(mc, guiRenderState);
-
-                    guigraphics.nextStratum();
+                    guiGraphics.nextStratum();
                     ProfilerFiller profilerfiller = Profiler.get();
                     profilerfiller.push("infernalMobs");
 
-                    drawModifiersUnderHealthBar(guigraphics, mod);
+                    drawModifiersUnderHealthBar(guiGraphics, mod);
 
                     profilerfiller.pop();
                 }
@@ -142,7 +150,7 @@ public class OverlayBossBar {
     }
 
 
-    private static void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
+    private void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
         //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         int screenwidth = mc.getWindow().getGuiScaledWidth();
@@ -161,7 +169,7 @@ public class OverlayBossBar {
         //RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
     }
 
-    private static LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {
+    private LivingEntity getEntityCrosshairOver(float partialTicks, Minecraft mc) {
 
         Entity entity = mc.getCameraEntity();
         if (entity != null && mc.level != null) {
@@ -188,7 +196,7 @@ public class OverlayBossBar {
         return null;
     }
 
-    private static void askServerMods(Entity ent) {
+    private void askServerMods(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime && (ent instanceof Mob || (ent instanceof LivingEntity && ent instanceof Enemy))) {
             InfernalMobsCore.networkChannel.send(new MobModsPacket(mc.player.getName().getString(), ent.getId(), (byte) 0), PacketDistributor.SERVER.noArg());
             InfernalMobsCore.LOGGER.debug("askServerMods {}, ent-id {} querying modifiers from server", ent, ent.getId());
@@ -196,7 +204,7 @@ public class OverlayBossBar {
         }
     }
 
-    private static void askServerHealth(Entity ent) {
+    private void askServerHealth(Entity ent) {
         if (System.currentTimeMillis() > nextPacketTime) {
             InfernalMobsCore.networkChannel.send(new HealthPacket(mc.player.getName().getString(), ent.getId(), 0f, 0f), PacketDistributor.SERVER.noArg());
             nextPacketTime = System.currentTimeMillis() + 250L;
