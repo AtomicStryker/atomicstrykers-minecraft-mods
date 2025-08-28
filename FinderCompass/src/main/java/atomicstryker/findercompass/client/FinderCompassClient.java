@@ -47,7 +47,7 @@ public class FinderCompassClient implements ISidedProxy {
         }
     }
 
-    public void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {
+    public static void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {
         if (packet.username().equals("server")) {
             Minecraft.getInstance().submitAsync(() -> {
                 FinderCompassLogic.featureCoords = new BlockPos(packet.x(), packet.y(), packet.z());

@@ -30,7 +30,7 @@ public class FinderCompassServer implements ISidedProxy {
         return server.getServerDirectory();
     }
 
-    public void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {
+    public static void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         server.submitAsync(() -> {
             ServerPlayer p = server.getPlayerList().getPlayerByName(packet.username());

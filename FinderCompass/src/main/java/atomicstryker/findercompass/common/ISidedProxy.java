@@ -9,6 +9,4 @@ public interface ISidedProxy {
     void commonSetup();
 
     Path getMcFolder();
-
-    void handleFeatureSearch(final FeatureSearchPacket packet, final IPayloadContext context);
 }

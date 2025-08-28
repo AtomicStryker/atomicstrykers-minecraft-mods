@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map.Entry;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = FinderCompassMod.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
 public class CompassRenderHook {
 
     private static final int[] strongholdNeedlecolor = {102, 0, 153};

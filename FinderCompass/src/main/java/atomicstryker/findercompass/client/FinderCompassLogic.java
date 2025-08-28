@@ -5,7 +5,7 @@ import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -65,7 +65,7 @@ public class FinderCompassLogic {
                         // dont send packets to a server that does not know them
                         && mc.player.connection.hasChannel(FeatureSearchPacket.TYPE.id())) {
                     FeatureSearchPacket featureSearchPacket = new FeatureSearchPacket(mc.player.getOnPos().getX(), mc.player.getOnPos().getY(), mc.player.getOnPos().getZ(), mc.player.getName().getString(), currentSetting.getFeatureNeedle());
-                    PacketDistributor.sendToServer(featureSearchPacket);
+                    ClientPacketDistributor.sendToServer(featureSearchPacket);
                 }
 
                 while (iter.hasNext()) {

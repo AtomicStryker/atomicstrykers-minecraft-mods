@@ -67,7 +67,7 @@ public class FinderCompassMod {
                 (payload, context) -> FinderCompassClient.getInstance().handleHandshake(payload, context));
 
         registrar.playBidirectional(FeatureSearchPacket.TYPE, FeatureSearchPacket.STREAM_CODEC,
-                (payload, context) -> FinderCompassMod.proxy.handleFeatureSearch(payload, context));
+                FinderCompassServer::handleFeatureSearch, FinderCompassClient::handleFeatureSearch);
     }
 
     @SubscribeEvent
