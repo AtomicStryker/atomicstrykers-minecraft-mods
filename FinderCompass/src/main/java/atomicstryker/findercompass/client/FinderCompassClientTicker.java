@@ -50,12 +50,12 @@ public class FinderCompassClientTicker {
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent.Post tick) {
         if (compassLogic != null) {
-            if (tick.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == Items.COMPASS) {
+            if (tick.player().getItemInHand(InteractionHand.MAIN_HAND).getItem() == Items.COMPASS) {
                 if (mc.options.keyAttack.isDown()) {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player.level().playSound(null, new BlockPos(tick.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
+                        tick.player().level().playSound(null, new BlockPos(tick.player().getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;

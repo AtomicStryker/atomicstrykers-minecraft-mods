@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Map.Entry;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = FinderCompassMod.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = FinderCompassMod.MOD_ID)
 public class CompassRenderHook implements ForgeLayer {
 
     private final int[] strongholdNeedlecolor = {102, 0, 153};
