@@ -83,17 +83,17 @@ public class DynamicLights {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final RegistryObject<Block> LIT_AIR_BLOCK = BLOCKS.register("lit_air", () ->
             new BlockLitAir(BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_air"))
-                    .replaceable().noCollission().noLootTable().air().randomTicks().lightLevel((x)
+                    .replaceable().noCollision().noLootTable().air().randomTicks().lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
     public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
             new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_water"))
-                    .mapColor(MapColor.WATER).replaceable().noCollission().strength(100.0F)
+                    .mapColor(MapColor.WATER).replaceable().noCollision().strength(100.0F)
                     .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
                     .lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER))));
     public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
             new BlockLitCaveAir(BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_cave_air"))
-                    .replaceable().noCollission().noLootTable().air().lightLevel((x)
+                    .replaceable().noCollision().noLootTable().air().lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public DynamicLights(FMLJavaModLoadingContext context) {
@@ -218,20 +218,20 @@ public class DynamicLights {
     }
 
     @SubscribeEvent
-    public void serverWorldTick(TickEvent.LevelTickEvent event) {
+    public void serverWorldTick(TickEvent.LevelTickEvent.Post event) {
 
-        if (event.side != LogicalSide.SERVER) {
+        if (event.side() != LogicalSide.SERVER) {
             return;
         }
 
-        ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(event.level);
+        ConcurrentLinkedQueue<DynamicLightSourceContainer> worldLights = worldLightsMap.get(event.level());
         if (worldLights != null) {
             Iterator<DynamicLightSourceContainer> iter = worldLights.iterator();
             while (iter.hasNext()) {
                 DynamicLightSourceContainer tickedLightContainer = iter.next();
                 if (tickedLightContainer.onUpdate()) {
                     iter.remove();
-                    tickedLightContainer.removeLight(event.level);
+                    tickedLightContainer.removeLight(event.level());
                     LOGGER.debug("Dynamic Lights killing off LightSource on dead Entity: " + tickedLightContainer.getLightSource().getAttachmentEntity());
                 }
             }

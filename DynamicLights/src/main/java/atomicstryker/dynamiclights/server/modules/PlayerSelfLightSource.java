@@ -79,30 +79,30 @@ public class PlayerSelfLightSource {
     }
 
     @SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event) {
+    public void playerTick(TickEvent.PlayerTickEvent.Post event) {
 
-        if (event.side != LogicalSide.SERVER) {
+        if (event.side() != LogicalSide.SERVER) {
             return;
         }
 
-        if (event.player.isAlive()) {
+        if (event.player().isAlive()) {
 
-            PlayerLightSourceContainer playerLightSourceContainer = playerLightsMap.get(event.player);
+            PlayerLightSourceContainer playerLightSourceContainer = playerLightsMap.get(event.player());
             if (playerLightSourceContainer == null) {
-                LOGGER.trace("built new PlayerLightSourceContainer for player {}", event.player);
-                playerLightSourceContainer = new PlayerLightSourceContainer(event.player);
-                playerLightsMap.put(event.player, playerLightSourceContainer);
+                LOGGER.trace("built new PlayerLightSourceContainer for player {}", event.player());
+                playerLightSourceContainer = new PlayerLightSourceContainer(event.player());
+                playerLightsMap.put(event.player(), playerLightSourceContainer);
             }
 
             int prevLight = playerLightSourceContainer.lightLevel;
-            boolean isUnderwater = checkPlayerWater(event.player);
+            boolean isUnderwater = checkPlayerWater(event.player());
 
             ItemStack itemStack = ItemStack.EMPTY;
             playerLightSourceContainer.lightLevel = 0;
             // equipmentSlot enum includes main and off hand and all armor pieces
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                ItemStack equippedStack = event.player.getInventory().getEquipment().get(equipmentSlot);
-                int itemLight = getLightFromItemStack(equippedStack, isUnderwater, event.player.level().registryAccess());
+                ItemStack equippedStack = event.player().getInventory().getEquipment().get(equipmentSlot);
+                int itemLight = getLightFromItemStack(equippedStack, isUnderwater, event.player().level().registryAccess());
                 if (itemLight > playerLightSourceContainer.lightLevel) {
                     playerLightSourceContainer.lightLevel = itemLight;
                     itemStack = equippedStack;
@@ -113,7 +113,7 @@ public class PlayerSelfLightSource {
             if (prevLight != 0 && playerLightSourceContainer.lightLevel != prevLight) {
                 playerLightSourceContainer.lightLevel = 0;
             } else {
-                if (event.player.isOnFire()) {
+                if (event.player().isOnFire()) {
                     playerLightSourceContainer.lightLevel = 15;
                 }
             }
@@ -124,7 +124,7 @@ public class PlayerSelfLightSource {
                 disableLight(playerLightSourceContainer);
             }
         } else {
-            PlayerLightSourceContainer playerLightSourceContainer = playerLightsMap.get(event.player);
+            PlayerLightSourceContainer playerLightSourceContainer = playerLightsMap.get(event.player());
             if (playerLightSourceContainer != null) {
                 disableLight(playerLightSourceContainer);
                 playerLightsMap.remove(playerLightSourceContainer.thePlayer);

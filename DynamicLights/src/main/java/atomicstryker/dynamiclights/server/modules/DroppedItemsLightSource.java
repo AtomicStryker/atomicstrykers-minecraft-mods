@@ -97,9 +97,9 @@ public class DroppedItemsLightSource {
     }
 
     @SubscribeEvent
-    public void serverWorldTick(TickEvent.LevelTickEvent event) {
+    public void serverWorldTick(TickEvent.LevelTickEvent.Post event) {
 
-        if (event.side != LogicalSide.SERVER) {
+        if (event.side() != LogicalSide.SERVER) {
             return;
         }
 
