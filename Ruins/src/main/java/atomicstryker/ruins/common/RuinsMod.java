@@ -229,7 +229,7 @@ public class RuinsMod {
 
     @SubscribeEvent
     public static void onEntityEnteringChunk(EntityEvent.EnteringSection event) {
-        if (event.getEntity() instanceof Player && !event.getEntity().level().isClientSide) {
+        if (event.getEntity() instanceof Player && !event.getEntity().level().isClientSide()) {
             getInstance().executeCommandBlockLogic(event.getEntity(), event.getNewPos());
         }
     }
