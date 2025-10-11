@@ -309,12 +309,12 @@ public class MultiMineServer {
      */
     @SubscribeEvent
     public void onTick(TickEvent.LevelTickEvent.Post tick) {
-        if (tick.side.isClient()) {
+        if (tick.side().isClient()) {
             return;
         }
 
         HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
-                .computeIfAbsent(tick.level.dimension(), k -> Maps.newHashMap());
+                .computeIfAbsent(tick.level().dimension(), k -> Maps.newHashMap());
         Iterator<Map.Entry<BlockPos, Integer>> iterator = blocksRecentlyDestroyed.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<BlockPos, Integer> entry = iterator.next();
@@ -328,7 +328,7 @@ public class MultiMineServer {
             }
         }
 
-        BlockRegenQueue queueForDimension = getBlockRegenQueueForDimension(tick.level.dimension());
+        BlockRegenQueue queueForDimension = getBlockRegenQueueForDimension(tick.level().dimension());
         if (queueForDimension.isEmpty()) {
             return;
         }
@@ -336,7 +336,7 @@ public class MultiMineServer {
         PartiallyMinedBlock block;
         for (Iterator<PartiallyMinedBlock> iter = queueForDimension.iterator(); iter.hasNext(); ) {
             block = iter.next();
-            if (tick.level.isEmptyBlock(block.getPos())) {
+            if (tick.level().isEmptyBlock(block.getPos())) {
                 sendPartiallyMinedBlockDeleteCommandToAllPlayers(block);
                 getPartiallyMinedBlocksForDimension(block.getDimension()).remove(block);
                 iter.remove();

@@ -101,7 +101,7 @@ public class MultiMineClient {
 
     private void onClickBlockInstance(Player player, BlockPos pos) {
 
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             // only clientside pls
             return;
         }
