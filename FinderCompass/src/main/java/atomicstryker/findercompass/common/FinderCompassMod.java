@@ -47,7 +47,7 @@ public class FinderCompassMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static FinderCompassMod instance;
-    public static ISidedProxy proxy = FMLEnvironment.dist.isClient() ? new FinderCompassClient() : new FinderCompassServer();
+    public static ISidedProxy proxy = FMLEnvironment.getDist().isClient() ? new FinderCompassClient() : new FinderCompassServer();
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
