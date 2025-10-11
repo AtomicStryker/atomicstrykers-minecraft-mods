@@ -82,13 +82,13 @@ public class DynamicLights {
     public static final DeferredBlock<BlockLitAir> LIT_AIR_BLOCK = BLOCKS.register("lit_air", resourceLocation ->
             new BlockLitAir(BlockBehaviour.Properties.of()
                     .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_air")))
-                    .replaceable().noCollission().noLootTable().air().randomTicks().lightLevel((x)
+                    .replaceable().noCollision().noLootTable().air().randomTicks().lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public static final DeferredBlock<BlockLitWater> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
             new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of()
                     .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_water")))
-                    .mapColor(MapColor.WATER).replaceable().noCollission().strength(100.0F)
+                    .mapColor(MapColor.WATER).replaceable().noCollision().strength(100.0F)
                     .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
                     .lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER))));
@@ -96,7 +96,7 @@ public class DynamicLights {
     public static final DeferredBlock<BlockLitCaveAir> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
             new BlockLitCaveAir(BlockBehaviour.Properties.of()
                     .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_cave_air")))
-                    .replaceable().noCollission().noLootTable().air().lightLevel((x)
+                    .replaceable().noCollision().noLootTable().air().lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public DynamicLights(IEventBus modEventBus) {
