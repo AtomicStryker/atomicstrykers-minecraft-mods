@@ -72,7 +72,6 @@ public class FinderCompassMod {
 
     public FinderCompassMod() {
         instance = this;
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
