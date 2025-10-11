@@ -55,7 +55,6 @@ public class RuinsMod {
     public RuinsMod(FMLJavaModLoadingContext context) {
         instance = this;
         generatorMap = new ConcurrentHashMap<>();
-        MinecraftForge.EVENT_BUS.register(this);
         BlockEvent.BreakEvent.BUS.addListener(CommandParseTemplate::onBlockBroken);
         LOGGER.info("Ruins instance built, events registered");
     }
