@@ -50,7 +50,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingDeath(LivingDeathEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 if (mod.onDeath()) {
@@ -62,7 +62,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingSetAttackTarget(LivingChangeTargetEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onSetAttackTarget(event.getNewAboutToBeSetTarget());
@@ -139,7 +139,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingFall(LivingFallEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 event.setCanceled(mod.onFall(event.getDistance()));
@@ -149,7 +149,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onJump(event.getEntity());
@@ -204,7 +204,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingDrops(LivingDropsEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onDropItems(event.getEntity(), event.getSource(), event.getDrops(), event.isRecentlyHit());

@@ -216,7 +216,7 @@ public abstract class MobModifier {
         if (nextMod != null) {
             amount = nextMod.onHurt(mob, source, amount);
         } else if (source.getDirectEntity() != null) {
-            if (source.getDirectEntity().level().isClientSide && source.getDirectEntity() instanceof Player) {
+            if (source.getDirectEntity().level().isClientSide() && source.getDirectEntity() instanceof Player) {
                 InfernalMobsCore.instance().sendHealthRequestPacket(source.getDirectEntity().getName().getString(), mob);
             }
         }
@@ -313,7 +313,7 @@ public abstract class MobModifier {
     }
 
     private void increaseMaxHealthForMobIfNeeded(LivingEntity mob) {
-        if (mob.level().isClientSide) {
+        if (mob.level().isClientSide()) {
             return;
         }
         float storedMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth").orElse(0F);
@@ -332,7 +332,7 @@ public abstract class MobModifier {
      * @return buffered modified max health
      */
     public float getActualMaxHealth(LivingEntity mob) {
-        if (!mob.level().isClientSide && actualMaxHealth < 1F) {
+        if (!mob.level().isClientSide() && actualMaxHealth < 1F) {
             actualMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth").orElse(1F);
         }
         return actualMaxHealth;

@@ -127,7 +127,7 @@ public class InfernalMobsCore {
         NeoForge.EVENT_BUS.register(new EntityEventHandler());
         NeoForge.EVENT_BUS.register(new SaveEventHandler());
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             NeoForge.EVENT_BUS.register(new InfernalMobsClient());
         }
 
@@ -151,31 +151,31 @@ public class InfernalMobsCore {
     }
 
     private void onHealthPacketForClient(HealthPacket healthPacket, IPayloadContext playPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             InfernalMobsClient.instance().onHealthPacketForClient(healthPacket, playPayloadContext);
         }
     }
 
     private void onKnockBackPacketForClient(KnockBackPacket knockBackPacket, IPayloadContext playPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             InfernalMobsClient.instance().onKnockBackPacket(knockBackPacket, playPayloadContext);
         }
     }
 
     private void onMobModsPacketForClient(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             InfernalMobsClient.instance().onMobModsPacketToClient(mobModsPacket, playPayloadContext);
         }
     }
 
     private void onAirPacketForClient(AirPacket airPacket, IPayloadContext playPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             InfernalMobsClient.instance().onAirPacket(airPacket, playPayloadContext);
         }
     }
 
     private void onVelocityPacketForClient(VelocityPacket velocityPacket, IPayloadContext playPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             InfernalMobsClient.instance().onVelocityPacket(velocityPacket, playPayloadContext);
         }
     }
@@ -424,7 +424,7 @@ public class InfernalMobsCore {
      * @param entity Entity in question, already asserted to be instanceof Enemy
      */
     public void processEntitySpawn(LivingEntity entity) {
-        if (!entity.level().isClientSide && config != null) {
+        if (!entity.level().isClientSide() && config != null) {
             if (!getIsRareEntityOnline(entity) && !getWasMobSpawnedBefore(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {

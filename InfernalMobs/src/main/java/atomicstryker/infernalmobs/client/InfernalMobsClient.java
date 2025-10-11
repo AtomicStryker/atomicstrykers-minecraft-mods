@@ -46,7 +46,7 @@ public class InfernalMobsClient {
 
     @SubscribeEvent
     public void onEntityJoinedWorld(EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
+        if (event.getLevel().isClientSide() && mc.player != null && (event.getEntity() instanceof Mob || (event.getEntity() instanceof LivingEntity && event.getEntity() instanceof Enemy))) {
             MobModsPacket mobModsPacket = new MobModsPacket(mc.player.getName().getString(), event.getEntity().getId(), (byte) 0);
             ClientPacketDistributor.sendToServer(mobModsPacket);
             InfernalMobsCore.LOGGER.trace("onEntityJoinedWorld {}, ent-id {} querying modifiers from server", event.getEntity(), event.getEntity().getId());
