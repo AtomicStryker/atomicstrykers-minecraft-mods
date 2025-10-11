@@ -154,8 +154,6 @@ public class InfernalMobsCore {
         classesHealthMap = new HashMap<>();
         modifiedPlayerTimes = new HashMap<>();
 
-        MinecraftForge.EVENT_BUS.register(this);
-
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         LevelEvent.Unload.BUS.addListener(new SaveEventHandler());
 
