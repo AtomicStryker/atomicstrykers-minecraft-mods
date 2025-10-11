@@ -39,7 +39,7 @@ public class MultiMine {
         instance = this;
         LOGGER = LogManager.getLogger();
         MultiMine.LOGGER.info("mod instantiated");
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             // triggers instance init
             new MultiMineClient().commonSetup();
         }
@@ -61,13 +61,13 @@ public class MultiMine {
     }
 
     private void handlePartialBlockPacketClient(PartialBlockPacket partialBlockPacket, IPayloadContext iPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             MultiMineClient.handlePartialBlockPacket(partialBlockPacket, iPayloadContext);
         }
     }
 
     private void handlePartialBlockRemovalPacketClient(PartialBlockRemovalPacket partialBlockRemovalPacket, IPayloadContext iPayloadContext) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             MultiMineClient.handlePartialBlockRemovalPacket(partialBlockRemovalPacket, iPayloadContext);
         }
     }

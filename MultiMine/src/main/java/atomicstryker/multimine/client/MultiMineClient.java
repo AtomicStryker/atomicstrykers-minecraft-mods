@@ -96,7 +96,7 @@ public class MultiMineClient {
 
     private void onClickBlockInstance(PlayerInteractEvent.LeftClickBlock event) {
 
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             // only clientside pls
             return;
         }
