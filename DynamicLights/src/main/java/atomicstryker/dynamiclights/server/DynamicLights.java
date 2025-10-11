@@ -109,9 +109,6 @@ public class DynamicLights {
         var modBusGroup = context.getModBusGroup();
         GatherDataEvent.getBus(modBusGroup).addListener(ModDatagen::start);
 
-        // this one is for FMLServerStartedEvent, WorldTickEvent
-        MinecraftForge.EVENT_BUS.register(this);
-
         BLOCKS.register(modBusGroup);
     }
 
