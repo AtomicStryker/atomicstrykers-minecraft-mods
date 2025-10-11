@@ -103,8 +103,8 @@ public abstract class AbstractTeleporter extends MobModifier {
         mob.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
     }
 
-    protected EntityTeleportEvent getForgeEvent(LivingEntity mob, double x, double y, double z) {
-        return new EntityTeleportEvent(mob, x, y, z);
+    protected EntityTeleportEvent.EnderEntity getForgeEvent(LivingEntity mob, double x, double y, double z) {
+        return new EntityTeleportEvent.EnderEntity(mob, x, y, z);
     }
 
 }

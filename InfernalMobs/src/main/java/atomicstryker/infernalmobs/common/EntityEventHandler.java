@@ -13,8 +13,8 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.bus.EventBus;
+import net.minecraftforge.eventbus.api.event.RecordEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public boolean onEntityLivingDeath(LivingDeathEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 return mod.onDeath();
@@ -59,7 +59,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingSetAttackTarget(LivingChangeTargetEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onSetAttackTarget(event.getNewTarget());
@@ -129,7 +129,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public boolean onEntityLivingFall(LivingFallEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 return mod.onFall(event.getDistance());
@@ -140,7 +140,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingJump(LivingEvent.LivingJumpEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onJump(event.getEntity());
@@ -150,7 +150,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingUpdate(LivingEvent.LivingTickEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
 
             // workaround to get save-loaded infernal entities working, init them on their first living tick
             if (event.getEntity().tickCount == 1) {
@@ -193,7 +193,7 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public void onEntityLivingDrops(LivingDropsEvent event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
                 mod.onDropItems(event.getEntity(), event.getSource(), event.getDrops(), event.isRecentlyHit());
@@ -202,16 +202,8 @@ public class EntityEventHandler {
         }
     }
 
-    public static class MobFarmDetectedEvent extends ChunkEvent {
+    public record MobFarmDetectedEvent(LevelChunk chunk, long triggeringInterval,
+                                       float triggeringDamage) implements RecordEvent {
         public static final EventBus<MobFarmDetectedEvent> BUS = EventBus.create(MobFarmDetectedEvent.class);
-
-        public final long triggeringInterval;
-        public final float triggeringDamage;
-
-        public MobFarmDetectedEvent(LevelChunk chunk, long ti, float td) {
-            super(chunk);
-            triggeringInterval = ti;
-            triggeringDamage = td;
-        }
     }
 }

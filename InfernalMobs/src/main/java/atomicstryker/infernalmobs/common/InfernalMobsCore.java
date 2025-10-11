@@ -386,7 +386,7 @@ public class InfernalMobsCore {
      * @param entity Entity in question, already asserted to be instanceof Enemy
      */
     public void processEntitySpawn(LivingEntity entity) {
-        if (!entity.level().isClientSide && config != null) {
+        if (!entity.level().isClientSide() && config != null) {
             if (!getIsRareEntityOnline(entity) && !isBlockedBeingInfernal(entity)) {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {
@@ -749,18 +749,18 @@ public class InfernalMobsCore {
     }
 
     @SubscribeEvent
-    public static void onTick(TickEvent.LevelTickEvent tick) {
+    public static void onTick(TickEvent.LevelTickEvent.Post tick) {
         if (System.currentTimeMillis() > instance().nextExistCheckTime) {
             instance().nextExistCheckTime = System.currentTimeMillis() + instance().existCheckDelay;
-            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.level);
+            Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(tick.level());
             // System.out.println("Removed unloaded Entity "+mob+" with ID
             // "+mob.getEntityId()+" from rareMobs");
             mobsmap.keySet().stream().filter(instance()::filterMob).forEach(InfernalMobsCore::removeEntFromElites);
 
-            instance().resetModifiedPlayerEntitiesAsNeeded(tick.level);
+            instance().resetModifiedPlayerEntitiesAsNeeded(tick.level());
         }
 
-        if (!tick.level.isClientSide) {
+        if (!tick.level().isClientSide()) {
             instance().infCheckA = null;
             instance().infCheckB = null;
         }

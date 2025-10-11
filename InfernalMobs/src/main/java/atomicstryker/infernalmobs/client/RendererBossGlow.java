@@ -34,8 +34,8 @@ public class RendererBossGlow {
         Vec3 curPos = viewEnt.position();
         Map<LivingEntity, MobModifier> mobsmap = SidedCache.getInfernalMobs(viewEnt.level());
         mobsmap.keySet().stream().filter(ent -> ent.shouldRenderAtSqrDistance(curPos.distanceToSqr(ent.position()))
-                && ent.isAlive()).forEach(ent -> mc.levelRenderer.addParticle(ParticleTypes.WITCH,
-                false, ent.getX() + (ent.getRandom().nextDouble() - 0.5D) * (double) ent.getBbWidth(),
+                && ent.isAlive()).forEach(ent -> ent.level().addParticle(ParticleTypes.WITCH,
+                ent.getX() + (ent.getRandom().nextDouble() - 0.5D) * (double) ent.getBbWidth(),
                 ent.getY() + ent.getRandom().nextDouble() * (double) ent.getBbHeight() - 0.25D,
                 ent.getZ() + (ent.getRandom().nextDouble() - 0.5D) * (double) ent.getBbWidth(),
                 (ent.getRandom().nextDouble() - 0.5D) * 2.0D,
