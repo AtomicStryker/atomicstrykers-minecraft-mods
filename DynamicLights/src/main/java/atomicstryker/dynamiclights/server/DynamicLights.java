@@ -28,6 +28,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -110,6 +111,9 @@ public class DynamicLights {
         GatherDataEvent.getBus(modBusGroup).addListener(ModDatagen::start);
 
         BLOCKS.register(modBusGroup);
+
+        // allow clients/servers to connect to remotes which do not have the mod installed
+        context.registerDisplayTest(IExtensionPoint.DisplayTest.IGNORE_ALL_VERSION);
     }
 
     @SubscribeEvent
