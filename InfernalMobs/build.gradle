@@ -102,7 +102,26 @@ dependencies {
     // Forge 1.21.6+ uses EventBus 7, which shifts most of its runtime validation to compile-time via an annotation processor
     // to improve performance in production environments. This line is required to enable said compile-time validation
     // in your development environment, helping you catch issues early.
-    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.12'
+}
+
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
+// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+tasks.named('processResources', ProcessResources) {
+    var replaceProperties = [
+            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version, forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors: mod_authors, mod_description: mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
