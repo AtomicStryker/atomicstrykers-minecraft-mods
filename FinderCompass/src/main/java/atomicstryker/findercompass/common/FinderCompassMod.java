@@ -317,7 +317,7 @@ public class FinderCompassMod {
 
         compassConfig.setNeedles(needleSetList);
 
-        compassConfig.setNeedleWidthOfScreenWidth(0.01D);
+        compassConfig.setNeedleWidthOfScreenWidth(0.015D);
         compassConfig.setNeedleHeightOfScreenHeight(0.15D);
         compassConfig.setOnScreenPositionHeight(0.5D);
         compassConfig.setOnScreenPositionWidth(0.5D);
