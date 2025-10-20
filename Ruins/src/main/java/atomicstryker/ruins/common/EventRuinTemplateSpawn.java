@@ -2,7 +2,6 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.bus.CancellableEventBus;
-import net.minecraftforge.eventbus.api.bus.EventBus;
 import net.minecraftforge.eventbus.api.event.RecordEvent;
 import net.minecraftforge.eventbus.api.event.characteristic.Cancellable;
 import org.jetbrains.annotations.NotNull;
@@ -24,5 +23,5 @@ import org.jetbrains.annotations.NotNull;
  */
 public record EventRuinTemplateSpawn(Level world, RuinTemplate templ, int x, int y, int z, int rotation,
                                      boolean testing, boolean isPrior) implements Cancellable, RecordEvent {
-    public static final CancellableEventBus<@NotNull EventRuinTemplateSpawn> BUS = (CancellableEventBus<@NotNull EventRuinTemplateSpawn>) EventBus.create(EventRuinTemplateSpawn.class);
+    public static final CancellableEventBus<@NotNull EventRuinTemplateSpawn> BUS = CancellableEventBus.create(EventRuinTemplateSpawn.class);
 }
