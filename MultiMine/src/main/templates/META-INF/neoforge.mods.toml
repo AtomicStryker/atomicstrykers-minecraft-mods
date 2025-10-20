@@ -3,7 +3,6 @@
 # The overall format is standard TOML format, v0.5.0.
 # Note that there are a couple of TOML lists in this file.
 # Find more information on toml format here:  https://github.com/toml-lang/toml
-# The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 license="AtomicStrykers License https://atomicstryker.github.io/"
 # A URL to refer people to when problems occur with this mod
@@ -19,11 +18,11 @@ displayName="${mod_name}" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 # updateJSONURL="http://www.atomicstryker.net/updatemanager/findercompass.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://atomicstryker.github.io" #optional
+displayURL="https://atomicstryker.github.io/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
-credits="" #optional
+# credits="" #optional
 # A text field displayed in the mod UI
 authors="AtomicStryker" #optional
 # The description text for the mod (multi line!) (#mandatory)

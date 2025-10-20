@@ -4,7 +4,6 @@
 # Note that there are a couple of TOML lists in this file.
 # Find more information on toml format here:  https://github.com/toml-lang/toml
 modLoader="javafml" #mandatory
-# A version range to match for said mod loader - for regular FML @Mod it will be the forge version
 license="AtomicStrykers License https://atomicstryker.github.io/"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues" #optional
@@ -17,9 +16,9 @@ version="${mod_version}" #mandatory
 # A display name for the mod
 displayName="${mod_name}" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-# updateJSONURL="http://myurl.me/" #optional
+# updateJSONURL="http://www.atomicstryker.net/updatemanager/findercompass.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="http://atomicstryker.org/" #optional
+displayURL="https://atomicstryker.github.io/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
