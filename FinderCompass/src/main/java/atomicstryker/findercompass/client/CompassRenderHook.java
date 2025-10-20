@@ -15,6 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.gui.overlay.ForgeLayer;
+import net.minecraftforge.client.gui.overlay.ForgeLayeredDraw;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -67,8 +68,11 @@ public class CompassRenderHook implements ForgeLayer {
     }
 
     @SubscribeEvent
-    public static void renderEvent(AddGuiOverlayLayersEvent event) {
-        event.getLayeredDraw().add(ResourceLocation.fromNamespaceAndPath("findercompass", "findercompass"), new CompassRenderHook());
+    public static void registerLayers(AddGuiOverlayLayersEvent event) {
+        ForgeLayeredDraw forgeLayeredDraw = event.getLayeredDraw().add(
+                ResourceLocation.fromNamespaceAndPath(FinderCompassMod.MOD_ID, FinderCompassMod.MOD_ID),
+                new CompassRenderHook());
+        event.getLayeredDraw().move(forgeLayeredDraw.getName(), ForgeLayeredDraw.SLEEP_OVERLAY, ForgeLayeredDraw.LayerOffset.ABOVE);
     }
 
     @Override
