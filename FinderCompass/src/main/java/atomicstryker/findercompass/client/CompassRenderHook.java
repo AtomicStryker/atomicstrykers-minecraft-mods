@@ -2,11 +2,9 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -89,86 +87,81 @@ public class CompassRenderHook implements ForgeLayer {
 
     private void renderCompassNeedles(GuiGraphics guiGraphics) {
 
-        // push pose to not mess up other renderers
-        guiGraphics.pose().pushMatrix();
-        // use the standard gui vertex consumer which is already set up for simple quads
-        VertexConsumer vertexconsumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.debugQuads());
-
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         CompassSetting css = FinderCompassClientTicker.instance.getCurrentSetting();
-        boolean drewSomething = false;
+
+        int widthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
+        int heightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
+
+        int originPointX = (int) Math.rint(screenWidth * onScreenPositionWidth);
+        int originPointY = (int) Math.rint(screenHeight * onScreenPositionHeight);
+
+        // shift the origin x by half needle width so it rotates cleanly around the center
+        originPointX -= widthNeedle / 2;
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawNeedle(guiGraphics, vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
-            drewSomething = true;
+            drawNeedle(guiGraphics, widthNeedle, heightNeedle, originPointX, originPointY,
+                    configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            drawNeedle(guiGraphics, vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
-            drewSomething = true;
+            drawNeedle(guiGraphics, widthNeedle, heightNeedle, originPointX, originPointY,
+                    strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2],
+                    computeNeedleHeading(FinderCompassLogic.featureCoords));
         }
+    }
 
-        if (drewSomething) {
-            Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
-        }
+    private void drawNeedle(GuiGraphics guiGraphics, int widthNeedle, int heightNeedle,
+                            int originPointX, int originPointY, int r, int g, int b, float angleDegrees) {
+
+        // convert angleDegrees to radians
+        float angleRadian = (float) (Math.toRadians(angleDegrees));
+
+        // construct a color integer by bit shifting rgb together
+        int color = 0xff000000;
+        color |= b;
+        color |= g << 8;
+        color |= r << 16;
+
+        // push pose to not mess up other renderers
+        guiGraphics.pose().pushMatrix();
+
+        // move our draw starting point to the needle center
+        guiGraphics.pose().translate(originPointX, originPointY);
+        // rotate our draw by the needle rotation
+        guiGraphics.pose().rotate(angleRadian);
+
+        // dont start in the center so we dont overlap with the crosshair so much
+        int startHeight = heightNeedle / 2;
+        int halfWidth = widthNeedle / 2;
+
+        // ask guiGraphics to draw us a filled rectangle in the rotated view
+        // note we dont start drawing at zero but negative half width
+        // so the needles are centered properly
+        guiGraphics.fill(startHeight, -halfWidth, heightNeedle, widthNeedle, color);
 
         // pop pose to reset rendering to where it was before we started drawing
         guiGraphics.pose().popMatrix();
     }
 
-    private void drawNeedle(GuiGraphics guiGraphics, VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
-        guiGraphics.pose().pushMatrix();
-        int halfWidthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
-        int halfHeightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
-
-        int originPointX = (int) Math.rint(screenWidth * onScreenPositionWidth);
-        int originPointY = (int) Math.rint(screenHeight * onScreenPositionHeight);
-        guiGraphics.pose().translate(originPointX, originPointY);
-        // we want the resulting thin, long rectangle to point straight up above the origin point unrotated
-        int bottomLeftX = originPointX - halfWidthNeedle;
-        int bottomLeftY = originPointY - halfHeightNeedle;
-
-        int bottomRightX = originPointX + halfWidthNeedle;
-        int bottomRightY = bottomLeftY;
-
-        int topRightX = bottomRightX;
-        int topRightY = bottomLeftY - (2 * halfHeightNeedle);
-
-        int topLeftX = bottomLeftX;
-        int topLeftY = topRightY;
-
-        // now do some "rotate point around another point" math
-        // im sure this is inefficient and terrible. PR me an improvement.
-        float angleRadian = (float) (Math.toRadians(angle) - 90f);
-        Point rotatedBottomLeft = rotateAroundPointByAngle(new Point(bottomLeftX, bottomLeftY), new Point(originPointX, originPointY), angleRadian);
-        Point rotatedBottomRight = rotateAroundPointByAngle(new Point(bottomRightX, bottomRightY), new Point(originPointX, originPointY), angleRadian);
-        Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
-        Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
-        int color = 0xff000000;
-        color |= b;
-        color |= g << 8;
-        color |= r << 16;
-        guiGraphics.pose().rotate(angleRadian);
-        guiGraphics.fill(0, 0, halfHeightNeedle, halfWidthNeedle, color);
-        guiGraphics.pose().popMatrix();
-    }
-
+    /**
+     * this was klepped from MC source code many years ago and i make random changes until it works
+     */
     private float computeNeedleHeading(BlockPos coords) {
-        double angleRadian = 0.0D;
+        double angleDegrees = 0.0D;
         if (mc.level != null && mc.player != null) {
-            double xdiff = mc.player.getX() - (coords.getX()  );
-            double zdiff = mc.player.getZ() - (coords.getZ() );
-            angleRadian = (mc.player.getYRot() - 90.0F) * Math.PI / 180.0D - Math.atan2(zdiff, xdiff);
+            double playerX = mc.player.getX();
+            double playerZ = mc.player.getZ();
+            // int block coordinates are for their starting corners, add .5 to get center coords
+            double blockX = coords.getX() + 0.5D;
+            double blockZ = coords.getZ() + 0.5D;
+            double xDiff = playerX - blockX;
+            double zDiff = playerZ - blockZ;
+            angleDegrees = mc.player.getYRot() * Math.PI / 180.0D - Math.atan2(zDiff, xDiff);
         }
 
-        return (float) -(angleRadian * 180f / Math.PI);
-    }
-
-    private Point rotateAroundPointByAngle(Point toRotate, Point toRotateAround, double angleRadian) {
-        double xRotated = Math.cos(angleRadian) * (toRotate.x - toRotateAround.x) - Math.sin(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.x;
-        double yRotated = Math.sin(angleRadian) * (toRotate.x - toRotateAround.x) + Math.cos(angleRadian) * (toRotate.y - toRotateAround.y) + toRotateAround.y;
-        return new Point((int) Math.rint(xRotated), (int) Math.rint(yRotated));
+        return (float) -(angleDegrees * 180f / Math.PI);
     }
 }
