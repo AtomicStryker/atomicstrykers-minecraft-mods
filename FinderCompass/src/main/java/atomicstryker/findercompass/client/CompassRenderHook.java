@@ -69,10 +69,10 @@ public class CompassRenderHook implements ForgeLayer {
 
     @SubscribeEvent
     public static void registerLayers(AddGuiOverlayLayersEvent event) {
-        ForgeLayeredDraw forgeLayeredDraw = event.getLayeredDraw().add(
+        event.getLayeredDraw().addAbove(
                 ResourceLocation.fromNamespaceAndPath(FinderCompassMod.MOD_ID, FinderCompassMod.MOD_ID),
+                ForgeLayeredDraw.SLEEP_OVERLAY,
                 new CompassRenderHook());
-        event.getLayeredDraw().move(forgeLayeredDraw.getName(), ForgeLayeredDraw.SLEEP_OVERLAY, ForgeLayeredDraw.LayerOffset.ABOVE);
     }
 
     @Override
@@ -101,12 +101,12 @@ public class CompassRenderHook implements ForgeLayer {
 
         for (Entry<CompassTargetData, BlockPos> entryTarget : css.getCustomNeedleTargets().entrySet()) {
             final int[] configInts = css.getCustomNeedles().get(entryTarget.getKey());
-            drawNeedle(vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
+            drawNeedle(guiGraphics, vertexconsumer, screenWidth, screenHeight, configInts[0], configInts[1], configInts[2], computeNeedleHeading(entryTarget.getValue()));
             drewSomething = true;
         }
 
         if (css.getFeatureNeedle() != null && FinderCompassLogic.hasFeature) {
-            drawNeedle(vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
+            drawNeedle(guiGraphics, vertexconsumer, screenWidth, screenHeight, strongholdNeedlecolor[0], strongholdNeedlecolor[1], strongholdNeedlecolor[2], computeNeedleHeading(FinderCompassLogic.featureCoords));
             drewSomething = true;
         }
 
@@ -118,14 +118,14 @@ public class CompassRenderHook implements ForgeLayer {
         guiGraphics.pose().popMatrix();
     }
 
-    private void drawNeedle(VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
-
+    private void drawNeedle(GuiGraphics guiGraphics, VertexConsumer vertexConsumer, int screenWidth, int screenHeight, int r, int g, int b, float angle) {
+        guiGraphics.pose().pushMatrix();
         int halfWidthNeedle = (int) Math.rint(screenWidth * (needleWidthOfScreenWidth / 2));
         int halfHeightNeedle = (int) Math.rint(screenHeight * (needleHeightOfScreenHeight / 2));
 
         int originPointX = (int) Math.rint(screenWidth * onScreenPositionWidth);
         int originPointY = (int) Math.rint(screenHeight * onScreenPositionHeight);
-
+        guiGraphics.pose().translate(originPointX, originPointY);
         // we want the resulting thin, long rectangle to point straight up above the origin point unrotated
         int bottomLeftX = originPointX - halfWidthNeedle;
         int bottomLeftY = originPointY - halfHeightNeedle;
@@ -141,35 +141,25 @@ public class CompassRenderHook implements ForgeLayer {
 
         // now do some "rotate point around another point" math
         // im sure this is inefficient and terrible. PR me an improvement.
-        double angleRadian = Math.toRadians(angle);
+        float angleRadian = (float) (Math.toRadians(angle) - 90f);
         Point rotatedBottomLeft = rotateAroundPointByAngle(new Point(bottomLeftX, bottomLeftY), new Point(originPointX, originPointY), angleRadian);
         Point rotatedBottomRight = rotateAroundPointByAngle(new Point(bottomRightX, bottomRightY), new Point(originPointX, originPointY), angleRadian);
         Point rotatedTopRight = rotateAroundPointByAngle(new Point(topRightX, topRightY), new Point(originPointX, originPointY), angleRadian);
         Point rotatedTopLeft = rotateAroundPointByAngle(new Point(topLeftX, topLeftY), new Point(originPointX, originPointY), angleRadian);
-
-        // bottom left corner of quad
-        vertexConsumer
-                .addVertex(rotatedBottomLeft.x, rotatedBottomLeft.y, -90.0F)
-                .setColor(r, g, b, 120);
-        // bottom right corner
-        vertexConsumer
-                .addVertex(rotatedBottomRight.x, rotatedBottomRight.y, -90.0F)
-                .setColor(r, g, b, 120);
-        // top right corner
-        vertexConsumer
-                .addVertex(rotatedTopRight.x, rotatedTopRight.y, -90.0F)
-                .setColor(r, g, b, 120);
-        // top left corner
-        vertexConsumer
-                .addVertex(rotatedTopLeft.x, rotatedTopLeft.y, -90.0F)
-                .setColor(r, g, b, 120);
+        int color = 0xff000000;
+        color |= b;
+        color |= g << 8;
+        color |= r << 16;
+        guiGraphics.pose().rotate(angleRadian);
+        guiGraphics.fill(0, 0, halfHeightNeedle, halfWidthNeedle, color);
+        guiGraphics.pose().popMatrix();
     }
 
     private float computeNeedleHeading(BlockPos coords) {
         double angleRadian = 0.0D;
         if (mc.level != null && mc.player != null) {
-            double xdiff = mc.player.getX() - (coords.getX() + 0.5D);
-            double zdiff = mc.player.getZ() - (coords.getZ() + 0.5D);
+            double xdiff = mc.player.getX() - (coords.getX()  );
+            double zdiff = mc.player.getZ() - (coords.getZ() );
             angleRadian = (mc.player.getYRot() - 90.0F) * Math.PI / 180.0D - Math.atan2(zdiff, xdiff);
         }
 
