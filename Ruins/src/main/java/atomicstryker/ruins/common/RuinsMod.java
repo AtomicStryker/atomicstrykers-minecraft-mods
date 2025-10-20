@@ -16,14 +16,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -37,7 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mod(RuinsMod.MOD_ID)
-@Mod.EventBusSubscriber(modid = RuinsMod.MOD_ID, value = Dist.DEDICATED_SERVER)
+@Mod.EventBusSubscriber(modid = RuinsMod.MOD_ID)
 public class RuinsMod {
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -57,6 +56,8 @@ public class RuinsMod {
         generatorMap = new ConcurrentHashMap<>();
         BlockEvent.BreakEvent.BUS.addListener(CommandParseTemplate::onBlockBroken);
         LOGGER.info("Ruins instance built, events registered");
+        // allow clients/servers to connect to remotes which do not have the mod installed
+        context.registerDisplayTest(IExtensionPoint.DisplayTest.IGNORE_ALL_VERSION);
     }
 
     public static RuinsMod getInstance() {
