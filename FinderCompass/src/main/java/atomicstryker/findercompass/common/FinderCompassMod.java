@@ -22,7 +22,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
@@ -70,8 +72,10 @@ public class FinderCompassMod {
             .consumerNetworkThread(FeatureSearchPacket::handle)
             .add();
 
-    public FinderCompassMod() {
+    public FinderCompassMod(FMLJavaModLoadingContext context) {
         instance = this;
+        // allow clients/servers to connect to remotes which do not have the mod installed
+        context.registerDisplayTest(IExtensionPoint.DisplayTest.IGNORE_ALL_VERSION);
     }
 
     @SubscribeEvent
