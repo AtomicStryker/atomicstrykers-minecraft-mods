@@ -15,6 +15,7 @@ public class MultiMineConfig {
     private boolean disableAutoRegisterNames = false;
 
     public MultiMineConfig() {
+        // Default banned blocks added due to https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/555
         this.bannedBlocks.put("littletiles:tiles", true);
         this.bannedBlocks.put("littletiles:tiles_ticking", true);
         this.bannedBlocks.put("littletiles:tiles_rendered", true);
