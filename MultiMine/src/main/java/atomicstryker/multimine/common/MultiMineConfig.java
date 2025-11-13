@@ -14,6 +14,13 @@ public class MultiMineConfig {
     private boolean disableForAllTileEntities = false;
     private boolean disableAutoRegisterNames = false;
 
+    public MultiMineConfig() {
+        this.bannedBlocks.put("littletiles:tiles", true);
+        this.bannedBlocks.put("littletiles:tiles_ticking", true);
+        this.bannedBlocks.put("littletiles:tiles_rendered", true);
+        this.bannedBlocks.put("littletiles:tiles_ticking_rendered", true);
+    }
+
     public boolean isBlockRegenerationEnabled() {
         return blockRegenerationEnabled;
     }
