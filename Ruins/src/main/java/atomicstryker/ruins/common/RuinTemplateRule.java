@@ -2,8 +2,8 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -216,10 +216,10 @@ public class RuinTemplateRule {
                         String lootTable = nbtTagCompound.getString("LootTable").get();
                         long lootSeed = nbtTagCompound.getLong("LootTableSeed").get();
 
-                        ResourceLocation lootResourceLocation = ResourceLocation.parse(lootTable);
+                        Identifier lootIdentifier = Identifier.parse(lootTable);
                         RandomizableContainerBlockEntity tileEntityLockableLoot = (RandomizableContainerBlockEntity) entity;
                         for (ResourceKey<LootTable> lootTableResourceKey : BuiltInLootTables.all()) {
-                            if (lootTableResourceKey.location().equals(lootResourceLocation)) {
+                            if (lootTableResourceKey.identifier().equals(lootIdentifier)) {
                                 tileEntityLockableLoot.setLootTable(lootTableResourceKey, lootSeed);
                                 tileEntityLockableLoot.unpackLootTable(null);
                                 break;

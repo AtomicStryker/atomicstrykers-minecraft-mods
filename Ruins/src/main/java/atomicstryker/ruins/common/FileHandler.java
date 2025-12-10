@@ -4,7 +4,7 @@ import com.google.common.io.Files;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 
@@ -26,7 +26,7 @@ class FileHandler {
 
     private final static int WEIGHT = 0, CHANCE = 1;
     private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<>();
-    private final ResourceLocation dimension;
+    private final Identifier dimension;
     private final HashMap<String, double[]> vars = new HashMap<>();
 
     int triesPerChunkNormal = 6, triesPerChunkNether = 6;
@@ -46,7 +46,7 @@ class FileHandler {
 
     private int templateCount;
 
-    public FileHandler(File worldPath, ResourceLocation dim) {
+    public FileHandler(File worldPath, Identifier dim) {
         saveFolder = worldPath;
         loaded = false;
         templateCount = 0;
@@ -108,10 +108,10 @@ class FileHandler {
             Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
             for (Holder.Reference<Biome> biomeReference : biomeSet) {
                 try {
-                    loadSpecificTemplates(templPath, biomeReference.getKey().location().getPath());
+                    loadSpecificTemplates(templPath, biomeReference.getKey().identifier().getPath());
                     // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
                 } catch (Exception e) {
-                    RuinsMod.LOGGER.error("There was an error when loading the {} ruins templates:", biomeReference.getKey().location().getPath(), e);
+                    RuinsMod.LOGGER.error("There was an error when loading the {} ruins templates:", biomeReference.getKey().identifier().getPath(), e);
                 }
             }
 
@@ -230,7 +230,7 @@ class FileHandler {
                 Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
                 for (Holder.Reference<Biome> biomeReference : biomeSet) {
                     Biome bgb = biomeReference.value();
-                    ResourceLocation rl = biomeReference.getKey().location();
+                    Identifier rl = biomeReference.getKey().identifier();
                     if (bgb != null && rl.getPath().equals(matcher.group(1))) {
                         double[] val = vars.get(rl.getPath());
                         if (val != null) {
@@ -269,7 +269,7 @@ class FileHandler {
                     Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
                     for (String biomeName : r.getBiomesToSpawnIn()) {
                         for (Holder.Reference<Biome> biomeReference : biomeSet) {
-                            ResourceLocation rl = biomeReference.getKey().location();
+                            Identifier rl = biomeReference.getKey().identifier();
                             if (rl.getPath().equals(biomeName)) {
                                 if (!biomeName.equals(name)) {
                                     // if no template entry for this biome, create (empty) one
@@ -367,7 +367,7 @@ class FileHandler {
         HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
         Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
         for (Holder.Reference<Biome> biomeReference : biomeSet) {
-            pw.println("specific_" + biomeReference.getKey().location().getPath() + "=75");
+            pw.println("specific_" + biomeReference.getKey().identifier().getPath() + "=75");
         }
         pw.flush();
         pw.close();

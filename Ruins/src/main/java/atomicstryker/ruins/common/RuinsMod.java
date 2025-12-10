@@ -3,7 +3,7 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +43,7 @@ public class RuinsMod {
     public static final String BIOME_ANY = "generic";
     static final String MOD_ID = "ruins";
     private static RuinsMod instance = null;
-    private final ConcurrentHashMap<ResourceLocation, WorldHandle> generatorMap;
+    private final ConcurrentHashMap<Identifier, WorldHandle> generatorMap;
     private long nextInfoTime;
     // MC now needs this for registry access all over the place, just buffer the latest one
     private Level lastLoadedLevel;
@@ -107,7 +107,7 @@ public class RuinsMod {
                 wh = instance.getWorldHandle(world);
                 if (wh == null
                         || !wh.fileHandle.loaded
-                        || !wh.fileHandle.allowsDimension(world.dimension().location().getPath())) {
+                        || !wh.fileHandle.allowsDimension(world.dimension().identifier().getPath())) {
                     return;
                 }
             } else {
@@ -165,7 +165,7 @@ public class RuinsMod {
         world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), 3);
 
         LOGGER.trace("Ruins generation for chunk {}", chunkPos);
-        if (world.dimension().location().getPath().equals("the_nether")) {
+        if (world.dimension().identifier().getPath().equals("the_nether")) {
             worldHandle.generator.generateNether(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
         } else
         // normal world
@@ -256,7 +256,7 @@ public class RuinsMod {
 
         for (CommandBlockEntity tecb2 : tecblist) {
             // call command block execution
-            tecb2.getCommandBlock().performCommand(event.getEntity().level());
+            tecb2.getCommandBlock().performCommand((ServerLevel) event.getEntity().level());
             // kill block
             BlockPos pos = tecb2.getBlockPos();
             LOGGER.info("Ruins executed and killed Command Block at [{}]", pos);
@@ -267,13 +267,13 @@ public class RuinsMod {
     private static WorldHandle getWorldHandle(ServerLevel world) {
         WorldHandle wh = null;
         if (!world.isClientSide()) {
-            if (!instance.generatorMap.containsKey(world.dimension().location())) {
+            if (!instance.generatorMap.containsKey(world.dimension().identifier())) {
                 wh = new WorldHandle();
                 ConfigFolderPreparator.copyFromJarIfNotPresent(new File(getMinecraftBaseDir(), TEMPLATE_PATH_MC_EXTRACTED));
                 initWorldHandle(wh, world);
-                instance.generatorMap.put(world.dimension().location(), wh);
+                instance.generatorMap.put(world.dimension().identifier(), wh);
             } else {
-                wh = instance.generatorMap.get(world.dimension().location());
+                wh = instance.generatorMap.get(world.dimension().identifier());
             }
         }
 
@@ -285,7 +285,7 @@ public class RuinsMod {
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
-            worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().location());
+            worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().identifier());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
             instance.lastLoadedLevel = world;
 

@@ -7,6 +7,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
@@ -17,7 +18,7 @@ public class CommandParseTemplate {
     private static String templateName;
     public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("parseruin")
-                    .requires((caller) -> caller.hasPermission(2))
+                    .requires((caller) -> caller.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                     .then(Commands.argument("input", StringArgumentType.greedyString())
                             .executes((caller) -> {
                                 execute(caller.getSource().getPlayerOrException(), StringArgumentType.getString(caller, "input"));

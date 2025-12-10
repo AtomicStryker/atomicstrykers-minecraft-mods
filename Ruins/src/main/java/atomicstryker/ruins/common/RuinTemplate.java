@@ -744,7 +744,7 @@ public class RuinTemplate {
         HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
         Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
         for (Holder.Reference<Biome> biomeReference : biomeSet) {
-            String biome_name = biomeReference.getKey().location().getPath();
+            String biome_name = biomeReference.getKey().identifier().getPath();
             if (!biomes.contains(biome_name)) {
                 if (included_biomes.contains(biome_name)) {
                     biomes.add(biome_name);
