@@ -2,14 +2,11 @@ package atomicstryker.infernalmobs.client;
 
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.AirPacket;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 @EventBusSubscriber(value = Dist.CLIENT, modid = InfernalMobsCore.MOD_ID)
 public class OverlayChoking {
 
-    private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");
-    private static final ResourceLocation AIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/air");
-    private static final ResourceLocation AIR_POPPING_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_bursting");
+    private static final Identifier GUI_ICONS_LOCATION = Identifier.parse("textures/gui/icons.png");
+    private static final Identifier AIR_SPRITE = Identifier.withDefaultNamespace("hud/air");
+    private static final Identifier AIR_POPPING_SPRITE = Identifier.withDefaultNamespace("hud/air_bursting");
 
     private static Minecraft mc;
 
@@ -41,7 +38,7 @@ public class OverlayChoking {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_choking"), new InfernalMobsChokingGuiOverlay());
+        event.registerAboveAll(Identifier.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_choking"), new InfernalMobsChokingGuiOverlay());
         mc = Minecraft.getInstance();
     }
 

@@ -5,11 +5,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record VelocityPacket(float xv, float yv, float zv) implements CustomPacketPayload {
 
-    public static final Type<VelocityPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "velocity"));
+    public static final Type<VelocityPacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "velocity"));
 
     public static final StreamCodec<ByteBuf, VelocityPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT,

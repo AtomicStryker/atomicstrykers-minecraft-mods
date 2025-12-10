@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -54,7 +54,7 @@ public class OverlayBossBar {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossbar"), new InfernalMobsHealthBarGuiOverlay());
+        event.registerAboveAll(Identifier.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossbar"), new InfernalMobsHealthBarGuiOverlay());
         mc = Minecraft.getInstance();
         healthBarRetainTime = 0;
         retainedTarget = null;

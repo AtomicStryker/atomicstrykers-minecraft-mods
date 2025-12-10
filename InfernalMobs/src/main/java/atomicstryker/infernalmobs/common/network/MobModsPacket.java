@@ -5,11 +5,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record MobModsPacket(String stringData, int entID, byte sentFromServer) implements CustomPacketPayload {
 
-    public static final Type<MobModsPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "mobmods"));
+    public static final Type<MobModsPacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "mobmods"));
 
     public static final StreamCodec<ByteBuf, MobModsPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

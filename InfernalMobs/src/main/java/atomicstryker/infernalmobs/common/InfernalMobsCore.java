@@ -40,7 +40,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EnchantmentTags;
@@ -434,10 +434,10 @@ public class InfernalMobsCore {
                             ServerWorld serverworld = p_212592_0_.getSource().getServer().getWorld(registrykey);
                          */
                         ResourceKey<Level> worldRegistryKey = entity.level().dimension();
-                        ResourceLocation worldResourceLocation = worldRegistryKey.location();
+                        Identifier worldIdentifier = worldRegistryKey.identifier();
 
                         // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
-                        if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
+                        if (!config.getDimensionIDBlackList().contains(worldIdentifier.toString())) {
                             MobModifier mod = instance.createMobModifiers(entity);
                             if (mod != null) {
                                 SidedCache.getInfernalMobs(entity.level()).put(entity, mod);

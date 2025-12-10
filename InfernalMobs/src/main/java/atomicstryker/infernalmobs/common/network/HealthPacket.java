@@ -5,11 +5,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record HealthPacket(String stringData, int entID, float health, float maxhealth) implements CustomPacketPayload {
 
-    public static final Type<HealthPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "health"));
+    public static final Type<HealthPacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "health"));
 
     public static final StreamCodec<ByteBuf, HealthPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

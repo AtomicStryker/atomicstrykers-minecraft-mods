@@ -7,7 +7,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +20,7 @@ public class InfernalCommandSpawnInfernal {
 
     public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("spawninfernal")
-                    .requires((caller) -> caller.hasPermission(2))
+                    .requires((caller) -> caller.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                     .then(Commands.argument("x", IntegerArgumentType.integer())
                             .then(Commands.argument("y", IntegerArgumentType.integer())
                                     .then(Commands.argument("z", IntegerArgumentType.integer())
@@ -32,7 +33,7 @@ public class InfernalCommandSpawnInfernal {
 
     private static void execute(CommandSourceStack source, int x, int y, int z, String entClassName, String modifiers) {
 
-        Optional<EntityType<?>> chosenType = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(entClassName));
+        Optional<EntityType<?>> chosenType = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(entClassName));
         if (chosenType.isEmpty() || chosenType.get().getCategory().isFriendly() || chosenType.get().getCategory().isPersistent()) {
             source.sendFailure(Component.literal("Invalid SpawnInfernal command, no Entity Resource [" + entClassName + "] known or noncombat entity type"));
             return;

@@ -7,7 +7,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -28,7 +28,7 @@ public class RendererBossGlow {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossglow"), new InfernalMobsBossGlowOverlay());
+        event.registerAboveAll(Identifier.fromNamespaceAndPath(ModLoadingContext.get().getActiveNamespace(), InfernalMobsCore.MOD_ID + "_bossglow"), new InfernalMobsBossGlowOverlay());
     }
 
     public static class InfernalMobsBossGlowOverlay implements GuiLayer {
