@@ -15,7 +15,7 @@ import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.BossEvent;
@@ -31,7 +31,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.gui.overlay.ForgeLayer;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -57,7 +56,7 @@ public class OverlayBossBar implements ForgeLayer {
 
     @SubscribeEvent
     public static void renderEvent(AddGuiOverlayLayersEvent event) {
-        event.getLayeredDraw().add(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "overlaybossbar"), new OverlayBossBar());
+        event.getLayeredDraw().add(Identifier.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "overlaybossbar"), new OverlayBossBar());
     }
 
     @Override

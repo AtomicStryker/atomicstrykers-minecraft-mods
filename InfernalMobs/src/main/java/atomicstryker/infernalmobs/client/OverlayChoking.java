@@ -4,16 +4,14 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.gui.overlay.ForgeLayer;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -22,9 +20,9 @@ public class OverlayChoking implements ForgeLayer {
 
     private static final OverlayChoking INSTANCE = new OverlayChoking();
 
-    private final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.parse("textures/gui/icons.png");
-    private final ResourceLocation AIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/air");
-    private final ResourceLocation AIR_POPPING_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_bursting");
+    private final Identifier GUI_ICONS_LOCATION = Identifier.parse("textures/gui/icons.png");
+    private final Identifier AIR_SPRITE = Identifier.withDefaultNamespace("hud/air");
+    private final Identifier AIR_POPPING_SPRITE = Identifier.withDefaultNamespace("hud/air_bursting");
 
     private Minecraft mc;
 
@@ -38,7 +36,7 @@ public class OverlayChoking implements ForgeLayer {
 
     @SubscribeEvent
     public static void renderEvent(AddGuiOverlayLayersEvent event) {
-        event.getLayeredDraw().add(ResourceLocation.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "overlaychoking"), INSTANCE);
+        event.getLayeredDraw().add(Identifier.fromNamespaceAndPath(InfernalMobsCore.MOD_ID, "overlaychoking"), INSTANCE);
     }
 
     @Override

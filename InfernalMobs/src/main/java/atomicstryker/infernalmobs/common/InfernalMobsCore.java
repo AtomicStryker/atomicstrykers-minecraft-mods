@@ -38,8 +38,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EnchantmentTags;
@@ -109,7 +109,7 @@ public class InfernalMobsCore {
      */
     private HashMap<String, Long> modifiedPlayerTimes;
 
-    public static SimpleChannel networkChannel = ChannelBuilder.named(ResourceLocation.parse("infernalmobs")).
+    public static SimpleChannel networkChannel = ChannelBuilder.named(Identifier.parse("infernalmobs")).
             clientAcceptedVersions((status, version) -> true).
             serverAcceptedVersions((status, version) -> true).
             networkProtocolVersion(1)
@@ -389,10 +389,10 @@ public class InfernalMobsCore {
                 if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
                     try {
                         ResourceKey<Level> worldRegistryKey = entity.level().dimension();
-                        ResourceLocation worldResourceLocation = worldRegistryKey.location();
+                        Identifier worldIdentifier = worldRegistryKey.identifier();
 
                         // Skip Infernal-Spawn when Dimension is Blacklisted, entries look like: "minecraft:overworld"
-                        if (!config.getDimensionIDBlackList().contains(worldResourceLocation.toString())) {
+                        if (!config.getDimensionIDBlackList().contains(worldIdentifier.toString())) {
                             MobModifier mod = instance.createMobModifiers(entity);
                             if (mod != null) {
                                 SidedCache.getInfernalMobs(entity.level()).put(entity, mod);

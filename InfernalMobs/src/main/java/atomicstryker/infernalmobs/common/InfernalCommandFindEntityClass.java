@@ -5,14 +5,15 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
 
 public class InfernalCommandFindEntityClass {
     public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("feclass")
-                    .requires((caller) -> caller.hasPermission(2))
+                    .requires((caller) -> caller.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                     .then(Commands.argument("entClass", StringArgumentType.word())
                             .executes((caller) -> {
                                 execute(caller.getSource(), StringArgumentType.getString(caller, "entClass"));
@@ -23,7 +24,7 @@ public class InfernalCommandFindEntityClass {
 
         StringBuilder stringBuilder = new StringBuilder("Found Entity classes: ");
         boolean found = false;
-        for (ResourceLocation entityResource : ForgeRegistries.ENTITY_TYPES.getKeys()) {
+        for (Identifier entityResource : ForgeRegistries.ENTITY_TYPES.getKeys()) {
             String entclass = entityResource.getPath();
             if (entclass.toLowerCase().contains(entClass.toLowerCase())) {
                 if (!found) {

@@ -26,7 +26,9 @@ public class MM_Gravity extends MobModifier {
     }
 
     public static void knockBack(LivingEntity target, double x, double z) {
-        target.hasImpulse = true;
+        // if they rename this field, check net.minecraft.world.entity.LivingEntity.knockback
+        // if that is renamed too, check RamTarget impl
+        target.needsSync = true;
         float normalizedPower = Mth.sqrt((float) (x * x + z * z));
         float knockPower = 0.8F;
 
