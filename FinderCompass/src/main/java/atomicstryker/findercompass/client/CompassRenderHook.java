@@ -2,13 +2,11 @@ package atomicstryker.findercompass.client;
 
 import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -38,7 +36,7 @@ public class CompassRenderHook {
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(FinderCompassMod.MOD_ID, "findercompassrenderer"),
+        event.registerAboveAll(Identifier.fromNamespaceAndPath(FinderCompassMod.MOD_ID, "findercompassrenderer"),
                 new FinderCompassGuiOverlay());
     }
 
@@ -113,7 +111,7 @@ public class CompassRenderHook {
     }
 
     private static void drawNeedle(GuiGraphics guiGraphics, int widthNeedle, int heightNeedle,
-                            int originPointX, int originPointY, int r, int g, int b, float angleDegrees) {
+                                   int originPointX, int originPointY, int r, int g, int b, float angleDegrees) {
 
         // convert angleDegrees to radians
         float angleRadian = (float) (Math.toRadians(angleDegrees));

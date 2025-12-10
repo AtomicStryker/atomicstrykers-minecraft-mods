@@ -1,3 +1,6 @@
+1.21.11.1NF
+- updated to MC 1.21.11 and neoforge 21.11.0-beta
+
 1.21.10.1NF
 - updated to MC 1.21.10 and neoforge 21.10.1-beta, many thanks to Fealtous from Forge Discord
   who got rendering working again

@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -135,7 +135,7 @@ public class FinderCompassMod {
         Gson gson = new Gson();
         Map<String, String> blockMap = gson.fromJson(json, HashMap.class);
         String resourceAsString = blockMap.get("block");
-        Optional<Block> blockOptional = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(resourceAsString));
+        Optional<Block> blockOptional = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(resourceAsString));
         if (blockOptional.isEmpty()) {
             return null;
         }
@@ -339,7 +339,7 @@ public class FinderCompassMod {
      */
     public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
         // EnderEyeItem is useful for looking up how map structures work if they change
-        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, ResourceLocation.parse(featureId));
+        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, Identifier.parse(featureId));
         return level.findNearestMapStructure(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 
