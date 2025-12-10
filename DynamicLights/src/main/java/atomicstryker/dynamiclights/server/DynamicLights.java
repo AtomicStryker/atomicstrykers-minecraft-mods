@@ -8,8 +8,8 @@ import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class DynamicLights {
 
     public static final String MOD_ID = "dynamiclights";
-    public static final ResourceLocation NOT_WATERPROOF_TAG = ResourceLocation.fromNamespaceAndPath(DynamicLights.MOD_ID, "not_waterproof");
+    public static final Identifier NOT_WATERPROOF_TAG = Identifier.fromNamespaceAndPath(DynamicLights.MOD_ID, "not_waterproof");
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static DynamicLights instance;
@@ -81,13 +81,13 @@ public class DynamicLights {
 
     public static final DeferredBlock<BlockLitAir> LIT_AIR_BLOCK = BLOCKS.register("lit_air", resourceLocation ->
             new BlockLitAir(BlockBehaviour.Properties.of()
-                    .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_air")))
+                    .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "lit_air")))
                     .replaceable().noCollision().noLootTable().air().randomTicks().lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
     public static final DeferredBlock<BlockLitWater> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
             new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of()
-                    .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_water")))
+                    .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "lit_water")))
                     .mapColor(MapColor.WATER).replaceable().noCollision().strength(100.0F)
                     .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
                     .lightLevel((x)
@@ -95,7 +95,7 @@ public class DynamicLights {
 
     public static final DeferredBlock<BlockLitCaveAir> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->
             new BlockLitCaveAir(BlockBehaviour.Properties.of()
-                    .setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lit_cave_air")))
+                    .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "lit_cave_air")))
                     .replaceable().noCollision().noLootTable().air().lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER)).noLootTable().air()));
 
@@ -124,7 +124,7 @@ public class DynamicLights {
     public void onResourceReload(AddServerReloadListenersEvent event) {
         // we need to clear our item -> light level cache on reload
         LOGGER.debug("Adding reload listener for light level cache");
-        event.addListener(ResourceLocation.fromNamespaceAndPath(MOD_ID, "reloadlistener"), new SimplePreparableReloadListener<>() {
+        event.addListener(Identifier.fromNamespaceAndPath(MOD_ID, "reloadlistener"), new SimplePreparableReloadListener<>() {
 
             @Override
             protected @NotNull Object prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
@@ -160,7 +160,7 @@ public class DynamicLights {
      */
     public static void addLightSource(IDynamicLightSource lightToAdd) {
         if (lightToAdd.getAttachmentEntity() != null) {
-            String dimensionLocationPath = lightToAdd.getAttachmentEntity().level().dimension().location().getPath();
+            String dimensionLocationPath = lightToAdd.getAttachmentEntity().level().dimension().identifier().getPath();
             LOGGER.debug("Calling addLightSource on entity {}, dimensionLocationPath {}", lightToAdd.getAttachmentEntity(), dimensionLocationPath);
             if (lightToAdd.getAttachmentEntity().isAlive() && !instance.isBannedDimension(dimensionLocationPath)) {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
@@ -178,7 +178,7 @@ public class DynamicLights {
                     instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().level(), lightList);
                 }
             } else {
-                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level().dimension().location().getPath());
+                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level().dimension().identifier().getPath());
             }
         } else {
             LOGGER.debug("Cannot add Dynamic Light: Attachment Entity is null!");
