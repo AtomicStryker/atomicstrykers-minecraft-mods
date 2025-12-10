@@ -5,12 +5,12 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record PartialBlockPacket(String user, int x, int y, int z, float value,
                                  boolean regenerating) implements CustomPacketPayload {
 
-    public static final Type<PartialBlockPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MultiMine.MOD_ID, "partialblock"));
+    public static final Type<PartialBlockPacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(MultiMine.MOD_ID, "partialblock"));
 
     public static final StreamCodec<ByteBuf, PartialBlockPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
