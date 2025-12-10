@@ -6,7 +6,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,7 +68,7 @@ public class CompassRenderHook implements ForgeLayer {
     @SubscribeEvent
     public static void registerLayers(AddGuiOverlayLayersEvent event) {
         event.getLayeredDraw().addAbove(
-                ResourceLocation.fromNamespaceAndPath(FinderCompassMod.MOD_ID, FinderCompassMod.MOD_ID),
+                Identifier.fromNamespaceAndPath(FinderCompassMod.MOD_ID, FinderCompassMod.MOD_ID),
                 ForgeLayeredDraw.SLEEP_OVERLAY,
                 new CompassRenderHook());
     }

@@ -8,7 +8,7 @@ import atomicstryker.findercompass.common.network.HandshakePacket;
 import com.google.gson.Gson;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
@@ -54,7 +53,7 @@ public class FinderCompassMod {
     public CompassConfig compassConfig;
     public ArrayList<CompassSetting> settingList;
 
-    public static SimpleChannel networkChannel = ChannelBuilder.named(ResourceLocation.parse("findercompass")).
+    public static SimpleChannel networkChannel = ChannelBuilder.named(Identifier.parse("findercompass")).
             clientAcceptedVersions((status, version) -> true).
             serverAcceptedVersions((status, version) -> true).
             networkProtocolVersion(1)
@@ -143,7 +142,7 @@ public class FinderCompassMod {
         Gson gson = new Gson();
         Map<String, String> blockMap = gson.fromJson(json, HashMap.class);
         String resourceAsString = blockMap.get("block");
-        Block block = ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse(resourceAsString));
+        Block block = ForgeRegistries.BLOCKS.getValue(Identifier.parse(resourceAsString));
         if (block == null) {
             return null;
         }
@@ -346,7 +345,7 @@ public class FinderCompassMod {
      */
     public BlockPos findLevelStructure(ServerLevel level, BlockPos searchPosition, String featureId) {
         // EnderEyeItem is useful for looking up how map structures work if they change
-        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, ResourceLocation.parse(featureId));
+        TagKey<Structure> configuredStructureFeatureTagKey = TagKey.create(Registries.STRUCTURE, Identifier.parse(featureId));
         return level.findNearestMapStructure(configuredStructureFeatureTagKey, searchPosition, FeatureSearchPacket.SEARCH_RADIUS, false);
     }
 

@@ -1,3 +1,6 @@
+1.21.11.1
+- updated for MC 1.21.11 and Forge 61.0.1
+
 1.21.10.1
 - updated for MC 1.21.10 and Forge 60.0.8, many thanks to Fealtous from Forge Discord
   who got rendering working again

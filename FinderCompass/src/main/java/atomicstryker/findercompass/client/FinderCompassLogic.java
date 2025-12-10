@@ -5,6 +5,9 @@ import atomicstryker.findercompass.common.FinderCompassMod;
 import atomicstryker.findercompass.common.network.FeatureSearchPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -12,6 +15,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class FinderCompassLogic {
+
+    private final ItemStack compassStack = new ItemStack(Items.COMPASS);
 
     public static BlockPos featureCoords = new BlockPos(0, 0, 0);
     public static boolean hasFeature = false;
@@ -29,13 +34,14 @@ public class FinderCompassLogic {
 
     public void onTick() {
         if (mc.level != null && mc.player != null) {
-            boolean isNewSecond = false;
             boolean is15SecInterval = false;
             boolean movement = false;
-            if (System.currentTimeMillis() > nextTime) {
-                isNewSecond = true;
+            if (System.currentTimeMillis() > nextTime && playerHasCompass()) {
                 seccounter++;
                 nextTime = System.currentTimeMillis() + 1000L;
+            } else {
+                // if less than a second has passed, or no compass is equipped, do nothing
+                return;
             }
 
             BlockPos pos = new BlockPos(mc.player.getOnPos());
@@ -44,7 +50,7 @@ public class FinderCompassLogic {
                 movement = true;
             }
 
-            if (isNewSecond && this.seccounter > 14) {
+            if (this.seccounter > 14) {
                 seccounter = 0;
                 is15SecInterval = true;
 
@@ -56,7 +62,7 @@ public class FinderCompassLogic {
             BlockPos coords;
             Iterator<Entry<CompassTargetData, int[]>> iter;
             Entry<CompassTargetData, int[]> iterEntry;
-            if (movement || isNewSecond) {
+            if (movement) {
                 CompassSetting currentSetting = FinderCompassClientTicker.instance.getCurrentSetting();
                 iter = currentSetting.getCustomNeedles().entrySet().iterator();
                 //System.out.println("finder compass second ticker");
@@ -86,6 +92,18 @@ public class FinderCompassLogic {
                 }
             }
         }
+    }
+
+    private boolean playerHasCompass() {
+        if (mc.player != null) {
+            if (FinderCompassMod.instance.compassConfig.isMustHoldCompassInHandToBeActive()) {
+                return mc.player.getMainHandItem().getItem() == Items.COMPASS || mc.player.getOffhandItem().getItem() == Items.COMPASS;
+            } else {
+                int compassSlot = mc.player.getInventory().findSlotMatchingItem(compassStack);
+                return Inventory.isHotbarSlot(compassSlot);
+            }
+        }
+        return false;
     }
 
     /**
