@@ -2,24 +2,19 @@ package atomicstryker.dynamiclights.server.datagen;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 
 /**
- * @author Tfarcenim
- * <p>
- * Datagenerator for assets and data that gets included in the mod
+ * wrapper for vanilla data generation, this means the lit blocks dont have to be added with jsons
  */
-public class ModDatagen {
+public class DynamicLightsDataGenerator {
 
     public static void start(GatherDataEvent event) {
-        
+
         DataGenerator dataGenerator = event.getGenerator();
         PackOutput packOutput = dataGenerator.getPackOutput();
-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
         boolean client = event.includeClient();
-
-        dataGenerator.addProvider(client, new ModBlockStateProvider(packOutput, existingFileHelper));
+        dataGenerator.addProvider(client, new DynamicLightsModelProvider(packOutput));
     }
 }

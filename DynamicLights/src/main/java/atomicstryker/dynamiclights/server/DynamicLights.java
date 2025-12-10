@@ -3,11 +3,11 @@ package atomicstryker.dynamiclights.server;
 import atomicstryker.dynamiclights.server.blocks.BlockLitAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitCaveAir;
 import atomicstryker.dynamiclights.server.blocks.BlockLitWater;
-import atomicstryker.dynamiclights.server.datagen.ModDatagen;
+import atomicstryker.dynamiclights.server.datagen.DynamicLightsDataGenerator;
 import atomicstryker.dynamiclights.server.modules.DroppedItemsLightSource;
 import atomicstryker.dynamiclights.server.modules.PlayerSelfLightSource;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
@@ -62,7 +61,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class DynamicLights {
 
     public static final String MOD_ID = "dynamiclights";
-    public static final ResourceLocation NOT_WATERPROOF_TAG = ResourceLocation.fromNamespaceAndPath(DynamicLights.MOD_ID, "not_waterproof");
+    public static final Identifier NOT_WATERPROOF_TAG = Identifier.fromNamespaceAndPath(DynamicLights.MOD_ID, "not_waterproof");
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static DynamicLights instance;
@@ -76,8 +75,8 @@ public class DynamicLights {
      */
     private ConcurrentHashMap<Level, ConcurrentLinkedQueue<atomicstryker.dynamiclights.server.DynamicLightSourceContainer>> worldLightsMap;
 
-    private PlayerSelfLightSource playerSelfLightSource;
-    private DroppedItemsLightSource droppedItemsLightSource;
+    private final PlayerSelfLightSource playerSelfLightSource;
+    private final DroppedItemsLightSource droppedItemsLightSource;
 
     public static final HashMap<Block, Block> vanillaBlocksToLitBlocksMap = new HashMap<>();
 
@@ -108,7 +107,7 @@ public class DynamicLights {
         BusGroup.DEFAULT.register(MethodHandles.lookup(), this);
 
         var modBusGroup = context.getModBusGroup();
-        GatherDataEvent.getBus(modBusGroup).addListener(ModDatagen::start);
+        GatherDataEvent.getBus(modBusGroup).addListener(DynamicLightsDataGenerator::start);
 
         BLOCKS.register(modBusGroup);
 
@@ -164,7 +163,7 @@ public class DynamicLights {
      */
     public static void addLightSource(IDynamicLightSource lightToAdd) {
         if (lightToAdd.getAttachmentEntity() != null) {
-            String dimensionLocationPath = lightToAdd.getAttachmentEntity().level().dimension().location().getPath();
+            String dimensionLocationPath = lightToAdd.getAttachmentEntity().level().dimension().identifier().getPath();
             LOGGER.debug("Calling addLightSource on entity {}, dimensionLocationPath {}", lightToAdd.getAttachmentEntity(), dimensionLocationPath);
             if (lightToAdd.getAttachmentEntity().isAlive() && !instance.isBannedDimension(dimensionLocationPath)) {
                 DynamicLightSourceContainer newLightContainer = new DynamicLightSourceContainer(lightToAdd);
@@ -182,7 +181,7 @@ public class DynamicLights {
                     instance.worldLightsMap.put(lightToAdd.getAttachmentEntity().level(), lightList);
                 }
             } else {
-                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level().dimension().location().getPath());
+                LOGGER.debug("Cannot add Dynamic Light: Attachment Entity {} is dead or in a banned dimension {}", lightToAdd.getAttachmentEntity(), lightToAdd.getAttachmentEntity().level().dimension().identifier().getPath());
             }
         } else {
             LOGGER.debug("Cannot add Dynamic Light: Attachment Entity is null!");

@@ -1,7 +1,7 @@
 plugins {
     id 'eclipse'
 	id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0.36,6.2)'
+    id 'net.minecraftforge.gradle' version '[6.0.46,6.2)'
     id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
@@ -148,6 +148,9 @@ jar {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
+
+// IntelliJ no longer downloads javadocs and sources by default, this tells Gradle to force IntelliJ to do it.
+idea.module { downloadJavadoc = downloadSources = true }
 
 publishMods {
     file = jar.archiveFile
