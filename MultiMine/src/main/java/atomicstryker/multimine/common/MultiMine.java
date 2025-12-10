@@ -3,7 +3,7 @@ package atomicstryker.multimine.common;
 import atomicstryker.multimine.client.MultiMineClient;
 import atomicstryker.multimine.common.network.PartialBlockPacket;
 import atomicstryker.multimine.common.network.PartialBlockRemovalPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,7 +32,7 @@ public class MultiMine {
     private File configFile;
     private MultiMineConfig config;
 
-    public static SimpleChannel networkChannel = ChannelBuilder.named(ResourceLocation.parse("as_mm")).
+    public static SimpleChannel networkChannel = ChannelBuilder.named(Identifier.parse("as_mm")).
             clientAcceptedVersions((status, version) -> true).
             serverAcceptedVersions((status, version) -> true).
             networkProtocolVersion(1)
