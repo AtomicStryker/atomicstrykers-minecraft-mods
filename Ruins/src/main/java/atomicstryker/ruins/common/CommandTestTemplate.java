@@ -7,6 +7,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -18,7 +19,7 @@ class CommandTestTemplate {
 
     public static final LiteralArgumentBuilder<CommandSourceStack> BUILDER =
             Commands.literal("testruin")
-                    .requires((caller) -> caller.hasPermission(2))
+                    .requires((caller) -> caller.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                     .then(Commands.argument("input", StringArgumentType.greedyString())
                             .executes((caller) -> {
                                 execute(caller.getSource().getPlayerOrException(), StringArgumentType.getString(caller, "input"));

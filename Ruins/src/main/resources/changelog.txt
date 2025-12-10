@@ -654,3 +654,6 @@ a: setAccessible now true
 
 1.21.10.2
 + updated to Minecraft 1.21.10 (min Forge 60.0.8)
+
+1.21.11.1
++ updated to Minecraft 1.21.11 (min Forge 61.0.1)

@@ -743,7 +743,7 @@ public class RuinTemplate {
         // 3) biomes satisfying at least one biomeTypesToSpawnIn criterion are added
         for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
             Biome biome = entry.getValue();
-            String biome_name = entry.getKey().location().getPath();
+            String biome_name = entry.getKey().identifier().getPath();
             if (!biomes.contains(biome_name)) {
                 if (included_biomes.contains(biome_name)) {
                     biomes.add(biome_name);

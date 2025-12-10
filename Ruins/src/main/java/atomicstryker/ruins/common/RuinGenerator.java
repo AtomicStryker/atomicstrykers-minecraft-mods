@@ -103,7 +103,7 @@ class RuinGenerator {
     private void createBuilding(Level world, RandomSource random, int x, int z, boolean nether) {
         final int rotate = random.nextInt(4);
         // note in 1.19+ a chunk can contain different biomes at different heights ... we usually want the surface
-        String biomeID = world.getBiome(new BlockPos(x, world.getSeaLevel(), z)).unwrapKey().get().location().getPath();
+        String biomeID = world.getBiome(new BlockPos(x, world.getSeaLevel(), z)).unwrapKey().get().identifier().getPath();
         if (fileHandler.useGeneric(random, biomeID)) {
             biomeID = RuinsMod.BIOME_ANY;
         }
@@ -181,7 +181,7 @@ class RuinGenerator {
 
     private boolean checkMinDistance(Level world, RuinTemplate ruinTemplate, RuinData ruinData) {
         // in overworld, check min/max distances from world spawn
-        if (world.dimension().location().getPath().equals("overworld")) {
+        if (world.dimension().identifier().getPath().equals("overworld")) {
             BlockPos spawn = world.getLevelData().getRespawnData().pos();
             final int min_distance = Math.max(fileHandler.anySpawnMinDistance, ruinTemplate.spawnMinDistance);
             if (

@@ -1,8 +1,8 @@
 package atomicstryker.ruins.common;
 
 import com.google.common.io.Files;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -25,7 +25,7 @@ class FileHandler {
 
     private final static int WEIGHT = 0, CHANCE = 1;
     private final HashMap<String, HashSet<RuinTemplate>> templates = new HashMap<>();
-    private final ResourceLocation dimension;
+    private final Identifier dimension;
     private final HashMap<String, double[]> vars = new HashMap<>();
 
     int triesPerChunkNormal = 6, triesPerChunkNether = 6;
@@ -45,7 +45,7 @@ class FileHandler {
 
     private int templateCount;
 
-    public FileHandler(File worldPath, ResourceLocation dim) {
+    public FileHandler(File worldPath, Identifier dim) {
         saveFolder = worldPath;
         loaded = false;
         templateCount = 0;
@@ -105,7 +105,7 @@ class FileHandler {
              */
             Biome bgb;
             IForgeRegistry<Biome> biomeRegistry = ForgeRegistries.BIOMES;
-            for (ResourceLocation rl : biomeRegistry.getKeys()) {
+            for (Identifier rl : biomeRegistry.getKeys()) {
                 bgb = biomeRegistry.getValue(rl);
                 if (bgb != null) {
                     try {
@@ -230,7 +230,7 @@ class FileHandler {
                 boolean found = false;
                 Biome bgb;
                 IForgeRegistry<Biome> biomeRegistry = ForgeRegistries.BIOMES;
-                for (ResourceLocation rl : biomeRegistry.getKeys()) {
+                for (Identifier rl : biomeRegistry.getKeys()) {
                     bgb = biomeRegistry.getValue(rl);
                     if (bgb != null && rl.getPath().equals(matcher.group(1))) {
                         double[] val = vars.get(rl.getPath());
@@ -270,7 +270,7 @@ class FileHandler {
                     for (String biomeName : r.getBiomesToSpawnIn()) {
                         for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
                             bgb = entry.getValue();
-                            if (bgb != null && entry.getKey().location().getPath().equals(biomeName)) {
+                            if (bgb != null && entry.getKey().identifier().getPath().equals(biomeName)) {
                                 if (!biomeName.equals(name)) {
                                     // if no template entry for this biome, create (empty) one
                                     if (!templates.containsKey(biomeName)) {
@@ -367,7 +367,7 @@ class FileHandler {
         for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
             Biome bgb = entry.getValue();
             if (bgb != null) {
-                pw.println("specific_" + entry.getKey().location().getPath() + "=75");
+                pw.println("specific_" + entry.getKey().identifier().getPath() + "=75");
             }
         }
         pw.flush();
