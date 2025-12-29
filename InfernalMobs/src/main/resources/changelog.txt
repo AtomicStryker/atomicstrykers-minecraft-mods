@@ -1,3 +1,7 @@
+1.19.4.3
+- fix ghastly displacing mobs shooting fireballs, thanks Wasupmacuz for reporting
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/559
+
 1.19.4.2
 - fix problem with i18n system using lowercase entity keys (now always forced to Uppercase like "Zombie")
 
