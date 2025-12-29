@@ -1,3 +1,7 @@
+1.21.11.2
+- fix ghastly displacing mobs shooting fireballs, thanks Wasupmacuz for reporting
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/559
+
 1.21.11.1
 - updated for MC 1.21.11 and Forge 61.0.1
 
