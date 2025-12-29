@@ -59,7 +59,7 @@ public class MM_Ghastly extends MobModifier {
             double newX = mob.getX() + mobLook.x * spawnOffset;
             double newY = mob.getY() + (double) (mob.getBbHeight() / 2.0F) + 0.5D;
             double newZ = mob.getZ() + mobLook.z * spawnOffset;
-            mob.setPos(newX, newY, newZ);
+            entFB.setPos(newX, newY, newZ);
 
             mob.level().addFreshEntity(entFB);
         }
