@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
@@ -258,6 +259,18 @@ public abstract class MobModifier {
             }
         }
 
+        return false;
+    }
+
+    /**
+     * forward the knockback event through the modlist
+     *
+     * @param event forge knockback event, note there is no source reference
+     */
+    public boolean onKnockBack(LivingKnockBackEvent event) {
+        if (nextMod != null) {
+            return nextMod.onKnockBack(event);
+        }
         return false;
     }
 

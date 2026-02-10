@@ -14,6 +14,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -124,6 +125,19 @@ public class EntityEventHandler {
                         GsonConfig.saveConfig(InfernalMobsCore.instance().config, InfernalMobsCore.instance().configFile);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Hook into LivingKnockBackEvent. Is always serverside, assured by mc itself
+     */
+    @SubscribeEvent
+    public void onEntityLivingKnockback(LivingKnockBackEvent event) {
+        MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        if (mod != null) {
+            if (mod.onKnockBack(event)) {
+                event.setCanceled(true);
             }
         }
     }
