@@ -73,6 +73,9 @@
     "translation.infernalmobs:prefix.Sith Lord": "Sith-Lord",
     "translation.infernalmobs:prefix.Dark Lord": "Dark Lord",
     "translation.infernalmobs:prefix.Darth": "Darth",
+    "translation.infernalmobs:prefix.ofRelentlessness": "unnachgiebiger",
+    "translation.infernalmobs:prefix.unyielding": "unbeugsamer",
+    "translation.infernalmobs:prefix.unstoppable": "unaufhaltbarer",
 
 
 
@@ -149,6 +152,9 @@
     "translation.infernalmobs:suffix.ofBreathlessness": "von der Atemlosigkeit",
     "translation.infernalmobs:suffix.theAnaerobic": "der Anaerobe",
     "translation.infernalmobs:suffix.ofDeprivation": "von der Beraubung",
+    "translation.infernalmobs:suffix.ofRelentlessness": "der Unnachgiebigkeit",
+    "translation.infernalmobs:suffix.theUnYielding": "der Unbeugsamkeit",
+    "translation.infernalmobs:suffix.theUnstoppable": "der Unaufhaltbarkeit",
 
 
     "translation.infernalmobs:mod.1UP": "1UP",
@@ -174,6 +180,7 @@
     "translation.infernalmobs:mod.Sprint": "Sprintender",
     "translation.infernalmobs:mod.Sticky": "Klebriger",
     "translation.infernalmobs:mod.Storm": "Sturm",
+    "translation.infernalmobs:mod.Unyielding": "Unbeugsamer",
     "translation.infernalmobs:mod.Vengeance": "Rache",
     "translation.infernalmobs:mod.Weakness": "Schwäche",
     "translation.infernalmobs:mod.Webber": "Webender",
