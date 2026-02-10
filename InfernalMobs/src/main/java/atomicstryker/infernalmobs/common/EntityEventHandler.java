@@ -13,6 +13,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.bus.EventBus;
 import net.minecraftforge.eventbus.api.event.RecordEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
@@ -125,6 +126,18 @@ public class EntityEventHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Hook into LivingKnockBackEvent. Is always serverside, assured by mc itself
+     */
+    @SubscribeEvent
+    public boolean onEntityLivingKnockback(LivingKnockBackEvent event) {
+        MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
+        if (mod != null) {
+            return mod.onKnockBack(event);
+        }
+        return false;
     }
 
     @SubscribeEvent

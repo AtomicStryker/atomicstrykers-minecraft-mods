@@ -1,3 +1,7 @@
+1.21.10.3
+- readd missing mod Unyielding, thanks Brokodos for reporting
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/561
+
 1.21.10.2
 - updated for MC 1.21.10 and Forge 60.0.8
 
