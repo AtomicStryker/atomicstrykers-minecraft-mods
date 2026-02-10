@@ -1,3 +1,7 @@
+1.20.1.11
+- fix duped translation, resulting in relentless prefix missing
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/561
+
 1.20.1.10
 - fix https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/541 again (sorry)
 - removal of the item wasnt working in last version
