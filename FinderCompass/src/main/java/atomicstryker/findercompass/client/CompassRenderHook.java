@@ -4,7 +4,7 @@ import atomicstryker.findercompass.common.CompassTargetData;
 import atomicstryker.findercompass.common.FinderCompassMod;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -25,7 +25,6 @@ public class CompassRenderHook implements ForgeLayer {
 
     private final int[] strongholdNeedlecolor = {102, 0, 153};
     private Minecraft mc = null;
-    private final ItemStack compassStack = new ItemStack(Items.COMPASS);
 
     private double onScreenPositionWidth;
     private double onScreenPositionHeight;
@@ -58,7 +57,7 @@ public class CompassRenderHook implements ForgeLayer {
                     return true;
                 }
             } else {
-                int compassSlot = mc.player.getInventory().findSlotMatchingItem(compassStack);
+                int compassSlot = mc.player.getInventory().findSlotMatchingItem(new ItemStack(Items.COMPASS));
                 return Inventory.isHotbarSlot(compassSlot);
             }
         }
@@ -74,7 +73,7 @@ public class CompassRenderHook implements ForgeLayer {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void extract(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
         if (mc == null) {
             mc = Minecraft.getInstance();
         }
@@ -85,7 +84,7 @@ public class CompassRenderHook implements ForgeLayer {
         }
     }
 
-    private void renderCompassNeedles(GuiGraphics guiGraphics) {
+    private void renderCompassNeedles(GuiGraphicsExtractor guiGraphics) {
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
@@ -113,7 +112,7 @@ public class CompassRenderHook implements ForgeLayer {
         }
     }
 
-    private void drawNeedle(GuiGraphics guiGraphics, int widthNeedle, int heightNeedle,
+    private void drawNeedle(GuiGraphicsExtractor guiGraphics, int widthNeedle, int heightNeedle,
                             int originPointX, int originPointY, int r, int g, int b, float angleDegrees) {
 
         // convert angleDegrees to radians

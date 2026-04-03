@@ -91,7 +91,7 @@ public class FinderCompassClientTicker {
 
         if (mc.level != null && mc.player != null) {
             mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
-            mc.gui.getChat().addMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
+            mc.gui.getChat().addClientSystemMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
 
@@ -103,7 +103,7 @@ public class FinderCompassClientTicker {
         FinderCompassMod.LOGGER.info("inputting Finder Compass config from serverside: {}", json);
         CompassConfig compassConfig = GsonConfig.loadConfigFromString(CompassConfig.class, json);
         FinderCompassMod.instance.loadSettingListFromConfig(compassConfig);
-        mc.gui.getChat().addMessage(Component.literal("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
+        mc.gui.getChat().addClientSystemMessage(Component.literal("Finder Compass server config loaded; " + getSettingsList().size() + " custom Setting-Sets loaded"));
     }
 
     public void onFoundChunkCoordinates(BlockPos input, BlockState blockState) {
