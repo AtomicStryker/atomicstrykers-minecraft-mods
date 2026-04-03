@@ -153,7 +153,7 @@ public class RuinsMod {
 
     private static void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
 
-        if (!world.hasChunk(chunkPos.x, chunkPos.z)) {
+        if (!world.hasChunk(chunkPos.x(), chunkPos.z())) {
             return;
         }
 
@@ -166,11 +166,11 @@ public class RuinsMod {
 
         LOGGER.trace("Ruins generation for chunk {}", chunkPos);
         if (world.dimension().identifier().getPath().equals("the_nether")) {
-            worldHandle.generator.generateNether(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
+            worldHandle.generator.generateNether(world, world.getRandom(), chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
         } else
         // normal world
         {
-            worldHandle.generator.generateNormal(world, world.random, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
+            worldHandle.generator.generateNormal(world, world.getRandom(), chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
         }
     }
 
@@ -190,7 +190,7 @@ public class RuinsMod {
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > instance.nextInfoTime) {
                     instance.nextInfoTime = System.currentTimeMillis() + 1000L;
                     BlockEntity te = event.getEntity().level().getBlockEntity(event.getPosition().get());
-                    event.getEntity().displayClientMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)), false);
+                    event.getEntity().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                 }
             }
         }
@@ -205,7 +205,7 @@ public class RuinsMod {
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > instance.nextInfoTime) {
                     instance.nextInfoTime = System.currentTimeMillis() + 1000L;
                     BlockEntity te = event.getPlayer().level().getBlockEntity(event.getPos());
-                    event.getPlayer().displayClientMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)), false);
+                    event.getPlayer().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                     event.setCanceled(true);
                 }
             }

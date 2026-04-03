@@ -359,7 +359,7 @@ public class RuinTemplate {
                 BonemealableBlock igrowable = (BonemealableBlock) growable;
                 int grows;
                 for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state); ++grows) {
-                    igrowable.performBonemeal((ServerLevel) world, world.random, position, state);
+                    igrowable.performBonemeal((ServerLevel) world, world.getRandom(), position, state);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
                     if (growable instanceof BonemealableBlock) {
@@ -377,9 +377,9 @@ public class RuinTemplate {
 
         for (AdjoiningTemplateData ad : adjoiningTemplates) {
             RuinsMod.LOGGER.info("Considering to spawn adjoining {} of Ruin {}...", ad.adjoiningTemplate.getName(), getName());
-            float randres = (world.random.nextFloat() * 100);
+            float randres = (world.getRandom().nextFloat() * 100);
             if (randres < ad.spawnchance) {
-                int newrot = world.random.nextInt(4);
+                int newrot = world.getRandom().nextInt(4);
                 int targetX = xBase + ad.relativeX;
                 int targetZ = zBase + ad.relativeZ;
                 int targetY = ad.adjoiningTemplate.checkArea(world, targetX, yReturn, targetZ, newrot, ad.acceptableY);

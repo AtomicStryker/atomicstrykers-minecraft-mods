@@ -42,10 +42,10 @@ class CommandTestTemplate {
             if (args.length < 1) {
                 if (parsedRuin != null) {
                     final Level world = sender.level();
-                    parsedRuin.doBuild(world, world.random, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
+                    parsedRuin.doBuild(world, world.getRandom(), xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
                     parsedRuin = null;
                 } else {
-                    sender.displayClientMessage(Component.literal("You need to use the command with the target template name, eg. /testruin beach/LightHouse"), false);
+                    sender.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /testruin beach/LightHouse"), false);
                 }
             } else {
                 tryBuild(sender, args, xpos, ypos, zpos, true);
@@ -63,7 +63,7 @@ class CommandTestTemplate {
                     tryBuild(sender, args, x, y, z, true);
                 }
             } catch (NumberFormatException e) {
-                sender.displayClientMessage(Component.literal("Invalid coordinates specified"), false);
+                sender.sendSystemMessage(Component.literal("Invalid coordinates specified"), false);
             }
         }
     }
@@ -95,27 +95,27 @@ class CommandTestTemplate {
                             if (parsedRuin.isAcceptableSurface(world, b, pos)) {
                                 break;
                             }
-                            sender.displayClientMessage(Component.literal("Could not find acceptable Y coordinate"), false);
+                            sender.sendSystemMessage(Component.literal("Could not find acceptable Y coordinate"));
                             return;
                         }
                         ++y;
                     }
 
-                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) > world.getMinY()) {
+                    if (parsedRuin.doBuild(world, world.getRandom(), x, y, z, rotation, is_player, ignore_ceiling) > world.getMinY()) {
                         parsedRuin = null;
                     } else {
-                        sender.displayClientMessage(Component.literal("EventRuinTemplateSpawn returned as cancelled, not building that."), false);
+                        sender.sendSystemMessage(Component.literal("EventRuinTemplateSpawn returned as cancelled, not building that."));
                     }
                 } else {
-                    sender.displayClientMessage(Component.literal("Could not parse Ruin of file " + file), false);
+                    sender.sendSystemMessage(Component.literal("Could not parse Ruin of file " + file));
                 }
             } catch (RuinTemplate.IncompatibleModException e) {
-                sender.displayClientMessage(Component.literal(e.getMessage()), false);
+                sender.sendSystemMessage(Component.literal(e.getMessage()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            sender.displayClientMessage(Component.literal("Could not open/write file " + file), false);
+            sender.sendSystemMessage(Component.literal("Could not open/write file " + file));
         }
     }
 
