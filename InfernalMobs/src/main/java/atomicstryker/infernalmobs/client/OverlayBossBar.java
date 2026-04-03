@@ -10,12 +10,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
-import net.minecraft.client.gui.render.state.GuiRenderState;
+
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.BossEvent;
@@ -60,7 +62,7 @@ public class OverlayBossBar implements ForgeLayer {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void extract(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
 
         mc = Minecraft.getInstance();
 
@@ -149,7 +151,7 @@ public class OverlayBossBar implements ForgeLayer {
     }
 
 
-    private void drawModifiersUnderHealthBar(GuiGraphics guiGraphics, MobModifier mod) {
+    private void drawModifiersUnderHealthBar(GuiGraphicsExtractor guiGraphics, MobModifier mod) {
         //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         int screenwidth = mc.getWindow().getGuiScaledWidth();
@@ -160,7 +162,7 @@ public class OverlayBossBar implements ForgeLayer {
         int i = 0;
         while (i < display.length && display[i] != null) {
             yCoord += 10;
-            guiGraphics.drawString(mc.font, display[i], screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, -1);
+            guiGraphics.textWithBackdrop(mc.font, Component.literal(display[i]), screenwidth / 2 - fontR.width(display[i]) / 2, yCoord, -1, ARGB.white(255));
             i++;
         }
 

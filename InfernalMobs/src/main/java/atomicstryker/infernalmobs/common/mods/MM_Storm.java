@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -51,7 +52,7 @@ public class MM_Storm extends MobModifier {
         if (time > nextAbilityUse
                 && mob.distanceTo(target) > MIN_DISTANCE
                 && target.level().canSeeSkyFromBelowWater(new BlockPos(Mth.floor(target.getX()), Mth.floor(target.getY()), Mth.floor(target.getZ())))) {
-            nextAbilityUse = time + coolDown;
+            nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
             LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(mob.level(), EntitySpawnReason.MOB_SUMMONED);
             lightningboltentity.setPos(target.getX(), target.getY(), target.getZ());
             lightningboltentity.setVisualOnly(false);

@@ -3,7 +3,7 @@ package atomicstryker.infernalmobs.client;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
@@ -40,7 +40,7 @@ public class OverlayChoking implements ForgeLayer {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void extract(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
         mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) {
             return;

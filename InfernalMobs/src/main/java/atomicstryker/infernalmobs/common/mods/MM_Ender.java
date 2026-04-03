@@ -31,7 +31,7 @@ public class MM_Ender extends AbstractTeleporter {
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse && source.getDirectEntity() != null && source.getDirectEntity() != mob && !InfernalMobsCore.instance().isInfiniteLoop(mob, source.getDirectEntity())
                 && tryTeleportWithTarget(mob, source.getDirectEntity())) {
-            nextAbilityUse = time + coolDown;
+            nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
             source.getDirectEntity().hurt(source.getDirectEntity().damageSources().mobAttack(mob), InfernalMobsCore.instance().getLimitedDamage(damage));
 
             return super.onHurt(mob, source, 0);

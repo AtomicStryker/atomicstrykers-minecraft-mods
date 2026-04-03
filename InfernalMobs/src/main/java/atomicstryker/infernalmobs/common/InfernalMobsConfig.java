@@ -18,6 +18,8 @@ public class InfernalMobsConfig {
     private boolean useSimpleEntityClassNames;
     private boolean disableHealthBar;
     private double modHealthFactor;
+    private boolean healthChangesDisabled;
+    private double modCooldownFactor;
 
     private double maxDamage;
 
@@ -104,6 +106,22 @@ public class InfernalMobsConfig {
 
     public void setModHealthFactor(double modHealthFactor) {
         this.modHealthFactor = modHealthFactor;
+    }
+
+    public boolean isHealthChangesDisabled() {
+        return healthChangesDisabled;
+    }
+
+    public void setHealthChangesDisabled(boolean healthChangesDisabled) {
+        this.healthChangesDisabled = healthChangesDisabled;
+    }
+
+    public double getModCooldownFactor() {
+        return modCooldownFactor;
+    }
+
+    public void setModCooldownFactor(double modCooldownFactor) {
+        this.modCooldownFactor = modCooldownFactor;
     }
 
     public double getMaxDamage() {

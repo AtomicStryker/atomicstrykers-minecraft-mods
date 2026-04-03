@@ -1,6 +1,10 @@
 {
   "pack": {
-    "description": "Infernal Mobs resources",
-    "pack_format": 32
+    "description": "${mod_id} resources",
+    "max_format": 101,
+    "min_format": [
+      101,
+      1
+    ]
   }
 }

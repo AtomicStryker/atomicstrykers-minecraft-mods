@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,7 +62,7 @@ public class MM_Webber extends MobModifier {
         int z = Mth.floor(target.getZ());
 
         long time = System.currentTimeMillis();
-        if (time > lastAbilityUse + coolDown) {
+        if (time > lastAbilityUse + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor())) {
             int offset;
             if (target.level().getBlockState(new BlockPos(x, y - 1, z)).getBlock() == Blocks.AIR) {
                 offset = -1;
