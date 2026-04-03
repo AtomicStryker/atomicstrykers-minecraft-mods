@@ -1,5 +1,8 @@
+26.1.1.1NF
+- updated to MC 26.1.1 and neoforge 26.1.1.0-beta
+
 26.1.1NF
-updated to MC 26.1 with neoforge 26.1.0.1-beta
+- updated to MC 26.1 with neoforge 26.1.0.1-beta
 
 1.21.11.1NF
 - updated to MC 1.21.11 with NeoForge 21.11.0-beta
