@@ -205,8 +205,8 @@ class World2TemplateParser {
                     if (temp.tileEntity instanceof ChestBlockEntity && isIInventoryEmpty((Container) temp.tileEntity)) {
                         CompoundTag teData = temp.tileEntity.saveWithFullMetadata(world.registryAccess());
                         // use vanilla method of placing loot!
-                        teData.putString("LootTable", chestLootTableNamesToGenerate.get(world.random.nextInt(chestLootTableNamesToGenerate.size())));
-                        teData.putLong("LootTableSeed", world.random.nextLong());
+                        teData.putString("LootTable", chestLootTableNamesToGenerate.get(world.getRandom().nextInt(chestLootTableNamesToGenerate.size())));
+                        teData.putLong("LootTableSeed", world.getRandom().nextLong());
                     }
 
                     int indexInList = usedBlocks.indexOf(temp);

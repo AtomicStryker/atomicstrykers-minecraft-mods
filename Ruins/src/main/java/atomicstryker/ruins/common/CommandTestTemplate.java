@@ -41,7 +41,7 @@ class CommandTestTemplate {
             if (args.length < 1) {
                 if (parsedRuin != null) {
                     final Level world = sender.level();
-                    parsedRuin.doBuild(world, world.random, xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
+                    parsedRuin.doBuild(world, world.getRandom(), xpos, ypos, zpos, RuinsMod.DIR_NORTH, true, false);
                     parsedRuin = null;
                 } else {
                     sender.sendSystemMessage(Component.literal("You need to use the command with the target template name, eg. /testruin beach/LightHouse"));
@@ -100,7 +100,7 @@ class CommandTestTemplate {
                         ++y;
                     }
 
-                    if (parsedRuin.doBuild(world, world.random, x, y, z, rotation, is_player, ignore_ceiling) > world.getMinY()) {
+                    if (parsedRuin.doBuild(world, world.getRandom(), x, y, z, rotation, is_player, ignore_ceiling) > world.getMinY()) {
                         parsedRuin = null;
                     } else {
                         sender.sendSystemMessage(Component.literal("EventRuinTemplateSpawn returned as cancelled, not building that."));
