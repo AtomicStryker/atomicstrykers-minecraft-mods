@@ -28,6 +28,7 @@ public class InfernalMobsConfig {
     private List<String> droppedItemIDsInfernal = new ArrayList<>();
 
     private List<String> dimensionIDBlackList = new ArrayList<>();
+    private List<String> entityTagBlackList = new ArrayList<>();
 
     private Map<String, Boolean> modsEnabled = new HashMap<>();
 
@@ -193,5 +194,13 @@ public class InfernalMobsConfig {
 
     public void setEntitybasehealth(Map<String, Double> entitybasehealth) {
         this.entitybasehealth = entitybasehealth;
+    }
+
+    public List<String> getEntityTagBlackList() {
+        return entityTagBlackList;
+    }
+
+    public void setEntityTagBlackList(List<String> entityTagBlackList) {
+        this.entityTagBlackList = entityTagBlackList;
     }
 }
