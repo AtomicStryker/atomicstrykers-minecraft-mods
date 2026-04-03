@@ -193,7 +193,7 @@ public class MultiMineServer {
 
     private boolean isBlockTagBanned(BlockState blockState) {
         // check for the tag being banned in the config list
-        return blockState.getTags().anyMatch(blockTagKey -> {
+        return blockState.tags().anyMatch(blockTagKey -> {
             Boolean boolForTag = MultiMine.instance().getConfig().getBannedBlocks().get(blockTagKey.location().toString());
             return Objects.requireNonNullElse(boolForTag, false);
         });
@@ -217,7 +217,7 @@ public class MultiMineServer {
     }
 
     private boolean isItemTagBanned(ItemStack handItem) {
-        return handItem.getTags().anyMatch(itemTagKey -> {
+        return handItem.tags().anyMatch(itemTagKey -> {
             Boolean boolForTag = MultiMine.instance().getConfig().getBannedItems().get(itemTagKey.location().toString());
             return Objects.requireNonNullElse(boolForTag, false);
         });

@@ -1,7 +1,10 @@
 {
-    "pack": {
-        "description": "multi mine resources",
-        "pack_format": 6,
-        "_comment": "Note: we require v6 pack meta for all mods."
-    }
+  "pack": {
+    "description": "${mod_id} resources",
+    "max_format": 101,
+    "min_format": [
+      101,
+      1
+    ]
+  }
 }
