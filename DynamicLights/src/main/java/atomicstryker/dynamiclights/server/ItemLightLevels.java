@@ -23,7 +23,7 @@ public class ItemLightLevels {
         }
 
         Map<Item, Integer> innerCache = cache.computeIfAbsent(tagName, s -> new HashMap<>());
-        return innerCache.computeIfAbsent(stack.getItem(), item1 -> stack.getTags().map(t -> getLightLevelByTagName(t.location().toString(), tagName)).filter(t -> t > 0 && t <= 15).max(Integer::compareTo).orElse(0));
+        return innerCache.computeIfAbsent(stack.getItem(), item1 -> stack.tags().map(t -> getLightLevelByTagName(t.location().toString(), tagName)).filter(t -> t > 0 && t <= 15).max(Integer::compareTo).orElse(0));
     }
 
     private static int getLightLevelByTagName(String testee, String tagName) {

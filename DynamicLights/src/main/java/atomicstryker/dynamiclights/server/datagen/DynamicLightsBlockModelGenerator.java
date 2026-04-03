@@ -8,7 +8,8 @@ import net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerato
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
-import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.renderer.block.dispatch.Variant;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.block.Blocks;
@@ -29,8 +30,8 @@ public class DynamicLightsBlockModelGenerator extends BlockModelGenerators {
     public void run() {
         final Identifier airModel = Identifier.parse("block/air");
         // use the existing helper methods for air like blocks, otherwise this could be multi variants of air block
-        this.createAirLikeBlock(DynamicLights.LIT_AIR_BLOCK.get(), airModel);
-        this.createAirLikeBlock(DynamicLights.LIT_CAVE_AIR_BLOCK.get(), airModel);
+        this.createAirLikeBlock(DynamicLights.LIT_AIR_BLOCK.get(), new Material(airModel));
+        this.createAirLikeBlock(DynamicLights.LIT_CAVE_AIR_BLOCK.get(), new Material(airModel));
         // no helper exists for water, but multi variants copy existing blocks such as water here
         this.blockStateOutput.accept(MultiVariantGenerator.dispatch(DynamicLights.LIT_WATER_BLOCK.get(), new MultiVariant(WeightedList.of(new Variant(ModelLocationUtils.getModelLocation(Blocks.WATER))))));
     }
