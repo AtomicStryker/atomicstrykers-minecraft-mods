@@ -70,7 +70,7 @@ public class MM_Gravity extends MobModifier {
 
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse) {
-            nextAbilityUse = time + coolDown;
+            nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
 
             double diffX = target.getX() - mob.getX();
             double diffZ;

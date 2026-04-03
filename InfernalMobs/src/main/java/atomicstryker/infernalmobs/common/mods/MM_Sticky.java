@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -38,7 +39,7 @@ public class MM_Sticky extends MobModifier {
                 && (source.getDirectEntity() instanceof Player p) && !isCreativePlayer(p)) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
-                nextAbilityUse = time + coolDown;
+                nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
                 ItemStack equippedStack = p.getMainHandItem();
                 if (ItemStack.EMPTY != equippedStack) {
                     p.getInventory().removeItem(equippedStack);

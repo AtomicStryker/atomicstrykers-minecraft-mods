@@ -426,7 +426,7 @@ public class InfernalMobsCore {
     public void processEntitySpawn(LivingEntity entity) {
         if (!entity.level().isClientSide() && config != null) {
             if (!getIsRareEntityOnline(entity) && !getWasMobSpawnedBefore(entity)) {
-                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().random.nextInt(config.getEliteRarity()) == 0)) {
+                if (isClassAllowed(entity) && (instance.checkEntityClassForced(entity) || entity.level().getRandom().nextInt(config.getEliteRarity()) == 0)) {
                     try {
                         /*
                             get server world from resource location:
@@ -528,6 +528,14 @@ public class InfernalMobsCore {
         return result;
     }
 
+    public boolean healthChangesDisabled() {
+        return config.isHealthChangesDisabled();
+    }
+
+    public double getModCooldownFactor() {
+        return config.getModCooldownFactor();
+    }
+
     /**
      * Allows setting Entity Health past the hardcoded getMaxHealth() constraint
      *
@@ -549,18 +557,18 @@ public class InfernalMobsCore {
      */
     private MobModifier createMobModifiers(LivingEntity entity) {
         /* 2-5 modifications standard */
-        int number = 2 + entity.level().random.nextInt(3);
+        int number = 2 + entity.level().getRandom().nextInt(3);
         /* lets just be lazy and scratch mods off a list copy */
         ArrayList<Class<? extends MobModifier>> possibleMods = Lists.newArrayList(mobMods);
 
-        if (entity.level().random.nextInt(config.getUltraRarity()) == 0) // ultra mobs
+        if (entity.level().getRandom().nextInt(config.getUltraRarity()) == 0) // ultra mobs
         {
-            number += 3 + entity.level().random.nextInt(2);
+            number += 3 + entity.level().getRandom().nextInt(2);
 
-            if (entity.level().random.nextInt(config.getInfernoRarity()) == 0) // infernal
+            if (entity.level().getRandom().nextInt(config.getInfernoRarity()) == 0) // infernal
             // mobs
             {
-                number += 3 + entity.level().random.nextInt(2);
+                number += 3 + entity.level().getRandom().nextInt(2);
             }
         }
 
@@ -569,7 +577,7 @@ public class InfernalMobsCore {
         // and have some
         {
             /* random index of mod list */
-            int index = entity.level().random.nextInt(possibleMods.size());
+            int index = entity.level().getRandom().nextInt(possibleMods.size());
             MobModifier nextMod = null;
 
             /*
@@ -759,7 +767,7 @@ public class InfernalMobsCore {
      */
     private ItemStack getRandomItem(LivingEntity mob, int prefix) {
         List<ItemStack> list = (prefix == 0) ? instance.lootItemDropsElite.getItemStackList() : (prefix == 1) ? instance.lootItemDropsUltra.getItemStackList() : instance.lootItemDropsInfernal.getItemStackList();
-        return !list.isEmpty() ? list.get(mob.level().random.nextInt(list.size())).copy() : null;
+        return !list.isEmpty() ? list.get(mob.level().getRandom().nextInt(list.size())).copy() : null;
     }
 
     public void sendVelocityPacket(ServerPlayer target, float xVel, float yVel, float zVel) {

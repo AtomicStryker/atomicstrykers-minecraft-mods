@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
@@ -42,7 +43,7 @@ public class MM_Alchemist extends MobModifier {
         if (hasSteadyTarget()) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
-                nextAbilityUse = time + coolDown;
+                nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
                 tryAbility(mob, mob.level().getNearestPlayer(mob, 12f));
             }
         }
@@ -79,7 +80,7 @@ public class MM_Alchemist extends MobModifier {
                 ItemStack itemstack = PotionContents.createItemStack(Items.SPLASH_POTION, potiontype);
                 Projectile.spawnProjectileUsingShoot(ThrownSplashPotion::new, serverLevel, itemstack, mob, xDistance, yDistance + absDistance * 0.2, zDistance, 0.75F, 8.0F);
 
-                mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().random.nextFloat() * 0.4F);
+                mob.level().playSound(null, mob.getX(), mob.getY(), mob.getZ(), SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F + mob.level().getRandom().nextFloat() * 0.4F);
             }
         }
     }

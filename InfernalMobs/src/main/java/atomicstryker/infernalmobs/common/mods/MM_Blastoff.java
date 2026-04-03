@@ -57,7 +57,7 @@ public class MM_Blastoff extends MobModifier {
 
         long time = System.currentTimeMillis();
         if (time > nextAbilityUse) {
-            nextAbilityUse = time + coolDown;
+            nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
             mob.level().playSound(null, mob.blockPosition(), SoundEvents.SLIME_JUMP, SoundSource.HOSTILE, 1.0F + mob.getRandom().nextFloat(), mob.getRandom().nextFloat() * 0.7F + 0.3F);
 
             if (target.level().isClientSide() || !(target instanceof ServerPlayer)) {

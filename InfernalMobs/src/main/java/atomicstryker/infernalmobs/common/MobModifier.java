@@ -313,7 +313,7 @@ public abstract class MobModifier {
     }
 
     private void increaseMaxHealthForMobIfNeeded(LivingEntity mob) {
-        if (mob.level().isClientSide()) {
+        if (mob.level().isClientSide() || InfernalMobsCore.instance().healthChangesDisabled()) {
             return;
         }
         float storedMaxHealth = mob.getPersistentData().getFloat("infernalMaxHealth").orElse(0F);

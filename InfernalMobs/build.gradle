@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'eclipse'
 	id 'idea'
-    id 'net.neoforged.moddev' version '2.0.122'
+    id 'net.neoforged.moddev' version '2.0.141'
     id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
@@ -26,18 +26,13 @@ base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 21 to end users in 1.20.5+
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+// Mojang ships Java 25 to end users in 26.1+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     // This line is optional. Access Transformers are automatically detected
     // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')

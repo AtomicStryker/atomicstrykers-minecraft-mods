@@ -1,5 +1,6 @@
 package atomicstryker.infernalmobs.common.mods;
 
+import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -31,7 +32,7 @@ public class MM_Sprint extends MobModifier {
         if (hasSteadyTarget()) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
-                nextAbilityUse = time + coolDown;
+                nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());
                 sprinting = !sprinting;
             }
 

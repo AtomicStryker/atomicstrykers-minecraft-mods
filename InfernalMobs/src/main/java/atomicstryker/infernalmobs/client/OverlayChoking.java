@@ -4,7 +4,7 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.network.AirPacket;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
@@ -44,7 +44,7 @@ public class OverlayChoking {
 
     public static class InfernalMobsChokingGuiOverlay implements GuiLayer {
         @Override
-        public void render(@NotNull GuiGraphics guiGraphics, DeltaTracker partialTick) {
+        public void render(@NotNull GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
             if (System.currentTimeMillis() > airDisplayTimeout) {
                 airOverrideValue = -999;
             }

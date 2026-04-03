@@ -1,3 +1,8 @@
+26.1.1.1NF
+- updated to MC 26.1.1 with neoforge 26.1.1.0-beta
+- add new config modCooldownFactor to adjust difficulty to taste. example "2.0" abilities take 200% time to recharge
+- add new config healthChangesDisabled in case another mod should handle mob health
+
 1.21.11.2NF
 - fix ghastly displacing mobs shooting fireballs, thanks Wasupmacuz for reporting
 - https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/559

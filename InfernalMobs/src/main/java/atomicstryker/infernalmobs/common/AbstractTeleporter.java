@@ -2,6 +2,7 @@ package atomicstryker.infernalmobs.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Entity;
@@ -103,7 +104,8 @@ public abstract class AbstractTeleporter extends MobModifier {
     }
 
     protected EntityTeleportEvent getForgeEvent(LivingEntity mob, double x, double y, double z) {
-        return new EntityTeleportEvent(mob, x, y, z);
+        // this should only be called on server side which makes (ServerLevel) cast safe
+        return new EntityTeleportEvent(mob, (ServerLevel) mob.level(), x, y, z);
     }
 
 }
