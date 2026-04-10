@@ -660,3 +660,6 @@ a: setAccessible now true
 
 26.1.1.1
 + updated for MC 26.1.1 and Forge 63.0.0
+
+26.1.2.1
++ updated for MC 26.1.2 and Forge 64.0.0
