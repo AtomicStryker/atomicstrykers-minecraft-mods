@@ -9,7 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 
 public class CommandParseTemplate {
@@ -36,7 +36,7 @@ public class CommandParseTemplate {
     }
 
     @SubscribeEvent
-    public void onBlockBroken(BlockEvent.BreakEvent event) {
+    public void onBlockBroken(BreakBlockEvent event) {
         if (event.getPlayer() == player) {
             // have to defer parsing to main thread, else all Tile Entities read as null
             MinecraftServer server = player.level().getServer();

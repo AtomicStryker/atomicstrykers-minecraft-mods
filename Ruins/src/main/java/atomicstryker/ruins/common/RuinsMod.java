@@ -22,8 +22,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -197,7 +197,7 @@ public class RuinsMod {
     }
 
     @SubscribeEvent
-    public void onBreak(BlockEvent.BreakEvent event) {
+    public void onBreak(BreakBlockEvent event) {
         if (event.getPlayer() != null && event.getLevel() instanceof ServerLevel) {
             WorldHandle wh = getWorldHandle((ServerLevel) event.getLevel());
             if (wh != null && wh.fileHandle.enableStick) {
