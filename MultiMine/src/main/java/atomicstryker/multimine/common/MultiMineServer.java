@@ -15,9 +15,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -25,6 +28,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,6 +39,8 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class MultiMineServer {
+    private static final String CURRENT_BLOCK_BREAK_EVENT_CLASS = "net.neoforged.neoforge.event.level.block.BreakBlockEvent";
+    private static final String LEGACY_BLOCK_BREAK_EVENT_CLASS = "net.neoforged.neoforge.event.level.BlockEvent$BreakEvent";
     private static MultiMineServer instance;
     private static MinecraftServer serverInstance;
     private final HashMap<ResourceKey<Level>, List<PartiallyMinedBlock>> partiallyMinedBlocksListByDimension;
@@ -59,6 +66,27 @@ public class MultiMineServer {
         blockRegenQueuesByDimension = Maps.newHashMap();
         blocksRecentlyDestroyedByWorld = Maps.newHashMap();
         serverSideDestroyBlockPosFields = Lists.newArrayList();
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void registerBlockBreakListener(IEventBus eventBus) {
+        Class<? extends Event> eventClass = findBlockBreakEventClass();
+        eventBus.addListener((Class) eventClass, event -> onBlockBreak((BlockEvent) event));
+        MultiMine.LOGGER.info("Registered MultiMine block break listener for {}", eventClass.getName());
+    }
+
+    private Class<? extends Event> findBlockBreakEventClass() {
+        for (String className : new String[]{CURRENT_BLOCK_BREAK_EVENT_CLASS, LEGACY_BLOCK_BREAK_EVENT_CLASS}) {
+            try {
+                Class<?> eventClass = Class.forName(className);
+                if (BlockEvent.class.isAssignableFrom(eventClass) && Event.class.isAssignableFrom(eventClass)) {
+                    return eventClass.asSubclass(Event.class);
+                }
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+
+        throw new IllegalStateException("Could not find a supported NeoForge block break event class");
     }
 
     public static void handlePartialBlockPacket(PartialBlockPacket packet, IPayloadContext context) {
@@ -177,18 +205,32 @@ public class MultiMineServer {
         }
     }
 
-    @SubscribeEvent
-    public void onBlockBreak(BreakBlockEvent event) {
+    public void onBlockBreak(BlockEvent event) {
+        Player player = getBlockBreakPlayer(event);
         HashMap<BlockPos, Integer> blocksRecentlyDestroyed = blocksRecentlyDestroyedByWorld
-                .computeIfAbsent(event.getPlayer().level().dimension(), k -> Maps.newHashMap());
+                .computeIfAbsent(player.level().dimension(), k -> Maps.newHashMap());
         /*
          * any block destroyed by multi mine has its coordinates entered into a blacklist for 10 ticks,
          * during which Multi Mine will block any further block destruction.
          * this is to prevent race conditions with vanilla and other mod interactions
          */
         if (blocksRecentlyDestroyed.containsKey(event.getPos())) {
-            event.setCanceled(true);
+            ((ICancellableEvent) event).setCanceled(true);
         }
+    }
+
+    private Player getBlockBreakPlayer(BlockEvent event) {
+        try {
+            Method getPlayer = event.getClass().getMethod("getPlayer");
+            Object player = getPlayer.invoke(event);
+            if (player instanceof Player blockBreakPlayer) {
+                return blockBreakPlayer;
+            }
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException("Could not read player from NeoForge block break event", e);
+        }
+
+        throw new RuntimeException("NeoForge block break event returned an unexpected player value");
     }
 
     private boolean isBlockBanned(BlockState blockState) {

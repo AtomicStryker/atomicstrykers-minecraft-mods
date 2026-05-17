@@ -46,6 +46,7 @@ public class MultiMine {
         modEventBus.addListener(this::registerNetworking);
 
         multiMineServer = new MultiMineServer();
+        multiMineServer.registerBlockBreakListener(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.register(multiMineServer);
     }
 
