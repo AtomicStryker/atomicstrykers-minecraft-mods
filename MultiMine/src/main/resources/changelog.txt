@@ -1,3 +1,6 @@
+26.1.2.2NF
+- updated to neoforge 26.1.2.59-beta, thanks to umeyir061 for pointing out api change
+
 26.1.2.1NF
 - updated to MC 26.1.2 with neoforge 26.1.2.2-beta
 
