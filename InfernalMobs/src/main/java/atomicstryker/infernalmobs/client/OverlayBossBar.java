@@ -66,7 +66,7 @@ public class OverlayBossBar implements ForgeLayer {
 
         mc = Minecraft.getInstance();
 
-        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
+        if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.hud.getBossOverlay().shouldPlayMusic()) {
             return;
         }
 
@@ -87,7 +87,7 @@ public class OverlayBossBar implements ForgeLayer {
                 if (declaredField.getType() == Map.class) {
                     declaredField.setAccessible(true);
                     try {
-                        vanillaBossEventsMap = (LinkedHashMap<UUID, LerpingBossEvent>) declaredField.get(mc.gui.getBossOverlay());
+                        vanillaBossEventsMap = (LinkedHashMap<UUID, LerpingBossEvent>) declaredField.get(mc.gui.hud.getBossOverlay());
                         hackSuccess = true;
                     } catch (IllegalAccessException e) {
                         hackSuccess = false;
@@ -125,9 +125,9 @@ public class OverlayBossBar implements ForgeLayer {
                 // MC supports multiple bosses. Infernal Mobs does not. hide the modifier subdisplay in multi case
                 if (vanillaBossEventsMap.size() == 1) {
 
-                    RenderTarget rendertarget = mc.getMainRenderTarget();
+                    RenderTarget rendertarget = mc.gameRenderer.mainRenderTarget();
                     RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(rendertarget.getDepthTexture(), 1.0);
-                    mc.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
+                    mc.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
                     guiRenderState.reset();
 
                     guiGraphics.nextStratum();

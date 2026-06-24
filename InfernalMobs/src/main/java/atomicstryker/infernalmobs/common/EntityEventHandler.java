@@ -1,6 +1,5 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
@@ -23,7 +22,7 @@ import java.util.Map.Entry;
 
 public class EntityEventHandler {
 
-    private final HashMap<Tuple<Integer, Integer>, Float> damageMap = new HashMap<>();
+    private final HashMap<Integer[], Float> damageMap = new HashMap<>();
     private long nextMapEvaluation;
 
     /**
@@ -108,12 +107,12 @@ public class EntityEventHandler {
                  */
                 if (event.getSource() == attacker.damageSources().cactus() || event.getSource() == attacker.damageSources().drown() || event.getSource() == attacker.damageSources().fall() || event.getSource() == attacker.damageSources().inWall()
                         || event.getSource() == attacker.damageSources().lava()) {
-                    Tuple<Integer, Integer> cpair = new Tuple<>((int) event.getEntity().getX(), (int) event.getEntity().getZ());
+                    Integer[] cpair = new Integer[]{(int) event.getEntity().getX(), (int) event.getEntity().getZ()};
                     Float value = damageMap.get(cpair);
                     if (value == null) {
-                        for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet()) {
-                            if (Math.abs(e.getKey().getA() - cpair.getA()) < 3) {
-                                if (Math.abs(e.getKey().getB() - cpair.getB()) < 3) {
+                        for (Entry<Integer[], Float> e : damageMap.entrySet()) {
+                            if (Math.abs(e.getKey()[0] - cpair[0]) < 3) {
+                                if (Math.abs(e.getKey()[1] - cpair[1]) < 3) {
                                     e.setValue(e.getValue() + event.getAmount());
                                     break;
                                 }
@@ -182,8 +181,8 @@ public class EntityEventHandler {
                 if (!damageMap.isEmpty()) {
                     float maxDamage = 0f;
                     float val;
-                    Tuple<Integer, Integer> maxC = null;
-                    for (Entry<Tuple<Integer, Integer>, Float> e : damageMap.entrySet()) {
+                    Integer[] maxC = null;
+                    for (Entry<Integer[], Float> e : damageMap.entrySet()) {
                         val = e.getValue();
                         if (val > maxDamage) {
                             maxC = e.getKey();
@@ -192,9 +191,9 @@ public class EntityEventHandler {
                     }
 
                     if (maxC != null) {
-                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC.getA() + ", " + maxC.getB());
+                        System.out.println("Infernal Mobs AntiMobFarm damage check, max detected chunk damage value " + maxDamage + " near coords " + maxC[0] + ", " + maxC[1]);
                         if (maxDamage > InfernalMobsCore.instance().config.getMobFarmDamageTrigger()) {
-                            MobFarmDetectedEvent.BUS.post(new MobFarmDetectedEvent(event.getEntity().level().getChunk(maxC.getA(), maxC.getB()), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
+                            MobFarmDetectedEvent.BUS.post(new MobFarmDetectedEvent(event.getEntity().level().getChunk(maxC[0], maxC[1]), InfernalMobsCore.instance().config.getMobFarmCheckIntervals(), maxDamage));
                         }
                     }
                     damageMap.clear();
