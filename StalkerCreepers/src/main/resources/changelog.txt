@@ -1,3 +1,6 @@
+26.2.1
+ported to MC 26.2 and Forge 65.0.0
+
 26.1.2.1
 ported to MC 26.1.2 and Forge 64.0.0
 
