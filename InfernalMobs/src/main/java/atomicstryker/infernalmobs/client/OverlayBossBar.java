@@ -4,7 +4,6 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -32,7 +30,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -65,7 +62,7 @@ public class OverlayBossBar {
     public static class InfernalMobsHealthBarGuiOverlay implements GuiLayer {
         @Override
         public void render(@NotNull GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
-            if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.getBossOverlay().shouldPlayMusic()) {
+            if (InfernalMobsCore.instance().getIsHealthBarDisabled() || mc.gui.hud.getBossOverlay().shouldPlayMusic()) {
                 return;
             }
 
@@ -86,7 +83,7 @@ public class OverlayBossBar {
                     if (declaredField.getType() == Map.class) {
                         declaredField.setAccessible(true);
                         try {
-                            vanillaBossEventsMap = (LinkedHashMap<UUID, LerpingBossEvent>) declaredField.get(mc.gui.getBossOverlay());
+                            vanillaBossEventsMap = (LinkedHashMap<UUID, LerpingBossEvent>) declaredField.get(mc.gui.hud.getBossOverlay());
                             hackSuccess = true;
                         } catch (IllegalAccessException e) {
                             hackSuccess = false;
