@@ -6,6 +6,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -166,17 +169,61 @@ public abstract class MobModifier {
     /**
      * passes the setAttackTarget event to the modifier list
      *
+     * @param mob the infernal entity
      * @param target being passed from the event
      */
-    public void onSetAttackTarget(LivingEntity target) {
+    public void onSetAttackTarget(LivingEntity mob, LivingEntity target) {
+
+        if (!wantsToAttack(mob, target)) {
+            return;
+        }
+
         previousAttackTarget = attackTarget;
         attackTarget = target;
         if (previousAttackTarget != target) {
             targetingTicksSteadyTarget = 0;
         }
         if (nextMod != null) {
-            nextMod.onSetAttackTarget(target);
+            nextMod.onSetAttackTarget(mob, target);
         }
+    }
+
+    public LivingEntity getAttackTarget() {
+        return attackTarget;
+    }
+
+    /**
+     * filter valid attack targets in case the mob is tamed or owned or the target is not valid, like a creative player
+     * mostly a copy of Wolf#wantsToAttack
+     */
+    public boolean wantsToAttack(LivingEntity mob, LivingEntity target) {
+        if (target == null) {
+            return false;
+        }
+        // this check contains creative mode checks and such
+        if (!mob.canAttack(target)) {
+            return false;
+        }
+        if (target instanceof ArmorStand) {
+            return false;
+        }
+        if (mob instanceof NeutralMob neutralMob) {
+            if (!neutralMob.isAngryAt(target)) {
+                return false;
+            }
+        }
+        if (mob instanceof OwnableEntity ownableEntity) {
+            if (ownableEntity.getOwner() != null) {
+                LivingEntity owner = ownableEntity.getOwner();
+                if (owner == target) {
+                    return false;
+                }
+                if (owner != null && !owner.canAttack(target)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -244,21 +291,22 @@ public abstract class MobModifier {
      * currently unused
      */
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (nextMod != null) {
             return nextMod.onUpdate(mob);
-        } else {
-            if (attackTarget == null) {
-                attackTarget = mob.level.getNearestPlayer(mob, 7.5f);
-            }
+        }
+        return false;
+    }
 
-            if (attackTarget != null) {
-                if (!attackTarget.isAlive() || attackTarget.distanceTo(mob) > 15f) {
-                    attackTarget = null;
-                }
+    /**
+     * drop the instance attackTarget if it should not be targeted anymore
+     */
+    protected void removeStaleAttackTarget(LivingEntity mob) {
+        if (attackTarget != null) {
+            if (!attackTarget.isAlive() || attackTarget.distanceTo(mob) > 15f || !wantsToAttack(mob, attackTarget)) {
+                attackTarget = null;
             }
         }
-
-        return false;
     }
 
     /**
@@ -267,11 +315,7 @@ public abstract class MobModifier {
      */
     public boolean hasSteadyTarget() {
         if (attackTarget != null) {
-            if (isCreativePlayer(attackTarget)) {
-                targetingTicksSteadyTarget = 0;
-            } else {
-                targetingTicksSteadyTarget++;
-            }
+            targetingTicksSteadyTarget++;
             return targetingTicksSteadyTarget > TARGETING_TICKS_BEFORE_ATTACK;
         }
         return false;

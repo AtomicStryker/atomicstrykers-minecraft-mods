@@ -30,6 +30,7 @@ public class MM_Choke extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (!hasSteadyTarget()) {
             return super.onUpdate(mob);
         }

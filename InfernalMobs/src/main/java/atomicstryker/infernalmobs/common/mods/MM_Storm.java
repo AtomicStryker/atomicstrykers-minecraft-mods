@@ -33,8 +33,8 @@ public class MM_Storm extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
-        if (hasSteadyTarget()
-                && getMobTarget() instanceof Player) {
+        removeStaleAttackTarget(mob);
+        if (hasSteadyTarget()) {
             tryAbility(mob, getMobTarget());
         }
 

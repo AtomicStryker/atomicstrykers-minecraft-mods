@@ -1,3 +1,8 @@
+1.19.4.4
+- implement mob attack target filtering similar to tamed wolf filtering, tamed or neutrals should no longer attack you
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/569
+- removed several filters that prevented ability use against nonplayer targets (tamed infernal army gogo)
+
 1.19.4.3
 - fix ghastly displacing mobs shooting fireballs, thanks Wasupmacuz for reporting
 - https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/559

@@ -35,11 +35,12 @@ public class MM_Alchemist extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (hasSteadyTarget()) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + coolDown;
-                tryAbility(mob, mob.level.getNearestPlayer(mob, 12f));
+                tryAbility(mob, getAttackTarget());
             }
         }
         return super.onUpdate(mob);

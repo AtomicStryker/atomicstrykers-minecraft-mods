@@ -31,6 +31,7 @@ public class MM_Cloaking extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (hasSteadyTarget()
                 && getMobTarget() instanceof Player) {
             tryAbility(mob);
