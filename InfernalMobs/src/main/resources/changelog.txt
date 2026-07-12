@@ -1,5 +1,5 @@
 26.2.2NF
--
+- fix default ability cooldown ModCooldownFactor being zero
 - implement mob attack target filtering similar to tamed wolf filtering, tamed or neutrals should no longer attack you
 - https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/569
 - removed several filters that prevented ability use against nonplayer targets (tamed infernal army gogo)

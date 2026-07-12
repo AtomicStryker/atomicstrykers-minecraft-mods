@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -208,8 +209,8 @@ public abstract class MobModifier {
         if (target instanceof ArmorStand) {
             return false;
         }
-        if (mob instanceof NeutralMob neutralMob) {
-            if (!neutralMob.isAngryAt(target)) {
+        if (mob instanceof NeutralMob neutralMob && target.level() instanceof ServerLevel) {
+            if (!neutralMob.isAngryAt(target, (ServerLevel) target.level())) {
                 return false;
             }
         }

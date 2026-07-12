@@ -64,7 +64,7 @@ public class EntityEventHandler {
         if (!event.getEntity().level().isClientSide()) {
             MobModifier mod = InfernalMobsCore.getMobModifiers(event.getEntity());
             if (mod != null) {
-                mod.onSetAttackTarget(event.getNewAboutToBeSetTarget());
+                mod.onSetAttackTarget(event.getEntity(), event.getNewAboutToBeSetTarget());
             }
         }
     }

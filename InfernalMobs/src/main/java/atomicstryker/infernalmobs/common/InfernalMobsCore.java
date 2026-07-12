@@ -411,6 +411,7 @@ public class InfernalMobsCore {
 
         defaultConfig.setMaxDamage(10D);
         defaultConfig.setDimensionIDBlackList(new ArrayList<>());
+        defaultConfig.setModCooldownFactor(1D);
 
         Map<String, Boolean> modsEnabledMap = new HashMap<>();
         for (Class<?> c : mobMods) {
