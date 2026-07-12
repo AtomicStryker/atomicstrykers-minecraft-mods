@@ -56,7 +56,8 @@ public class MM_Gravity extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
-        if (hasSteadyTarget() && getMobTarget() instanceof Player) {
+        removeStaleAttackTarget(mob);
+        if (hasSteadyTarget()) {
             tryAbility(mob, getMobTarget());
         }
 

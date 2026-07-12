@@ -27,6 +27,7 @@ public class MM_Quicksand extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (hasSteadyTarget()
                 && InfernalMobsCore.instance().getIsEntityAllowedTarget(getMobTarget())
                 && canMobSeeTarget(mob, getMobTarget())

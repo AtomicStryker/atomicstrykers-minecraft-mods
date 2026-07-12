@@ -1,3 +1,9 @@
+26.2.2NF
+-
+- implement mob attack target filtering similar to tamed wolf filtering, tamed or neutrals should no longer attack you
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/569
+- removed several filters that prevented ability use against nonplayer targets (tamed infernal army gogo)
+
 26.2.1NF
 - updated to MC 26.2 with neoforge 26.2.0.7-beta
 

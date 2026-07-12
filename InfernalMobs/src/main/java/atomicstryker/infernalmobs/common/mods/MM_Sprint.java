@@ -29,6 +29,7 @@ public class MM_Sprint extends MobModifier {
 
     @Override
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (hasSteadyTarget()) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
