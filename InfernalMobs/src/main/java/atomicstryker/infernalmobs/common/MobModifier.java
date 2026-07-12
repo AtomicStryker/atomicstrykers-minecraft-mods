@@ -293,21 +293,22 @@ public abstract class MobModifier {
      * currently unused
      */
     public boolean onUpdate(LivingEntity mob) {
+        removeStaleAttackTarget(mob);
         if (nextMod != null) {
             return nextMod.onUpdate(mob);
-        } else {
-            if (attackTarget == null) {
-                attackTarget = mob.level().getNearestPlayer(mob, 7.5f);
-            }
+        }
+        return false;
+    }
 
-            if (attackTarget != null) {
-                if (!attackTarget.isAlive() || attackTarget.distanceTo(mob) > 15f) {
-                    attackTarget = null;
-                }
+    /**
+     * drop the instance attackTarget if it should not be targeted anymore
+     */
+    protected void removeStaleAttackTarget(LivingEntity mob) {
+        if (attackTarget != null) {
+            if (!attackTarget.isAlive() || attackTarget.distanceTo(mob) > 15f || !wantsToAttack(mob, attackTarget)) {
+                attackTarget = null;
             }
         }
-
-        return false;
     }
 
     /**
