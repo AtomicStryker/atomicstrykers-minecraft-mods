@@ -36,7 +36,7 @@ public class MM_Sticky extends MobModifier {
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (isDirectAttack(source)
-                && (source.getDirectEntity() instanceof Player p) && !isCreativePlayer(p)) {
+                && (source.getDirectEntity() instanceof Player p) && wantsToAttack(mob, p)) {
             long time = System.currentTimeMillis();
             if (time > nextAbilityUse) {
                 nextAbilityUse = time + (long)(coolDown * InfernalMobsCore.instance().getModCooldownFactor());

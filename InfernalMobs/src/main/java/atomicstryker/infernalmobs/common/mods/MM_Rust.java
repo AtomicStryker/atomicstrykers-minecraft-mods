@@ -30,7 +30,7 @@ public class MM_Rust extends MobModifier {
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
         if (isDirectAttack(source)
                 && (source.getDirectEntity() instanceof Player p)
-                && !isCreativePlayer(p)) {
+                && wantsToAttack(mob, p)) {
             ItemStack equippedStack = p.getInventory().getEquipment().get(EquipmentSlot.MAINHAND);
             equippedStack.hurtAndBreak(4, (LivingEntity) source.getDirectEntity(), EquipmentSlot.MAINHAND);
         }

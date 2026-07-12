@@ -1,3 +1,8 @@
+26.2.2
+- fix default ability cooldown ModCooldownFactor being zero
+- implement mob attack target filtering similar to tamed wolf filtering
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/issues/569
+
 26.2.1
 - updated for MC 26.2 and Forge 65.0.0
 

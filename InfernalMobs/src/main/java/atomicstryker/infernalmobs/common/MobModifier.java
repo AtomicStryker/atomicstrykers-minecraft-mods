@@ -2,10 +2,14 @@ package atomicstryker.infernalmobs.common;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
@@ -167,17 +171,61 @@ public abstract class MobModifier {
     /**
      * passes the setAttackTarget event to the modifier list
      *
+     * @param mob the infernal entity
      * @param target being passed from the event
      */
-    public void onSetAttackTarget(LivingEntity target) {
+    public void onSetAttackTarget(LivingEntity mob, LivingEntity target) {
+
+        if (!wantsToAttack(mob, target)) {
+            return;
+        }
+
         previousAttackTarget = attackTarget;
         attackTarget = target;
         if (previousAttackTarget != target) {
             targetingTicksSteadyTarget = 0;
         }
         if (nextMod != null) {
-            nextMod.onSetAttackTarget(target);
+            nextMod.onSetAttackTarget(mob, target);
         }
+    }
+
+    public LivingEntity getAttackTarget() {
+        return attackTarget;
+    }
+
+    /**
+     * filter valid attack targets in case the mob is tamed or owned or the target is not valid, like a creative player
+     * mostly a copy of Wolf#wantsToAttack
+     */
+    public boolean wantsToAttack(LivingEntity mob, LivingEntity target) {
+        if (target == null) {
+            return false;
+        }
+        // this check contains creative mode checks and such
+        if (!mob.canAttack(target)) {
+            return false;
+        }
+        if (target instanceof ArmorStand) {
+            return false;
+        }
+        if (mob instanceof NeutralMob && target.level() instanceof ServerLevel) {
+            NeutralMob neutralMob = (NeutralMob) mob;
+            if (!neutralMob.isAngryAt(target, (ServerLevel) target.level())) {
+                return false;
+            }
+        }
+        if (mob instanceof OwnableEntity) {
+            OwnableEntity ownableEntity = (OwnableEntity) mob;
+            LivingEntity owner = ownableEntity.getOwner();
+            if (owner == target) {
+                return false;
+            }
+            if (owner != null && !owner.canAttack(target)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -280,11 +328,7 @@ public abstract class MobModifier {
      */
     public boolean hasSteadyTarget() {
         if (attackTarget != null) {
-            if (isCreativePlayer(attackTarget)) {
-                targetingTicksSteadyTarget = 0;
-            } else {
-                targetingTicksSteadyTarget++;
-            }
+            targetingTicksSteadyTarget++;
             return targetingTicksSteadyTarget > TARGETING_TICKS_BEFORE_ATTACK;
         }
         return false;
