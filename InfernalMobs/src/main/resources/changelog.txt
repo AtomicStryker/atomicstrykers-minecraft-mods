@@ -1,3 +1,6 @@
+26.3.1
+- updated for MC 26.3 and Forge 66.0.2
+
 26.2.2
 - fix default ability cooldown ModCooldownFactor being zero
 - implement mob attack target filtering similar to tamed wolf filtering
