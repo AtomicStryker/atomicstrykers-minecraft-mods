@@ -1,14 +1,10 @@
 package atomicstryker.infernalmobs.common;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
@@ -66,32 +62,11 @@ public abstract class AbstractTeleporter extends MobModifier {
     }
 
     protected boolean tryTeleportTo(LivingEntity mob, double x, double y, double z) {
-        BlockPos.MutableBlockPos destination = new BlockPos.MutableBlockPos(x, y, z);
-
-        while (destination.getY() > mob.level().getMinY() && !mob.level().getBlockState(destination).blocksMotion()) {
-            destination.move(Direction.DOWN);
+        boolean success = mob.randomTeleport(x, y, z, true, BlockTags.ENDERMAN_DOES_NOT_TELEPORT_TO);
+        if (success) {
+            playDestinationEffects(mob);
         }
-
-        BlockState destinationFloorState = mob.level().getBlockState(destination);
-        boolean blocksMotion = destinationFloorState.blocksMotion();
-        boolean isWater = destinationFloorState.getFluidState().is(FluidTags.WATER);
-        if (blocksMotion && !isWater) {
-            EntityTeleportEvent forgeEvent = getForgeEvent(mob, x, y, z);
-            if (forgeEvent.isCanceled()) {
-                return false;
-            }
-            Vec3 vec3 = mob.position();
-            boolean teleportResult = mob.randomTeleport(forgeEvent.getTargetX(), forgeEvent.getTargetY(), forgeEvent.getTargetZ(), true);
-            if (teleportResult) {
-                mob.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(mob));
-                if (!mob.isSilent()) {
-                    playDestinationEffects(mob);
-                }
-            }
-            return teleportResult;
-        } else {
-            return false;
-        }
+        return success;
     }
 
     protected void playStartEffects(LivingEntity mob, double x, double y, double z) {

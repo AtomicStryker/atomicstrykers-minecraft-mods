@@ -4,6 +4,7 @@ import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -43,7 +44,7 @@ public class MM_Sticky extends MobModifier {
                 ItemStack equippedStack = p.getMainHandItem();
                 if (ItemStack.EMPTY != equippedStack) {
                     p.getInventory().removeItem(equippedStack);
-                    ItemEntity drop = p.drop(equippedStack, false);
+                    ItemEntity drop = p.drop(equippedStack, false, Prediction.PREDICTED);
                     if (drop != null) {
                         // drop may be cancelled by forge event hook, but if it was, restoring the lost item
                         // is the responsibility of that outside party
